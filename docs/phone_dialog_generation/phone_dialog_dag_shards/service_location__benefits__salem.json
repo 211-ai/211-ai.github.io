@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__salem",
   "kind": "service_location",
   "key": "benefits__salem",
-  "nodeCount": 73,
+  "nodeCount": 81,
   "nodes": [
     {
       "id": "phone_dialog_0000011#turn-1",
@@ -2173,6 +2173,246 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002175#turn-2",
+      "scenarioId": "phone_dialog_0002175",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Salem, Oregon, and I'm a veteran, I keep calling places and nobody answers, I can't do this.",
+      "normalizedQuery": "i'm salem oregon veteran veterans va keep calling places nobody answers can't this",
+      "voiceResponse": "I hear you. You do not have to do this alone. If you might hurt yourself, or you\u2019re not safe right now, call 911 now. Call 800, 692, 9666. Backup number: 800, 698, 2411. I\u2019m connecting you to a live 211 specialist now to help you find a safe place tonight.",
+      "evidenceDocIds": [
+        "service:1a1c9e1d22a02f0b",
+        "service:1c026470db6ca453",
+        "service:1f766ab1492218f0",
+        "service:81124e3057b57631",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You do not have to do this alone. If you might hurt yourself, or you\u2019re not safe right now, call 911 now. Call 800, 692, 9666. Backup number: 800, 698, 2411. I\u2019m connecting you to a live 211 specialist now to help you find a safe place tonight.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002175#turn-3",
+      "scenarioId": "phone_dialog_0002175",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I missed that part\u2014what number was it? Say it again, please.",
+      "normalizedQuery": "hi sorry can't catch breath just got told leave don't know go tonight i'm salem oregon veteran veterans va keep calling places nobody answers this slow down missed part number was it say again please",
+      "voiceResponse": "I\u2019ll repeat: 800, 692, 9666. Backup number: 800, 698, 2411.",
+      "evidenceDocIds": [
+        "service:1a1c9e1d22a02f0b",
+        "service:1c026470db6ca453",
+        "service:1f766ab1492218f0",
+        "service:81124e3057b57631",
+        "service:2e6a4c77b4bef070"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: 800, 692, 9666. Backup number: 800, 698, 2411.",
+      "voiceResponseAlternatives": [
+        "Of course\u2014you\u2019re doing okay. I\u2019ll say the office name slowly: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**. Again: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**.",
+        "Next step: write the name down as I say it: **KEEP**. That\u2019s **K \u2014 E \u2014 E \u2014 P**. It\u2019s said like the word \u201ckeep.\u201d",
+        "You\u2019re right, repeating slowly: I didn\u2019t confirm walk-in hours. I said you can call for **same-day options** and ask for the **closest opening to Salem**. The number is: **503 \u2026 714 \u2026 4148**. And because you said chest pain, emergency care is the safer choice right now. If you feel in danger, call **911**.",
+        "Absolutely. I haven\u2019t shared office hours yet, and I don\u2019t want to give you the wrong time. The number I gave is: **five \u2026 four \u2026 one \u2026 nine \u2026 nine \u2026 four \u2026 four \u2026 nine \u2026 six \u2026 eight**. If you want, I can repeat it again even slower."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002200#turn-6",
+      "scenarioId": "phone_dialog_0002200",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "If they need paperwork, mine is in storage and I can't get there tonight, so can you find one that will still see me?",
+      "normalizedQuery": "i'm passed anything getting shaky somewhere like clinic medical health right away sorry signal cut name did say please it slow forget things don't have car so bus walking directions from downtown salem far if they paperwork mine storage can't there tonight one will still see",
+      "voiceResponse": "First step: if you are still shaky right now, call 9 1 1 now. I can\u2019t confirm a specific clinic\u2019s paperwork rules from the records I have. I can connect you to a live 211 specialist now to find a place open tonight that may still see you without documents and give your next step right away.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if you are still shaky right now, call 9 1 1 now. I can\u2019t confirm a specific clinic\u2019s paperwork rules from the records I have. I can connect you to a live 211 specialist now to find a place open tonight that may still see you without documents and give your next step right away.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002286#turn-1",
+      "scenarioId": "phone_dialog_0002286",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I keep losing the thread, I\u2019m in Salem and I need mental health help, I think, but there\u2019s a man in the hallway and also maybe not, I can\u2019t tell what\u2019s real right now.",
+      "normalizedQuery": "hi sorry keep losing thread salem mental health think there man hallway also maybe tell real right now",
+      "voiceResponse": "I\u2019m glad you called. This is an urgent safety situation. If you might be in danger right now, call 911 now. If you can, move to a safer place with other people or lock your door. Call (503) 585-3012 for same-day adult mental health help in Salem.",
+      "evidenceDocIds": [
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "service:4b42df756753dbd4",
+        "service:0804026f5736e839",
+        "service:e5da0f1a3feee6e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called. This is an urgent safety situation. If you might be in danger right now, call 911 now. If you can, move to a safer place with other people or lock your door. Call (503) 585-3012 for same-day adult mental health help in Salem.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002286#turn-2",
+      "scenarioId": "phone_dialog_0002286",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "No, wait, don\u2019t send police, please, I\u2019m not violent, I just haven\u2019t slept and the voices keep saying my phone is hacked, can you hear that buzzing too or is that just me?",
+      "normalizedQuery": "hi sorry keep losing thread salem mental health think there man hallway also maybe tell real right now no wait don send police please violent just haven slept voices saying phone hacked hear buzzing too",
+      "voiceResponse": "I hear you, and you\u2019re not in trouble. What you\u2019re describing is a safety crisis right now. If you might act on the voices or feel in immediate danger, call 911 now. Otherwise, stay with me and we\u2019ll get you to a live crisis counselor right away. Move to a safer spot and keep your door locked if you can.",
+      "evidenceDocIds": [
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:8e98106e040e9fe3",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not in trouble. What you\u2019re describing is a safety crisis right now. If you might act on the voices or feel in immediate danger, call 911 now. Otherwise, stay with me and we\u2019ll get you to a live crisis counselor right away. Move to a safer spot and keep your door locked if you can.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002286#turn-4",
+      "scenarioId": "phone_dialog_0002286",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry I\u2019m talking over you, my battery is at like two percent, can you repeat the number slower if there\u2019s a crisis line, and can you stay with me while I write it down?",
+      "normalizedQuery": "hi sorry keep losing thread salem mental health think there man hallway also maybe tell real right now no wait don send police please violent just haven slept voices saying phone hacked hear buzzing too did ask safety mean apartment door locked trying hurt myself thinking someone switched meds line up days talking over battery at like two percent repeat number slower if crisis stay while write it down",
+      "voiceResponse": "Yes. I\u2019m here with you. I\u2019ll repeat: 503, 585, 3012.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019m here with you. I\u2019ll repeat: 503, 585, 3012.",
+      "voiceResponseAlternatives": [
+        "Of course\u2014you\u2019re doing okay. I\u2019ll say the office name slowly: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**. Again: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**.",
+        "Next step: write the name down as I say it: **KEEP**. That\u2019s **K \u2014 E \u2014 E \u2014 P**. It\u2019s said like the word \u201ckeep.\u201d",
+        "You\u2019re right, repeating slowly: I didn\u2019t confirm walk-in hours. I said you can call for **same-day options** and ask for the **closest opening to Salem**. The number is: **503 \u2026 714 \u2026 4148**. And because you said chest pain, emergency care is the safer choice right now. If you feel in danger, call **911**.",
+        "Absolutely. I haven\u2019t shared office hours yet, and I don\u2019t want to give you the wrong time. The number I gave is: **five \u2026 four \u2026 one \u2026 nine \u2026 nine \u2026 four \u2026 four \u2026 nine \u2026 six \u2026 eight**. If you want, I can repeat it again even slower."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002323#turn-6",
+      "scenarioId": "phone_dialog_0002323",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I keep jumping around\u2014 yes, Salem, Oregon, and can you say the phone number one digit at a time?",
+      "normalizedQuery": "legal aid attorney advocacy salem getting papers from landlord don understand them repeat name slowly miss letters on phone like mix those up wait before it free ssi pay lawyer right now sorry keep jumping around yes oregon say number one digit at time",
+      "voiceResponse": "Yes. Salem, Oregon. The number is 5, 0, 3, 4, 8, 5, 0, 6, 9, 6. I\u2019ll repeat: 5, 0, 3, 4, 8, 5, 0, 6, 9, 6.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Salem, Oregon. The number is 5, 0, 3, 4, 8, 5, 0, 6, 9, 6. I\u2019ll repeat: 5, 0, 3, 4, 8, 5, 0, 6, 9, 6.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002338#turn-6",
+      "scenarioId": "phone_dialog_0002338",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Can we do a quiet plan first, then a place I can get to without them noticing? If you give a number, say it twice.",
+      "normalizedQuery": "salem downtown person keeps id tells go if they see called it gets bad scared re nearby right now domestic violence survivor advocacy have papers stay on this line long we quiet plan first then place without them noticing give number say twice",
+      "voiceResponse": "Yes. Quiet plan first: keep this call short, move near other people, and leave if you can do it safely. If they\u2019re close and you feel in danger, call 911 now. For private advocacy without papers, call 541, 779, 4357. I\u2019ll repeat: 541, 779, 4357. If traveling feels safer later: 2594 East Barnett Road, Suite C, Medford, Oregon, 97504. Backup number: 541, 779, 2393, extension 209. I\u2019ll repeat: 541, 779, 2393, extension 209.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Quiet plan first: keep this call short, move near other people, and leave if you can do it safely. If they\u2019re close and you feel in danger, call 911 now. For private advocacy without papers, call 541, 779, 4357. I\u2019ll repeat: 541, 779, 4357. If traveling feels safer later: 2594 East Barnett Road, Suite C, Medford, Oregon, 97504. Backup number: 541, 779, 2393, extension 209. I\u2019ll repeat: 541, 779, 2393, extension 209.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize\u2014I\u2019m glad you called. We can do this one step at a time. If you\u2019re a veteran or family member, Salem Benefits Assistance can help with disability applications. Call **8 0 0, 6 9 2, 9 6 6 6**. I\u2019ll repeat: **8 0 0, 6 9 2, 9 6 6 6**. Address: **700 Summer Street N E, Salem**. If you feel unsafe right now, call **9 1 1**. I can also get you to a live person now.",
+        "I\u2019m so sorry about your brother. You don\u2019t need to apologize. Let\u2019s do just one step now. The office is: **Oregon Department of Human Services, Self-Sufficiency Administrative Office**. Phone number: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. I\u2019ll repeat: **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**. If you want, I can stay with you while we connect you to a live person.",
+        "That is a very good question, and I\u2019m glad you asked. For this request, they usually only need what\u2019s on the **SNAP replacement form** and basic contact details to reach you. The people seeing it should be the **Oregon Department of Human Services, Self-Sufficiency Administrative Office** staff handling your case. You can share the minimum first, then ask what is optional before giving more. If you want, I can stay with you while you ask them that directly at **8 0 0 \u2026 6 9 9 \u2026 9 0 7 5**.",
+        "Next step: stay with me and I\u2019ll connect you to a live 211 specialist now to find Salem options you can reach without a car. If you feel unsafe or might hurt yourself right now, call 9-1-1 immediately. I hear this is urgent, and I\u2019m not sending you away. While I connect you, tell the specialist you\u2019re near downtown Salem and need same-day mental health help with transportation limits."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -2577,6 +2817,36 @@
       "to": "phone_dialog_0002094#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002175#turn-2",
+      "to": "phone_dialog_0002175#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002175#turn-3",
+      "to": "phone_dialog_0002175#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002286#turn-1",
+      "to": "phone_dialog_0002286#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002286#turn-2",
+      "to": "phone_dialog_0002286#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002286#turn-4",
+      "to": "phone_dialog_0002286#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

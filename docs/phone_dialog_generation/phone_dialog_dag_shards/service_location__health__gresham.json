@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__gresham",
   "kind": "service_location",
   "key": "health__gresham",
-  "nodeCount": 24,
+  "nodeCount": 39,
   "nodes": [
     {
       "id": "phone_dialog_0000230#turn-1",
@@ -119,7 +119,8 @@
       "voiceResponseAlternatives": [
         "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
         "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
-        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions.",
+        "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives."
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "hard_of_hearing",
@@ -328,7 +329,8 @@
       "voiceResponseAlternatives": [
         "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
         "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
-        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions.",
+        "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -447,7 +449,8 @@
       "voiceResponseAlternatives": [
         "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
         "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
-        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions.",
+        "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -473,7 +476,12 @@
       ],
       "similarCases": [],
       "assistantResponse": "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+        "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+        "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d",
+        "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone."
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
@@ -676,7 +684,8 @@
       "voiceResponseAlternatives": [
         "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
         "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
-        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now."
+        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
+        "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -707,6 +716,456 @@
         "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
         "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
         "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002158#turn-2",
+      "scenarioId": "phone_dialog_0002158",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Gresham, at my buddy's apartment, and we were trying to find detox help, but he's, like, not waking up right now.",
+      "normalizedQuery": "i'm gresham at buddy's apartment we were trying detox he's like waking up right now",
+      "voiceResponse": "I\u2019m really glad you said that. This is an emergency right now. Call 911. If he is not waking up, tell them he may be overdosing and give the exact apartment address in Gresham. If you have naloxone, use it now. Put him on his side and watch his breathing until help arrives. Stay on the line with 911. I can repeat any step.",
+      "evidenceDocIds": [
+        "service:0ace06937c39cb61",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:40aa5dece0a62b6a",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. This is an emergency right now. Call 911. If he is not waking up, tell them he may be overdosing and give the exact apartment address in Gresham. If you have naloxone, use it now. Put him on his side and watch his breathing until help arrives. Stay on the line with 911. I can repeat any step.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002158#turn-3",
+      "scenarioId": "phone_dialog_0002158",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "He took pills and drank, I think, and his breathing is weird... long gaps, then a gasp.",
+      "normalizedQuery": "hello sorry your voice cutting hear now i'm gresham at buddy's apartment we were trying detox he's like waking up right he took pills drank think his breathing weird long gaps then gasp",
+      "voiceResponse": "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+      "voiceResponseAlternatives": [
+        "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
+        "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+        "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d",
+        "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002158#turn-4",
+      "scenarioId": "phone_dialog_0002158",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat that? You said call who first? I keep losing words.",
+      "normalizedQuery": "hello sorry your voice cutting hear now i'm gresham at buddy's apartment we were trying detox he's like waking up right he took pills drank think his breathing weird long gaps then gasp wait repeat said call who first keep losing words",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Call 911 first. I\u2019ll repeat: 9-1-1. Tell them: \u201cNot waking up, possible overdose, pills and alcohol, breathing with long pauses and gasps.\u201d Then put him on his side and stay with him until help arrives.",
+      "voiceResponseAlternatives": [
+        "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
+        "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002158#turn-5",
+      "scenarioId": "phone_dialog_0002158",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I shook him and yelled and he just kind of groaned, eyes not really opening.",
+      "normalizedQuery": "i'm gresham at buddy's apartment we were trying detox he's like waking up right now he took pills drank think his breathing weird long gaps then gasp wait repeat said call who first keep losing words shook him yelled just kind groaned eyes really opening",
+      "voiceResponse": "I know this is scary, and you\u2019re doing the right thing. This is still an emergency. Call 911 now. I\u2019ll repeat: 9-1-1. Say: \u201cHe\u2019s barely responsive, possible overdose, pills and alcohol, breathing has long pauses and gasps.\u201d Lay him on his side, keep his airway clear, and stay with him. If you have naloxone, give it now. Keep 911 on speaker until paramedics arrive.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I know this is scary, and you\u2019re doing the right thing. This is still an emergency. Call 911 now. I\u2019ll repeat: 9-1-1. Say: \u201cHe\u2019s barely responsive, possible overdose, pills and alcohol, breathing has long pauses and gasps.\u201d Lay him on his side, keep his airway clear, and stay with him. If you have naloxone, give it now. Keep 911 on speaker until paramedics arrive.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002224#turn-1",
+      "scenarioId": "phone_dialog_0002224",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Sorry, your voice is cutting out... I\u2019m in Gresham and I need detox help, like tonight if possible.",
+      "normalizedQuery": "hello sorry your voice cutting gresham detox like tonight if possible",
+      "voiceResponse": "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:09f0f9ede3cd2dda",
+        "page:bafkreidmvamtlfb4hntegcosgjot4ufype3foxat2tsucu5g2jqm4oxyqm",
+        "page:bafkreibtyps3eaduaspjm5xzrrq3kagwmueluhbgardiozbotzvmccurhm",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+      "voiceResponseAlternatives": [
+        "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
+        "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+        "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d",
+        "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002224#turn-2",
+      "scenarioId": "phone_dialog_0002224",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It\u2019s not just me, my friend took pills and a lot to drink, and now he won\u2019t really wake up all the way.",
+      "normalizedQuery": "hello sorry your voice cutting gresham detox like tonight if possible it just friend took pills lot drink now he won really wake up all way",
+      "voiceResponse": "I\u2019m really glad you told me. This sounds dangerous right now. Please call 911 now for your friend, or have someone nearby call while you stay with him. If he\u2019s hard to wake, that can be an overdose emergency. If you can, put him on his side and don\u2019t give him more alcohol or pills. After 911 is on the way, I can help you find detox options for tonight in Gresham.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:a558e2f5ba96f584"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This sounds dangerous right now. Please call 911 now for your friend, or have someone nearby call while you stay with him. If he\u2019s hard to wake, that can be an overdose emergency. If you can, put him on his side and don\u2019t give him more alcohol or pills. After 911 is on the way, I can help you find detox options for tonight in Gresham.",
+      "voiceResponseAlternatives": [
+        "Okay. First step: call **FORA Health Detox Services** now at **5 0 3\u2026 5 3 5\u2026 1 1 5 1**. I\u2019ll repeat: **5 0 3\u2026 5 3 5\u2026 1 1 5 1**. They do detox, and the address is **10230 Southeast Cherry Blossom Drive, Portland**. If you\u2019re 18 or older, this may fit. Have your insurance info if you can.",
+        "Yes. The place name is **FORA Health Detox Services**. I\u2019ll say it slower: **FORA** \u2014 **F O R A** \u2014 **Health Detox Services**.",
+        "Next step: plan for **Portland**. It is **not in Gresham**. The detox location I gave is in Portland: **10230 Southeast Cherry Blossom Drive**. I\u2019ll repeat the city clearly: **Portland**. **Portland**.",
+        "I\u2019m glad you called, and we can take action right now. For detox today, call Recovery Village Center Medical Detox at **five four one, five two three, four zero four nine**. If they don\u2019t answer, try **five four one, four zero six, four three six three**. When they pick up, say: \u201cI\u2019m in Gresham and need medical detox admission today.\u201d Have insurance info ready, and proof of income if you need sliding-scale fees."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002224#turn-3",
+      "scenarioId": "phone_dialog_0002224",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? I missed it... he\u2019s breathing, but weird, like slow and kinda gurgly.",
+      "normalizedQuery": "hello sorry your voice cutting gresham detox like tonight if possible it just friend took pills lot drink now he won really wake up all way say again missed breathing weird slow kinda gurgly",
+      "voiceResponse": "You\u2019re doing the right thing calling this out. I\u2019ll repeat the key part: call 911 now. Slow, gurgly breathing and hard to wake can be an overdose emergency. Stay with him, roll him onto his side, and do not give any more alcohol or pills. If someone is with you, have them call 911 while you stay with him.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling this out. I\u2019ll repeat the key part: call 911 now. Slow, gurgly breathing and hard to wake can be an overdose emergency. Stay with him, roll him onto his side, and do not give any more alcohol or pills. If someone is with you, have them call 911 while you stay with him.",
+      "voiceResponseAlternatives": [
+        "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
+        "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002282#turn-1",
+      "scenarioId": "phone_dialog_0002282",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, signal is bad... I need detox help in Gresham, for me and maybe my friend too.",
+      "normalizedQuery": "hi sorry signal bad detox gresham maybe friend too",
+      "voiceResponse": "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d",
+      "voiceResponseAlternatives": [
+        "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
+        "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+        "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+        "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002282#turn-2",
+      "scenarioId": "phone_dialog_0002282",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? You cut out... I haven't slept, I'm kinda shaky and I can't think straight.",
+      "normalizedQuery": "hi sorry signal bad detox gresham maybe friend too say again cut haven't slept i'm kinda shaky can't think straight",
+      "voiceResponse": "I\u2019ll repeat. If either of you might overdose, pass out, or have trouble breathing, call 911 now. If it\u2019s not that, say one word so I can route fast: \u201cdetox\u201d or \u201cemergency.\u201d",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat. If either of you might overdose, pass out, or have trouble breathing, call 911 now. If it\u2019s not that, say one word so I can route fast: \u201cdetox\u201d or \u201cemergency.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
+        "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002282#turn-3",
+      "scenarioId": "phone_dialog_0002282",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My friend took pills and booze, I thought he was just passed out but now he's not really waking up.",
+      "normalizedQuery": "hi sorry signal bad detox gresham maybe friend too say again cut haven't slept i'm kinda shaky can't think straight took pills booze thought he was just passed now he's really waking up",
+      "voiceResponse": "This is an emergency. Call 911 now. Your friend may be overdosing and needs immediate medical help. If you can, put the phone on speaker, tell 911: \u201cpills and alcohol, not waking up.\u201d If he is not breathing or has no pulse, start CPR if you can. Do not leave him alone.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is an emergency. Call 911 now. Your friend may be overdosing and needs immediate medical help. If you can, put the phone on speaker, tell 911: \u201cpills and alcohol, not waking up.\u201d If he is not breathing or has no pulse, start CPR if you can. Do not leave him alone.",
+      "voiceResponseAlternatives": [
+        "Okay. First step: call **FORA Health Detox Services** now at **5 0 3\u2026 5 3 5\u2026 1 1 5 1**. I\u2019ll repeat: **5 0 3\u2026 5 3 5\u2026 1 1 5 1**. They do detox, and the address is **10230 Southeast Cherry Blossom Drive, Portland**. If you\u2019re 18 or older, this may fit. Have your insurance info if you can.",
+        "Yes. The place name is **FORA Health Detox Services**. I\u2019ll say it slower: **FORA** \u2014 **F O R A** \u2014 **Health Detox Services**.",
+        "Next step: plan for **Portland**. It is **not in Gresham**. The detox location I gave is in Portland: **10230 Southeast Cherry Blossom Drive**. I\u2019ll repeat the city clearly: **Portland**. **Portland**.",
+        "I\u2019m glad you called, and we can take action right now. For detox today, call Recovery Village Center Medical Detox at **five four one, five two three, four zero four nine**. If they don\u2019t answer, try **five four one, four zero six, four three six three**. When they pick up, say: \u201cI\u2019m in Gresham and need medical detox admission today.\u201d Have insurance info ready, and proof of income if you need sliding-scale fees."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002282#turn-4",
+      "scenarioId": "phone_dialog_0002282",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, hold on\u2014his breathing sounds weird, like long gaps... oh god.",
+      "normalizedQuery": "hi sorry signal bad detox gresham maybe friend too say again cut haven't slept i'm kinda shaky can't think straight took pills booze thought he was just passed now he's really waking up wait hold on his breathing sounds weird like long gaps oh god",
+      "voiceResponse": "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is life-threatening. Call 911 now, right now. Say: \u201cPossible overdose, pills and alcohol, long gaps in breathing, not waking up.\u201d Put your phone on speaker. If he stops breathing, start CPR if you can. Do not leave him alone.",
+      "voiceResponseAlternatives": [
+        "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
+        "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+        "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+        "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002314#turn-1",
+      "scenarioId": "phone_dialog_0002314",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, signal's bad... can you hear me? I'm in Gresham, I need detox help for my friend, he's really messed up right now.",
+      "normalizedQuery": "hi sorry signal's bad hear i'm gresham detox friend he's really messed up right now",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. If your friend is hard to wake, not breathing normally, or could overdose, call 911 now. If he\u2019s awake and breathing, I can help with detox options in or near Gresham right now. Stay with him, keep him on his side, and don\u2019t leave him alone. If the line drops, call back immediately.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:3bf79b1da127b257",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "service:7a13b77aa237b2eb",
+        "service:4cf2de0c28d3b829"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. If your friend is hard to wake, not breathing normally, or could overdose, call 911 now. If he\u2019s awake and breathing, I can help with detox options in or near Gresham right now. Stay with him, keep him on his side, and don\u2019t leave him alone. If the line drops, call back immediately.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002314#turn-2",
+      "scenarioId": "phone_dialog_0002314",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, can you say that again slower? I think he took pills and drank, I don't know how much.",
+      "normalizedQuery": "hi sorry signal's bad hear i'm gresham detox friend he's really messed up right now cut say again slower think he took pills drank don't know how much",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Slowly: if he mixed pills and alcohol and is hard to wake, breathing slowly, has blue lips, or can\u2019t stay alert, call 911 now. If he\u2019s awake and breathing, keep him on his side, stay with him, and don\u2019t let him take anything else. I can help with detox options near Gresham right after this.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:28acd183a54cc8a5",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Slowly: if he mixed pills and alcohol and is hard to wake, breathing slowly, has blue lips, or can\u2019t stay alert, call 911 now. If he\u2019s awake and breathing, keep him on his side, stay with him, and don\u2019t let him take anything else. I can help with detox options near Gresham right after this.",
+      "voiceResponseAlternatives": [
+        "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
+        "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+        "Yes. Call Recovery Village Center Medical Detox now: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. If you feel unsafe, might pass out, or withdrawal is severe, call **9-1-1** now.",
+        "I hear you. Repeat: call **911 now** and say, \u201cHe took pills and alcohol and is hard to wake up.\u201d Put your phone on speaker. Roll him onto his side and check if he\u2019s breathing. If he\u2019s not breathing, or you\u2019re not sure, tell 911 that right away and follow their instructions."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002314#turn-3",
+      "scenarioId": "phone_dialog_0002314",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "He was talking a minute ago, now he's kinda just slumped and not answering me when I shake him.",
+      "normalizedQuery": "hi sorry signal's bad hear i'm gresham detox friend he's really messed up right now cut say again slower think he took pills drank don't know how much was talking minute ago kinda just slumped answering when shake him",
+      "voiceResponse": "I hear how scary this is. Call 911 now. Tell them: \u201cPossible pill and alcohol overdose, now unresponsive.\u201d Put your phone on speaker, stay with him, and keep him on his side if you can. If he stops breathing or you can\u2019t feel breathing, tell 911 immediately and follow their instructions. Do not give him food, drink, or more substances. I\u2019ll stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scary this is. Call 911 now. Tell them: \u201cPossible pill and alcohol overdose, now unresponsive.\u201d Put your phone on speaker, stay with him, and keep him on his side if you can. If he stops breathing or you can\u2019t feel breathing, tell 911 immediately and follow their instructions. Do not give him food, drink, or more substances. I\u2019ll stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002314#turn-4",
+      "scenarioId": "phone_dialog_0002314",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hold on, I'm trying to listen... his breathing sounds weird, like long gaps, and his lips look kind of gray.",
+      "normalizedQuery": "hi sorry signal's bad hear i'm gresham detox friend he's really messed up right now cut say again slower think he took pills drank don't know how much was talking minute ago kinda just slumped answering when shake him hold on trying listen his breathing sounds weird like long gaps lips look kind gray",
+      "voiceResponse": "I\u2019m with you. The audio cut out, but I heard enough to be worried. Long pauses in breathing and gray lips can mean overdose emergency. Call 911 right now and say: \u201cPossible pill and alcohol overdose, slow or stopped breathing, gray lips.\u201d Put your phone on speaker and stay beside him. Quick repeat so I\u2019m sure: is he breathing at all right now, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. The audio cut out, but I heard enough to be worried. Long pauses in breathing and gray lips can mean overdose emergency. Call 911 right now and say: \u201cPossible pill and alcohol overdose, slow or stopped breathing, gray lips.\u201d Put your phone on speaker and stay beside him. Quick repeat so I\u2019m sure: is he breathing at all right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "Your audio is cutting out, but this sounds like an overdose emergency. Call **9-1-1** right now. If he\u2019s hard to wake, lay him on his side and stay with him. Tell 911 he took pills and alcohol and is nodding off. One quick check: **is he breathing right now, yes or no?**",
+        "I\u2019m really glad you told me. Your audio is breaking up, and what I heard is very serious. If his breathing has long pauses and gasping, call 911 right now and say possible overdose from pills and alcohol. Put him on his side and stay with him. If you have naloxone, give it now. One quick repeat: is 911 on speaker yet?",
+        "I hear this is urgent, and I\u2019m here with you. Your audio cut out on my end. Did you say you need **detox tonight** in Gresham?",
+        "I heard \u201cdetox help in Gresham.\u201d If either of you might overdose, pass out, or have trouble breathing, call 911 now. Your audio is unclear, so please say one word: \u201cdetox\u201d or \u201cemergency.\u201d"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -833,6 +1292,96 @@
       "to": "phone_dialog_0002075#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002158#turn-2",
+      "to": "phone_dialog_0002158#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002158#turn-3",
+      "to": "phone_dialog_0002158#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002158#turn-4",
+      "to": "phone_dialog_0002158#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002158#turn-5",
+      "to": "phone_dialog_0002158#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002224#turn-1",
+      "to": "phone_dialog_0002224#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002224#turn-2",
+      "to": "phone_dialog_0002224#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002224#turn-3",
+      "to": "phone_dialog_0002224#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002282#turn-1",
+      "to": "phone_dialog_0002282#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002282#turn-2",
+      "to": "phone_dialog_0002282#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002282#turn-3",
+      "to": "phone_dialog_0002282#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002282#turn-4",
+      "to": "phone_dialog_0002282#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002314#turn-1",
+      "to": "phone_dialog_0002314#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002314#turn-2",
+      "to": "phone_dialog_0002314#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002314#turn-3",
+      "to": "phone_dialog_0002314#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002314#turn-4",
+      "to": "phone_dialog_0002314#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

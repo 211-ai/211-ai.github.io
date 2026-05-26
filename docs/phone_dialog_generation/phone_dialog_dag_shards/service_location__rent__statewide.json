@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__rent__statewide",
   "kind": "service_location",
   "key": "rent__statewide",
-  "nodeCount": 143,
+  "nodeCount": 148,
   "nodes": [
     {
       "id": "phone_dialog_0000006#turn-3",
@@ -4267,6 +4267,156 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002215#turn-6",
+      "scenarioId": "phone_dialog_0002215",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "And if there's rent help plus legal help, I need both... sorry, I'm talking over you, go ahead.",
+      "normalizedQuery": "if there's rent eviction assistance plus legal aid attorney advocacy both sorry i'm talking over go ahead",
+      "voiceResponse": "I\u2019m sorry, the line was unclear for a moment. I heard you need both rent help and legal help. I\u2019ll repeat: both rent help and legal help. Which do you want first: legal help, or rent help?",
+      "evidenceDocIds": [
+        "service:9daa4747aa898de5",
+        "service:3694ab25654f4b81",
+        "service:22f25b2759f09c8b",
+        "service:2281747e76c4abb0",
+        "service:cdf21cb4663fa97f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the line was unclear for a moment. I heard you need both rent help and legal help. I\u2019ll repeat: both rent help and legal help. Which do you want first: legal help, or rent help?",
+      "voiceResponseAlternatives": [
+        "I hear you. Parts cut out. I heard rent help, behind this month and last month. Rent help, behind this month and last month. Quick choice so I can route you right: La Pine, Prineville, or Madras?",
+        "Yes, I heard \u201crent help.\u201d I heard \u201crent help.\u201d The audio is still breaking up. Please say one short thing: your city. Bend, La Pine, or Prineville?",
+        "Yes. Yes, this is rent help for eviction prevention. I\u2019m sorry, your audio cut out again. Please say just one choice: \u201cthree-day notice\u201d or \u201cthirty-day notice\u201d?",
+        "I\u2019m really sorry you\u2019re carrying this, and you did the right thing by saying it out loud. Your audio was a little unclear for one part, so we can move fast: which area are you closest to right now, La Pine, Prineville, or Madras?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002280#turn-5",
+      "scenarioId": "phone_dialog_0002280",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, is that for rent help or legal help? I need whatever stops the eviction, I'm mixing this up.",
+      "normalizedQuery": "wait rent eviction assistance legal aid attorney advocacy whatever stops i'm mixing this up",
+      "voiceResponse": "Legal help. Not rent help. This line is for legal help to try to stop the eviction. I\u2019ll repeat: legal help to try to stop the eviction. If you want, I can look up rent payment help next.",
+      "evidenceDocIds": [
+        "service:9daa4747aa898de5",
+        "service:3694ab25654f4b81",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "service:a4f4532cd4713872",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Legal help. Not rent help. This line is for legal help to try to stop the eviction. I\u2019ll repeat: legal help to try to stop the eviction. If you want, I can look up rent payment help next.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I hear you. For eviction help, call **DEVNW Eviction Prevention**. Springfield: **5 4 1, 3 4 5, 7 1 0 6**. Again: **5 4 1, 3 4 5, 7 1 0 6**. Address: **212 Main Street, Springfield**. Again: **212 Main Street, Springfield**. I can also give the Corvallis number next. Are you closer to Springfield or Corvallis?",
+        "You\u2019re doing the right thing by calling now. Call **Tenant Eviction Defense** now: **5 0 3, 8 5 0, 0 8 1 1**. Again: **5 0 3, 8 5 0, 0 8 1 1**. They help before court. Have these papers ready: eviction notice, court papers, lease, and proof of income. Do you want me to stay with you while you make the call?",
+        "Next step: call Rent Assistance now and ask for an intake for your brother for eviction-prevention or move-in cost help. For Bend or La Pine, call **5 4 1** \u2026 **5 4 8** \u2026 **2 3 8 0**. For Prineville, call **5 4 1** \u2026 **3 2 3** \u2026 **0 3 9 4**. They said documents vary by service, so ask what paperwork your brother should bring.",
+        "Yes. I can point you local. For landlord or eviction, I found General Legal Aid at Legal Aid Services of Oregon, Salem Regional Office. Phone: 5 0 3, 5 8 1, 5 2 6 5. Toll-free: 8 0 0, 3 5 9, 1 8 4 5. Again: 5 0 3, 5 8 1, 5 2 6 5. It says eligibility is income below 125% FPL, and legal issue in Marion or Polk County. You can share only basics when you call. Are you in Marion or Polk County?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002288#turn-2",
+      "scenarioId": "phone_dialog_0002288",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "It's, uh, rent, I think-- no, sorry, [inaudible] -- I missed what you said, can you say that slower?",
+      "normalizedQuery": "it's uh rent eviction assistance think no sorry inaudible missed said say slower",
+      "voiceResponse": "Yes. I will say it slower. Please tell me one thing. What do you need help with right now? I\u2019ll repeat: what do you need help with right now?",
+      "evidenceDocIds": [
+        "service:8a6c6604cd95e457",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6",
+        "service:66df89740da9485c",
+        "service:4bfb7e6eaea01bbd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slower. Please tell me one thing. What do you need help with right now? I\u2019ll repeat: what do you need help with right now?",
+      "voiceResponseAlternatives": [
+        "Yes. The office name is **2-1-1 info**. I\u2019ll repeat it: **2-1-1 info**.",
+        "Yes. The number is **5 0 3 \u2026 6 5 5 \u2026 8 5 7 5**. If that line is busy, the backup is **5 0 3 \u2026 6 5 5 \u2026 8 6 4 0**.",
+        "Yes. Call this one first: **5 0 3, 5 8 1, 5 2 6 5**. Again, **5 0 3, 5 8 1, 5 2 6 5**.",
+        "Yes. Main line: **five-zero-three \u2026 two-two-two \u2026 five-five-five-five**. Backup: **five-zero-three \u2026 two-two-six \u2026 three-zero-nine-nine**. When they answer, say: \u201cI need emergency rental assistance. Do you help with first-month rent, past-due rent, or both?\u201d"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002288#turn-4",
+      "scenarioId": "phone_dialog_0002288",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need rent assistance, like emergency help, and I can't hear great on this line.",
+      "normalizedQuery": "rent eviction assistance like emergency can't hear great on this line",
+      "voiceResponse": "I hear you. You need emergency rent help. You need emergency rent help. Call five zero three, two three four, two zero four eight. I\u2019ll repeat: five zero three, two three four, two zero four eight. Backup number: five zero three, two three five, nine three nine six. Address: eight zero four zero Northeast Sandy Boulevard, Suite two hundred, Portland, Oregon, nine seven two one three. Do you have a court-dated eviction notice?",
+      "evidenceDocIds": [
+        "service:1b6e1c18557fb6a5",
+        "service:085fe55781b79fcb",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need emergency rent help. You need emergency rent help. Call five zero three, two three four, two zero four eight. I\u2019ll repeat: five zero three, two three four, two zero four eight. Backup number: five zero three, two three five, nine three nine six. Address: eight zero four zero Northeast Sandy Boulevard, Suite two hundred, Portland, Oregon, nine seven two one three. Do you have a court-dated eviction notice?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I hear you. For eviction help, call **DEVNW Eviction Prevention**. Springfield: **5 4 1, 3 4 5, 7 1 0 6**. Again: **5 4 1, 3 4 5, 7 1 0 6**. Address: **212 Main Street, Springfield**. Again: **212 Main Street, Springfield**. I can also give the Corvallis number next. Are you closer to Springfield or Corvallis?",
+        "You\u2019re doing the right thing by calling now. Call **Tenant Eviction Defense** now: **5 0 3, 8 5 0, 0 8 1 1**. Again: **5 0 3, 8 5 0, 0 8 1 1**. They help before court. Have these papers ready: eviction notice, court papers, lease, and proof of income. Do you want me to stay with you while you make the call?",
+        "Next step: call Rent Assistance now and ask for an intake for your brother for eviction-prevention or move-in cost help. For Bend or La Pine, call **5 4 1** \u2026 **5 4 8** \u2026 **2 3 8 0**. For Prineville, call **5 4 1** \u2026 **3 2 3** \u2026 **0 3 9 4**. They said documents vary by service, so ask what paperwork your brother should bring.",
+        "Yes. I can point you local. For landlord or eviction, I found General Legal Aid at Legal Aid Services of Oregon, Salem Regional Office. Phone: 5 0 3, 5 8 1, 5 2 6 5. Toll-free: 8 0 0, 3 5 9, 1 8 4 5. Again: 5 0 3, 5 8 1, 5 2 6 5. It says eligibility is income below 125% FPL, and legal issue in Marion or Polk County. You can share only basics when you call. Are you in Marion or Polk County?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002350#turn-1",
+      "scenarioId": "phone_dialog_0002350",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "H-hello? [static] I c-can't... hear you, it's cutting out... re-- rent, I think, uh...",
+      "normalizedQuery": "hello static can't hear it's cutting re rent eviction assistance think uh",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard \u201crent assistance.\u201d Please say one place: Bend, La Pine, or Prineville?",
+      "evidenceDocIds": [
+        "service:8a6c6604cd95e457",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6",
+        "service:66df89740da9485c",
+        "service:4bfb7e6eaea01bbd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard \u201crent assistance.\u201d Please say one place: Bend, La Pine, or Prineville?",
+      "voiceResponseAlternatives": [
+        "I hear you. Parts cut out. I heard rent help, behind this month and last month. Rent help, behind this month and last month. Quick choice so I can route you right: La Pine, Prineville, or Madras?",
+        "Yes, I heard \u201crent help.\u201d I heard \u201crent help.\u201d The audio is still breaking up. Please say one short thing: your city. Bend, La Pine, or Prineville?",
+        "Yes. Yes, this is rent help for eviction prevention. I\u2019m sorry, your audio cut out again. Please say just one choice: \u201cthree-day notice\u201d or \u201cthirty-day notice\u201d?",
+        "I\u2019m really sorry you\u2019re carrying this, and you did the right thing by saying it out loud. Your audio was a little unclear for one part, so we can move fast: which area are you closest to right now, La Pine, Prineville, or Madras?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -4893,6 +5043,30 @@
       "to": "phone_dialog_0002134#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002280#turn-5",
+      "to": "phone_dialog_0002280#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002288#turn-2",
+      "to": "phone_dialog_0002288#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002288#turn-4",
+      "to": "phone_dialog_0002288#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002350#turn-1",
+      "to": "phone_dialog_0002350#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
     }
   ]
 }

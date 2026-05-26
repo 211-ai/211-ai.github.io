@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__salem",
   "kind": "service_location",
   "key": "broad_help__salem",
-  "nodeCount": 16,
+  "nodeCount": 17,
   "nodes": [
     {
       "id": "phone_dialog_0000141#turn-3",
@@ -207,7 +207,8 @@
       "similarCases": [],
       "assistantResponse": "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
       "voiceResponseAlternatives": [
-        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?"
+        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?",
+        "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "rambling_and_interrupting",
@@ -264,7 +265,8 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?",
       "voiceResponseAlternatives": [
-        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?"
+        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
+        "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "clear_line",
@@ -469,6 +471,34 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002310#turn-1",
+      "scenarioId": "phone_dialog_0002310",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, if I jump around it's because they keep talking over me, like through the vents, and I know that sounds wrong but I need help in Salem.",
+      "normalizedQuery": "hi sorry if jump around it's because they keep talking over like through vents know sounds wrong salem",
+      "voiceResponse": "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
+        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -555,6 +585,12 @@
       "to": "phone_dialog_0002127#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002310#turn-1",
+      "to": "phone_dialog_0002310#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
     }
   ]
 }

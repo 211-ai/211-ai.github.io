@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__medford",
   "kind": "service_location",
   "key": "general__medford",
-  "nodeCount": 132,
+  "nodeCount": 149,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-2",
@@ -3956,6 +3956,516 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002165#turn-1",
+      "scenarioId": "phone_dialog_0002165",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, can you talk a little slower? I\u2019m calling for my niece, she\u2019s 16 and in Medford, and she ran away from home two nights ago.",
+      "normalizedQuery": "hi sorry talk little slower calling niece she 16 medford ran away from home two nights ago",
+      "voiceResponse": "I\u2019m so sorry this is happening. I\u2019ll go slowly. Since she is 16 and missing, this is urgent. If you think she may be in immediate danger, call 911 now. You can also contact local police to file or update a missing person report, and share her photo, last location, and what she was wearing. If you want, I can stay with you and help you plan exactly what to say on that call.",
+      "evidenceDocIds": [
+        "service:99e8679fab689416",
+        "service:34d9e92d3ede5e98",
+        "service:73273f6832e1bbfe",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry this is happening. I\u2019ll go slowly. Since she is 16 and missing, this is urgent. If you think she may be in immediate danger, call 911 now. You can also contact local police to file or update a missing person report, and share her photo, last location, and what she was wearing. If you want, I can stay with you and help you plan exactly what to say on that call.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002165#turn-2",
+      "scenarioId": "phone_dialog_0002165",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "She\u2019s been couch-surfing with older people I don\u2019t know, and one guy keeps offering her rides if she \u2018does him favors\u2019... I don\u2019t like how that sounds.",
+      "normalizedQuery": "hi sorry talk little slower calling niece she 16 medford ran away from home two nights ago been couch surfing older people don know one guy keeps offering her rides if does him favors like how sounds",
+      "voiceResponse": "You\u2019re right to trust your instincts. That sounds like grooming and possible trafficking risk, and your niece could be in immediate danger. If there is any current contact or planned ride, call 911 now. If not, you can still call police right now to update the missing person report with that exact detail about \u201cfavors for rides,\u201d names, phone numbers, car info, and locations. If you want, I can stay with you and help you script that call, step by step.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to trust your instincts. That sounds like grooming and possible trafficking risk, and your niece could be in immediate danger. If there is any current contact or planned ride, call 911 now. If not, you can still call police right now to update the missing person report with that exact detail about \u201cfavors for rides,\u201d names, phone numbers, car info, and locations. If you want, I can stay with you and help you script that call, step by step.",
+      "voiceResponseAlternatives": [
+        "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now and say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Put him on his side, stay with him, and keep your phone on speaker if you can.",
+        "Yes, I hear you. You\u2019re in Medford, and your mom is 78 and disabled. I heard that. First, quick safety check: is your mom in immediate danger right now, or needing urgent medical help right now? If yes, call 9-1-1 now. Call 9-1-1 now. If she is safe this moment, I can help you report neglect and plan the next step.",
+        "Thank you for telling me. Quick safety check: if she is with threatening adults, being forced to stay, or you think she could be hurt tonight, please call 9-1-1 now and ask for a youth welfare check in Medford. If it\u2019s not immediate, we can do this gently: I can help you make a short report to local non-emergency police and connect you to runaway youth support through 2-1-1. You can share only what you know."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002165#turn-3",
+      "scenarioId": "phone_dialog_0002165",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "She texted me from a gas station near Medford, said she wants out but doesn\u2019t have a safe way to get across town.",
+      "normalizedQuery": "hi sorry talk little slower calling niece she 16 medford ran away from home two nights ago been couch surfing older people don know one guy keeps offering her rides if does him favors like how sounds texted gas station said wants doesn have safe way across town",
+      "voiceResponse": "Thank you for telling me. This is urgent, and you\u2019re doing the right thing. Please call 911 now and report her exact gas station location and that she\u2019s a 16-year-old missing youth with a possible exploitation risk. If you can text her, ask her to stay inside the store, near staff, and not accept any ride. If you want, I can help you with a short script for the 911 call right now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent, and you\u2019re doing the right thing. Please call 911 now and report her exact gas station location and that she\u2019s a 16-year-old missing youth with a possible exploitation risk. If you can text her, ask her to stay inside the store, near staff, and not accept any ride. If you want, I can help you with a short script for the 911 call right now.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002165#turn-4",
+      "scenarioId": "phone_dialog_0002165",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you repeat that number? I\u2019m shaking and I missed it, and my phone battery is at like 4 percent.",
+      "normalizedQuery": "hi sorry talk little slower calling niece she 16 medford ran away from home two nights ago been couch surfing older people don know one guy keeps offering her rides if does him favors like how sounds texted gas station said wants doesn have safe way across town repeat number shaking missed it phone battery at percent",
+      "voiceResponse": "Yes. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. If your battery is low, call now and say: \u201cMissing 16-year-old at a Medford gas station, possible exploitation risk, needs safe pickup.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. If your battery is low, call now and say: \u201cMissing 16-year-old at a Medford gas station, possible exploitation risk, needs safe pickup.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002184#turn-1",
+      "scenarioId": "phone_dialog_0002184",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my older brother in Medford, can you check first if what I\u2019m saying sounds like an emergency?",
+      "normalizedQuery": "hi calling older brother medford check first if saying sounds like an emergency",
+      "voiceResponse": "Yes. I can check that first. Is he having chest pain, trouble breathing, heavy bleeding, or not waking up right now? If yes, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. If no, I can connect you to a live agent for next steps.",
+      "evidenceDocIds": [
+        "page:bafkreic2bxkmlwvta33vtjikxigdolrnhlzdjupyahrmsvgzl3kc4pvije",
+        "page:bafkreiefqwdaex3dwhp77jfw3zddibzfiji255omomj2slrdjqy3iizyuu",
+        "page:bafkreifonefj6zww4o7b3e5lxmryjh2u5xqtrsl6ud7mf4xgunj4urja7a",
+        "page:bafkreigmw5bsc6tzqsxbjnqnou74t2qskwxcj5rrsueufudlexwxm2kmau",
+        "service:238d53870b43731e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can check that first. Is he having chest pain, trouble breathing, heavy bleeding, or not waking up right now? If yes, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. If no, I can connect you to a live agent for next steps.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002198#turn-1",
+      "scenarioId": "phone_dialog_0002198",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, can you hear me? I\u2019m in Medford, sleeping in my car, and my insulin bag is gone.",
+      "normalizedQuery": "hi sorry hear medford sleeping car insulin bag gone",
+      "voiceResponse": "I hear you. First step: if you feel shaky, confused, very weak, or like you might pass out, call **9-1-1** right now. Quick safety check: do you have any insulin left with you right now?",
+      "evidenceDocIds": [
+        "service:4565f55d52214819",
+        "service:2df605d5503d1f52",
+        "service:c4d345493517c8d0",
+        "service:69a0def45f7321b0",
+        "service:8a2b1da07535e049"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. First step: if you feel shaky, confused, very weak, or like you might pass out, call **9-1-1** right now. Quick safety check: do you have any insulin left with you right now?",
+      "voiceResponseAlternatives": [
+        "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now and say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Put him on his side, stay with him, and keep your phone on speaker if you can.",
+        "Yes, I hear you. You\u2019re in Medford, and your mom is 78 and disabled. I heard that. First, quick safety check: is your mom in immediate danger right now, or needing urgent medical help right now? If yes, call 9-1-1 now. Call 9-1-1 now. If she is safe this moment, I can help you report neglect and plan the next step.",
+        "Thank you for telling me. Quick safety check: if she is with threatening adults, being forced to stay, or you think she could be hurt tonight, please call 9-1-1 now and ask for a youth welfare check in Medford. If it\u2019s not immediate, we can do this gently: I can help you make a short report to local non-emergency police and connect you to runaway youth support through 2-1-1. You can share only what you know."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002248#turn-2",
+      "scenarioId": "phone_dialog_0002248",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Medford, outside near the library area, and I\u2019m shaking bad and getting really dizzy from the cold.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first medford outside library area shaking bad getting really dizzy from cold",
+      "voiceResponse": "Call 9-1-1 now. I\u2019ll repeat: 9-1-1. You may have cold illness, and this can be serious. Please get inside the nearest warm building now, even a lobby or store. Keep your phone on. If you can, sit down and stay out of the wind. Are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreibgimm7n5onnnyvcflvv7c2ztkkw7zgn6nuoaav6q7gu4qaevnx4a",
+        "page:bafkreihtetflqauhq2niqthrnpmt4qsake4m24xywebzhy7niwwu6ssedu",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:7fc903dee857293d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 9-1-1 now. I\u2019ll repeat: 9-1-1. You may have cold illness, and this can be serious. Please get inside the nearest warm building now, even a lobby or store. Keep your phone on. If you can, sit down and stay out of the wind. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now and say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Put him on his side, stay with him, and keep your phone on speaker if you can.",
+        "Yes, I hear you. You\u2019re in Medford, and your mom is 78 and disabled. I heard that. First, quick safety check: is your mom in immediate danger right now, or needing urgent medical help right now? If yes, call 9-1-1 now. Call 9-1-1 now. If she is safe this moment, I can help you report neglect and plan the next step.",
+        "Thank you for telling me. Quick safety check: if she is with threatening adults, being forced to stay, or you think she could be hurt tonight, please call 9-1-1 now and ask for a youth welfare check in Medford. If it\u2019s not immediate, we can do this gently: I can help you make a short report to local non-emergency police and connect you to runaway youth support through 2-1-1. You can share only what you know."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002248#turn-3",
+      "scenarioId": "phone_dialog_0002248",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you repeat that slower? I\u2019m confused and my head feels foggy.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first medford outside library area shaking bad getting really dizzy from cold repeat slower confused head feels foggy",
+      "voiceResponse": "Yes. Slow and simple. Call 9-1-1. I\u2019ll repeat: 9-1-1. Go inside now. Any warm building. Library lobby, store, anywhere warm. Sit down. Stay out of the wind. Keep the phone on. Are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreibgimm7n5onnnyvcflvv7c2ztkkw7zgn6nuoaav6q7gu4qaevnx4a",
+        "page:bafkreihtetflqauhq2niqthrnpmt4qsake4m24xywebzhy7niwwu6ssedu",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif5z6frzc2qnroluofhpy7bljvghzpceqn3dtuu5vyzydbnvaoks4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and simple. Call 9-1-1. I\u2019ll repeat: 9-1-1. Go inside now. Any warm building. Library lobby, store, anywhere warm. Sit down. Stay out of the wind. Keep the phone on. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002260#turn-1",
+      "scenarioId": "phone_dialog_0002260",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Medford, can you hear me? The signal keeps cutting out.",
+      "normalizedQuery": "hi medford hear signal keeps cutting",
+      "voiceResponse": "Yes, I hear you. One next step: call City of Medford Parks and Recreation now and ask what in-person help is open nearby. Call 541, 774, 2400. I\u2019ll repeat: 541, 774, 2400.",
+      "evidenceDocIds": [
+        "service:ba31c8280a41b0ff",
+        "service:4583b1dd2fe086cc",
+        "service:b8e98634e94cf362",
+        "service:7883be6b23d37a0e",
+        "service:058b7ffa9fce339a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. One next step: call City of Medford Parks and Recreation now and ask what in-person help is open nearby. Call 541, 774, 2400. I\u2019ll repeat: 541, 774, 2400.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002269#turn-1",
+      "scenarioId": "phone_dialog_0002269",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, if I sound jumpy, I'm in Medford and the neighbors keep signaling through the walls, or maybe it's the wiring, I can't tell which part is real right now.",
+      "normalizedQuery": "hi sorry if sound jumpy i'm medford neighbors keep signaling through walls maybe it's wiring can't tell which part real right now",
+      "voiceResponse": "Thank you for telling me, and I can hear how intense this feels. Right now, let\u2019s focus on safety first: if you feel in immediate danger, or might act on fear, call 911 now. If you can, step to a quieter, well-lit place and stay on the line with me. We can sort what\u2019s happening one step at a time, but your immediate safety comes first.",
+      "evidenceDocIds": [
+        "service:ae190dddb7989f4b",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiboevqlpkmwdmpf3ngkbfwkl4hykvztqj5kk5vf3ftecf7yvaphym",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya",
+        "service:30323daf16c4ac67"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me, and I can hear how intense this feels. Right now, let\u2019s focus on safety first: if you feel in immediate danger, or might act on fear, call 911 now. If you can, step to a quieter, well-lit place and stay on the line with me. We can sort what\u2019s happening one step at a time, but your immediate safety comes first.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002269#turn-6",
+      "scenarioId": "phone_dialog_0002269",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you stay with me and get a real person on the line, like crisis support in Medford, and repeat the number slowly because my battery is at two percent.",
+      "normalizedQuery": "stay real person on line like crisis support medford repeat number slowly because battery at two percent",
+      "voiceResponse": "I\u2019m with you, and you\u2019re doing the right thing by asking for help. Because you said you might do something unsafe, call 911 now if that feeling spikes. For crisis support, call 541, 754, 0110. I\u2019ll repeat: 541, 754, 0110. Keep this line open with me while you place the call, and put your phone on low power mode right now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:907999d48cd2bc6a",
+        "service:98249e32a262b454",
+        "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+        "page:bafkreia77zfd45b5necf6cvklqkajhoyeat4b65svmh3oyudvzc246lht4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you, and you\u2019re doing the right thing by asking for help. Because you said you might do something unsafe, call 911 now if that feeling spikes. For crisis support, call 541, 754, 0110. I\u2019ll repeat: 541, 754, 0110. Keep this line open with me while you place the call, and put your phone on low power mode right now.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002292#turn-1",
+      "scenarioId": "phone_dialog_0002292",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Medford, calling about my older brother. I keep checking on him and this is getting bad.",
+      "normalizedQuery": "hi medford calling older brother keep checking on him this getting bad",
+      "voiceResponse": "I\u2019m here with you. I\u2019m here with you. If your brother is in immediate danger, call 911 now. If your brother is in immediate danger, call 911 now. I can get you to a live specialist right away. Is he in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:8633bf7679779ba4",
+        "service:69128c9460576fff",
+        "service:64f988e24fcc9b24"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. I\u2019m here with you. If your brother is in immediate danger, call 911 now. If your brother is in immediate danger, call 911 now. I can get you to a live specialist right away. Is he in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002292#turn-3",
+      "scenarioId": "phone_dialog_0002292",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that slower? I\u2019m hard of hearing on this phone, and I forget things if it comes too fast.",
+      "normalizedQuery": "hi medford calling older brother keep checking on him this getting bad yes he breathing awake right now so immediate danger no hasn eaten since yesterday missed his heart pills again sorry say slower hard hearing phone forget things if it comes too fast",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. If he gets chest pain, call 911 right away. If he has trouble breathing, call 911 right away. If he faints, call 911 right away. If he seems confused, call 911 right away. I\u2019ll repeat: chest pain, trouble breathing, fainting, or confusion means call 911 right away. Is he having chest pain right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. If he gets chest pain, call 911 right away. If he has trouble breathing, call 911 right away. If he faints, call 911 right away. If he seems confused, call 911 right away. I\u2019ll repeat: chest pain, trouble breathing, fainting, or confusion means call 911 right away. Is he having chest pain right now?",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. It is: 825 E Main Street, Suite A, Medford, Oregon, 97504. I\u2019ll repeat it: 825 E Main Street, Suite A, Medford, Oregon, 97504.",
+        "Yes. The name is a live specialist. A live specialist for Medford resources. I\u2019m connecting you now.",
+        "Yes. I will say it slower. You said you lost your state I.D. You said you lost your state I.D. My question is: do you want help replacing it? Yes, or no?",
+        "You\u2019re right to keep it quick. I don\u2019t have a verified phone number on this screen to repeat. Fast fallback: call 211 and say, \u201cMedford or nearby, interview clothing, larger sizes, sensory-friendly fabrics, evening hours after 5.\u201d If they ask for extra personal details, you can decline and keep it minimal."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002292#turn-4",
+      "scenarioId": "phone_dialog_0002292",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "He uses a walker and our apartment has stairs, no ramp, so he can\u2019t get out safely, and he\u2019s been stuck alone most days.",
+      "normalizedQuery": "hi medford calling older brother keep checking on him this getting bad yes he breathing awake right now so immediate danger no hasn eaten since yesterday missed his heart pills again sorry say slower hard hearing phone forget things if it comes too fast uses walker our apartment has stairs ramp safely been stuck alone most days",
+      "voiceResponse": "Thank you for telling me. He uses a walker. There are stairs and no ramp. He is stuck alone most days. I\u2019ll repeat: stairs, no ramp, and stuck alone most days. If he falls, has chest pain, trouble breathing, or confusion, call 911 right away. I can connect you to a live specialist for urgent home safety and support options today. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. He uses a walker. There are stairs and no ramp. He is stuck alone most days. I\u2019ll repeat: stairs, no ramp, and stuck alone most days. If he falls, has chest pain, trouble breathing, or confusion, call 911 right away. I can connect you to a live specialist for urgent home safety and support options today. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now and say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Put him on his side, stay with him, and keep your phone on speaker if you can.",
+        "Yes, I hear you. You\u2019re in Medford, and your mom is 78 and disabled. I heard that. First, quick safety check: is your mom in immediate danger right now, or needing urgent medical help right now? If yes, call 9-1-1 now. Call 9-1-1 now. If she is safe this moment, I can help you report neglect and plan the next step.",
+        "Thank you for telling me. Quick safety check: if she is with threatening adults, being forced to stay, or you think she could be hurt tonight, please call 9-1-1 now and ask for a youth welfare check in Medford. If it\u2019s not immediate, we can do this gently: I can help you make a short report to local non-emergency police and connect you to runaway youth support through 2-1-1. You can share only what you know."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002308#turn-2",
+      "scenarioId": "phone_dialog_0002308",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Medford, been crashing on different couches, but one of these older guys keeps saying I owe him if I stay there.",
+      "normalizedQuery": "hi sorry it loud here by buses hear 16 go back home tonight medford been crashing on different couches one these older guys keeps saying owe him if stay there",
+      "voiceResponse": "Thank you for saying that. You do not owe anyone sex, favors, or anything for a place to sleep. If that guy is nearby or you feel in immediate danger, call 911 now. If you can, stay in a public, lit spot near other people or staff. I can connect you to a live specialist right now for a safe youth option tonight in Medford, and you can share only what feels safe.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for saying that. You do not owe anyone sex, favors, or anything for a place to sleep. If that guy is nearby or you feel in immediate danger, call 911 now. If you can, stay in a public, lit spot near other people or staff. I can connect you to a live specialist right now for a safe youth option tonight in Medford, and you can share only what feels safe.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002317#turn-5",
+      "scenarioId": "phone_dialog_0002317",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you find somewhere near Medford that's open now and maybe tell me exactly how to get there? I missed the address.",
+      "normalizedQuery": "no er don't think just someone check head blood pressure because voices got louder last night didn't sleep wait did ask say it again slower keep losing thread man outside window part this i'm trying hurt anyone trust going alone can't tell what's real right now somewhere medford that's open maybe exactly how there missed address",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing by asking. I don\u2019t have a confirmed street address to read you right now, but we can still move fast. Call La Clinica Women\u2019s Health Center now. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you, call Medford Health Center: 5 4 1, 3 4 4, 9 4 1 1. If you feel unsafe or can\u2019t tell what\u2019s real, call 9 1 1 now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing by asking. I don\u2019t have a confirmed street address to read you right now, but we can still move fast. Call La Clinica Women\u2019s Health Center now. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you, call Medford Health Center: 5 4 1, 3 4 4, 9 4 1 1. If you feel unsafe or can\u2019t tell what\u2019s real, call 9 1 1 now.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002328#turn-1",
+      "scenarioId": "phone_dialog_0002328",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, can you keep this short? I\u2019m at a bus stop in Medford and I think he checks my phone.",
+      "normalizedQuery": "hi keep this short at bus stop medford think he checks phone",
+      "voiceResponse": "Yeah, I\u2019ll keep it short. If you\u2019re in immediate danger right now, call 911. If not, you can use a safer phone later and call 211 to talk to a person about ride and safety options near Medford. If you need to leave fast by bus, Greyhound can be an option. The number is 800, 231, 2222. I\u2019ll repeat: 800, 231, 2222.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:86384c62740499ba",
+        "service:ba024a031f6ac689",
+        "service:aff99442bdc0d67e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I\u2019ll keep it short. If you\u2019re in immediate danger right now, call 911. If not, you can use a safer phone later and call 211 to talk to a person about ride and safety options near Medford. If you need to leave fast by bus, Greyhound can be an option. The number is 800, 231, 2222. I\u2019ll repeat: 800, 231, 2222.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -4660,6 +5170,102 @@
       "to": "phone_dialog_0002134#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002165#turn-1",
+      "to": "phone_dialog_0002165#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002165#turn-2",
+      "to": "phone_dialog_0002165#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002165#turn-3",
+      "to": "phone_dialog_0002165#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002165#turn-4",
+      "to": "phone_dialog_0002165#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002184#turn-1",
+      "to": "phone_dialog_0002184#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002198#turn-1",
+      "to": "phone_dialog_0002198#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002248#turn-2",
+      "to": "phone_dialog_0002248#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002248#turn-3",
+      "to": "phone_dialog_0002248#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002260#turn-1",
+      "to": "phone_dialog_0002260#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002269#turn-1",
+      "to": "phone_dialog_0002269#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002292#turn-1",
+      "to": "phone_dialog_0002292#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002292#turn-3",
+      "to": "phone_dialog_0002292#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002292#turn-4",
+      "to": "phone_dialog_0002292#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002308#turn-2",
+      "to": "phone_dialog_0002308#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002317#turn-5",
+      "to": "phone_dialog_0002317#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002328#turn-1",
+      "to": "phone_dialog_0002328#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

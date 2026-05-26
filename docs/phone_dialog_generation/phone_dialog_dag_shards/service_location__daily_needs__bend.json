@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__bend",
   "kind": "service_location",
   "key": "daily_needs__bend",
-  "nodeCount": 28,
+  "nodeCount": 29,
   "nodes": [
     {
       "id": "phone_dialog_0000215#turn-3",
@@ -840,6 +840,36 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002159#turn-2",
+      "scenarioId": "phone_dialog_0002159",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? Say that slower, I don't hear good on this phone... [inaudible] Bend or, uh, Ben?",
+      "normalizedQuery": "static hello can't you're cutting sh shower no wait sorry say slower don't hear good on this phone inaudible bend uh ben",
+      "voiceResponse": "Bend. Bend, Oregon. I\u2019ll repeat: Bend, Oregon. Did you mean help in Bend, yes or no?",
+      "evidenceDocIds": [
+        "service:a57556cec82ec770",
+        "service:684eea07dc6b8eb2",
+        "service:f453b3ca7bf279c5",
+        "service:6872f635aec2c58f",
+        "service:0515ac454b59ee68"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Bend. Bend, Oregon. I\u2019ll repeat: Bend, Oregon. Did you mean help in Bend, yes or no?",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll say the place name slowly. It\u2019s **two-one-one info**: **211info**. And the area is **Oregon** and **Southwest Washington**.",
+        "Of course, you\u2019re okay. The place name is: **St. Vincent de Paul of Lane County, First Place Family Center**. I\u2019ll say it again: **St. Vincent de Paul** \u2026 **First Place Family Center**.",
+        "Of course. The first place is **First Place Family Center**. Address: **4060 West Amazon Drive, Eugene, Oregon 97405**. Phone: **541\u2026 342\u2026 7728**. We can go one step at a time.",
+        "You\u2019re doing great. I haven\u2019t given you hours yet, and I don\u2019t want to guess. What we have is: First Place Family Center, 4060 West Amazon Drive, Eugene, Oregon 97405. Phone: 541\u2026 342\u2026 7728. If you want, I can pause while you finish writing that."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -992,6 +1022,12 @@
       "to": "phone_dialog_0001429#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002159#turn-2",
+      "to": "phone_dialog_0002159#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

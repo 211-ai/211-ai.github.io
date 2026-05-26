@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__documents__medford",
   "kind": "service_location",
   "key": "documents__medford",
-  "nodeCount": 25,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000133#turn-2",
@@ -745,6 +745,66 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002345#turn-2",
+      "scenarioId": "phone_dialog_0002345",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Medford right now, and the person I stay with controls where I go and took my ID and papers.",
+      "normalizedQuery": "medford right now person stay controls go took id papers",
+      "voiceResponse": "Thank you for telling me. What you described is serious, and you did the right thing by reaching out. If you feel in immediate danger, call 911 now. If not, we can keep this general and low-profile: plan one safe time to leave, keep any small essentials hidden, and use a safer phone later to contact local domestic violence support about ID replacement and safe shelter. I can connect you to a live person now without sharing extra details.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:2ef319d5e12550a7",
+        "service:078087b57125137d",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. What you described is serious, and you did the right thing by reaching out. If you feel in immediate danger, call 911 now. If not, we can keep this general and low-profile: plan one safe time to leave, keep any small essentials hidden, and use a safer phone later to contact local domestic violence support about ID replacement and safe shelter. I can connect you to a live person now without sharing extra details.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I did **not** give a Main Street address. I said the help line is **2-1-1**. That is **two, one, one**. A **211 specialist** can walk you through your husband\u2019s ID steps and appointment papers, slowly. A **211 specialist** can walk you through your husband\u2019s ID steps and appointment papers, slowly. Would you like me to connect you now?",
+        "Next step: if he is freezing right now, call **9-1-1** now for immediate cold exposure help. Since I already started the live 211 handoff, stay on this line so the specialist can locate tonight shelter options near Main Street. It\u2019s okay if you don\u2019t have his paperwork yet.",
+        "Stay on the line now. I didn\u2019t give a shelter name yet\u2014I said I\u2019m connecting you to a live 211 specialist to find a same-day place near Main Street. If he\u2019s freezing or in immediate danger, call **9-1-1** right now: **9...1...1**.",
+        "Next step: stay on this line so I can complete the live 211 handoff right now and get options he can reach without a car near Main Street. If he is freezing or in immediate danger, call **9-1-1** now: **9...1...1**. You\u2019re doing the right thing, and it\u2019s okay that you only have partial details."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002345#turn-3",
+      "scenarioId": "phone_dialog_0002345",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out, can you repeat that slower? I\u2019m trying to keep my voice down.",
+      "normalizedQuery": "hi um talk long phone might be monitored so please keep this general medford right now person stay controls go took id papers sorry cut repeat slower trying voice down",
+      "voiceResponse": "Of course. I\u2019ll say it slowly. If you\u2019re in immediate danger, call 911. If not, keep it low-profile: pick one safe time to leave, hide a few small essentials, and use a safer phone later for local domestic violence support. They can help with safe shelter and replacing ID or papers. If you want, I can connect you to a live person now, without sharing extra details.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:8633bf7679779ba4",
+        "service:078087b57125137d",
+        "service:3bf79b1da127b257",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say it slowly. If you\u2019re in immediate danger, call 911. If not, keep it low-profile: pick one safe time to leave, hide a few small essentials, and use a safer phone later for local domestic violence support. They can help with safe shelter and replacing ID or papers. If you want, I can connect you to a live person now, without sharing extra details.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. The office is **2-1-1**. That is **two, one, one**. A **211 specialist** can walk you through this, step by step. A **211 specialist** can walk you through this, step by step.",
+        "Yes. The number is **2-1-1**. Slowly: **two, one, one**. I\u2019ll repeat it: **2-1-1**. Again: **two, one, one**.",
+        "Yes. The office is **2-1-1 info** \u2014 say it as \u201ctwo-one-one info.\u201d I can connect you to a live **2-1-1 specialist** now.",
+        "Yes. I said the Oregon EBT replacement line, not an office name. The number is: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll say it again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -873,6 +933,18 @@
       "to": "phone_dialog_0002029#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002345#turn-2",
+      "to": "phone_dialog_0002345#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002345#turn-3",
+      "to": "phone_dialog_0002345#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__clackamas",
   "kind": "service_location",
   "key": "general__clackamas",
-  "nodeCount": 93,
+  "nodeCount": 113,
   "nodes": [
     {
       "id": "phone_dialog_0000036#turn-2",
@@ -2786,6 +2786,606 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002161#turn-1",
+      "scenarioId": "phone_dialog_0002161",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, I can\u2019t hear great on this line, can you talk louder? I\u2019m in Clackamas and my inhaler is gone.",
+      "normalizedQuery": "hi sorry hear great on this line talk louder clackamas inhaler gone",
+      "voiceResponse": "Yes. I\u2019ll speak louder. First step: if you are short of breath now, call **9-1-1** right now. Are you having trouble breathing right this second? You said you are in Clackamas. I can stay with you while we do the next step. If breathing gets worse, call **9-1-1** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreib2mlhzydblqlypuedxqyffx5yxlmiaqiryqgo2ta5ip4lpbhz34u",
+        "service:3af525274aceaedb",
+        "service:4f3f12fd2a097337",
+        "service:03f0d7f3a93aaddb",
+        "service:40087f84f2e0d13b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll speak louder. First step: if you are short of breath now, call **9-1-1** right now. Are you having trouble breathing right this second? You said you are in Clackamas. I can stay with you while we do the next step. If breathing gets worse, call **9-1-1** immediately.",
+      "voiceResponseAlternatives": [
+        "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now.",
+        "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d",
+        "I\u2019m really glad you called. First, quick safety check: do you think your niece is in immediate danger right now, or needing urgent medical help? If yes, you can call 9-1-1 right away. If not, we can take this step by step and focus on a youth-safe runaway report and local support options in Clackamas. I can keep this simple and go slow with you.",
+        "Hi. I hear you. You\u2019re worried about your 78-year-old neighbor in Clackamas. First, is she in immediate danger right now? If yes, call 911 now. Call 911 now. If not, I can help you report possible neglect to Adult Protective Services and share what to say. Tell me one thing: what did you see today that worried you most?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002183#turn-1",
+      "scenarioId": "phone_dialog_0002183",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling about my dad in Clackamas, and sorry, can you speak a little louder? I\u2019m having trouble hearing on this phone.",
+      "normalizedQuery": "hi calling dad clackamas sorry speak little louder having trouble hearing on this phone",
+      "voiceResponse": "Yes. I can speak louder and slower. You\u2019re calling about your dad in Clackamas. I heard you. I heard you. I can connect you to a live 211 specialist now. They can help with local options in Clackamas. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "service:34d9e92d3ede5e98",
+        "service:f7f1a44948506f7a",
+        "service:3765a8082141d5b8",
+        "service:edd660b46aff2c3f",
+        "page:bafkreiaqyjw6aqqpiwacar3cg732akl47kl6st6yo7yjl2jwehx2ack5hm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can speak louder and slower. You\u2019re calling about your dad in Clackamas. I heard you. I heard you. I can connect you to a live 211 specialist now. They can help with local options in Clackamas. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002215#turn-3",
+      "scenarioId": "phone_dialog_0002215",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Yeah, okay, I'm in Clackamas, and my landlord gave me, uh, like a pay-or-quit notice, I think.",
+      "normalizedQuery": "hello static can't you're cutting got paper on door don't inaudible wait sorry say again slow please hear good this phone two one yeah okay i'm clackamas landlord gave uh like pay quit notice think",
+      "voiceResponse": "Thank you. I hear you. You are in Clackamas. You got a pay-or-quit notice from your landlord. I\u2019ll repeat: a pay-or-quit notice. I can connect you to a live specialist now for eviction help options. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:cd4723c0c202bdcc",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. You are in Clackamas. You got a pay-or-quit notice from your landlord. I\u2019ll repeat: a pay-or-quit notice. I can connect you to a live specialist now for eviction help options. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002215#turn-4",
+      "scenarioId": "phone_dialog_0002215",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "No, sorry, not this Friday\u2014 I mean maybe Friday\u2014 I keep mixing it up, but I'm trying not to get evicted.",
+      "normalizedQuery": "hello static can't you're cutting got paper on door don't inaudible wait sorry say again slow please hear good this phone two one yeah okay i'm clackamas landlord gave uh like pay quit notice think no friday mean maybe keep mixing it up trying evicted",
+      "voiceResponse": "I hear you. You\u2019re trying to avoid eviction. I\u2019ll repeat: you\u2019re trying to avoid eviction. That\u2019s okay about Friday. We can do this now. I can connect you to a live eviction specialist right now. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re trying to avoid eviction. I\u2019ll repeat: you\u2019re trying to avoid eviction. That\u2019s okay about Friday. We can do this now. I can connect you to a live eviction specialist right now. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002215#turn-5",
+      "scenarioId": "phone_dialog_0002215",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the program name and number really slow, like one digit at a time? I misheard the city part too.",
+      "normalizedQuery": "wait sorry say again slow please don't hear good on this phone two one yeah okay i'm clackamas landlord gave uh like pay quit notice think no friday mean maybe keep mixing it up trying evicted repeat program name number really digit at time misheard city part too",
+      "voiceResponse": "Yes. Program name: 211info. I\u2019ll repeat: 211info. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. City: Clackamas. I\u2019ll repeat: Clackamas.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Program name: 211info. I\u2019ll repeat: 211info. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. City: Clackamas. I\u2019ll repeat: Clackamas.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow repeat: call Pacific Power at **8-8-8, 2-2-1, 7-0-7-0**. Backup number: **8-8-8, 2-2-5, 2-6-1-1**. If your mom uses medical equipment or is in immediate danger, call **9-1-1** now.",
+        "Yeah. I\u2019ll say it slow. If you are in immediate danger, call **9-1-1** now. If you are in immediate danger, call **9-1-1** now. I can connect you to a live person for **same-day safety options tonight**. A live person. Same-day help tonight. Are you safe where you are for the next **10 minutes**?",
+        "Yes. I will slow down. First step: are you safe where you are right now? If you are in immediate danger, call 9-1-1 now. Call 9-1-1 now.",
+        "Of course. Slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.** Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002235#turn-1",
+      "scenarioId": "phone_dialog_0002235",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I can barely hear you out here at the bus stop. I\u2019m calling for my cousin in Clackamas, not for me.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop calling cousin clackamas",
+      "voiceResponse": "No problem, we can keep this simple. If this is for bus travel help for your cousin: Call 800, 231, 2222. Backup number: 800, 531, 5332. If you meant a different service, just say the category, like housing, food, or medical, and I\u2019ll keep it brief.",
+      "evidenceDocIds": [
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "service:b4f6da06252ca9af",
+        "service:4e82c2963dee6f88",
+        "page:bafkreib6sf3nys2q5mzhjzn2frcunn4v6bywrw4dzbtxflarwzhmvqea5q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No problem, we can keep this simple. If this is for bus travel help for your cousin: Call 800, 231, 2222. Backup number: 800, 531, 5332. If you meant a different service, just say the category, like housing, food, or medical, and I\u2019ll keep it brief.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002235#turn-2",
+      "scenarioId": "phone_dialog_0002235",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "She asked me to do this quietly, her partner checks her phone and has been threatening her all week.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop calling cousin clackamas she asked this quietly her partner checks phone has been threatening all week",
+      "voiceResponse": "Thank you for telling me. You\u2019re doing the right thing. If she is in immediate danger right now, call 911. If not, we can keep this quiet and move carefully. I can connect you to a live advocate who can help with a safety plan and low-profile contact options. We can share only what feels safe.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e",
+        "page:bafkreibyh5ekwksyacmqdgrp2iq57sticiqotwqhkvc5akts2ovgmsttw4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re doing the right thing. If she is in immediate danger right now, call 911. If not, we can keep this quiet and move carefully. I can connect you to a live advocate who can help with a safety plan and low-profile contact options. We can share only what feels safe.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002245#turn-1",
+      "scenarioId": "phone_dialog_0002245",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling about my neighbor, she\u2019s 78 and in Clackamas, and I\u2019m really worried she\u2019s being neglected.",
+      "normalizedQuery": "hi calling neighbor she 78 clackamas really worried being neglected",
+      "voiceResponse": "I hear you. Thank you for calling about her. This is serious, and you did the right thing. If she is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. I can connect you to a live specialist right away. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8c233174a5794cff",
+        "service:451ce5caf0eab303",
+        "service:20f9819f3a206b5f",
+        "service:3bc41c464c1fdc60"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Thank you for calling about her. This is serious, and you did the right thing. If she is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. I can connect you to a live specialist right away. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002245#turn-2",
+      "scenarioId": "phone_dialog_0002245",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that slower? She can\u2019t hear well and honestly I\u2019m a little rattled here.",
+      "normalizedQuery": "hi calling neighbor she 78 clackamas really worried being neglected sorry say slower hear well honestly little rattled here",
+      "voiceResponse": "Of course. I\u2019ll say it slowly. If she is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:99e8679fab689416",
+        "service:8c233174a5794cff",
+        "service:34d9e92d3ede5e98",
+        "service:f7f1a44948506f7a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say it slowly. If she is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Yes. Slow repeat: call Pacific Power at **8-8-8, 2-2-1, 7-0-7-0**. Backup number: **8-8-8, 2-2-5, 2-6-1-1**. If your mom uses medical equipment or is in immediate danger, call **9-1-1** now.",
+        "Yeah. I\u2019ll say it slow. If you are in immediate danger, call **9-1-1** now. If you are in immediate danger, call **9-1-1** now. I can connect you to a live person for **same-day safety options tonight**. A live person. Same-day help tonight. Are you safe where you are for the next **10 minutes**?",
+        "Yes. I will slow down. First step: are you safe where you are right now? If you are in immediate danger, call 9-1-1 now. Call 9-1-1 now.",
+        "Of course. Slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.** Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.**"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002264#turn-1",
+      "scenarioId": "phone_dialog_0002264",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I need to talk quiet... I\u2019m in Clackamas, and I can\u2019t go back home tonight.",
+      "normalizedQuery": "hi um talk quiet clackamas go back home tonight",
+      "voiceResponse": "I\u2019m here with you, and we can keep this quiet. Your audio was a little unclear. Which do you want right now: shelter for tonight, or help making a safe call?",
+      "evidenceDocIds": [
+        "service:a8985ec91c7fc1f1",
+        "service:27e274f68ae6936d",
+        "service:ced2f04b0f5b651e",
+        "service:bf2835753c92089f",
+        "service:af8d742aaf84a8b7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and we can keep this quiet. Your audio was a little unclear. Which do you want right now: shelter for tonight, or help making a safe call?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you, and I\u2019ll keep this quiet. The audio was a little unclear just now. Could you repeat one short choice: do you want a quick safety plan, or a 24-hour hotline number?",
+        "I\u2019m really sorry, that sounds scary. Your audio was unclear for a second. Are you safe right now: yes or no?",
+        "Sorry, the line is still unclear. I heard \u201csenior\u201d and \u201cClackamas.\u201d I heard \u201csenior\u201d and \u201cClackamas.\u201d Please say just one thing: do you need **senior meal help** in **Clackamas County**?",
+        "I hear you, and your audio is cutting out. I want to get this right: are you asking for a shelter bed in Clackamas County for tonight, yes or no?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002264#turn-2",
+      "scenarioId": "phone_dialog_0002264",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "My ex keeps showing up and texting threats, and he said if he sees me with anyone he\u2019ll hurt me... I\u2019m really scared.",
+      "normalizedQuery": "hi um talk quiet clackamas go back home tonight ex keeps showing up texting threats he said if sees anyone ll hurt really scared",
+      "voiceResponse": "I hear how scared you are, and you\u2019re not overreacting. Your audio cut a little, so I want to make sure I got this right. Please say one choice: \u201csafe place tonight,\u201d or \u201chelp making a protective call.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:83d9d6ee97f5d757",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiacnkk6y5xktut4slueqa2koudbk44wznzryxk5ofu6pkjpcbzkju"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scared you are, and you\u2019re not overreacting. Your audio cut a little, so I want to make sure I got this right. Please say one choice: \u201csafe place tonight,\u201d or \u201chelp making a protective call.\u201d",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you, and I\u2019ll keep this quiet. The audio was a little unclear just now. Could you repeat one short choice: do you want a quick safety plan, or a 24-hour hotline number?",
+        "I\u2019m really sorry, that sounds scary. Your audio was unclear for a second. Are you safe right now: yes or no?",
+        "Sorry, the line is still unclear. I heard \u201csenior\u201d and \u201cClackamas.\u201d I heard \u201csenior\u201d and \u201cClackamas.\u201d Please say just one thing: do you need **senior meal help** in **Clackamas County**?",
+        "I hear you, and your audio is cutting out. I want to get this right: are you asking for a shelter bed in Clackamas County for tonight, yes or no?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002264#turn-3",
+      "scenarioId": "phone_dialog_0002264",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not with him right this second, but he knows where my sister lives and he\u2019s been circling the block.",
+      "normalizedQuery": "hi um talk quiet clackamas go back home tonight ex keeps showing up texting threats he said if sees anyone ll hurt really scared him right this second knows sister lives been circling block",
+      "voiceResponse": "Thank you for telling me. You\u2019re doing the right thing. Since he\u2019s circling nearby and made threats, this could turn dangerous fast. If you can, please call 911 now, or I can stay with you while you do. If calling feels hard, we can do one quiet next step: move to a locked place away from windows, silence notifications, and keep your phone charged. If you want, I can connect you to a live advocate next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:83d9d6ee97f5d757",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re doing the right thing. Since he\u2019s circling nearby and made threats, this could turn dangerous fast. If you can, please call 911 now, or I can stay with you while you do. If calling feels hard, we can do one quiet next step: move to a locked place away from windows, silence notifications, and keep your phone charged. If you want, I can connect you to a live advocate next.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002264#turn-4",
+      "scenarioId": "phone_dialog_0002264",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down and say that number again? I\u2019m crying and I missed part of it.",
+      "normalizedQuery": "hi um talk quiet clackamas go back home tonight ex keeps showing up texting threats he said if sees anyone ll hurt really scared him right this second knows sister lives been circling block sorry slow down say number again crying missed part it",
+      "voiceResponse": "Of course. I\u2019ll go slow. Call 911. I\u2019ll repeat: 9, 1, 1. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:83d9d6ee97f5d757"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slow. Call 911. I\u2019ll repeat: 9, 1, 1. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow repeat: call Pacific Power at **8-8-8, 2-2-1, 7-0-7-0**. Backup number: **8-8-8, 2-2-5, 2-6-1-1**. If your mom uses medical equipment or is in immediate danger, call **9-1-1** now.",
+        "Yeah. I\u2019ll say it slow. If you are in immediate danger, call **9-1-1** now. If you are in immediate danger, call **9-1-1** now. I can connect you to a live person for **same-day safety options tonight**. A live person. Same-day help tonight. Are you safe where you are for the next **10 minutes**?",
+        "Yes. I will slow down. First step: are you safe where you are right now? If you are in immediate danger, call 9-1-1 now. Call 9-1-1 now.",
+        "Of course. Slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.** Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.**"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002293#turn-1",
+      "scenarioId": "phone_dialog_0002293",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, I can\u2019t hear great out here at the bus stop. I\u2019m 16 and I\u2019ve been couch-surfing in Clackamas after I left home.",
+      "normalizedQuery": "hi sorry hear great here at bus stop 16 ve been couch surfing clackamas after left home",
+      "voiceResponse": "Thanks for telling me. Quick safety check first: are you safe right now, and not in immediate danger? If yes, we can keep this private and only share the minimum. I can help with youth shelter options, a safe place for tonight, or food and basic needs in Clackamas. If you want, just say which one to start with.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaa4x4rnhydiuj34jkc6mjbepb7wriov4627ult5rqdfy6wssb75e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for telling me. Quick safety check first: are you safe right now, and not in immediate danger? If yes, we can keep this private and only share the minimum. I can help with youth shelter options, a safe place for tonight, or food and basic needs in Clackamas. If you want, just say which one to start with.",
+      "voiceResponseAlternatives": [
+        "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now.",
+        "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d",
+        "I\u2019m really glad you called. First, quick safety check: do you think your niece is in immediate danger right now, or needing urgent medical help? If yes, you can call 9-1-1 right away. If not, we can take this step by step and focus on a youth-safe runaway report and local support options in Clackamas. I can keep this simple and go slow with you.",
+        "Hi. I hear you. You\u2019re worried about your 78-year-old neighbor in Clackamas. First, is she in immediate danger right now? If yes, call 911 now. Call 911 now. If not, I can help you report possible neglect to Adult Protective Services and share what to say. Tell me one thing: what did you see today that worried you most?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002293#turn-2",
+      "scenarioId": "phone_dialog_0002293",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Before I say too much, are you gonna report me right away? I don\u2019t want my location shared or anything.",
+      "normalizedQuery": "hi sorry hear great here at bus stop 16 ve been couch surfing clackamas after left home before say too much gonna report right away don want location shared anything",
+      "voiceResponse": "I hear you. You do not have to share your exact location or full name to get help. We can keep this general. I\u2019m here to connect you to options, not to track you. I only have to act fast if someone is in immediate danger. If you want, we can start with just one thing: a safe place tonight, food, or both.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You do not have to share your exact location or full name to get help. We can keep this general. I\u2019m here to connect you to options, not to track you. I only have to act fast if someone is in immediate danger. If you want, we can start with just one thing: a safe place tonight, food, or both.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002324#turn-1",
+      "scenarioId": "phone_dialog_0002324",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Can you hear me? Sorry, signal is awful... I'm in Clackamas and my friend took pills and a bunch of vodka.",
+      "normalizedQuery": "hello hear sorry signal awful i'm clackamas friend took pills bunch vodka",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. The audio is breaking up, but I heard pills and vodka, and that can be an emergency. If your friend is hard to wake, not breathing normally, or throwing up, call 911 right now. I need one quick repeat: are they awake right now?",
+      "evidenceDocIds": [
+        "service:2d63f632b46d0d29",
+        "service:c1be66b3f546e230",
+        "service:b4f6da06252ca9af",
+        "service:03f0d7f3a93aaddb",
+        "service:77801dbfae971c49"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. The audio is breaking up, but I heard pills and vodka, and that can be an emergency. If your friend is hard to wake, not breathing normally, or throwing up, call 911 right now. I need one quick repeat: are they awake right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you, and I\u2019ll keep this quiet. The audio was a little unclear just now. Could you repeat one short choice: do you want a quick safety plan, or a 24-hour hotline number?",
+        "I\u2019m really sorry, that sounds scary. Your audio was unclear for a second. Are you safe right now: yes or no?",
+        "Sorry, the line is still unclear. I heard \u201csenior\u201d and \u201cClackamas.\u201d I heard \u201csenior\u201d and \u201cClackamas.\u201d Please say just one thing: do you need **senior meal help** in **Clackamas County**?",
+        "I hear you, and your audio is cutting out. I want to get this right: are you asking for a shelter bed in Clackamas County for tonight, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002324#turn-2",
+      "scenarioId": "phone_dialog_0002324",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "He keeps nodding off and I can't really wake him up, like he opens his eyes then goes out again.",
+      "normalizedQuery": "hello hear sorry signal awful i'm clackamas friend took pills bunch vodka he keeps nodding off can't really wake him up like opens his eyes then goes again",
+      "voiceResponse": "I\u2019m really glad you told me. This is serious, and you need emergency help now. Call 911 right now. Say: \u201cAdult, possible overdose, pills and alcohol, hard to wake, drifting in and out.\u201d Put your phone on speaker, stay with him, and roll him onto his side. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:303f1003525d7f18"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This is serious, and you need emergency help now. Call 911 right now. Say: \u201cAdult, possible overdose, pills and alcohol, hard to wake, drifting in and out.\u201d Put your phone on speaker, stay with him, and roll him onto his side. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002324#turn-3",
+      "scenarioId": "phone_dialog_0002324",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, can you repeat that? His breathing is weird, really slow, kinda gurgly.",
+      "normalizedQuery": "hello hear sorry signal awful i'm clackamas friend took pills bunch vodka he keeps nodding off can't really wake him up like opens his eyes then goes again cut repeat breathing weird slow kinda gurgly",
+      "voiceResponse": "I hear you. I\u2019ll repeat clearly: call 911 right now. Say, \u201cPossible overdose, pills and alcohol, very slow gurgling breathing, hard to wake.\u201d Put your phone on speaker, stay with him, and roll him onto his side. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:303f1003525d7f18"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll repeat clearly: call 911 right now. Say, \u201cPossible overdose, pills and alcohol, very slow gurgling breathing, hard to wake.\u201d Put your phone on speaker, stay with him, and roll him onto his side. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow repeat: call Pacific Power at **8-8-8, 2-2-1, 7-0-7-0**. Backup number: **8-8-8, 2-2-5, 2-6-1-1**. If your mom uses medical equipment or is in immediate danger, call **9-1-1** now.",
+        "Yeah. I\u2019ll say it slow. If you are in immediate danger, call **9-1-1** now. If you are in immediate danger, call **9-1-1** now. I can connect you to a live person for **same-day safety options tonight**. A live person. Same-day help tonight. Are you safe where you are for the next **10 minutes**?",
+        "Yes. I will slow down. First step: are you safe where you are right now? If you are in immediate danger, call 9-1-1 now. Call 9-1-1 now.",
+        "Of course. Slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.** Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.**"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002332#turn-1",
+      "scenarioId": "phone_dialog_0002332",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m calling about my dad in Clackamas. He\u2019s 78, on oxygen, and I think he\u2019s being neglected in his building.",
+      "normalizedQuery": "hi calling dad clackamas he 78 on oxygen think being neglected his building",
+      "voiceResponse": "I hear you. Your dad is 78, on oxygen, and you\u2019re worried about neglect in Clackamas. First, safety check: is he in immediate danger right now, or having trouble breathing right now? If yes, call 9-1-1 now. Call 9-1-1 now. If no, I can help with the next report step.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:ebcc2eae6f267a16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your dad is 78, on oxygen, and you\u2019re worried about neglect in Clackamas. First, safety check: is he in immediate danger right now, or having trouble breathing right now? If yes, call 9-1-1 now. Call 9-1-1 now. If no, I can help with the next report step.",
+      "voiceResponseAlternatives": [
+        "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now.",
+        "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d",
+        "I\u2019m really glad you called. First, quick safety check: do you think your niece is in immediate danger right now, or needing urgent medical help? If yes, you can call 9-1-1 right away. If not, we can take this step by step and focus on a youth-safe runaway report and local support options in Clackamas. I can keep this simple and go slow with you.",
+        "Hi. I hear you. You\u2019re worried about your 78-year-old neighbor in Clackamas. First, is she in immediate danger right now? If yes, call 911 now. Call 911 now. If not, I can help you report possible neglect to Adult Protective Services and share what to say. Tell me one thing: what did you see today that worried you most?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002351#turn-2",
+      "scenarioId": "phone_dialog_0002351",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019m in Clackamas, sorry, can you slow down? I keep missing what you\u2019re saying.",
+      "normalizedQuery": "hi sorry really breathe right now just got let go don know clackamas slow down keep missing re saying",
+      "voiceResponse": "I\u2019ll slow down. If you can\u2019t breathe right now, call 911 now. Sit upright, unlock your door, and wait for help. After you are safe, I can connect you to a live agent for next steps.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21",
+        "service:28acd183a54cc8a5",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:8e98106e040e9fe3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll slow down. If you can\u2019t breathe right now, call 911 now. Sit upright, unlock your door, and wait for help. After you are safe, I can connect you to a live agent for next steps.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow repeat: call Pacific Power at **8-8-8, 2-2-1, 7-0-7-0**. Backup number: **8-8-8, 2-2-5, 2-6-1-1**. If your mom uses medical equipment or is in immediate danger, call **9-1-1** now.",
+        "Yeah. I\u2019ll say it slow. If you are in immediate danger, call **9-1-1** now. If you are in immediate danger, call **9-1-1** now. I can connect you to a live person for **same-day safety options tonight**. A live person. Same-day help tonight. Are you safe where you are for the next **10 minutes**?",
+        "Yes. I will slow down. First step: are you safe where you are right now? If you are in immediate danger, call 9-1-1 now. Call 9-1-1 now.",
+        "Of course. Slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.** Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 6\u2026 7\u2026 8\u2026 7\u2026 8.**"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -3302,6 +3902,126 @@
     {
       "from": "phone_dialog_0002136#turn-4",
       "to": "phone_dialog_0002136#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002161#turn-1",
+      "to": "phone_dialog_0002161#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002183#turn-1",
+      "to": "phone_dialog_0002183#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002215#turn-3",
+      "to": "phone_dialog_0002215#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002215#turn-4",
+      "to": "phone_dialog_0002215#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002215#turn-5",
+      "to": "phone_dialog_0002215#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002235#turn-1",
+      "to": "phone_dialog_0002235#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002235#turn-2",
+      "to": "phone_dialog_0002235#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002245#turn-1",
+      "to": "phone_dialog_0002245#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002245#turn-2",
+      "to": "phone_dialog_0002245#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002264#turn-1",
+      "to": "phone_dialog_0002264#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002264#turn-2",
+      "to": "phone_dialog_0002264#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002264#turn-3",
+      "to": "phone_dialog_0002264#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002264#turn-4",
+      "to": "phone_dialog_0002264#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002293#turn-1",
+      "to": "phone_dialog_0002293#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002293#turn-2",
+      "to": "phone_dialog_0002293#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002324#turn-1",
+      "to": "phone_dialog_0002324#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002324#turn-2",
+      "to": "phone_dialog_0002324#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002324#turn-3",
+      "to": "phone_dialog_0002324#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002332#turn-1",
+      "to": "phone_dialog_0002332#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002351#turn-2",
+      "to": "phone_dialog_0002351#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
     }

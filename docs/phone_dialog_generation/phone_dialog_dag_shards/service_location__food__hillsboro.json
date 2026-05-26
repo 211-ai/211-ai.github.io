@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__hillsboro",
   "kind": "service_location",
   "key": "food__hillsboro",
-  "nodeCount": 37,
+  "nodeCount": 38,
   "nodes": [
     {
       "id": "phone_dialog_0000001#turn-3",
@@ -1093,6 +1093,36 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002273#turn-4",
+      "scenarioId": "phone_dialog_0002273",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m hard of hearing, so please say any number slow, in chunks... my phone is cutting out.",
+      "normalizedQuery": "hi calling from hillsboro dad he 78 on oxygen sorry hear over this tv before anything else should call 911 right now if weak breathing fast we keep talking his aide hasn shown up two days missed meals heart meds alone most day hard hearing so please say any number slow chunks phone cutting",
+      "voiceResponse": "I hear you. I will speak slowly, in chunks. I will repeat key numbers. This is still an emergency. Call 9 1 1 now. I\u2019ll repeat: 9 1 1. If the call drops, dial 9 1 1 right back. I\u2019ll repeat: 9 1 1. Keep him sitting up. Keep oxygen on. Unlock the door. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I will speak slowly, in chunks. I will repeat key numbers. This is still an emergency. Call 9 1 1 now. I\u2019ll repeat: 9 1 1. If the call drops, dial 9 1 1 right back. I\u2019ll repeat: 9 1 1. Keep him sitting up. Keep oxygen on. Unlock the door. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Next step: please call **Food Pantry and Meals** now and ask for **to-go meals or home-delivered food boxes**. The number is **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. If needed, the address is **8800 Southeast 80th Avenue, Portland**. If your breathing gets worse or pain becomes severe, call **9-1-1** right away.",
+        "Next step: write this down slowly. The address is **8 8 0 0** Southeast **8 0th** Avenue, Portland, Oregon, **9 7 2 0 6**. I\u2019ll repeat it: **8 8 0 0** Southeast **8 0th** Avenue, Portland, Oregon, **9 7 2 0 6**. If you suddenly get worse, call **9-1-1** right away.",
+        "Yes. We can do that in that order. First, meal delivery. Then transport and a wellness check. I can connect you now to a live specialist to set all three up. For transport, use Cascades West Ride Line: `(541) 924-8738` \u2014 that is `5 4 1` \u2026 `9 2 4` \u2026 `8 7 3 8`. Again: `5 4 1` \u2026 `9 2 4` \u2026 `8 7 3 8`. If she gets worse or is hard to wake, call `9-1-1`. Do I have your yes to connect now?",
+        "I hear you. He is alone most of the time. Caregiver is not showing up regularly. He cannot safely use the stairs from a second-floor apartment. I heard you: alone most of the time, missed caregiver, unsafe stairs. This is urgent neglect risk. I will connect you to a live agent now for same-day reporting and safety planning. If he has trouble breathing, chest pain, or becomes unresponsive, call 9-1-1. Call 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1293,6 +1323,12 @@
       "to": "phone_dialog_0001911#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002273#turn-4",
+      "to": "phone_dialog_0002273#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

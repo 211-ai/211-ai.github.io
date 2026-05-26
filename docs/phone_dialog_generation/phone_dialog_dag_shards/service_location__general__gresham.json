@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__gresham",
   "kind": "service_location",
   "key": "general__gresham",
-  "nodeCount": 117,
+  "nodeCount": 133,
   "nodes": [
     {
       "id": "phone_dialog_0000017#turn-5",
@@ -3493,6 +3493,486 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002169#turn-1",
+      "scenarioId": "phone_dialog_0002169",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my aunt in Gresham, and before we get into it, she is awake and breathing right now, but I\u2019m really worried about neglect.",
+      "normalizedQuery": "hi calling aunt gresham before we into it she awake breathing right now really worried neglect",
+      "voiceResponse": "I hear you. She is awake and breathing. She is awake and breathing. If she is in immediate danger right now, call 9 1 1. Call 9 1 1. I can get you to a live specialist for neglect concerns in Gresham. One question first: is your aunt in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. She is awake and breathing. She is awake and breathing. If she is in immediate danger right now, call 9 1 1. Call 9 1 1. I can get you to a live specialist for neglect concerns in Gresham. One question first: is your aunt in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002169#turn-2",
+      "scenarioId": "phone_dialog_0002169",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, can you say that again slower? I\u2019m hard of hearing on this phone.",
+      "normalizedQuery": "hi calling aunt gresham before we into it she awake breathing right now really worried neglect sorry say again slower hard hearing on this phone",
+      "voiceResponse": "Of course. I will go slowly. She is awake and breathing. She is awake and breathing. If she is in immediate danger now, call 9 1 1. Call 9 1 1. One question: is your aunt in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:f343701d786b3ebc",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I will go slowly. She is awake and breathing. She is awake and breathing. If she is in immediate danger now, call 9 1 1. Call 9 1 1. One question: is your aunt in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. First, quick safety check: are you having chest pain, trouble breathing, or feeling faint right now? If yes, call 9-1-1 now. That is 9-1-1. If no, we can call City of Gresham for help: 5-0-3, 6-1-8, 3-0-0-0. Again: 5-0-3, 6-1-8, 3-0-0-0. Can you tell me if you are in immediate danger right now?",
+        "Thank you. I hear you. Being trapped, not eating, and missing heart pills can be an emergency. Please call **9-1-1** now. Call **9-1-1** now: **9... 1... 1**. I can stay with you while you call. One question: is your mom awake and answering you right now?",
+        "Thank you for telling me. What he\u2019s saying is not your fault, and it sounds unsafe. Quick safety check: are you in immediate danger right now? If yes, you can call 911 now, or I can help you say exactly what to report. If not immediate, I can connect you to a live 211 specialist for youth-safe options right now. You can keep details minimal and share only what you choose.",
+        "I hear you. Quick safety check: are you in immediate danger right now? If yes, call 911 now. If not, we can keep this low-key: avoid sensitive texts/calls on that phone, and use a public place to make one short transport call. Greyhound support is **8-0-0, 2-3-1, 2-2-2-2**. If you want, I can stay with you while you make it."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002187#turn-1",
+      "scenarioId": "phone_dialog_0002187",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling from Gresham about my older brother, he\u2019s disabled and I think he\u2019s being neglected where he lives.",
+      "normalizedQuery": "hi calling from gresham older brother he disabled think being neglected lives",
+      "voiceResponse": "I\u2019m so sorry. That sounds very serious. You\u2019re in Gresham, and you think your disabled older brother is being neglected. You\u2019re in Gresham, and you think your disabled older brother is being neglected. If he is in immediate danger right now, call 9-1-1 now. If he is in immediate danger right now, call 9-1-1 now. I can get you to a live specialist now. Is he in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:f064091646bc9755",
+        "service:325abc754c86fde4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry. That sounds very serious. You\u2019re in Gresham, and you think your disabled older brother is being neglected. You\u2019re in Gresham, and you think your disabled older brother is being neglected. If he is in immediate danger right now, call 9-1-1 now. If he is in immediate danger right now, call 9-1-1 now. I can get you to a live specialist now. Is he in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002187#turn-3",
+      "scenarioId": "phone_dialog_0002187",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing, can you say that again slower? My phone keeps cutting out.",
+      "normalizedQuery": "hi calling from gresham older brother he disabled think being neglected lives before anything else check should if safe right now missed two doses heart meds barely ate yesterday sorry hard hearing say again slower phone keeps cutting",
+      "voiceResponse": "Yes. I will say it slower. If he is not safe right now, call 9-1-1 now. Call 9-1-1 now. Tell them: disabled adult, missed two heart medicine doses, barely ate, possible neglect. Say his address first. Then his symptoms. If he has chest pain, trouble breathing, confusion, or is hard to wake, it is an emergency. After 9-1-1, I can connect you to a live specialist.",
+      "evidenceDocIds": [
+        "service:f343701d786b3ebc",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slower. If he is not safe right now, call 9-1-1 now. Call 9-1-1 now. Tell them: disabled adult, missed two heart medicine doses, barely ate, possible neglect. Say his address first. Then his symptoms. If he has chest pain, trouble breathing, confusion, or is hard to wake, it is an emergency. After 9-1-1, I can connect you to a live specialist.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at **888 \u2026 221 \u2026 7070**. Backup number is **888 \u2026 225 \u2026 2611**. I can stay on the line while you make that call.",
+        "I\u2019ve got you. I\u2019ll say it slowly: **eight-eight-eight \u2026 two-two-one \u2026 seven-zero-seven-zero**. That\u2019s **888 \u2026 221 \u2026 7070**. Backup is **eight-eight-eight \u2026 two-two-five \u2026 two-six-one-one**. That\u2019s **888 \u2026 225 \u2026 2611**.",
+        "Yes. The name is a **live 2-1-1 specialist**. Next step: stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s a **24-hour crisis line**. The number is: **8-0-0, 8-3-3, 1-1-6-1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002210#turn-1",
+      "scenarioId": "phone_dialog_0002210",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, can you hear me? I\u2019m by Burnside in Gresham and people keep tracking my phone, I know that sounds bad, but the voices are loud again.",
+      "normalizedQuery": "hi sorry hear by burnside gresham people keep tracking phone know sounds bad voices loud again",
+      "voiceResponse": "I hear how intense this feels, and I\u2019m glad you reached out. First, if you\u2019re in immediate danger right now, call 911. If you want a safer place tonight, Burnside Shelter is at 111 West Burnside Street, Portland. Main number: (503) 906-7690. Backup number: (503) 647-7466. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "service:46248714e594f5e5",
+        "service:f8af123dfb3c38af",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:8633bf7679779ba4",
+        "service:f525d65d4bd89731"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how intense this feels, and I\u2019m glad you reached out. First, if you\u2019re in immediate danger right now, call 911. If you want a safer place tonight, Burnside Shelter is at 111 West Burnside Street, Portland. Main number: (503) 906-7690. Backup number: (503) 647-7466. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002210#turn-2",
+      "scenarioId": "phone_dialog_0002210",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "No, wait, don\u2019t hang up, I\u2019m not joking, they keep saying don\u2019t go outside and then my neighbor\u2019s TV repeats my thoughts.",
+      "normalizedQuery": "hi sorry hear by burnside gresham people keep tracking phone know sounds bad voices loud again no wait don hang up joking they saying go outside then neighbor tv repeats thoughts",
+      "voiceResponse": "I hear you, and I believe you\u2019re scared right now. Let\u2019s do one safe step first: stay inside, away from windows and doors. If you might act on what you\u2019re hearing or feel in immediate danger, call 911 now. If you can, tell me your exact location and whether you\u2019re alone, so I can help with the next step right away.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:a8985ec91c7fc1f1",
+        "service:8c233174a5794cff"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I believe you\u2019re scared right now. Let\u2019s do one safe step first: stay inside, away from windows and doors. If you might act on what you\u2019re hearing or feel in immediate danger, call 911 now. If you can, tell me your exact location and whether you\u2019re alone, so I can help with the next step right away.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002220#turn-1",
+      "scenarioId": "phone_dialog_0002220",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m calling for my cousin, not me, and I\u2019m kind of panicking, sorry. She\u2019s in Gresham and her ex has been threatening her all week.",
+      "normalizedQuery": "hi calling cousin kind panicking sorry she gresham her ex has been threatening all week",
+      "voiceResponse": "You\u2019re doing the right thing by calling. First, is she in immediate danger right now? If yes, call 911 now. If not, we can do this step by step: help her get to a safer place, keep threatening messages, and contact a domestic violence advocate for a safety plan. I can help you with exactly what to say when you call.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibyh5ekwksyacmqdgrp2iq57sticiqotwqhkvc5akts2ovgmsttw4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling. First, is she in immediate danger right now? If yes, call 911 now. If not, we can do this step by step: help her get to a safer place, keep threatening messages, and contact a domestic violence advocate for a safety plan. I can help you with exactly what to say when you call.",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. First, quick safety check: are you having chest pain, trouble breathing, or feeling faint right now? If yes, call 9-1-1 now. That is 9-1-1. If no, we can call City of Gresham for help: 5-0-3, 6-1-8, 3-0-0-0. Again: 5-0-3, 6-1-8, 3-0-0-0. Can you tell me if you are in immediate danger right now?",
+        "Thank you. I hear you. Being trapped, not eating, and missing heart pills can be an emergency. Please call **9-1-1** now. Call **9-1-1** now: **9... 1... 1**. I can stay with you while you call. One question: is your mom awake and answering you right now?",
+        "Thank you for telling me. What he\u2019s saying is not your fault, and it sounds unsafe. Quick safety check: are you in immediate danger right now? If yes, you can call 911 now, or I can help you say exactly what to report. If not immediate, I can connect you to a live 211 specialist for youth-safe options right now. You can keep details minimal and share only what you choose.",
+        "I hear you. Quick safety check: are you in immediate danger right now? If yes, call 911 now. If not, we can keep this low-key: avoid sensitive texts/calls on that phone, and use a public place to make one short transport call. Greyhound support is **8-0-0, 2-3-1, 2-2-2-2**. If you want, I can stay with you while you make it."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002220#turn-2",
+      "scenarioId": "phone_dialog_0002220",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Can you talk slower? I\u2019m in my car and I don\u2019t want to say too much out loud, he checks her phone and shows up where she is.",
+      "normalizedQuery": "hi calling cousin kind panicking sorry she gresham her ex has been threatening all week talk slower car don want say too much loud he checks phone shows up",
+      "voiceResponse": "Yes. I\u2019ll go slow. If she is in danger right now, call 911 now. If not, use short, neutral messages and avoid details on her phone. You can help her pick one safe place he does not know, and keep screenshots of threats in a hidden or backed-up folder. If you want, I can give you a calm one-minute script to call an advocate without saying much.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll go slow. If she is in danger right now, call 911 now. If not, use short, neutral messages and avoid details on her phone. You can help her pick one safe place he does not know, and keep screenshots of threats in a hidden or backed-up folder. If you want, I can give you a calm one-minute script to call an advocate without saying much.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002220#turn-3",
+      "scenarioId": "phone_dialog_0002220",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "She said he was outside her apartment last night and texted that if she leaves he\u2019ll hurt her, so she\u2019s scared to go back there tonight.",
+      "normalizedQuery": "hi calling cousin kind panicking sorry she gresham her ex has been threatening all week talk slower car don want say too much loud he checks phone shows up said was outside apartment last night texted if leaves ll hurt so scared go back there tonight",
+      "voiceResponse": "I\u2019m really glad you called. This sounds urgent. If he is outside now, or she feels trapped, call 911 now. If she is not in immediate danger this minute, option one is she does not return there tonight and stays at a place he does not know. Option two is a quick police non-emergency report about last night\u2019s threat, then keep those texts and screenshots backed up. I can stay with you and give you a short script, one line at a time.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. This sounds urgent. If he is outside now, or she feels trapped, call 911 now. If she is not in immediate danger this minute, option one is she does not return there tonight and stays at a place he does not know. Option two is a quick police non-emergency report about last night\u2019s threat, then keep those texts and screenshots backed up. I can stay with you and give you a short script, one line at a time.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002270#turn-1",
+      "scenarioId": "phone_dialog_0002270",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, can you keep this short? I\u2019m in Gresham and I think my phone is watched.",
+      "normalizedQuery": "hi keep this short gresham think phone watched",
+      "voiceResponse": "Yeah. Keep it simple: if you feel in danger right now, call 911. If it\u2019s not immediate, you can use a different phone and call Gresham Police\u2019s non-emergency line. The number is 503, 618, 2318. Backup number: 503, 618, 3000. If you want, I can stay with you while you decide which one to call.",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:8633bf7679779ba4",
+        "service:bcfe168519274472",
+        "service:6157126cc568b343"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah. Keep it simple: if you feel in danger right now, call 911. If it\u2019s not immediate, you can use a different phone and call Gresham Police\u2019s non-emergency line. The number is 503, 618, 2318. Backup number: 503, 618, 3000. If you want, I can stay with you while you decide which one to call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002295#turn-1",
+      "scenarioId": "phone_dialog_0002295",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, can you hear me? I\u2019m in Gresham and it\u2019s freezing out here, I got pushed out of where I was staying.",
+      "normalizedQuery": "hi hear gresham it freezing here got pushed was staying",
+      "voiceResponse": "Yes, I hear you. Your safety comes first. If you feel like you might pass out, can\u2019t feel your hands or feet, or are in immediate danger, call 911 now. Right now, can you get inside the nearest open place to warm up, like a store or transit station? I can help you find the closest safe warming shelter in Gresham next.",
+      "evidenceDocIds": [
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. Your safety comes first. If you feel like you might pass out, can\u2019t feel your hands or feet, or are in immediate danger, call 911 now. Right now, can you get inside the nearest open place to warm up, like a store or transit station? I can help you find the closest safe warming shelter in Gresham next.",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. First, quick safety check: are you having chest pain, trouble breathing, or feeling faint right now? If yes, call 9-1-1 now. That is 9-1-1. If no, we can call City of Gresham for help: 5-0-3, 6-1-8, 3-0-0-0. Again: 5-0-3, 6-1-8, 3-0-0-0. Can you tell me if you are in immediate danger right now?",
+        "Thank you. I hear you. Being trapped, not eating, and missing heart pills can be an emergency. Please call **9-1-1** now. Call **9-1-1** now: **9... 1... 1**. I can stay with you while you call. One question: is your mom awake and answering you right now?",
+        "Thank you for telling me. What he\u2019s saying is not your fault, and it sounds unsafe. Quick safety check: are you in immediate danger right now? If yes, you can call 911 now, or I can help you say exactly what to report. If not immediate, I can connect you to a live 211 specialist for youth-safe options right now. You can keep details minimal and share only what you choose.",
+        "I hear you. Quick safety check: are you in immediate danger right now? If yes, call 911 now. If not, we can keep this low-key: avoid sensitive texts/calls on that phone, and use a public place to make one short transport call. Greyhound support is **8-0-0, 2-3-1, 2-2-2-2**. If you want, I can stay with you while you make it."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002295#turn-2",
+      "scenarioId": "phone_dialog_0002295",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "There was yelling and threats at the camp by the trail, and someone took my backpack last night, so I don\u2019t feel safe going back.",
+      "normalizedQuery": "hi hear gresham it freezing here got pushed was staying there yelling threats at camp by trail someone took backpack last night so don feel safe going back",
+      "voiceResponse": "That\u2019s not safe, and you did the right thing telling me. If you\u2019re in immediate danger right now, call 911 now. Do not go back to that camp. Go to the nearest open, public place with lights and people, and stay there. I can connect you to a live 211 specialist right now to help you get a safe place tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "service:0f54d8a0521f759c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s not safe, and you did the right thing telling me. If you\u2019re in immediate danger right now, call 911 now. Do not go back to that camp. Go to the nearest open, public place with lights and people, and stay there. I can connect you to a live 211 specialist right now to help you get a safe place tonight.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002329#turn-1",
+      "scenarioId": "phone_dialog_0002329",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my sister in Gresham, this is a borrowed phone and it\u2019s about to die, so can you give me the most important number first?",
+      "normalizedQuery": "hi calling sister gresham this borrowed phone it die so give most important number first",
+      "voiceResponse": "Main number: 503, 283, 6881. I\u2019ll repeat: 503, 283, 6881. If you want, I can quickly connect you to a live 211 specialist next.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e7f69e9f7d66f5f6",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: 503, 283, 6881. I\u2019ll repeat: 503, 283, 6881. If you want, I can quickly connect you to a live 211 specialist next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002352#turn-2",
+      "scenarioId": "phone_dialog_0002352",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "She says she\u2019s in Gresham, bouncing between couches, and there are older guys at one place making her 'help out' for rides, which sounds wrong.",
+      "normalizedQuery": "hi calling cousin she 16 ran off two nights ago this phone might die so give most important number first says gresham bouncing between couches there older guys at one place making her 'help out' rides which sounds wrong",
+      "voiceResponse": "Call 9-1-1 now. The number is 9, 1, 1. What you described is serious exploitation of a 16-year-old, and police can do a welfare check in Gresham right away. You can say: \u201cShe is 16, in Gresham, moving between couches, and older men are making her do things for rides.\u201d If this phone dies, send that exact line by text to a trusted person so they can keep calling for her.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 9-1-1 now. The number is 9, 1, 1. What you described is serious exploitation of a 16-year-old, and police can do a welfare check in Gresham right away. You can say: \u201cShe is 16, in Gresham, moving between couches, and older men are making her do things for rides.\u201d If this phone dies, send that exact line by text to a trusted person so they can keep calling for her.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002352#turn-3",
+      "scenarioId": "phone_dialog_0002352",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, bus is loud\u2014what was that first number again, slower?",
+      "normalizedQuery": "hi calling cousin she 16 ran off two nights ago this phone might die so give most important number first says gresham bouncing between couches there older guys at one place making her 'help out' rides which sounds wrong sorry bus loud was again slower",
+      "voiceResponse": "The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. If you can, call now and say she is 16 and in Gresham with adults exploiting her.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. If you can, call now and say she is 16 and in Gresham with adults exploiting her.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at **888 \u2026 221 \u2026 7070**. Backup number is **888 \u2026 225 \u2026 2611**. I can stay on the line while you make that call.",
+        "I\u2019ve got you. I\u2019ll say it slowly: **eight-eight-eight \u2026 two-two-one \u2026 seven-zero-seven-zero**. That\u2019s **888 \u2026 221 \u2026 7070**. Backup is **eight-eight-eight \u2026 two-two-five \u2026 two-six-one-one**. That\u2019s **888 \u2026 225 \u2026 2611**.",
+        "Yes. The name is a **live 2-1-1 specialist**. Next step: stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s a **24-hour crisis line**. The number is: **8-0-0, 8-3-3, 1-1-6-1**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002352#turn-4",
+      "scenarioId": "phone_dialog_0002352",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have her exact address, just near Burnside and like, a strip mall, and she won\u2019t tell me names because she\u2019s scared.",
+      "normalizedQuery": "hi calling cousin she 16 ran off two nights ago this phone might die so give most important number first says gresham bouncing between couches there older guys at one place making her 'help out' rides which sounds wrong sorry bus loud was again slower don have exact address just burnside like strip mall won tell names because scared",
+      "voiceResponse": "You have enough to call now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Tell them: \u201cShe is 16, near Burnside by a strip mall in Gresham, moving between couches, and scared to share names.\u201d That is still actionable, even without an exact address. If this phone dies, text that exact sentence to one trusted person so they can keep calling.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You have enough to call now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Tell them: \u201cShe is 16, near Burnside by a strip mall in Gresham, moving between couches, and scared to share names.\u201d That is still actionable, even without an exact address. If this phone dies, text that exact sentence to one trusted person so they can keep calling.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -4119,6 +4599,102 @@
       "to": "phone_dialog_0002128#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002169#turn-1",
+      "to": "phone_dialog_0002169#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002169#turn-2",
+      "to": "phone_dialog_0002169#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002187#turn-1",
+      "to": "phone_dialog_0002187#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002187#turn-3",
+      "to": "phone_dialog_0002187#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002210#turn-1",
+      "to": "phone_dialog_0002210#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002210#turn-2",
+      "to": "phone_dialog_0002210#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002220#turn-1",
+      "to": "phone_dialog_0002220#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002220#turn-2",
+      "to": "phone_dialog_0002220#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002220#turn-3",
+      "to": "phone_dialog_0002220#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002270#turn-1",
+      "to": "phone_dialog_0002270#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002295#turn-1",
+      "to": "phone_dialog_0002295#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002295#turn-2",
+      "to": "phone_dialog_0002295#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002329#turn-1",
+      "to": "phone_dialog_0002329#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002352#turn-2",
+      "to": "phone_dialog_0002352#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002352#turn-3",
+      "to": "phone_dialog_0002352#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002352#turn-4",
+      "to": "phone_dialog_0002352#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

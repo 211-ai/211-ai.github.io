@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__shelter__beaverton",
   "kind": "service_location",
   "key": "shelter__beaverton",
-  "nodeCount": 151,
+  "nodeCount": 176,
   "nodes": [
     {
       "id": "phone_dialog_0000031#turn-1",
@@ -4523,6 +4523,756 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002164#turn-3",
+      "scenarioId": "phone_dialog_0002164",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "It\u2019s really cold and wet out here, I don\u2019t think I can sleep outside tonight.",
+      "normalizedQuery": "hi hear outside beaverton this call keeps cutting left shelter shelters homeless overnight warming because guy threatened backpack got stolen scared go back it really cold wet here don think sleep tonight",
+      "voiceResponse": "I hear you. This is urgent, and your safety comes first. If you\u2019re getting too cold to stay awake or feel in danger, call 911 now. I\u2019m reconnecting you to a live person to find a safe indoor bed tonight. If we get cut off, call 503, 644, 2339. I\u2019ll repeat: 503, 644, 2339.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is urgent, and your safety comes first. If you\u2019re getting too cold to stay awake or feel in danger, call 911 now. I\u2019m reconnecting you to a live person to find a safe indoor bed tonight. If we get cut off, call 503, 644, 2339. I\u2019ll repeat: 503, 644, 2339.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002164#turn-4",
+      "scenarioId": "phone_dialog_0002164",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Before I tell you too much, is this private? I don\u2019t want my name put in some system.",
+      "normalizedQuery": "hi hear outside beaverton this call keeps cutting left shelter shelters homeless overnight warming because guy threatened backpack got stolen scared go back it really cold wet here don think sleep tonight before tell too much private want name put some system",
+      "voiceResponse": "Yes. You can share only what you want, and we can start without your name. I\u2019ll keep this minimal and connect you to a live person now. If you\u2019re in immediate danger or getting too cold to stay safe, call 911 right now.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You can share only what you want, and we can start without your name. I\u2019ll keep this minimal and connect you to a live person now. If you\u2019re in immediate danger or getting too cold to stay safe, call 911 right now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002164#turn-6",
+      "scenarioId": "phone_dialog_0002164",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I need somewhere warm tonight, like a warming center near Beaverton, and I need to know how late they take people.",
+      "normalizedQuery": "somewhere warm tonight like warming center beaverton know how late they take people",
+      "voiceResponse": "Yes. A Beaverton option is the Daytime Winter Warming Center. Call 503, 644, 2197. I don\u2019t have confirmed intake cutoff hours here, so the live agent will verify tonight\u2019s latest entry time now. You can ask without giving your name. Address: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton. If you start feeling unsafe from the cold, call 911 right away.",
+      "evidenceDocIds": [
+        "service:b0c8e9742e204dea",
+        "service:e214d980a21cc642",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:2216206c6d8d586d",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. A Beaverton option is the Daytime Winter Warming Center. Call 503, 644, 2197. I don\u2019t have confirmed intake cutoff hours here, so the live agent will verify tonight\u2019s latest entry time now. You can ask without giving your name. Address: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton. If you start feeling unsafe from the cold, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002178#turn-1",
+      "scenarioId": "phone_dialog_0002178",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear great out here\u2014the bus is loud. I\u2019m in Beaverton by the transit center, really cold and shaky, and I need a warming center.",
+      "normalizedQuery": "hi sorry hear great here bus loud beaverton by transit center really cold shaky warming",
+      "voiceResponse": "I hear you. You need a warming center in Beaverton. Daytime Winter Warming Center. 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. I\u2019ll repeat: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. Call 503, 644, 2197. I\u2019ll repeat: 503, 644, 2197. They take walk-ins, and no documents are needed. Can you get to Murray Scholls now?",
+      "evidenceDocIds": [
+        "service:b0c8e9742e204dea",
+        "service:e214d980a21cc642",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreibetunrx6vm3a2aixe6tb7wyw2ubta37dvobqs4q73aeouyxakhoi",
+        "page:bafkreidd76pmckxucedisme7v2swhgpamcfb6tmwv22kxhfx3ag7llzcja"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need a warming center in Beaverton. Daytime Winter Warming Center. 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. I\u2019ll repeat: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. Call 503, 644, 2197. I\u2019ll repeat: 503, 644, 2197. They take walk-ins, and no documents are needed. Can you get to Murray Scholls now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I\u2019m glad you called. Yes, 211info shows multiple Extreme Heat Cooling Centers in and near Beaverton. The quickest way is to call **2-1-1** and ask for the **nearest open cooling center in Beaverton** right now, since locations and hours can change. If you can get online, go to 211info\u2019s **Extreme Heat Cooling Centers** page and tap **\u201cMore Details\u201d** for exact addresses. If you want, I can repeat that slowly.",
+        "Totally understandable, and you\u2019re right to check the street number. I don\u2019t have one exact Beaverton address in front of me here. The cooling-center list says map pins are only estimates. For the exact address, do this: call **2-1-1** and ask, \u201cnearest open cooling center in Beaverton.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. Or on the **Extreme Heat Cooling Centers** page, tap **\u201cMore Details\u201d** for the full street address.",
+        "Good catch, and I\u2019m glad you asked. I don\u2019t have a confirmed closing time in front of me, so I don\u2019t want to guess between six or seven. Best next step: call **2 \u2026 1 \u2026 1** and ask, \u201cWhat time does the nearest open cooling center in Beaverton close today?\u201d If you want, I can repeat that question slowly so you can use it word-for-word.",
+        "You\u2019re doing a good job keeping track, and I can help. In Beaverton, the closest youth support program I have is KEEP at Options Counseling and Family Services: 8285 Southwest Nimbus Avenue, Suite 148, Beaverton, 97008. Phone is 503\u2026 352\u2026 3260. They support families with kids ages 3 to 17 and offer weekly 90-minute sessions, in person or remote. No documents are required at intake."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002178#turn-2",
+      "scenarioId": "phone_dialog_0002178",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I feel dizzy when I stand up, like my legs are weak. Can you tell me first if I should sit down somewhere before I try to go anywhere?",
+      "normalizedQuery": "hi sorry hear great here bus loud beaverton by transit center really cold shaky warming feel dizzy when stand up like legs weak tell first if should sit down somewhere before try go anywhere",
+      "voiceResponse": "Yes. Please sit down now, somewhere safe and out of the wind. If you can, lean back and keep still. Do not try to walk yet. Do not try to walk yet. If you feel faint, have chest pain, or trouble breathing, call 911 right now. After you sit for a minute, can you tell me if the dizziness is getting better or worse?",
+      "evidenceDocIds": [
+        "service:b0c8e9742e204dea",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreibetunrx6vm3a2aixe6tb7wyw2ubta37dvobqs4q73aeouyxakhoi",
+        "page:bafkreidd76pmckxucedisme7v2swhgpamcfb6tmwv22kxhfx3ag7llzcja",
+        "service:2e6a4c77b4bef070"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Please sit down now, somewhere safe and out of the wind. If you can, lean back and keep still. Do not try to walk yet. Do not try to walk yet. If you feel faint, have chest pain, or trouble breathing, call 911 right now. After you sit for a minute, can you tell me if the dizziness is getting better or worse?",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I\u2019m glad you called. Yes, 211info shows multiple Extreme Heat Cooling Centers in and near Beaverton. The quickest way is to call **2-1-1** and ask for the **nearest open cooling center in Beaverton** right now, since locations and hours can change. If you can get online, go to 211info\u2019s **Extreme Heat Cooling Centers** page and tap **\u201cMore Details\u201d** for exact addresses. If you want, I can repeat that slowly.",
+        "Totally understandable, and you\u2019re right to check the street number. I don\u2019t have one exact Beaverton address in front of me here. The cooling-center list says map pins are only estimates. For the exact address, do this: call **2-1-1** and ask, \u201cnearest open cooling center in Beaverton.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. Or on the **Extreme Heat Cooling Centers** page, tap **\u201cMore Details\u201d** for the full street address.",
+        "Good catch, and I\u2019m glad you asked. I don\u2019t have a confirmed closing time in front of me, so I don\u2019t want to guess between six or seven. Best next step: call **2 \u2026 1 \u2026 1** and ask, \u201cWhat time does the nearest open cooling center in Beaverton close today?\u201d If you want, I can repeat that question slowly so you can use it word-for-word.",
+        "You\u2019re doing a good job keeping track, and I can help. In Beaverton, the closest youth support program I have is KEEP at Options Counseling and Family Services: 8285 Southwest Nimbus Avenue, Suite 148, Beaverton, 97008. Phone is 503\u2026 352\u2026 3260. They support families with kids ages 3 to 17 and offer weekly 90-minute sessions, in person or remote. No documents are required at intake."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002178#turn-3",
+      "scenarioId": "phone_dialog_0002178",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that address? I missed the street name\u2014can you say it slower?",
+      "normalizedQuery": "hi sorry hear great here bus loud beaverton by transit center really cold shaky warming feel dizzy when stand up like legs weak tell first if should sit down somewhere before try go anywhere wait was address missed street name say it slower",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. I\u2019ll repeat: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreibetunrx6vm3a2aixe6tb7wyw2ubta37dvobqs4q73aeouyxakhoi",
+        "page:bafkreidd76pmckxucedisme7v2swhgpamcfb6tmwv22kxhfx3ag7llzcja"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007. I\u2019ll repeat: 11200 Southwest Murray Scholls Place, Suite 102, Beaverton, Oregon, 97007.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great in all that noise. The name is **211info\u2019s \u201cExtreme Heat Cooling Centers.\u201d** I\u2019ll say it slowly: **Ex-treme Heat Cooling Centers**. And the call number is **2-1-1**. Ask for: \u201cthe nearest open cooling center in Beaverton.\u201d",
+        "The second option was: I can connect you right now to a live 211 specialist to find same-day child care in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 first.",
+        "It\u2019s just three digits: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**.",
+        "Of course. First number to call is **503\u2026 644\u2026 2197**. Again: **503\u2026 644\u2026 2197**. Warming center address is **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002186#turn-1",
+      "scenarioId": "phone_dialog_0002186",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, this is a borrowed phone and it\u2019s at like two percent, can you give me the most important number first for a youth day center in Beaverton?",
+      "normalizedQuery": "hi sorry this borrowed phone it at like two percent give most important number first youth day center beaverton",
+      "voiceResponse": "Main number: 971-319-9793. Backup number: 360-521-6527. If one doesn\u2019t pick up, try the other right away and say you need a youth day center in Beaverton.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:98249e32a262b454",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif5z6frzc2qnroluofhpy7bljvghzpceqn3dtuu5vyzydbnvaoks4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: 971-319-9793. Backup number: 360-521-6527. If one doesn\u2019t pick up, try the other right away and say you need a youth day center in Beaverton.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I\u2019m glad you called. Yes, 211info shows multiple Extreme Heat Cooling Centers in and near Beaverton. The quickest way is to call **2-1-1** and ask for the **nearest open cooling center in Beaverton** right now, since locations and hours can change. If you can get online, go to 211info\u2019s **Extreme Heat Cooling Centers** page and tap **\u201cMore Details\u201d** for exact addresses. If you want, I can repeat that slowly.",
+        "Totally understandable, and you\u2019re right to check the street number. I don\u2019t have one exact Beaverton address in front of me here. The cooling-center list says map pins are only estimates. For the exact address, do this: call **2-1-1** and ask, \u201cnearest open cooling center in Beaverton.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. Or on the **Extreme Heat Cooling Centers** page, tap **\u201cMore Details\u201d** for the full street address.",
+        "Good catch, and I\u2019m glad you asked. I don\u2019t have a confirmed closing time in front of me, so I don\u2019t want to guess between six or seven. Best next step: call **2 \u2026 1 \u2026 1** and ask, \u201cWhat time does the nearest open cooling center in Beaverton close today?\u201d If you want, I can repeat that question slowly so you can use it word-for-word.",
+        "You\u2019re doing a good job keeping track, and I can help. In Beaverton, the closest youth support program I have is KEEP at Options Counseling and Family Services: 8285 Southwest Nimbus Avenue, Suite 148, Beaverton, 97008. Phone is 503\u2026 352\u2026 3260. They support families with kids ages 3 to 17 and offer weekly 90-minute sessions, in person or remote. No documents are required at intake."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002186#turn-3",
+      "scenarioId": "phone_dialog_0002186",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you say that number again slower? I missed the middle part, there\u2019s traffic noise over here.",
+      "normalizedQuery": "hi sorry this borrowed phone it at like two percent give most important number first youth day center beaverton 16 kinda couch surfing right now really home somewhere safe go daytime say again slower missed middle part there traffic noise over here",
+      "voiceResponse": "If you\u2019re in immediate danger right now, call 911 first. I\u2019ll repeat: 971, 319, 9793. Call 971, 319, 9793.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b0c8e9742e204dea",
+        "service:e214d980a21cc642"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If you\u2019re in immediate danger right now, call 911 first. I\u2019ll repeat: 971, 319, 9793. Call 971, 319, 9793.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Quick safety check: if she has chest pain, trouble breathing, heavy bleeding, confusion, says she might hurt herself or the baby, or seems hard to wake, call **911 now**. If none of those right this second, she still needs urgent same-day postpartum care today. Please take her to the nearest ER or urgent care now and tell them: \u201cTwo weeks postpartum, mental and physical safety concern.\u201d",
+        "I\u2019m really glad you called. What you described can be exploitation, so first: if she\u2019s with that man now or can\u2019t leave safely, call **911** right away. If she can move, have her go to a public place and call **Safe Place for Youth** now: **503, 542, 2717**. Backup: **503, 542, 2389**. Address: **454 Southeast Washington Street, Hillsboro**. They serve youth 12 to 20, no documents needed. I can stay with you while you make the call.",
+        "I hear you. You feel weak and confused, and might pass out. This could be dangerous. Please call **9-1-1 now**. Call **9-1-1 now**. Sit or lie down right away. Do not stand up. If you can, ask someone nearby to stay with you. After emergency help is on the way, I can repeat the warming center details. Do you want me to stay on the line while you call?",
+        "I\u2019m really glad you trusted your gut. What he\u2019s doing is not okay, and you don\u2019t owe him anything. Quick safety check: are you somewhere public right now, and can you stay where other people are? If you feel in immediate danger, call 911. For a safe bed tonight, you can call **503-650-5622**. Say: \u201cI\u2019m 16, I don\u2019t feel safe where I stayed, and I need a youth-safe place now.\u201d If you want, I can stay with you while you make that call."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002209#turn-2",
+      "scenarioId": "phone_dialog_0002209",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I'm in Beaverton... I need a youth day center, like somewhere I can go today and not be alone.",
+      "normalizedQuery": "i'm beaverton youth day center like somewhere go be alone",
+      "voiceResponse": "Your audio was unclear. If you need a Beaverton drop-in day space today, call **(503) 644-2197**. I\u2019ll repeat: **(503) 644-2197**. Do you want the address too?",
+      "evidenceDocIds": [
+        "service:b0c8e9742e204dea",
+        "service:e214d980a21cc642",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreicxbzphm7i44ai3ketd4lb5cujncwt3nwlps5kc3fzuwjvnqvjdrm",
+        "page:bafkreibtrhpmawf7thys7ghwp4vus7zxk4c2ugdu46yyj6skrogo32lyze"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio was unclear. If you need a Beaverton drop-in day space today, call **(503) 644-2197**. I\u2019ll repeat: **(503) 644-2197**. Do you want the address too?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing your best on no sleep. Your audio broke up a little. Say just one choice so I can move fast: **\u201cwalk-in today\u201d** or **\u201cOHP accepted.\u201d** Then I\u2019ll give the next step for the Beaverton Wellness Center Dental Clinic.",
+        "I\u2019m really glad you called, and I\u2019m sorry this is stressful. The audio is breaking up, so I want to get this right. I heard \u201cBeaverton\u201d and \u201cyour son is 16.\u201d Did you say you need a youth day center?",
+        "I\u2019m really glad you told me. Your audio cut out, and I want to get this right fast. Please say just one of these: \u201cunsafe now\u201d or \u201cneed cooling center now.\u201d",
+        "I\u2019m here with you. The line is rough, and part of your audio was unclear. I heard \u201cBeaverton\u201d and \u201cwarming center tonight.\u201d Please say one choice: do you want the address, or the phone number?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002209#turn-4",
+      "scenarioId": "phone_dialog_0002209",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I'm not saying I have a plan, I just keep thinking people would be better off if I disappeared.",
+      "normalizedQuery": "hi sorry this cousin's phone it's die give main number first i'm beaverton youth day center like somewhere go be alone can't keep thoughts straight everything's loud feeling safe own head right now saying have plan just thinking people would better off if disappeared",
+      "voiceResponse": "Thank you for telling me. This is serious, and your safety comes first. If you might act on these thoughts or feel in immediate danger, call 911 now. Call (800) 448-3000. I\u2019ll repeat: (800) 448-3000. Stay on the line with me if you can.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is serious, and your safety comes first. If you might act on these thoughts or feel in immediate danger, call 911 now. Call (800) 448-3000. I\u2019ll repeat: (800) 448-3000. Stay on the line with me if you can.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002209#turn-5",
+      "scenarioId": "phone_dialog_0002209",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that number slower? I missed the middle part.",
+      "normalizedQuery": "i'm beaverton youth day center like somewhere go be alone can't keep thoughts straight everything's loud feeling safe own head right now saying have plan just thinking people would better off if disappeared repeat number slower missed middle part",
+      "voiceResponse": "I\u2019ll repeat: 800, 448, 3000. Call 800, 448, 3000.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: 800, 448, 3000. Call 800, 448, 3000.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great in all that noise. The name is **211info\u2019s \u201cExtreme Heat Cooling Centers.\u201d** I\u2019ll say it slowly: **Ex-treme Heat Cooling Centers**. And the call number is **2-1-1**. Ask for: \u201cthe nearest open cooling center in Beaverton.\u201d",
+        "The second option was: I can connect you right now to a live 211 specialist to find same-day child care in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 first.",
+        "It\u2019s just three digits: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**.",
+        "Of course. First number to call is **503\u2026 644\u2026 2197**. Again: **503\u2026 644\u2026 2197**. Warming center address is **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002234#turn-2",
+      "scenarioId": "phone_dialog_0002234",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I had my baby three weeks ago, I\u2019m in Beaverton, and I keep crying all day... I\u2019m scared by my own thoughts.",
+      "normalizedQuery": "hi sorry this borrowed phone it die give most important number first had baby three weeks ago beaverton keep crying all day scared by own thoughts",
+      "voiceResponse": "I\u2019m so sorry you\u2019re carrying this. The audio was unclear for a second. Call (541) 322-8768 right now. I\u2019ll repeat: (541) 322-8768. If you might act on those thoughts, call 911 now. Can you repeat just this: are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5738cc1cdf700a78",
+        "service:c3df1f7ad18b318a",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:c58e831033c03c31"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry you\u2019re carrying this. The audio was unclear for a second. Call (541) 322-8768 right now. I\u2019ll repeat: (541) 322-8768. If you might act on those thoughts, call 911 now. Can you repeat just this: are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing your best on no sleep. Your audio broke up a little. Say just one choice so I can move fast: **\u201cwalk-in today\u201d** or **\u201cOHP accepted.\u201d** Then I\u2019ll give the next step for the Beaverton Wellness Center Dental Clinic.",
+        "I\u2019m really glad you called, and I\u2019m sorry this is stressful. The audio is breaking up, so I want to get this right. I heard \u201cBeaverton\u201d and \u201cyour son is 16.\u201d Did you say you need a youth day center?",
+        "I\u2019m really glad you told me. Your audio cut out, and I want to get this right fast. Please say just one of these: \u201cunsafe now\u201d or \u201cneed cooling center now.\u201d",
+        "I\u2019m here with you. The line is rough, and part of your audio was unclear. I heard \u201cBeaverton\u201d and \u201cwarming center tonight.\u201d Please say one choice: do you want the address, or the phone number?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002234#turn-4",
+      "scenarioId": "phone_dialog_0002234",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? The line cut out and I missed the number.",
+      "normalizedQuery": "hi sorry this borrowed phone it die give most important number first had baby three weeks ago beaverton keep crying all day scared by own thoughts bleeding more again just spotting don know if 911 serious should go somewhere now say slower line cut missed",
+      "voiceResponse": "I hear you. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Call now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Call now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great in all that noise. The name is **211info\u2019s \u201cExtreme Heat Cooling Centers.\u201d** I\u2019ll say it slowly: **Ex-treme Heat Cooling Centers**. And the call number is **2-1-1**. Ask for: \u201cthe nearest open cooling center in Beaverton.\u201d",
+        "The second option was: I can connect you right now to a live 211 specialist to find same-day child care in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 first.",
+        "It\u2019s just three digits: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**.",
+        "Of course. First number to call is **503\u2026 644\u2026 2197**. Again: **503\u2026 644\u2026 2197**. Warming center address is **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002234#turn-5",
+      "scenarioId": "phone_dialog_0002234",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I need to tell you this out loud, I had a moment where I thought about hurting myself, and that scared me.",
+      "normalizedQuery": "had baby three weeks ago beaverton keep crying all day scared by own thoughts bleeding more again just spotting don know if this 911 serious should go somewhere now say slower line cut missed number tell loud moment thought hurting myself",
+      "voiceResponse": "I\u2019m really glad you told me out loud. You did the right thing. Call 9, 1, 1 now. I\u2019ll repeat: 9, 1, 1. Tell them you\u2019re three weeks postpartum, bleeding more today, and you had a moment of wanting to hurt yourself. Stay on the line with me until you start that call.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me out loud. You did the right thing. Call 9, 1, 1 now. I\u2019ll repeat: 9, 1, 1. Tell them you\u2019re three weeks postpartum, bleeding more today, and you had a moment of wanting to hurt yourself. Stay on the line with me until you start that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002259#turn-1",
+      "scenarioId": "phone_dialog_0002259",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, can you hear me okay? I'm in Beaverton, and I got put out this morning, I need a shelter bed for tonight.",
+      "normalizedQuery": "hi hear okay i'm beaverton got put this morning shelter shelters homeless overnight warming bed tonight",
+      "voiceResponse": "Yes, I can hear you. First step: call this shelter now. Call 541, 388, 2096. Overnight Winter Warming Shelter. 1350 South Highway 97, Redmond. I\u2019ll repeat: 541, 388, 2096. I only have shelter listings in Redmond, La Pine, and La Grande right now.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:5ded755b33454184",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:18555484ba4abb9a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. First step: call this shelter now. Call 541, 388, 2096. Overnight Winter Warming Shelter. 1350 South Highway 97, Redmond. I\u2019ll repeat: 541, 388, 2096. I only have shelter listings in Redmond, La Pine, and La Grande right now.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I\u2019m glad you called. Yes, 211info shows multiple Extreme Heat Cooling Centers in and near Beaverton. The quickest way is to call **2-1-1** and ask for the **nearest open cooling center in Beaverton** right now, since locations and hours can change. If you can get online, go to 211info\u2019s **Extreme Heat Cooling Centers** page and tap **\u201cMore Details\u201d** for exact addresses. If you want, I can repeat that slowly.",
+        "Totally understandable, and you\u2019re right to check the street number. I don\u2019t have one exact Beaverton address in front of me here. The cooling-center list says map pins are only estimates. For the exact address, do this: call **2-1-1** and ask, \u201cnearest open cooling center in Beaverton.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. Or on the **Extreme Heat Cooling Centers** page, tap **\u201cMore Details\u201d** for the full street address.",
+        "Good catch, and I\u2019m glad you asked. I don\u2019t have a confirmed closing time in front of me, so I don\u2019t want to guess between six or seven. Best next step: call **2 \u2026 1 \u2026 1** and ask, \u201cWhat time does the nearest open cooling center in Beaverton close today?\u201d If you want, I can repeat that question slowly so you can use it word-for-word.",
+        "You\u2019re doing a good job keeping track, and I can help. In Beaverton, the closest youth support program I have is KEEP at Options Counseling and Family Services: 8285 Southwest Nimbus Avenue, Suite 148, Beaverton, 97008. Phone is 503\u2026 352\u2026 3260. They support families with kids ages 3 to 17 and offer weekly 90-minute sessions, in person or remote. No documents are required at intake."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002259#turn-3",
+      "scenarioId": "phone_dialog_0002259",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, what was that place called? Say it slower, my hearing's bad on the phone.",
+      "normalizedQuery": "hi hear okay i'm beaverton got put this morning shelter shelters homeless overnight warming bed tonight also inhaler gone think it fell bag on bus chest getting tight still breathing right now sorry was place called say slower hearing's bad phone",
+      "voiceResponse": "First, if your chest tightness is worse right now, call 9-1-1. I\u2019ll repeat: 9-1-1. The name is Overnight Winter Warming Shelter. The number is 541, 393, 8552. I\u2019ll repeat: 541, 393, 8552.",
+      "evidenceDocIds": [
+        "service:9ba6422a5084e69c",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if your chest tightness is worse right now, call 9-1-1. I\u2019ll repeat: 9-1-1. The name is Overnight Winter Warming Shelter. The number is 541, 393, 8552. I\u2019ll repeat: 541, 393, 8552.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Quick safety check: if she has chest pain, trouble breathing, heavy bleeding, confusion, says she might hurt herself or the baby, or seems hard to wake, call **911 now**. If none of those right this second, she still needs urgent same-day postpartum care today. Please take her to the nearest ER or urgent care now and tell them: \u201cTwo weeks postpartum, mental and physical safety concern.\u201d",
+        "I\u2019m really glad you called. What you described can be exploitation, so first: if she\u2019s with that man now or can\u2019t leave safely, call **911** right away. If she can move, have her go to a public place and call **Safe Place for Youth** now: **503, 542, 2717**. Backup: **503, 542, 2389**. Address: **454 Southeast Washington Street, Hillsboro**. They serve youth 12 to 20, no documents needed. I can stay with you while you make the call.",
+        "I hear you. You feel weak and confused, and might pass out. This could be dangerous. Please call **9-1-1 now**. Call **9-1-1 now**. Sit or lie down right away. Do not stand up. If you can, ask someone nearby to stay with you. After emergency help is on the way, I can repeat the warming center details. Do you want me to stay on the line while you call?",
+        "I\u2019m really glad you trusted your gut. What he\u2019s doing is not okay, and you don\u2019t owe him anything. Quick safety check: are you somewhere public right now, and can you stay where other people are? If you feel in immediate danger, call 911. For a safe bed tonight, you can call **503-650-5622**. Say: \u201cI\u2019m 16, I don\u2019t feel safe where I stayed, and I need a youth-safe place now.\u201d If you want, I can stay with you while you make that call."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002259#turn-4",
+      "scenarioId": "phone_dialog_0002259",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Can you repeat the number in little parts, please... I forget if you said 503 or 971.",
+      "normalizedQuery": "hi hear okay i'm beaverton got put this morning shelter shelters homeless overnight warming bed tonight also inhaler gone think it fell bag on bus chest getting tight still breathing right now sorry was place called say slower hearing's bad phone repeat number little parts please forget if said 503 971",
+      "voiceResponse": "First step: if your chest is tight right now, call 9-1-1. For the shelter, call 541, 393, 8552. I\u2019ll repeat: 541, 393, 8552. It is not 503 or 971.",
+      "evidenceDocIds": [
+        "service:9ba6422a5084e69c",
+        "service:bab9f596e07026df",
+        "service:32f8d8103ea16592",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if your chest is tight right now, call 9-1-1. For the shelter, call 541, 393, 8552. I\u2019ll repeat: 541, 393, 8552. It is not 503 or 971.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002259#turn-6",
+      "scenarioId": "phone_dialog_0002259",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "If they can't refill it there, can you give me one more place near Beaverton for same-day inhaler help?",
+      "normalizedQuery": "sorry was place called say it slower hearing's bad on phone repeat number little parts please forget if said 503 971 battery at three percent don't have car so somewhere by bus before dark they can't refill there give one more beaverton same day inhaler",
+      "voiceResponse": "First step: if your chest tightness is happening now, call 9, 1, 1. I\u2019ll repeat: 9, 1, 1. I don\u2019t have another verified Beaverton same-day inhaler location in front of me. I can connect you to a live 2-1-1 specialist right now to find the nearest same-day option by bus before dark.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if your chest tightness is happening now, call 9, 1, 1. I\u2019ll repeat: 9, 1, 1. I don\u2019t have another verified Beaverton same-day inhaler location in front of me. I can connect you to a live 2-1-1 specialist right now to find the nearest same-day option by bus before dark.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002274#turn-5",
+      "scenarioId": "phone_dialog_0002274",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Is there a youth day center near Beaverton where I can go today, like somewhere safe to be in daytime and talk to someone?",
+      "normalizedQuery": "there youth day center beaverton go like somewhere safe be daytime talk someone",
+      "voiceResponse": "Main number: (503) 644-2197. I\u2019ll repeat: 503, 644, 2197. Daytime Winter Warming Center, 11200 Southwest Murray Scholls Place, Suite 102, Beaverton. It\u2019s drop-in, no documents required, and you can share only what feels safe. If you want, call now and ask if they\u2019re open today and if someone can talk with you. If he shows up or you feel trapped, call 911.",
+      "evidenceDocIds": [
+        "service:b0c8e9742e204dea",
+        "service:e214d980a21cc642",
+        "service:814126c4cd9bbb45",
+        "service:2216206c6d8d586d",
+        "service:a290a7a3976aedbd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: (503) 644-2197. I\u2019ll repeat: 503, 644, 2197. Daytime Winter Warming Center, 11200 Southwest Murray Scholls Place, Suite 102, Beaverton. It\u2019s drop-in, no documents required, and you can share only what feels safe. If you want, call now and ask if they\u2019re open today and if someone can talk with you. If he shows up or you feel trapped, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002274#turn-6",
+      "scenarioId": "phone_dialog_0002274",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, signal cut a second, can you repeat that number slowly? If this dies, what\u2019s the one next step I should do first?",
+      "normalizedQuery": "hurt right now he apartment don feel safe if comes back tonight want name put anywhere this traced mom without giving all info there youth day center beaverton go like somewhere be daytime talk someone sorry signal cut second repeat number slowly dies one next step should first",
+      "voiceResponse": "I\u2019ll repeat: 503, 644, 2197. The number is 503, 644, 2197. If this call drops, first step: call that number now and ask, \u201cAre you open today, and can someone talk with me?\u201d If he comes back or you feel trapped, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b0c8e9742e204dea",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: 503, 644, 2197. The number is 503, 644, 2197. If this call drops, first step: call that number now and ask, \u201cAre you open today, and can someone talk with me?\u201d If he comes back or you feel trapped, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great in all that noise. The name is **211info\u2019s \u201cExtreme Heat Cooling Centers.\u201d** I\u2019ll say it slowly: **Ex-treme Heat Cooling Centers**. And the call number is **2-1-1**. Ask for: \u201cthe nearest open cooling center in Beaverton.\u201d",
+        "The second option was: I can connect you right now to a live 211 specialist to find same-day child care in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 first.",
+        "It\u2019s just three digits: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**.",
+        "Of course. First number to call is **503\u2026 644\u2026 2197**. Again: **503\u2026 644\u2026 2197**. Warming center address is **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002326#turn-2",
+      "scenarioId": "phone_dialog_0002326",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Beaverton, near the transit center, and I\u2019m sleeping outside right now.",
+      "normalizedQuery": "beaverton transit center sleeping outside right now",
+      "voiceResponse": "Next step: go to Virginia Garcia at Beaverton High School and ask for same-day help. 13000 Southwest 2nd Street, Beaverton. If you want to call first: 503, 356, 3985. I\u2019ll repeat: 503, 356, 3985. If you feel in immediate danger where you are sleeping, call 911 now.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:fd3b16d707204ad2",
+        "service:69a0def45f7321b0",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: go to Virginia Garcia at Beaverton High School and ask for same-day help. 13000 Southwest 2nd Street, Beaverton. If you want to call first: 503, 356, 3985. I\u2019ll repeat: 503, 356, 3985. If you feel in immediate danger where you are sleeping, call 911 now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002326#turn-3",
+      "scenarioId": "phone_dialog_0002326",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "My inhaler got stolen with my bag this morning, and I\u2019m starting to wheeze, not like full emergency yet but I need help today.",
+      "normalizedQuery": "hi sorry hear great on this phone talk little slower beaverton transit center sleeping outside right now inhaler got stolen bag morning starting wheeze like full emergency yet",
+      "voiceResponse": "Next step: if your wheezing gets worse, or you cannot speak full sentences, call 9 1 1 now. Quick safety check: can you still speak in full sentences right now? For same-day help, call Virginia Garcia. The number is 503, 356, 3985. I\u2019ll repeat: 503, 356, 3985.",
+      "evidenceDocIds": [
+        "service:34d9e92d3ede5e98",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0c11a529e3153ee8",
+        "service:69a0def45f7321b0",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: if your wheezing gets worse, or you cannot speak full sentences, call 9 1 1 now. Quick safety check: can you still speak in full sentences right now? For same-day help, call Virginia Garcia. The number is 503, 356, 3985. I\u2019ll repeat: 503, 356, 3985.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Quick safety check: if she has chest pain, trouble breathing, heavy bleeding, confusion, says she might hurt herself or the baby, or seems hard to wake, call **911 now**. If none of those right this second, she still needs urgent same-day postpartum care today. Please take her to the nearest ER or urgent care now and tell them: \u201cTwo weeks postpartum, mental and physical safety concern.\u201d",
+        "I\u2019m really glad you called. What you described can be exploitation, so first: if she\u2019s with that man now or can\u2019t leave safely, call **911** right away. If she can move, have her go to a public place and call **Safe Place for Youth** now: **503, 542, 2717**. Backup: **503, 542, 2389**. Address: **454 Southeast Washington Street, Hillsboro**. They serve youth 12 to 20, no documents needed. I can stay with you while you make the call.",
+        "I hear you. You feel weak and confused, and might pass out. This could be dangerous. Please call **9-1-1 now**. Call **9-1-1 now**. Sit or lie down right away. Do not stand up. If you can, ask someone nearby to stay with you. After emergency help is on the way, I can repeat the warming center details. Do you want me to stay on the line while you call?",
+        "I\u2019m really glad you trusted your gut. What he\u2019s doing is not okay, and you don\u2019t owe him anything. Quick safety check: are you somewhere public right now, and can you stay where other people are? If you feel in immediate danger, call 911. For a safe bed tonight, you can call **503-650-5622**. Say: \u201cI\u2019m 16, I don\u2019t feel safe where I stayed, and I need a youth-safe place now.\u201d If you want, I can stay with you while you make that call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002326#turn-5",
+      "scenarioId": "phone_dialog_0002326",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "My battery\u2019s at like three percent, so if you give me a number can you repeat it in chunks?",
+      "normalizedQuery": "beaverton transit center sleeping outside right now inhaler got stolen bag this morning starting wheeze like full emergency yet don have ride walk far transportation transport bus urgent care pharmacy battery at three percent so if give number repeat it chunks",
+      "voiceResponse": "Next step: call Cascades West Ride Line now for a same-day medical ride to urgent care or a pharmacy. Call 866, 724, 2975. I\u2019ll repeat: 866, 724, 2975. Backup number: 541, 924, 8738. If your breathing gets worse, or you can\u2019t speak full sentences, call 9 1 1 now.",
+      "evidenceDocIds": [
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:a52e78bc8469df64",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:06227c05cc4eea25"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Cascades West Ride Line now for a same-day medical ride to urgent care or a pharmacy. Call 866, 724, 2975. I\u2019ll repeat: 866, 724, 2975. Backup number: 541, 924, 8738. If your breathing gets worse, or you can\u2019t speak full sentences, call 9 1 1 now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002331#turn-5",
+      "scenarioId": "phone_dialog_0002331",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Also, are you gonna save my name or location somewhere? I really don\u2019t want this getting back to people.",
+      "normalizedQuery": "beaverton been couch surfing friends one older guy at this apartment keeps pressuring him money it feels wrong immediate danger second outside now don feel safe going back there know youth day center they won make call parents right away also gonna save name location somewhere really want getting people",
+      "voiceResponse": "That makes sense, and you\u2019re right to ask. You can keep details minimal and share only what feels safe. Before giving your name or exact location, you can ask, \u201cWhat do you record, and who can see it?\u201d If you want, I can connect you to a live 211 specialist now, and you can ask that first. If your safety changes at any point, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re right to ask. You can keep details minimal and share only what feels safe. Before giving your name or exact location, you can ask, \u201cWhat do you record, and who can see it?\u201d If you want, I can connect you to a live 211 specialist now, and you can ask that first. If your safety changes at any point, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002348#turn-4",
+      "scenarioId": "phone_dialog_0002348",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Before I say more, is this private? I don\u2019t want my name in some system my family can check.",
+      "normalizedQuery": "hi sorry there buses going by barely hear 16 beaverton go back home tonight ve been crashing on different couches like week one older guys at this place keeps saying owe him wants being attacked right second it doesn feel safe know tell youth shelter shelters homeless overnight warming options adult before say more private don want name some system family check",
+      "voiceResponse": "That makes sense. You can ask for help without giving your full name, and your family cannot just look up your call. We only share what\u2019s needed to get you support, and you can keep details minimal. If you want, I can connect you to a live 211 specialist now and you can stay anonymous as you start. If you feel in immediate danger at any point, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiel54ecsv6nebupfolgrg2ly3qzdagszmrpfekcvp446wihpvs5fq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense. You can ask for help without giving your full name, and your family cannot just look up your call. We only share what\u2019s needed to get you support, and you can keep details minimal. If you want, I can connect you to a live 211 specialist now and you can stay anonymous as you start. If you feel in immediate danger at any point, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. I\u2019ll connect you now to a live 211 specialist who can help find safe, lower-cost, even part-day child care in Beaverton for this week. If anyone is in immediate danger, call 911 now; otherwise, stay on the line for the transfer.",
+        "You\u2019re in Beaverton, so call this first: **503\u2026 644\u2026 2197**. It\u2019s the Daytime Winter Warming Center, at **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you want, I can stay with you while you place the call. If you feel in danger or too cold to stay safe right now, call **911**.",
+        "You\u2019re doing fine. Next step: call **503\u2026 644\u2026 2197** now. Say this and keep it short: \u201cI need a warm place tonight in Beaverton. Can I stay anonymous?\u201d If talking feels hard, repeat just: \u201cWarm place tonight, Beaverton.\u201d Address, if they ask: **11200 Southwest Murray Scholls Place, Suite 102, Beaverton**. If you feel too cold to stay safe right now, call **911**.",
+        "I hear you. You need a shelter bed tonight in Beaverton. I can connect you to a live person now. You can share only what you choose. If you are in immediate danger, call 9-1-1. Call 9-1-1. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -5365,6 +6115,138 @@
       "to": "phone_dialog_0002095#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002164#turn-3",
+      "to": "phone_dialog_0002164#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002164#turn-4",
+      "to": "phone_dialog_0002164#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002178#turn-1",
+      "to": "phone_dialog_0002178#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002178#turn-2",
+      "to": "phone_dialog_0002178#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002178#turn-3",
+      "to": "phone_dialog_0002178#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002186#turn-1",
+      "to": "phone_dialog_0002186#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002186#turn-3",
+      "to": "phone_dialog_0002186#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002209#turn-2",
+      "to": "phone_dialog_0002209#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002209#turn-4",
+      "to": "phone_dialog_0002209#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002209#turn-5",
+      "to": "phone_dialog_0002209#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002234#turn-2",
+      "to": "phone_dialog_0002234#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002234#turn-4",
+      "to": "phone_dialog_0002234#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002234#turn-5",
+      "to": "phone_dialog_0002234#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002259#turn-1",
+      "to": "phone_dialog_0002259#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002259#turn-3",
+      "to": "phone_dialog_0002259#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002259#turn-4",
+      "to": "phone_dialog_0002259#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002274#turn-5",
+      "to": "phone_dialog_0002274#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002326#turn-2",
+      "to": "phone_dialog_0002326#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002326#turn-3",
+      "to": "phone_dialog_0002326#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002326#turn-5",
+      "to": "phone_dialog_0002326#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002331#turn-5",
+      "to": "phone_dialog_0002331#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002348#turn-4",
+      "to": "phone_dialog_0002348#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

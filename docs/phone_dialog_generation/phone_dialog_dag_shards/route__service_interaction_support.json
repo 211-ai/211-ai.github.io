@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "route__service_interaction_support",
   "kind": "route",
   "key": "service_interaction_support",
-  "nodeCount": 81,
+  "nodeCount": 82,
   "nodes": [
     {
       "id": "phone_dialog_0000027#turn-6",
@@ -2190,6 +2190,36 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002269#turn-4",
+      "scenarioId": "phone_dialog_0002269",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I'm not trying to be dramatic, I just can't keep the steps in order, like phone, bus, intake, ID, then I lose it and start over.",
+      "normalizedQuery": "i'm trying be dramatic just can't keep steps order like phone bus intake id then lose it start over",
+      "voiceResponse": "I hear you. You\u2019re not being dramatic. Let\u2019s make it one step at a time: first phone call, then transportation, then intake. For this service, no documents are required. Call (800) 965-6519. I\u2019ll repeat: (800) 965-6519. If that line is busy, backup number: (559) 369-4212.",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b6e8a3b4aab14edf",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re not being dramatic. Let\u2019s make it one step at a time: first phone call, then transportation, then intake. For this service, no documents are required. Call (800) 965-6519. I\u2019ll repeat: (800) 965-6519. If that line is busy, backup number: (559) 369-4212.",
+      "voiceResponseAlternatives": [
+        "Next step: make one quick note now: \u201cCalled today; got conflicting info; requested after-4:30 arrival confirmation and required documents list.\u201d What happened: you already called, and we still do not have a verified document list from the pantry. Follow-up: send that same line as a text to the pantry and wait for their written reply before driving, so you have proof on your phone if you\u2019re turned away.",
+        "Good question. On this line, I do not have a confirmed document list for that clinic. I do not have a confirmed document list. Best next step: call the clinic and ask, \u201cWhat should I bring to a first visit for a new patient with low income and possible no insurance?\u201d If you want, I can give you a short call script next.",
+        "You did the hard part. You called. Then they asked for documents, and you panicked and hung up. That happens. You are not alone. Next step: call back and say, \u201cI got disconnected. Please repeat where to send my documents.\u201d Ask them to spell it slowly. We can script it first, then you call. Do you want a one-sentence script you can read out loud?",
+        "Good question. I do not have an intake or ID rule listed for that site. Next step: call them and ask if they can take him without ID tonight. Use this: **5 0 3, 2 6 3, 3 1 8 2**. Again: **5 0 3, 2 6 3, 3 1 8 2**. Site: **1 3 6 9 Southeast 1st Avenue, Canby**. Again: **1 3 6 9 Southeast 1st Avenue, Canby**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -2592,6 +2622,12 @@
     {
       "from": "phone_dialog_0001973#turn-5",
       "to": "phone_dialog_0001973#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002269#turn-4",
+      "to": "phone_dialog_0002269#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->live_agent"
     }

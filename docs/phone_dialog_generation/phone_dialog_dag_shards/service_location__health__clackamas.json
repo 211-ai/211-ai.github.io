@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__clackamas",
   "kind": "service_location",
   "key": "health__clackamas",
-  "nodeCount": 26,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000257#turn-1",
@@ -771,6 +771,36 @@
         "Yes. It\u2019s **503, 535, 1151**. I\u2019ll say it in chunks: **503** \u2026 **535** \u2026 **1151**.",
         "You\u2019re okay, and I\u2019m right here with you. I haven\u2019t given you a phone number yet, so there\u2019s nothing you missed. Let\u2019s do one small step, slowly: tell me your appointment **time** in one chunk, like \u201c10:00 AM\u201d or \u201c2:00 PM.\u201d",
         "I hear how urgent this is. Call **9-7-1, 3-1-9, 9-7-9-3** right now and say: \u201cI need detox placement in Clackamas today.\u201d If that doesn\u2019t connect, try **3-6-0, 5-2-1, 6-5-2-7**. If you feel in immediate danger or can\u2019t breathe well, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002324#turn-6",
+      "scenarioId": "phone_dialog_0002324",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I'm at my apartment off McLoughlin in Clackamas, please stay with me.",
+      "normalizedQuery": "cut repeat his breathing weird really slow kinda gurgly don't know if this overdose just super drunk i'm freaking phone's at like five percent please tell right now he makes it detox both us after apartment off mcloughlin clackamas stay",
+      "voiceResponse": "I\u2019m with you. You\u2019re not alone, and you\u2019re doing the right thing. Call 911 now if you haven\u2019t already. Say: \u201cPossible overdose, very slow gurgling breathing, hard to wake.\u201d Put your phone on speaker and keep him on his side. Watch his chest for breathing. If he stops breathing or turns blue, tell 911 immediately. Stay with me while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. You\u2019re not alone, and you\u2019re doing the right thing. Call 911 now if you haven\u2019t already. Say: \u201cPossible overdose, very slow gurgling breathing, hard to wake.\u201d Put your phone on speaker and keep him on his side. Watch his chest for breathing. If he stops breathing or turns blue, tell 911 immediately. Stay with me while you make the call.",
+      "voiceResponseAlternatives": [
+        "Thank you. I hear you. He is in Clackamas, and he wants detox today, fast and safe. Clackamas, detox today, fast and safe. I will connect you to a live specialist now for immediate placement options. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now.",
+        "Of course. I\u2019ll repeat slowly. The location I heard is **Clackamas**. **Clackamas**. No street address yet. No street address yet. If he is in immediate danger, call **9\u2026 1\u2026 1** now. **9\u2026 1\u2026 1**. If not, I will transfer you now for fast detox placement.",
+        "I\u2019m worried about your breathing and shaking. Call **911 now** for immediate medical help. If you can\u2019t call, tell someone nearby to call 911 for you right now. If you can stay on the line after that, call detox in Clackamas area: **(503) 535-1151**. I can repeat it: **5-0-3, 5-3-5, 1-1-5-1**.",
+        "Call **911** now. That is the most important number. I\u2019m worried about your breathing and shaking, and you need emergency medical help right now. If the call drops, ask anyone nearby to call 911 for you immediately."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",

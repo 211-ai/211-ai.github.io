@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__medford",
   "kind": "service_location",
   "key": "benefits__medford",
-  "nodeCount": 60,
+  "nodeCount": 64,
   "nodes": [
     {
       "id": "phone_dialog_0000120#turn-4",
@@ -1777,6 +1777,126 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002269#turn-3",
+      "scenarioId": "phone_dialog_0002269",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "You asked if I'm safe, right? I mean, I locked the door, but the voices are louder tonight and they're telling me not to trust anyone.",
+      "normalizedQuery": "hi sorry if sound jumpy i'm medford neighbors keep signaling through walls maybe it's wiring can't tell which part real right now no wait don't transfer yet just clinic medical health address unless they're connected too repeat asked line cut second safe mean locked door voices louder tonight telling trust anyone",
+      "voiceResponse": "Yes, you\u2019re right, and thank you for telling me this so clearly. I\u2019m glad your door is locked. Because the voices are telling you not to trust anyone, I need you to call 911 right now if you might act on fear or feel unsafe. If you can, move to a brighter room, keep your phone with you, and stay with me on the line. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:e25fd4aa967fb6a0",
+        "service:d7391252bb832366",
+        "service:9d8134994edb4433",
+        "service:263120f4b123f5c2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you\u2019re right, and thank you for telling me this so clearly. I\u2019m glad your door is locked. Because the voices are telling you not to trust anyone, I need you to call 911 right now if you might act on fear or feel unsafe. If you can, move to a brighter room, keep your phone with you, and stay with me on the line. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+        "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+        "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**",
+        "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002317#turn-1",
+      "scenarioId": "phone_dialog_0002317",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I need a clinic in Medford, like today, but my phone keeps cutting out and they're listening through it.",
+      "normalizedQuery": "hi sorry hear clinic medical health medford like phone keeps cutting they're listening through it",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing calling. If it\u2019s safer, just say \u201cyes\u201d or \u201cno\u201d and I\u2019ll keep this brief. Two Medford clinics today: La Clinica Women\u2019s Health Center, 221 West Stewart Avenue, Suite 101. Call 5 4 1, 5 3 5, 6 2 3 9. Or Medford Health Center, 125 South Central Avenue, Suite 201. Call 5 4 1, 3 4 4, 9 4 1 1. No documents required at intake.",
+      "evidenceDocIds": [
+        "service:7aac824b62477306",
+        "service:a8682c03031f55ca",
+        "service:22ee94049c99d6aa",
+        "service:794e02ec18c20419",
+        "service:46f4b2310fc412d0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing calling. If it\u2019s safer, just say \u201cyes\u201d or \u201cno\u201d and I\u2019ll keep this brief. Two Medford clinics today: La Clinica Women\u2019s Health Center, 221 West Stewart Avenue, Suite 101. Call 5 4 1, 5 3 5, 6 2 3 9. Or Medford Health Center, 125 South Central Avenue, Suite 201. Call 5 4 1, 3 4 4, 9 4 1 1. No documents required at intake.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002317#turn-2",
+      "scenarioId": "phone_dialog_0002317",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, not ER, I don't think, I just need someone to check my head and my blood pressure because the voices got louder last night and I didn't sleep.",
+      "normalizedQuery": "hi sorry hear clinic medical health medford like phone keeps cutting they're listening through it no er don't think just someone check head blood pressure because voices got louder last night didn't sleep",
+      "voiceResponse": "I hear you, and I\u2019m glad you said that. Let\u2019s do this now: call La Clinica Women\u2019s Health Center for a same-day check of your head and blood pressure. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you quickly, call Medford Health Center. The number is 5 4 1, 3 4 4, 9 4 1 1. If you feel unsafe or might act on the voices, call 9 1 1 now.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreibxhfltoz4bje5v3p5x6ouebgogzr5nsvflar5brqijnvwqjb72ve",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you said that. Let\u2019s do this now: call La Clinica Women\u2019s Health Center for a same-day check of your head and blood pressure. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you quickly, call Medford Health Center. The number is 5 4 1, 3 4 4, 9 4 1 1. If you feel unsafe or might act on the voices, call 9 1 1 now.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002317#turn-3",
+      "scenarioId": "phone_dialog_0002317",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what did you ask? Say it again slower... I keep losing the thread, and the man outside my window is part of this.",
+      "normalizedQuery": "hi sorry hear clinic medical health medford like phone keeps cutting they're listening through it no er don't think just someone check head blood pressure because voices got louder last night didn't sleep wait did ask say again slower keep losing thread man outside window part this",
+      "voiceResponse": "I hear you. Let\u2019s do one step at a time, slowly. First: call La Clinica Women\u2019s Health Center now. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you soon, call Medford Health Center. The number is 5 4 1, 3 4 4, 9 4 1 1. If you feel in immediate danger right now, call 9 1 1.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Let\u2019s do one step at a time, slowly. First: call La Clinica Women\u2019s Health Center now. The number is 5 4 1, 5 3 5, 6 2 3 9. If they can\u2019t see you soon, call Medford Health Center. The number is 5 4 1, 3 4 4, 9 4 1 1. If you feel in immediate danger right now, call 9 1 1.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -2103,6 +2223,30 @@
       "to": "phone_dialog_0002106#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002269#turn-3",
+      "to": "phone_dialog_0002269#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0002317#turn-1",
+      "to": "phone_dialog_0002317#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002317#turn-2",
+      "to": "phone_dialog_0002317#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002317#turn-3",
+      "to": "phone_dialog_0002317#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

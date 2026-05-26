@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__beaverton",
   "kind": "service_location",
   "key": "food__beaverton",
-  "nodeCount": 32,
+  "nodeCount": 35,
   "nodes": [
     {
       "id": "phone_dialog_0000109#turn-1",
@@ -554,7 +554,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+        "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
@@ -942,6 +945,92 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-3",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Beaverton, yeah, Beaverton... sorry I keep talking over you, this phone is crackly.",
+      "normalizedQuery": "static hel can't it's cutting uh place food pantry meal meals groceries inaudible no sorry say again slower hearing's great got 'what city' then it dropped beaverton yeah keep talking over this phone crackly",
+      "voiceResponse": "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:1a1916cf1f6f8f5c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+      "voiceResponseAlternatives": [
+        "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
+        "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-5",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, repeat that church name? I heard 'Saint' something but missed the street.",
+      "normalizedQuery": "no sorry say again slower hearing's great got 'what city' then it dropped beaverton yeah keep talking over this phone crackly hot meals like community dinner groceries if possible skipped lunch wait hold on repeat church name heard 'saint' something missed street",
+      "voiceResponse": "I\u2019m sorry, I can\u2019t confirm the church name or street from what I have right now. Please say the church name again, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, I can\u2019t confirm the church name or street from what I have right now. Please say the church name again, slowly.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-6",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you read the phone number real slow, one digit at a time... I keep mixing up the 6 and 8.",
+      "normalizedQuery": "beaverton yeah sorry keep talking over this phone crackly hot meals like community dinner groceries if possible skipped lunch wait hold on repeat church name heard 'saint' something missed street read number real slow one digit at time mixing up",
+      "voiceResponse": "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifoku5qrv6dgv6bqkrqt5bam35cvg3sfhh6uh7m25whtt2usha4wi",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?",
+      "voiceResponseAlternatives": [
+        "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
+        "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1118,6 +1207,18 @@
       "to": "phone_dialog_0002093#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002302#turn-3",
+      "to": "phone_dialog_0002302#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002302#turn-5",
+      "to": "phone_dialog_0002302#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__family__beaverton",
   "kind": "service_location",
   "key": "family__beaverton",
-  "nodeCount": 25,
+  "nodeCount": 28,
   "nodes": [
     {
       "id": "phone_dialog_0000044#turn-2",
@@ -745,6 +745,96 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002291#turn-2",
+      "scenarioId": "phone_dialog_0002291",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m calling about my sister in Beaverton, she had the baby about three weeks ago and she\u2019s bleeding a lot again tonight.",
+      "normalizedQuery": "calling sister beaverton she had baby three weeks ago bleeding lot again tonight",
+      "voiceResponse": "I\u2019m really glad you called. This sounds urgent postpartum bleeding, so call 911 right now for your sister in Beaverton. If you can, stay with her, keep her lying down, and don\u2019t wait to see if it slows. If this call drops, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibbfkxcxhvux36pkaunpqi4lt7olwozbgtp65tloqxtgdjqcwbuuq",
+        "page:bafkreidjxz4ii5zs2io74zun76wb7xwwtcdne52dsifgxqcagw7oeqesw4",
+        "page:bafkreihbfpfmpeqrtrqapqs56gqxur2s2b34rg2ltqoqkrdqzxpifjhmme"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. This sounds urgent postpartum bleeding, so call 911 right now for your sister in Beaverton. If you can, stay with her, keep her lying down, and don\u2019t wait to see if it slows. If this call drops, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "I hear you. This is urgent, and you did the right thing calling for her. I\u2019m connecting you now to a live 211 specialist who can look for same-day child care options in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 right now. Stay on the line while I transfer you.",
+        "Yes. Tell her to call **2-1-1** right now and ask for a **Child Care Referral Specialist** for Beaverton, including any same-day or emergency options. If there\u2019s any immediate safety danger, call **9-1-1** first. Otherwise, stay on this line and I can transfer you now.",
+        "I hear you, and I\u2019m with you. First, if you feel too weak or unsafe right now, call **911** now. For diapers, call **DIAPERS** at **541\u2026221\u20260824**. I\u2019ll repeat: **541\u2026221\u20260824**. Say: \u201cI\u2019m in Beaverton, mostly bedbound, and need adult diapers urgently. Can you help or connect me to the closest provider?\u201d If they can\u2019t, call me back and I\u2019ll keep working the next number with you.",
+        "I hear how hard this is. First: if your breathing is getting worse right now, call **911** immediately. If you can make one call for supply help today, try **Emergency Diaper Closet** at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. Say: \u201cI\u2019m bedbound in Beaverton and need urgent adult diapers today. If you can\u2019t provide them, please connect me to who can right now.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002291#turn-3",
+      "scenarioId": "phone_dialog_0002291",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you repeat that? I can barely hear you, there\u2019s a TV and the baby crying in the background.",
+      "normalizedQuery": "hi on borrowed phone it at like two percent give most important number first case this drops calling sister beaverton she had baby three weeks ago bleeding lot again tonight sorry repeat barely hear there tv crying background",
+      "voiceResponse": "I know it\u2019s loud, and you\u2019re doing the right thing. Call 911 now. I\u2019ll repeat: 911. Tell them she is three weeks postpartum and bleeding heavily again tonight in Beaverton. Stay with her, keep her lying down, and do not wait to see if it slows.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I know it\u2019s loud, and you\u2019re doing the right thing. Call 911 now. I\u2019ll repeat: 911. Tell them she is three weeks postpartum and bleeding heavily again tonight in Beaverton. Stay with her, keep her lying down, and do not wait to see if it slows.",
+      "voiceResponseAlternatives": [
+        "Yep. The place name is **Lane County Diaper Bank**. Slowly: **Lane** \u2026 **County** \u2026 **Diaper** \u2026 **Bank**.",
+        "Of course. The diaper number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. I\u2019ll say it once more: **541** \u2026 **221** \u2026 **0824**.",
+        "You\u2019re okay, I\u2019ve got you. Most important step: call **9-1-1 now**. You had a baby **8 days ago**, you\u2019re **bleeding through pads fast**, with **clots** and **weakness**. That is an emergency. If you can: **unlock the door**, **lie on your side**, and **do not drive yourself**. If calling is hard, text: \u201cPostpartum emergency, call 911 for me now.\u201d",
+        "Of course. Slow and simple: this is an emergency. You\u2019re bleeding heavily two weeks after birth and feeling shaky. Please call **9-1-1** now, or have someone with you call **9-1-1** now. If you can, lie down while you wait. I can stay with you."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002291#turn-4",
+      "scenarioId": "phone_dialog_0002291",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "She told me she feels scared she might hurt herself when she gets overwhelmed, and the baby\u2019s been sleeping on a couch cushion, which I know is not safe.",
+      "normalizedQuery": "hi on borrowed phone it at like two percent give most important number first case this drops calling sister beaverton she had baby three weeks ago bleeding lot again tonight sorry repeat barely hear there tv crying background told feels scared might hurt herself when gets overwhelmed been sleeping couch cushion which know safe",
+      "voiceResponse": "I\u2019m really glad you told me, and this is urgent. Call 911 now. I\u2019ll repeat: 911. Say: \u201cShe\u2019s three weeks postpartum, bleeding heavily, and told me she might hurt herself.\u201d Move the baby off the couch cushion now to a flat, firm sleep surface. Stay with your sister and remove anything she could use to hurt herself. If this call drops, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me, and this is urgent. Call 911 now. I\u2019ll repeat: 911. Say: \u201cShe\u2019s three weeks postpartum, bleeding heavily, and told me she might hurt herself.\u201d Move the baby off the couch cushion now to a flat, firm sleep surface. Stay with your sister and remove anything she could use to hurt herself. If this call drops, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "I hear you. This is urgent, and you did the right thing calling for her. I\u2019m connecting you now to a live 211 specialist who can look for same-day child care options in Beaverton so she can keep her shift. If anyone is in immediate danger, call 911 right now. Stay on the line while I transfer you.",
+        "Yes. Tell her to call **2-1-1** right now and ask for a **Child Care Referral Specialist** for Beaverton, including any same-day or emergency options. If there\u2019s any immediate safety danger, call **9-1-1** first. Otherwise, stay on this line and I can transfer you now.",
+        "I hear you, and I\u2019m with you. First, if you feel too weak or unsafe right now, call **911** now. For diapers, call **DIAPERS** at **541\u2026221\u20260824**. I\u2019ll repeat: **541\u2026221\u20260824**. Say: \u201cI\u2019m in Beaverton, mostly bedbound, and need adult diapers urgently. Can you help or connect me to the closest provider?\u201d If they can\u2019t, call me back and I\u2019ll keep working the next number with you.",
+        "I hear how hard this is. First: if your breathing is getting worse right now, call **911** immediately. If you can make one call for supply help today, try **Emergency Diaper Closet** at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. Say: \u201cI\u2019m bedbound in Beaverton and need urgent adult diapers today. If you can\u2019t provide them, please connect me to who can right now.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -879,6 +969,24 @@
       "to": "phone_dialog_0002116#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002291#turn-2",
+      "to": "phone_dialog_0002291#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002291#turn-3",
+      "to": "phone_dialog_0002291#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002291#turn-4",
+      "to": "phone_dialog_0002291#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

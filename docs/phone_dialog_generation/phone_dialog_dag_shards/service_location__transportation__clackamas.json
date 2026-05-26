@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__transportation__clackamas",
   "kind": "service_location",
   "key": "transportation__clackamas",
-  "nodeCount": 7,
+  "nodeCount": 8,
   "nodes": [
     {
       "id": "phone_dialog_0001573#turn-1",
@@ -109,7 +109,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re doing the right thing. First number: **2-1-1**. Say: \u201cI\u2019m 16 in Clackamas County, I\u2019m at a store parking lot, I need a safe pickup now.\u201d You can ask to share your exact location quietly, not on speaker. If anyone is pressuring you or you feel in immediate danger, call **9-1-1** right away and say, \u201cI\u2019m 16 and not safe.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, we can do both. I can connect you to a live advocate for Clackamas now, and they can help plan discreet transport with only the details you want to share. If risk turns immediate, call 911. Call 800, 231, 2222. I\u2019ll repeat: 800, 231, 2222. Backup number: 800, 531, 5332."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
@@ -195,6 +197,33 @@
       "voiceResponseAlternatives": [],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002235#turn-6",
+      "scenarioId": "phone_dialog_0002235",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I only know part of her info, but can you help us with transport and maybe connect us to an advocate in Clackamas?",
+      "normalizedQuery": "only know part her info us transport ride transportation bus maybe connect an advocate clackamas",
+      "voiceResponse": "Yes, we can do both. I can connect you to a live advocate for Clackamas now, and they can help plan discreet transport with only the details you want to share. If risk turns immediate, call 911. Call 800, 231, 2222. I\u2019ll repeat: 800, 231, 2222. Backup number: 800, 531, 5332.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:86384c62740499ba"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, we can do both. I can connect you to a live advocate for Clackamas now, and they can help plan discreet transport with only the details you want to share. If risk turns immediate, call 911. Call 800, 231, 2222. I\u2019ll repeat: 800, 231, 2222. Backup number: 800, 531, 5332.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. First number: **2-1-1**. Say: \u201cI\u2019m 16 in Clackamas County, I\u2019m at a store parking lot, I need a safe pickup now.\u201d You can ask to share your exact location quietly, not on speaker. If anyone is pressuring you or you feel in immediate danger, call **9-1-1** right away and say, \u201cI\u2019m 16 and not safe.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
     }
   ],

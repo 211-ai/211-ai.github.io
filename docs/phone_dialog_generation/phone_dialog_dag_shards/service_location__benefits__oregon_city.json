@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__oregon_city",
   "kind": "service_location",
   "key": "benefits__oregon_city",
-  "nodeCount": 329,
+  "nodeCount": 358,
   "nodes": [
     {
       "id": "phone_dialog_0000006#turn-2",
@@ -9858,6 +9858,876 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002152#turn-1",
+      "scenarioId": "phone_dialog_0002152",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my dad in Oregon City. He\u2019s 78, very weak, and I think he\u2019s being neglected by the aide who was supposed to check on him.",
+      "normalizedQuery": "hi calling dad oregon city he 78 very weak think being neglected by aide who was supposed check on him",
+      "voiceResponse": "I\u2019m so sorry this is happening. You did the right thing by calling. If your dad is in immediate danger, call 9 1 1 now. Call 9 1 1 now. I can get you to a live specialist to report possible neglect and next steps in Oregon City. Is he in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:437ec64b59b0ac16",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry this is happening. You did the right thing by calling. If your dad is in immediate danger, call 9 1 1 now. Call 9 1 1 now. I can get you to a live specialist to report possible neglect and next steps in Oregon City. Is he in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002152#turn-3",
+      "scenarioId": "phone_dialog_0002152",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that slower? I\u2019m hard of hearing on this phone, and I\u2019ve got traffic noise here.",
+      "normalizedQuery": "hi calling dad oregon city he 78 very weak think being neglected by aide who was supposed check on him no floor right now stove off so immediate danger hasn eaten since yesterday missed his heart pills this morning sorry say slower hard hearing phone ve got traffic noise here",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. If he has chest pain, trouble breathing, or is hard to wake, call 9 1 1. Call 9 1 1. One question now: Is he awake, and able to swallow, right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. If he has chest pain, trouble breathing, or is hard to wake, call 9 1 1. Call 9 1 1. One question now: Is he awake, and able to swallow, right now?",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: the name is **two-one-one info**. **Two-one-one info**. I can help connect you to a live person there for a same-day cooling option in Oregon City.",
+        "I don\u2019t have an address or closing time on my screen right now. I don\u2019t have an address or closing time on my screen right now. What I do have is the name: two-one-one info. Two-one-one info.",
+        "I hear you, and you\u2019re doing great staying focused. Main number, slowly: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**. Again: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**.",
+        "Of course. The place name is **Lane County Diaper Bank**. I\u2019ll say it slowly: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**: **three-zero-five-zero Game Farm Road, Springfield**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002162#turn-1",
+      "scenarioId": "phone_dialog_0002162",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Can you hear me okay? Sorry, signal is awful... I'm in Oregon City and I need detox help, I think.",
+      "normalizedQuery": "hello hear okay sorry signal awful i'm oregon city detox think",
+      "voiceResponse": "I can hear you, but the audio cut out. Did you say you need detox help in Oregon City? Please say yes or no.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, but the audio cut out. Did you say you need detox help in Oregon City? Please say yes or no.",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. One quick choice: do you want address one, **19761 South Beavercreek Road, Room 145A**, Oregon City, or address two, **110 Beavercreek Road, Suite 100**, Oregon City?",
+        "I\u2019m sorry, the audio was unclear. I did not say 589 or 519. I said **503, 222, 5555**. Again: **503, 222, 5555**. Do you want me to repeat that one digit by digit?",
+        "I\u2019m so sorry about your brother. I\u2019m here with you. Your audio is breaking up, so I may miss words. Please say just one choice: do you want **grief support now**, or a **quick calming step first**?",
+        "I\u2019m hearing background noise, so if I miss you, repeat one word only. First step: call **2-1-1** now and say, \u201cI\u2019m in Oregon City, shaking, and need a safe detox place tonight, with transport if possible.\u201d Ask them to stay on until you have an address. If you feel faint, chest pain, or unsafe, call **9-1-1**. If I cut out, say one word: **\u201cdetox\u201d** or **\u201cride\u201d**?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002162#turn-2",
+      "scenarioId": "phone_dialog_0002162",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "It's not just me, my friend took pills and drank, and now he's like... barely waking up.",
+      "normalizedQuery": "hello hear okay sorry signal awful i'm oregon city detox think it's just friend took pills drank now he's like barely waking up",
+      "voiceResponse": "I heard enough, and this sounds like an overdose emergency. Call 911 now. If you can, lay your friend on his side and stay with him. Your audio is breaking up, so please repeat one word only: \u201ccalled\u201d when 911 is on the line.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:01fa99fed3711557",
+        "service:15571749aff504f0",
+        "service:99e79e74de65a168"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I heard enough, and this sounds like an overdose emergency. Call 911 now. If you can, lay your friend on his side and stay with him. Your audio is breaking up, so please repeat one word only: \u201ccalled\u201d when 911 is on the line.",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. One quick choice: do you want address one, **19761 South Beavercreek Road, Room 145A**, Oregon City, or address two, **110 Beavercreek Road, Suite 100**, Oregon City?",
+        "I\u2019m sorry, the audio was unclear. I did not say 589 or 519. I said **503, 222, 5555**. Again: **503, 222, 5555**. Do you want me to repeat that one digit by digit?",
+        "I\u2019m so sorry about your brother. I\u2019m here with you. Your audio is breaking up, so I may miss words. Please say just one choice: do you want **grief support now**, or a **quick calming step first**?",
+        "I\u2019m hearing background noise, so if I miss you, repeat one word only. First step: call **2-1-1** now and say, \u201cI\u2019m in Oregon City, shaking, and need a safe detox place tonight, with transport if possible.\u201d Ask them to stay on until you have an address. If you feel faint, chest pain, or unsafe, call **9-1-1**. If I cut out, say one word: **\u201cdetox\u201d** or **\u201cride\u201d**?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002162#turn-3",
+      "scenarioId": "phone_dialog_0002162",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, say that again... breathing? It's really slow, like long gaps, and he's kind of blue around the lips.",
+      "normalizedQuery": "hello hear okay sorry signal awful i'm oregon city detox think it's just friend took pills drank now he's like barely waking up cut say again breathing really slow long gaps kind blue around lips",
+      "voiceResponse": "Yes. Slow breathing with long gaps and blue lips is an overdose emergency. Call 911 now. Put him on his side, stay with him, and watch his breathing. If he stops breathing or you can\u2019t wake him, tell 911 immediately. Say one word when they answer: \u201ccalled.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow breathing with long gaps and blue lips is an overdose emergency. Call 911 now. Put him on his side, stay with him, and watch his breathing. If he stops breathing or you can\u2019t wake him, tell 911 immediately. Say one word when they answer: \u201ccalled.\u201d",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: the name is **two-one-one info**. **Two-one-one info**. I can help connect you to a live person there for a same-day cooling option in Oregon City.",
+        "I don\u2019t have an address or closing time on my screen right now. I don\u2019t have an address or closing time on my screen right now. What I do have is the name: two-one-one info. Two-one-one info.",
+        "I hear you, and you\u2019re doing great staying focused. Main number, slowly: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**. Again: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**.",
+        "Of course. The place name is **Lane County Diaper Bank**. I\u2019ll say it slowly: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**: **three-zero-five-zero Game Farm Road, Springfield**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002162#turn-4",
+      "scenarioId": "phone_dialog_0002162",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "No, no, he won't stay awake, I keep shaking him and he just drops back out.",
+      "normalizedQuery": "hello hear okay sorry signal awful i'm oregon city detox think it's just friend took pills drank now he's like barely waking up cut say again breathing really slow long gaps kind blue around lips no he won't stay awake keep shaking him drops back",
+      "voiceResponse": "That is life-threatening right now. Call 911 now, immediately. Put him on his side, keep his airway clear, and stay with him. If he stops breathing, start rescue breaths if you can, and tell 911 his lips are blue and he won\u2019t stay awake. Say one word: \u201ccalled.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That is life-threatening right now. Call 911 now, immediately. Put him on his side, keep his airway clear, and stay with him. If he stops breathing, start rescue breaths if you can, and tell 911 his lips are blue and he won\u2019t stay awake. Say one word: \u201ccalled.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+        "Yes. I\u2019ll repeat slowly. Phone number: **5-0-3, 7-8-5, 8-7-7-2**. Again: **5-0-3, 7-8-5, 8-7-7-2**. Address: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. Again: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. If you feel close to passing out, call **9-1-1** now.",
+        "Yes. Slow and simple. First, are you safe right this second? If not, call **9 1 1** now. If you can talk, you do not need to go back tonight. You can use a safer phone if available. For partner-violence legal support, call Legal Aid Services of Oregon at **5 0 3, 9 8 8, 6 4 0 0**. If you want, I can help you script one short, low-risk call.",
+        "First, quick safety check: are you having trouble breathing, confusion, vomiting, or feeling like you might pass out right now? If yes, call 911 now. If no, stay on the line with me and I\u2019ll help you find urgent insulin replacement in Oregon City right away."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002172#turn-1",
+      "scenarioId": "phone_dialog_0002172",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling about my neighbor, not me. She\u2019s 74, in Oregon City, and I\u2019m really worried she\u2019s being neglected.",
+      "normalizedQuery": "hi calling neighbor she 74 oregon city really worried being neglected",
+      "voiceResponse": "I hear you. You\u2019re calling for your 74-year-old neighbor in Oregon City. Thank you for calling for her. If she is in immediate danger, call 911 now. I\u2019ll repeat: if she is in immediate danger, call 911 now. I can get you to a live specialist for suspected neglect reporting steps in Oregon. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8c233174a5794cff",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:451ce5caf0eab303"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re calling for your 74-year-old neighbor in Oregon City. Thank you for calling for her. If she is in immediate danger, call 911 now. I\u2019ll repeat: if she is in immediate danger, call 911 now. I can get you to a live specialist for suspected neglect reporting steps in Oregon. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002172#turn-3",
+      "scenarioId": "phone_dialog_0002172",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Her caregiver hasn\u2019t shown up in two days, and her meds are still in the pill box. She missed at least two doses.",
+      "normalizedQuery": "hi calling neighbor she 74 oregon city really worried being neglected sorry hard hearing say slower yes awake breathing right now told hasn eaten since yesterday her caregiver shown up two days meds still pill box missed at least doses",
+      "voiceResponse": "Thank you. I hear you. Caregiver absent for two days. Meds still in the pill box. She missed at least two doses. I\u2019ll repeat: missed at least two doses. This may be urgent. If she gets worse, or is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. I can connect you to a live specialist right now for adult neglect reporting in Oregon. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:f343701d786b3ebc",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. Caregiver absent for two days. Meds still in the pill box. She missed at least two doses. I\u2019ll repeat: missed at least two doses. This may be urgent. If she gets worse, or is in immediate danger, call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. I can connect you to a live specialist right now for adult neglect reporting in Oregon. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002206#turn-2",
+      "scenarioId": "phone_dialog_0002206",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Oregon City, and my friend took pills and a bunch of booze, and now he won\u2019t really wake up.",
+      "normalizedQuery": "hello hear okay sorry this signal keeps cutting oregon city friend took pills bunch booze now he won really wake up",
+      "voiceResponse": "I\u2019m really glad you called. This is an emergency. Call 911 right now and say: \u201cHe took pills and alcohol, and he\u2019s hard to wake.\u201d Put your phone on speaker, stay with him, and roll him onto his side if he might vomit. Don\u2019t give him food, drink, or more meds. If he stops breathing, tell 911 immediately and start CPR if you can. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "service:ba024a031f6ac689",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. This is an emergency. Call 911 right now and say: \u201cHe took pills and alcohol, and he\u2019s hard to wake.\u201d Put your phone on speaker, stay with him, and roll him onto his side if he might vomit. Don\u2019t give him food, drink, or more meds. If he stops breathing, tell 911 immediately and start CPR if you can. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002206#turn-3",
+      "scenarioId": "phone_dialog_0002206",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, what? You said check his breathing? Hold on... it\u2019s like really slow and weird.",
+      "normalizedQuery": "hello hear okay sorry this signal keeps cutting oregon city friend took pills bunch booze now he won really wake up wait said check his breathing hold on it like slow weird",
+      "voiceResponse": "You\u2019re doing the right thing staying with him. The audio cut out, so I need one quick repeat: is he breathing at all, yes or no? If it\u2019s very slow or weird, call 911 now on speaker and say, \u201cPossible overdose, hard to wake, breathing is slow and irregular.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing staying with him. The audio cut out, so I need one quick repeat: is he breathing at all, yes or no? If it\u2019s very slow or weird, call 911 now on speaker and say, \u201cPossible overdose, hard to wake, breathing is slow and irregular.\u201d",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. One quick choice: do you want address one, **19761 South Beavercreek Road, Room 145A**, Oregon City, or address two, **110 Beavercreek Road, Suite 100**, Oregon City?",
+        "I\u2019m sorry, the audio was unclear. I did not say 589 or 519. I said **503, 222, 5555**. Again: **503, 222, 5555**. Do you want me to repeat that one digit by digit?",
+        "I\u2019m so sorry about your brother. I\u2019m here with you. Your audio is breaking up, so I may miss words. Please say just one choice: do you want **grief support now**, or a **quick calming step first**?",
+        "I\u2019m hearing background noise, so if I miss you, repeat one word only. First step: call **2-1-1** now and say, \u201cI\u2019m in Oregon City, shaking, and need a safe detox place tonight, with transport if possible.\u201d Ask them to stay on until you have an address. If you feel faint, chest pain, or unsafe, call **9-1-1**. If I cut out, say one word: **\u201cdetox\u201d** or **\u201cride\u201d**?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002206#turn-5",
+      "scenarioId": "phone_dialog_0002206",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat what number I call, I missed it... my phone\u2019s at like two percent.",
+      "normalizedQuery": "oregon city friend took pills bunch booze now he won really wake up wait said check his breathing hold on it like slow weird was calling detox too right think might be overdosing repeat number call missed phone at two percent",
+      "voiceResponse": "I hear you. Call 911. I\u2019ll repeat: 9, 1, 1. Put it on speaker and say, \u201cPossible overdose, hard to wake, breathing is slow and irregular.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Call 911. I\u2019ll repeat: 9, 1, 1. Put it on speaker and say, \u201cPossible overdose, hard to wake, breathing is slow and irregular.\u201d",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: the name is **two-one-one info**. **Two-one-one info**. I can help connect you to a live person there for a same-day cooling option in Oregon City.",
+        "I don\u2019t have an address or closing time on my screen right now. I don\u2019t have an address or closing time on my screen right now. What I do have is the name: two-one-one info. Two-one-one info.",
+        "I hear you, and you\u2019re doing great staying focused. Main number, slowly: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**. Again: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**.",
+        "Of course. The place name is **Lane County Diaper Bank**. I\u2019ll say it slowly: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**: **three-zero-five-zero Game Farm Road, Springfield**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002222#turn-2",
+      "scenarioId": "phone_dialog_0002222",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Oregon City, near the bus station I think, and my insulin bag is gone... I can\u2019t find it anywhere.",
+      "normalizedQuery": "hello sorry hear great on this line talk little louder oregon city bus station think insulin bag gone it anywhere",
+      "voiceResponse": "First step: please stay in one safe spot near the bus station entrance. Before we continue, are you feeling shaky, confused, or sick right now without insulin? If yes, say \u201cyes\u201d now so I can do an urgent safety handoff. If no, I\u2019ll help you report the lost insulin bag and connect you to a live 211 specialist in Oregon City.",
+      "evidenceDocIds": [
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:814126c4cd9bbb45"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: please stay in one safe spot near the bus station entrance. Before we continue, are you feeling shaky, confused, or sick right now without insulin? If yes, say \u201cyes\u201d now so I can do an urgent safety handoff. If no, I\u2019ll help you report the lost insulin bag and connect you to a live 211 specialist in Oregon City.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+        "Yes. I\u2019ll repeat slowly. Phone number: **5-0-3, 7-8-5, 8-7-7-2**. Again: **5-0-3, 7-8-5, 8-7-7-2**. Address: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. Again: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. If you feel close to passing out, call **9-1-1** now.",
+        "Yes. Slow and simple. First, are you safe right this second? If not, call **9 1 1** now. If you can talk, you do not need to go back tonight. You can use a safer phone if available. For partner-violence legal support, call Legal Aid Services of Oregon at **5 0 3, 9 8 8, 6 4 0 0**. If you want, I can help you script one short, low-risk call.",
+        "First, quick safety check: are you having trouble breathing, confusion, vomiting, or feeling like you might pass out right now? If yes, call 911 now. If no, stay on the line with me and I\u2019ll help you find urgent insulin replacement in Oregon City right away."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002222#turn-3",
+      "scenarioId": "phone_dialog_0002222",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not passed out or anything, but I need help today, like now, and I need somewhere safe to sleep tonight.",
+      "normalizedQuery": "hello sorry hear great on this line talk little louder oregon city bus station think insulin bag gone it anywhere passed anything like now somewhere safe sleep tonight",
+      "voiceResponse": "First step: stay near the bus station entrance, where there are other people and light. I\u2019m connecting you to a live 211 specialist now for urgent shelter options tonight and help after your insulin bag was lost. If you start feeling shaky, confused, or sick, call 911 right away. If we get disconnected, call 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409.",
+      "evidenceDocIds": [
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: stay near the bus station entrance, where there are other people and light. I\u2019m connecting you to a live 211 specialist now for urgent shelter options tonight and help after your insulin bag was lost. If you start feeling shaky, confused, or sick, call 911 right away. If we get disconnected, call 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002222#turn-4",
+      "scenarioId": "phone_dialog_0002222",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "My phone\u2019s at like three percent, so if you give me a number, please do it slow, maybe in little chunks.",
+      "normalizedQuery": "hello sorry hear great on this line talk little louder oregon city bus station think insulin bag gone it anywhere passed anything like now somewhere safe sleep tonight phone at three percent so if give number please slow maybe chunks",
+      "voiceResponse": "First step: save this callback number now. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. I\u2019m connecting you to a live 211 specialist for urgent shelter tonight and insulin-loss help. If you start feeling shaky, confused, or sick, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: save this callback number now. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. I\u2019m connecting you to a live 211 specialist for urgent shelter tonight and insulin-loss help. If you start feeling shaky, confused, or sick, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002247#turn-1",
+      "scenarioId": "phone_dialog_0002247",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know this sounds weird, I\u2019m in Oregon City and I need, um, mental health help, but I think my neighbors can hear this through the outlets.",
+      "normalizedQuery": "hi sorry know this sounds weird oregon city um mental health think neighbors hear through outlets",
+      "voiceResponse": "You\u2019re not weird, and I\u2019m really glad you called. Let\u2019s keep this simple and private. If talking feels unsafe, you can give me short yes-or-no answers. First, are you in immediate danger right now? If yes, call 911 now. If no, I can help you get connected to 211info for mental health support in Oregon City, one step at a time.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21",
+        "service:afe5dce291e752b0",
+        "service:2a5f29476b411a59"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not weird, and I\u2019m really glad you called. Let\u2019s keep this simple and private. If talking feels unsafe, you can give me short yes-or-no answers. First, are you in immediate danger right now? If yes, call 911 now. If no, I can help you get connected to 211info for mental health support in Oregon City, one step at a time.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I can keep this simple. One option today is **Lane County Diaper Bank**. Phone: **five-four-one\u2026 two-two-one\u2026 zero-eight-two-four**. Address: **three-zero-five-zero Game Farm Road, Springfield**. They share diapers and wipes, Monday to Friday, 8 to 5. They list eligibility as OHP, WIC, or SNAP, and no intake documents required. If you want, I can repeat just the phone number again slowly.",
+        "Neither one only. It\u2019s **Monday through Friday**, **8 to 5**. So yes, **Wednesday** works, and **Thursday** works too. You didn\u2019t hear wrong; the hours are weekday hours.",
+        "You\u2019re doing the right thing by calling. I found a domestic violence legal advocacy option near Oregon City. Gateway Center / Legal Aid Services of Oregon. Phone: 5 0 3, 9 8 8, 6 4 0 0. Again: 5 0 3, 9 8 8, 6 4 0 0. Address: 1 0 3 0 5 East Burnside Street, Portland, Oregon, 9 7 2 1 6. They help survivors with safety planning and family law support. Do you want me to help you script what to say when you call?",
+        "Yes. Slowly. The program name is: Domestic Violence Survivor Advocacy, at Community Works. Again: Domestic Violence Survivor Advocacy, at Community Works. The phone number is: 5 4 1, 7 7 9, 4 3 5 7. Again: 5 4 1, 7 7 9, 4 3 5 7."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002253#turn-1",
+      "scenarioId": "phone_dialog_0002253",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m shaking... I had my baby nine days ago, I\u2019m in Oregon City, and I\u2019m bleeding more again.",
+      "normalizedQuery": "hi sorry shaking had baby nine days ago oregon city bleeding more again",
+      "voiceResponse": "I\u2019m really glad you called, and I hear how scared you are. Heavy bleeding nine days after birth can be an emergency. Please call 911 now, or have someone with you call right now. If you can, lie down, keep your phone with you, and do not drive yourself. If you start feeling faint, short of breath, or soak a pad in an hour, tell 911 that immediately. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreigh34e65ki4udshbpear26p5fhsuacxzenjrxeld3vvfalwi3hkx4",
+        "page:bafkreihh4zbdmg2usvb6nhtn4m4icf4rh4dx2cxho6ihogw2vgtorm2xvm",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreiezx37qgwxow7kj5qvgq2dvz5huyp5v4bbllyektmajx3htce3v4m",
+        "page:bafkreihddsczo7vly3v4ueijogtqmx2gwi6qlqqeotzxsgnfszr6njkp3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, and I hear how scared you are. Heavy bleeding nine days after birth can be an emergency. Please call 911 now, or have someone with you call right now. If you can, lie down, keep your phone with you, and do not drive yourself. If you start feeling faint, short of breath, or soak a pad in an hour, tell 911 that immediately. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002253#turn-3",
+      "scenarioId": "phone_dialog_0002253",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "No, I don\u2019t want to hurt the baby, but I don\u2019t trust myself alone tonight, and she\u2019s sleeping in a bouncer because I couldn\u2019t get her down safely in the crib.",
+      "normalizedQuery": "hi sorry shaking had baby nine days ago oregon city bleeding more again slow down process fast right now scared because earlier this flash like might hurt myself freaked no don want trust alone tonight she sleeping bouncer couldn her safely crib",
+      "voiceResponse": "Thank you for telling me. You\u2019re doing the right thing, and I\u2019m here with you. Quick safety check: are you and your baby safe right this second? Because of the bleeding and not trusting yourself alone, call 911 now. Tell them: \u201cI\u2019m nine days postpartum, bleeding again, and I don\u2019t feel safe alone tonight.\u201d For your baby right now, move her from the bouncer to a flat crib or bassinet on her back, no loose blankets. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:74856920128de95e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re doing the right thing, and I\u2019m here with you. Quick safety check: are you and your baby safe right this second? Because of the bleeding and not trusting yourself alone, call 911 now. Tell them: \u201cI\u2019m nine days postpartum, bleeding again, and I don\u2019t feel safe alone tonight.\u201d For your baby right now, move her from the bouncer to a flat crib or bassinet on her back, no loose blankets. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+        "Yes. I\u2019ll repeat slowly. Phone number: **5-0-3, 7-8-5, 8-7-7-2**. Again: **5-0-3, 7-8-5, 8-7-7-2**. Address: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. Again: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. If you feel close to passing out, call **9-1-1** now.",
+        "Yes. Slow and simple. First, are you safe right this second? If not, call **9 1 1** now. If you can talk, you do not need to go back tonight. You can use a safer phone if available. For partner-violence legal support, call Legal Aid Services of Oregon at **5 0 3, 9 8 8, 6 4 0 0**. If you want, I can help you script one short, low-risk call.",
+        "First, quick safety check: are you having trouble breathing, confusion, vomiting, or feeling like you might pass out right now? If yes, call 911 now. If no, stay on the line with me and I\u2019ll help you find urgent insulin replacement in Oregon City right away."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002253#turn-6",
+      "scenarioId": "phone_dialog_0002253",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "And after that, can you tell me where I can get diapers in Oregon City tomorrow if I make it through the night?",
+      "normalizedQuery": "after tell diapers diaper baby oregon city tomorrow if make it through night",
+      "voiceResponse": "I\u2019m really glad you asked, and I want you through tonight first. Right now, please call 911. I\u2019ll repeat: 911. For tomorrow, I don\u2019t have a confirmed Oregon City diaper site in front of me. The confirmed option I have is Lane County Diaper Bank. The number is 541, 221, 0824. The address is 3050 Game Farm Road, Springfield. If you want, after 911, I can help you ask the responder to connect you to the closest Oregon City diaper pickup.",
+      "evidenceDocIds": [
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "service:72a4239cdad3e299",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreiezx37qgwxow7kj5qvgq2dvz5huyp5v4bbllyektmajx3htce3v4m"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you asked, and I want you through tonight first. Right now, please call 911. I\u2019ll repeat: 911. For tomorrow, I don\u2019t have a confirmed Oregon City diaper site in front of me. The confirmed option I have is Lane County Diaper Bank. The number is 541, 221, 0824. The address is 3050 Game Farm Road, Springfield. If you want, after 911, I can help you ask the responder to connect you to the closest Oregon City diaper pickup.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002256#turn-6",
+      "scenarioId": "phone_dialog_0002256",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I only know she said she was near Oregon City, still in Clackamas County, and she doesn\u2019t want police unless it\u2019s absolutely necessary.",
+      "normalizedQuery": "she been couch surfing older people don know one guy keeps asking her 'pay way' somehow so really worried if immediate danger this second texted feels trapped scared leave calls back exact number should give youth repeat it slowly right only said was oregon city still clackamas county doesn want police unless absolutely necessary",
+      "voiceResponse": "That makes sense, and we can try non-police help first. Have her call 211 for youth crisis and safe shelter options in Clackamas County, and say she is 16, near Oregon City, and feels trapped. If risk spikes, she cannot leave safely, or someone is pressuring her sexually, call 9-1-1 right away. I\u2019ll repeat: 9-1-1. I can stay with you while you text her exactly what to say.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and we can try non-police help first. Have her call 211 for youth crisis and safe shelter options in Clackamas County, and say she is 16, near Oregon City, and feels trapped. If risk spikes, she cannot leave safely, or someone is pressuring her sexually, call 9-1-1 right away. I\u2019ll repeat: 9-1-1. I can stay with you while you text her exactly what to say.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002285#turn-1",
+      "scenarioId": "phone_dialog_0002285",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Hello? Can you hear me okay? I\u2019m in Oregon City and my friend took some pills and was drinking, and now I can\u2019t really wake him up.",
+      "normalizedQuery": "hello hear okay oregon city friend took some pills was drinking now really wake him up",
+      "voiceResponse": "I hear you, and you did the right thing calling. This is an emergency. Call 911 now and say: \u201cPossible overdose, not waking up.\u201d If you can, put your friend on their side, check breathing, and stay with them. Do not let them sleep it off. If they stop breathing, start CPR if you know how. If you have naloxone, give it now. Stay on the line with 911 and follow their steps.",
+      "evidenceDocIds": [
+        "service:f5c970e0eb32ae29",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:9bef0e1af0d86bd6",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:30391c8a6f37b770"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you did the right thing calling. This is an emergency. Call 911 now and say: \u201cPossible overdose, not waking up.\u201d If you can, put your friend on their side, check breathing, and stay with them. Do not let them sleep it off. If they stop breathing, start CPR if you know how. If you have naloxone, give it now. Stay on the line with 911 and follow their steps.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002285#turn-2",
+      "scenarioId": "phone_dialog_0002285",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out, can you say that again? He keeps kinda nodding off and his breathing sounds... slow, like weird gaps.",
+      "normalizedQuery": "hello hear okay oregon city friend took some pills was drinking now really wake him up sorry cut say again he keeps kinda nodding off his breathing sounds slow like weird gaps",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. I\u2019ll repeat: call 911 now and say, \u201cPossible overdose, not waking up, slow breathing with gaps.\u201d Put him on his side right away. Stay with him and do not let him sleep. If you have naloxone, give it now. If he stops breathing, start CPR if you can. Stay on the line with 911 and follow their instructions.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:437ec64b59b0ac16",
+        "service:0aa4f4d85cc3f6b8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. I\u2019ll repeat: call 911 now and say, \u201cPossible overdose, not waking up, slow breathing with gaps.\u201d Put him on his side right away. Stay with him and do not let him sleep. If you have naloxone, give it now. If he stops breathing, start CPR if you can. Stay on the line with 911 and follow their instructions.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: the name is **two-one-one info**. **Two-one-one info**. I can help connect you to a live person there for a same-day cooling option in Oregon City.",
+        "I don\u2019t have an address or closing time on my screen right now. I don\u2019t have an address or closing time on my screen right now. What I do have is the name: two-one-one info. Two-one-one info.",
+        "I hear you, and you\u2019re doing great staying focused. Main number, slowly: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**. Again: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**.",
+        "Of course. The place name is **Lane County Diaper Bank**. I\u2019ll say it slowly: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**: **three-zero-five-zero Game Farm Road, Springfield**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002306#turn-1",
+      "scenarioId": "phone_dialog_0002306",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, can you keep this private? I\u2019m in Oregon City at a bus stop, and I think this phone is monitored.",
+      "normalizedQuery": "hi keep this private oregon city at bus stop think phone monitored",
+      "voiceResponse": "Yes. We can keep this minimal, and you can share as little as you want. First, quick safety check: are you safe where you are right now? If not, call 911. If you want local support in Oregon City, call 503, 650, 5722. That\u2019s the Area Agency on Aging. I\u2019ll repeat: 503, 650, 5722.",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "service:6157126cc568b343",
+        "service:f37fc55dfd83a839",
+        "service:892ad93c8a501162",
+        "service:7f8a19163ee3a7bc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this minimal, and you can share as little as you want. First, quick safety check: are you safe where you are right now? If not, call 911. If you want local support in Oregon City, call 503, 650, 5722. That\u2019s the Area Agency on Aging. I\u2019ll repeat: 503, 650, 5722.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+        "Yes. I\u2019ll repeat slowly. Phone number: **5-0-3, 7-8-5, 8-7-7-2**. Again: **5-0-3, 7-8-5, 8-7-7-2**. Address: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. Again: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. If you feel close to passing out, call **9-1-1** now.",
+        "Yes. Slow and simple. First, are you safe right this second? If not, call **9 1 1** now. If you can talk, you do not need to go back tonight. You can use a safer phone if available. For partner-violence legal support, call Legal Aid Services of Oregon at **5 0 3, 9 8 8, 6 4 0 0**. If you want, I can help you script one short, low-risk call.",
+        "First, quick safety check: are you having trouble breathing, confusion, vomiting, or feeling like you might pass out right now? If yes, call 911 now. If no, stay on the line with me and I\u2019ll help you find urgent insulin replacement in Oregon City right away."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002306#turn-3",
+      "scenarioId": "phone_dialog_0002306",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, a bus just went by, I missed that part, can you repeat only the safest option?",
+      "normalizedQuery": "hi keep this private oregon city at bus stop think phone monitored talk long he makes work keeps id allowed leave on own sorry just went by missed part repeat only safest option",
+      "voiceResponse": "Safest option: if you feel in immediate danger, call 911 now. If calling feels risky, move toward other people and say, \u201cI need help. I\u2019m not being allowed to leave.\u201d Share only what you need to.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Safest option: if you feel in immediate danger, call 911 now. If calling feels risky, move toward other people and say, \u201cI need help. I\u2019m not being allowed to leave.\u201d Share only what you need to.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002325#turn-2",
+      "scenarioId": "phone_dialog_0002325",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Sorry, sorry, I keep losing you. Oregon... Oregon... City, yeah, I\u2019m in Oregon City, but the line keeps cutting.",
+      "normalizedQuery": "hello static uh laundr no wait hear inaudible sorry keep losing oregon city yeah line keeps cutting",
+      "voiceResponse": "Thank you. I heard Oregon City. I heard Oregon City. Your audio is still unclear. Please say one word: laundry, food, or housing?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreiabhnolhjv7u6k6hlchmic2hjjlg26hwy52cx6qiisw5u65zy5gh4",
+        "service:a767978dd81d0893",
+        "page:bafkreidrpog5gdxdwj5jyf6voejgtuh672fj6gotuqu7tvbbsxv5jfz34e",
+        "page:bafkreidvpgtjmdf57q6fl5qeuw7rxhd2uq2au5crs3igzofg3lbdjtxwzm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I heard Oregon City. I heard Oregon City. Your audio is still unclear. Please say one word: laundry, food, or housing?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. One quick choice: do you want address one, **19761 South Beavercreek Road, Room 145A**, Oregon City, or address two, **110 Beavercreek Road, Suite 100**, Oregon City?",
+        "I\u2019m sorry, the audio was unclear. I did not say 589 or 519. I said **503, 222, 5555**. Again: **503, 222, 5555**. Do you want me to repeat that one digit by digit?",
+        "I\u2019m so sorry about your brother. I\u2019m here with you. Your audio is breaking up, so I may miss words. Please say just one choice: do you want **grief support now**, or a **quick calming step first**?",
+        "I\u2019m hearing background noise, so if I miss you, repeat one word only. First step: call **2-1-1** now and say, \u201cI\u2019m in Oregon City, shaking, and need a safe detox place tonight, with transport if possible.\u201d Ask them to stay on until you have an address. If you feel faint, chest pain, or unsafe, call **9-1-1**. If I cut out, say one word: **\u201cdetox\u201d** or **\u201cride\u201d**?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002325#turn-4",
+      "scenarioId": "phone_dialog_0002325",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, did you say Beavercreek? No, I said Oregon City... unless that\u2019s nearby, I can\u2019t hear great.",
+      "normalizedQuery": "hello static uh laundr no wait hear inaudible sorry keep losing oregon city yeah line keeps cutting finding place laundry like low cost free if exists behind on everything did say beavercreek said unless nearby great",
+      "voiceResponse": "You said Oregon City. I heard Oregon City. Beavercreek is a road name in one Oregon City address I can see. Your audio is still unclear. Please say one choice: laundry vouchers, or emergency money for laundry?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "service:149df10ea982fab6",
+        "service:77b0a0fda481a98b",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You said Oregon City. I heard Oregon City. Beavercreek is a road name in one Oregon City address I can see. Your audio is still unclear. Please say one choice: laundry vouchers, or emergency money for laundry?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. One quick choice: do you want address one, **19761 South Beavercreek Road, Room 145A**, Oregon City, or address two, **110 Beavercreek Road, Suite 100**, Oregon City?",
+        "I\u2019m sorry, the audio was unclear. I did not say 589 or 519. I said **503, 222, 5555**. Again: **503, 222, 5555**. Do you want me to repeat that one digit by digit?",
+        "I\u2019m so sorry about your brother. I\u2019m here with you. Your audio is breaking up, so I may miss words. Please say just one choice: do you want **grief support now**, or a **quick calming step first**?",
+        "I\u2019m hearing background noise, so if I miss you, repeat one word only. First step: call **2-1-1** now and say, \u201cI\u2019m in Oregon City, shaking, and need a safe detox place tonight, with transport if possible.\u201d Ask them to stay on until you have an address. If you feel faint, chest pain, or unsafe, call **9-1-1**. If I cut out, say one word: **\u201cdetox\u201d** or **\u201cride\u201d**?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002325#turn-5",
+      "scenarioId": "phone_dialog_0002325",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number slow, like one digit at a time? I miss numbers when people talk fast.",
+      "normalizedQuery": "sorry keep losing oregon city yeah line keeps cutting finding place laundry like low cost free if exists behind on everything wait did say beavercreek no said unless nearby hear great repeat phone number slow one digit at time miss numbers when people talk fast",
+      "voiceResponse": "I do not have a phone number in the info I can see. I do not have a phone number in the info I can see. I heard your city as Oregon City. Oregon City. Do you want me to keep searching for a laundry phone number now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:149df10ea982fab6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I do not have a phone number in the info I can see. I do not have a phone number in the info I can see. I heard your city as Oregon City. Oregon City. Do you want me to keep searching for a laundry phone number now?",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: the name is **two-one-one info**. **Two-one-one info**. I can help connect you to a live person there for a same-day cooling option in Oregon City.",
+        "I don\u2019t have an address or closing time on my screen right now. I don\u2019t have an address or closing time on my screen right now. What I do have is the name: two-one-one info. Two-one-one info.",
+        "I hear you, and you\u2019re doing great staying focused. Main number, slowly: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**. Again: **4-5-8 \u2026 2-1-4 \u2026 0-4-9-7**.",
+        "Of course. The place name is **Lane County Diaper Bank**. I\u2019ll say it slowly: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**: **three-zero-five-zero Game Farm Road, Springfield**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002333#turn-2",
+      "scenarioId": "phone_dialog_0002333",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "She ran away two nights ago and is couch-surfing around Oregon City, mostly with older people I don\u2019t trust.",
+      "normalizedQuery": "hi calling little cousin she 17 phone die so give most important number first ran away two nights ago couch surfing around oregon city mostly older people don trust",
+      "voiceResponse": "Thanks for telling me. Quick safety check: if she\u2019s in immediate danger right now, call 911. If she isn\u2019t in immediate danger, call 211 now and say: \u201cShe is 17, couch-surfing in Oregon City with older adults, and may be unsafe. We need youth shelter and crisis support tonight.\u201d If your battery drops, text that exact sentence to a trusted adult so they can call 211 for you.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for telling me. Quick safety check: if she\u2019s in immediate danger right now, call 911. If she isn\u2019t in immediate danger, call 211 now and say: \u201cShe is 17, couch-surfing in Oregon City with older adults, and may be unsafe. We need youth shelter and crisis support tonight.\u201d If your battery drops, text that exact sentence to a trusted adult so they can call 211 for you.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+        "Yes. I\u2019ll repeat slowly. Phone number: **5-0-3, 7-8-5, 8-7-7-2**. Again: **5-0-3, 7-8-5, 8-7-7-2**. Address: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. Again: **1-9-7-6-1 South Beavercreek Road, Room 1-4-5-A, Oregon City**. If you feel close to passing out, call **9-1-1** now.",
+        "Yes. Slow and simple. First, are you safe right this second? If not, call **9 1 1** now. If you can talk, you do not need to go back tonight. You can use a safer phone if available. For partner-violence legal support, call Legal Aid Services of Oregon at **5 0 3, 9 8 8, 6 4 0 0**. If you want, I can help you script one short, low-risk call.",
+        "First, quick safety check: are you having trouble breathing, confusion, vomiting, or feeling like you might pass out right now? If yes, call 911 now. If no, stay on the line with me and I\u2019ll help you find urgent insulin replacement in Oregon City right away."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002333#turn-3",
+      "scenarioId": "phone_dialog_0002333",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, you cut out\u2014can you repeat that number slower? I\u2019m on a borrowed phone and it keeps dropping.",
+      "normalizedQuery": "hi calling little cousin she 17 phone die so give most important number first ran away two nights ago couch surfing around oregon city mostly older people don trust sorry cut repeat slower on borrowed it keeps dropping",
+      "voiceResponse": "Of course. Call 2, 1, 1. I\u2019ll repeat: 2, 1, 1. If she is in immediate danger right now, call 9, 1, 1. If not, call 2, 1, 1 and say she is 17, couch-surfing in Oregon City, and may be unsafe tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:98249e32a262b454",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Call 2, 1, 1. I\u2019ll repeat: 2, 1, 1. If she is in immediate danger right now, call 9, 1, 1. If not, call 2, 1, 1 and say she is 17, couch-surfing in Oregon City, and may be unsafe tonight.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002333#turn-4",
+      "scenarioId": "phone_dialog_0002333",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "She says she\u2019s not being hit right this second, but one guy keeps pressuring her to 'help make money' and it sounds really wrong.",
+      "normalizedQuery": "hi calling little cousin she 17 phone die so give most important number first ran away two nights ago couch surfing around oregon city mostly older people don trust sorry cut repeat slower on borrowed it keeps dropping says being hit right this second one guy pressuring her 'help make money' sounds really wrong",
+      "voiceResponse": "You did the right thing calling. This can still be an emergency. If she feels trapped, threatened, or pressured to do sexual or money-making acts, call 9, 1, 1 now. If she can talk safely, call 2, 1, 1 and ask for youth crisis shelter and trafficking support in Oregon City for a 17-year-old tonight. If the call drops, text her: \u201cLeave now if you can, go to a public place, and call 9, 1, 1 if you feel unsafe.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. This can still be an emergency. If she feels trapped, threatened, or pressured to do sexual or money-making acts, call 9, 1, 1 now. If she can talk safely, call 2, 1, 1 and ask for youth crisis shelter and trafficking support in Oregon City for a 17-year-old tonight. If the call drops, text her: \u201cLeave now if you can, go to a public place, and call 9, 1, 1 if you feel unsafe.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call the Modest Means Program now for eviction legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I\u2019ll repeat: **5-0-3, 6-8-4, 3-7-6-3**. If that line is busy, call **5-0-3, 6-2-0, 0-2-2-2**. They help with Oregon legal matters, and eligibility depends on income, assets, and case type. I can stay with you while you dial.",
+        "My name is Abby. A-b-b-y. I hear you\u2019re in Oregon City, and I\u2019ll speak slowly. I\u2019m connecting you to a live person now.",
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+        "You\u2019re under a lot of pressure, and you\u2019re doing the right thing by calling now. Most important number first: **4-5-8, 2-1-4, 0-4-9-7**. That\u2019s Child Care Resource and Referral. Say: \u201cI\u2019m in Oregon City, I need emergency child care today to keep my work shift, and I can share minimal details.\u201d Backup number: **8-0-0, 5-5-6, 6-6-1-6** for Oregon Child Care Licensing."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -11670,6 +12540,168 @@
     {
       "from": "phone_dialog_0002140#turn-4",
       "to": "phone_dialog_0002140#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002152#turn-1",
+      "to": "phone_dialog_0002152#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002152#turn-3",
+      "to": "phone_dialog_0002152#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002162#turn-1",
+      "to": "phone_dialog_0002162#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002162#turn-2",
+      "to": "phone_dialog_0002162#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002162#turn-3",
+      "to": "phone_dialog_0002162#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002162#turn-4",
+      "to": "phone_dialog_0002162#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002172#turn-1",
+      "to": "phone_dialog_0002172#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002172#turn-3",
+      "to": "phone_dialog_0002172#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002206#turn-2",
+      "to": "phone_dialog_0002206#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002206#turn-3",
+      "to": "phone_dialog_0002206#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002206#turn-5",
+      "to": "phone_dialog_0002206#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002222#turn-2",
+      "to": "phone_dialog_0002222#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002222#turn-3",
+      "to": "phone_dialog_0002222#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002222#turn-4",
+      "to": "phone_dialog_0002222#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002247#turn-1",
+      "to": "phone_dialog_0002247#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002253#turn-1",
+      "to": "phone_dialog_0002253#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002253#turn-3",
+      "to": "phone_dialog_0002253#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002285#turn-1",
+      "to": "phone_dialog_0002285#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002285#turn-2",
+      "to": "phone_dialog_0002285#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002306#turn-1",
+      "to": "phone_dialog_0002306#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002306#turn-3",
+      "to": "phone_dialog_0002306#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002325#turn-2",
+      "to": "phone_dialog_0002325#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002325#turn-4",
+      "to": "phone_dialog_0002325#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002325#turn-5",
+      "to": "phone_dialog_0002325#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0002333#turn-2",
+      "to": "phone_dialog_0002333#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002333#turn-3",
+      "to": "phone_dialog_0002333#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002333#turn-4",
+      "to": "phone_dialog_0002333#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

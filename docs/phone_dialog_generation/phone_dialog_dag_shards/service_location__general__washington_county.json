@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__washington_county",
   "kind": "service_location",
   "key": "general__washington_county",
-  "nodeCount": 89,
+  "nodeCount": 100,
   "nodes": [
     {
       "id": "phone_dialog_0000073#turn-1",
@@ -2670,6 +2670,336 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002189#turn-1",
+      "scenarioId": "phone_dialog_0002189",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, I\u2019m 16, I left home two nights ago, and I\u2019m in Washington County right now by the bus stop.",
+      "normalizedQuery": "hi um 16 left home two nights ago washington county right now by bus stop",
+      "voiceResponse": "Thanks for telling me. You did the right thing calling. You don\u2019t need to share anything you\u2019re not ready to share. If you feel in immediate danger right now, call 911. If you want, I can connect you to a live 211 specialist now to help find a safe youth place tonight in Washington County and talk through your options quietly.",
+      "evidenceDocIds": [
+        "page:bafkreibrwtwzp673s5y5nsk4qryompt2csus5eav4eeg7dkwzrfkwlc5uq",
+        "page:bafkreih6ggishwe6sfbs5rzyoup5rmfn7ozds4ai274jg37iefkzqr2aga",
+        "page:bafkreiaa4x4rnhydiuj34jkc6mjbepb7wriov4627ult5rqdfy6wssb75e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreickpuh3htckzgkt7nsuratnqnl4nb2ktu5zrgjcacv5mjnyde4dxe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for telling me. You did the right thing calling. You don\u2019t need to share anything you\u2019re not ready to share. If you feel in immediate danger right now, call 911. If you want, I can connect you to a live 211 specialist now to help find a safe youth place tonight in Washington County and talk through your options quietly.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002189#turn-2",
+      "scenarioId": "phone_dialog_0002189",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s a lot of noise out here, can you say that again? I just need somewhere safe to sleep tonight.",
+      "normalizedQuery": "hi um 16 left home two nights ago washington county right now by bus stop sorry there lot noise here say again just somewhere safe sleep tonight",
+      "voiceResponse": "Of course. I\u2019ll repeat it clearly. You don\u2019t have to share anything you\u2019re not ready to share. If you feel in immediate danger, call 911. If you want, I can connect you to a live 211 specialist now to find a safe youth place for tonight in Washington County, and go over options quietly with you.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibrwtwzp673s5y5nsk4qryompt2csus5eav4eeg7dkwzrfkwlc5uq",
+        "page:bafkreih6ggishwe6sfbs5rzyoup5rmfn7ozds4ai274jg37iefkzqr2aga",
+        "page:bafkreiaivop5s26hcgcpstok2unp3jdsfec2wne2pd4macooorcwmvszka"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll repeat it clearly. You don\u2019t have to share anything you\u2019re not ready to share. If you feel in immediate danger, call 911. If you want, I can connect you to a live 211 specialist now to find a safe youth place for tonight in Washington County, and go over options quietly with you.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: **9-1-1**. For VA outreach, call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. Backup number: **5-4-1, 4-4-0, 1-0-0-0**. I\u2019ll repeat: **5-4-1, 4-4-0, 1-0-0-0**.",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call **9-1-1** now.",
+        "Of course. The two phone numbers are: First: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. Second: **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3**, then **extension 2 0 9**.",
+        "I\u2019ll repeat it clearly: I\u2019m connecting you to a live specialist now to find the closest warm, safe place. If you are in immediate danger from the cold, call **9-1-1** now. Stay on the line with me if you can."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002189#turn-3",
+      "scenarioId": "phone_dialog_0002189",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019ve been couch-surfing, but one of the older guys at this apartment keeps saying I owe him stuff to stay, and it doesn\u2019t feel safe.",
+      "normalizedQuery": "hi um 16 left home two nights ago washington county right now by bus stop sorry there lot noise here say again just somewhere safe sleep tonight ve been couch surfing one older guys at this apartment keeps saying owe him stuff stay it doesn feel",
+      "voiceResponse": "I\u2019m really glad you said that. What he\u2019s doing is not okay, and your safety matters. Quick check: are you in immediate danger right this second? If yes, call 911 now. If not, we can keep this low-key and get you somewhere safer tonight. I can connect you to a live 211 specialist in Washington County right now to help with youth-safe shelter options and a safe exit plan. You share only what you want.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. What he\u2019s doing is not okay, and your safety matters. Quick check: are you in immediate danger right this second? If yes, call 911 now. If not, we can keep this low-key and get you somewhere safer tonight. I can connect you to a live 211 specialist in Washington County right now to help with youth-safe shelter options and a safe exit plan. You share only what you want.",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. Dizziness and weak legs after heat can be serious. Serious. Please sit or lie down in shade now. Take small sips of cool water. If you have chest pain, trouble breathing, confusion, or you faint, call 9-1-1 now. Call 9-1-1 now. Are you alone right now?",
+        "I hear you. Quick safety check first: are you safe right now, and able to breathe okay? If you\u2019re in immediate danger, call **9-1-1** now. The number again is **2-1-1**: that\u2019s **two, one, one**. If your phone dies, try to keep it brief: \u201cI\u2019m 22, in Washington County, need urgent same-day dental care, no regular dentist.\u201d",
+        "Most important number first: call **9-1-1** now. Again, **9-1-1**. You are shaking and dizzy in the cold, and that can be serious. Please get inside somewhere warm right now, out of wind, if you can. Can you call **9-1-1** now and tell me once you\u2019ve started the call?",
+        "I hear you. You\u2019re very cold and shaking. You\u2019re very cold and shaking. First, are you in immediate danger right now, or having chest pain, trouble breathing, or feeling confused? If yes, call 9-1-1 now. I can stay with you while you call. If no, I\u2019ll help you find the nearest warm indoor place in Washington County right now."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002189#turn-4",
+      "scenarioId": "phone_dialog_0002189",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not trying to get anyone in trouble, I just don\u2019t want my name shared or my parents called yet, is this private?",
+      "normalizedQuery": "hi um 16 left home two nights ago washington county right now by bus stop sorry there lot noise here say again just somewhere safe sleep tonight ve been couch surfing one older guys at this apartment keeps saying owe him stuff stay it doesn feel trying anyone trouble don want name shared parents called yet private",
+      "voiceResponse": "That makes sense, and you\u2019re not asking for anything wrong. You can keep it minimal and share only what you choose. I won\u2019t ask for extra details you don\u2019t want to give. If you\u2019re in immediate danger right now, call 911. If you want, I can connect you to a live 211 specialist now and you can start by saying, \u201cI need a safe place tonight, and I don\u2019t want my name shared yet.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re not asking for anything wrong. You can keep it minimal and share only what you choose. I won\u2019t ask for extra details you don\u2019t want to give. If you\u2019re in immediate danger right now, call 911. If you want, I can connect you to a live 211 specialist now and you can start by saying, \u201cI need a safe place tonight, and I don\u2019t want my name shared yet.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002199#turn-1",
+      "scenarioId": "phone_dialog_0002199",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I only got a minute, this is not my phone and the battery is almost dead, can you give me the safest number first for Washington County?",
+      "normalizedQuery": "hi only got minute this phone battery almost dead give safest number first washington county",
+      "voiceResponse": "Okay. Main number: (503) 846-4918. Call 503, 846, 4918. I\u2019ll repeat: 503, 846, 4918. If that line does not work, backup number: (503) 862-7874. Call 503, 862, 7874.",
+      "evidenceDocIds": [
+        "service:ac3a1d3c1ff7ffd6",
+        "service:a6af0a0c66fba050",
+        "service:69a098f45e89a214",
+        "service:8389c48742b7b175",
+        "service:9272d823f204d412"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Main number: (503) 846-4918. Call 503, 846, 4918. I\u2019ll repeat: 503, 846, 4918. If that line does not work, backup number: (503) 862-7874. Call 503, 862, 7874.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002199#turn-2",
+      "scenarioId": "phone_dialog_0002199",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m crying, he checks my calls and messages, so please don\u2019t say my name back or anything detailed out loud.",
+      "normalizedQuery": "hi only got minute this phone battery almost dead give safest number first washington county sorry crying he checks calls messages so please don say name back anything detailed loud",
+      "voiceResponse": "You\u2019re doing the right thing. We can keep this minimal. Main number: 503, 846, 4918. I\u2019ll repeat: 503, 846, 4918. Backup number: 503, 862, 7874. If speaking feels risky, you can hang up after they answer and call back when it\u2019s safer.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. We can keep this minimal. Main number: 503, 846, 4918. I\u2019ll repeat: 503, 846, 4918. Backup number: 503, 862, 7874. If speaking feels risky, you can hang up after they answer and call back when it\u2019s safer.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002266#turn-2",
+      "scenarioId": "phone_dialog_0002266",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Washington County, and my ex keeps showing up where I am, texting threats, and saying if I go back to get my things he\u2019ll be waiting.",
+      "normalizedQuery": "hi this isn phone it at like two percent so give most important number first case we cut off washington county ex keeps showing up texting threats saying if go back things he ll be waiting",
+      "voiceResponse": "Call 9-1-1 now if you feel in immediate danger. If you can, leave that location and go somewhere public or with people. If you want, I can connect you to a live 211 specialist next for shelter and safety planning, with minimal details. If this phone dies, call 211 back and say \u201clive agent.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 9-1-1 now if you feel in immediate danger. If you can, leave that location and go somewhere public or with people. If you want, I can connect you to a live 211 specialist next for shelter and safety planning, with minimal details. If this phone dies, call 211 back and say \u201clive agent.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002266#turn-3",
+      "scenarioId": "phone_dialog_0002266",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not with him this second, but I\u2019m scared to go back tonight, and I need to keep this quiet because he checks my accounts and call logs.",
+      "normalizedQuery": "hi this isn phone it at like two percent so give most important number first case we cut off washington county ex keeps showing up texting threats saying if go back things he ll be waiting him second scared tonight keep quiet because checks accounts call logs",
+      "voiceResponse": "Main number: 211. I can connect you to a live specialist now for a safe place tonight and a quiet safety plan. You can share very little, just that you\u2019re in Washington County and need help tonight. If this call drops, call 211 back and say \u201clive agent.\u201d If he shows up or you feel immediate danger, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: 211. I can connect you to a live specialist now for a safe place tonight and a quiet safety plan. You can share very little, just that you\u2019re in Washington County and need help tonight. If this call drops, call 211 back and say \u201clive agent.\u201d If he shows up or you feel immediate danger, call 911.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002266#turn-4",
+      "scenarioId": "phone_dialog_0002266",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you repeat that hotline slower? I\u2019m outside and there\u2019s traffic, I missed the middle part.",
+      "normalizedQuery": "hi this isn phone it at like two percent so give most important number first case we cut off washington county ex keeps showing up texting threats saying if go back things he ll be waiting him second scared tonight keep quiet because checks accounts call logs sorry repeat hotline slower outside there traffic missed middle part",
+      "voiceResponse": "I\u2019ll repeat: 2, 1, 1. Call 2, 1, 1. Ask for a live agent. You can share very little. If you feel immediate danger, call 9, 1, 1.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: 2, 1, 1. Call 2, 1, 1. Ask for a live agent. You can share very little. If you feel immediate danger, call 9, 1, 1.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: **9-1-1**. For VA outreach, call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. Backup number: **5-4-1, 4-4-0, 1-0-0-0**. I\u2019ll repeat: **5-4-1, 4-4-0, 1-0-0-0**.",
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call **9-1-1** now.",
+        "Of course. The two phone numbers are: First: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. Second: **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3**, then **extension 2 0 9**.",
+        "I\u2019ll repeat it clearly: I\u2019m connecting you to a live specialist now to find the closest warm, safe place. If you are in immediate danger from the cold, call **9-1-1** now. Stay on the line with me if you can."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002284#turn-1",
+      "scenarioId": "phone_dialog_0002284",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, I can barely hear you, can you talk louder? I\u2019m in Washington County and my insulin bag got stolen last night.",
+      "normalizedQuery": "hi sorry barely hear talk louder washington county insulin bag got stolen last night",
+      "voiceResponse": "I\u2019m speaking louder now. First, are you having chest pain, trouble breathing, or confusion right now? If yes, call 9-1-1 now. If you are safe, I can give one local shelter contact while we find next medical help: NIGHT SHELTER ANNEX. Call 541, 342, 7728. I\u2019ll repeat: 541, 342, 7728.",
+      "evidenceDocIds": [
+        "service:17f85caae2094027",
+        "service:36b21c6682d22d49",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiede56k7f33nvbaxqaeini6sz4wxd7omofhleb2h4yaz347erg53q",
+        "service:24561653fddc898b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m speaking louder now. First, are you having chest pain, trouble breathing, or confusion right now? If yes, call 9-1-1 now. If you are safe, I can give one local shelter contact while we find next medical help: NIGHT SHELTER ANNEX. Call 541, 342, 7728. I\u2019ll repeat: 541, 342, 7728.",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. Dizziness and weak legs after heat can be serious. Serious. Please sit or lie down in shade now. Take small sips of cool water. If you have chest pain, trouble breathing, confusion, or you faint, call 9-1-1 now. Call 9-1-1 now. Are you alone right now?",
+        "I hear you. Quick safety check first: are you safe right now, and able to breathe okay? If you\u2019re in immediate danger, call **9-1-1** now. The number again is **2-1-1**: that\u2019s **two, one, one**. If your phone dies, try to keep it brief: \u201cI\u2019m 22, in Washington County, need urgent same-day dental care, no regular dentist.\u201d",
+        "Most important number first: call **9-1-1** now. Again, **9-1-1**. You are shaking and dizzy in the cold, and that can be serious. Please get inside somewhere warm right now, out of wind, if you can. Can you call **9-1-1** now and tell me once you\u2019ve started the call?",
+        "I hear you. You\u2019re very cold and shaking. You\u2019re very cold and shaking. First, are you in immediate danger right now, or having chest pain, trouble breathing, or feeling confused? If yes, call 9-1-1 now. I can stay with you while you call. If no, I\u2019ll help you find the nearest warm indoor place in Washington County right now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002315#turn-1",
+      "scenarioId": "phone_dialog_0002315",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, hold on, you said my name? I\u2019m in Washington County, I think, and the walls are passing messages again, like coded radio.",
+      "normalizedQuery": "hi sorry hold on said name washington county think walls passing messages again like coded radio",
+      "voiceResponse": "You\u2019re not bothering me, and I\u2019m glad you said that out loud. I\u2019m Abby. What you\u2019re describing sounds intense, and I want you safe first. Are you in immediate danger right now, or thinking of hurting yourself or anyone else? If yes, call 911 now. If you can, move to a quieter place, away from anything sharp, and stay on the line with me while we take the next step together.",
+      "evidenceDocIds": [
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not bothering me, and I\u2019m glad you said that out loud. I\u2019m Abby. What you\u2019re describing sounds intense, and I want you safe first. Are you in immediate danger right now, or thinking of hurting yourself or anyone else? If yes, call 911 now. If you can, move to a quieter place, away from anything sharp, and stay on the line with me while we take the next step together.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a safe place tonight in Washington County. If you feel in immediate danger, call 911 now. 9-1-1 now. I can connect you to VA outreach right away: Call **5-0-3, 7-2-1, 1-0-2-5**. I\u2019ll repeat: **5-0-3, 7-2-1, 1-0-2-5**. If that does not answer, call **5-4-1, 4-4-0, 1-0-0-0**. Are you in immediate danger right this minute?",
+        "Thank you for telling me. You\u2019re not alone in this. If you feel faint, confused, or like you might pass out, please call 911 now for immediate help. If you want, I can connect you to a live WA 211 person right now so they can help find a cool safe place nearby and stay with you while you make a plan. We can do this one step at a time.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. You\u2019ve done the right thing by calling. I can connect you to a live WA 211 person right now so they can find a cool place you can go today in Washington County and stay with you through next steps. If you start feeling faint, confused, or like you might pass out, call 911 right away.",
+        "Yes, I hear you. I\u2019m here with you. For tonight, I have Warm Springs Senior Wellness Center: **2331 High Lookee, Warm Springs, Oregon, 97761**. Phone is **541-553-3313**. Again: **541-553-3313**. If you are in immediate danger from cold right now, call **911** now. Can you get to Warm Springs tonight?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -3158,6 +3488,72 @@
       "to": "phone_dialog_0002110#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002189#turn-1",
+      "to": "phone_dialog_0002189#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002189#turn-2",
+      "to": "phone_dialog_0002189#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002189#turn-3",
+      "to": "phone_dialog_0002189#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002189#turn-4",
+      "to": "phone_dialog_0002189#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002199#turn-1",
+      "to": "phone_dialog_0002199#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002199#turn-2",
+      "to": "phone_dialog_0002199#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002266#turn-2",
+      "to": "phone_dialog_0002266#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002266#turn-3",
+      "to": "phone_dialog_0002266#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002266#turn-4",
+      "to": "phone_dialog_0002266#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002284#turn-1",
+      "to": "phone_dialog_0002284#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002315#turn-1",
+      "to": "phone_dialog_0002315#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__hillsboro",
   "kind": "service_location",
   "key": "health__hillsboro",
-  "nodeCount": 27,
+  "nodeCount": 33,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-2",
@@ -556,7 +556,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you, and I\u2019m really glad you called. Your audio cut out for a second. Are you asking for detox **today**? If yes, just say **\u201cPortland\u201d** or **\u201c541 area\u201d**, and I\u2019ll give you the right number right away.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just this: is your friend awake and breathing right now, yes or no?",
+        "I hear how scared you are. Your audio is breaking up, but this part is clear enough: if he won\u2019t wake up and only groans, call 911 now. Put your phone on speaker, lay him on his side, and stay with him. I need one quick repeat: is he breathing right now, yes or no?"
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
@@ -795,6 +798,182 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002170#turn-6",
+      "scenarioId": "phone_dialog_0002170",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "If he makes it through this, I still need detox options in Hillsboro, but right now I need emergency help.",
+      "normalizedQuery": "if he makes it through this still detox options hillsboro right now emergency",
+      "voiceResponse": "You\u2019re doing the right thing, and I\u2019m with you. Right now this is life-or-death, so call 911 now if you haven\u2019t already, and put them on speaker. Say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Give naloxone now if you have it. If he\u2019s breathing, keep him on his side. If he stops breathing, start hard, fast chest compressions in the center of his chest. Once EMS is on the way, I can help with Hillsboro detox options.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I\u2019m with you. Right now this is life-or-death, so call 911 now if you haven\u2019t already, and put them on speaker. Say: \u201cPossible overdose, slow gurgling breathing, barely responsive.\u201d Give naloxone now if you have it. If he\u2019s breathing, keep him on his side. If he stops breathing, start hard, fast chest compressions in the center of his chest. Once EMS is on the way, I can help with Hillsboro detox options.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. Shaking and feeling scared can be serious, so please do not stop on your own right now. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** now. For detox tonight, call **5 4 1, 5 2 3, 4 0 4 9** right now, and I can stay with you while you call.",
+        "That does not sound bad, it sounds dangerous, and I\u2019m really glad you said it. You\u2019re at real medical risk if you detox alone. If you feel faint, confused, or might hurt yourself, call **9 1 1** right now. I\u2019m getting you to a live agent now to help you get safe detox tonight. Stay with me and keep breathing slowly with me.",
+        "Yes, I can help you get into a place today. You should not do this alone tonight. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** right now. Otherwise, call **5 4 1, 5 2 3, 4 0 4 9** now for detox intake, and if they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay with me while you make the call.",
+        "Of course. The provider is **Cascades West Ride Line**. Slowly: **Cas-cades**... **West**... **Ride**... **Line**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002182#turn-1",
+      "scenarioId": "phone_dialog_0002182",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, my signal is bad... I\u2019m in Hillsboro and I need help for my friend, like detox or something, he took a lot and I don\u2019t know what to do.",
+      "normalizedQuery": "hi sorry signal bad hillsboro friend like detox something he took lot don know",
+      "voiceResponse": "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just this: is your friend awake and breathing right now, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:28acd183a54cc8a5",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just this: is your friend awake and breathing right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m really glad you called. Your audio cut out for a second. Are you asking for detox **today**? If yes, just say **\u201cPortland\u201d** or **\u201c541 area\u201d**, and I\u2019ll give you the right number right away.",
+        "I hear how scared you are. Your audio is breaking up, but this part is clear enough: if he won\u2019t wake up and only groans, call 911 now. Put your phone on speaker, lay him on his side, and stay with him. I need one quick repeat: is he breathing right now, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002182#turn-2",
+      "scenarioId": "phone_dialog_0002182",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? You\u2019re cutting out... he\u2019s on the couch, eyes half open, kinda mumbling, I can smell alcohol and I think pills too.",
+      "normalizedQuery": "hi sorry signal bad hillsboro friend like detox something he took lot don know say again re cutting on couch eyes half open kinda mumbling smell alcohol think pills too",
+      "voiceResponse": "I hear you, this is scary. I\u2019ll repeat: is your friend awake and breathing right now, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e8399a8259fb5c21",
+        "service:28acd183a54cc8a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, this is scary. I\u2019ll repeat: is your friend awake and breathing right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "The place you said is **Hillsboro, near downtown**. The number is **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Again: **541, 523, 4049**.",
+        "Yes. The main number is: **5 4 1\u2026 9 2 4\u2026 8 7 3 8**. Second number: **5 4 1\u2026 9 6 7\u2026 8 6 3 0**.",
+        "Yeah\u2014repeating it clearly: if he took pills plus alcohol and keeps nodding off, that\u2019s an emergency. Call 911 now. After that, I can connect you to a 211 specialist to check live detox options near Hillsboro that are less likely to turn people away.",
+        "You\u2019re okay, I\u2019ve got you. Slow repeat: call **9-1-1** right now. Say: \u201cPossible fentanyl overdose. Person slumped over, hard to wake.\u201d If you have naloxone, give it now. Try to wake him, keep him on his side, and watch his breathing. I can stay with you while you call."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002182#turn-3",
+      "scenarioId": "phone_dialog_0002182",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, hold on... I shook him and he won\u2019t really wake up, just groans. I\u2019m freaking out.",
+      "normalizedQuery": "hi sorry signal bad hillsboro friend like detox something he took lot don know say again re cutting on couch eyes half open kinda mumbling smell alcohol think pills too wait hold shook him won really wake up just groans freaking",
+      "voiceResponse": "I hear how scared you are. Your audio is breaking up, but this part is clear enough: if he won\u2019t wake up and only groans, call 911 now. Put your phone on speaker, lay him on his side, and stay with him. I need one quick repeat: is he breathing right now, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scared you are. Your audio is breaking up, but this part is clear enough: if he won\u2019t wake up and only groans, call 911 now. Put your phone on speaker, lay him on his side, and stay with him. I need one quick repeat: is he breathing right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m really glad you called. Your audio cut out for a second. Are you asking for detox **today**? If yes, just say **\u201cPortland\u201d** or **\u201c541 area\u201d**, and I\u2019ll give you the right number right away.",
+        "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just this: is your friend awake and breathing right now, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002182#turn-4",
+      "scenarioId": "phone_dialog_0002182",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "His breathing sounds weird, like slow and snoring, then long pauses. Is that bad?",
+      "normalizedQuery": "hi sorry signal bad hillsboro friend like detox something he took lot don know say again re cutting on couch eyes half open kinda mumbling smell alcohol think pills too wait hold shook him won really wake up just groans freaking his breathing sounds weird slow snoring then long pauses",
+      "voiceResponse": "Yes, that is bad. Slow, snoring breathing with long pauses after alcohol or pills can be life-threatening. Call 911 now, right now. Put him on his side, keep his airway clear, and stay with him. If breathing stops, tell 911 immediately and start CPR if they instruct you. Do not let him \u201csleep it off.\u201d I\u2019m here with you. Is 911 on the line now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that is bad. Slow, snoring breathing with long pauses after alcohol or pills can be life-threatening. Call 911 now, right now. Put him on his side, keep his airway clear, and stay with him. If breathing stops, tell 911 immediately and start CPR if they instruct you. Do not let him \u201csleep it off.\u201d I\u2019m here with you. Is 911 on the line now?",
+      "voiceResponseAlternatives": [
+        "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**.",
+        "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**.",
+        "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery.",
+        "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002182#turn-6",
+      "scenarioId": "phone_dialog_0002182",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "After this, if he\u2019s okay, I still need detox help near Hillsboro because this keeps happening.",
+      "normalizedQuery": "after this if he okay still detox hillsboro because keeps happening",
+      "voiceResponse": "I hear you, and you\u2019re thinking ahead in a strong way. Right now, call 911 first and stay with him until they take over. After he\u2019s safe, for detox help you can call Recovery Village Center Medical Detox. The number is 541, 523, 4049. Backup number: 541, 406, 4363. If we get cut off, call 911 first.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:a80fc4c7b16e0d53",
+        "service:ba024a031f6ac689",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re thinking ahead in a strong way. Right now, call 911 first and stay with him until they take over. After he\u2019s safe, for detox help you can call Recovery Village Center Medical Detox. The number is 541, 523, 4049. Backup number: 541, 406, 4363. If we get cut off, call 911 first.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. Shaking and feeling scared can be serious, so please do not stop on your own right now. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** now. For detox tonight, call **5 4 1, 5 2 3, 4 0 4 9** right now, and I can stay with you while you call.",
+        "That does not sound bad, it sounds dangerous, and I\u2019m really glad you said it. You\u2019re at real medical risk if you detox alone. If you feel faint, confused, or might hurt yourself, call **9 1 1** right now. I\u2019m getting you to a live agent now to help you get safe detox tonight. Stay with me and keep breathing slowly with me.",
+        "Yes, I can help you get into a place today. You should not do this alone tonight. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** right now. Otherwise, call **5 4 1, 5 2 3, 4 0 4 9** now for detox intake, and if they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay with me while you make the call.",
+        "Of course. The provider is **Cascades West Ride Line**. Slowly: **Cas-cades**... **West**... **Ride**... **Line**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -947,6 +1126,30 @@
       "to": "phone_dialog_0001948#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002182#turn-1",
+      "to": "phone_dialog_0002182#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002182#turn-2",
+      "to": "phone_dialog_0002182#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002182#turn-3",
+      "to": "phone_dialog_0002182#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002182#turn-4",
+      "to": "phone_dialog_0002182#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

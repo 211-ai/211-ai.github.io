@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__hillsboro",
   "kind": "service_location",
   "key": "broad_help__hillsboro",
-  "nodeCount": 14,
+  "nodeCount": 17,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-5",
@@ -256,7 +256,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. Next step: call now. The number is **503** \u2026 **368** \u2026 **9895**. I\u2019ll repeat it: **503** \u2026 **368** \u2026 **9895**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I know this is terrifying. This sounds like an overdose emergency. Call 911 now. Put your phone on speaker. If you have naloxone, give it now. Lay him on his side if he\u2019s breathing, and clear his mouth. If he stops breathing, start chest compressions, hard and fast in the center of his chest. Stay with me. Are you able to call 911 right now?"
+      ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
@@ -402,6 +404,88 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002170#turn-1",
+      "scenarioId": "phone_dialog_0002170",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Sorry, your voice is cutting out... I\u2019m in Hillsboro and I need help, my friend took a lot and I think he might be overdosing.",
+      "normalizedQuery": "hello sorry your voice cutting hillsboro friend took lot think he might be overdosing",
+      "voiceResponse": "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please repeat just this one thing: is your friend breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:e199df043ac5d3f3",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:09f0f9ede3cd2dda",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scary this is, and I\u2019m with you. Your audio cut out, so I missed part of that. Please repeat just this one thing: is your friend breathing right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002170#turn-2",
+      "scenarioId": "phone_dialog_0002170",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that? I can\u2019t hear good on this line... he\u2019s on the floor and he\u2019s barely responding when I shake him.",
+      "normalizedQuery": "hello sorry your voice cutting hillsboro friend took lot think he might be overdosing repeat hear good on this line floor barely responding when shake him",
+      "voiceResponse": "I know this is scary. I\u2019ll repeat: is your friend breathing right now? Just yes or no.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:e199df043ac5d3f3",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I know this is scary. I\u2019ll repeat: is your friend breathing right now? Just yes or no.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. The number is: 5-0-3. Then: 5-4-2. Then: 2-7-1-7. Again: 5-0-3. 5-4-2. 2-7-1-7.",
+        "Yes. I\u2019ll repeat it slowly. Address: 4-5-4, Southeast Washington Street, Hillsboro, 9-7-1-2-3. Again: 4-5-4, Southeast Washington Street, Hillsboro, 9-7-1-2-3.",
+        "Yes. I will go slower. You are in Hillsboro, and your landlord posted a notice. I need one detail: what kind of notice is it? Is it a rent nonpayment notice, a lease violation notice, or a termination notice? I\u2019ll repeat that: rent nonpayment, lease violation, or termination.",
+        "Yes. The name is **Centro Cultural** \u2014 slowly: **Cen-tro Cul-tu-ral**. Next step: call them now and ask for clothing basics or clothing referrals for adults and kids."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002170#turn-3",
+      "scenarioId": "phone_dialog_0002170",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "His breathing is weird, like slow and gurgly, then nothing for a few seconds, and I\u2019m freaking out.",
+      "normalizedQuery": "hello sorry your voice cutting hillsboro friend took lot think he might be overdosing repeat hear good on this line floor barely responding when shake him his breathing weird like slow gurgly then nothing few seconds freaking",
+      "voiceResponse": "You\u2019re doing the right thing calling, and I know this is terrifying. This sounds like an overdose emergency. Call 911 now. Put your phone on speaker. If you have naloxone, give it now. Lay him on his side if he\u2019s breathing, and clear his mouth. If he stops breathing, start chest compressions, hard and fast in the center of his chest. Stay with me. Are you able to call 911 right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling, and I know this is terrifying. This sounds like an overdose emergency. Call 911 now. Put your phone on speaker. If you have naloxone, give it now. Lay him on his side if he\u2019s breathing, and clear his mouth. If he stops breathing, start chest compressions, hard and fast in the center of his chest. Stay with me. Are you able to call 911 right now?",
+      "voiceResponseAlternatives": [
+        "Yes. Next step: call now. The number is **503** \u2026 **368** \u2026 **9895**. I\u2019ll repeat it: **503** \u2026 **368** \u2026 **9895**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -470,6 +554,24 @@
       "to": "phone_dialog_0001887#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002170#turn-1",
+      "to": "phone_dialog_0002170#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002170#turn-2",
+      "to": "phone_dialog_0002170#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002170#turn-3",
+      "to": "phone_dialog_0002170#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

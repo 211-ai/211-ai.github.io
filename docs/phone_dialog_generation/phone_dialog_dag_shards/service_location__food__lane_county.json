@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__lane_county",
   "kind": "service_location",
   "key": "food__lane_county",
-  "nodeCount": 22,
+  "nodeCount": 24,
   "nodes": [
     {
       "id": "phone_dialog_0000155#turn-2",
@@ -650,7 +650,66 @@
       ],
       "similarCases": [],
       "assistantResponse": "Thank you. I hear you. Stairs and a tight walker space are not safe. Not safe. Quick safety check: is she safe right now, in this moment? I will keep connecting you to a live specialist for same-day help. They can help with in-home support, groceries, and getting to appointments. If she has chest pain, trouble breathing, new confusion, or cannot wake, call 9-1-1. Call 9-1-1.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re worried the home aide keeps not showing up. You\u2019re worried this could be neglect. I hear that. First, quick safety check: Is your mom safe right now, where she is? If yes, I can help with the next step. I can help you report missed visits and leave a clear message for the agency."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002252#turn-3",
+      "scenarioId": "phone_dialog_0002252",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that? I\u2019m hard of hearing, can you say that slower?",
+      "normalizedQuery": "hi calling neighbor lane county she 82 mostly alone worried being neglected yeah right now breathing okay on floor anything so immediate danger no keeps missing meals found yesterday pills still case sorry was hard hearing say slower",
+      "voiceResponse": "Of course. I\u2019ll say it slowly. If her breathing changes, or she seems confused, or unresponsive, call 9-1-1 right away. I\u2019ll repeat: call 9-1-1 right away. Are you with her right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie6s22rm54esp6idw3f3mhhqxm46j7kht6jqmzcblgwk4pvkajooy",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say it slowly. If her breathing changes, or she seems confused, or unresponsive, call 9-1-1 right away. I\u2019ll repeat: call 9-1-1 right away. Are you with her right now?",
+      "voiceResponseAlternatives": [
+        "Most important number: **2-1-1** \u2014 **two, one, one**. If you wanted the backup Portland number again, it is: **5-0-3, 4-8-4, 8-8-0-0**.",
+        "I only gave one place so far. I only gave one. Springfield OASIS Drop-In Day Center. Address: 1-0-2-5 G Street, Springfield. Again: 1-0-2-5 G Street, Springfield. Phone: 5-4-1, 3-4-5, 3-6-2-8. Again: 5-4-1, 3-4-5, 3-6-2-8.",
+        "You\u2019re okay, I can repeat it. Best match: the **Oregon Food Bank Food Pantry and Meal Locator**. It helps you find nearby food pantries and community meal sites in Lane County, including senior-friendly options. Eligibility is **unrestricted**. Documents **vary by site**. If you want, I can stay with you and do it step by step.",
+        "Yes. I\u2019ll say it slower. Food Pantry and Meals, at Clackamas Service Center. Phone: **503** \u2026 **771** \u2026 **7914**. I\u2019ll repeat: **503** \u2026 **771** \u2026 **7914**. Address: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I\u2019ll repeat: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. They have hot to-go meals. Eligibility is unrestricted."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002318#turn-4",
+      "scenarioId": "phone_dialog_0002318",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m worried this is neglect from the home aide service, they keep not showing up, and I live across town and can\u2019t always get there in time.",
+      "normalizedQuery": "hi sorry hear okay calling from lane county mom she 79 alone most days could say slower hard hearing on this phone didn eat yesterday found two pills still box right now says hurt gets dizzy her apartment stairs too much walker so safely food pantry meal meals groceries worried neglect home aide service they keep showing up live across town always there time",
+      "voiceResponse": "I hear you. You\u2019re worried the home aide keeps not showing up. You\u2019re worried this could be neglect. I hear that. First, quick safety check: Is your mom safe right now, where she is? If yes, I can help with the next step. I can help you report missed visits and leave a clear message for the agency.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re worried the home aide keeps not showing up. You\u2019re worried this could be neglect. I hear that. First, quick safety check: Is your mom safe right now, where she is? If yes, I can help with the next step. I can help you report missed visits and leave a clear message for the agency.",
+      "voiceResponseAlternatives": [
+        "Thank you. I hear you. Stairs and a tight walker space are not safe. Not safe. Quick safety check: is she safe right now, in this moment? I will keep connecting you to a live specialist for same-day help. They can help with in-home support, groceries, and getting to appointments. If she has chest pain, trouble breathing, new confusion, or cannot wake, call 9-1-1. Call 9-1-1."
+      ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
@@ -762,6 +821,18 @@
     {
       "from": "phone_dialog_0002066#turn-4",
       "to": "phone_dialog_0002066#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002252#turn-3",
+      "to": "phone_dialog_0002252#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002318#turn-4",
+      "to": "phone_dialog_0002318#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
     }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__family__salem",
   "kind": "service_location",
   "key": "family__salem",
-  "nodeCount": 34,
+  "nodeCount": 37,
   "nodes": [
     {
       "id": "phone_dialog_0000206#turn-2",
@@ -1005,6 +1005,96 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002265#turn-4",
+      "scenarioId": "phone_dialog_0002265",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A truck just went by. I\u2019m in Salem, near downtown, and I need diapers today.",
+      "normalizedQuery": "say again truck just went by salem downtown diapers diaper baby",
+      "voiceResponse": "Of course. You\u2019re doing the right thing. If heavy bleeding starts again, or you feel out of control, call 911 right away. For diapers today: call (541) 221-0824. I\u2019ll repeat: 541, 221, 0824. Location: 3050 Game Farm Road, Springfield, Oregon, 97478. They provide diapers and wipes, and eligibility is OHP, WIC, or SNAP.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreiezx37qgwxow7kj5qvgq2dvz5huyp5v4bbllyektmajx3htce3v4m",
+        "page:bafkreihddsczo7vly3v4ueijogtqmx2gwi6qlqqeotzxsgnfszr6njkp3u",
+        "service:c196660a779416f8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. You\u2019re doing the right thing. If heavy bleeding starts again, or you feel out of control, call 911 right away. For diapers today: call (541) 221-0824. I\u2019ll repeat: 541, 221, 0824. Location: 3050 Game Farm Road, Springfield, Oregon, 97478. They provide diapers and wipes, and eligibility is OHP, WIC, or SNAP.",
+      "voiceResponseAlternatives": [
+        "Of course. Slow and simple: First, dial **2-1-1**. Then say: **\u201cI\u2019m in Salem. I need emergency child care today so I can keep my work shift.\u201d** If the call drops, call **2-1-1** again and repeat that same sentence. I can stay with you while you do it.",
+        "Of course. Here it is slowly: Phone number: **8 0 0** \u2026 **5 5 6** \u2026 **6 6 1 6**. What to say: \u201cMy sitter canceled, and I need licensed emergency child care in Salem today.\u201d If you need the address too: **700 Summer Street Northeast, Suite 350, Salem**. We can do this one step at a time.",
+        "I did not give an address yet. Sorry about the noise. The number is **2-1-1**. That is **2 \u2026 1 \u2026 1**. The service name is **211info**. Again: **211info**.",
+        "Yes. The numbers I gave are: **503-802-8333** and **503-802-8300**. Slowly: **five-zero-three \u2026 eight-zero-two \u2026 eight-three-three-three**. And **five-zero-three \u2026 eight-zero-two \u2026 eight-three-zero-zero**. I don\u2019t have a Salem-specific address in front of me here, so these are the best contact numbers to start with."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002265#turn-5",
+      "scenarioId": "phone_dialog_0002265",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "We\u2019ve also been letting her sleep on a couch cushion because we don\u2019t have a crib, and I know that\u2019s not safe.",
+      "normalizedQuery": "was bleeding lot this morning like soaking pads fast got really scared right now it slowed down some no trying hurt myself second earlier had thought might drop baby started crying say again truck just went by salem downtown diapers diaper we ve also been letting her sleep on couch cushion because don have crib know safe",
+      "voiceResponse": "Thank you for saying that out loud. You\u2019re a caring mom, and this is fixable right now. Please stop using the couch cushion and move her now to a flat, firm surface on her back, with no pillows or loose blankets. If you feel overwhelmed or unsafe at any point, call 911 right away. I\u2019m connecting you to the live 211 specialist now to help find a safe sleep option today and diapers today.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for saying that out loud. You\u2019re a caring mom, and this is fixable right now. Please stop using the couch cushion and move her now to a flat, firm surface on her back, with no pillows or loose blankets. If you feel overwhelmed or unsafe at any point, call 911 right away. I\u2019m connecting you to the live 211 specialist now to help find a safe sleep option today and diapers today.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling now, and I know this is urgent. For Salem, the fastest step is 211info\u2019s Child Care Team for free, same-day child care referrals. Dial **2-1-1** now, and say: \u201cI\u2019m in Salem, I need emergency child care today so I can keep my work shift.\u201d If the line drops, call back and repeat that exact sentence. If you want, I can stay with you while you place the call.",
+        "I hear you, and you\u2019re not alone right now. Let\u2019s do one thing at a time. Take one slow breath with me, then dial **2-1-1** now. Say exactly: **\u201cI\u2019m in Salem. I need emergency child care today so I can keep my work shift.\u201d** If it drops, call **2-1-1** again and repeat that same line. If you feel unsafe at any point, call **9-1-1**. I\u2019m here with you.",
+        "I can help you move fast. Best first step: call the Child Care Licensing Division now at **8 0 0, 5 5 6, 6 6 1 6**. They can help with licensed care options and urgent child care questions in Salem. If you want in-person contact, their office is **700 Summer Street Northeast, Suite 350, Salem**. If you\u2019d like, I can also help you script exactly what to say on that call.",
+        "You\u2019re doing the right thing. Fastest option: call **8 0 0, 5 5 6, 6 6 1 6** now and say, \u201cMy sitter canceled and I need licensed emergency child care in Salem today.\u201d If calling is hard right now, second option is go in person to **700 Summer Street Northeast, Suite 350, Salem**. If you want, I can give you a 20-second script for your employer too."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002265#turn-6",
+      "scenarioId": "phone_dialog_0002265",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you have a number, please repeat it slow, my phone is at 3 percent and I don\u2019t want to lose this.",
+      "normalizedQuery": "right now it slowed down some no trying hurt myself this second earlier had thought might drop baby started crying say again truck just went by salem downtown diapers diaper we ve also been letting her sleep on couch cushion because don have crib know safe if number please repeat slow phone at percent want lose",
+      "voiceResponse": "You\u2019re doing the right thing. Call 541, 221, 0824. I\u2019ll repeat: 541, 221, 0824.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Call 541, 221, 0824. I\u2019ll repeat: 541, 221, 0824.",
+      "voiceResponseAlternatives": [
+        "Of course. Slow and simple: First, dial **2-1-1**. Then say: **\u201cI\u2019m in Salem. I need emergency child care today so I can keep my work shift.\u201d** If the call drops, call **2-1-1** again and repeat that same sentence. I can stay with you while you do it.",
+        "Of course. Here it is slowly: Phone number: **8 0 0** \u2026 **5 5 6** \u2026 **6 6 1 6**. What to say: \u201cMy sitter canceled, and I need licensed emergency child care in Salem today.\u201d If you need the address too: **700 Summer Street Northeast, Suite 350, Salem**. We can do this one step at a time.",
+        "I did not give an address yet. Sorry about the noise. The number is **2-1-1**. That is **2 \u2026 1 \u2026 1**. The service name is **211info**. Again: **211info**.",
+        "Yes. The numbers I gave are: **503-802-8333** and **503-802-8300**. Slowly: **five-zero-three \u2026 eight-zero-two \u2026 eight-three-three-three**. And **five-zero-three \u2026 eight-zero-two \u2026 eight-three-zero-zero**. I don\u2019t have a Salem-specific address in front of me here, so these are the best contact numbers to start with."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1157,6 +1247,18 @@
       "to": "phone_dialog_0002069#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002265#turn-4",
+      "to": "phone_dialog_0002265#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002265#turn-5",
+      "to": "phone_dialog_0002265#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

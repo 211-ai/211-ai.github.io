@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__work__medford",
   "kind": "service_location",
   "key": "work__medford",
-  "nodeCount": 20,
+  "nodeCount": 21,
   "nodes": [
     {
       "id": "phone_dialog_0000107#turn-4",
@@ -56,7 +56,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes, I can do that for you. I\u2019ll contact places first and ask only: \u201cDo you currently have men\u2019s interview clothing sizes in stock?\u201d I can keep your name out of it and share just \u201cMedford\u201d if needed. If you want, I can also ask about free options and hours so you only make one call after.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you. We can keep this off text and voicemail. You can use a short live-call script: \u201cI need help with safety, housing, and replacing documents. I can\u2019t share details right now. Please tell me the safest next step.\u201d If you want even less detail: \u201cI need confidential support and a safe way to talk.\u201d You can hang up anytime if it feels unsafe. If danger feels immediate, call 911."
+      ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
@@ -583,6 +585,33 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002345#turn-4",
+      "scenarioId": "phone_dialog_0002345",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "provider_contact_support",
+      "user": "They make me work and hand over money, and sometimes force sex. I don\u2019t want details on a text or voicemail.",
+      "normalizedQuery": "hi um talk long phone might be monitored so please keep this general medford right now person stay controls go took id papers sorry cut repeat slower trying voice down they make work hand over money sometimes force sex don want details on text voicemail",
+      "voiceResponse": "I hear you. We can keep this off text and voicemail. You can use a short live-call script: \u201cI need help with safety, housing, and replacing documents. I can\u2019t share details right now. Please tell me the safest next step.\u201d If you want even less detail: \u201cI need confidential support and a safe way to talk.\u201d You can hang up anytime if it feels unsafe. If danger feels immediate, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. We can keep this off text and voicemail. You can use a short live-call script: \u201cI need help with safety, housing, and replacing documents. I can\u2019t share details right now. Please tell me the safest next step.\u201d If you want even less detail: \u201cI need confidential support and a safe way to talk.\u201d You can hang up anytime if it feels unsafe. If danger feels immediate, call 911.",
+      "voiceResponseAlternatives": [
+        "Yes, I can do that for you. I\u2019ll contact places first and ask only: \u201cDo you currently have men\u2019s interview clothing sizes in stock?\u201d I can keep your name out of it and share just \u201cMedford\u201d if needed. If you want, I can also ask about free options and hours so you only make one call after."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -705,6 +734,12 @@
       "to": "phone_dialog_0002106#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002345#turn-4",
+      "to": "phone_dialog_0002345#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->safety_guardrail_support"
     }
   ]
 }

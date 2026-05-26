@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "route__calendar_event_support",
   "kind": "route",
   "key": "calendar_event_support",
-  "nodeCount": 286,
+  "nodeCount": 290,
   "nodes": [
     {
       "id": "phone_dialog_0000020#turn-5",
@@ -1066,7 +1066,8 @@
       "assistantResponse": "Absolutely, that\u2019s a smart plan, and we can make the reminder more complete. I can include the address in it. I don\u2019t have a bus line listed in my notes yet, but we can add one once it\u2019s confirmed. What is the appointment address?",
       "voiceResponseAlternatives": [
         "Most reliable next step: call **2-1-1** now and ask for \u201cshower locations with hours confirmed for tomorrow, before my interview.\u201d They can verify what\u2019s actually open, not just listed. If this phone dies, just redial **2-1-1** from any phone. What time is your interview tomorrow?",
-        "I can help with that. What time tomorrow can you come in?"
+        "I can help with that. What time tomorrow can you come in?",
+        "You\u2019re making sense, and I\u2019m here with you. If your breathing gets hard again, call 911 right away. For tomorrow, I can help one step at a time: what time do you need to be at work?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
@@ -2310,7 +2311,8 @@
       "assistantResponse": "Most reliable next step: call **2-1-1** now and ask for \u201cshower locations with hours confirmed for tomorrow, before my interview.\u201d They can verify what\u2019s actually open, not just listed. If this phone dies, just redial **2-1-1** from any phone. What time is your interview tomorrow?",
       "voiceResponseAlternatives": [
         "Absolutely, that\u2019s a smart plan, and we can make the reminder more complete. I can include the address in it. I don\u2019t have a bus line listed in my notes yet, but we can add one once it\u2019s confirmed. What is the appointment address?",
-        "I can help with that. What time tomorrow can you come in?"
+        "I can help with that. What time tomorrow can you come in?",
+        "You\u2019re making sense, and I\u2019m here with you. If your breathing gets hard again, call 911 right away. For tomorrow, I can help one step at a time: what time do you need to be at work?"
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -3288,7 +3290,8 @@
       "assistantResponse": "I can help with that. What time tomorrow can you come in?",
       "voiceResponseAlternatives": [
         "Absolutely, that\u2019s a smart plan, and we can make the reminder more complete. I can include the address in it. I don\u2019t have a bus line listed in my notes yet, but we can add one once it\u2019s confirmed. What is the appointment address?",
-        "Most reliable next step: call **2-1-1** now and ask for \u201cshower locations with hours confirmed for tomorrow, before my interview.\u201d They can verify what\u2019s actually open, not just listed. If this phone dies, just redial **2-1-1** from any phone. What time is your interview tomorrow?"
+        "Most reliable next step: call **2-1-1** now and ask for \u201cshower locations with hours confirmed for tomorrow, before my interview.\u201d They can verify what\u2019s actually open, not just listed. If this phone dies, just redial **2-1-1** from any phone. What time is your interview tomorrow?",
+        "You\u2019re making sense, and I\u2019m here with you. If your breathing gets hard again, call 911 right away. For tomorrow, I can help one step at a time: what time do you need to be at work?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -3532,7 +3535,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, we can do that. I can set a backup reminder for the next day if they don\u2019t answer. What time do you want that follow-up reminder?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re right, don\u2019t wait for a regular appointment. This sounds urgent now. Please go to the nearest emergency room immediately. If you feel faint, have trouble breathing or swallowing, or the swelling is getting worse, call 911 right now. Can you call 911 now while we\u2019re on the phone?"
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
@@ -8151,6 +8156,117 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002272#turn-6",
+      "scenarioId": "phone_dialog_0002272",
+      "turnIndex": 5,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "calendar_event_support",
+      "user": "I\u2019m sorry, I keep crying. I just need a plan for tonight and someone to talk to me about a protection order tomorrow.",
+      "normalizedQuery": "hurt right now he shoved last week think it getting worse survivor advocate just hotline number hold on someone walked by okay if shows up here call 911 first don want him hearing ask repeat shelter shelters homeless overnight warming option they safe ride have anyone trust pick sorry keep crying plan tonight talk protection order tomorrow",
+      "voiceResponse": "You don\u2019t need to apologize. We can keep this simple. For tonight: if you feel unsafe, call 911 first; if you can travel, the La Pine overnight shelter is an option, and the number is 541, 948, 6649. For tomorrow, I can help set one reminder to speak with a live 211 specialist about a protection order. What time tomorrow feels best for that reminder?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:32f8d8103ea16592",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize. We can keep this simple. For tonight: if you feel unsafe, call 911 first; if you can travel, the La Pine overnight shelter is an option, and the number is 541, 948, 6649. For tomorrow, I can help set one reminder to speak with a live 211 specialist about a protection order. What time tomorrow feels best for that reminder?",
+      "voiceResponseAlternatives": [
+        "Yes, absolutely. We can keep it private and label it \u201chousing paperwork.\u201d What time tomorrow afternoon would you like the reminder?",
+        "Absolutely, we can do that, and you\u2019re doing great. I can set two reminders: one for the appointment day, and one the day before. What date and time should I use for the appointment?",
+        "Next step: call the **Same Day Clinic** and ask for the earliest opening today; this service is appointment-based. The number is **541 \u2026 271 \u2026 6309**. I\u2019ll repeat: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**. I don\u2019t have confirmed details on same-day clothing from the info in front of me. Do you want a reminder set for morning or afternoon to make that call?",
+        "Perfect, that setup works. We\u2019ll do three reminders for each call: one the day before, one the morning of, and one 30 minutes before. One quick detail so I set it right: what time is your call tomorrow?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002276#turn-4",
+      "scenarioId": "phone_dialog_0002276",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "hillsboro",
+      "promptTemplate": "calendar_event_support",
+      "user": "I feel shaky and feverish and the pain is shooting into my jaw, I don\u2019t think I can wait for a regular appointment.",
+      "normalizedQuery": "hello really hear there lot going on here now tooth killing hillsboro shelter shelters homeless overnight warming lobby face swelling up one side since last night sorry say again slower people yelling bus just pulled feel shaky feverish pain shooting into jaw don think wait regular appointment",
+      "voiceResponse": "You\u2019re right, don\u2019t wait for a regular appointment. This sounds urgent now. Please go to the nearest emergency room immediately. If you feel faint, have trouble breathing or swallowing, or the swelling is getting worse, call 911 right now. Can you call 911 now while we\u2019re on the phone?",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:b739229de4536559",
+        "service:da479dd20eb5563d",
+        "service:bab9f596e07026df",
+        "service:5454a228a107c009"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right, don\u2019t wait for a regular appointment. This sounds urgent now. Please go to the nearest emergency room immediately. If you feel faint, have trouble breathing or swallowing, or the swelling is getting worse, call 911 right now. Can you call 911 now while we\u2019re on the phone?",
+      "voiceResponseAlternatives": [
+        "Absolutely, we can do that. I can set a backup reminder for the next day if they don\u2019t answer. What time do you want that follow-up reminder?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002294#turn-5",
+      "scenarioId": "phone_dialog_0002294",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "calendar_event_support",
+      "user": "My phone battery is like two percent, I just need somebody who can help me before tomorrow morning.",
+      "normalizedQuery": "slow down car it loud missed said after lane county yes eugene keep crying know sound crazy landlord says have be there hearing date on this wait hold legal aid attorney advocacy right say number again slower don pen phone battery like two percent just somebody who before tomorrow morning",
+      "voiceResponse": "I hear you, and this is urgent. If you feel unsafe or can\u2019t breathe, call 911 now. I can help right now with one quick reminder before tomorrow morning to call legal aid. What time should I set it for?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and this is urgent. If you feel unsafe or can\u2019t breathe, call 911 now. I can help right now with one quick reminder before tomorrow morning to call legal aid. What time should I set it for?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002309#turn-4",
+      "scenarioId": "phone_dialog_0002309",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "work",
+      "locationTag": "statewide",
+      "promptTemplate": "calendar_event_support",
+      "user": "I'm not making sense, I know, I'm crying, but I haven't had a shower in days and I have to go to work tomorrow.",
+      "normalizedQuery": "i'm making sense know crying haven't had shower days have go work tomorrow",
+      "voiceResponse": "You\u2019re making sense, and I\u2019m here with you. If your breathing gets hard again, call 911 right away. For tomorrow, I can help one step at a time: what time do you need to be at work?",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e8399a8259fb5c21",
+        "service:f525d65d4bd89731",
+        "service:28acd183a54cc8a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making sense, and I\u2019m here with you. If your breathing gets hard again, call 911 right away. For tomorrow, I can help one step at a time: what time do you need to be at work?",
+      "voiceResponseAlternatives": [
+        "Absolutely, that\u2019s a smart plan, and we can make the reminder more complete. I can include the address in it. I don\u2019t have a bus line listed in my notes yet, but we can add one once it\u2019s confirmed. What is the appointment address?",
+        "Most reliable next step: call **2-1-1** now and ask for \u201cshower locations with hours confirmed for tomorrow, before my interview.\u201d They can verify what\u2019s actually open, not just listed. If this phone dies, just redial **2-1-1** from any phone. What time is your interview tomorrow?",
+        "I can help with that. What time tomorrow can you come in?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -9375,6 +9491,24 @@
     {
       "from": "phone_dialog_0002083#turn-4",
       "to": "phone_dialog_0002083#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002276#turn-4",
+      "to": "phone_dialog_0002276#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002294#turn-5",
+      "to": "phone_dialog_0002294#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002309#turn-4",
+      "to": "phone_dialog_0002309#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "calendar_event_support->live_agent"
     }

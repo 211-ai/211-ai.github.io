@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__work__multnomah",
   "kind": "service_location",
   "key": "work__multnomah",
-  "nodeCount": 21,
+  "nodeCount": 22,
   "nodes": [
     {
       "id": "phone_dialog_0000342#turn-1",
@@ -615,6 +615,36 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002268#turn-2",
+      "scenarioId": "phone_dialog_0002268",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "She\u2019s in Multnomah County, her ex keeps showing up outside her job and texting threats, and she\u2019s scared to go back to her apartment tonight.",
+      "normalizedQuery": "she multnomah county her ex keeps showing up outside job texting threats scared go back apartment tonight",
+      "voiceResponse": "If she feels in immediate danger right now, call 911 first. For local help and safety planning: Main number: 971-319-9793. Call 971, 319, 9793. Backup number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. If it feels safer, she can ask about a safe place for tonight and help with threats from an ex.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:df6f05609bb7717a",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0ace06937c39cb61"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If she feels in immediate danger right now, call 911 first. For local help and safety planning: Main number: 971-319-9793. Call 971, 319, 9793. Backup number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. If it feels safer, she can ask about a safe place for tonight and help with threats from an ex.",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -737,6 +767,12 @@
       "to": "phone_dialog_0001959#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002268#turn-2",
+      "to": "phone_dialog_0002268#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

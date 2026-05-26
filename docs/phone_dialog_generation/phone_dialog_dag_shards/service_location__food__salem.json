@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__salem",
   "kind": "service_location",
   "key": "food__salem",
-  "nodeCount": 27,
+  "nodeCount": 28,
   "nodes": [
     {
       "id": "phone_dialog_0000128#turn-2",
@@ -795,6 +795,36 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002323#turn-4",
+      "scenarioId": "phone_dialog_0002323",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the name slowly? I miss letters on the phone, like S or F, I mix those up.",
+      "normalizedQuery": "static hello re cutting got uh le inaudible no sorry say again slower hearing bad heard 'food' maybe food pantry meal meals groceries hold on legal aid attorney advocacy salem getting papers from landlord don understand them repeat name slowly miss letters phone like mix those up",
+      "voiceResponse": "The name is Oregon Law Center. I\u2019ll repeat: Oregon Law Center. Oregon: O, R, E, G, O, N. Law Center.",
+      "evidenceDocIds": [
+        "service:97fd6b13a5399d5a",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreicuwafofc7at3r5slvg4m7hdnp5ny3f73xyfam7h6gpjygcenroay",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreieieiylvtx53hrcncy52q6j6zkqxxtb73xnqduxwb5p27a7dlaomm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The name is Oregon Law Center. I\u2019ll repeat: Oregon Law Center. Oregon: O, R, E, G, O, N. Law Center.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and thanks for checking. The name is: **Union Gospel Mission** \u2014 **Men\u2019s Mission Meals**. I\u2019ll say it one more time, slowly: **Union** \u2026 **Gospel** \u2026 **Mission**.",
+        "Yeah \u2014 the name is **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it in chunks: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**.",
+        "I hear you, and you\u2019re doing okay. We didn\u2019t give hours yet. I don\u2019t have verified hours on-screen for that spot right now. For a Salem clothing option, call **Hope Station** at **5 0 3, 3 3 9, 7 7 1 0** and ask, \u201cWhat are your clothing hours today?\u201d",
+        "Yes. One at a time. First place name: **Salem**. I said: **Salem**. Second place name in the address: **Madison Street**. I said: **Madison Street**. State: **Oregon**. I said: **Oregon**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -929,6 +959,12 @@
       "to": "phone_dialog_0001954#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002323#turn-4",
+      "to": "phone_dialog_0002323#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

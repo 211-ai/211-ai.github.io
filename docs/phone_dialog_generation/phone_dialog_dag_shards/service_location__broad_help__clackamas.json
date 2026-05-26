@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__clackamas",
   "kind": "service_location",
   "key": "broad_help__clackamas",
-  "nodeCount": 7,
+  "nodeCount": 9,
   "nodes": [
     {
       "id": "phone_dialog_0000127#turn-5",
@@ -78,7 +78,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "That worry makes a lot of sense. I can keep this as private and minimal as possible here, and you only share what you\u2019re comfortable sharing. A good low-barrier option is **Veterans Stand Down**\u2014their listing says **no documents required**. There\u2019s also **Homeless Veterans Coordinated Entry** in 211 for housing help. If you want, I can walk you through exactly what to say without giving extra personal details.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really sorry this happened. Your safety comes first right now. Leave that camp area and move toward a lit public place with people nearby, like a store or gas station. If they threatened you and your backpack was stolen, call 911 now and report both. If you can, keep moving while you call. Once you\u2019re in a safer spot, I can help with next steps for shelter and replacing essentials."
+      ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
@@ -188,6 +190,58 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002151#turn-1",
+      "scenarioId": "phone_dialog_0002151",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, I\u2019m in Clackamas... sorry, signal\u2019s bad. I need help fast.",
+      "normalizedQuery": "hi clackamas sorry signal bad fast",
+      "voiceResponse": "I hear you, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just one: \u201csafe place,\u201d \u201cfood,\u201d or \u201ccase help.\u201d",
+      "evidenceDocIds": [
+        "service:2d63f632b46d0d29",
+        "service:c1be66b3f546e230",
+        "service:b4f6da06252ca9af",
+        "service:03f0d7f3a93aaddb",
+        "service:77801dbfae971c49"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m with you. Your audio cut out, so I missed part of that. Please say just one: \u201csafe place,\u201d \u201cfood,\u201d or \u201ccase help.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002151#turn-2",
+      "scenarioId": "phone_dialog_0002151",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Some guys at the camp by the creek started threatening me, and somebody took my backpack last night.",
+      "normalizedQuery": "hi clackamas sorry signal bad fast some guys at camp by creek started threatening somebody took backpack last night",
+      "voiceResponse": "I\u2019m really sorry this happened. Your safety comes first right now. Leave that camp area and move toward a lit public place with people nearby, like a store or gas station. If they threatened you and your backpack was stolen, call 911 now and report both. If you can, keep moving while you call. Once you\u2019re in a safer spot, I can help with next steps for shelter and replacing essentials.",
+      "evidenceDocIds": [
+        "service:e03c087ec8e82c0c",
+        "service:08ec7daf2c890a4e",
+        "page:bafkreifnnx7os2rbah742w5jkvmtvykuezt6vglhcvyxofassz7llgc4za",
+        "page:bafkreignt7zaz67dtr2mwstc2okesmxrrifkifkudv2o5oqf456zdljmau",
+        "page:bafkreibxxhqm7xa3jktehgkyuc7xjc65a57jmraqu2nby7uzyw3npxznym"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry this happened. Your safety comes first right now. Leave that camp area and move toward a lit public place with people nearby, like a store or gas station. If they threatened you and your backpack was stolen, call 911 now and report both. If you can, keep moving while you call. Once you\u2019re in a safer spot, I can help with next steps for shelter and replacing essentials.",
+      "voiceResponseAlternatives": [
+        "That worry makes a lot of sense. I can keep this as private and minimal as possible here, and you only share what you\u2019re comfortable sharing. A good low-barrier option is **Veterans Stand Down**\u2014their listing says **no documents required**. There\u2019s also **Homeless Veterans Coordinated Entry** in 211 for housing help. If you want, I can walk you through exactly what to say without giving extra personal details."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -220,6 +274,18 @@
       "to": "phone_dialog_0001957#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "clarifying_prompt->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002151#turn-1",
+      "to": "phone_dialog_0002151#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002151#turn-2",
+      "to": "phone_dialog_0002151#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

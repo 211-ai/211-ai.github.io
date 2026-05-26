@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "route__wallet_document_support",
   "kind": "route",
   "key": "wallet_document_support",
-  "nodeCount": 239,
+  "nodeCount": 246,
   "nodes": [
     {
       "id": "phone_dialog_0000027#turn-3",
@@ -6880,6 +6880,211 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002156#turn-6",
+      "scenarioId": "phone_dialog_0002156",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "I need a quiet plan I can remember without texts, and somewhere that will still take me even without my documents.",
+      "normalizedQuery": "quiet plan remember without texts somewhere will still take even documents",
+      "voiceResponse": "Main number: 9 1 1, if you feel in immediate danger. Backup number: 5 4 1, 9 6 2, 7 9 9 4. Quiet plan: go to a public place, keep this call short, and share only your first name and where to meet safely. You can say, \u201cI don\u2019t have my documents with me.\u201d Ask for a safe pickup or shelter that can start without documents. No texts needed.",
+      "evidenceDocIds": [
+        "service:32f1368d2a1bbe2b",
+        "page:bafkreih57kvljmzhggdm2zlr4cwqc4y2vedxidahadhez44bmiuyfdxmgy",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibswllbu7okyluxx2feappoaidfgynoifxwqwv3ir7rkr24k5s75q",
+        "page:bafkreigkmyl7zxzaevslver5qxau4zfz6oddtoawhzzyjka7a5i3cx3jxa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: 9 1 1, if you feel in immediate danger. Backup number: 5 4 1, 9 6 2, 7 9 9 4. Quiet plan: go to a public place, keep this call short, and share only your first name and where to meet safely. You can say, \u201cI don\u2019t have my documents with me.\u201d Ask for a safe pickup or shelter that can start without documents. No texts needed.",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002207#turn-3",
+      "scenarioId": "phone_dialog_0002207",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "My wallet got stolen last night, I think, and I need help replacing my ID today or I can't get into services.",
+      "normalizedQuery": "wallet got stolen last night think replacing id can't into services",
+      "voiceResponse": "I\u2019m sorry that happened. If you feel in danger right now, call 911 first. For services today, you can still do intake without ID at NIGHT SHELTER ANNEX. The required documents are none at intake. Call (541) 342-7728. I\u2019ll repeat: (541) 342-7728.",
+      "evidenceDocIds": [
+        "service:17f85caae2094027",
+        "service:36b21c6682d22d49",
+        "page:bafkreiede56k7f33nvbaxqaeini6sz4wxd7omofhleb2h4yaz347erg53q",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiglqsnakq5mfvk6m42mjfy6nvvyfh6bb36ctunxs4wz43dvlvhhpy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry that happened. If you feel in danger right now, call 911 first. For services today, you can still do intake without ID at NIGHT SHELTER ANNEX. The required documents are none at intake. Call (541) 342-7728. I\u2019ll repeat: (541) 342-7728.",
+      "voiceResponseAlternatives": [
+        "That makes sense, and you\u2019re not doing anything wrong. If proof of address is the issue, you can use a simple wallet file packet: one ID file, plus any current mail, benefit letter, shelter letter, or signed statement from where you\u2019re staying. Export each as PDF, then keep one folder named \u201cAddress Proof.\u201d If a place insists on one exact document, you can say: \u201cI\u2019m between housing, and this is my current proof set.\u201d",
+        "Yes. Next step: bring an **ID card** with you to check in. From what I have, the required document listed is only an ID card. I\u2019ll repeat: **ID card**. I do not see a separate address-proof requirement in the information I have.",
+        "Next step: in your wallet app, save a clear photo of your **ID card** and label it \u201cCheck-in ID.\u201d From the information I have, the only required document listed is an ID card. I\u2019ll repeat: **ID card**.",
+        "Yes. We can keep this tight. I cannot confirm the exact required document list from my local source. I cannot confirm the exact list. To lower turn-away risk, bring original documents: One photo ID, if you still have one. Two proofs of Oregon address. One legal-name document, if your name changed. Payment method. Keep wallet files ready too: clear photos or PDFs of each proof, in case they ask for upload. Do you want a one-minute folder checklist for your phone?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002261#turn-6",
+      "scenarioId": "phone_dialog_0002261",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "Also if they need proof of income or ID, tell me now so I don\u2019t take two buses for nothing.",
+      "normalizedQuery": "also if they proof income id tell now so don take two buses nothing",
+      "voiceResponse": "Good question. For the program I can see, required documents are none. I\u2019ll repeat: required documents are none. For other child care programs, rules can differ. To protect your privacy, bring only basics first, like photo ID and one income note, unless they ask for more. Do you want me to check one specific provider before you travel?",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreigshe4u2qgpbz5yo6xodrigum5vzydtcrvans3mg4cbcuzshqs73y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Good question. For the program I can see, required documents are none. I\u2019ll repeat: required documents are none. For other child care programs, rules can differ. To protect your privacy, bring only basics first, like photo ID and one income note, unless they ask for more. Do you want me to check one specific provider before you travel?",
+      "voiceResponseAlternatives": [
+        "That makes sense, and you\u2019re not doing anything wrong. If proof of address is the issue, you can use a simple wallet file packet: one ID file, plus any current mail, benefit letter, shelter letter, or signed statement from where you\u2019re staying. Export each as PDF, then keep one folder named \u201cAddress Proof.\u201d If a place insists on one exact document, you can say: \u201cI\u2019m between housing, and this is my current proof set.\u201d",
+        "Yes. Next step: bring an **ID card** with you to check in. From what I have, the required document listed is only an ID card. I\u2019ll repeat: **ID card**. I do not see a separate address-proof requirement in the information I have.",
+        "Next step: in your wallet app, save a clear photo of your **ID card** and label it \u201cCheck-in ID.\u201d From the information I have, the only required document listed is an ID card. I\u2019ll repeat: **ID card**.",
+        "Yes. We can keep this tight. I cannot confirm the exact required document list from my local source. I cannot confirm the exact list. To lower turn-away risk, bring original documents: One photo ID, if you still have one. Two proofs of Oregon address. One legal-name document, if your name changed. Payment method. Keep wallet files ready too: clear photos or PDFs of each proof, in case they ask for upload. Do you want a one-minute folder checklist for your phone?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002273#turn-6",
+      "scenarioId": "phone_dialog_0002273",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "After the safety check, can you help me start disability benefits help for him and tell me what proof papers we need?",
+      "normalizedQuery": "after safety check start disability benefits snap assistance him tell proof papers we",
+      "voiceResponse": "Yes. We can start now. For proof papers, they may ask for proof of income, proof of identity, and other documents. I\u2019ll repeat: proof of income, proof of identity, and other documents. To start enrollment help, call 5 4 1, 9 6 7, 8 6 3 0. I\u2019ll repeat: 5 4 1, 9 6 7, 8 6 3 0. Do you want Albany or Corvallis?",
+      "evidenceDocIds": [
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:314f807c8277e945",
+        "service:028f2c81cf7533a3",
+        "service:c1167410fec4d9a3",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can start now. For proof papers, they may ask for proof of income, proof of identity, and other documents. I\u2019ll repeat: proof of income, proof of identity, and other documents. To start enrollment help, call 5 4 1, 9 6 7, 8 6 3 0. I\u2019ll repeat: 5 4 1, 9 6 7, 8 6 3 0. Do you want Albany or Corvallis?",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-5",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "wallet_document_support",
+      "user": "Can you tell me one step at a time, like exactly where I go in Beaverton for urgent mental health, and if they can see me tonight without insurance proof in hand?",
+      "normalizedQuery": "tell one step at time like exactly go beaverton urgent mental health if they see tonight without insurance proof hand",
+      "voiceResponse": "You\u2019re doing the right thing asking for clear steps. Step one: go to LifeWorks NW, 10700 SW Beaverton-Hillside Highway, Suite 110, Beaverton. Step two: call first to ask about tonight walk-in availability. Main number: (503) 641-1475. Backup number: (503) 645-9010. Step three: if you don\u2019t have insurance proof, still go or call; they list insurance information as \u201cif applicable,\u201d so ask what they can accept tonight. If you feel in immediate danger, call 911 now.",
+      "evidenceDocIds": [
+        "service:ed88848aae7354c5",
+        "service:d0f6bca8c0a87513",
+        "service:0eb8fe666cad31a1",
+        "service:b4628a59858284c9",
+        "service:318a2bc97c0c8395"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing asking for clear steps. Step one: go to LifeWorks NW, 10700 SW Beaverton-Hillside Highway, Suite 110, Beaverton. Step two: call first to ask about tonight walk-in availability. Main number: (503) 641-1475. Backup number: (503) 645-9010. Step three: if you don\u2019t have insurance proof, still go or call; they list insurance information as \u201cif applicable,\u201d so ask what they can accept tonight. If you feel in immediate danger, call 911 now.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002325#turn-6",
+      "scenarioId": "phone_dialog_0002325",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "And if they need ID or proof of address, can you tell me that too before I go?",
+      "normalizedQuery": "if they id proof address tell too before go",
+      "voiceResponse": "Yes. I can check that. Right now, I only see one listing about ID help, and it does not show required documents. It does not show required documents. I do not want you to make an extra trip. Which program should I verify first: ID-card help, or laundry help?",
+      "evidenceDocIds": [
+        "page:bafkreiemvimtczhcn3mohrl6plj6ad2xf6gz5h44iu7vmwspgqjujrxd54",
+        "service:263120f4b123f5c2",
+        "service:d7391252bb832366",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:69a0def45f7321b0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can check that. Right now, I only see one listing about ID help, and it does not show required documents. It does not show required documents. I do not want you to make an extra trip. Which program should I verify first: ID-card help, or laundry help?",
+      "voiceResponseAlternatives": [
+        "That makes sense, and you\u2019re not doing anything wrong. If proof of address is the issue, you can use a simple wallet file packet: one ID file, plus any current mail, benefit letter, shelter letter, or signed statement from where you\u2019re staying. Export each as PDF, then keep one folder named \u201cAddress Proof.\u201d If a place insists on one exact document, you can say: \u201cI\u2019m between housing, and this is my current proof set.\u201d",
+        "Yes. Next step: bring an **ID card** with you to check in. From what I have, the required document listed is only an ID card. I\u2019ll repeat: **ID card**. I do not see a separate address-proof requirement in the information I have.",
+        "Next step: in your wallet app, save a clear photo of your **ID card** and label it \u201cCheck-in ID.\u201d From the information I have, the only required document listed is an ID card. I\u2019ll repeat: **ID card**.",
+        "Yes. We can keep this tight. I cannot confirm the exact required document list from my local source. I cannot confirm the exact list. To lower turn-away risk, bring original documents: One photo ID, if you still have one. Two proofs of Oregon address. One legal-name document, if your name changed. Payment method. Keep wallet files ready too: clear photos or PDFs of each proof, in case they ask for upload. Do you want a one-minute folder checklist for your phone?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002348#turn-6",
+      "scenarioId": "phone_dialog_0002348",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I leave now, is there somewhere I can wait that\u2019s safe till intake, and do I need ID if I don\u2019t have my wallet?",
+      "normalizedQuery": "if leave now there somewhere wait safe till intake id don have wallet",
+      "voiceResponse": "Yes, you can still get help without your wallet. For intake, you can say, \u201cI don\u2019t have ID with me right now,\u201d and ask to start with minimal details. Many places can begin first and sort documents later. If they need proof later, options can be a photo of ID, school or clinic paperwork, or a trusted contact confirming identity. For waiting, choose a public staffed place nearby, like a lobby or clinic waiting area, until pickup or intake.",
+      "evidenceDocIds": [
+        "service:e25fd4aa967fb6a0",
+        "service:9d8134994edb4433",
+        "service:27e274f68ae6936d",
+        "service:00a346e74bf7ec91",
+        "service:afc6f1937f1c2ad1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you can still get help without your wallet. For intake, you can say, \u201cI don\u2019t have ID with me right now,\u201d and ask to start with minimal details. Many places can begin first and sort documents later. If they need proof later, options can be a photo of ID, school or clinic paperwork, or a trusted contact confirming identity. For waiting, choose a public staffed place nearby, like a lobby or clinic waiting area, until pickup or intake.",
+      "voiceResponseAlternatives": [
+        "That makes sense, and you\u2019re not doing anything wrong. If proof of address is the issue, you can use a simple wallet file packet: one ID file, plus any current mail, benefit letter, shelter letter, or signed statement from where you\u2019re staying. Export each as PDF, then keep one folder named \u201cAddress Proof.\u201d If a place insists on one exact document, you can say: \u201cI\u2019m between housing, and this is my current proof set.\u201d",
+        "Yes. Next step: bring an **ID card** with you to check in. From what I have, the required document listed is only an ID card. I\u2019ll repeat: **ID card**. I do not see a separate address-proof requirement in the information I have.",
+        "Next step: in your wallet app, save a clear photo of your **ID card** and label it \u201cCheck-in ID.\u201d From the information I have, the only required document listed is an ID card. I\u2019ll repeat: **ID card**.",
+        "Yes. We can keep this tight. I cannot confirm the exact required document list from my local source. I cannot confirm the exact list. To lower turn-away risk, bring original documents: One photo ID, if you still have one. Two proofs of Oregon address. One legal-name document, if your name changed. Payment method. Keep wallet files ready too: clear photos or PDFs of each proof, in case they ask for upload. Do you want a one-minute folder checklist for your phone?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -7942,6 +8147,18 @@
     {
       "from": "phone_dialog_0002001#turn-5",
       "to": "phone_dialog_0002001#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002207#turn-3",
+      "to": "phone_dialog_0002207#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-5",
+      "to": "phone_dialog_0002287#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->live_agent"
     }

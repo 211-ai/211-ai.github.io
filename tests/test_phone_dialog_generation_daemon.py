@@ -191,3 +191,27 @@ def test_assistant_prompt_includes_slot_friendly_voice_guidance() -> None:
     assert "Prefer reusable TTS-friendly sentence frames" in prompt
     assert "Call {phone_1}." in prompt
     assert "never say the placeholder name" in prompt
+
+
+def test_ipfs_accelerate_llm_router_shim_delegates_to_ipfs_datasets(monkeypatch) -> None:
+    from ipfs_accelerate_py import llm_router as accelerate_llm_router
+    from ipfs_datasets_py import llm_router as datasets_llm_router
+
+    calls: list[dict[str, object]] = []
+
+    def fake_generate_text(prompt: str, *args: object, provider: str | None = None, **kwargs: object) -> str:
+        calls.append({"prompt": prompt, "provider": provider, "kwargs": kwargs})
+        return "shim-ok"
+
+    monkeypatch.setattr(datasets_llm_router, "generate_text", fake_generate_text)
+
+    result = accelerate_llm_router.generate_text("hello", provider="hf", model_name="Qwen/Qwen3.5-2B")
+
+    assert result == "shim-ok"
+    assert calls == [
+        {
+            "prompt": "hello",
+            "provider": "hf_inference_api",
+            "kwargs": {"model_name": "Qwen/Qwen3.5-2B"},
+        }
+    ]

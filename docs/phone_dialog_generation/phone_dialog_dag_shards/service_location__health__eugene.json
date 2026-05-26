@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__eugene",
   "kind": "service_location",
   "key": "health__eugene",
-  "nodeCount": 25,
+  "nodeCount": 32,
   "nodes": [
     {
       "id": "phone_dialog_0000041#turn-1",
@@ -699,7 +699,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear how scared you are, and you\u2019re doing the right thing calling. Your audio is breaking up. If his breathing is very slow or pausing, call 9-1-1 right now and put your phone on speaker while you stay with him. One quick repeat so I can guide you: is he breathing right now, yes or no?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio cut out. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene, yes or no?",
+        "Your audio is breaking up. I heard slow, weird breathing and he won\u2019t stay awake. That is still an overdose emergency. Call 911 now. Put him on his side, keep his airway clear, and stay with him. If breathing gets very slow or stops, start CPR. Have you called 911 yet?"
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
@@ -733,6 +736,212 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002195#turn-1",
+      "scenarioId": "phone_dialog_0002195",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hey, sorry, signal's bad... I need detox help in Eugene, like tonight if possible.",
+      "normalizedQuery": "hey sorry signal's bad detox eugene like tonight if possible",
+      "voiceResponse": "I\u2019m sorry, your audio cut out. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene, yes or no?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c",
+        "service:507a859ca3a7d126",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio cut out. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene, yes or no?",
+      "voiceResponseAlternatives": [
+        "I hear how scared you are, and you\u2019re doing the right thing calling. Your audio is breaking up. If his breathing is very slow or pausing, call 9-1-1 right now and put your phone on speaker while you stay with him. One quick repeat so I can guide you: is he breathing right now, yes or no?",
+        "Your audio is breaking up. I heard slow, weird breathing and he won\u2019t stay awake. That is still an overdose emergency. Call 911 now. Put him on his side, keep his airway clear, and stay with him. If breathing gets very slow or stops, start CPR. Have you called 911 yet?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002195#turn-2",
+      "scenarioId": "phone_dialog_0002195",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, can you say that again slower?",
+      "normalizedQuery": "hey sorry signal's bad detox eugene like tonight if possible cut say again slower",
+      "voiceResponse": "Yes. I\u2019ll say it slower. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene? Yes or no?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c",
+        "service:507a859ca3a7d126",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene? Yes or no?",
+      "voiceResponseAlternatives": [
+        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
+        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**.",
+        "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer.",
+        "Yes. Slowly: **Call 911 now** for your friend who mixed pills and alcohol. Say first if they are hard to wake, not breathing normally, having a seizure, or turning blue. Stay with them. Put them on their side. Do not give more alcohol or drugs. If you can, unlock the door for responders."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002195#turn-3",
+      "scenarioId": "phone_dialog_0002195",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It's for me, and maybe my friend too, we've both been drinking and using pills, I can't really focus.",
+      "normalizedQuery": "hey sorry signal's bad detox eugene like tonight if possible cut say again slower it's maybe friend too we've both been drinking using pills can't really focus",
+      "voiceResponse": "Thanks for telling me. Mixing alcohol and pills can be dangerous. If either of you is very sleepy, confused, or breathing slow, call 911 now. For detox help tonight, call (541) 406-4363. I\u2019ll repeat: (541) 406-4363. Backup number: (541) 523-4049.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiahhdmhoubqwox57iezihiqxxaip6kx3t24ifte3ga4dnk2mjztqm",
+        "page:bafkreih5dckhsjzjanhv3bcckagdethb5snwbu2rz2akpmle4npa4nwkkm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for telling me. Mixing alcohol and pills can be dangerous. If either of you is very sleepy, confused, or breathing slow, call 911 now. For detox help tonight, call (541) 406-4363. I\u2019ll repeat: (541) 406-4363. Backup number: (541) 523-4049.",
+      "voiceResponseAlternatives": [
+        "I hear the urgency, and you\u2019re doing the right thing calling now. In Eugene, try **Buckley Sobering and Detox** first: **640 West 7th Avenue, Eugene**. Phone: **5-4-1, 7-6-2, 4-5-7-5**. If they\u2019re full, call this detox line next: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. When they answer, say: \u201cI\u2019m in Eugene and need detox admission today. Do you have a bed now?\u201d",
+        "Absolutely, I\u2019ll say it slowly. Buckley Sobering and Detox: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**. Again: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**.",
+        "Absolutely, and good on you for helping him take this step. In Eugene, you can start by calling 2-1-1 and asking for \u201cdetox intake options today,\u201d including same-day and medically supervised programs. If you want, you can also call providers for him and say, \u201cI\u2019m calling for my uncle\u2014what\u2019s the fastest way to get him assessed today?\u201d If he has severe withdrawal signs like confusion, seizures, or trouble breathing, call 9-1-1.",
+        "Thank you for telling me where you are. You\u2019re doing exactly the right thing for your son. If he\u2019s very drowsy, confused, or breathing slowly, call 911 now. If he\u2019s awake and stable, I can help you connect to 211 right now to find the closest same-day detox near downtown Eugene and check travel distance before you go. I can stay with you while we do that."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002195#turn-4",
+      "scenarioId": "phone_dialog_0002195",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hold on\u2014he's on the couch and won't really wake up, he's breathing weird, like long gaps.",
+      "normalizedQuery": "hey sorry signal's bad detox eugene like tonight if possible cut say again slower it's maybe friend too we've both been drinking using pills can't really focus hold on he's couch won't wake up breathing weird long gaps",
+      "voiceResponse": "This is an emergency. Call 911 now. Say: \u201cHe won\u2019t wake up and his breathing has long gaps after drinking and pills.\u201d Put your phone on speaker, keep him on his side, and stay with him. If he stops breathing, tell 911 right away and follow their instructions.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is an emergency. Call 911 now. Say: \u201cHe won\u2019t wake up and his breathing has long gaps after drinking and pills.\u201d Put your phone on speaker, keep him on his side, and stay with him. If he stops breathing, tell 911 right away and follow their instructions.",
+      "voiceResponseAlternatives": [
+        "I hear the urgency, and you\u2019re doing the right thing calling now. In Eugene, try **Buckley Sobering and Detox** first: **640 West 7th Avenue, Eugene**. Phone: **5-4-1, 7-6-2, 4-5-7-5**. If they\u2019re full, call this detox line next: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. When they answer, say: \u201cI\u2019m in Eugene and need detox admission today. Do you have a bed now?\u201d",
+        "Absolutely, I\u2019ll say it slowly. Buckley Sobering and Detox: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**. Again: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**.",
+        "Absolutely, and good on you for helping him take this step. In Eugene, you can start by calling 2-1-1 and asking for \u201cdetox intake options today,\u201d including same-day and medically supervised programs. If you want, you can also call providers for him and say, \u201cI\u2019m calling for my uncle\u2014what\u2019s the fastest way to get him assessed today?\u201d If he has severe withdrawal signs like confusion, seizures, or trouble breathing, call 9-1-1.",
+        "Thank you for telling me where you are. You\u2019re doing exactly the right thing for your son. If he\u2019s very drowsy, confused, or breathing slowly, call 911 now. If he\u2019s awake and stable, I can help you connect to 211 right now to find the closest same-day detox near downtown Eugene and check travel distance before you go. I can stay with you while we do that."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002267#turn-2",
+      "scenarioId": "phone_dialog_0002267",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you hear me? You cut out. I\u2019m in Eugene, near west 11th, and I was trying to find detox help.",
+      "normalizedQuery": "hear cut eugene west 11th was trying detox",
+      "voiceResponse": "I can hear you. I\u2019ll repeat: Call 911 now. This is an emergency if he won\u2019t wake up after pills and alcohol. Put him on his side, keep his airway clear, and stay with him. Do not let him sleep it off. If he stops breathing, start CPR if you can, and follow 911 instructions.",
+      "evidenceDocIds": [
+        "service:e4b8188e069aee8c",
+        "service:67250a9ff887e1f9",
+        "service:944406a8d13c934b",
+        "service:2dff32ecaab8f609",
+        "service:5a832d83d6e37da4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you. I\u2019ll repeat: Call 911 now. This is an emergency if he won\u2019t wake up after pills and alcohol. Put him on his side, keep his airway clear, and stay with him. Do not let him sleep it off. If he stops breathing, start CPR if you can, and follow 911 instructions.",
+      "voiceResponseAlternatives": [
+        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
+        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**.",
+        "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer.",
+        "Yes. Slowly: **Call 911 now** for your friend who mixed pills and alcohol. Say first if they are hard to wake, not breathing normally, having a seizure, or turning blue. Stay with them. Put them on their side. Do not give more alcohol or drugs. If you can, unlock the door for responders."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002267#turn-3",
+      "scenarioId": "phone_dialog_0002267",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "He\u2019s breathing, but it\u2019s like... slow and weird, and he keeps slipping back out when I shake him.",
+      "normalizedQuery": "hi sorry signal awful here friend took some pills was drinking now he won really wake up hear cut eugene west 11th trying detox breathing it like slow weird keeps slipping back when shake him",
+      "voiceResponse": "Your audio is breaking up. I heard slow, weird breathing and he won\u2019t stay awake. That is still an overdose emergency. Call 911 now. Put him on his side, keep his airway clear, and stay with him. If breathing gets very slow or stops, start CPR. Have you called 911 yet?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio is breaking up. I heard slow, weird breathing and he won\u2019t stay awake. That is still an overdose emergency. Call 911 now. Put him on his side, keep his airway clear, and stay with him. If breathing gets very slow or stops, start CPR. Have you called 911 yet?",
+      "voiceResponseAlternatives": [
+        "I hear how scared you are, and you\u2019re doing the right thing calling. Your audio is breaking up. If his breathing is very slow or pausing, call 9-1-1 right now and put your phone on speaker while you stay with him. One quick repeat so I can guide you: is he breathing right now, yes or no?",
+        "I\u2019m sorry, your audio cut out. If you\u2019re in immediate danger, call 911 now. Are you asking for detox tonight in Eugene, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002267#turn-4",
+      "scenarioId": "phone_dialog_0002267",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that, can you repeat that part about breathing again? You\u2019re breaking up.",
+      "normalizedQuery": "hi sorry signal awful here friend took some pills was drinking now he won really wake up hear cut eugene west 11th trying detox breathing it like slow weird keeps slipping back when shake him wait repeat part again re breaking",
+      "voiceResponse": "I\u2019ll repeat: if his breathing gets very slow or stops, start CPR right away. Slow, weird breathing is still an overdose emergency, so call 911 now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: if his breathing gets very slow or stops, start CPR right away. Slow, weird breathing is still an overdose emergency, so call 911 now.",
+      "voiceResponseAlternatives": [
+        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
+        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**.",
+        "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer.",
+        "Yes. Slowly: **Call 911 now** for your friend who mixed pills and alcohol. Say first if they are hard to wake, not breathing normally, having a seizure, or turning blue. Stay with them. Put them on their side. Do not give more alcohol or drugs. If you can, unlock the door for responders."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -871,6 +1080,48 @@
     {
       "from": "phone_dialog_0001967#turn-4",
       "to": "phone_dialog_0001967#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002195#turn-1",
+      "to": "phone_dialog_0002195#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002195#turn-2",
+      "to": "phone_dialog_0002195#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002195#turn-3",
+      "to": "phone_dialog_0002195#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002195#turn-4",
+      "to": "phone_dialog_0002195#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002267#turn-2",
+      "to": "phone_dialog_0002267#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002267#turn-3",
+      "to": "phone_dialog_0002267#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002267#turn-4",
+      "to": "phone_dialog_0002267#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
     }

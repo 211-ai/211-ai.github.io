@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__multnomah",
   "kind": "service_location",
   "key": "food__multnomah",
-  "nodeCount": 28,
+  "nodeCount": 32,
   "nodes": [
     {
       "id": "phone_dialog_0000082#turn-2",
@@ -834,6 +834,126 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002154#turn-4",
+      "scenarioId": "phone_dialog_0002154",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "She\u2019s in Multnomah County, in Gresham, second-floor apartment and the elevator\u2019s been out, so she can\u2019t safely get down for appointments.",
+      "normalizedQuery": "hi calling mom sorry if ramble little she 74 disabled alone most days yes breathing awake right now no fire anything like really worried tonight her caregiver keeps showing up missed meals again found yesterday pills still box multnomah county gresham second floor apartment elevator been so safely down appointments",
+      "voiceResponse": "Thank you. I hear you. She is in Multnomah County, in Gresham, on a second-floor apartment, and the elevator is out. I\u2019ll repeat: second floor, elevator out, cannot safely get to appointments. I can connect you to a live specialist now to make a plan for tonight and missed care. If she has trouble breathing, is hard to wake, or is in immediate danger, call 9-1-1. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. She is in Multnomah County, in Gresham, on a second-floor apartment, and the elevator is out. I\u2019ll repeat: second floor, elevator out, cannot safely get to appointments. I can connect you to a live specialist now to make a plan for tonight and missed care. If she has trouble breathing, is hard to wake, or is in immediate danger, call 9-1-1. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Thanks for sharing that. Since he hasn\u2019t eaten since yesterday, let\u2019s move fast with a live person now. I can stay with you while we connect. A nearby option is DHS Gresham, **6 3 5 S E 2 2 3 r d Avenue, Suite 1 0 2**. Phone: **5 0 3 \u2014 6 7 3 \u2014 8 5 0 0**. Backup: **5 4 1 \u2014 8 8 7 \u2014 8 4 9 5**. If he\u2019s in immediate medical danger, call **9 1 1** now.",
+        "First step: call the Gresham Self-Sufficiency office now and say, \u201cMy mom is 72, not cooking, and needs senior meal help in Gresham.\u201d The number is: **5 0 3** \u2026 **6 7 3** \u2026 **8 5 0 0**. I\u2019ll repeat it: **5 0 3** \u2026 **6 7 3** \u2026 **8 5 0 0**.",
+        "Yes. I will say it slowly. Address: `eight eight zero zero` \u2026 `Southeast Eightieth Avenue` \u2026 `Portland, Oregon` \u2026 `nine seven two zero six`. Again: `eight eight zero zero` \u2026 `Southeast Eightieth Avenue` \u2026 `Portland, Oregon` \u2026 `nine seven two zero six`. Phone: `five zero three` \u2026 `seven seven one` \u2026 `seven nine one four`. Again: `five zero three` \u2026 `seven seven one` \u2026 `seven nine one four`.",
+        "Yes. I will say it slowly. The number is: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. Again: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002154#turn-6",
+      "scenarioId": "phone_dialog_0002154",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019m hard of hearing, can you repeat any phone number slowly in chunks, like three digits at a time? Sorry, my battery is low.",
+      "normalizedQuery": "her caregiver keeps showing up she missed meals again found yesterday pills still box multnomah county gresham second floor apartment elevator been so safely down appointments abby us disability benefits snap assistance maybe emergency support travel be there every day hard hearing repeat any phone number slowly chunks like three digits at time sorry battery low",
+      "voiceResponse": "Yes. I\u2019ll say them slowly. The number is 541, 967, 8630. I\u2019ll repeat: 541, 967, 8630. Backup number: 800, 638, 0510. I\u2019ll repeat: 800, 638, 0510.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say them slowly. The number is 541, 967, 8630. I\u2019ll repeat: 541, 967, 8630. Backup number: 800, 638, 0510. I\u2019ll repeat: 800, 638, 0510.",
+      "voiceResponseAlternatives": [
+        "Of course. It\u2019s **DHS Gresham**: **6 3 5 S E 2 2 3 r d Avenue, Suite 1 0 2**. Main number: **5 0 3 \u2014 6 7 3 \u2014 8 5 0 0**. Backup: **5 4 1 \u2014 8 8 7 \u2014 8 4 9 5**. If he feels medically unsafe right now, call **9 1 1**.",
+        "Yes. Slow version. First name: **Clackamas Service Center**. Again: **Clackamas Service Center**. Second name: **First Baptist Church Portland**. Again: **First Baptist Church Portland**.",
+        "Yes. The food pantry address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+        "Absolutely. Here\u2019s one place in Portland you can go today: Food Pantry and Meals, at **8800 Southeast 80th Avenue, Portland, 97206**. Phone number is **503, 771, 7914**. They serve food and to-go meals, and eligibility is unrestricted."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002238#turn-4",
+      "scenarioId": "phone_dialog_0002238",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m hard of hearing, can you repeat that slower and do the phone number in small chunks?",
+      "normalizedQuery": "hi calling from multnomah county older brother he disabled stuck upstairs no working elevator really worried this neglect before anything else tell should right now if gets worse tonight sounds weak him fast told missed two meals his heart pills yesterday because caregiver didn come been alone most week sorry hard hearing repeat slower phone number small chunks",
+      "voiceResponse": "Yes. I will say it slowly. If he gets weaker, call **9-1-1** right away. Call **9**, **1**, **1**. I\u2019ll repeat: **9**, **1**, **1**. Tell them: disabled adult, trapped upstairs, missed meals, missed heart medicine, possible neglect. If he has chest pain, trouble breathing, or confusion, call now. I\u2019ll repeat: chest pain, trouble breathing, or confusion means call now. Is he having trouble breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slowly. If he gets weaker, call **9-1-1** right away. Call **9**, **1**, **1**. I\u2019ll repeat: **9**, **1**, **1**. Tell them: disabled adult, trapped upstairs, missed meals, missed heart medicine, possible neglect. If he has chest pain, trouble breathing, or confusion, call now. I\u2019ll repeat: chest pain, trouble breathing, or confusion means call now. Is he having trouble breathing right now?",
+      "voiceResponseAlternatives": [
+        "Thanks for sharing that. Since he hasn\u2019t eaten since yesterday, let\u2019s move fast with a live person now. I can stay with you while we connect. A nearby option is DHS Gresham, **6 3 5 S E 2 2 3 r d Avenue, Suite 1 0 2**. Phone: **5 0 3 \u2014 6 7 3 \u2014 8 5 0 0**. Backup: **5 4 1 \u2014 8 8 7 \u2014 8 4 9 5**. If he\u2019s in immediate medical danger, call **9 1 1** now.",
+        "First step: call the Gresham Self-Sufficiency office now and say, \u201cMy mom is 72, not cooking, and needs senior meal help in Gresham.\u201d The number is: **5 0 3** \u2026 **6 7 3** \u2026 **8 5 0 0**. I\u2019ll repeat it: **5 0 3** \u2026 **6 7 3** \u2026 **8 5 0 0**.",
+        "Yes. I will say it slowly. Address: `eight eight zero zero` \u2026 `Southeast Eightieth Avenue` \u2026 `Portland, Oregon` \u2026 `nine seven two zero six`. Again: `eight eight zero zero` \u2026 `Southeast Eightieth Avenue` \u2026 `Portland, Oregon` \u2026 `nine seven two zero six`. Phone: `five zero three` \u2026 `seven seven one` \u2026 `seven nine one four`. Again: `five zero three` \u2026 `seven seven one` \u2026 `seven nine one four`.",
+        "Yes. I will say it slowly. The number is: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. Again: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002350#turn-5",
+      "scenarioId": "phone_dialog_0002350",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you read the phone number slowly, like one digit at a time? I don't hear well on this line.",
+      "normalizedQuery": "inaudible food pantry meal meals groceries no wait sorry faded say slower yeah keep missing words i'm multnomah county rent eviction assistance before evicted got notice repeating myself know really shelter shelters homeless overnight warming yet read phone number slowly like one digit at time don't hear well on this line",
+      "voiceResponse": "Yes. I\u2019ll read it one digit at a time. The number is 5, 0, 3, 2, 2, 2, 5, 5, 5, 5. I\u2019ll repeat: 5, 0, 3, 2, 2, 2, 5, 5, 5, 5. Backup number: 5, 0, 3, 2, 2, 6, 3, 0, 9, 9. I\u2019ll repeat: 5, 0, 3, 2, 2, 6, 3, 0, 9, 9.",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:bd5c5bd198f76c8b",
+        "service:5baf40645f0369dd",
+        "service:b8c762144d937988",
+        "page:bafkreiaobtvhasqn22xpjuujosbgahpr3zeaytx5d3yatmh4bsblyn3qfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll read it one digit at a time. The number is 5, 0, 3, 2, 2, 2, 5, 5, 5, 5. I\u2019ll repeat: 5, 0, 3, 2, 2, 2, 5, 5, 5, 5. Backup number: 5, 0, 3, 2, 2, 6, 3, 0, 9, 9. I\u2019ll repeat: 5, 0, 3, 2, 2, 6, 3, 0, 9, 9.",
+      "voiceResponseAlternatives": [
+        "You got it. Two places in Multnomah County today. First: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503-771-7914**. Again: **503-771-7914**. Second: First Baptist Church, **909 Southwest 11th Avenue, Portland, 97205**. Phone: **503-228-7465**. Again: **503-228-7465**. Both say unrestricted, and no documents listed.",
+        "You\u2019re not talking in circles, and I\u2019m glad you said that. Let\u2019s do one simple next step: go to Food Pantry and Meals, at 8800 Southeast 80th Avenue, Portland, 97206. Their number is 503, 771, 7914. They can give food today, and there are no eligibility requirements. If you feel unsafe or might hurt yourself, call 911 right now.",
+        "You\u2019re doing okay, and I\u2019m glad you told me that. Here are two Portland options today: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland 97206**. Phone: **503\u2026771\u20267914**. Also First Baptist Church pantry, **909 Southwest 11th Avenue, Portland 97205**. Phone: **503\u2026228\u20267465**. Both list unrestricted eligibility, and no documents required. If you want, I can stay with you while you call one now.",
+        "Absolutely. I can help with that today. Option one: Clackamas Service Center, 8800 Southeast 80th Avenue, Portland, 97206. That is 8-8-0-0, Southeast 8-0th Avenue. Phone: 503, 771, 7914. Again: 503, 771, 7914. Option two: First Baptist Church, 909 Southwest 11th Avenue, Portland, 97205. Phone: 503, 228, 7465. Do you want me to repeat just one address slowly?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -986,6 +1106,24 @@
       "to": "phone_dialog_0002049#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002154#turn-4",
+      "to": "phone_dialog_0002154#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002238#turn-4",
+      "to": "phone_dialog_0002238#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002350#turn-5",
+      "to": "phone_dialog_0002350#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

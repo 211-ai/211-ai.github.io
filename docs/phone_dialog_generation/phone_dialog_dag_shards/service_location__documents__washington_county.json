@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__documents__washington_county",
   "kind": "service_location",
   "key": "documents__washington_county",
-  "nodeCount": 13,
+  "nodeCount": 14,
   "nodes": [
     {
       "id": "phone_dialog_0000333#turn-1",
@@ -169,7 +169,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re cutting out on my end. You\u2019re cutting out on my end. I may have missed part of that. I can\u2019t confirm DMV steps clearly on this line right now. Please pick one: \u201cDMV first\u201d or \u201clive specialist first\u201d?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Your audio got a little unclear. I heard \u201cscared\u201d and \u201cfollowed.\u201d Quick choice: do you want 911 now, or the safe help line, 503, 846, 4918?"
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
@@ -364,6 +366,33 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002199#turn-4",
+      "scenarioId": "phone_dialog_0002199",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, there\u2019s someone near me... okay, I can talk for maybe thirty seconds, I\u2019m not hurt right this second but I\u2019m scared he\u2019s following me.",
+      "normalizedQuery": "hi only got minute this phone battery almost dead give safest number first washington county sorry crying he checks calls messages so please don say name back anything detailed loud keeps id cards makes go men money if says stay there tonight wait someone okay talk maybe thirty seconds hurt right second scared following",
+      "voiceResponse": "Your audio got a little unclear. I heard \u201cscared\u201d and \u201cfollowed.\u201d Quick choice: do you want 911 now, or the safe help line, 503, 846, 4918?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio got a little unclear. I heard \u201cscared\u201d and \u201cfollowed.\u201d Quick choice: do you want 911 now, or the safe help line, 503, 846, 4918?",
+      "voiceResponseAlternatives": [
+        "You\u2019re cutting out on my end. You\u2019re cutting out on my end. I may have missed part of that. I can\u2019t confirm DMV steps clearly on this line right now. Please pick one: \u201cDMV first\u201d or \u201clive specialist first\u201d?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -426,6 +455,12 @@
       "to": "phone_dialog_0001631#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002199#turn-4",
+      "to": "phone_dialog_0002199#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

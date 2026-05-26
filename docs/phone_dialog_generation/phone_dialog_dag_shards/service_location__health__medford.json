@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__medford",
   "kind": "service_location",
   "key": "health__medford",
-  "nodeCount": 32,
+  "nodeCount": 36,
   "nodes": [
     {
       "id": "phone_dialog_0000068#turn-2",
@@ -954,6 +954,120 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002157#turn-1",
+      "scenarioId": "phone_dialog_0002157",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, my signal is trash... I'm in Medford and I need detox help, like tonight if possible.",
+      "normalizedQuery": "hi sorry signal trash i'm medford detox like tonight if possible",
+      "voiceResponse": "I\u2019m sorry, your audio cut out. I heard Medford and detox tonight. Do you want me to give you the closest detox phone number now?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio cut out. I heard Medford and detox tonight. Do you want me to give you the closest detox phone number now?",
+      "voiceResponseAlternatives": [
+        "I hear you. This is an emergency. Your friend is not responding after pills and alcohol, so call 911 now. Put the phone on speaker and stay with him. Is he breathing right now?",
+        "This is an emergency. If you can\u2019t tell he\u2019s breathing, treat it like he is not breathing and call 911 now. Put your phone on speaker, lay him flat, and start hard, fast chest compressions in the center of his chest until help arrives. Are you calling 911 right now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002157#turn-2",
+      "scenarioId": "phone_dialog_0002157",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, can you say that again slower? I haven't slept and I took stuff earlier.",
+      "normalizedQuery": "hi sorry signal trash i'm medford detox like tonight if possible cut say again slower haven't slept took stuff earlier",
+      "voiceResponse": "I\u2019ll repeat, slowly: I heard \u201cMedford\u201d and \u201cdetox tonight.\u201d Do you want me to give you the closest detox phone number now? If you feel unsafe, might pass out, or took too much, call 911 now.",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat, slowly: I heard \u201cMedford\u201d and \u201cdetox tonight.\u201d Do you want me to give you the closest detox phone number now? If you feel unsafe, might pass out, or took too much, call 911 now.",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002157#turn-3",
+      "scenarioId": "phone_dialog_0002157",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "It's for me, but also my friend here, he did pills and alcohol and he's like... not really responding.",
+      "normalizedQuery": "hi sorry signal trash i'm medford detox like tonight if possible cut say again slower haven't slept took stuff earlier it's also friend here he did pills alcohol he's really responding",
+      "voiceResponse": "I hear you. This is an emergency. Your friend is not responding after pills and alcohol, so call 911 now. Put the phone on speaker and stay with him. Is he breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is an emergency. Your friend is not responding after pills and alcohol, so call 911 now. Put the phone on speaker and stay with him. Is he breathing right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio cut out. I heard Medford and detox tonight. Do you want me to give you the closest detox phone number now?",
+        "This is an emergency. If you can\u2019t tell he\u2019s breathing, treat it like he is not breathing and call 911 now. Put your phone on speaker, lay him flat, and start hard, fast chest compressions in the center of his chest until help arrives. Are you calling 911 right now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002157#turn-4",
+      "scenarioId": "phone_dialog_0002157",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hold on, hold on... I shook him and he's barely making this snoring sound, I can't tell if he's breathing right.",
+      "normalizedQuery": "hi sorry signal trash i'm medford detox like tonight if possible cut say again slower haven't slept took stuff earlier it's also friend here he did pills alcohol he's really responding hold on shook him barely making this snoring sound can't tell breathing right",
+      "voiceResponse": "This is an emergency. If you can\u2019t tell he\u2019s breathing, treat it like he is not breathing and call 911 now. Put your phone on speaker, lay him flat, and start hard, fast chest compressions in the center of his chest until help arrives. Are you calling 911 right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is an emergency. If you can\u2019t tell he\u2019s breathing, treat it like he is not breathing and call 911 now. Put your phone on speaker, lay him flat, and start hard, fast chest compressions in the center of his chest until help arrives. Are you calling 911 right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio cut out. I heard Medford and detox tonight. Do you want me to give you the closest detox phone number now?",
+        "I hear you. This is an emergency. Your friend is not responding after pills and alcohol, so call 911 now. Put the phone on speaker and stay with him. Is he breathing right now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1130,6 +1244,30 @@
       "to": "phone_dialog_0001976#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002157#turn-1",
+      "to": "phone_dialog_0002157#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002157#turn-2",
+      "to": "phone_dialog_0002157#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002157#turn-3",
+      "to": "phone_dialog_0002157#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002157#turn-4",
+      "to": "phone_dialog_0002157#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

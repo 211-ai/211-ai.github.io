@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__bend",
   "kind": "service_location",
   "key": "benefits__bend",
-  "nodeCount": 66,
+  "nodeCount": 67,
   "nodes": [
     {
       "id": "phone_dialog_0000202#turn-1",
@@ -1963,6 +1963,36 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002159#turn-3",
+      "scenarioId": "phone_dialog_0002159",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah Bend, Oregon, sorry, I keep losing you. I need a place I can take a shower today.",
+      "normalizedQuery": "yeah bend oregon sorry keep losing place take shower",
+      "voiceResponse": "I hear you. Bend, Oregon, today. I\u2019ll repeat: Bend, Oregon, today. I do not have a shower listing in front of me yet. Do you need a free shower, yes or no?",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "service:e25fd4aa967fb6a0",
+        "service:102c674f1762c2df",
+        "service:474dbd2a1b00636e",
+        "page:bafkreiezmey74zvzy64vlvnpkbriepz4gul6mygdiixldxcgdvkgt7sanu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Bend, Oregon, today. I\u2019ll repeat: Bend, Oregon, today. I do not have a shower listing in front of me yet. Do you need a free shower, yes or no?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -2323,6 +2353,12 @@
     {
       "from": "phone_dialog_0002148#turn-4",
       "to": "phone_dialog_0002148#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002159#turn-3",
+      "to": "phone_dialog_0002159#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
     }

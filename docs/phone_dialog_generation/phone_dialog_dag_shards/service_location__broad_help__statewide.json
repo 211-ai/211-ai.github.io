@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__statewide",
   "kind": "service_location",
   "key": "broad_help__statewide",
-  "nodeCount": 125,
+  "nodeCount": 129,
   "nodes": [
     {
       "id": "phone_dialog_0000002#turn-1",
@@ -3733,6 +3733,126 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002216#turn-1",
+      "scenarioId": "phone_dialog_0002216",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, I\u2019m sorry, I can\u2019t really breathe right now... I just, I need help.",
+      "normalizedQuery": "hi um sorry really breathe right now just",
+      "voiceResponse": "I\u2019m here with you. This sounds urgent. If you can\u2019t breathe right now, call 911 now. If you\u2019re alone, unlock your door and sit upright. Try slow breaths with me: in for 4, out for 6. I can connect you to a live agent right after 911 is on the way.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:078087b57125137d",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de",
+        "service:16c906930c61dd47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. This sounds urgent. If you can\u2019t breathe right now, call 911 now. If you\u2019re alone, unlock your door and sit upright. Try slow breaths with me: in for 4, out for 6. I can connect you to a live agent right after 911 is on the way.",
+      "voiceResponseAlternatives": [
+        "First, if you feel in immediate danger right now, call 911. If you\u2019re not in immediate danger, stay with me on the line and I\u2019ll connect you to a live 211info specialist now to help find a safe place for tonight.",
+        "You\u2019re doing the right thing calling. Since you\u2019re getting out of breath fast, safety first: if breathing gets worse, chest pain starts, or you feel faint, call 9-1-1 now. To start benefits help right now, call **8-0-0, 6-3-8, 0-5-1-0** and say, \u201cI need disability benefits application help and I\u2019m medically fragile.\u201d",
+        "First step: call this confidential helpline now so you\u2019re not alone while your battery is low: **800\u2026 448\u2026 3000**. If that doesn\u2019t connect, try **888\u2026 532\u2026 0550**. They support youth and young adults and families with immediate guidance. If you\u2019re in immediate danger right now, call **911** first.",
+        "I\u2019m really glad you called. What you just said sounds like a safety crisis right now. If you might hurt yourself or you\u2019re in immediate danger, call 911 now. If you can, stay on the line with me while we get you to a live crisis counselor right away. You don\u2019t have to do this alone tonight."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002254#turn-3",
+      "scenarioId": "phone_dialog_0002254",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I'm not passed out or anything right now, but I feel shaky and I need somewhere today that can help me get insulin.",
+      "normalizedQuery": "i'm passed anything right now feel shaky somewhere insulin",
+      "voiceResponse": "Call 911 now and say: \u201cI have diabetes, my insulin was stolen, I feel shaky, and I need urgent medical help now in Salem.\u201d You are not safe to wait on this. If the call drops, dial 911 again right away.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:078087b57125137d",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de",
+        "service:16c906930c61dd47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 911 now and say: \u201cI have diabetes, my insulin was stolen, I feel shaky, and I need urgent medical help now in Salem.\u201d You are not safe to wait on this. If the call drops, dial 911 again right away.",
+      "voiceResponseAlternatives": [
+        "First, if you feel in immediate danger right now, call 911. If you\u2019re not in immediate danger, stay with me on the line and I\u2019ll connect you to a live 211info specialist now to help find a safe place for tonight.",
+        "You\u2019re doing the right thing calling. Since you\u2019re getting out of breath fast, safety first: if breathing gets worse, chest pain starts, or you feel faint, call 9-1-1 now. To start benefits help right now, call **8-0-0, 6-3-8, 0-5-1-0** and say, \u201cI need disability benefits application help and I\u2019m medically fragile.\u201d",
+        "First step: call this confidential helpline now so you\u2019re not alone while your battery is low: **800\u2026 448\u2026 3000**. If that doesn\u2019t connect, try **888\u2026 532\u2026 0550**. They support youth and young adults and families with immediate guidance. If you\u2019re in immediate danger right now, call **911** first.",
+        "I\u2019m really glad you called. What you just said sounds like a safety crisis right now. If you might hurt yourself or you\u2019re in immediate danger, call 911 now. If you can, stay on the line with me while we get you to a live crisis counselor right away. You don\u2019t have to do this alone tonight."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002257#turn-1",
+      "scenarioId": "phone_dialog_0002257",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I can\u2019t really breathe right now... I need help, I don\u2019t know where to start.",
+      "normalizedQuery": "hi sorry really breathe right now don know start",
+      "voiceResponse": "I\u2019m really glad you called. You\u2019re not alone, and we can do this one step at a time. Right now, if you\u2019re struggling to breathe, call 911 immediately. If you can, sit down, loosen tight clothing, and take slow breaths with me: in for 4, out for 6, three times. I can stay with you while you call. Are you in immediate danger right this second?",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:2ef319d5e12550a7",
+        "service:8cff3ea3d8ce0793"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. You\u2019re not alone, and we can do this one step at a time. Right now, if you\u2019re struggling to breathe, call 911 immediately. If you can, sit down, loosen tight clothing, and take slow breaths with me: in for 4, out for 6, three times. I can stay with you while you call. Are you in immediate danger right this second?",
+      "voiceResponseAlternatives": [
+        "First, if you feel in immediate danger right now, call 911. If you\u2019re not in immediate danger, stay with me on the line and I\u2019ll connect you to a live 211info specialist now to help find a safe place for tonight.",
+        "You\u2019re doing the right thing calling. Since you\u2019re getting out of breath fast, safety first: if breathing gets worse, chest pain starts, or you feel faint, call 9-1-1 now. To start benefits help right now, call **8-0-0, 6-3-8, 0-5-1-0** and say, \u201cI need disability benefits application help and I\u2019m medically fragile.\u201d",
+        "First step: call this confidential helpline now so you\u2019re not alone while your battery is low: **800\u2026 448\u2026 3000**. If that doesn\u2019t connect, try **888\u2026 532\u2026 0550**. They support youth and young adults and families with immediate guidance. If you\u2019re in immediate danger right now, call **911** first.",
+        "I\u2019m really glad you called. What you just said sounds like a safety crisis right now. If you might hurt yourself or you\u2019re in immediate danger, call 911 now. If you can, stay on the line with me while we get you to a live crisis counselor right away. You don\u2019t have to do this alone tonight."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002276#turn-1",
+      "scenarioId": "phone_dialog_0002276",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hello? I can\u2019t really hear, there\u2019s a lot going on here, but I need help now, my tooth is killing me.",
+      "normalizedQuery": "hello really hear there lot going on here now tooth killing",
+      "voiceResponse": "I hear you. Quick safety check: are you having any face or neck swelling, fever, or trouble breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "service:bf0682fd9fa9809c",
+        "service:3bf79b1da127b257",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Quick safety check: are you having any face or neck swelling, fever, or trouble breathing right now?",
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. First, is your friend in immediate danger right now?",
+        "Yeah, I hear you. We can keep this minimal and only share what you choose. I can help with urgent power-bill options and contacts that usually don\u2019t need much info up front. What city are you in right now?",
+        "I\u2019m so sorry you\u2019re going through this. I\u2019m here with you. Are you having any thoughts of hurting yourself right now?",
+        "I hear you. I can help fast. What do you need most today: food, a place to stay, or school supplies?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -4323,6 +4443,30 @@
       "to": "phone_dialog_0002127#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002216#turn-1",
+      "to": "phone_dialog_0002216#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002254#turn-3",
+      "to": "phone_dialog_0002254#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002257#turn-1",
+      "to": "phone_dialog_0002257#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002276#turn-1",
+      "to": "phone_dialog_0002276#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
     }
   ]
 }

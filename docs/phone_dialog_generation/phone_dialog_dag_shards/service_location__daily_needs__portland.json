@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__portland",
   "kind": "service_location",
   "key": "daily_needs__portland",
-  "nodeCount": 37,
+  "nodeCount": 41,
   "nodes": [
     {
       "id": "phone_dialog_0000052#turn-1",
@@ -1100,6 +1100,126 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002216#turn-5",
+      "scenarioId": "phone_dialog_0002216",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, slow down, please... can you repeat the address one more time?",
+      "normalizedQuery": "brother passed last week trying keep it together don have decent clothes portland say again missed there noise here head all over place somewhere gives clothing like if possible even know doing wait slow down please repeat address one more time",
+      "voiceResponse": "I haven\u2019t given an address yet. I\u2019m connecting you to a live agent now for same-day clothing help in Portland. If your breathing gets bad again, or you feel like you might pass out, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I haven\u2019t given an address yet. I\u2019m connecting you to a live agent now for same-day clothing help in Portland. If your breathing gets bad again, or you feel like you might pass out, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002316#turn-2",
+      "scenarioId": "phone_dialog_0002316",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Portland, I\u2019m by the bus station, and my check got sent back again because I have nowhere to get mail.",
+      "normalizedQuery": "portland by bus station check got sent back again because have nowhere mail",
+      "voiceResponse": "You\u2019re not alone. If your breathing gets worse or you feel in immediate danger, call 911 now. You\u2019re at Greyhound Portland. 1090 NW Station Way Portland Curbside Bus Stop, Portland, OR 97209. I\u2019m connecting you to a live agent now to help you get a mailing address so your check can be delivered.",
+      "evidenceDocIds": [
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "service:7cc5d105ad0f1b6e",
+        "service:fbd5bccefe3a07a8",
+        "service:3a42571e919d6a12"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone. If your breathing gets worse or you feel in immediate danger, call 911 now. You\u2019re at Greyhound Portland. 1090 NW Station Way Portland Curbside Bus Stop, Portland, OR 97209. I\u2019m connecting you to a live agent now to help you get a mailing address so your check can be delivered.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002316#turn-4",
+      "scenarioId": "phone_dialog_0002316",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what was the place called? I missed it, there\u2019s a lot of noise here and I didn\u2019t catch the name.",
+      "normalizedQuery": "hi sorry really breathe right now keep losing things don have an address anymore portland by bus station check got sent back again because nowhere mail slow down crying trying listen just somewhere pick up like safe wait was place called missed it there lot noise here didn catch name",
+      "voiceResponse": "Yes. The place is **Greyhound Portland**. I\u2019ll repeat: **Greyhound Portland**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The place is **Greyhound Portland**. I\u2019ll repeat: **Greyhound Portland**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002316#turn-5",
+      "scenarioId": "phone_dialog_0002316",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the number one more time, just really slow, my phone\u2019s at like two percent and I\u2019m freaking out.",
+      "normalizedQuery": "portland by bus station check got sent back again because have nowhere mail slow down crying trying listen just somewhere pick up like safe wait was place called missed it there lot noise here didn catch name repeat number one more time really phone at two percent freaking",
+      "voiceResponse": "I don\u2019t have a phone number to repeat right now. I\u2019ll repeat the place: Greyhound Portland. 1090 Northwest Station Way, Portland, Oregon, 97209. I\u2019m connecting you to a live agent now for a safe mail pickup option today.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a phone number to repeat right now. I\u2019ll repeat the place: Greyhound Portland. 1090 Northwest Station Way, Portland, Oregon, 97209. I\u2019m connecting you to a live agent now for a safe mail pickup option today.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1306,6 +1426,30 @@
       "to": "phone_dialog_0001963#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002216#turn-5",
+      "to": "phone_dialog_0002216#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002316#turn-2",
+      "to": "phone_dialog_0002316#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002316#turn-4",
+      "to": "phone_dialog_0002316#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002316#turn-5",
+      "to": "phone_dialog_0002316#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

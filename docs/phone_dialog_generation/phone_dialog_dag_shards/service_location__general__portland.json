@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__portland",
   "kind": "service_location",
   "key": "general__portland",
-  "nodeCount": 129,
+  "nodeCount": 142,
   "nodes": [
     {
       "id": "phone_dialog_0000013#turn-5",
@@ -3854,6 +3854,396 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002173#turn-1",
+      "scenarioId": "phone_dialog_0002173",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, wait, sorry, there\u2019s a train or something loud outside, can you still hear me? I\u2019m in Portland, Multnomah County, and people in my building are sending messages through the vents.",
+      "normalizedQuery": "hi wait sorry there train something loud outside still hear portland multnomah county people building sending messages through vents",
+      "voiceResponse": "I can hear you, and that sounds really unsettling. Let\u2019s focus on your safety first: are you in immediate danger right now? If yes, call 911 now. If you can, step to a quieter, safer spot like outside or near other people. I can stay with you while we get a live person on the line to help with next steps in Multnomah County.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:90c7ca5c66c5c48e",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:56b06f24d0db91fe",
+        "service:f0dc8dae97168e5b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, and that sounds really unsettling. Let\u2019s focus on your safety first: are you in immediate danger right now? If yes, call 911 now. If you can, step to a quieter, safer spot like outside or near other people. I can stay with you while we get a live person on the line to help with next steps in Multnomah County.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002173#turn-2",
+      "scenarioId": "phone_dialog_0002173",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "No, I know how that sounds, but the voices started again last night and now I can\u2019t tell what actually happened first, the knocking or the whispering, I keep losing the order.",
+      "normalizedQuery": "hi wait sorry there train something loud outside still hear portland multnomah county people building sending messages through vents no know how sounds voices started again last night now tell actually happened first knocking whispering keep losing order",
+      "voiceResponse": "That sounds frightening, and you\u2019re doing the right thing by saying it out loud. Let\u2019s keep this simple right now: are you physically safe where you are this minute, yes or no? If yes, move to a quieter spot near other people, and I\u2019ll stay with you while we get a live support person on the line in Multnomah County. If you feel in immediate danger at any point, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That sounds frightening, and you\u2019re doing the right thing by saying it out loud. Let\u2019s keep this simple right now: are you physically safe where you are this minute, yes or no? If yes, move to a quieter spot near other people, and I\u2019ll stay with you while we get a live support person on the line in Multnomah County. If you feel in immediate danger at any point, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002173#turn-4",
+      "scenarioId": "phone_dialog_0002173",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I keep talking over you, my phone keeps cutting out and I\u2019m at 8 percent battery, can you repeat the number slower if there\u2019s a crisis team?",
+      "normalizedQuery": "hi wait sorry there train something loud outside still hear portland multnomah county people building sending messages through vents no know how sounds voices started again last night now tell actually happened first knocking whispering keep losing order asked if safe right mean locked door haven slept two days thinking someone hallway talking over phone keeps cutting at percent battery repeat number slower crisis team",
+      "voiceResponse": "You\u2019re doing your best in a hard moment. I\u2019ll repeat the emergency number slowly: The number is 9, 1, 1. If you\u2019re in immediate danger, call now. If you\u2019re safe for now, say \u201csafe for now,\u201d and I\u2019ll give the next step quickly to save your battery.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing your best in a hard moment. I\u2019ll repeat the emergency number slowly: The number is 9, 1, 1. If you\u2019re in immediate danger, call now. If you\u2019re safe for now, say \u201csafe for now,\u201d and I\u2019ll give the next step quickly to save your battery.",
+      "voiceResponseAlternatives": [
+        "Of course, and I\u2019m glad you asked. The name I said was **\u201clive specialist.\u201d** Slowly: **live** \u2026 **specialist**. They\u2019ll check ride options for her medical visits and walk you through next steps. Please stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s **8-8-8** \u2026 **2-2-1** \u2026 **7-0-7-0**. I\u2019ll say it once more: **8-8-8, 2-2-1, 7-0-7-0**.",
+        "Yes. First, call **2-1-1** for the live specialist. That is **2-1-1**. If you are in immediate danger, call **9-1-1**. That is **9-1-1**.",
+        "Yes. Slow and clear. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: call **9-1-1**. Portland address: **5100** Southwest Macadam Avenue, Suite **400**, Portland, **9-7-2-3-9**. Repeating: **5100** Southwest Macadam, Suite **400**. Main phone: **8-8-8, 5-3-2, 0-5-5-0**. Backup: **8-0-0, 4-4-8, 3-0-0-0**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002181#turn-2",
+      "scenarioId": "phone_dialog_0002181",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I\u2019m in Portland, and my power\u2019s supposed to be cut tomorrow, I just... I can\u2019t think straight.",
+      "normalizedQuery": "hi sorry trying really breathe right now got this shutoff notice don know slow down portland power supposed be cut tomorrow just think straight",
+      "voiceResponse": "I\u2019ll go slowly. Main number: (888) 221-7070. I\u2019ll repeat: 888, 221, 7070. Backup number: (888) 225-2611. Call now and say your power may be cut tomorrow in Portland, and you need urgent shutoff help.",
+      "evidenceDocIds": [
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:b30d1ccbf8ca9924"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll go slowly. Main number: (888) 221-7070. I\u2019ll repeat: 888, 221, 7070. Backup number: (888) 225-2611. Call now and say your power may be cut tomorrow in Portland, and you need urgent shutoff help.",
+      "voiceResponseAlternatives": [
+        "Of course, and I\u2019m glad you asked. The name I said was **\u201clive specialist.\u201d** Slowly: **live** \u2026 **specialist**. They\u2019ll check ride options for her medical visits and walk you through next steps. Please stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s **8-8-8** \u2026 **2-2-1** \u2026 **7-0-7-0**. I\u2019ll say it once more: **8-8-8, 2-2-1, 7-0-7-0**.",
+        "Yes. First, call **2-1-1** for the live specialist. That is **2-1-1**. If you are in immediate danger, call **9-1-1**. That is **9-1-1**.",
+        "Yes. Slow and clear. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: call **9-1-1**. Portland address: **5100** Southwest Macadam Avenue, Suite **400**, Portland, **9-7-2-3-9**. Repeating: **5100** Southwest Macadam, Suite **400**. Main phone: **8-8-8, 5-3-2, 0-5-5-0**. Backup: **8-0-0, 4-4-8, 3-0-0-0**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002181#turn-3",
+      "scenarioId": "phone_dialog_0002181",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hold on, there\u2019s noise here\u2014what did you say the program was called? Can you say it again?",
+      "normalizedQuery": "hi sorry trying really breathe right now got this shutoff notice don know slow down portland power supposed be cut tomorrow just think straight hold on there noise here did say program was called it again",
+      "voiceResponse": "The name is Public Safety Power Shutoffs.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The name is Public Safety Power Shutoffs.",
+      "voiceResponseAlternatives": [
+        "Of course, and I\u2019m glad you asked. The name I said was **\u201clive specialist.\u201d** Slowly: **live** \u2026 **specialist**. They\u2019ll check ride options for her medical visits and walk you through next steps. Please stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s **8-8-8** \u2026 **2-2-1** \u2026 **7-0-7-0**. I\u2019ll say it once more: **8-8-8, 2-2-1, 7-0-7-0**.",
+        "Yes. First, call **2-1-1** for the live specialist. That is **2-1-1**. If you are in immediate danger, call **9-1-1**. That is **9-1-1**.",
+        "Yes. Slow and clear. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: call **9-1-1**. Portland address: **5100** Southwest Macadam Avenue, Suite **400**, Portland, **9-7-2-3-9**. Repeating: **5100** Southwest Macadam, Suite **400**. Main phone: **8-8-8, 5-3-2, 0-5-5-0**. Backup: **8-0-0, 4-4-8, 3-0-0-0**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002236#turn-1",
+      "scenarioId": "phone_dialog_0002236",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hello? Can you hear me? I'm in Portland, by Old Town, and this line keeps cutting out.",
+      "normalizedQuery": "hello hear i'm portland by old town this line keeps cutting",
+      "voiceResponse": "Yes, I hear you. You\u2019re in Old Town, Portland. I can get you to a live 211 specialist now. If you\u2019re in immediate danger or feel unsafe, call 911 right now.",
+      "evidenceDocIds": [
+        "service:7a8f64f224c2c5ea",
+        "service:35dc05f6d1dcb822",
+        "service:6edca67b158c280e",
+        "page:bafkreigxnr3ak3v2jf2s3cnxj2ljtoyi32puwirzncxp5tteom3jeajfga",
+        "page:bafkreiefee7hmeq4l746vxkezdbxm4xqjzul2q7y2b34q5w7cotkdw4ewu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. You\u2019re in Old Town, Portland. I can get you to a live 211 specialist now. If you\u2019re in immediate danger or feel unsafe, call 911 right now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002236#turn-2",
+      "scenarioId": "phone_dialog_0002236",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I'm outside and it's getting really hot, and some guys at the camp keep threatening to take my stuff.",
+      "normalizedQuery": "hello hear i'm portland by old town this line keeps cutting outside it's getting really hot some guys at camp keep threatening take stuff",
+      "voiceResponse": "That sounds unsafe right now. If you feel in danger, call 911 now. Move to a public place with people, like near a store entrance, and keep your phone with you. I can connect you to a live 211 specialist now for immediate shelter and safety help nearby. If we get cut off: Call 503, 228, 4533.",
+      "evidenceDocIds": [
+        "service:7a8f64f224c2c5ea",
+        "service:35dc05f6d1dcb822",
+        "service:6edca67b158c280e",
+        "page:bafkreigxnr3ak3v2jf2s3cnxj2ljtoyi32puwirzncxp5tteom3jeajfga",
+        "page:bafkreiefee7hmeq4l746vxkezdbxm4xqjzul2q7y2b34q5w7cotkdw4ewu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That sounds unsafe right now. If you feel in danger, call 911 now. Move to a public place with people, like near a store entrance, and keep your phone with you. I can connect you to a live 211 specialist now for immediate shelter and safety help nearby. If we get cut off: Call 503, 228, 4533.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002236#turn-4",
+      "scenarioId": "phone_dialog_0002236",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you broke up, can you repeat that last part slower?",
+      "normalizedQuery": "hello hear i'm portland by old town this line keeps cutting outside it's getting really hot some guys at camp keep threatening take stuff before anything else safe stay right here now should move sorry broke up repeat last part slower",
+      "voiceResponse": "Move right now. Don\u2019t stay there. Go to a busy public place with people and shade, like a store entrance. If anyone threatens you, or you feel in immediate danger, call 911 now. Then I can connect you to a live 211 specialist for a safe place right away.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreigxnr3ak3v2jf2s3cnxj2ljtoyi32puwirzncxp5tteom3jeajfga",
+        "page:bafkreiefee7hmeq4l746vxkezdbxm4xqjzul2q7y2b34q5w7cotkdw4ewu",
+        "page:bafkreiftkqb7eifdmg7gublzcj72ja66suga5pcyq6yk3ncz3m5ajlgpfm",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Move right now. Don\u2019t stay there. Go to a busy public place with people and shade, like a store entrance. If anyone threatens you, or you feel in immediate danger, call 911 now. Then I can connect you to a live 211 specialist for a safe place right away.",
+      "voiceResponseAlternatives": [
+        "Of course, and I\u2019m glad you asked. The name I said was **\u201clive specialist.\u201d** Slowly: **live** \u2026 **specialist**. They\u2019ll check ride options for her medical visits and walk you through next steps. Please stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s **8-8-8** \u2026 **2-2-1** \u2026 **7-0-7-0**. I\u2019ll say it once more: **8-8-8, 2-2-1, 7-0-7-0**.",
+        "Yes. First, call **2-1-1** for the live specialist. That is **2-1-1**. If you are in immediate danger, call **9-1-1**. That is **9-1-1**.",
+        "Yes. Slow and clear. If you are in immediate danger, call **9-1-1**. I\u2019ll repeat: call **9-1-1**. Portland address: **5100** Southwest Macadam Avenue, Suite **400**, Portland, **9-7-2-3-9**. Repeating: **5100** Southwest Macadam, Suite **400**. Main phone: **8-8-8, 5-3-2, 0-5-5-0**. Backup: **8-0-0, 4-4-8, 3-0-0-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002263#turn-1",
+      "scenarioId": "phone_dialog_0002263",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hello? Can you hear me? I\u2019m in Portland and it\u2019s freezing out here, I can\u2019t stay where I was sleeping tonight.",
+      "normalizedQuery": "hello hear portland it freezing here stay was sleeping tonight",
+      "voiceResponse": "I hear you, and I\u2019m here with you. First, quick safety check: are you in immediate danger or feeling too cold to stay awake? If yes, call 911 now. For a place tonight in Portland: 999 N Thunderbird Way, Portland, OR 97227. They have a tented sleeping area and basic sleeping materials. You can share only what you\u2019re comfortable sharing.",
+      "evidenceDocIds": [
+        "service:69a0def45f7321b0",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m here with you. First, quick safety check: are you in immediate danger or feeling too cold to stay awake? If yes, call 911 now. For a place tonight in Portland: 999 N Thunderbird Way, Portland, OR 97227. They have a tented sleeping area and basic sleeping materials. You can share only what you\u2019re comfortable sharing.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you told me. Quick safety check: are you feeling dangerously cold right now, like uncontrolled shivering, confusion, or numb hands/feet? If yes, call **9-1-1** now. If you can move, nearest indoor option here is **Old Town Clinic**, **726 West Burnside Street**. Phone: **5-0-3, 2-2-8, 4-5-3-3**. Also call **2-1-1** and ask for a live agent for emergency warming shelter tonight near Old Town.",
+        "You\u2019re in a safety risk right now. First step: call **911** now and say, \u201cI\u2019m in Old Town Portland, people are threatening me and it\u2019s freezing.\u201d If you can move, go to a lit public place with people nearby while you call. If 911 doesn\u2019t connect, call **Old Town Clinic** at **5 0 3, 2 2 8, 4 5 3 3** and ask for immediate safe shelter help near **726 West Burnside**.",
+        "Thank you for telling me. Quick safety check: if she\u2019s with that man now or feels pressured to do anything to stay there, call **911** right now. If she can leave safely, next best step is **call 211** and ask for a youth runaway or trafficking safety specialist in Portland. If her phone is unsafe, she can use any public phone or ask a trusted adult to call. You can also text her: \u201cYou don\u2019t owe anyone your body to have a place to sleep.\u201d",
+        "Yes, I hear you. First, quick safety check: are you shaky, confused, or feeling like you might pass out right now? If yes, call 9-1-1 now. Next step: go to Operation Nightwatch Downtown Hospitality Center, **1432 Southwest 13th Avenue, Portland**. Phone, slowly: **5-0-3, 2-2-0, 0-4-3-8**. I\u2019ll repeat: **5-0-3, 2-2-0, 0-4-3-8**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002263#turn-2",
+      "scenarioId": "phone_dialog_0002263",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Before I say too much, is this private? I don\u2019t want my name or location blasted anywhere.",
+      "normalizedQuery": "hello hear portland it freezing here stay was sleeping tonight before say too much this private don want name location blasted anywhere",
+      "voiceResponse": "Yes, you can keep this private. Share only what you choose, and you don\u2019t have to give your full name. I won\u2019t post your details publicly. Because you said you\u2019re freezing and without a safe place tonight, this is urgent. If you feel too cold to stay awake or in immediate danger, call 911 now. If you want, I can connect you to a live person next with the least details possible.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:69a0def45f7321b0",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you can keep this private. Share only what you choose, and you don\u2019t have to give your full name. I won\u2019t post your details publicly. Because you said you\u2019re freezing and without a safe place tonight, this is urgent. If you feel too cold to stay awake or in immediate danger, call 911 now. If you want, I can connect you to a live person next with the least details possible.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002340#turn-1",
+      "scenarioId": "phone_dialog_0002340",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hello? I can\u2019t hear great, so please talk slow. I\u2019m in Portland, calling for my older brother, he\u2019s disabled and very sick.",
+      "normalizedQuery": "hello hear great so please talk slow portland calling older brother he disabled very sick",
+      "voiceResponse": "Hi, I hear you. I will speak slowly. You\u2019re in Portland, calling for your older brother, and he is very sick. I heard that: he is very sick. If he has trouble breathing, chest pain, or is not responding, call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist for local help. Is he in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:20b8aa2fe9cb02fe",
+        "service:95958cd2913deae2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Hi, I hear you. I will speak slowly. You\u2019re in Portland, calling for your older brother, and he is very sick. I heard that: he is very sick. If he has trouble breathing, chest pain, or is not responding, call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist for local help. Is he in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002340#turn-3",
+      "scenarioId": "phone_dialog_0002340",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "His caregiver keeps not showing up, and he missed two medication doses. He sounds confused and out of breath when I call.",
+      "normalizedQuery": "hello hear great so please talk slow portland calling older brother he disabled very sick before anything else immediate danger right now breathing weak hasn eaten since yesterday his caregiver keeps showing up missed two medication doses sounds confused breath when call",
+      "voiceResponse": "I hear you. He missed two medication doses. He missed two doses. He sounds confused and out of breath. That can be urgent. If he is struggling to breathe now, call 9-1-1 now. Call 9-1-1 now. I can bring in a live specialist right now for local support. One question: is he awake right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. He missed two medication doses. He missed two doses. He sounds confused and out of breath. That can be urgent. If he is struggling to breathe now, call 9-1-1 now. Call 9-1-1 now. I can bring in a live specialist right now for local support. One question: is he awake right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002340#turn-4",
+      "scenarioId": "phone_dialog_0002340",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "His apartment has stairs and his chair can\u2019t get down safely, so he\u2019s basically trapped and alone most days.",
+      "normalizedQuery": "hello hear great so please talk slow portland calling older brother he disabled very sick before anything else immediate danger right now breathing weak hasn eaten since yesterday his caregiver keeps showing up missed two medication doses sounds confused breath when call apartment has stairs chair down safely basically trapped alone most days",
+      "voiceResponse": "I hear you. He is trapped by stairs, and alone most days. I heard that: trapped, and alone most days. This is urgent with confusion and shortness of breath. Call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist right now for local crisis support and caregiver backup. One question: is someone physically with him right now?",
+      "evidenceDocIds": [
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:28acd183a54cc8a5",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. He is trapped by stairs, and alone most days. I heard that: trapped, and alone most days. This is urgent with confusion and shortness of breath. Call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist right now for local crisis support and caregiver backup. One question: is someone physically with him right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -4562,6 +4952,84 @@
     {
       "from": "phone_dialog_0002096#turn-3",
       "to": "phone_dialog_0002096#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002173#turn-1",
+      "to": "phone_dialog_0002173#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002173#turn-2",
+      "to": "phone_dialog_0002173#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002173#turn-4",
+      "to": "phone_dialog_0002173#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002181#turn-2",
+      "to": "phone_dialog_0002181#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002181#turn-3",
+      "to": "phone_dialog_0002181#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002236#turn-1",
+      "to": "phone_dialog_0002236#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002236#turn-2",
+      "to": "phone_dialog_0002236#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002236#turn-4",
+      "to": "phone_dialog_0002236#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002263#turn-1",
+      "to": "phone_dialog_0002263#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002263#turn-2",
+      "to": "phone_dialog_0002263#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002340#turn-1",
+      "to": "phone_dialog_0002340#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002340#turn-3",
+      "to": "phone_dialog_0002340#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002340#turn-4",
+      "to": "phone_dialog_0002340#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

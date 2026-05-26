@@ -2,16 +2,16 @@
   "schemaVersion": 1,
   "input": "docs/phone_dialog_generation/voice_response_chunk_dedupe.json",
   "summary": {
-    "opportunityCount": 56,
-    "reportedOpportunityCount": 56,
-    "estimatedSavedChunkCallsTop": 4915,
-    "estimatedSavedChunkCallsAll": 4915,
+    "opportunityCount": 62,
+    "reportedOpportunityCount": 62,
+    "estimatedSavedChunkCallsTop": 5600,
+    "estimatedSavedChunkCallsAll": 5600,
     "familyKindCounts": {
       "211_phrase": 1,
       "emergency_phrase": 1,
-      "location": 16,
-      "named_entity": 20,
-      "phone_or_number": 12,
+      "location": 19,
+      "named_entity": 22,
+      "phone_or_number": 13,
       "static_phrase": 6
     },
     "note": "Savings are static-analysis estimates. Slot audio still needs prosody validation before runtime composition."
@@ -21,30 +21,30 @@
       "canonicalTemplate": "Call {phone_1}.",
       "familyKind": "phone_or_number",
       "slotKinds": {
-        "address_part": 45,
-        "entity": 287,
-        "location": 196,
-        "number": 120,
-        "phone": 1231
+        "address_part": 51,
+        "entity": 294,
+        "location": 217,
+        "number": 138,
+        "phone": 1353
       },
-      "uniqueChunkCount": 1143,
-      "sourceChunkRefs": 1143,
-      "sourceTemplateCount": 874,
+      "uniqueChunkCount": 1261,
+      "sourceChunkRefs": 1261,
+      "sourceTemplateCount": 957,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 1139,
+      "estimatedSavedChunkCalls": 1257,
       "sourceMaskedTemplates": [
         "A confidential hotline you can call is: {phone_1}.",
         "A counseling option you can call is {entity_2} in Ontario: {phone_1}.",
         "A local {location_2} number you can call now is {phone_1}.",
         "After emergency care starts, nearby in {location_6} you can call {entity_5} at {phone_1} \u2014 that\u2019South {number_2}, {number_3}, {number_4} \u2014 or five zero three,",
+        "After emergency help is arranged, for ride support in {entity_2}, call {phone_1}.",
         "After emergency help is on the Way, for diapers today call {address_part_2} at {phone_1}.",
         "After help is on the Way, I can help you call a diaper bank at {phone_1}.",
         "After help is on the Way, for diapers call {entity_2} at {phone_1}.",
         "After nine one one is on the Way, you can also call the confidential helpline at {phone_1}.",
         "After police help you get safe, for ride support you can call {entity_2} at {phone_1}.",
-        "After that, call detox directly: {phone_1}.",
-        "After that, for diapers today, call {address_part_2} at {phone_1}.",
-        "After you call nine one one, for diapers tonight try {entity_2} at {phone_1}: five four one\u2026 eight six four\u2026 zero seven seven six."
+        "After she\u2019s safe, you or she can call the youth line for shelter and confidential next steps: {phone_1}.",
+        "After that, call detox directly: {phone_1}."
       ],
       "examples": [
         "You can call five-four-one, two-two-one, zero-eight-two-four.",
@@ -59,17 +59,17 @@
       "canonicalTemplate": "The number is {phone_1}.",
       "familyKind": "phone_or_number",
       "slotKinds": {
-        "address_part": 53,
-        "entity": 217,
-        "location": 133,
-        "number": 91,
-        "phone": 1111
+        "address_part": 54,
+        "entity": 223,
+        "location": 139,
+        "number": 101,
+        "phone": 1157
       },
-      "uniqueChunkCount": 1020,
-      "sourceChunkRefs": 1020,
-      "sourceTemplateCount": 695,
+      "uniqueChunkCount": 1063,
+      "sourceChunkRefs": 1063,
+      "sourceTemplateCount": 717,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 1016,
+      "estimatedSavedChunkCalls": 1059,
       "sourceMaskedTemplates": [
         "1 0 0 5 to Newport: {number_3} {address_part_4} seventh Street, same phone {phone_1} to Florence: eight seven seven three eight Highway one hundred one, phone {phone_2}",
         "1 8 4 5) and {entity_2} at {phone_1}.",
@@ -82,15 +82,15 @@
         "After nine one one is on the Way, I can help with food: {phone_1}.",
         "After that, here\u2019s a diaper line you can try right away: {phone_1} (Lane County Diaper Bank, Springfield).",
         "After you\u2019re with help, diaper line numbers are: {phone_1} (Springfield) and {phone_2} ({entity_3}).",
-        "Also: {phone_1}, extension two 0 9."
+        "Also, {location_3} and Hard of {entity_2} may help with communication support at {phone_1}."
       ],
       "examples": [
+        "The number is five four one, two two one, zero eight two four.",
         "The number is 5 0 3, 3 5 2, 6 0 0 0.",
+        "The number is 5, 4, 1, 3, 9, 3, 8, 5, 5, 2.",
         "The number is five four one, nine two four, eight seven three eight.",
         "The number is 5-0-3, 3-5-9, 5-5-6-4.",
-        "The number is 5-0-3, 2-2-2, 5-5-5-5.",
-        "The number is 5 4 1, 2 2 1, 0 8 2 4.",
-        "The number is 5 4 1, 4 8 8, 6 0 0 4."
+        "The number is 5-0-3, 2-2-2, 5-5-5-5."
       ]
     },
     {
@@ -99,14 +99,14 @@
       "slotKinds": {
         "address_part": 24,
         "entity": 87,
-        "location": 64,
-        "number": 2190
+        "location": 66,
+        "number": 2391
       },
-      "uniqueChunkCount": 688,
-      "sourceChunkRefs": 688,
-      "sourceTemplateCount": 424,
+      "uniqueChunkCount": 755,
+      "sourceChunkRefs": 755,
+      "sourceTemplateCount": 441,
       "estimatedTtsAssets": 8,
-      "estimatedSavedChunkCalls": 680,
+      "estimatedSavedChunkCalls": 747,
       "sourceMaskedTemplates": [
         "A practical low-cost option is {entity_5}: phone {number_1}, {number_2}, {number_3}, address {number_4} G Street, Springfield.",
         "A second line is {number_1}, {number_2}, {number_3}.",
@@ -122,12 +122,12 @@
         "Alternate: {number_1}\u2026 {number_2}\u2026 {number_3}."
       ],
       "examples": [
-        "The number is 503\u2026 585\u2026 4949.",
-        "The number is 541\u2026 864\u2026 0776.",
-        "The number is 503\u2026 650\u2026 4678.",
-        "The number is 503\u2026 982\u2026 2000.",
-        "The number is 503\u2026 222\u2026 5555.",
-        "The number is 503\u2026 785\u2026 8772."
+        "The number is 503, 581, 5265.",
+        "The number is 541, 864, 0776.",
+        "The number is 541, 689, 6747.",
+        "The number is 503, 542, 2717.",
+        "The number is 541, 330, 9001.",
+        "The number is 541, 232, 8546."
       ]
     },
     {
@@ -135,36 +135,36 @@
       "familyKind": "phone_or_number",
       "slotKinds": {
         "address_part": 28,
-        "entity": 125,
-        "location": 154,
-        "number": 1842
+        "entity": 138,
+        "location": 164,
+        "number": 2332
       },
-      "uniqueChunkCount": 587,
-      "sourceChunkRefs": 587,
-      "sourceTemplateCount": 454,
+      "uniqueChunkCount": 749,
+      "sourceChunkRefs": 749,
+      "sourceTemplateCount": 557,
       "estimatedTtsAssets": 8,
-      "estimatedSavedChunkCalls": 579,
+      "estimatedSavedChunkCalls": 741,
       "sourceMaskedTemplates": [
         "3) Then call {number_1}, {number_2}, {number_3} and leave the same voicemail.",
+        "About police: ask their privacy rule before giving your name: \u201cIf I\u2019m {number_1} and runaway, when do you have to report?\u201d Call now: {number_2}\u2026{number_3}\u2026{number_4}.",
+        "After emergency help is on the Way, call {number_1}, {number_2}, {number_3} for shelter and support.",
+        "After emergency help is on the Way, call {number_1}, {number_2}, {number_3} for shelter support in {location_4}.",
+        "After emergency help is on the Way, call {number_1}, {number_2}, {number_3}.",
         "After emergency help is on the Way, for food and a safe Place call {number_1}\u2026{number_2}\u2026{number_3} ({entity_6}, {number_4} {address_part_5}).",
+        "After nine one one is on the Way, call {number_1}, {number_2}, {number_3} for postpartum crisis support.",
+        "After nine one one is on the Way, call {number_1}, {number_2}, {number_3}.",
         "After nine one one, call food help at {number_1}, {number_2}, {number_3}.",
         "After nine one one, call shelter at {number_1}, {number_2}, {number_3} for a bed tonight.",
         "After nine one one, call shelter at {number_1}, {number_2}, {number_3} for tonight\u2019s bed.",
-        "After she\u2019s out, call the {location_4} urgent line: {number_1}\u2026{number_2}\u2026{number_3}.",
-        "After that, for legal help, call {location_4}: {number_1} \u2026 {number_2} \u2026 {number_3}.",
-        "After that, for same-day care in Clackamas: Women\u2019s Clinic one zero one five one Southeast Sunnyside Road, Suite {number_1} A You can call {number_2} \u2026 {number_3} \u2026 {number_4}.",
-        "Are you able to call {number_1}, {number_2}, {number_3} with me right now?",
-        "Best fast step is to call {entity_4} now and ask: \u201cDo I need ID for a shower, or can I walk in?\u201d Number is {number_1}\u2026 {number_2}\u2026 {number_3}.",
-        "Best low-friction next step is to call {number_1}, {number_2}, {number_3} and ask for the nearest daytime youth drop-in with walk-ins today.",
-        "Best next step is a quick call before you go: {number_1}, {number_2}, {number_3} for {location_7}, and {number_4}, {number_5}, {number_6} for First Baptist."
+        "After she\u2019s out, call the {location_4} urgent line: {number_1}\u2026{number_2}\u2026{number_3}."
       ],
       "examples": [
-        "You can call 503\u2026 640\u2026 4222.",
-        "You can call 541\u2026 683\u2026 0836.",
-        "You can call 541\u2026 554\u2026 4700.",
-        "You can call 503\u2026 655\u2026 7701.",
-        "You can call 503\u2026 657\u2026 8269.",
-        "You can call 541\u2026 336\u2026 2339."
+        "Call 503, 228, 7465.",
+        "Call 541, 221, 0824.",
+        "Call 541, 682, 3353.",
+        "Call 503, 684, 3763.",
+        "Call 541, 343, 4747.",
+        "Call 503, 640, 3263."
       ]
     },
     {
@@ -175,13 +175,13 @@
         "entity": 11,
         "location": 9,
         "number": 8,
-        "phone": 498
+        "phone": 554
       },
-      "uniqueChunkCount": 491,
-      "sourceChunkRefs": 491,
-      "sourceTemplateCount": 94,
+      "uniqueChunkCount": 547,
+      "sourceChunkRefs": 547,
+      "sourceTemplateCount": 97,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 487,
+      "estimatedSavedChunkCalls": 543,
       "sourceMaskedTemplates": [
         "Again slowly: {phone_1}.",
         "Again, one digit at a time: {phone_1}.",
@@ -212,13 +212,13 @@
         "address_part": 1,
         "entity": 3,
         "location": 6,
-        "number": 1123
+        "number": 1369
       },
-      "uniqueChunkCount": 363,
-      "sourceChunkRefs": 363,
-      "sourceTemplateCount": 108,
+      "uniqueChunkCount": 445,
+      "sourceChunkRefs": 445,
+      "sourceTemplateCount": 117,
       "estimatedTtsAssets": 8,
-      "estimatedSavedChunkCalls": 355,
+      "estimatedSavedChunkCalls": 437,
       "sourceMaskedTemplates": [
         "Again, slowly: {number_1} \u2014 {number_2} \u2014 {number_3}.",
         "Again, slowly: {number_1} \u2026 {number_2} \u2026 {number_3}.",
@@ -234,28 +234,28 @@
         "Again: {number_1} \u2026 {number_2} \u2026 {number_3} \u2026 7."
       ],
       "examples": [
-        "Again: 503, 640, 3263.",
-        "Again: 503, 945, 8348.",
-        "Again: 503, 645, 9010.",
-        "Again: 503, 721, 1025.",
-        "Again: 503, 383, 1834.",
-        "Again: 800, 359, 1845."
+        "I\u2019ll repeat: 541, 343, 4747.",
+        "I\u2019ll repeat: 541, 336, 2339.",
+        "I\u2019ll repeat: 503, 684, 3763.",
+        "I\u2019ll repeat: 503, 339, 7710.",
+        "I\u2019ll repeat: 541, 322, 8768.",
+        "I\u2019ll repeat: 541, 232, 8546."
       ]
     },
     {
       "canonicalTemplate": "Backup number: {phone_1}.",
       "familyKind": "phone_or_number",
       "slotKinds": {
-        "entity": 7,
-        "location": 15,
-        "number": 26,
-        "phone": 265
+        "entity": 8,
+        "location": 16,
+        "number": 27,
+        "phone": 313
       },
-      "uniqueChunkCount": 244,
-      "sourceChunkRefs": 244,
-      "sourceTemplateCount": 103,
+      "uniqueChunkCount": 289,
+      "sourceChunkRefs": 289,
+      "sourceTemplateCount": 116,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 240,
+      "estimatedSavedChunkCalls": 285,
       "sourceMaskedTemplates": [
         "A second number is {phone_1}.",
         "After nine one one, call two one one for shelter and advocacy. backup is {phone_1}.",
@@ -271,12 +271,12 @@
         "Backup is {phone_1}: {phone_2}."
       ],
       "examples": [
-        "Backup: 8 6 6, 7 2 4, 2 9 7 5.",
-        "Backup: eight eight eight, six eight nine, three one one one.",
-        "Backup: 5 0 3, 2 2 6, 3 0 9 9.",
-        "Backup: 5-4-1, 3-8-3, 2-7-9-3.",
-        "Backup: 5-4-1, 4-8-8, 5-3-5-7.",
-        "Backup: 5-4-1, 7-4-3, 7-1-7-0."
+        "Backup number: 5-4-1, 7-4-3, 7-1-7-0.",
+        "Backup number: 5 4 1, 8 4 1, 1 9 7 4.",
+        "Backup number: 5 0 3, 2 2 6, 3 0 9 9.",
+        "Backup number: five zero three, two two six, three zero nine nine.",
+        "Backup number: 5 0 3, 4 7 2, 9 5 6 1.",
+        "Backup number: 5 4 1, 9 4 8, 6 6 4 9."
       ]
     },
     {
@@ -286,17 +286,18 @@
         "address_part": 1,
         "entity": 10,
         "location": 5,
-        "number": 432
+        "number": 628
       },
-      "uniqueChunkCount": 134,
-      "sourceChunkRefs": 134,
-      "sourceTemplateCount": 62,
+      "uniqueChunkCount": 199,
+      "sourceChunkRefs": 199,
+      "sourceTemplateCount": 76,
       "estimatedTtsAssets": 8,
-      "estimatedSavedChunkCalls": 126,
+      "estimatedSavedChunkCalls": 191,
       "sourceMaskedTemplates": [
         "Another number is {number_1} \u2026 {number_2} \u2026 {number_3}.",
         "Another number is {number_1}, {number_2}, {number_3}.",
         "Backup if needed: {number_1}\u2026 {number_2}\u2026 {number_3}.",
+        "Backup if that doesn\u2019t answer: {number_1}, {number_2}, {number_3}.",
         "Backup in Portland, Fora Health Detox: {number_1}\u2026 {number_2}\u2026 {number_3}.",
         "Backup is {number_1} \u2026 {number_2} \u2026 {number_3}.",
         "Backup is {number_1}\u2026 {number_2}\u2026 {number_3}.",
@@ -304,16 +305,15 @@
         "Backup line is {number_1}\u2026 {number_2}\u2026 {number_3}.",
         "Backup line: {number_1}, {number_2}, {number_3}.",
         "Backup line: {number_1}\u2026{number_2}\u2026{number_3}.",
-        "Backup number if it drops: {number_1}\u2026 {number_2}\u2026 {number_3}.",
-        "Backup number if they can\u2019t take you today: {number_1} \u2026 {number_2} \u2026 {number_3}."
+        "Backup number if it drops: {number_1}\u2026 {number_2}\u2026 {number_3}."
       ],
       "examples": [
-        "Backup: 503 \u2026 726 \u2026 0812.",
-        "Backup: 541 \u2026 967 \u2026 8630.",
-        "Backup: 503 \u2026 647 \u2026 7466.",
-        "Backup: 800 \u2026 531 \u2026 5332.",
-        "Backup: 971 \u2026 673 \u2026 1299.",
-        "Backup: 877 \u2026 296 \u2026 4076."
+        "Backup number: 541, 393, 8552.",
+        "Backup number: 541, 367, 5181.",
+        "Backup number: 503, 226, 3099.",
+        "Backup number: 888, 689, 3111.",
+        "Backup number: 541, 743, 7170.",
+        "Backup number: 541, 476, 3877."
       ]
     },
     {
@@ -324,14 +324,15 @@
         "entity": 8,
         "location": 8,
         "number": 12,
-        "phone": 131
+        "phone": 152
       },
-      "uniqueChunkCount": 127,
-      "sourceChunkRefs": 127,
-      "sourceTemplateCount": 60,
+      "uniqueChunkCount": 148,
+      "sourceChunkRefs": 148,
+      "sourceTemplateCount": 62,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 123,
+      "estimatedSavedChunkCalls": 144,
       "sourceMaskedTemplates": [
+        "After you call, for diaper help: Main number: {phone_1}.",
         "Call this main number now: {phone_1}.",
         "First number is {phone_1}.",
         "First number to call in {location_2} is {phone_1}.",
@@ -341,9 +342,8 @@
         "First step: call legal aid now and ask, before sharing details, \u201cWhat do you keep private, and who do you share it with?\u201d Main number: {phone_1}.",
         "First step: call this main number now: {phone_1}.",
         "First step: redial the main number right away: {phone_1}.",
-        "Here is the main number first: {phone_1}.",
-        "If not, call {phone_1} right now and say, \u201cI\u2019m grieving, feeling done, and need help now.\u201d That is the most important next step.",
-        "If you want to call now, the main number is {phone_1}."
+        "For local help and safety planning: Main number: {phone_1}.",
+        "Here is the main number first: {phone_1}."
       ],
       "examples": [
         "Most important number first: 5 0 3, 5 3 5, 1 1 5 1.",
@@ -358,13 +358,13 @@
       "canonicalTemplate": "{entity_1}.",
       "familyKind": "named_entity",
       "slotKinds": {
-        "entity": 37
+        "entity": 43
       },
-      "uniqueChunkCount": 37,
-      "sourceChunkRefs": 37,
+      "uniqueChunkCount": 43,
+      "sourceChunkRefs": 43,
       "sourceTemplateCount": 1,
       "estimatedTtsAssets": 3,
-      "estimatedSavedChunkCalls": 34,
+      "estimatedSavedChunkCalls": 40,
       "sourceMaskedTemplates": [
         "{entity_1}."
       ],
@@ -372,22 +372,22 @@
         "Overnight Winter Warming Shelter.",
         "Tap Reminder.",
         "Choose Reminder.",
+        "Law Center.",
         "Since Friday.",
-        "Not Center.",
-        "Salud Medical Center Community Health Services."
+        "Not Center."
       ]
     },
     {
       "canonicalTemplate": "The name is {entity_1}.",
       "familyKind": "named_entity",
       "slotKinds": {
-        "entity": 28
+        "entity": 32
       },
-      "uniqueChunkCount": 28,
-      "sourceChunkRefs": 28,
+      "uniqueChunkCount": 32,
+      "sourceChunkRefs": 32,
       "sourceTemplateCount": 3,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 24,
+      "estimatedSavedChunkCalls": 28,
       "sourceMaskedTemplates": [
         "The Place is {entity_1}.",
         "The name is {entity_1}.",
@@ -398,8 +398,31 @@
         "The name is KEEP.",
         "The name is Veterans Housing Project.",
         "The name is CARE-RIDE.",
-        "The name is Crisis Counseling Hotline.",
-        "The name is Sunnyside Shower Project."
+        "The name is Safe Sleep United.",
+        "The name is Crisis Counseling Hotline."
+      ]
+    },
+    {
+      "canonicalTemplate": "{zip_1}.",
+      "familyKind": "static_phrase",
+      "slotKinds": {
+        "zip": 23
+      },
+      "uniqueChunkCount": 23,
+      "sourceChunkRefs": 23,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 3,
+      "estimatedSavedChunkCalls": 20,
+      "sourceMaskedTemplates": [
+        "{zip_1}."
+      ],
+      "examples": [
+        "ZIP code nine seven three zero four.",
+        "ZIP code nine seven zero four five.",
+        "ZIP code nine seven seven five six.",
+        "ZIP code nine seven two zero six.",
+        "ZIP code nine seven four seven eight.",
+        "ZIP code nine seven four zero five."
       ]
     },
     {
@@ -426,29 +449,6 @@
       ]
     },
     {
-      "canonicalTemplate": "{zip_1}.",
-      "familyKind": "static_phrase",
-      "slotKinds": {
-        "zip": 17
-      },
-      "uniqueChunkCount": 17,
-      "sourceChunkRefs": 17,
-      "sourceTemplateCount": 1,
-      "estimatedTtsAssets": 3,
-      "estimatedSavedChunkCalls": 14,
-      "sourceMaskedTemplates": [
-        "{zip_1}."
-      ],
-      "examples": [
-        "ZIP code nine seven three zero four.",
-        "ZIP code nine seven zero four five.",
-        "ZIP code nine seven seven five six.",
-        "ZIP code nine seven two zero six.",
-        "ZIP code nine seven four zero five.",
-        "ZIP code nine seven eight zero one."
-      ]
-    },
-    {
       "canonicalTemplate": "Again: {entity_1}.",
       "familyKind": "named_entity",
       "slotKinds": {
@@ -469,6 +469,29 @@
         "Again: Overnight Winter Warming Shelter.",
         "Again: Two Families Now.",
         "Again: Deflection Drug Treatment Program."
+      ]
+    },
+    {
+      "canonicalTemplate": "{number_1}.",
+      "familyKind": "phone_or_number",
+      "slotKinds": {
+        "number": 13
+      },
+      "uniqueChunkCount": 13,
+      "sourceChunkRefs": 13,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 3,
+      "estimatedSavedChunkCalls": 10,
+      "sourceMaskedTemplates": [
+        "{number_1}."
+      ],
+      "examples": [
+        "771.",
+        "2380.",
+        "232.",
+        "7914.",
+        "8575.",
+        "2048."
       ]
     },
     {
@@ -493,29 +516,6 @@
         "Say: \u201cI\u2019m in Salem.",
         "Say: \u201cI\u2019m in Bend.",
         "Say: \u201cI\u2019m in Medford."
-      ]
-    },
-    {
-      "canonicalTemplate": "{number_1}.",
-      "familyKind": "phone_or_number",
-      "slotKinds": {
-        "number": 12
-      },
-      "uniqueChunkCount": 12,
-      "sourceChunkRefs": 12,
-      "sourceTemplateCount": 1,
-      "estimatedTtsAssets": 3,
-      "estimatedSavedChunkCalls": 9,
-      "sourceMaskedTemplates": [
-        "{number_1}."
-      ],
-      "examples": [
-        "771.",
-        "2380.",
-        "232.",
-        "7914.",
-        "8575.",
-        "2048."
       ]
     },
     {
@@ -562,6 +562,52 @@
         "The Place name is Warm Springs Senior Wellness Center.",
         "The Place name is Union Gospel Mission.",
         "The Place name is Right Track Resource Center."
+      ]
+    },
+    {
+      "canonicalTemplate": "The Place name is {location_1}.",
+      "familyKind": "location",
+      "slotKinds": {
+        "location": 9
+      },
+      "uniqueChunkCount": 9,
+      "sourceChunkRefs": 9,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 5,
+      "sourceMaskedTemplates": [
+        "The Place name is {location_1}."
+      ],
+      "examples": [
+        "The Place name is Multnomah County.",
+        "The Place name is Bend.",
+        "The Place name is Downtown Bend Library.",
+        "The Place name is Springfield Eugene Tenant Association.",
+        "The Place name is Hillsboro.",
+        "The Place name is Salem."
+      ]
+    },
+    {
+      "canonicalTemplate": "The name is {location_1}.",
+      "familyKind": "location",
+      "slotKinds": {
+        "location": 9
+      },
+      "uniqueChunkCount": 9,
+      "sourceChunkRefs": 9,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 5,
+      "sourceMaskedTemplates": [
+        "The name is {location_1}."
+      ],
+      "examples": [
+        "The name is DHS Gresham.",
+        "The name is Portland Therapy Project.",
+        "The name is Clackamas Service Center.",
+        "The name is Hillsboro Family Shelter.",
+        "The name is Salem Alliance Church.",
+        "The name is Eugene Service Station."
       ]
     },
     {
@@ -634,7 +680,7 @@
       ]
     },
     {
-      "canonicalTemplate": "The name is {location_1}.",
+      "canonicalTemplate": "I\u2019ll repeat: {location_1}.",
       "familyKind": "location",
       "slotKinds": {
         "location": 8
@@ -645,15 +691,15 @@
       "estimatedTtsAssets": 4,
       "estimatedSavedChunkCalls": 4,
       "sourceMaskedTemplates": [
-        "The name is {location_1}."
+        "I\u2019ll repeat: {location_1}."
       ],
       "examples": [
-        "The name is DHS Gresham.",
-        "The name is Clackamas Service Center.",
-        "The name is Hillsboro Family Shelter.",
-        "The name is Salem Alliance Church.",
-        "The name is Eugene Service Station.",
-        "The name is Washington County Behavioral Health Referrals."
+        "I\u2019ll repeat: Greyhound Portland.",
+        "I\u2019ll repeat: Washington County.",
+        "I\u2019ll repeat: Oregon Law Center.",
+        "I\u2019ll repeat: Multnomah County Eviction Prevention Program.",
+        "I\u2019ll repeat: Clackamas.",
+        "I\u2019ll repeat: Salem Electric."
       ]
     },
     {
@@ -678,29 +724,6 @@
         "call nine one one.",
         "call nine one one now.",
         "Call nine one one."
-      ]
-    },
-    {
-      "canonicalTemplate": "The Place name is {location_1}.",
-      "familyKind": "location",
-      "slotKinds": {
-        "location": 7
-      },
-      "uniqueChunkCount": 7,
-      "sourceChunkRefs": 7,
-      "sourceTemplateCount": 1,
-      "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 3,
-      "sourceMaskedTemplates": [
-        "The Place name is {location_1}."
-      ],
-      "examples": [
-        "The Place name is Multnomah County.",
-        "The Place name is Bend.",
-        "The Place name is Downtown Bend Library.",
-        "The Place name is Springfield Eugene Tenant Association.",
-        "The Place name is Hillsboro.",
-        "The Place name is Salem."
       ]
     },
     {
@@ -836,6 +859,28 @@
       ]
     },
     {
+      "canonicalTemplate": "I heard {location_1}.",
+      "familyKind": "location",
+      "slotKinds": {
+        "location": 5
+      },
+      "uniqueChunkCount": 5,
+      "sourceChunkRefs": 5,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 1,
+      "sourceMaskedTemplates": [
+        "I heard {location_1}."
+      ],
+      "examples": [
+        "I heard Multnomah County.",
+        "I heard Medford.",
+        "I heard Eugene.",
+        "I heard Salem.",
+        "I heard Oregon City."
+      ]
+    },
+    {
       "canonicalTemplate": "I\u2019ll say it again: {location_1}.",
       "familyKind": "location",
       "slotKinds": {
@@ -902,24 +947,25 @@
       ]
     },
     {
-      "canonicalTemplate": "I heard {location_1}.",
+      "canonicalTemplate": "You are in {location_1}.",
       "familyKind": "location",
       "slotKinds": {
-        "location": 4
+        "location": 5
       },
-      "uniqueChunkCount": 4,
-      "sourceChunkRefs": 4,
+      "uniqueChunkCount": 5,
+      "sourceChunkRefs": 5,
       "sourceTemplateCount": 1,
       "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 0,
+      "estimatedSavedChunkCalls": 1,
       "sourceMaskedTemplates": [
-        "I heard {location_1}."
+        "You are in {location_1}."
       ],
       "examples": [
-        "I heard Multnomah County.",
-        "I heard Medford.",
-        "I heard Salem.",
-        "I heard Oregon City."
+        "You are in Clackamas.",
+        "You are in Medford.",
+        "You are in Beaverton.",
+        "You are in Bend.",
+        "You are in Eugene."
       ]
     },
     {
@@ -944,6 +990,27 @@
       ]
     },
     {
+      "canonicalTemplate": "I\u2019ll repeat: {entity_1}.",
+      "familyKind": "named_entity",
+      "slotKinds": {
+        "entity": 4
+      },
+      "uniqueChunkCount": 4,
+      "sourceChunkRefs": 4,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 0,
+      "sourceMaskedTemplates": [
+        "I\u2019ll repeat: {entity_1}."
+      ],
+      "examples": [
+        "I\u2019ll repeat: Union Gospel Mission.",
+        "I\u2019ll repeat: Emergency Diaper Closet.",
+        "I\u2019ll repeat: Safe Sleep United.",
+        "I\u2019ll repeat: Extreme Heat Cooling Centers."
+      ]
+    },
+    {
       "canonicalTemplate": "Next step: call {entity_1} now.",
       "familyKind": "named_entity",
       "slotKinds": {
@@ -962,6 +1029,28 @@
         "Next step: call Cascades West Ride Line now.",
         "Next step: call Hawthorn Walk-In Center now.",
         "Next step: call Emergency Diaper Closet now."
+      ]
+    },
+    {
+      "canonicalTemplate": "Say: \u201cI\u2019m {number_1} in {location_1}.",
+      "familyKind": "phone_or_number",
+      "slotKinds": {
+        "location": 4,
+        "number": 4
+      },
+      "uniqueChunkCount": 4,
+      "sourceChunkRefs": 4,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 7,
+      "estimatedSavedChunkCalls": 0,
+      "sourceMaskedTemplates": [
+        "Say: \u201cI\u2019m {number_1} in {location_2}."
+      ],
+      "examples": [
+        "Say: \u201cI\u2019m 16 in Gresham.",
+        "Say: \u201cI\u2019m 17 in Hillsboro.",
+        "Say: \u201cI\u2019m 16 in Washington County.",
+        "Say: \u201cI\u2019m 17 in Salem."
       ]
     },
     {
@@ -1046,27 +1135,6 @@
         "The program name is Rent Payment Assistance.",
         "The program name is Medical Rides.",
         "The program name is Rent Assistance."
-      ]
-    },
-    {
-      "canonicalTemplate": "You are in {location_1}.",
-      "familyKind": "location",
-      "slotKinds": {
-        "location": 4
-      },
-      "uniqueChunkCount": 4,
-      "sourceChunkRefs": 4,
-      "sourceTemplateCount": 1,
-      "estimatedTtsAssets": 4,
-      "estimatedSavedChunkCalls": 0,
-      "sourceMaskedTemplates": [
-        "You are in {location_1}."
-      ],
-      "examples": [
-        "You are in Clackamas.",
-        "You are in Medford.",
-        "You are in Beaverton.",
-        "You are in Bend."
       ]
     },
     {
@@ -1232,6 +1300,26 @@
       ]
     },
     {
+      "canonicalTemplate": "Slowly: {location_1}.",
+      "familyKind": "location",
+      "slotKinds": {
+        "location": 3
+      },
+      "uniqueChunkCount": 3,
+      "sourceChunkRefs": 3,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 0,
+      "sourceMaskedTemplates": [
+        "Slowly: {location_1}."
+      ],
+      "examples": [
+        "Slowly: Clackamas Service Center.",
+        "Slowly: Multnomah County.",
+        "Slowly: Multnomah County Eviction Prevention Program."
+      ]
+    },
+    {
       "canonicalTemplate": "That is {entity_1} in {location_1}.",
       "familyKind": "named_entity",
       "slotKinds": {
@@ -1250,6 +1338,26 @@
         "That is General Legal Aid in Salem.",
         "That is Adventist Health Urgent Care in Portland.",
         "That is HOPE STATION in Salem."
+      ]
+    },
+    {
+      "canonicalTemplate": "That is {entity_1}.",
+      "familyKind": "named_entity",
+      "slotKinds": {
+        "entity": 3
+      },
+      "uniqueChunkCount": 3,
+      "sourceChunkRefs": 3,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 0,
+      "sourceMaskedTemplates": [
+        "That is {entity_1}."
+      ],
+      "examples": [
+        "That is S-P-R-I-N-G-F-I-E-L-D.",
+        "That is Vine Medical Pregnancy Health Clinic.",
+        "That is Tenant Eviction Defense."
       ]
     },
     {
@@ -1290,6 +1398,26 @@
         "That\u2019s Hillsboro Dental Clinic.",
         "That\u2019s Oregon Eviction Prevention Rapid Response.",
         "That\u2019s Clackamas Service Center."
+      ]
+    },
+    {
+      "canonicalTemplate": "The Place is {location_1}.",
+      "familyKind": "location",
+      "slotKinds": {
+        "location": 3
+      },
+      "uniqueChunkCount": 3,
+      "sourceChunkRefs": 3,
+      "sourceTemplateCount": 1,
+      "estimatedTtsAssets": 4,
+      "estimatedSavedChunkCalls": 0,
+      "sourceMaskedTemplates": [
+        "The Place is {location_1}."
+      ],
+      "examples": [
+        "The Place is Greyhound Portland.",
+        "The Place is Eugene Service Station.",
+        "The Place is Albany Helping Hands Thrift Store."
       ]
     },
     {

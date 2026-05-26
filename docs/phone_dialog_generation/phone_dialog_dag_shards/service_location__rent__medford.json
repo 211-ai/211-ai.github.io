@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__rent__medford",
   "kind": "service_location",
   "key": "rent__medford",
-  "nodeCount": 15,
+  "nodeCount": 17,
   "nodes": [
     {
       "id": "phone_dialog_0000276#turn-3",
@@ -29,7 +29,8 @@
       "voiceResponseAlternatives": [
         "Yes, **Medford, Oregon**. The number is **five four one, seven seven two, three eight two eight**. Extension: **one**. If that drops, call the same number without extension: **five four one, seven seven two, three eight two eight**.",
         "Yes. The program name is **Multnomah County Eviction Prevention Program**. Again: **Multnomah County Eviction Prevention Program**. If you want, call **503, 222, 5555**. Again: **503, 222, 5555**.",
-        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**."
+        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**.",
+        "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
@@ -113,7 +114,8 @@
       "voiceResponseAlternatives": [
         "You\u2019re okay, I\u2019ve got you. The number is **541\u2026 499\u2026 0880**. I\u2019ll say it again: **541\u2026 499\u2026 0880**.",
         "Yes. The program name is **Multnomah County Eviction Prevention Program**. Again: **Multnomah County Eviction Prevention Program**. If you want, call **503, 222, 5555**. Again: **503, 222, 5555**.",
-        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**."
+        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**.",
+        "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon."
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -407,7 +409,8 @@
       "voiceResponseAlternatives": [
         "You\u2019re okay, I\u2019ve got you. The number is **541\u2026 499\u2026 0880**. I\u2019ll say it again: **541\u2026 499\u2026 0880**.",
         "Yes, **Medford, Oregon**. The number is **five four one, seven seven two, three eight two eight**. Extension: **one**. If that drops, call the same number without extension: **five four one, seven seven two, three eight two eight**.",
-        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**."
+        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**.",
+        "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "hard_of_hearing",
@@ -436,10 +439,71 @@
       "voiceResponseAlternatives": [
         "You\u2019re okay, I\u2019ve got you. The number is **541\u2026 499\u2026 0880**. I\u2019ll say it again: **541\u2026 499\u2026 0880**.",
         "Yes, **Medford, Oregon**. The number is **five four one, seven seven two, three eight two eight**. Extension: **one**. If that drops, call the same number without extension: **five four one, seven seven two, three eight two eight**.",
-        "Yes. The program name is **Multnomah County Eviction Prevention Program**. Again: **Multnomah County Eviction Prevention Program**. If you want, call **503, 222, 5555**. Again: **503, 222, 5555**."
+        "Yes. The program name is **Multnomah County Eviction Prevention Program**. Again: **Multnomah County Eviction Prevention Program**. If you want, call **503, 222, 5555**. Again: **503, 222, 5555**.",
+        "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002288#turn-3",
+      "scenarioId": "phone_dialog_0002288",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, sorry, I keep talking over you. I'm in Medford and I'm trying not to lose my apartment this month.",
+      "normalizedQuery": "hello static can't wait hear phone's cutting it's uh rent eviction assistance think no sorry inaudible missed said say slower yeah keep talking over i'm medford trying lose apartment this month",
+      "voiceResponse": "I hear you. You are in Medford and trying to keep your apartment this month. St. Vincent de Paul in Medford may help with rent or utilities. Call five four one, seven seven two, three eight two eight. I\u2019ll repeat: five four one, seven seven two, three eight two eight. Address: two four two four North Pacific Highway, Medford, Oregon, nine seven five zero one. They may not do eviction-prevention cases. Do you want rent help first, or utility help first?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:a14ff6275ba48883",
+        "service:22f25b2759f09c8b",
+        "service:2281747e76c4abb0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You are in Medford and trying to keep your apartment this month. St. Vincent de Paul in Medford may help with rent or utilities. Call five four one, seven seven two, three eight two eight. I\u2019ll repeat: five four one, seven seven two, three eight two eight. Address: two four two four North Pacific Highway, Medford, Oregon, nine seven five zero one. They may not do eviction-prevention cases. Do you want rent help first, or utility help first?",
+      "voiceResponseAlternatives": [
+        "Most important number: **five four one, seven seven two, three eight two eight, extension one**. That\u2019s St. Vincent de Paul in Medford for rent and utility help, at **2424 North Pacific Highway**. If extension is hard, call the same number without it: **five four one, seven seven two, three eight two eight**. They may ask for ID, income proof, and your rental agreement.",
+        "Yes. I can keep this minimal, and I won\u2019t contact your landlord. You can stay anonymous with me and share only what you want. If your phone dies, here\u2019s the eviction help line first: **eight three three, seven four six, eight one six seven**. If you want, next step is just calling that number and saying, \u201cI\u2019m in Medford and trying to prevent eviction.\u201d",
+        "Thanks for telling me. First step: call **eight three three, seven four six, eight one six seven** now for eviction prevention help. If that line is busy, call **five four one, seven seven two, three eight two eight**, extension **one**. You can keep it short: \u201cI\u2019m in Medford near downtown, got a pay-or-quit notice yesterday, and need help preventing eviction.\u201d You can share only what feels safe.",
+        "Yes. In Medford, rent help is **St. Vincent de Paul, Utility and Rent Assistance**. Phone, one digit at a time: **5, 4, 1, 7, 7, 2, 3, 8, 2, 8**. I\u2019ll repeat: **5, 4, 1, 7, 7, 2, 3, 8, 2, 8**. Address: **2 4 2 4 North Pacific Highway, Medford, Oregon, 9 7 5 0 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002288#turn-5",
+      "scenarioId": "phone_dialog_0002288",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat any phone number really slow, one digit at a time? I misheard the last place name.",
+      "normalizedQuery": "it's uh rent eviction assistance think no sorry inaudible missed said say slower yeah keep talking over i'm medford trying lose apartment this month like emergency can't hear great on line repeat any phone number really slow one digit at time misheard last place name",
+      "voiceResponse": "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1b6e1c18557fb6a5",
+        "service:085fe55781b79fcb",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:22f25b2759f09c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will go very slow. The number is five, zero, three, two, three, four, two, zero, four, eight. I\u2019ll repeat: five, zero, three, two, three, four, two, zero, four, eight. The place name is Portland. Portland, Oregon.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. The number is **541\u2026 499\u2026 0880**. I\u2019ll say it again: **541\u2026 499\u2026 0880**.",
+        "Yes, **Medford, Oregon**. The number is **five four one, seven seven two, three eight two eight**. Extension: **one**. If that drops, call the same number without extension: **five four one, seven seven two, three eight two eight**.",
+        "Yes. The program name is **Multnomah County Eviction Prevention Program**. Again: **Multnomah County Eviction Prevention Program**. If you want, call **503, 222, 5555**. Again: **503, 222, 5555**.",
+        "Yes. The number is **503, 222, 5555**. Slowly, two digits at a time: **50 \u2026 32 \u2026 22 \u2026 55 \u2026 55**. Again: **503, 222, 5555**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
     }
   ],
@@ -527,6 +591,18 @@
       "to": "phone_dialog_0001079#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002288#turn-3",
+      "to": "phone_dialog_0002288#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002288#turn-5",
+      "to": "phone_dialog_0002288#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
     }
   ]
 }

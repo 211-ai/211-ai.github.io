@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__shelter__salem",
   "kind": "service_location",
   "key": "shelter__salem",
-  "nodeCount": 114,
+  "nodeCount": 123,
   "nodes": [
     {
       "id": "phone_dialog_0000102#turn-1",
@@ -3399,6 +3399,276 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002166#turn-1",
+      "scenarioId": "phone_dialog_0002166",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, can you hear me? I\u2019m in Salem and I lost my insulin when I got moved from one shelter to another.",
+      "normalizedQuery": "hi sorry hear salem lost insulin when got moved from one shelter shelters homeless overnight warming another",
+      "voiceResponse": "First, if you feel very weak, confused, vomiting, or short of breath, call 9-1-1 now. Are you safe right this minute? I can help with the next step for replacement insulin. Please tell me the insulin name, slowly, from the label if you remember it.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:b739229de4536559",
+        "service:18555484ba4abb9a",
+        "service:dc93c9592519c012"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you feel very weak, confused, vomiting, or short of breath, call 9-1-1 now. Are you safe right this minute? I can help with the next step for replacement insulin. Please tell me the insulin name, slowly, from the label if you remember it.",
+      "voiceResponseAlternatives": [
+        "I said this is an emergency, and you deserve help right now. If you might hurt yourself tonight, call **9-1-1** now. If you can\u2019t call, go to the nearest driver, transit staff, or security and say: **\u201cI don\u2019t feel safe with myself. I need emergency help now.\u201d**",
+        "Of course. I\u2019ll say it slower. First, quick safety check: if you feel confused, very sleepy, or numb, call 9-1-1 right now. For now, keep moving, stamp your feet, and cover your chest and head first. You can share as little as you want with me. Next step: I can connect you to a live person to help find a safer indoor place tonight near Commercial Street.",
+        "Thanks for telling me. Quick safety check: are you safe right now, and do you need urgent medical help? If yes, call 911 now. If not, we can keep this private and just do next steps: I can help you find a youth day center in Salem and what to say when you call, without sharing extra personal details.",
+        "I hear you, and I\u2019m with you. Quick safety check: are you feeling faint, very dizzy, or short of breath right now? If yes, call 911 now. The part to repeat is this: heavy bleeding three weeks after birth can be an emergency. Please go to the nearest ER now. If you\u2019re soaking a pad in an hour, passing large clots, or feel weak, do not wait. If you can, call your OB while you\u2019re on the way."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002166#turn-2",
+      "scenarioId": "phone_dialog_0002166",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not crashing right this second, but I only had enough for this morning, so by tonight this gets dangerous for me.",
+      "normalizedQuery": "hi sorry hear salem lost insulin when got moved from one shelter shelters homeless overnight warming another crashing right this second only had enough morning so by tonight gets dangerous",
+      "voiceResponse": "Next step: call this shelter line now so staff can help you get immediate support today. Call 541, 962, 7994. I\u2019ll repeat: 541, 962, 7994. If you become very weak, confused, vomiting, or short of breath before you get help, call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:57c4c63dcadba358"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call this shelter line now so staff can help you get immediate support today. Call 541, 962, 7994. I\u2019ll repeat: 541, 962, 7994. If you become very weak, confused, vomiting, or short of breath before you get help, call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002166#turn-4",
+      "scenarioId": "phone_dialog_0002166",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Wait, I didn\u2019t catch that name, I\u2019m hard of hearing on this phone. Can you say it slower and do the number in chunks?",
+      "normalizedQuery": "hi sorry hear salem lost insulin when got moved from one shelter shelters homeless overnight warming another crashing right this second only had enough morning so by tonight gets dangerous clinic medical health without all paperwork bag stolen meds charger wait didn catch name hard hearing on phone say it slower number chunks",
+      "voiceResponse": "Call 541, 962, 7994. The name is Severe Weather Union County Right Track Resource Center Overnight Winter Warming Shelter. I\u2019ll repeat: 541, 962, 7994. Backup number: 541, 948, 6649.",
+      "evidenceDocIds": [
+        "service:9ba6422a5084e69c",
+        "service:18555484ba4abb9a",
+        "service:32f8d8103ea16592",
+        "service:57c4c63dcadba358",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 541, 962, 7994. The name is Severe Weather Union County Right Track Resource Center Overnight Winter Warming Shelter. I\u2019ll repeat: 541, 962, 7994. Backup number: 541, 948, 6649.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002200#turn-5",
+      "scenarioId": "phone_dialog_0002200",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I don't have a car, so I need bus or walking directions from downtown Salem, not far.",
+      "normalizedQuery": "insulin bag gone think it got taken at shelter shelters homeless overnight warming last night can't charger either so this phone may die i'm passed anything getting shaky somewhere like clinic medical health right away sorry signal cut name did say please slow forget things don't have car bus walking directions from downtown salem far",
+      "voiceResponse": "First step: if you are still shaky now, call 9 1 1 right now. I do not have a confirmed nearby Salem clinic or shelter address in the records I can safely use for bus or walking directions. I can connect you to a live 211 specialist now to find the closest open option from downtown Salem and give step-by-step transit directions.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bd5c5bd198f76c8b",
+        "service:32f8d8103ea16592",
+        "service:5ded755b33454184"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if you are still shaky now, call 9 1 1 right now. I do not have a confirmed nearby Salem clinic or shelter address in the records I can safely use for bus or walking directions. I can connect you to a live 211 specialist now to find the closest open option from downtown Salem and give step-by-step transit directions.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002214#turn-2",
+      "scenarioId": "phone_dialog_0002214",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m 17 and in Salem, been couch-surfing since I left home, and I need a youth day center where they won\u2019t turn me away.",
+      "normalizedQuery": "17 salem been couch surfing since left home youth day center they won turn away",
+      "voiceResponse": "Quick safety check first: are you safe for the next hour where you are right now? If not, call 911 first. Main number: (541) 343-4747. Call now and say: \u201cI\u2019m 17 in Salem, couch-surfing, and I need a youth day center today with low-barrier entry and no-document options.\u201d Backup number: (503) 559-0424. If the call drops, redial either number and repeat that exact line.",
+      "evidenceDocIds": [
+        "page:bafkreihdkf4vsdk2c4ybff5vnjgffhnet3bpm6vfak45n44a63diuutp3i",
+        "page:bafkreiewho76sdamymk4dzfano4plzlmwl3ns4emmvhxi2dvziazlky4su",
+        "page:bafkreiap5wfs3nc26sip5g27peqrkrqubu7mi6qaqbcos3vjamd5cgcrcq",
+        "page:bafkreiav36hcetfu7vrmvdpugb7rbzi6tftms6asw6q2w3oqv2nywa3ghy",
+        "page:bafkreihnaujhmygqtpncczy5mv7y2htihnnnvyxn7v44phxgqd7wcrulva"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quick safety check first: are you safe for the next hour where you are right now? If not, call 911 first. Main number: (541) 343-4747. Call now and say: \u201cI\u2019m 17 in Salem, couch-surfing, and I need a youth day center today with low-barrier entry and no-document options.\u201d Backup number: (503) 559-0424. If the call drops, redial either number and repeat that exact line.",
+      "voiceResponseAlternatives": [
+        "I said this is an emergency, and you deserve help right now. If you might hurt yourself tonight, call **9-1-1** now. If you can\u2019t call, go to the nearest driver, transit staff, or security and say: **\u201cI don\u2019t feel safe with myself. I need emergency help now.\u201d**",
+        "Of course. I\u2019ll say it slower. First, quick safety check: if you feel confused, very sleepy, or numb, call 9-1-1 right now. For now, keep moving, stamp your feet, and cover your chest and head first. You can share as little as you want with me. Next step: I can connect you to a live person to help find a safer indoor place tonight near Commercial Street.",
+        "Thanks for telling me. Quick safety check: are you safe right now, and do you need urgent medical help? If yes, call 911 now. If not, we can keep this private and just do next steps: I can help you find a youth day center in Salem and what to say when you call, without sharing extra personal details.",
+        "I hear you, and I\u2019m with you. Quick safety check: are you feeling faint, very dizzy, or short of breath right now? If yes, call 911 now. The part to repeat is this: heavy bleeding three weeks after birth can be an emergency. Please go to the nearest ER now. If you\u2019re soaking a pad in an hour, passing large clots, or feel weak, do not wait. If you can, call your OB while you\u2019re on the way."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002214#turn-3",
+      "scenarioId": "phone_dialog_0002214",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what? You cut out\u2014can you say that slower, and don\u2019t say my name out loud, people are in the room.",
+      "normalizedQuery": "hey only got like two percent this borrowed phone give main number first step right now 17 salem been couch surfing since left home youth day center they won turn away sorry cut say slower don name loud people room",
+      "voiceResponse": "Absolutely. I\u2019ll keep it short and quiet. Main number: (541) 343-4747. Call 541, 343, 4747. Say: \u201cI\u2019m 17 in Salem. I need a youth day center today, with no-document options.\u201d Backup number: (503) 559-0424. Call 503, 559, 0424. If you feel in immediate danger, call 911 first.",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I\u2019ll keep it short and quiet. Main number: (541) 343-4747. Call 541, 343, 4747. Say: \u201cI\u2019m 17 in Salem. I need a youth day center today, with no-document options.\u201d Backup number: (503) 559-0424. Call 503, 559, 0424. If you feel in immediate danger, call 911 first.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002214#turn-4",
+      "scenarioId": "phone_dialog_0002214",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "One of the adults here keeps asking me to go with his friends for money and a place to sleep, and it feels really wrong.",
+      "normalizedQuery": "hey only got like two percent this borrowed phone give main number first step right now 17 salem been couch surfing since left home youth day center they won turn away sorry cut say slower don name loud people room one adults here keeps asking go his friends money place sleep it feels really wrong",
+      "voiceResponse": "You\u2019re right to trust that feeling. If you might be forced, threatened, or followed, call 911 now. Main number: (541) 343-4747. Call 541, 343, 4747. Say: \u201cI\u2019m 17 in Salem. I don\u2019t feel safe where I\u2019m staying. I need a youth-safe place today, no-document options.\u201d Backup number: (503) 559-0424. Call 503, 559, 0424.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to trust that feeling. If you might be forced, threatened, or followed, call 911 now. Main number: (541) 343-4747. Call 541, 343, 4747. Say: \u201cI\u2019m 17 in Salem. I don\u2019t feel safe where I\u2019m staying. I need a youth-safe place today, no-document options.\u201d Backup number: (503) 559-0424. Call 503, 559, 0424.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002233#turn-1",
+      "scenarioId": "phone_dialog_0002233",
+      "turnIndex": 0,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hello? Sorry, say that again, my hearing\u2019s not great. I\u2019m in Salem, near the transit center, and I don\u2019t have a place to sleep tonight.",
+      "normalizedQuery": "hello sorry say again hearing great salem transit center don have place sleep tonight",
+      "voiceResponse": "Next step: call Safe Sleep United now for an overnight shelter bed. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. Address: 1910 Front Street N E, Salem, Oregon, 97301.",
+      "evidenceDocIds": [
+        "service:a1e021534ee03771",
+        "service:772d7d7943af2255",
+        "service:2e6331f97ca5eacd",
+        "service:755193c3d210f2d9",
+        "service:f343701d786b3ebc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Safe Sleep United now for an overnight shelter bed. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. Address: 1910 Front Street N E, Salem, Oregon, 97301.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **ARCHES Day Center**. I\u2019ll say it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**.",
+        "Of course. Slowly, the address I have is: **1 2 4 5** \u2026 **Fulton Avenue** \u2026 **Coos Bay, Oregon** \u2026 **9 7 4 2 0**. If you want, I can repeat it one more time at the same pace.",
+        "Yes. I\u2019ll go slow. I can find nearby cooling centers in Salem through 211info. I can find nearby cooling centers in Salem through 211info. Please tell me your ZIP code now, so I can give the closest place first.",
+        "I didn\u2019t give an address yet. The key part was: call **9-1-1** now for an immediate welfare check at your brother\u2019s exact location in Salem. Say, slowly: \u201cHe is outside, shaking, and dangerously cold.\u201d Then give dispatch his exact address."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002233#turn-2",
+      "scenarioId": "phone_dialog_0002233",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I lost my insulin bag this morning when I had to leave camp, and my phone charger\u2019s gone too, so this phone might die.",
+      "normalizedQuery": "hello sorry say again hearing great salem transit center don have place sleep tonight lost insulin bag this morning when had leave camp phone charger gone too so might die",
+      "voiceResponse": "First, if you feel very sick right now, call 911. Then call Safe Sleep United now for tonight\u2019s shelter bed. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. 1910 Front Street NE, Salem, Oregon, 97301.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:a1e021534ee03771",
+        "service:2e6331f97ca5eacd",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you feel very sick right now, call 911. Then call Safe Sleep United now for tonight\u2019s shelter bed. The number is 503, 816, 3409. I\u2019ll repeat: 503, 816, 3409. 1910 Front Street NE, Salem, Oregon, 97301.",
+      "voiceResponseAlternatives": [
+        "I said this is an emergency, and you deserve help right now. If you might hurt yourself tonight, call **9-1-1** now. If you can\u2019t call, go to the nearest driver, transit staff, or security and say: **\u201cI don\u2019t feel safe with myself. I need emergency help now.\u201d**",
+        "Of course. I\u2019ll say it slower. First, quick safety check: if you feel confused, very sleepy, or numb, call 9-1-1 right now. For now, keep moving, stamp your feet, and cover your chest and head first. You can share as little as you want with me. Next step: I can connect you to a live person to help find a safer indoor place tonight near Commercial Street.",
+        "Thanks for telling me. Quick safety check: are you safe right now, and do you need urgent medical help? If yes, call 911 now. If not, we can keep this private and just do next steps: I can help you find a youth day center in Salem and what to say when you call, without sharing extra personal details.",
+        "I hear you, and I\u2019m with you. Quick safety check: are you feeling faint, very dizzy, or short of breath right now? If yes, call 911 now. The part to repeat is this: heavy bleeding three weeks after birth can be an emergency. Please go to the nearest ER now. If you\u2019re soaking a pad in an hour, passing large clots, or feel weak, do not wait. If you can, call your OB while you\u2019re on the way."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -4007,6 +4277,60 @@
       "to": "phone_dialog_0002047#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002166#turn-1",
+      "to": "phone_dialog_0002166#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002166#turn-2",
+      "to": "phone_dialog_0002166#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002166#turn-4",
+      "to": "phone_dialog_0002166#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002200#turn-5",
+      "to": "phone_dialog_0002200#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002214#turn-2",
+      "to": "phone_dialog_0002214#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002214#turn-3",
+      "to": "phone_dialog_0002214#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002214#turn-4",
+      "to": "phone_dialog_0002214#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002233#turn-1",
+      "to": "phone_dialog_0002233#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002233#turn-2",
+      "to": "phone_dialog_0002233#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

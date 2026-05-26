@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__medford",
   "kind": "service_location",
   "key": "food__medford",
-  "nodeCount": 47,
+  "nodeCount": 49,
   "nodes": [
     {
       "id": "phone_dialog_0000055#turn-1",
@@ -1404,6 +1404,66 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002184#turn-3",
+      "scenarioId": "phone_dialog_0002184",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "He missed his heart and diabetes pills yesterday and today, and he can\u2019t safely get down the front steps to leave.",
+      "normalizedQuery": "hi calling older brother medford check first if saying sounds like an emergency he uses walker been alone most days no caregiver showing up found almost food pantry meal meals groceries there missed his heart diabetes pills yesterday safely down front steps leave",
+      "voiceResponse": "Thank you for telling me. This is urgent. Missing heart and diabetes pills for two days, and being unable to get out safely, can be dangerous. Please call 9-1-1 now for a welfare check and medical help. I\u2019ll repeat: call 9-1-1 now. If you can, stay on the phone with your brother until help arrives. Is he awake and answering you right now?",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent. Missing heart and diabetes pills for two days, and being unable to get out safely, can be dangerous. Please call 9-1-1 now for a welfare check and medical help. I\u2019ll repeat: call 9-1-1 now. If you can, stay on the phone with your brother until help arrives. Is he awake and answering you right now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing by asking. I can\u2019t see live open hours here, but the Oregon Food Bank has a pantry and meal locator for Medford sites near Main Street. If you can, we can use that now to find what\u2019s open today. If that feels like too much, I can connect you to a live person to check current openings with you.",
+        "Absolutely, that makes sense. Let\u2019s keep it simple: I don\u2019t have a confirmed walk-to pantry in Medford from this list, and I don\u2019t want to send you somewhere wrong. The best next step is a live person who can check what\u2019s open near Main Street right now and pick the closest one you can walk to. I can stay with you while we do that.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. We can keep this simple: I\u2019ll connect you now to a live specialist who can help with ride options for appointments and groceries in Medford, including same-day if available. You can share only what you\u2019re comfortable sharing, and we\u2019ll go at your pace.",
+        "You\u2019re okay. We can do this one step at a time. I can help find senior meal programs in Medford for your mom. I only need the minimum details, and we can keep this private. If anyone is in immediate danger, call 911 right now. One question first: is your mom in Medford, Oregon?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002184#turn-4",
+      "scenarioId": "phone_dialog_0002184",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m hard of hearing, can you repeat that slowly and do the phone number in small chunks?",
+      "normalizedQuery": "hi calling older brother medford check first if saying sounds like an emergency he uses walker been alone most days no caregiver showing up found almost food pantry meal meals groceries there missed his heart diabetes pills yesterday safely down front steps leave sorry hard hearing repeat slowly phone number small chunks",
+      "voiceResponse": "Yes. I will repeat slowly. Call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Missing heart and diabetes pills for two days is dangerous. If you can, stay on the phone with your brother until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:238d53870b43731e",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will repeat slowly. Call 9-1-1 now. I\u2019ll repeat: call 9-1-1 now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1. Missing heart and diabetes pills for two days is dangerous. If you can, stay on the phone with your brother until help arrives.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing by asking. I can\u2019t see live open hours here, but the Oregon Food Bank has a pantry and meal locator for Medford sites near Main Street. If you can, we can use that now to find what\u2019s open today. If that feels like too much, I can connect you to a live person to check current openings with you.",
+        "Absolutely, that makes sense. Let\u2019s keep it simple: I don\u2019t have a confirmed walk-to pantry in Medford from this list, and I don\u2019t want to send you somewhere wrong. The best next step is a live person who can check what\u2019s open near Main Street right now and pick the closest one you can walk to. I can stay with you while we do that.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. We can keep this simple: I\u2019ll connect you now to a live specialist who can help with ride options for appointments and groceries in Medford, including same-day if available. You can share only what you\u2019re comfortable sharing, and we\u2019ll go at your pace.",
+        "You\u2019re okay. We can do this one step at a time. I can help find senior meal programs in Medford for your mom. I only need the minimum details, and we can keep this private. If anyone is in immediate danger, call 911 right now. One question first: is your mom in Medford, Oregon?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1640,6 +1700,18 @@
       "to": "phone_dialog_0002131#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002184#turn-3",
+      "to": "phone_dialog_0002184#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002184#turn-4",
+      "to": "phone_dialog_0002184#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

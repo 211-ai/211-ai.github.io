@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__beaverton",
   "kind": "service_location",
   "key": "general__beaverton",
-  "nodeCount": 86,
+  "nodeCount": 97,
   "nodes": [
     {
       "id": "phone_dialog_0000018#turn-5",
@@ -2574,6 +2574,336 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002164#turn-1",
+      "scenarioId": "phone_dialog_0002164",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, can you hear me? I\u2019m outside in Beaverton and this call keeps cutting out.",
+      "normalizedQuery": "hi hear outside beaverton this call keeps cutting",
+      "voiceResponse": "Yes, I can hear you, but it\u2019s breaking up. I\u2019ll keep this short and privacy-first. I can connect you to a live person now. If we disconnect, call 503, 644, 2339. I\u2019ll repeat: 503, 644, 2339.",
+      "evidenceDocIds": [
+        "service:7a5cca37934277c2",
+        "page:bafkreidae32aw7iwgkvx22njyg2espy4uvgexgi3epmvxbt7bbs7kdwmna",
+        "page:bafkreiaklrgddsv2awz2nokqddmsytcpqjexqhxt374dx7e57vowk2k74e",
+        "service:34547b44d84220ba",
+        "service:ae8581ba6e6bcb07"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you, but it\u2019s breaking up. I\u2019ll keep this short and privacy-first. I can connect you to a live person now. If we disconnect, call 503, 644, 2339. I\u2019ll repeat: 503, 644, 2339.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002209#turn-6",
+      "scenarioId": "phone_dialog_0002209",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "If this cuts off, what's the first place I should go right now in Beaverton?",
+      "normalizedQuery": "if this cuts off what's first place should go right now beaverton",
+      "voiceResponse": "If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. Call 800, 448, 3000. I\u2019ll repeat: 800, 448, 3000. Go to the nearest busy public place and stay where other people are until help connects.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "service:8e687267cc7aa3d3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. Call 800, 448, 3000. I\u2019ll repeat: 800, 448, 3000. Go to the nearest busy public place and stay where other people are until help connects.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002211#turn-1",
+      "scenarioId": "phone_dialog_0002211",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling about my mom in Beaverton, not me. She\u2019s 82, hard of hearing, and I think she\u2019s being neglected where she lives.",
+      "normalizedQuery": "hi calling mom beaverton she 82 hard hearing think being neglected lives",
+      "voiceResponse": "I\u2019m sorry this is happening. If your mom is in immediate danger, call 911 now. For hard-of-hearing support in Oregon, call 8 5 5, 5 0 3, 7 2 3 3. I\u2019ll repeat: 8 5 5, 5 0 3, 7 2 3 3. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:f343701d786b3ebc",
+        "service:6bea21c589e0fac2",
+        "service:f601b0eec384cc47",
+        "service:5ff7b36972c8232c",
+        "service:fc45761866390797"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry this is happening. If your mom is in immediate danger, call 911 now. For hard-of-hearing support in Oregon, call 8 5 5, 5 0 3, 7 2 3 3. I\u2019ll repeat: 8 5 5, 5 0 3, 7 2 3 3. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002211#turn-3",
+      "scenarioId": "phone_dialog_0002211",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, say that again slower? I can\u2019t hear well on this line, and she can\u2019t either when I put you on speaker.",
+      "normalizedQuery": "hi calling mom beaverton she 82 hard hearing think being neglected lives before we referrals tell if safe right now told hasn eaten since yesterday missed her heart pills sorry say again slower hear well on this line either when put speaker",
+      "voiceResponse": "Yes. I will say it slower. If she is not safe right now, call 9 1 1 now. I\u2019ll repeat: call 9 1 1 now. Tell them: she is 82, she has not eaten since yesterday, and she missed her heart medicine. Ask for a welfare check and medical help right away. If you can, stay on the phone with her until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slower. If she is not safe right now, call 9 1 1 now. I\u2019ll repeat: call 9 1 1 now. Tell them: she is 82, she has not eaten since yesterday, and she missed her heart medicine. Ask for a welfare check and medical help right away. If you can, stay on the phone with her until help arrives.",
+      "voiceResponseAlternatives": [
+        "Yes. The program is **Public Safety Power Shutoffs** with Pacific Power. The shutoff line is: **8 8 8** \u2026 **2 2 1** \u2026 **7 0 7 0**.",
+        "I want to be accurate. I do not have office hours listed here. I\u2019ll repeat that: I do not have office hours listed here.",
+        "Of course. Here it is slowly, in short chunks. First number: **5 4 1** \u2026 **7 7 9** \u2026 **4 3 5 7**. Second number: **5 4 1** \u2026 **7 7 9** \u2026 **2 3 9 3** \u2026 extension **2 0 9**. No documents are required.",
+        "Address, slowly: **9 3 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. I\u2019ll repeat: **9 3 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. Second address: **9 4 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. I\u2019ll repeat: **9 4 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. Hours are not listed in what I have."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002242#turn-1",
+      "scenarioId": "phone_dialog_0002242",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, can you keep this private? I\u2019m at a bus stop in Beaverton and I can\u2019t talk long.",
+      "normalizedQuery": "hi um keep this private at bus stop beaverton talk long",
+      "voiceResponse": "Yes. We can keep this brief and private on your side. You can share only what you want, and we can stick to first names or no name. If talking feels risky, I can give one number and you can call when you\u2019re in a safer spot. You\u2019re in Beaverton, so I can keep options local and quick.",
+      "evidenceDocIds": [
+        "service:5738cc1cdf700a78",
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "service:6157126cc568b343",
+        "page:bafkreicixf5hhxrw2trtbjeuk2f2ib2sxb4sa6opyh6cbu5rpscagf7wa4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this brief and private on your side. You can share only what you want, and we can stick to first names or no name. If talking feels risky, I can give one number and you can call when you\u2019re in a safer spot. You\u2019re in Beaverton, so I can keep options local and quick.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002242#turn-2",
+      "scenarioId": "phone_dialog_0002242",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, a truck just went by, can you repeat that? My phone might be checked later, so please don\u2019t say my name.",
+      "normalizedQuery": "hi um keep this private at bus stop beaverton talk long sorry truck just went by repeat phone might be checked later so please don say name",
+      "voiceResponse": "Yes, keeping it private. Share only what you want, and we can use no name. If talking feels risky, you can call later from a safer spot. Main number: (503) 352-3260. I\u2019ll repeat: 503, 352, 3260.",
+      "evidenceDocIds": [
+        "service:5738cc1cdf700a78",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, keeping it private. Share only what you want, and we can use no name. If talking feels risky, you can call later from a safer spot. Main number: (503) 352-3260. I\u2019ll repeat: 503, 352, 3260.",
+      "voiceResponseAlternatives": [
+        "Yes. The program is **Public Safety Power Shutoffs** with Pacific Power. The shutoff line is: **8 8 8** \u2026 **2 2 1** \u2026 **7 0 7 0**.",
+        "I want to be accurate. I do not have office hours listed here. I\u2019ll repeat that: I do not have office hours listed here.",
+        "Of course. Here it is slowly, in short chunks. First number: **5 4 1** \u2026 **7 7 9** \u2026 **4 3 5 7**. Second number: **5 4 1** \u2026 **7 7 9** \u2026 **2 3 9 3** \u2026 extension **2 0 9**. No documents are required.",
+        "Address, slowly: **9 3 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. I\u2019ll repeat: **9 3 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. Second address: **9 4 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. I\u2019ll repeat: **9 4 1, West 7th Avenue, Eugene, Oregon, 9 7 4 0 2**. Hours are not listed in what I have."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002274#turn-1",
+      "scenarioId": "phone_dialog_0002274",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m 17 and in Beaverton, I can\u2019t stay where I was, I\u2019m on a borrowed phone with like 4%, so can you give me the most important number first?",
+      "normalizedQuery": "hi 17 beaverton stay was on borrowed phone like so give most important number first",
+      "voiceResponse": "Most important first: if you\u2019re in immediate danger, call 911. If you\u2019re not in immediate danger, call 211 now for a live local specialist. You can stay anonymous and share only what you want. With low battery, keep it short: \u201cI\u2019m 17 in Beaverton and need a safe place tonight.\u201d If this call drops, dial 211 as soon as you can.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreifoku5qrv6dgv6bqkrqt5bam35cvg3sfhh6uh7m25whtt2usha4wi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important first: if you\u2019re in immediate danger, call 911. If you\u2019re not in immediate danger, call 211 now for a live local specialist. You can stay anonymous and share only what you want. With low battery, keep it short: \u201cI\u2019m 17 in Beaverton and need a safe place tonight.\u201d If this call drops, dial 211 as soon as you can.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002274#turn-2",
+      "scenarioId": "phone_dialog_0002274",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019ve been couch-surfing two nights, and one older guy at this place keeps saying I need to \u2018pay him back\u2019 and go with him, and it feels really wrong.",
+      "normalizedQuery": "hi 17 beaverton stay was on borrowed phone like so give most important number first ve been couch surfing two nights one older guy at this place keeps saying pay him back go it feels really wrong",
+      "voiceResponse": "I\u2019m really glad you said that. Are you safe right this minute, away from him? If not, call 911 now. If you can move to a public place or lock a door, do that first, then call 211. Call 211. You can stay anonymous and just say: \u201cI\u2019m 17 in Beaverton, an older man is pressuring me for sex for a place to stay, and I need a safe youth shelter tonight.\u201d If the phone dies, borrow any phone and dial 211 again.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. Are you safe right this minute, away from him? If not, call 911 now. If you can move to a public place or lock a door, do that first, then call 211. Call 211. You can stay anonymous and just say: \u201cI\u2019m 17 in Beaverton, an older man is pressuring me for sex for a place to stay, and I need a safe youth shelter tonight.\u201d If the phone dies, borrow any phone and dial 211 again.",
+      "voiceResponseAlternatives": [
+        "Okay. Stay seated or lie down right now. If you feel like you might pass out, call **911** now. I can connect you to a live **211** specialist for shelter tonight in Beaverton. If we disconnect, call **SAFE SLEEP UNITED** at **503\u2026 816\u2026 3409**.",
+        "I\u2019m with you. This is very serious, and you need 911 right now if you haven\u2019t called yet. Put your phone on speaker. If his breathing is very slow or irregular, tell 911 that exactly. Lay him on his side, keep his airway clear, and watch his chest for movement. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you. Are you on with 911 right now?",
+        "You\u2019re okay. I\u2019ll go slow. The number is **9-1-1**: **nine\u2026 one\u2026 one**. If you feel in immediate danger, call now. If you can keep driving, go to a busy public place, stay in your locked car, and don\u2019t reply to his texts. I can connect you to a live advocate and you can share as little as you want.",
+        "You\u2019re doing the right thing with limited info. Quick safety check: do you think she\u2019s in immediate danger right now, or having a medical or mental health crisis? If yes, call 911 now. If not, we can keep this simple: save every text, ask her where she feels safest tonight, and share that location with local youth crisis or runaway support so they can do outreach without pressure. I can help you draft one calm text to send her."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002331#turn-2",
+      "scenarioId": "phone_dialog_0002331",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Beaverton, been couch-surfing with friends, but one older guy at this apartment keeps pressuring me to \u2018help him out\u2019 for money and it feels wrong.",
+      "normalizedQuery": "hi sorry at bus stop it loud hear 16 go back home tonight beaverton been couch surfing friends one older guy this apartment keeps pressuring him money feels wrong",
+      "voiceResponse": "I\u2019m really glad you said that. What he\u2019s doing is not okay, and your safety matters first. Are you safe where you are right now, for the next hour? If not, call 911 now. If yes, I can help you connect to a live 211 specialist to find a safer place tonight. You can keep details minimal and share only what feels safe.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:0ace06937c39cb61",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. What he\u2019s doing is not okay, and your safety matters first. Are you safe where you are right now, for the next hour? If not, call 911 now. If yes, I can help you connect to a live 211 specialist to find a safer place tonight. You can keep details minimal and share only what feels safe.",
+      "voiceResponseAlternatives": [
+        "Okay. Stay seated or lie down right now. If you feel like you might pass out, call **911** now. I can connect you to a live **211** specialist for shelter tonight in Beaverton. If we disconnect, call **SAFE SLEEP UNITED** at **503\u2026 816\u2026 3409**.",
+        "I\u2019m with you. This is very serious, and you need 911 right now if you haven\u2019t called yet. Put your phone on speaker. If his breathing is very slow or irregular, tell 911 that exactly. Lay him on his side, keep his airway clear, and watch his chest for movement. If he stops breathing or turns blue, tell 911 immediately and start CPR if they guide you. Are you on with 911 right now?",
+        "You\u2019re okay. I\u2019ll go slow. The number is **9-1-1**: **nine\u2026 one\u2026 one**. If you feel in immediate danger, call now. If you can keep driving, go to a busy public place, stay in your locked car, and don\u2019t reply to his texts. I can connect you to a live advocate and you can share as little as you want.",
+        "You\u2019re doing the right thing with limited info. Quick safety check: do you think she\u2019s in immediate danger right now, or having a medical or mental health crisis? If yes, call 911 now. If not, we can keep this simple: save every text, ask her where she feels safest tonight, and share that location with local youth crisis or runaway support so they can do outreach without pressure. I can help you draft one calm text to send her."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002348#turn-1",
+      "scenarioId": "phone_dialog_0002348",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, there\u2019s buses going by and I can barely hear you. I\u2019m 16 and in Beaverton, and I can\u2019t go back home tonight.",
+      "normalizedQuery": "hi sorry there buses going by barely hear 16 beaverton go back home tonight",
+      "voiceResponse": "You\u2019re not in trouble for asking, and you can share as little as you want. Since you\u2019re 16 and need a safe place tonight in Beaverton, I can connect you with a live 211 specialist right now to find youth-safe options nearby. If you feel in immediate danger, call 911. If not, we can do this step by step, with no unnecessary details.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:0742635076980962",
+        "service:1c25fa37ff636289",
+        "service:b385a4631c24feca",
+        "page:bafkreic7fzf7xjn2vyjkj277oum6z2fghx3lm5632fis3oszczz7y4brla"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not in trouble for asking, and you can share as little as you want. Since you\u2019re 16 and need a safe place tonight in Beaverton, I can connect you with a live 211 specialist right now to find youth-safe options nearby. If you feel in immediate danger, call 911. If not, we can do this step by step, with no unnecessary details.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002348#turn-2",
+      "scenarioId": "phone_dialog_0002348",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019ve been crashing on different couches for like a week, but one of the older guys at this place keeps saying I owe him and wants me to go with him.",
+      "normalizedQuery": "hi sorry there buses going by barely hear 16 beaverton go back home tonight ve been crashing on different couches like week one older guys at this place keeps saying owe him wants",
+      "voiceResponse": "Thank you for telling me. What he\u2019s doing is not okay, and this can be urgent. If you feel in immediate danger, call 911 now. If you can, move toward staff, a public area, or near other people, and do not go with him. You can share very little and still get help. I can connect you to a live 211 specialist right now to find a safer youth option tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. What he\u2019s doing is not okay, and this can be urgent. If you feel in immediate danger, call 911 now. If you can, move toward staff, a public area, or near other people, and do not go with him. You can share very little and still get help. I can connect you to a live 211 specialist right now to find a safer youth option tonight.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have that location yet. I do not have that location yet. We have not picked the program, so I cannot tell Beaverton or Portland yet. I can connect you to a live 211 specialist now, and they can confirm the exact city and bus option. Would you like me to connect you now?",
+        "I hear you. I still do not have a phone number to repeat. I still do not have a phone number to repeat. We have not picked the program yet, so I cannot give the right number. Since your battery is low, I can connect you to a live 211 specialist right now. Do you want me to connect you now?",
+        "I\u2019m really glad you reached out. If you\u2019re in immediate danger right now, call 911 first. For tonight, call Oregon domestic violence assistance at **541, 686, 7878**. I\u2019ll repeat: **5-4-1, 6-8-6, 7-8-7-8**. They can help with safety planning and emergency support. If that line doesn\u2019t pick up, tell me and I\u2019ll stay with you while we try the next number.",
+        "You\u2019re doing the right thing by calling. I\u2019m going to connect you to a live specialist now to help with that shutoff notice. If anyone there depends on power for medical equipment, or you feel in immediate danger, call 911 right now. If this is Pacific Power, their shutoff line is: 8 8 8, 2 2 1, 7 0 7 0."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -3054,6 +3384,66 @@
     {
       "from": "phone_dialog_0002146#turn-4",
       "to": "phone_dialog_0002146#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002164#turn-1",
+      "to": "phone_dialog_0002164#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002211#turn-1",
+      "to": "phone_dialog_0002211#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002211#turn-3",
+      "to": "phone_dialog_0002211#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002242#turn-1",
+      "to": "phone_dialog_0002242#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002242#turn-2",
+      "to": "phone_dialog_0002242#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002274#turn-1",
+      "to": "phone_dialog_0002274#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002274#turn-2",
+      "to": "phone_dialog_0002274#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002331#turn-2",
+      "to": "phone_dialog_0002331#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002348#turn-1",
+      "to": "phone_dialog_0002348#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002348#turn-2",
+      "to": "phone_dialog_0002348#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

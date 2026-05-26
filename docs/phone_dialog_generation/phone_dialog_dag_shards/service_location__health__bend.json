@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__health__bend",
   "kind": "service_location",
   "key": "health__bend",
-  "nodeCount": 22,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000176#turn-1",
@@ -660,6 +660,151 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002243#turn-3",
+      "scenarioId": "phone_dialog_0002243",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you dropped out, can you say that again? I can't tell if he's breathing normal, it's like slow gasps.",
+      "normalizedQuery": "hello hear okay i'm bend signal keeps cutting was trying detox friend took pills lot vodka now he won't really wake up sorry dropped say again can't tell if he's breathing normal it's like slow gasps",
+      "voiceResponse": "I\u2019ll repeat: this is an emergency. Call 911 now. Tell them: he took pills and a lot of vodka, he won\u2019t wake up, and his breathing is slow gasps. Slow gasps are not normal breathing. Put him on his side and stay with him until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: this is an emergency. Call 911 now. Tell them: he took pills and a lot of vodka, he won\u2019t wake up, and his breathing is slow gasps. Slow gasps are not normal breathing. Put him on his side and stay with him until help arrives.",
+      "voiceResponseAlternatives": [
+        "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**.",
+        "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d",
+        "You\u2019re okay, I\u2019ve got you. Let me repeat just the numbers, slowly. First call: **541\u2026 523\u2026 4049**. If no answer: **541\u2026 406\u2026 4363**. Backup in Portland, Fora Health Detox: **503\u2026 535\u2026 1151**. If you want, I can stay on and give you a short script for what to say when they answer."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002243#turn-4",
+      "scenarioId": "phone_dialog_0002243",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "He's cold and I shook him and he just mumbled once, then nothing, I'm really scared.",
+      "normalizedQuery": "hello hear okay i'm bend signal keeps cutting was trying detox friend took pills lot vodka now he won't really wake up sorry dropped say again can't tell if he's breathing normal it's like slow gasps cold shook him just mumbled once then nothing scared",
+      "voiceResponse": "I hear you. This is life-threatening. Call 911 now. Tell them: he took pills and vodka, he\u2019s not waking up, and he has slow gasps. If he is not breathing normally, start CPR if you can, and keep him on his side if he vomits. Do not shake him again. Stay with him until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is life-threatening. Call 911 now. Tell them: he took pills and vodka, he\u2019s not waking up, and he has slow gasps. If he is not breathing normally, start CPR if you can, and keep him on his side if he vomits. Do not shake him again. Stay with him until help arrives.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call **Cascades West Ride Line** now and ask for a non-emergency medical ride from Bend this week. The number is **5-4-1, 9-2-4, 8-7-3-8**. If needed, their other line is **5-4-1, 9-6-7, 8-6-3-0**. They serve eligible OHP Medicaid, ICHN CCO, and Samaritan Advantage members.",
+        "First step: call Cascades West Ride Line now and ask them to enroll you for rides this week. Their number is **5-4-1, 9-2-4, 8-7-3-8**. For sign-up, they list **no required documents**. You do need to be an eligible **OHP Medicaid** client, an eligible **InterCommunity Health Network CCO** member in their files, or a **Samaritan Advantage Medical** client. I can stay with you while you make the call.",
+        "You\u2019re doing the right thing. If we disconnect, call these and start with privacy first: First number: **5-4-1** \u2026 **5-2-3** \u2026 **4-0-4-9**. Second number: **5-4-1** \u2026 **4-0-6** \u2026 **4-3-6-3**. Say: \u201cI need same-day detox in Bend and want to stay as anonymous as possible. What do you record before intake, and do you contact employers?\u201d",
+        "I hear you, and I know you\u2019re trying to protect both of you. With slow, weird breathing and barely responsive, this is life-threatening. Call **911** now and say, \u201cPossible overdose, slow breathing, barely responsive, both under 25.\u201d Ask for medical help immediately. Keep him on his side and stay with him. This is about keeping him alive right now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002337#turn-1",
+      "scenarioId": "phone_dialog_0002337",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? The signal keeps cutting out. I'm in Bend and I need detox help, I think.",
+      "normalizedQuery": "hi sorry hear signal keeps cutting i'm bend detox think",
+      "voiceResponse": "Yes, I can hear you. If you feel in danger right now, call 911. For detox help, call (541) 523-4049. Backup number: (541) 406-4363. I\u2019ll repeat: (541) 523-4049.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. If you feel in danger right now, call 911. For detox help, call (541) 523-4049. Backup number: (541) 406-4363. I\u2019ll repeat: (541) 523-4049.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+        "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+        "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d",
+        "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002337#turn-2",
+      "scenarioId": "phone_dialog_0002337",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I haven't slept and I might be slurring, sorry... my friend took oxy and drank a lot, and now he won't really wake up.",
+      "normalizedQuery": "hi sorry hear signal keeps cutting i'm bend detox think haven't slept might be slurring friend took oxy drank lot now he won't really wake up",
+      "voiceResponse": "Your audio cut out, but this sounds like an overdose emergency. Call 911 now. If you can, put your friend on their side and stay with him. Is he breathing normally: yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio cut out, but this sounds like an overdose emergency. Call 911 now. If you can, put your friend on their side and stay with him. Is he breathing normally: yes or no?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002337#turn-3",
+      "scenarioId": "phone_dialog_0002337",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? You cut out, can you say that again... he's breathing weird, like slow and gurgly.",
+      "normalizedQuery": "hi sorry hear signal keeps cutting i'm bend detox think haven't slept might be slurring friend took oxy drank lot now he won't really wake up cut say again he's breathing weird like slow gurgly",
+      "voiceResponse": "I\u2019ll repeat: call 911 now. Slow, gurgly breathing is an overdose emergency. Put him on his side, keep his airway clear, and stay with him until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll repeat: call 911 now. Slow, gurgly breathing is an overdose emergency. Put him on his side, keep his airway clear, and stay with him until help arrives.",
+      "voiceResponseAlternatives": [
+        "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**.",
+        "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d",
+        "You\u2019re okay, I\u2019ve got you. Let me repeat just the numbers, slowly. First call: **541\u2026 523\u2026 4049**. If no answer: **541\u2026 406\u2026 4363**. Backup in Portland, Fora Health Detox: **503\u2026 535\u2026 1151**. If you want, I can stay on and give you a short script for what to say when they answer."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -776,6 +921,36 @@
       "to": "phone_dialog_0001500#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002243#turn-3",
+      "to": "phone_dialog_0002243#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002243#turn-4",
+      "to": "phone_dialog_0002243#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002337#turn-1",
+      "to": "phone_dialog_0002337#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002337#turn-2",
+      "to": "phone_dialog_0002337#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002337#turn-3",
+      "to": "phone_dialog_0002337#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

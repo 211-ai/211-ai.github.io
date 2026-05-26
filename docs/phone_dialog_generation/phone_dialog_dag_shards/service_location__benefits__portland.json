@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__portland",
   "kind": "service_location",
   "key": "benefits__portland",
-  "nodeCount": 63,
+  "nodeCount": 68,
   "nodes": [
     {
       "id": "phone_dialog_0000013#turn-1",
@@ -1867,6 +1867,156 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002316#turn-6",
+      "scenarioId": "phone_dialog_0002316",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m sorry, I sound all over the place, I just need mail service in Portland so I don\u2019t lose my benefits.",
+      "normalizedQuery": "sorry sound all over place just mail service portland so don lose benefits snap assistance",
+      "voiceResponse": "You\u2019re doing the right thing. For Portland benefits and mail-service support, call 503, 823, 4000. Backup number: 503, 320, 6658. I\u2019m connecting you to a live agent now to stay with you on this.",
+      "evidenceDocIds": [
+        "service:d58a8e52f7c74e3f",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:16b69bb7439604e8",
+        "service:0f54d8a0521f759c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. For Portland benefits and mail-service support, call 503, 823, 4000. Backup number: 503, 320, 6658. I\u2019m connecting you to a live agent now to stay with you on this.",
+      "voiceResponseAlternatives": [
+        "Yes. I can connect you to a live advocate tonight to make a safety plan. Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. I\u2019ll repeat: **5-0-3, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Okay, first step: call the SSI/SSDI legal help line now at **503\u2026 228\u2026 5222**. They help adults and kids with SSI and SSD applications and appeals, and the listing says no documents are required at intake. If you want to go in person, it\u2019s **820 SW 2nd Avenue, Suite 200, Portland**. If you feel unsafe right now or might get hurt, call **911** immediately.",
+        "That helps, thank you. Since he needs care soon and mornings work best, use this exact script when you call: \u201cHe has ongoing pain, can do morning appointments, and needs the soonest new-patient visit.\u201d Ask, \u201cDo you have anything this week?\u201d If they can\u2019t, ask for a cancellation list. For fastest local options, call 2-1-1 and use the same wording. If his pain becomes severe or he has trouble breathing, call 9-1-1 right away.",
+        "I\u2019m glad you reached out, and I hear this is urgent. If you might hurt yourself or someone else right now, call **911** immediately. For same-day mental health help in Portland, call **Behavioral Health Services** at **5-0-3, 3-3-5, 5-9-7-5**. Backup number: **5-0-3, 3-3-5, 5-9-7-4**. Address: **1-1-0-1-0 Southeast Division Street, Suite 2-0-2, Portland, 9-7-2-6-6**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002341#turn-1",
+      "scenarioId": "phone_dialog_0002341",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, this isn\u2019t my phone and it\u2019s on like two percent, can you give me the most important number first for mental health help in Portland?",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first mental health portland",
+      "voiceResponse": "You\u2019re doing the right thing calling now. Call 503, 917, 5737. The name is Portland Therapy Project. If that doesn\u2019t connect, backup number: 971, 319, 9793. I\u2019ll repeat: 503, 917, 5737.",
+      "evidenceDocIds": [
+        "service:98249e32a262b454",
+        "service:5fd8e43cfc766596",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:34af8c2108871a0a",
+        "service:1b6e1c18557fb6a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling now. Call 503, 917, 5737. The name is Portland Therapy Project. If that doesn\u2019t connect, backup number: 971, 319, 9793. I\u2019ll repeat: 503, 917, 5737.",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. In Portland, try Portland Therapy Project. Phone: **(503) 917-5737**. That is: **5 0 3, 9 1 7, 5 7 3 7**. Address: **825 NE 20th Avenue, Suite 250, Portland, 97232**. I\u2019ll repeat: **825 NE 20th Avenue, Suite 250**. Do you want a second mental health number too?",
+        "I hear you. I\u2019m here with you. For help today in Portland, call Behavioral Health Services now: 5 0 3, 3 3 5, 5 9 7 5. I\u2019ll repeat: 5 0 3, 3 3 5, 5 9 7 5. Second line: 5 0 3, 3 3 5, 5 9 7 4. If you feel in immediate danger, call 9 1 1 now. Can you call the first number now while I stay with you?",
+        "Yes. I\u2019ll do it slowly. First number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. Second number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4.",
+        "Yes. It can be crisis support for today, not just future counseling. I\u2019ll repeat: crisis support for today, and counseling connection too. Please call now: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002341#turn-2",
+      "scenarioId": "phone_dialog_0002341",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep looping and I can\u2019t settle down, and I\u2019m scared of my own thoughts tonight.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first mental health portland keep looping settle down scared own thoughts tonight",
+      "voiceResponse": "I\u2019m really glad you said that out loud. You\u2019re not alone right now. Call 503, 917, 5737. The name is Portland Therapy Project. If they don\u2019t pick up, backup number: 971, 319, 9793. Stay on the line while you dial if you can. I\u2019ll repeat: 503, 917, 5737.",
+      "evidenceDocIds": [
+        "service:98249e32a262b454",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:5fd8e43cfc766596",
+        "service:0371faf23a9ac44e",
+        "service:34af8c2108871a0a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that out loud. You\u2019re not alone right now. Call 503, 917, 5737. The name is Portland Therapy Project. If they don\u2019t pick up, backup number: 971, 319, 9793. Stay on the line while you dial if you can. I\u2019ll repeat: 503, 917, 5737.",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. In Portland, try Portland Therapy Project. Phone: **(503) 917-5737**. That is: **5 0 3, 9 1 7, 5 7 3 7**. Address: **825 NE 20th Avenue, Suite 250, Portland, 97232**. I\u2019ll repeat: **825 NE 20th Avenue, Suite 250**. Do you want a second mental health number too?",
+        "I hear you. I\u2019m here with you. For help today in Portland, call Behavioral Health Services now: 5 0 3, 3 3 5, 5 9 7 5. I\u2019ll repeat: 5 0 3, 3 3 5, 5 9 7 5. Second line: 5 0 3, 3 3 5, 5 9 7 4. If you feel in immediate danger, call 9 1 1 now. Can you call the first number now while I stay with you?",
+        "Yes. I\u2019ll do it slowly. First number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. Second number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4.",
+        "Yes. It can be crisis support for today, not just future counseling. I\u2019ll repeat: crisis support for today, and counseling connection too. Please call now: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002341#turn-3",
+      "scenarioId": "phone_dialog_0002341",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that? You cut out for a second, can you repeat the number slower?",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first mental health portland keep looping settle down scared own thoughts tonight wait was cut second repeat slower",
+      "voiceResponse": "I hear you. I\u2019ll say it slowly. Call 503, 917, 5737. I\u2019ll repeat: 503, 917, 5737.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:5fd8e43cfc766596",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll say it slowly. Call 503, 917, 5737. I\u2019ll repeat: 503, 917, 5737.",
+      "voiceResponseAlternatives": [
+        "Yeah, of course. First step: call Disability Rights Oregon for SSI/SSDI benefits counseling. The number is **503\u2026 323\u2026 9159**. I can repeat it again if you want.",
+        "I hear you, and you\u2019re doing your best. I\u2019ll say the number slowly: **5 0 3** \u2026 **3 2 3** \u2026 **9 1 5 9**. That\u2019s for Disability Rights Oregon benefits counseling. If you want, I can repeat it one more time, even slower.",
+        "You\u2019re doing the right thing. I\u2019ll say it slowly. If you might act on unsafe thoughts, call **9-1-1** now. For Portland Behavioral Health Services, call **5-0-3, 3-3-5, 5-9-7-5**. Backup number: **5-0-3, 3-3-5, 5-9-7-4**. If you can, stay near other people while you call.",
+        "I asked: do you want one Portland mental health crisis number to call right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002341#turn-4",
+      "scenarioId": "phone_dialog_0002341",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not saying I have a plan exactly, but I keep thinking everyone would be better off if I was gone.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first mental health portland keep looping settle down scared own thoughts tonight wait was cut second repeat slower saying have plan exactly thinking everyone would be better off if gone",
+      "voiceResponse": "I\u2019m really glad you told me. Right now, call 503, 917, 5737. The name is Portland Therapy Project. If you might act on these thoughts tonight, call 911 now. Backup number: 971, 319, 9793. I\u2019ll repeat: 503, 917, 5737.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. Right now, call 503, 917, 5737. The name is Portland Therapy Project. If you might act on these thoughts tonight, call 911 now. Backup number: 971, 319, 9793. I\u2019ll repeat: 503, 917, 5737.",
+      "voiceResponseAlternatives": [
+        "I hear you. I will speak slowly. In Portland, try Portland Therapy Project. Phone: **(503) 917-5737**. That is: **5 0 3, 9 1 7, 5 7 3 7**. Address: **825 NE 20th Avenue, Suite 250, Portland, 97232**. I\u2019ll repeat: **825 NE 20th Avenue, Suite 250**. Do you want a second mental health number too?",
+        "I hear you. I\u2019m here with you. For help today in Portland, call Behavioral Health Services now: 5 0 3, 3 3 5, 5 9 7 5. I\u2019ll repeat: 5 0 3, 3 3 5, 5 9 7 5. Second line: 5 0 3, 3 3 5, 5 9 7 4. If you feel in immediate danger, call 9 1 1 now. Can you call the first number now while I stay with you?",
+        "Yes. I\u2019ll do it slowly. First number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. Second number: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 4.",
+        "Yes. It can be crisis support for today, not just future counseling. I\u2019ll repeat: crisis support for today, and counseling connection too. Please call now: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat: 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -2199,6 +2349,30 @@
       "to": "phone_dialog_0002027#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002341#turn-1",
+      "to": "phone_dialog_0002341#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002341#turn-2",
+      "to": "phone_dialog_0002341#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002341#turn-3",
+      "to": "phone_dialog_0002341#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002341#turn-4",
+      "to": "phone_dialog_0002341#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

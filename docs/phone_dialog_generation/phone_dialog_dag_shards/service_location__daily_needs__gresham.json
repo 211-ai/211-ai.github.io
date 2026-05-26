@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__gresham",
   "kind": "service_location",
   "key": "daily_needs__gresham",
-  "nodeCount": 38,
+  "nodeCount": 39,
   "nodes": [
     {
       "id": "phone_dialog_0000269#turn-1",
@@ -806,7 +806,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Sorry, the audio was unclear. I did not say a city name. I only have a phone number, not a street or city. It is: 5 0 3 \u2026 9 8 8 \u2026 5 4 0 4. Again: 5 0 3 \u2026 9 8 8 \u2026 5 4 0 4. Do you want a short script for what to ask when you call?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, no need to apologize. You heard that wrong, I did not say Stark. The line is a little unclear on my end. Could you repeat one short answer: do you want me to connect you to a live 211 agent right now?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
@@ -1140,6 +1142,33 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002257#turn-5",
+      "scenarioId": "phone_dialog_0002257",
+      "turnIndex": 4,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, hold on, I\u2019m crying, I\u2019m sorry... did you say on Stark or did I hear that wrong?",
+      "normalizedQuery": "gresham by bus line all our clothes dirty kids have school tomorrow just fix this say again slower missed it there lot noise here somewhere cheap free laundry tonight like vouchers anything wait hold on crying sorry did stark hear wrong",
+      "voiceResponse": "You\u2019re okay, no need to apologize. You heard that wrong, I did not say Stark. The line is a little unclear on my end. Could you repeat one short answer: do you want me to connect you to a live 211 agent right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, no need to apologize. You heard that wrong, I did not say Stark. The line is a little unclear on my end. Could you repeat one short answer: do you want me to connect you to a live 211 agent right now?",
+      "voiceResponseAlternatives": [
+        "Sorry, the audio was unclear. I did not say a city name. I only have a phone number, not a street or city. It is: 5 0 3 \u2026 9 8 8 \u2026 5 4 0 4. Again: 5 0 3 \u2026 9 8 8 \u2026 5 4 0 4. Do you want a short script for what to ask when you call?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1364,6 +1393,12 @@
       "to": "phone_dialog_0002044#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002257#turn-5",
+      "to": "phone_dialog_0002257#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
     }
   ]
 }

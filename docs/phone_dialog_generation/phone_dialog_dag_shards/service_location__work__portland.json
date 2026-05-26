@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__work__portland",
   "kind": "service_location",
   "key": "work__portland",
-  "nodeCount": 21,
+  "nodeCount": 22,
   "nodes": [
     {
       "id": "phone_dialog_0000147#turn-5",
@@ -607,6 +607,36 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002309#turn-6",
+      "scenarioId": "phone_dialog_0002309",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the address and bus line again? I'm writing it on my hand because I can't find a pen.",
+      "normalizedQuery": "wait did say slow down again like one step at time i'm making sense know crying haven't had shower days have go work tomorrow there anywhere open tonight just portland actually clackamas county repeat address bus line writing it on hand because can't pen",
+      "voiceResponse": "I don\u2019t have that address or bus line on my screen right now. Stay on the line and I\u2019ll get the 211 specialist to repeat both slowly for you. If your breathing gets hard again, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have that address or bus line on my screen right now. Stay on the line and I\u2019ll get the 211 specialist to repeat both slowly for you. If your breathing gets hard again, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+        "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+        "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+        "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [

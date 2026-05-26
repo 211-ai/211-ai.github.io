@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__shelter__clackamas",
   "kind": "service_location",
   "key": "shelter__clackamas",
-  "nodeCount": 158,
+  "nodeCount": 167,
   "nodes": [
     {
       "id": "phone_dialog_0000010#turn-3",
@@ -4723,6 +4723,276 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002151#turn-4",
+      "scenarioId": "phone_dialog_0002151",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hello? You cut out on me, can you say that again slower?",
+      "normalizedQuery": "hi clackamas sorry signal bad fast some guys at camp by creek started threatening somebody took backpack last night check if safe enough right now first outside it getting really hot don think another day this heat utility utilities electric hello cut on say again slower",
+      "voiceResponse": "I hear you. I\u2019ll say it slowly. If you feel faint, confused, vomiting, not sweating, or your heart is racing, call 911 now. If not, move to shade or air conditioning with people nearby. Sip water slowly. Cool your neck and armpits with a wet cloth. When you\u2019re in a safer, cooler spot, I can help you find the nearest cooling center.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:e03c087ec8e82c0c",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll say it slowly. If you feel faint, confused, vomiting, not sweating, or your heart is racing, call 911 now. If not, move to shade or air conditioning with people nearby. Sip water slowly. Cool your neck and armpits with a wet cloth. When you\u2019re in a safer, cooler spot, I can help you find the nearest cooling center.",
+      "voiceResponseAlternatives": [
+        "Closest first: call **2-1-1** for Clackamas same-day laundry help, and ask for a live person now. Say: \u201cSame-day laundry help tonight in Clackamas. No callback. Minimum data sharing.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. That is **2-1-1**.",
+        "You\u2019re doing great, keep it simple. Next step: call **2-1-1** right now. Say: **\u201cI need replacement state ID help first so I can work. I\u2019m in Clackamas, sleeping in my car, and my battery is dying. What is the fastest same-day ID option?\u201d** Then ask: **\u201cPlease text me the address.\u201d**",
+        "Yes, I hear you. Next step: I can transfer you now to a live 211info specialist to find structured daytime youth support in Clackamas. If there\u2019s immediate danger, call **9-1-1** right now. If it\u2019s safe, stay on the line and I\u2019ll connect you now.",
+        "Next step: stay on the line while I transfer you now. The name is **211info**: \u201c**two-one-one\u2026 info**.\u201d I\u2019ll connect you to a live **211info specialist** for youth daytime support in Clackamas."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002161#turn-4",
+      "scenarioId": "phone_dialog_0002161",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "My phone battery is at like four percent because my charger\u2019s missing too, so if you give an address please do it slow.",
+      "normalizedQuery": "hi sorry hear great on this line talk louder clackamas inhaler gone ve been sleeping between shelters shelter homeless overnight warming buses think it got stolen last night bag breathing okay right second like ambulance bad chest tight clinic medical health phone battery at four percent because charger missing too so if give an address please slow",
+      "voiceResponse": "First step: if your breathing gets worse, call 9-1-1 immediately. I\u2019m transferring you to a live 211 navigator now for a same-day clinic in Clackamas. Because your battery is low, keep the call open and ask them for one nearby clinic address first, repeated slowly. If we disconnect, call 2-1-1 right back.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:9ba6422a5084e69c",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if your breathing gets worse, call 9-1-1 immediately. I\u2019m transferring you to a live 211 navigator now for a same-day clinic in Clackamas. Because your battery is low, keep the call open and ask them for one nearby clinic address first, repeated slowly. If we disconnect, call 2-1-1 right back.",
+      "voiceResponseAlternatives": [
+        "First step: call the Oregon City Overnight Winter Warming Shelter now at **five zero three, seven two two, nine seven eight zero**. Ask if they\u2019re open tonight and if they have a bed for a 19-year-old. It\u2019s at **603 12th Street, Oregon City**, for adults 18 and older, no documents required. It opens when overnight wind chill is **33 degrees or below**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: call **Oregon City Overnight Winter Warming Shelter** now at **five zero three, seven two two, nine seven eight zero** and ask, \u201cAny bed for a 19-year-old tonight?\u201d If no answer or no bed, stay on the line and I\u2019ll complete the live 211 handoff immediately. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "Next step: stay on the line and I\u2019ll connect you now to a live **211info** specialist. They can screen for teen programs with supervision and crisis-behavior support, not just tutoring, and tell you what\u2019s actually available in Clackamas today. If safety becomes immediate at any point, call **9-1-1**.",
+        "Next step: stay on the line and I\u2019ll transfer you now to a live **211info** specialist. I don\u2019t have two confirmed Clackamas program listings on this line to give you safely. The specialist can give you the **top two current options first** for teen supervision with crisis-behavior support. If his safety changes before you connect, call **9-1-1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002207#turn-1",
+      "scenarioId": "phone_dialog_0002207",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Can you hear me? I'm at the bus stop by the shelter in Clackamas and I can't find my ID, I lost everything.",
+      "normalizedQuery": "hello hear i'm at bus stop by shelter shelters homeless overnight warming clackamas can't id lost everything",
+      "voiceResponse": "Yes, I hear you. You can still get help even without ID. The Father\u2019s Heart Street Ministry shelter in Oregon City says required documents: none. 603 12th Street, Oregon City. Call (503) 722-9780. I\u2019ll repeat: (503) 722-9780. If you feel unsafe right now, call 911.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:bd5c5bd198f76c8b",
+        "service:bab9f596e07026df",
+        "service:2f8232cc7f33ac9d",
+        "service:da479dd20eb5563d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. You can still get help even without ID. The Father\u2019s Heart Street Ministry shelter in Oregon City says required documents: none. 603 12th Street, Oregon City. Call (503) 722-9780. I\u2019ll repeat: (503) 722-9780. If you feel unsafe right now, call 911.",
+      "voiceResponseAlternatives": [
+        "Main number first: **5-0-3, 6-5-0, 4-6-7-8**. That\u2019s Clackamas County Veterans Program in Oregon City, and they can help route you to veteran housing support. If you want a housing-specific backup number, I also have: **4-5-8, 2-2-1, 0-7-1-8**. If the call drops, try the first number first.",
+        "Yes. Here it is, one digit at a time: **5\u2026 0\u2026 3\u2026 8\u2026 0\u2026 8\u2026 1\u2026 2\u2026 5\u2026 6.** Again: **5\u2026 0\u2026 3\u2026 8\u2026 0\u2026 8\u2026 1\u2026 2\u2026 5\u2026 6.**",
+        "Clackamas County, not Clark County. I\u2019ll say it clearly: **Clackamas**. That number is **5-0-3, 6-5-0, 4-6-7-8**.",
+        "Next step: connect to a live 211 specialist right now and say, \u201cMy brother in Clackamas County has a 3-day pay-or-vacate notice and needs fast eviction-prevention help.\u201d I don\u2019t have a verified local provider number in this source, so I don\u2019t want to guess. Ask the specialist for the fastest same-day rental assistance options and exactly what documents he needs for urgent screening."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002207#turn-4",
+      "scenarioId": "phone_dialog_0002207",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what number did you say? Please say it slower, my phone's glitching and people are yelling next to me.",
+      "normalizedQuery": "hello hear i'm at bus stop by shelter shelters homeless overnight warming clackamas can't id lost everything sorry there's buses going missed real person right now don't feel safe here wallet got stolen last night think replacing into services wait number did say please it slower phone's glitching people yelling next",
+      "voiceResponse": "I hear you. If you don\u2019t feel safe right now, call 911 now. Say: \u201cI\u2019m at the bus stop by the shelter in Clackamas, and I don\u2019t feel safe.\u201d Move to the shelter lobby or near other people while you wait.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:57c4c63dcadba358",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. If you don\u2019t feel safe right now, call 911 now. Say: \u201cI\u2019m at the bus stop by the shelter in Clackamas, and I don\u2019t feel safe.\u201d Move to the shelter lobby or near other people while you wait.",
+      "voiceResponseAlternatives": [
+        "First step: call the Oregon City Overnight Winter Warming Shelter now at **five zero three, seven two two, nine seven eight zero**. Ask if they\u2019re open tonight and if they have a bed for a 19-year-old. It\u2019s at **603 12th Street, Oregon City**, for adults 18 and older, no documents required. It opens when overnight wind chill is **33 degrees or below**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: call **Oregon City Overnight Winter Warming Shelter** now at **five zero three, seven two two, nine seven eight zero** and ask, \u201cAny bed for a 19-year-old tonight?\u201d If no answer or no bed, stay on the line and I\u2019ll complete the live 211 handoff immediately. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "Next step: stay on the line and I\u2019ll connect you now to a live **211info** specialist. They can screen for teen programs with supervision and crisis-behavior support, not just tutoring, and tell you what\u2019s actually available in Clackamas today. If safety becomes immediate at any point, call **9-1-1**.",
+        "Next step: stay on the line and I\u2019ll transfer you now to a live **211info** specialist. I don\u2019t have two confirmed Clackamas program listings on this line to give you safely. The specialist can give you the **top two current options first** for teen supervision with crisis-behavior support. If his safety changes before you connect, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002256#turn-1",
+      "scenarioId": "phone_dialog_0002256",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling about my niece, she\u2019s 16 and she ran off two nights ago. I\u2019m in Clackamas and I\u2019m trying to find a safe youth shelter for her.",
+      "normalizedQuery": "hi calling niece she 16 ran off two nights ago clackamas trying safe youth shelter shelters homeless overnight warming her",
+      "voiceResponse": "Thanks for calling for her. I\u2019m not seeing a safe youth shelter in these matches. The options I have here are winter shelters for adults, or adults with families, and they\u2019re in La Pine, Pendleton, and La Grande. Since she\u2019s 16, the best next step is a youth-specific placement in Clackamas. We can do that now without sharing extra details first, and I can stay with you while we find the closest safe bed.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:18555484ba4abb9a",
+        "service:bd5c5bd198f76c8b",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for calling for her. I\u2019m not seeing a safe youth shelter in these matches. The options I have here are winter shelters for adults, or adults with families, and they\u2019re in La Pine, Pendleton, and La Grande. Since she\u2019s 16, the best next step is a youth-specific placement in Clackamas. We can do that now without sharing extra details first, and I can stay with you while we find the closest safe bed.",
+      "voiceResponseAlternatives": [
+        "Main number first: **5-0-3, 6-5-0, 4-6-7-8**. That\u2019s Clackamas County Veterans Program in Oregon City, and they can help route you to veteran housing support. If you want a housing-specific backup number, I also have: **4-5-8, 2-2-1, 0-7-1-8**. If the call drops, try the first number first.",
+        "Yes. Here it is, one digit at a time: **5\u2026 0\u2026 3\u2026 8\u2026 0\u2026 8\u2026 1\u2026 2\u2026 5\u2026 6.** Again: **5\u2026 0\u2026 3\u2026 8\u2026 0\u2026 8\u2026 1\u2026 2\u2026 5\u2026 6.**",
+        "Clackamas County, not Clark County. I\u2019ll say it clearly: **Clackamas**. That number is **5-0-3, 6-5-0, 4-6-7-8**.",
+        "Next step: connect to a live 211 specialist right now and say, \u201cMy brother in Clackamas County has a 3-day pay-or-vacate notice and needs fast eviction-prevention help.\u201d I don\u2019t have a verified local provider number in this source, so I don\u2019t want to guess. Ask the specialist for the fastest same-day rental assistance options and exactly what documents he needs for urgent screening."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002256#turn-2",
+      "scenarioId": "phone_dialog_0002256",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s a bus pulling in, can you say that again? I can\u2019t hear you great out here.",
+      "normalizedQuery": "hi calling niece she 16 ran off two nights ago clackamas trying safe youth shelter shelters homeless overnight warming her sorry there bus pulling say again hear great here",
+      "voiceResponse": "Of course. I\u2019m not seeing a youth safe shelter in these matches. The places I have are winter shelters for adults, or adults with families, in La Pine, Pendleton, and La Grande. Since she\u2019s 16, the next step is a youth-specific placement in Clackamas. We can do that now, and you don\u2019t need to share extra details first.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:5ded755b33454184",
+        "service:18555484ba4abb9a",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019m not seeing a youth safe shelter in these matches. The places I have are winter shelters for adults, or adults with families, in La Pine, Pendleton, and La Grande. Since she\u2019s 16, the next step is a youth-specific placement in Clackamas. We can do that now, and you don\u2019t need to share extra details first.",
+      "voiceResponseAlternatives": [
+        "Closest first: call **2-1-1** for Clackamas same-day laundry help, and ask for a live person now. Say: \u201cSame-day laundry help tonight in Clackamas. No callback. Minimum data sharing.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. That is **2-1-1**.",
+        "You\u2019re doing great, keep it simple. Next step: call **2-1-1** right now. Say: **\u201cI need replacement state ID help first so I can work. I\u2019m in Clackamas, sleeping in my car, and my battery is dying. What is the fastest same-day ID option?\u201d** Then ask: **\u201cPlease text me the address.\u201d**",
+        "Yes, I hear you. Next step: I can transfer you now to a live 211info specialist to find structured daytime youth support in Clackamas. If there\u2019s immediate danger, call **9-1-1** right now. If it\u2019s safe, stay on the line and I\u2019ll connect you now.",
+        "Next step: stay on the line while I transfer you now. The name is **211info**: \u201c**two-one-one\u2026 info**.\u201d I\u2019ll connect you to a live **211info specialist** for youth daytime support in Clackamas."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002256#turn-3",
+      "scenarioId": "phone_dialog_0002256",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "She\u2019s been couch-surfing with older people I don\u2019t know, and one guy keeps asking her to 'pay her way' somehow, so I\u2019m really worried.",
+      "normalizedQuery": "hi calling niece she 16 ran off two nights ago clackamas trying safe youth shelter shelters homeless overnight warming her sorry there bus pulling say again hear great here been couch surfing older people don know one guy keeps asking 'pay way' somehow so really worried",
+      "voiceResponse": "I\u2019m really glad you called. That sounds unsafe, and your concern makes sense. First, are you or your niece in immediate danger right now? If yes, call 911 now. If not, we can move on a youth-safe placement in Clackamas right away, with as little detail as possible. If she can, ask her to stay in a public place, keep her phone charged, and avoid being alone with that person while we line up a safer option.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. That sounds unsafe, and your concern makes sense. First, are you or your niece in immediate danger right now? If yes, call 911 now. If not, we can move on a youth-safe placement in Clackamas right away, with as little detail as possible. If she can, ask her to stay in a public place, keep her phone charged, and avoid being alone with that person while we line up a safer option.",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help. First, quick safety check: if you feel like you might pass out, get confused, have chest pain, or trouble breathing, call 9-1-1 now. For Clackamas, use the **211info Extreme Heat Cooling Centers** search. It shows multiple nearby providers, and you can set radius to **5, 10, 25, 50, or 100 miles**. The map pins are estimates, so tap **\u201cMore Details\u201d** on a site to get the exact location before you head there.",
+        "I hear you, and I\u2019m with you. Quick safety check: are you shivering hard, confused, or feeling numb? If yes, call 911 now for immediate medical help. If you can move, please get inside the warmest nearby public place right now, even for a few minutes. I can help with shelter options next.",
+        "I\u2019m really glad you said that. You sound medically unsafe right now. If you might pass out, call **9 1 1** now. Again, call **9 1 1** now. If you can stay on your feet, the Oregon City warming shelter is: **5 0 3, 7 2 2, 9 7 8 0**. Again: **5 0 3, 7 2 2, 9 7 8 0**. Are you able to call **9 1 1** right now?",
+        "I\u2019m here with you. You did the right thing calling. Please get into shade now, or an air-conditioned place if you can. Sip cool water slowly. If you feel worse, chest pain, or might faint, call 9-1-1 right away. Call 9-1-1 right away. I can help find a cooling center in Clackamas. What street or nearby landmark are you at right now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002309#turn-2",
+      "scenarioId": "phone_dialog_0002309",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Clackamas, near the transit center, I think, and my phone's at like three percent so please don't hang up.",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere shower feel disgusting think i'm clackamas transit center phone's at like three percent so please don't hang up",
+      "voiceResponse": "I\u2019m here with you. If you\u2019re still having trouble breathing, call 911 right now, or ask someone nearby at the transit center to call 911 for you. Your safety comes first. Put your phone on low power and stay where people can see you. I can stay on the line while you do that.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. If you\u2019re still having trouble breathing, call 911 right now, or ask someone nearby at the transit center to call 911 for you. Your safety comes first. Put your phone on low power and stay where people can see you. I can stay on the line while you do that.",
+      "voiceResponseAlternatives": [
+        "First step: call the Oregon City Overnight Winter Warming Shelter now at **five zero three, seven two two, nine seven eight zero**. Ask if they\u2019re open tonight and if they have a bed for a 19-year-old. It\u2019s at **603 12th Street, Oregon City**, for adults 18 and older, no documents required. It opens when overnight wind chill is **33 degrees or below**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: call **Oregon City Overnight Winter Warming Shelter** now at **five zero three, seven two two, nine seven eight zero** and ask, \u201cAny bed for a 19-year-old tonight?\u201d If no answer or no bed, stay on the line and I\u2019ll complete the live 211 handoff immediately. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "Next step: stay on the line and I\u2019ll connect you now to a live **211info** specialist. They can screen for teen programs with supervision and crisis-behavior support, not just tutoring, and tell you what\u2019s actually available in Clackamas today. If safety becomes immediate at any point, call **9-1-1**.",
+        "Next step: stay on the line and I\u2019ll transfer you now to a live **211info** specialist. I don\u2019t have two confirmed Clackamas program listings on this line to give you safely. The specialist can give you the **top two current options first** for teen supervision with crisis-behavior support. If his safety changes before you connect, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002309#turn-3",
+      "scenarioId": "phone_dialog_0002309",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what did you say? Can you slow down and say that again, like one step at a time?",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere shower feel disgusting think i'm clackamas transit center phone's at like three percent so please don't hang up wait did say slow down again one step time",
+      "voiceResponse": "Yes. One step at a time. Step one: If you are still having trouble breathing, call 911 now. Step two: If you can\u2019t call, ask someone nearby at the transit center to call 911 for you. Step three: Put your phone on low power and stay where people can see you. I can stay on the line with you while you do this.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One step at a time. Step one: If you are still having trouble breathing, call 911 now. Step two: If you can\u2019t call, ask someone nearby at the transit center to call 911 for you. Step three: Put your phone on low power and stay where people can see you. I can stay on the line with you while you do this.",
+      "voiceResponseAlternatives": [
+        "Closest first: call **2-1-1** for Clackamas same-day laundry help, and ask for a live person now. Say: \u201cSame-day laundry help tonight in Clackamas. No callback. Minimum data sharing.\u201d Number again, slowly: **2 \u2026 1 \u2026 1**. That is **2-1-1**.",
+        "You\u2019re doing great, keep it simple. Next step: call **2-1-1** right now. Say: **\u201cI need replacement state ID help first so I can work. I\u2019m in Clackamas, sleeping in my car, and my battery is dying. What is the fastest same-day ID option?\u201d** Then ask: **\u201cPlease text me the address.\u201d**",
+        "Yes, I hear you. Next step: I can transfer you now to a live 211info specialist to find structured daytime youth support in Clackamas. If there\u2019s immediate danger, call **9-1-1** right now. If it\u2019s safe, stay on the line and I\u2019ll connect you now.",
+        "Next step: stay on the line while I transfer you now. The name is **211info**: \u201c**two-one-one\u2026 info**.\u201d I\u2019ll connect you to a live **211info specialist** for youth daytime support in Clackamas."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -5553,6 +5823,60 @@
       "to": "phone_dialog_0002099#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002151#turn-4",
+      "to": "phone_dialog_0002151#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002161#turn-4",
+      "to": "phone_dialog_0002161#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002207#turn-1",
+      "to": "phone_dialog_0002207#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002207#turn-4",
+      "to": "phone_dialog_0002207#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002256#turn-1",
+      "to": "phone_dialog_0002256#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002256#turn-2",
+      "to": "phone_dialog_0002256#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002256#turn-3",
+      "to": "phone_dialog_0002256#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002309#turn-2",
+      "to": "phone_dialog_0002309#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002309#turn-3",
+      "to": "phone_dialog_0002309#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
     }
   ]
 }

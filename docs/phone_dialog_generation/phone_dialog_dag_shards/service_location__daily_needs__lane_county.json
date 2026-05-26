@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__lane_county",
   "kind": "service_location",
   "key": "daily_needs__lane_county",
-  "nodeCount": 24,
+  "nodeCount": 26,
   "nodes": [
     {
       "id": "phone_dialog_0000025#turn-1",
@@ -720,6 +720,61 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002231#turn-2",
+      "scenarioId": "phone_dialog_0002231",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Lane County, near Eugene, and I need domestic violence survivor help, but not anything that sends mail or calls me back.",
+      "normalizedQuery": "lane county eugene domestic violence survivor anything sends mail calls back",
+      "voiceResponse": "Okay. For Lane County, try Domestic Violence Support in Florence. Call 541, 997, 4444. Backup number: 541, 997, 2816. You can say, \u201cI need survivor support, no mail, and no callback.\u201d No documents are required. If it doesn\u2019t feel safe, hang up anytime.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:29e33c4115645e64",
+        "service:2a8dfbe44adb059e",
+        "service:eec5f9e1e439a0d0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. For Lane County, try Domestic Violence Support in Florence. Call 541, 997, 4444. Backup number: 541, 997, 2816. You can say, \u201cI need survivor support, no mail, and no callback.\u201d No documents are required. If it doesn\u2019t feel safe, hang up anytime.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and I know this is frustrating. One place in Eugene clearly lists both: **St. Vincent de Paul Service Station**, **450 Highway 99 North**. Their number is **541\u2026689\u20266747**. If you call now, say: \u201cI\u2019m near Eugene and need a shower today. Do you have showers available right now, and what\u2019s check-in like?\u201d If you want, I can stay with you while you make that call.",
+        "First step: call the Clothing Boutique at **5 0 3 \u2026 7 8 8 \u2026 7 0 0 0** and say this exactly: \u201cHi, I need an appointment for free clothing. I can come by bus. I need adult clothes and a warm jacket. What\u2019s your soonest opening?\u201d If they ask anything else, just repeat that sentence once.",
+        "Yes. Fast next step first. Call **five four one, six eight nine, six seven four seven**. Again: **five four one, six eight nine, six seven four seven**. Ask for the Eugene Service Station laundry access this week. Address: **four five zero Highway ninety-nine North, Eugene**. Again: **four five zero Highway ninety-nine North, Eugene**. If needed, second line is **five four one, nine four two, two one seven six**. Is your brother currently homeless?",
+        "First step: call **five four one, three four two, seven seven two eight** right after this drops. Again: **five four one, three four two, seven seven two eight**. Ask for the **First Place Family Center** and laundry access this week. If that line does not answer, call **five four one, three four five, three six two eight**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002231#turn-3",
+      "scenarioId": "phone_dialog_0002231",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, can you repeat that slower? I\u2019m shaking and I keep missing words.",
+      "normalizedQuery": "hi um keep this short phone might be checked talk like normal lane county eugene domestic violence survivor anything sends mail calls back sorry repeat slower shaking missing words",
+      "voiceResponse": "You\u2019re doing okay. Quick safety check: are you safe enough to stay on this call right now? If yes, here it is slowly. Call 541, 686, 7878. I\u2019ll repeat: 541, 686, 7878. You can say: \u201cI need domestic violence survivor help. No mail, and no callback.\u201d No documents are required at intake. If you\u2019re in immediate danger, call 911.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "service:2a8dfbe44adb059e",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreigll3i7al6snsud5wa5rxhmp5kazx6anqrxomsbhkg7qemsymeoya",
+        "service:e232f8e870bdd119"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay. Quick safety check: are you safe enough to stay on this call right now? If yes, here it is slowly. Call 541, 686, 7878. I\u2019ll repeat: 541, 686, 7878. You can say: \u201cI need domestic violence survivor help. No mail, and no callback.\u201d No documents are required at intake. If you\u2019re in immediate danger, call 911.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -848,6 +903,18 @@
       "to": "phone_dialog_0001763#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002231#turn-2",
+      "to": "phone_dialog_0002231#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002231#turn-3",
+      "to": "phone_dialog_0002231#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

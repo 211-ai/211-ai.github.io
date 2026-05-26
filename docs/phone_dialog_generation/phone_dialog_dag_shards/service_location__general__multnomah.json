@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__general__multnomah",
   "kind": "service_location",
   "key": "general__multnomah",
-  "nodeCount": 81,
+  "nodeCount": 93,
   "nodes": [
     {
       "id": "phone_dialog_0000004#turn-2",
@@ -834,7 +834,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "The audio was unclear. Most important: call **911 now** for an ambulance. Say: \u201cI\u2019m in Multnomah County near Gresham, chest pain and shortness of breath.\u201d Can you repeat your exact location in one short sentence?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. The audio got unclear for a moment. Could you say one quick choice: do you want the fastest help number right now, or a safe-place option for tonight?"
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -2426,6 +2428,363 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002197#turn-1",
+      "scenarioId": "phone_dialog_0002197",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Hello? I can\u2019t hear great, so please talk slow. I\u2019m calling about my neighbor, she\u2019s 79, in Multnomah County, and I don\u2019t think she\u2019s been fed right.",
+      "normalizedQuery": "hello hear great so please talk slow calling neighbor she 79 multnomah county don think been fed right",
+      "voiceResponse": "Yes. I hear you. I will speak slowly. You are worried your 79-year-old neighbor in Multnomah County may not be getting fed right. You are worried she may not be getting fed right. If she is in immediate danger right now, call 911 now. I can connect you to a live specialist to report possible elder neglect and get help. Is your neighbor in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:df6f05609bb7717a",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I hear you. I will speak slowly. You are worried your 79-year-old neighbor in Multnomah County may not be getting fed right. You are worried she may not be getting fed right. If she is in immediate danger right now, call 911 now. I can connect you to a live specialist to report possible elder neglect and get help. Is your neighbor in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002197#turn-3",
+      "scenarioId": "phone_dialog_0002197",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Her elevator has been broken for days, she uses a walker, and she can\u2019t get down the stairs, so she\u2019s stuck alone in that apartment.",
+      "normalizedQuery": "hello hear great so please talk slow calling neighbor she 79 multnomah county don think been fed right breathing awake now yes weak shaky missed her heart pills yesterday because nobody brought them up elevator has broken days uses walker down stairs stuck alone apartment",
+      "voiceResponse": "Thank you. I hear you. She is stuck upstairs, alone, with a walker. She is stuck upstairs, alone, with a walker. That is a serious safety risk. If she has chest pain, trouble breathing, faints, or gets suddenly worse, call 911 now. I can connect you to a live elder safety specialist in Multnomah County right now. Is she out of food or medicine today?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. She is stuck upstairs, alone, with a walker. She is stuck upstairs, alone, with a walker. That is a serious safety risk. If she has chest pain, trouble breathing, faints, or gets suddenly worse, call 911 now. I can connect you to a live elder safety specialist in Multnomah County right now. Is she out of food or medicine today?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. You did the right thing. First, are you safe to sit down right now where people can see you? If your dizziness gets worse, you feel faint, or chest pain starts, call 911 now. Since you\u2019re near downtown Portland, I can connect you to a live 211 specialist in Multnomah County to stay with you and help right away.",
+        "I\u2019m here with you. You got too hot, and now you feel dizzy and shaky. You got too hot, and now you feel dizzy and shaky. First, safety check: if you might pass out, have chest pain, or trouble breathing, call 911 now. Call 9-1-1 now. Are you alone right now?",
+        "Thank you for calling. I\u2019m glad you called. First, is she in immediate danger right now, like no heat, no food, or a medical crisis? If yes, call **9-1-1** now. Call **9-1-1** now. If not, I can help you make a neglect report in Multnomah County and request a welfare check.",
+        "Yes, I hear you. I will go slow. I will go slow. First, a quick safety check: is your mom having trouble breathing, chest pain, a bad fall, or not waking up right now? If yes, call 9-1-1 now. That is 9-1-1. If no, I can help with Multnomah County support next."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002218#turn-1",
+      "scenarioId": "phone_dialog_0002218",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hello? Can you hear me? I\u2019m in Multnomah County, out by 82nd, and my insulin is gone.",
+      "normalizedQuery": "hello hear multnomah county by 82nd insulin gone",
+      "voiceResponse": "Yes, I hear you. First step: if you feel weak, confused, vomiting, or very thirsty right now, call 911 now for urgent medical help. Quick safety check: are you feeling any of those symptoms right now? I don\u2019t have a confirmed insulin pickup line in the info I can see, but I can keep helping you find the fastest local option on 82nd.",
+      "evidenceDocIds": [
+        "service:01fa99fed3711557",
+        "service:15571749aff504f0",
+        "service:99e79e74de65a168",
+        "service:ddefbb40f88f4e21",
+        "service:e4488b03bff9c85e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. First step: if you feel weak, confused, vomiting, or very thirsty right now, call 911 now for urgent medical help. Quick safety check: are you feeling any of those symptoms right now? I don\u2019t have a confirmed insulin pickup line in the info I can see, but I can keep helping you find the fastest local option on 82nd.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. You did the right thing. First, are you safe to sit down right now where people can see you? If your dizziness gets worse, you feel faint, or chest pain starts, call 911 now. Since you\u2019re near downtown Portland, I can connect you to a live 211 specialist in Multnomah County to stay with you and help right away.",
+        "I\u2019m here with you. You got too hot, and now you feel dizzy and shaky. You got too hot, and now you feel dizzy and shaky. First, safety check: if you might pass out, have chest pain, or trouble breathing, call 911 now. Call 9-1-1 now. Are you alone right now?",
+        "Thank you for calling. I\u2019m glad you called. First, is she in immediate danger right now, like no heat, no food, or a medical crisis? If yes, call **9-1-1** now. Call **9-1-1** now. If not, I can help you make a neglect report in Multnomah County and request a welfare check.",
+        "Yes, I hear you. I will go slow. I will go slow. First, a quick safety check: is your mom having trouble breathing, chest pain, a bad fall, or not waking up right now? If yes, call 9-1-1 now. That is 9-1-1. If no, I can help with Multnomah County support next."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002238#turn-1",
+      "scenarioId": "phone_dialog_0002238",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m calling from Multnomah County about my older brother, he\u2019s disabled and stuck upstairs with no working elevator, and I\u2019m really worried this is neglect.",
+      "normalizedQuery": "hi calling from multnomah county older brother he disabled stuck upstairs no working elevator really worried this neglect",
+      "voiceResponse": "I hear you. He is disabled, upstairs, and the elevator is not working. I hear you. First, safety check. Is he in immediate danger right now, like chest pain, trouble breathing, no heat, or no way to get food, water, or medicine? If yes, call 911 now. If not immediate, I can help you report possible neglect and find urgent county support. What is his exact address?",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:df6f05609bb7717a",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:f064091646bc9755",
+        "page:bafkreifarmfsckrmtjvywdqqf2zpzxjendyfrvequy3746jpg7xl3gnofi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. He is disabled, upstairs, and the elevator is not working. I hear you. First, safety check. Is he in immediate danger right now, like chest pain, trouble breathing, no heat, or no way to get food, water, or medicine? If yes, call 911 now. If not immediate, I can help you report possible neglect and find urgent county support. What is his exact address?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. You did the right thing. First, are you safe to sit down right now where people can see you? If your dizziness gets worse, you feel faint, or chest pain starts, call 911 now. Since you\u2019re near downtown Portland, I can connect you to a live 211 specialist in Multnomah County to stay with you and help right away.",
+        "I\u2019m here with you. You got too hot, and now you feel dizzy and shaky. You got too hot, and now you feel dizzy and shaky. First, safety check: if you might pass out, have chest pain, or trouble breathing, call 911 now. Call 9-1-1 now. Are you alone right now?",
+        "Thank you for calling. I\u2019m glad you called. First, is she in immediate danger right now, like no heat, no food, or a medical crisis? If yes, call **9-1-1** now. Call **9-1-1** now. If not, I can help you make a neglect report in Multnomah County and request a welfare check.",
+        "Yes, I hear you. I will go slow. I will go slow. First, a quick safety check: is your mom having trouble breathing, chest pain, a bad fall, or not waking up right now? If yes, call 9-1-1 now. That is 9-1-1. If no, I can help with Multnomah County support next."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002304#turn-1",
+      "scenarioId": "phone_dialog_0002304",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Multnomah County, near Gresham, and I got kicked out of where I was staying last night.",
+      "normalizedQuery": "hi multnomah county gresham got kicked was staying last night",
+      "voiceResponse": "Call 503, 673, 8500. That is Oregon DHS Gresham Self-Sufficiency. I\u2019ll repeat: 503, 673, 8500. If you can travel in Gresham: 635 Southeast 223rd Avenue, Suite 102, Gresham, Oregon 97030. If you feel in immediate danger or cannot breathe, call 911 now.",
+      "evidenceDocIds": [
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036",
+        "service:df6f05609bb7717a",
+        "service:d7abe58ca7495460",
+        "service:17f85caae2094027"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 503, 673, 8500. That is Oregon DHS Gresham Self-Sufficiency. I\u2019ll repeat: 503, 673, 8500. If you can travel in Gresham: 635 Southeast 223rd Avenue, Suite 102, Gresham, Oregon 97030. If you feel in immediate danger or cannot breathe, call 911 now.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002304#turn-2",
+      "scenarioId": "phone_dialog_0002304",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "My insulin bag is gone, I think it was stolen at the bus stop, and I\u2019m starting to feel really shaky.",
+      "normalizedQuery": "hi multnomah county gresham got kicked was staying last night insulin bag gone think it stolen at bus stop starting feel really shaky",
+      "voiceResponse": "First, please call 9-1-1 now. You\u2019re shaky without insulin, and that can be an emergency. If speaking is hard, show your phone to someone nearby and point to 9-1-1. I\u2019ll repeat: 9-1-1. After emergency help is on the way, call 503, 673, 8500 for shelter and support.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey",
+        "page:bafkreihqdih5hb3qfoh7fp2soi6tbjxrnkp5lnw2j64chqumtvjoh6mfkm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, please call 9-1-1 now. You\u2019re shaky without insulin, and that can be an emergency. If speaking is hard, show your phone to someone nearby and point to 9-1-1. I\u2019ll repeat: 9-1-1. After emergency help is on the way, call 503, 673, 8500 for shelter and support.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. You did the right thing. First, are you safe to sit down right now where people can see you? If your dizziness gets worse, you feel faint, or chest pain starts, call 911 now. Since you\u2019re near downtown Portland, I can connect you to a live 211 specialist in Multnomah County to stay with you and help right away.",
+        "I\u2019m here with you. You got too hot, and now you feel dizzy and shaky. You got too hot, and now you feel dizzy and shaky. First, safety check: if you might pass out, have chest pain, or trouble breathing, call 911 now. Call 9-1-1 now. Are you alone right now?",
+        "Thank you for calling. I\u2019m glad you called. First, is she in immediate danger right now, like no heat, no food, or a medical crisis? If yes, call **9-1-1** now. Call **9-1-1** now. If not, I can help you make a neglect report in Multnomah County and request a welfare check.",
+        "Yes, I hear you. I will go slow. I will go slow. First, a quick safety check: is your mom having trouble breathing, chest pain, a bad fall, or not waking up right now? If yes, call 9-1-1 now. That is 9-1-1. If no, I can help with Multnomah County support next."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002304#turn-3",
+      "scenarioId": "phone_dialog_0002304",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I can\u2019t hear great on this phone, can you say the number slow in chunks?",
+      "normalizedQuery": "hi multnomah county gresham got kicked was staying last night insulin bag gone think it stolen at bus stop starting feel really shaky sorry hear great on this phone say number slow chunks",
+      "voiceResponse": "First step: call 9-1-1 now. I\u2019ll repeat: 9-1-1. After emergency help is on the way, call 503, 673, 8500. The number is 503, 673, 8500. I\u2019ll repeat: 503, 673, 8500.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey",
+        "page:bafkreihqdih5hb3qfoh7fp2soi6tbjxrnkp5lnw2j64chqumtvjoh6mfkm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call 9-1-1 now. I\u2019ll repeat: 9-1-1. After emergency help is on the way, call 503, 673, 8500. The number is 503, 673, 8500. I\u2019ll repeat: 503, 673, 8500.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002319#turn-2",
+      "scenarioId": "phone_dialog_0002319",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m a veteran, I got nowhere to sleep tonight, I\u2019m in Multnomah County, near downtown Portland, and I can\u2019t do this again.",
+      "normalizedQuery": "veteran veterans va got nowhere sleep tonight multnomah county downtown portland this again",
+      "voiceResponse": "I hear you, and I\u2019m glad you said it. If you might hurt yourself, or you\u2019re in immediate danger, call 911 right now. I\u2019m connecting you to a live person now to get you tonight shelter help in Multnomah County. While we connect, call this veteran line: The number is 503, 721, 7804.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "service:9b872ce46b837ac3",
+        "service:031bfb20ce232bc2",
+        "page:bafkreif5f7gkgq2fypzmdyygt5hwbccut6v6xywpckxlmqbmtnsivwbnbe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you said it. If you might hurt yourself, or you\u2019re in immediate danger, call 911 right now. I\u2019m connecting you to a live person now to get you tonight shelter help in Multnomah County. While we connect, call this veteran line: The number is 503, 721, 7804.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002319#turn-3",
+      "scenarioId": "phone_dialog_0002319",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what did you say? The name of the place? Can you say it slower, I missed it.",
+      "normalizedQuery": "hi sorry there people yelling here barely hear freaking veteran veterans va got nowhere sleep tonight multnomah county downtown portland this again wait did say name place it slower missed",
+      "voiceResponse": "I didn\u2019t give a place name yet. I\u2019m connecting you to a live person now for tonight\u2019s shelter help. Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreif5f7gkgq2fypzmdyygt5hwbccut6v6xywpckxlmqbmtnsivwbnbe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I didn\u2019t give a place name yet. I\u2019m connecting you to a live person now for tonight\u2019s shelter help. Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002319#turn-4",
+      "scenarioId": "phone_dialog_0002319",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I keep crying, I\u2019m sorry, my thoughts are all over, I just need somewhere safe that takes vets.",
+      "normalizedQuery": "hi sorry there people yelling here barely hear freaking veteran veterans va got nowhere sleep tonight multnomah county downtown portland this again wait did say name place it slower missed keep crying thoughts all over just somewhere safe takes vets",
+      "voiceResponse": "You don\u2019t need to apologize. You deserve a safe place tonight. I\u2019m staying with you while we connect to a live person for veteran shelter in Multnomah County. If you might hurt yourself or you feel in immediate danger, call 911 now. Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreif5f7gkgq2fypzmdyygt5hwbccut6v6xywpckxlmqbmtnsivwbnbe",
+        "page:bafkreif6oq25dl3ub76e2er5nqlj7b5thgpddlhjgo5bifvy7mhgs36zuq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize. You deserve a safe place tonight. I\u2019m staying with you while we connect to a live person for veteran shelter in Multnomah County. If you might hurt yourself or you feel in immediate danger, call 911 now. Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002319#turn-5",
+      "scenarioId": "phone_dialog_0002319",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hold on, bus is pulling up\u2014hello? If you gave a number I didn\u2019t catch it, can you repeat it twice?",
+      "normalizedQuery": "veteran veterans va got nowhere sleep tonight multnomah county downtown portland this again wait did say name place it slower missed keep crying sorry thoughts all over just somewhere safe takes vets hold on bus pulling up hello if gave number didn catch repeat twice",
+      "voiceResponse": "Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif5f7gkgq2fypzmdyygt5hwbccut6v6xywpckxlmqbmtnsivwbnbe",
+        "page:bafkreif6oq25dl3ub76e2er5nqlj7b5thgpddlhjgo5bifvy7mhgs36zuq",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call 503, 721, 7804. I\u2019ll repeat: 503, 721, 7804.",
+      "voiceResponseAlternatives": [
+        "There wasn\u2019t one specific place name yet. I said I can connect you to a live 211 specialist to find an open shelter for tonight in Multnomah County. Also, just to repeat clearly: emergency severe weather shelters are not open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open.",
+        "You\u2019re okay, I\u2019ll say it slower. There isn\u2019t a street name yet. For tonight in Multnomah County: severe-weather emergency shelters are **not** open. What **is** open: year-round shelters, overnight-only shelters, and daytime drop-in centers. If you feel unsafe or too cold right now, call 9-1-1.",
+        "Totally okay, I\u2019ll say just that part slowly. First, call **2-1-1**. Then say: **\u201cI\u2019m in Multnomah County, Portland, and my child and I need food tonight.\u201d** If the call drops, call **2-1-1** back right away. If there\u2019s immediate danger, call **9-1-1**.",
+        "Of course. You\u2019re doing great. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. If you feel you might act on those thoughts, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002336#turn-2",
+      "scenarioId": "phone_dialog_0002336",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Multnomah County... sorry, I\u2019m crying... my ex keeps showing up and texting threats, and I\u2019m scared to go back to my apartment tonight.",
+      "normalizedQuery": "hi um on coworker phone it at like two percent give most important number first case this drops multnomah county sorry crying ex keeps showing up texting threats scared go back apartment tonight",
+      "voiceResponse": "I\u2019m here with you. The audio got unclear for a moment. Could you say one quick choice: do you want the fastest help number right now, or a safe-place option for tonight?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:df6f05609bb7717a",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. The audio got unclear for a moment. Could you say one quick choice: do you want the fastest help number right now, or a safe-place option for tonight?",
+      "voiceResponseAlternatives": [
+        "The audio was unclear. Most important: call **911 now** for an ambulance. Say: \u201cI\u2019m in Multnomah County near Gresham, chest pain and shortness of breath.\u201d Can you repeat your exact location in one short sentence?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -2896,6 +3255,78 @@
       "to": "phone_dialog_0002092#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002197#turn-1",
+      "to": "phone_dialog_0002197#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002197#turn-3",
+      "to": "phone_dialog_0002197#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002218#turn-1",
+      "to": "phone_dialog_0002218#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002238#turn-1",
+      "to": "phone_dialog_0002238#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002304#turn-1",
+      "to": "phone_dialog_0002304#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002304#turn-2",
+      "to": "phone_dialog_0002304#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002304#turn-3",
+      "to": "phone_dialog_0002304#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002319#turn-2",
+      "to": "phone_dialog_0002319#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002319#turn-3",
+      "to": "phone_dialog_0002319#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002319#turn-4",
+      "to": "phone_dialog_0002319#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002319#turn-5",
+      "to": "phone_dialog_0002319#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002336#turn-2",
+      "to": "phone_dialog_0002336#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

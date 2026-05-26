@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__family__bend",
   "kind": "service_location",
   "key": "family__bend",
-  "nodeCount": 41,
+  "nodeCount": 44,
   "nodes": [
     {
       "id": "phone_dialog_0000098#turn-1",
@@ -1214,6 +1214,96 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002261#turn-3",
+      "scenarioId": "phone_dialog_0002261",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I talk over people when I can\u2019t hear well. I\u2019m in Bend, and I need help finding child care for my little boy while I work.",
+      "normalizedQuery": "sorry talk over people when hear well bend finding child care little boy while work",
+      "voiceResponse": "Yes. I can help with child care. In Bend, call 211info for free child care referrals and family support. Call 211. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Do you want infant care, preschool, or after-school care?",
+      "evidenceDocIds": [
+        "service:604454602aa57dcf",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreievi2bqmxgvvmf46lwqqw2xzr3ff6amq5on2qapk7e3mtaw3to6cq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with child care. In Bend, call 211info for free child care referrals and family support. Call 211. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Do you want infant care, preschool, or after-school care?",
+      "voiceResponseAlternatives": [
+        "First step: call Lane County Diaper Bank now at **5-4-1, 2-2-1, 0-8-2-4**. They provide diapers and wipes, and their listed hours are Monday to Friday, 8 a.m. to 5 p.m. Address is **3050 Game Farm Road, Springfield**. Eligibility says OHP, WIC, or SNAP recipients. If that does not work, second option is Emergency Diaper Closet at **5-4-1, 8-6-4, 0-7-7-6**, in Grants Pass.",
+        "Next step: please don\u2019t travel yet until we confirm the exact street. I\u2019m sorry\u2014I can repeat the city as **Springfield**, but I do **not** have a confirmed \u201cThird\u201d or \u201cThirteenth\u201d in the evidence I can rely on right now.",
+        "First step: please call **2-1-1** now. I need to correct myself: I can\u2019t verify the longer diaper-bank number from the evidence I have in front of me. Again, slowly: **2-1-1**. If you want, I can stay with you while you dial **2-1-1**.",
+        "You\u2019re not all over the place, and we can keep this simple. I found diaper help options in Oregon right now: Lane County Diaper Bank in Springfield, phone **5-4-1, 2-2-1, 0-8-2-4** (OHP, WIC, or SNAP; no documents needed). A Family Place in McMinnville, phone **5-0-3, 4-7-2, 4-0-2-0** or **9-7-1, 2-4-1, 9-2-5-8** (up to 15 diapers per child, supply dependent). If you want, I can help you with a 20-second call script."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002261#turn-4",
+      "scenarioId": "phone_dialog_0002261",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that place name slower? I heard 'Ben' or 'Bend'? I\u2019m on the east side here.",
+      "normalizedQuery": "hello static can't re cutting uh kid inaudible sorry wait say again heard 'food' maybe no said child something hold on talk over people when hear well bend finding care little boy while work repeat place name slower 'ben' 'bend' east side here",
+      "voiceResponse": "Yes. The place name is Bend. Bend, Oregon. I\u2019ll repeat: Bend. For child care help there, call 211. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The place name is Bend. Bend, Oregon. I\u2019ll repeat: Bend. For child care help there, call 211. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002261#turn-5",
+      "scenarioId": "phone_dialog_0002261",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And if there\u2019s a number, please do it one digit at a time, I miss parts when the line gets noisy.",
+      "normalizedQuery": "wait say again heard 'food' maybe no said child something hold on sorry talk over people when hear well bend finding care little boy while work repeat place name slower 'ben' 'bend' east side here if there number please it one digit at time miss parts line gets noisy",
+      "voiceResponse": "Yes. I can do that. I will say each digit slowly. Call 211 for child care help in Bend. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Do you need infant care, preschool, or after-school care?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can do that. I will say each digit slowly. Call 211 for child care help in Bend. The number is 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Do you need infant care, preschool, or after-school care?",
+      "voiceResponseAlternatives": [
+        "First step: call Lane County Diaper Bank now at **5-4-1, 2-2-1, 0-8-2-4**. They provide diapers and wipes, and their listed hours are Monday to Friday, 8 a.m. to 5 p.m. Address is **3050 Game Farm Road, Springfield**. Eligibility says OHP, WIC, or SNAP recipients. If that does not work, second option is Emergency Diaper Closet at **5-4-1, 8-6-4, 0-7-7-6**, in Grants Pass.",
+        "Next step: please don\u2019t travel yet until we confirm the exact street. I\u2019m sorry\u2014I can repeat the city as **Springfield**, but I do **not** have a confirmed \u201cThird\u201d or \u201cThirteenth\u201d in the evidence I can rely on right now.",
+        "First step: please call **2-1-1** now. I need to correct myself: I can\u2019t verify the longer diaper-bank number from the evidence I have in front of me. Again, slowly: **2-1-1**. If you want, I can stay with you while you dial **2-1-1**.",
+        "You\u2019re not all over the place, and we can keep this simple. I found diaper help options in Oregon right now: Lane County Diaper Bank in Springfield, phone **5-4-1, 2-2-1, 0-8-2-4** (OHP, WIC, or SNAP; no documents needed). A Family Place in McMinnville, phone **5-0-3, 4-7-2, 4-0-2-0** or **9-7-1, 2-4-1, 9-2-5-8** (up to 15 diapers per child, supply dependent). If you want, I can help you with a 20-second call script."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1426,6 +1516,24 @@
       "to": "phone_dialog_0001946#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002261#turn-3",
+      "to": "phone_dialog_0002261#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002261#turn-4",
+      "to": "phone_dialog_0002261#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002261#turn-5",
+      "to": "phone_dialog_0002261#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
     }
   ]
 }

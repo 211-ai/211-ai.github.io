@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__work__lane_county",
   "kind": "service_location",
   "key": "work__lane_county",
-  "nodeCount": 23,
+  "nodeCount": 24,
   "nodes": [
     {
       "id": "phone_dialog_0000207#turn-1",
@@ -675,6 +675,36 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002271#turn-4",
+      "scenarioId": "phone_dialog_0002271",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that number slower? Sorry, a bus just went by and I only caught part of it.",
+      "normalizedQuery": "hi sorry talk long this private someone checks phone so please keep it simple lane county eugene at bus stop right now loud here might miss parts they took id work papers being made go men money scared ll notice if gone too repeat number slower just went by only caught part",
+      "voiceResponse": "Of course. I\u2019ll repeat: 888, 532, 0550. Call 888, 532, 0550.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll repeat: 888, 532, 0550. Call 888, 532, 0550.",
+      "voiceResponseAlternatives": [
+        "Absolutely. The name is **All Star Labor and Staffing**. Number, slowly: **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**. Address: **1900 B West 7th Avenue, Eugene**.",
+        "Yes, of course. I didn\u2019t give a specific program name. I said I can connect you to a live 211 specialist for employment resources in Lane County. If we disconnect, call **2-1-1** \u2014 **two, one, one** \u2014 and say, \u201cemployment resources for my nephew in Lane County.\u201d",
+        "Yes. The advocacy number is **5 4 1, 7 7 9, 4 3 5 7**. I\u2019ll say it once more: **5 4 1, 7 7 9, 4 3 5 7**.",
+        "Of course. The middle part to say is: \u201cI\u2019m calling for my sister in Lane County. She needs safe, quiet contact options because her ex monitors calls and shows up at work.\u201d If needed, the number again is **541\u2026322\u20268768**, extension **13**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -815,6 +845,12 @@
       "to": "phone_dialog_0002052#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "template_guided_fallback->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002271#turn-4",
+      "to": "phone_dialog_0002271#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

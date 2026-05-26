@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__shelter__oregon_city",
   "kind": "service_location",
   "key": "shelter__oregon_city",
-  "nodeCount": 122,
+  "nodeCount": 129,
   "nodes": [
     {
       "id": "phone_dialog_0000019#turn-4",
@@ -1096,7 +1096,8 @@
       "voiceResponseAlternatives": [
         "I\u2019m sorry, the audio is breaking up and I missed part of that. If you or your child might be in immediate danger, call 911 right now. Can you repeat just this: do you want a youth day center near Oregon City, or immediate emotional support first?",
         "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first.",
-        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly."
+        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly.",
+        "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -2371,7 +2372,8 @@
       "voiceResponseAlternatives": [
         "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
         "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first.",
-        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly."
+        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly.",
+        "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?"
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
@@ -2400,7 +2402,8 @@
       "voiceResponseAlternatives": [
         "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
         "I\u2019m sorry, the audio is breaking up and I missed part of that. If you or your child might be in immediate danger, call 911 right now. Can you repeat just this: do you want a youth day center near Oregon City, or immediate emotional support first?",
-        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly."
+        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly.",
+        "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?"
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
@@ -2639,7 +2642,8 @@
       "voiceResponseAlternatives": [
         "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
         "I\u2019m sorry, the audio is breaking up and I missed part of that. If you or your child might be in immediate danger, call 911 right now. Can you repeat just this: do you want a youth day center near Oregon City, or immediate emotional support first?",
-        "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first."
+        "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first.",
+        "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "emotionally_overloaded",
@@ -3634,6 +3638,216 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002225#turn-3",
+      "scenarioId": "phone_dialog_0002225",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Right now I\u2019m by the transit center in Oregon City, I\u2019m okay this minute, just scared to go back there.",
+      "normalizedQuery": "right now by transit center oregon city okay this minute just scared go back there",
+      "voiceResponse": "I\u2019m glad you\u2019re safe right this minute, and it makes sense you\u2019re scared. Don\u2019t go back there. Stay in a lit spot at the transit center, near other people, and keep your phone charged if you can. If those men show up again or you feel unsafe, call 911 right away. I can connect you to a live 211 specialist now to find a safe place for tonight near Oregon City.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you\u2019re safe right this minute, and it makes sense you\u2019re scared. Don\u2019t go back there. Stay in a lit spot at the transit center, near other people, and keep your phone charged if you can. If those men show up again or you feel unsafe, call 911 right away. I can connect you to a live 211 specialist now to find a safe place for tonight near Oregon City.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002225#turn-6",
+      "scenarioId": "phone_dialog_0002225",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you tell me the closest safe place and repeat the address slow so I don\u2019t mess it up?",
+      "normalizedQuery": "right now by transit center oregon city okay this minute just scared go back there phone at like three percent so somewhere warm tonight warming tried one shelter shelters homeless overnight earlier was fighting don feel safe sleeping tell closest place repeat address slow mess it up",
+      "voiceResponse": "You\u2019re doing the right thing, and I hear you. Closest safe place I have is the overnight warming shelter in La Grande. I\u2019ll say the address slowly: **501 3rd Street, La Grande, Oregon, 97850.** I\u2019ll repeat: **501 3rd Street, La Grande, Oregon, 97850.**",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I hear you. Closest safe place I have is the overnight warming shelter in La Grande. I\u2019ll say the address slowly: **501 3rd Street, La Grande, Oregon, 97850.** I\u2019ll repeat: **501 3rd Street, La Grande, Oregon, 97850.**",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002247#turn-4",
+      "scenarioId": "phone_dialog_0002247",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I was trying to get counseling, maybe meds, but then I started walking and now I\u2019m by the bridge, I can\u2019t line up the timeline right.",
+      "normalizedQuery": "hi sorry know this sounds weird oregon city um mental health think neighbors hear through outlets no wait hurt don it just voices loud they keep saying trust clinic medical so missing re asking repeat said safe shelter shelters homeless overnight warming there traffic phone cutting was trying counseling maybe meds then started walking now by bridge line up timeline right",
+      "voiceResponse": "That sounds disorienting, and I\u2019m glad you told me. Let\u2019s do one steady step right now: please move to a safer spot away from the bridge edge, and tell me when you\u2019ve stopped. Then I\u2019ll help you connect with 211info for mental health support in Oregon City, step by step, including counseling and medication options. You don\u2019t need the full timeline right now. Just your current location and whether you feel safe in this moment.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That sounds disorienting, and I\u2019m glad you told me. Let\u2019s do one steady step right now: please move to a safer spot away from the bridge edge, and tell me when you\u2019ve stopped. Then I\u2019ll help you connect with 211info for mental health support in Oregon City, step by step, including counseling and medication options. You don\u2019t need the full timeline right now. Just your current location and whether you feel safe in this moment.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002275#turn-4",
+      "scenarioId": "phone_dialog_0002275",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what was the number again? I missed it when that bus came by.",
+      "normalizedQuery": "hello sorry hear great here at bus stop there traffic oregon city getting really dizzy this heat utility utilities electric feel weak kind mixed up like might pass talk slow tell if should sit down now cooling center think forgot street said repeat address one more time slower wait was number again missed it when came by",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. The number is 503, 228, 6322. I\u2019ll repeat: 503, 228, 6322. If you feel like you might pass out, call 911 now. Call 911 now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. The number is 503, 228, 6322. I\u2019ll repeat: 503, 228, 6322. If you feel like you might pass out, call 911 now. Call 911 now.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002344#turn-1",
+      "scenarioId": "phone_dialog_0002344",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, it\u2019s loud in here... I\u2019m in Oregon City, near the shelter lobby, and I need help finding a youth day center for my son.",
+      "normalizedQuery": "hi sorry it loud here oregon city shelter shelters homeless overnight warming lobby finding youth day center son",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?",
+      "evidenceDocIds": [
+        "service:bab9f596e07026df",
+        "service:a110aba06fd372f6",
+        "service:9ba6422a5084e69c",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. The audio was unclear, and I want to get this right. Are you asking for a youth day center, or an overnight shelter option right now?",
+      "voiceResponseAlternatives": [
+        "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
+        "I\u2019m sorry, the audio is breaking up and I missed part of that. If you or your child might be in immediate danger, call 911 right now. Can you repeat just this: do you want a youth day center near Oregon City, or immediate emotional support first?",
+        "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first.",
+        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002344#turn-2",
+      "scenarioId": "phone_dialog_0002344",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just went by and I missed most of it.",
+      "normalizedQuery": "hi sorry it loud here oregon city shelter shelters homeless overnight warming lobby finding youth day center son say again bus just went by missed most",
+      "voiceResponse": "Of course, and you\u2019re doing great in a noisy spot. I asked: are you looking for a youth day center, or an overnight shelter right now? Just those two options: youth day center, or overnight shelter.",
+      "evidenceDocIds": [
+        "service:bab9f596e07026df",
+        "service:a110aba06fd372f6",
+        "service:9ba6422a5084e69c",
+        "service:5ded755b33454184",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and you\u2019re doing great in a noisy spot. I asked: are you looking for a youth day center, or an overnight shelter right now? Just those two options: youth day center, or overnight shelter.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002344#turn-3",
+      "scenarioId": "phone_dialog_0002344",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m trying to hold it together, but I lost my sister last month and some days I just... I don\u2019t really want to be here.",
+      "normalizedQuery": "hi sorry it loud here oregon city shelter shelters homeless overnight warming lobby finding youth day center son say again bus just went by missed most trying hold together lost sister last month some days don really want be",
+      "voiceResponse": "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. I want to help you stay safe first. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bab9f596e07026df",
+        "service:a110aba06fd372f6",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. I want to help you stay safe first. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
+        "I\u2019m sorry, the audio is breaking up and I missed part of that. If you or your child might be in immediate danger, call 911 right now. Can you repeat just this: do you want a youth day center near Oregon City, or immediate emotional support first?",
+        "I\u2019m hearing you, and this is a safety risk. If you might act on these thoughts, call 911 now. Your audio is breaking up, so say just one word: \u201ccrisis\u201d if you want me to connect you to immediate crisis support right now, or \u201ccenter\u201d if you want youth day center options first.",
+        "I\u2019m here with you. I can help find a cooling center nearby. Your audio was a little unclear. Please repeat just your ZIP code, slowly."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -4296,6 +4510,42 @@
       "to": "phone_dialog_0002088#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002225#turn-3",
+      "to": "phone_dialog_0002225#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002247#turn-4",
+      "to": "phone_dialog_0002247#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002275#turn-4",
+      "to": "phone_dialog_0002275#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002344#turn-1",
+      "to": "phone_dialog_0002344#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002344#turn-2",
+      "to": "phone_dialog_0002344#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002344#turn-3",
+      "to": "phone_dialog_0002344#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

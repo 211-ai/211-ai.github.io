@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__oregon_city",
   "kind": "service_location",
   "key": "food__oregon_city",
-  "nodeCount": 41,
+  "nodeCount": 46,
   "nodes": [
     {
       "id": "phone_dialog_0000136#turn-1",
@@ -1229,6 +1229,151 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002191#turn-3",
+      "scenarioId": "phone_dialog_0002191",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I'm in Oregon City, I keep mixing up addresses, I just... I haven't eaten since yesterday.",
+      "normalizedQuery": "hi um can't really think straight right now i'm sorry crying food pantry meal meals groceries like slow down little missed part there's people yelling hallway hear good oregon city keep mixing up addresses just haven't eaten since yesterday",
+      "voiceResponse": "I\u2019m sorry, the audio was unclear. I heard you\u2019re in Oregon City and haven\u2019t eaten since yesterday. Do you want me to repeat the phone number, or give the address?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:edd660b46aff2c3f",
+        "service:b3d7aa7d9150b9d1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the audio was unclear. I heard you\u2019re in Oregon City and haven\u2019t eaten since yesterday. Do you want me to repeat the phone number, or give the address?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002191#turn-4",
+      "scenarioId": "phone_dialog_0002191",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that number? Please say it again, like really slow, my head is spinning.",
+      "normalizedQuery": "hi um can't really think straight right now i'm sorry crying food pantry meal meals groceries like slow down little missed part there's people yelling hallway hear good oregon city keep mixing up addresses just haven't eaten since yesterday wait was number please say it again head spinning",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Call 503, 771, 7914. I\u2019ll repeat: 503, 771, 7914.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Call 503, 771, 7914. I\u2019ll repeat: 503, 771, 7914.",
+      "voiceResponseAlternatives": [
+        "Of course. You\u2019re doing great. Here it is slowly: **Community Meal**, at **529 Molalla Avenue, Oregon City**. Phone number: **503 \u2026 383 \u2026 1834**. Again: **503 \u2026 383 \u2026 1834**. It\u2019s for adults **18 and older**, and **no documents are required**. Please call now to confirm today\u2019s meal time.",
+        "I don\u2019t have the street address in front of me right now. Fastest next step is to call and ask: \u201cWhat\u2019s your Oregon City street address?\u201d Number, slow: **5\u2026 0\u2026 3\u2026 7\u2026 7\u2026 1\u2026 7\u2026 9\u2026 1\u2026 4**. Backup: **5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 8\u2026 7\u2026 4\u2026 6\u2026 5**.",
+        "Yes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **3 6 6 3**. Again: **(503) 655-3663**.",
+        "Of course. The place name is **ANIMEALS**. I\u2019ll spell it slowly: **A-N-I-M-E-A-L-S**. That\u2019s \u201cANIMEALS,\u201d connected with Meals on Wheels recipients."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002191#turn-6",
+      "scenarioId": "phone_dialog_0002191",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I know I'm all over the place, I just need somewhere to eat tonight in Oregon City.",
+      "normalizedQuery": "i'm oregon city keep mixing up addresses just haven't eaten since yesterday wait was number please say it again like really slow head spinning don't have much battery left so if there's somewhere close walk community meals church dinner anything sorry know all over place eat tonight",
+      "voiceResponse": "You\u2019re not all over the place. You need food tonight in Oregon City, and I hear you. I\u2019m connecting you to a live 211 specialist now for the closest meal site. If the call drops, call 503, 771, 7914. If you feel too weak or unsafe right now, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not all over the place. You need food tonight in Oregon City, and I hear you. I\u2019m connecting you to a live 211 specialist now for the closest meal site. If the call drops, call 503, 771, 7914. If you feel too weak or unsafe right now, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a mess, you\u2019re doing the right thing by calling. In Oregon City, try **Community Meal** at **529 Molalla Avenue, Oregon City**. Phone number is **503\u2026 383\u2026 1834**. That\u2019s **503, 383, 1834**. It\u2019s for adults **18 and older**, and no documents are required. They serve meals twice a week, so call now to confirm today\u2019s meal time. If you want, I can stay with you while you dial.",
+        "I\u2019m so sorry about your dad. You don\u2019t have to explain anything there. Go to **Community Meal**, **529 Molalla Avenue, Oregon City**. They said **no documents are required**, and it\u2019s for adults **18 and older**. Call first to confirm today\u2019s meal time: **503 \u2026 383 \u2026 1834**. Again: **503 \u2026 383 \u2026 1834**. If you want, I can stay with you while you make the call.",
+        "First step: go to **Clackamas Service Center** and tell the front desk, \u201cI need food for me and my grandson tonight.\u201d If there\u2019s a line or confusion, call from outside: **5-0-3\u2026 7-7-1\u2026 7-9-1-4**. Backup: **5-0-3\u2026 2-2-8\u2026 7-4-6-5**. You can just ask what\u2019s available tonight and whether ID is needed.",
+        "You\u2019re okay, we can go slow. For Oregon City, I only have one listing: **ANIMEALS**, tied to **Meals on Wheels** recipients. Phone number is: **5-0-3, 6-5-5, 3-6-6-3**. Address is: **1-4-1-8-6 Fir Street, Suite 2-0-3, Oregon City**. If your dad gets Meals on Wheels, this could help right away. If not, I can get you to a live person to find same-day community meal sites nearby."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002300#turn-2",
+      "scenarioId": "phone_dialog_0002300",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Oregon City and they put a shutoff notice on my door, power goes today, I have food and my kid\u2019s medicine in the fridge.",
+      "normalizedQuery": "oregon city they put shutoff notice on door power goes have food pantry meal meals groceries kid medicine fridge",
+      "voiceResponse": "This is urgent. Main number: (541) 322-8768. I\u2019ll repeat: (541) 322-8768. Tell them your shutoff is today and your child has medicine that needs refrigeration. If your child\u2019s health is in immediate danger, call 911 now.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is urgent. Main number: (541) 322-8768. I\u2019ll repeat: (541) 322-8768. Tell them your shutoff is today and your child has medicine that needs refrigeration. If your child\u2019s health is in immediate danger, call 911 now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a mess, you\u2019re doing the right thing by calling. In Oregon City, try **Community Meal** at **529 Molalla Avenue, Oregon City**. Phone number is **503\u2026 383\u2026 1834**. That\u2019s **503, 383, 1834**. It\u2019s for adults **18 and older**, and no documents are required. They serve meals twice a week, so call now to confirm today\u2019s meal time. If you want, I can stay with you while you dial.",
+        "I\u2019m so sorry about your dad. You don\u2019t have to explain anything there. Go to **Community Meal**, **529 Molalla Avenue, Oregon City**. They said **no documents are required**, and it\u2019s for adults **18 and older**. Call first to confirm today\u2019s meal time: **503 \u2026 383 \u2026 1834**. Again: **503 \u2026 383 \u2026 1834**. If you want, I can stay with you while you make the call.",
+        "First step: go to **Clackamas Service Center** and tell the front desk, \u201cI need food for me and my grandson tonight.\u201d If there\u2019s a line or confusion, call from outside: **5-0-3\u2026 7-7-1\u2026 7-9-1-4**. Backup: **5-0-3\u2026 2-2-8\u2026 7-4-6-5**. You can just ask what\u2019s available tonight and whether ID is needed.",
+        "You\u2019re okay, we can go slow. For Oregon City, I only have one listing: **ANIMEALS**, tied to **Meals on Wheels** recipients. Phone number is: **5-0-3, 6-5-5, 3-6-6-3**. Address is: **1-4-1-8-6 Fir Street, Suite 2-0-3, Oregon City**. If your dad gets Meals on Wheels, this could help right away. If not, I can get you to a live person to find same-day community meal sites nearby."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002300#turn-5",
+      "scenarioId": "phone_dialog_0002300",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the number slower so I can write it down before this phone dies?",
+      "normalizedQuery": "oregon city they put shutoff notice on door power goes have food pantry meal meals groceries kid medicine fridge sorry say again couldn hear over traffic just most important live person line trying stay calm keep track emergency utility utilities heat electric right now website repeat number slower so write it down before this phone dies",
+      "voiceResponse": "The number is 888, 221, 7070. I\u2019ll repeat: 888, 221, 7070.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb",
+        "page:bafkreic5ljpiukze3p5aszi53vdaqobhzm6yufvjdqi3ykosdmbag3twgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The number is 888, 221, 7070. I\u2019ll repeat: 888, 221, 7070.",
+      "voiceResponseAlternatives": [
+        "Of course. You\u2019re doing great. Here it is slowly: **Community Meal**, at **529 Molalla Avenue, Oregon City**. Phone number: **503 \u2026 383 \u2026 1834**. Again: **503 \u2026 383 \u2026 1834**. It\u2019s for adults **18 and older**, and **no documents are required**. Please call now to confirm today\u2019s meal time.",
+        "I don\u2019t have the street address in front of me right now. Fastest next step is to call and ask: \u201cWhat\u2019s your Oregon City street address?\u201d Number, slow: **5\u2026 0\u2026 3\u2026 7\u2026 7\u2026 1\u2026 7\u2026 9\u2026 1\u2026 4**. Backup: **5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 8\u2026 7\u2026 4\u2026 6\u2026 5**.",
+        "Yes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **3 6 6 3**. Again: **(503) 655-3663**.",
+        "Of course. The place name is **ANIMEALS**. I\u2019ll spell it slowly: **A-N-I-M-E-A-L-S**. That\u2019s \u201cANIMEALS,\u201d connected with Meals on Wheels recipients."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1465,6 +1610,24 @@
       "to": "phone_dialog_0001904#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002191#turn-3",
+      "to": "phone_dialog_0002191#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002191#turn-4",
+      "to": "phone_dialog_0002191#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002300#turn-2",
+      "to": "phone_dialog_0002300#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

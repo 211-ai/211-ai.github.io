@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__clackamas",
   "kind": "service_location",
   "key": "food__clackamas",
-  "nodeCount": 46,
+  "nodeCount": 48,
   "nodes": [
     {
       "id": "phone_dialog_0000101#turn-3",
@@ -1375,6 +1375,61 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002183#turn-4",
+      "scenarioId": "phone_dialog_0002183",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "His building elevator is out and he uses a walker, so he can\u2019t safely get downstairs for groceries or appointments.",
+      "normalizedQuery": "hi calling dad clackamas sorry speak little louder having trouble hearing on this phone he 78 mostly alone found almost no food pantry meal meals groceries place again missed at least two yesterday if re asking immediate danger right second don think so weak confused his heart pills morning building elevator uses walker safely downstairs appointments",
+      "voiceResponse": "Thank you. I hear you. The elevator is out, and he cannot safely get downstairs with his walker. The elevator is out, and he cannot safely get downstairs with his walker. If he has chest pain, trouble breathing, or gets more confused, call 911 right now. For same-day food delivery options, call 503, 771, 7914. I\u2019ll repeat: 503, 771, 7914. Can someone stay with him today while we set this up?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:edd660b46aff2c3f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. The elevator is out, and he cannot safely get downstairs with his walker. The elevator is out, and he cannot safely get downstairs with his walker. If he has chest pain, trouble breathing, or gets more confused, call 911 right now. For same-day food delivery options, call 503, 771, 7914. I\u2019ll repeat: 503, 771, 7914. Can someone stay with him today while we set this up?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002332#turn-3",
+      "scenarioId": "phone_dialog_0002332",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m hard of hearing too, can you say that number slower? Like in chunks, please.",
+      "normalizedQuery": "hi calling dad clackamas he 78 on oxygen think being neglected his building yeah breathing okay right now no fire anything immediate hasn had real meal since yesterday missed heart pills this morning sorry hard hearing too say number slower like chunks please",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Call 9-1-1 now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Call 9-1-1 now. The number is 9, 1, 1. I\u2019ll repeat: 9, 1, 1.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+        "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+        "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know.",
+        "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1623,6 +1678,18 @@
       "to": "phone_dialog_0001995#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002183#turn-4",
+      "to": "phone_dialog_0002183#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002332#turn-3",
+      "to": "phone_dialog_0002332#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

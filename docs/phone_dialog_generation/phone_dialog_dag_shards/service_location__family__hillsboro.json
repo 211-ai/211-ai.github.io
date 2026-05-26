@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__family__hillsboro",
   "kind": "service_location",
   "key": "family__hillsboro",
-  "nodeCount": 36,
+  "nodeCount": 38,
   "nodes": [
     {
       "id": "phone_dialog_0000287#turn-1",
@@ -1074,6 +1074,66 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002241#turn-5",
+      "scenarioId": "phone_dialog_0002241",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Hillsboro, and I also really need diapers today, I\u2019m completely out.",
+      "normalizedQuery": "hillsboro also really diapers diaper baby completely",
+      "voiceResponse": "I hear how much you\u2019re carrying, and I\u2019m glad you said this. First, if you feel you might act on those scary thoughts, call **9, 1, 1** now. For diapers today in Hillsboro, call **2, 1, 1** and ask for a **live agent** to find same-day diaper banks near you. I\u2019ll repeat: **2, 1, 1**. If you can travel, one listed diaper bank is in Springfield: **5, 4, 1, 2, 2, 1, 0, 8, 2, 4**.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreihddsczo7vly3v4ueijogtqmx2gwi6qlqqeotzxsgnfszr6njkp3u",
+        "service:c196660a779416f8",
+        "service:25f3554514a1b499"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how much you\u2019re carrying, and I\u2019m glad you said this. First, if you feel you might act on those scary thoughts, call **9, 1, 1** now. For diapers today in Hillsboro, call **2, 1, 1** and ask for a **live agent** to find same-day diaper banks near you. I\u2019ll repeat: **2, 1, 1**. If you can travel, one listed diaper bank is in Springfield: **5, 4, 1, 2, 2, 1, 0, 8, 2, 4**.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019m here. I\u2019ll say that again, slowly. If your breathing gets worse, call `9 1 1` now. Call `9 1 1` now. One question: Is your breathing tight right now, or can you speak in full short sentences?",
+        "I\u2019m really glad you called. This sounds urgent, and your safety comes first. Please call **911 right now** for immediate medical help, especially since you\u2019re weak and can\u2019t get yourself to care. If you can, unlock your door and sit or lie down while you wait. I can stay with you while you call.",
+        "Absolutely. The number is **2-1-1**. One digit at a time: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. If you\u2019re in immediate medical danger, call **9-1-1**.",
+        "You\u2019re right, let\u2019s keep this practical and fast. Since your battery is low, best option is a live specialist right now who can give call-ready leads for today, not just websites. We can focus only on: overnight hours, drop-in, kindergarten age, trauma-informed, subsidy accepted, and current waitlist. If exact match isn\u2019t available, they\u2019ll still give closest options you can call immediately."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002241#turn-6",
+      "scenarioId": "phone_dialog_0002241",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "And my baby\u2019s been sleeping in the car seat because we don\u2019t have a crib yet, is there anywhere that can help with a safe place for her to sleep tonight?",
+      "normalizedQuery": "trying anything right now keep getting scared thoughts like might hurt myself drop baby when overwhelmed sorry say number slower outside there traffic didn catch middle part hillsboro also really diapers diaper completely been sleeping car seat because we don have crib yet anywhere safe place her sleep tonight",
+      "voiceResponse": "I\u2019m really glad you told me. You and your baby deserve a safe sleep spot tonight. Call 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Ask the live agent for same-night safe-sleep help in Hillsboro, including an emergency crib or pack-and-play. If your fear spikes or you might act on those thoughts, call 9, 1, 1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2df605d5503d1f52",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. You and your baby deserve a safe sleep spot tonight. Call 2, 1, 1. I\u2019ll repeat: 2, 1, 1. Ask the live agent for same-night safe-sleep help in Hillsboro, including an emergency crib or pack-and-play. If your fear spikes or you might act on those thoughts, call 9, 1, 1 right away.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019m here. I\u2019ll say that again, slowly. If your breathing gets worse, call `9 1 1` now. Call `9 1 1` now. One question: Is your breathing tight right now, or can you speak in full short sentences?",
+        "I\u2019m really glad you called. This sounds urgent, and your safety comes first. Please call **911 right now** for immediate medical help, especially since you\u2019re weak and can\u2019t get yourself to care. If you can, unlock your door and sit or lie down while you wait. I can stay with you while you call.",
+        "Absolutely. The number is **2-1-1**. One digit at a time: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. If you\u2019re in immediate medical danger, call **9-1-1**.",
+        "You\u2019re right, let\u2019s keep this practical and fast. Since your battery is low, best option is a live specialist right now who can give call-ready leads for today, not just websites. We can focus only on: overnight hours, drop-in, kindergarten age, trauma-informed, subsidy accepted, and current waitlist. If exact match isn\u2019t available, they\u2019ll still give closest options you can call immediately."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1266,6 +1326,12 @@
     {
       "from": "phone_dialog_0002114#turn-1",
       "to": "phone_dialog_0002114#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002241#turn-5",
+      "to": "phone_dialog_0002241#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

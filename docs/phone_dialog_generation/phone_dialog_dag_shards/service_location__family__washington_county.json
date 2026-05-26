@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__family__washington_county",
   "kind": "service_location",
   "key": "family__washington_county",
-  "nodeCount": 17,
+  "nodeCount": 21,
   "nodes": [
     {
       "id": "phone_dialog_0000125#turn-1",
@@ -511,6 +511,121 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002299#turn-1",
+      "scenarioId": "phone_dialog_0002299",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I\u2019m crying and I can barely think... I had my baby two weeks ago and I\u2019m in Washington County.",
+      "normalizedQuery": "hi sorry crying barely think had baby two weeks ago washington county",
+      "voiceResponse": "I\u2019m really glad you called, and I\u2019m sorry this is so hard right now. Your audio was unclear for a moment. Are you asking for Baby Promise child care help?",
+      "evidenceDocIds": [
+        "service:b7bf09e450197ec7",
+        "service:824341b52f6f4175",
+        "service:4b31fa08200eb48b",
+        "service:c3df1f7ad18b318a",
+        "service:a5a78310ac841807"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, and I\u2019m sorry this is so hard right now. Your audio was unclear for a moment. Are you asking for Baby Promise child care help?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002299#turn-4",
+      "scenarioId": "phone_dialog_0002299",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Also my baby fell asleep on the couch next to me earlier and I know that\u2019s not safe, I\u2019m just so exhausted.",
+      "normalizedQuery": "hi sorry crying barely think had baby two weeks ago washington county say slower bleeding more like soaking pad every hour it than yesterday feel shaky be honest this flash if hurt myself scared don want also fell asleep on couch next earlier know safe just so exhausted",
+      "voiceResponse": "You\u2019re not a bad mom, you\u2019re exhausted and overwhelmed, and I\u2019m really glad you told me. Right now, because of the bleeding, shakiness, and that scary self-harm thought, this is an emergency. Please call 911 now. Before you call, place your baby on their back in a clear crib or bassinet. Then stay where another adult can be with you both. I can stay on the line while you make the 911 call.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not a bad mom, you\u2019re exhausted and overwhelmed, and I\u2019m really glad you told me. Right now, because of the bleeding, shakiness, and that scary self-harm thought, this is an emergency. Please call 911 now. Before you call, place your baby on their back in a clear crib or bassinet. Then stay where another adult can be with you both. I can stay on the line while you make the 911 call.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002305#turn-1",
+      "scenarioId": "phone_dialog_0002305",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I'm calling for my sister, not me. She had the baby like two weeks ago and we're in Washington County.",
+      "normalizedQuery": "hi sorry i'm calling sister she had baby like two weeks ago we're washington county",
+      "voiceResponse": "You\u2019re doing the right thing calling for her, and I know this is a lot right now. Let\u2019s get a live specialist on the line who can help with postpartum support in Washington County. Call 360, 521, 6527. I\u2019ll repeat: 360, 521, 6527. Backup number: 971, 319, 9793.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:b7bf09e450197ec7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling for her, and I know this is a lot right now. Let\u2019s get a live specialist on the line who can help with postpartum support in Washington County. Call 360, 521, 6527. I\u2019ll repeat: 360, 521, 6527. Backup number: 971, 319, 9793.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002305#turn-2",
+      "scenarioId": "phone_dialog_0002305",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? She's crying nonstop and said she's scared she might do something bad if the baby won't stop screaming.",
+      "normalizedQuery": "hi sorry i'm calling sister she had baby like two weeks ago we're washington county say again slower she's crying nonstop said scared might something bad if won't stop screaming",
+      "voiceResponse": "I hear how urgent this is, and you\u2019re doing the right thing. If she might hurt herself or the baby, call 911 right now. Main number: 360, 521, 6527. I\u2019ll repeat: 360, 521, 6527. Backup number: 971, 319, 9793. I\u2019ll repeat: 971, 319, 9793.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how urgent this is, and you\u2019re doing the right thing. If she might hurt herself or the baby, call 911 right now. Main number: 360, 521, 6527. I\u2019ll repeat: 360, 521, 6527. Backup number: 971, 319, 9793. I\u2019ll repeat: 971, 319, 9793.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** now. Number, slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI need child care in Washington County and want customized referrals I can contact today.\u201d",
+        "Yes. Call now: **2 \u2026 1 \u2026 1**. Again, slowly: **2 \u2026 1 \u2026 1**.",
+        "You\u2019re okay, totally understandable. I said **Lane County**. The place I named is **Lane County Diaper Bank**, in **Springfield**.",
+        "You\u2019re doing great, and I\u2019ll go very slowly. The number is: **5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6**. I\u2019ll say it once more: **5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -609,6 +724,30 @@
       "to": "phone_dialog_0001712#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002299#turn-1",
+      "to": "phone_dialog_0002299#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002299#turn-4",
+      "to": "phone_dialog_0002299#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002305#turn-1",
+      "to": "phone_dialog_0002305#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002305#turn-2",
+      "to": "phone_dialog_0002305#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }
