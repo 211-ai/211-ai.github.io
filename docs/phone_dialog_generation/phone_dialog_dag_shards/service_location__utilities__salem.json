@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__utilities__salem",
   "kind": "service_location",
   "key": "utilities__salem",
-  "nodeCount": 8,
+  "nodeCount": 10,
   "nodes": [
     {
       "id": "phone_dialog_0000115#turn-1",
@@ -240,6 +240,60 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001318#turn-2",
+      "scenarioId": "phone_dialog_0001318",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, I\u2019ve been outside in the heat and now I\u2019m dizzy and shaky, and my legs feel weak.",
+      "normalizedQuery": "salem ve been outside heat utility utilities electric now dizzy shaky legs feel weak",
+      "voiceResponse": "You may be having a heat emergency. Most important step: call **9-1-1** now. That is **9-1-1**. While it rings, get into shade or cool air. Sit or lie down. Sip cool water if you can swallow safely. Loosen tight clothing. I can stay with you. Can you call **9-1-1** right now?",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:d9c7707e45d265ad",
+        "service:9c4a0ab059aed565",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You may be having a heat emergency. Most important step: call **9-1-1** now. That is **9-1-1**. While it rings, get into shade or cool air. Sit or lie down. Sip cool water if you can swallow safely. Loosen tight clothing. I can stay with you. Can you call **9-1-1** right now?",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now. If you can, move to shade and sit down while it rings."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001318#turn-3",
+      "scenarioId": "phone_dialog_0001318",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what? I didn\u2019t catch that part, can you say the number slow and clear?",
+      "normalizedQuery": "hi this isn phone it on like two percent give most important step first salem ve been outside heat utility utilities electric now dizzy shaky legs feel weak sorry didn catch part say number slow clear",
+      "voiceResponse": "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now. If you can, move to shade and sit down while it rings.",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. I\u2019ll say it again: **9-1-1**. Call now. If you can, move to shade and sit down while it rings.",
+      "voiceResponseAlternatives": [
+        "You may be having a heat emergency. Most important step: call **9-1-1** now. That is **9-1-1**. While it rings, get into shade or cool air. Sit or lie down. Sip cool water if you can swallow safely. Loosen tight clothing. I can stay with you. Can you call **9-1-1** right now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -284,6 +338,18 @@
       "to": "phone_dialog_0000948#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001318#turn-2",
+      "to": "phone_dialog_0001318#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001318#turn-3",
+      "to": "phone_dialog_0001318#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

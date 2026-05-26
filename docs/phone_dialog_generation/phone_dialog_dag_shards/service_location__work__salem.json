@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__work__salem",
   "kind": "service_location",
   "key": "work__salem",
-  "nodeCount": 15,
+  "nodeCount": 19,
   "nodes": [
     {
       "id": "phone_dialog_0000180#turn-2",
@@ -343,7 +343,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Of course. Slowly: if you feel in immediate danger, call **9-1-1** now. And the one question I need: **Are you safe inside right now \u2014 yes or no?**",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll go slow. First, quick safety check: are you safe where you are right now? What I said was: if he shows up, blocks you, or you feel in danger, call **9-1-1** right away. If you want, I can connect you to a live advocate for a private safety plan, and you can share only what feels safe."
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
@@ -434,6 +436,123 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001594#turn-2",
+      "scenarioId": "phone_dialog_0001594",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "My ex found me again, he\u2019s been waiting near my work and texting that he\u2019ll \u2018make me pay\u2019 if I leave him.",
+      "normalizedQuery": "hi sorry at bus stop it loud keep your voice low salem go back home tonight ex found again he been waiting work texting ll make pay if leave him",
+      "voiceResponse": "I\u2019m really glad you told me. What he said is a threat, and your safety comes first. If he\u2019s nearby right now, or you feel in immediate danger, please call 911 now. If you want, we can stay on together while you do that. If you\u2019re not in immediate danger this second, I can connect you to a live advocate now to help with a safe place tonight and a plan so he can\u2019t track you.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e199df043ac5d3f3",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. What he said is a threat, and your safety comes first. If he\u2019s nearby right now, or you feel in immediate danger, please call 911 now. If you want, we can stay on together while you do that. If you\u2019re not in immediate danger this second, I can connect you to a live advocate now to help with a safe place tonight and a plan so he can\u2019t track you.",
+      "voiceResponseAlternatives": [
+        "Next step: call **Clothes That Work / Work Wear** in Salem for your brother\u2019s job help. Number is **5 0 3 \u2026 3 6 4 \u2026 9 9 3 6**. Address is **1755 13th Street Southeast, Salem, 9 7 3 0 2**. They help with interview/work clothing, and intake says no documents are required.",
+        "Yes. The name is: **Clothes That Work** \u2026 also called **Work Wear**. Slowly: **Clothes** \u2026 **That** \u2026 **Work**. And: **Work** \u2026 **Wear**.",
+        "You\u2019re being very clear, and you\u2019re right to want real, practical help. In Salem, ask for a **Comprehensive Job Assistance Center** through 211info. These are **one-stop centers**, not just a website list, and they can include **job coaching, training services, and job-search support** like resume help and leads. Since your live-agent handoff is already open, I can stay with you while we get you to the closest center option in Salem right now.",
+        "Absolutely, that makes sense, and those supports can be a big deal. Here\u2019s the next step with the live 211info agent: ask for the nearest Comprehensive Job Assistance Center in Salem, and say you need three things this week: job leads, resume help, and work supports like interview clothes or bus-pass help. If you want, I can help you with the exact one-sentence script to say on the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001637#turn-3",
+      "scenarioId": "phone_dialog_0001637",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "work",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, I\u2019m shaking a little, can you slow down and say that again?",
+      "normalizedQuery": "hi um keep this private salem think partner checks phone call history him second so it 911 right now he been waiting outside job threatening if leave sorry shaking little slow down say again",
+      "voiceResponse": "Of course. I\u2019ll go slow. First, quick safety check: are you safe where you are right now? What I said was: if he shows up, blocks you, or you feel in danger, call **9-1-1** right away. If you want, I can connect you to a live advocate for a private safety plan, and you can share only what feels safe.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:aff99442bdc0d67e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slow. First, quick safety check: are you safe where you are right now? What I said was: if he shows up, blocks you, or you feel in danger, call **9-1-1** right away. If you want, I can connect you to a live advocate for a private safety plan, and you can share only what feels safe.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: if you feel in immediate danger, call **9-1-1** now. And the one question I need: **Are you safe inside right now \u2014 yes or no?**"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001637#turn-4",
+      "scenarioId": "phone_dialog_0001637",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I need a way to get somewhere safe without going back to the apartment tonight.",
+      "normalizedQuery": "hi um keep this private salem think partner checks phone call history him second so it 911 right now he been waiting outside job threatening if leave sorry shaking little slow down say again way somewhere safe without going back apartment tonight",
+      "voiceResponse": "You\u2019re doing the right thing. We can keep this private and move step by step. For tonight, options are: stay with someone trusted, go to a public place that\u2019s open late, or connect now to a live advocate who can help find a confidential safe place and plan your route without returning home. If he appears, follows you, or blocks you, call 9-1-1 right away. If you want, I can connect you to a live advocate now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:aff99442bdc0d67e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. We can keep this private and move step by step. For tonight, options are: stay with someone trusted, go to a public place that\u2019s open late, or connect now to a live advocate who can help find a confidential safe place and plan your route without returning home. If he appears, follows you, or blocks you, call 9-1-1 right away. If you want, I can connect you to a live advocate now.",
+      "voiceResponseAlternatives": [
+        "Next step: call **Clothes That Work / Work Wear** in Salem for your brother\u2019s job help. Number is **5 0 3 \u2026 3 6 4 \u2026 9 9 3 6**. Address is **1755 13th Street Southeast, Salem, 9 7 3 0 2**. They help with interview/work clothing, and intake says no documents are required.",
+        "Yes. The name is: **Clothes That Work** \u2026 also called **Work Wear**. Slowly: **Clothes** \u2026 **That** \u2026 **Work**. And: **Work** \u2026 **Wear**.",
+        "You\u2019re being very clear, and you\u2019re right to want real, practical help. In Salem, ask for a **Comprehensive Job Assistance Center** through 211info. These are **one-stop centers**, not just a website list, and they can include **job coaching, training services, and job-search support** like resume help and leads. Since your live-agent handoff is already open, I can stay with you while we get you to the closest center option in Salem right now.",
+        "Absolutely, that makes sense, and those supports can be a big deal. Here\u2019s the next step with the live 211info agent: ask for the nearest Comprehensive Job Assistance Center in Salem, and say you need three things this week: job leads, resume help, and work supports like interview clothes or bus-pass help. If you want, I can help you with the exact one-sentence script to say on the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001669#turn-5",
+      "scenarioId": "phone_dialog_0001669",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not hurt right this second, but if they see me gone I think they\u2019ll come looking for me.",
+      "normalizedQuery": "salem talk long he checks calls messages don have id papers they keep documents being forced work things agree say number again slower sorry there traffic noise missed middle part hurt right this second if see gone think ll come looking",
+      "voiceResponse": "Most important number: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. Tell them: \u201cI\u2019m not hurt now, but I may be in danger if I\u2019m found.\u201d They can help you make a quick safety plan without ID. If you feel in immediate danger at any point, call **9-1-1**. If this phone isn\u2019t safe, you can hang up after getting a meet location and time, then clear the call from recents.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. Tell them: \u201cI\u2019m not hurt now, but I may be in danger if I\u2019m found.\u201d They can help you make a quick safety plan without ID. If you feel in immediate danger at any point, call **9-1-1**. If this phone isn\u2019t safe, you can hang up after getting a meet location and time, then clear the call from recents.",
+      "voiceResponseAlternatives": [
+        "Next step: call **Clothes That Work / Work Wear** in Salem for your brother\u2019s job help. Number is **5 0 3 \u2026 3 6 4 \u2026 9 9 3 6**. Address is **1755 13th Street Southeast, Salem, 9 7 3 0 2**. They help with interview/work clothing, and intake says no documents are required.",
+        "Yes. The name is: **Clothes That Work** \u2026 also called **Work Wear**. Slowly: **Clothes** \u2026 **That** \u2026 **Work**. And: **Work** \u2026 **Wear**.",
+        "You\u2019re being very clear, and you\u2019re right to want real, practical help. In Salem, ask for a **Comprehensive Job Assistance Center** through 211info. These are **one-stop centers**, not just a website list, and they can include **job coaching, training services, and job-search support** like resume help and leads. Since your live-agent handoff is already open, I can stay with you while we get you to the closest center option in Salem right now.",
+        "Absolutely, that makes sense, and those supports can be a big deal. Here\u2019s the next step with the live 211info agent: ask for the nearest Comprehensive Job Assistance Center in Salem, and say you need three things this week: job leads, resume help, and work supports like interview clothes or bus-pass help. If you want, I can help you with the exact one-sentence script to say on the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -508,6 +627,30 @@
       "to": "phone_dialog_0001255#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001594#turn-2",
+      "to": "phone_dialog_0001594#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001637#turn-3",
+      "to": "phone_dialog_0001637#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001637#turn-4",
+      "to": "phone_dialog_0001637#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001669#turn-5",
+      "to": "phone_dialog_0001669#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->wallet_document_support"
     }
   ]
 }

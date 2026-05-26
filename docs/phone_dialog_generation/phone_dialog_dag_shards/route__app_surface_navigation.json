@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "route__app_surface_navigation",
   "kind": "route",
   "key": "app_surface_navigation",
-  "nodeCount": 112,
+  "nodeCount": 113,
   "nodes": [
     {
       "id": "phone_dialog_0000026#turn-6",
@@ -3210,6 +3210,36 @@
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002090#turn-6",
+      "scenarioId": "phone_dialog_0002090",
+      "turnIndex": 5,
+      "route": "app_surface_navigation",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "app_surface_navigation",
+      "user": "And if they need documents, tell me which ones first, because I don't want to show up missing proof again.",
+      "normalizedQuery": "if they documents tell which ones first because don't want show up missing proof again",
+      "voiceResponse": "Go to the **Proof Center** in the app. Again: go to **Proof Center**. Open your rent assistance request there. Tap **Documents**. You can see the checklist, upload files, and confirm what is still missing before you go in. If the checklist is empty, I can help you with one short script to ask the office for the exact proof list.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreig4me5upcwhs3yyt2sxk6r3rvqucnlcv7pg6zfinccdjzf3nnpudy",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreigsmfmikovykkzvwvtmbdf2igtzzl3pk23wtg76ujwhwcrng5g64m"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Go to the **Proof Center** in the app. Again: go to **Proof Center**. Open your rent assistance request there. Tap **Documents**. You can see the checklist, upload files, and confirm what is still missing before you go in. If the checklist is empty, I can help you with one short script to ask the office for the exact proof list.",
+      "voiceResponseAlternatives": [
+        "Yes. Open the **Wallet** surface. In Wallet, you can show your ID on your phone, or upload/export proof files. For this provider, I only see: **photo ID is required** for financial help. **Photo ID is required.** It does not say if physical ID is mandatory at check-in. You can ask before sharing more. I can connect you now to confirm their exact ID rule.",
+        "Yes. Open your **Wallet app**, then go to **Proof Center**. There you can pull up any available **digital proof** right away, like a verification card, letter, or shareable PDF, and use **Show**, **Download**, or **Export** while you wait for the replacement ID. If nothing shows yet, that\u2019s okay, you can still use the same screen to upload new proof later.",
+        "That\u2019s a smart question, and we can keep it private. Go to the **Proof Center** in your wallet app. There, you can add and show documents like a photo ID, proof of address, and any benefit or income letter if a provider asks. From what I can see here, I don\u2019t have a confirmed voucher-specific document list yet, so use Proof Center to store what you\u2019re comfortable sharing, then we can confirm exact requirements with the laundry provider before you upload anything else.",
+        "Good question. Open the **Proof Center** in your app wallet. There, you can add and review files before sharing anything. For this program, I don\u2019t have a confirmed exact document list yet. A safe starter set is: **photo ID**, **lease**, **rent amount or ledger**, and any **pay\u2011or\u2011vacate notice** if you have one. You can upload only what feels necessary, and share only when you choose."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
     }
   ],

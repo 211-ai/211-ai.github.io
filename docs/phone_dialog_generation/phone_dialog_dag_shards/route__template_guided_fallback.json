@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "route__template_guided_fallback",
   "kind": "route",
   "key": "template_guided_fallback",
-  "nodeCount": 82,
+  "nodeCount": 86,
   "nodes": [
     {
       "id": "phone_dialog_0000033#turn-6",
@@ -1015,7 +1015,8 @@
       "similarCases": [],
       "assistantResponse": "Yes, we can keep this low-exposure. I don\u2019t have a strong local match that clearly takes less documentation than others. One option is to call first and ask for a \u201cminimum-info pre-screen\u201d before uploading anything. The Health Share rental line is **five zero three, four one six, four one zero zero**. If you want, I can connect you to a human navigator to compare the six rent-help providers and pick the one with the lightest document requirements.",
       "voiceResponseAlternatives": [
-        "Good question. I don\u2019t have a strong local match on wallet privacy rules from what I can see here. In most wallets, you can export a copy for yourself from each file\u2019s **Share** or **Export** menu. If you want exact access rules, I can connect you to a live person now so you get a clear, app-specific answer."
+        "Good question. I don\u2019t have a strong local match on wallet privacy rules from what I can see here. In most wallets, you can export a copy for yourself from each file\u2019s **Share** or **Export** menu. If you want exact access rules, I can connect you to a live person now so you get a clear, app-specific answer.",
+        "I hear you. Battery is low. Eviction help number: **8 8 8, 5 8 5, 9 6 3 8**. I\u2019ll repeat: **8 8 8, 5 8 5, 9 6 3 8**. Backup number: **8 0 0, 6 7 2, 4 9 1 9**. I\u2019ll repeat: **8 0 0, 6 7 2, 4 9 1 9**. For papers, I do not have a strong local match beyond this: **none are required at intake**. One question: do you want legal help first, or rent help first?"
       ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "clear_line",
@@ -1369,7 +1370,8 @@
       "similarCases": [],
       "assistantResponse": "Good question. I don\u2019t have a strong local match on wallet privacy rules from what I can see here. In most wallets, you can export a copy for yourself from each file\u2019s **Share** or **Export** menu. If you want exact access rules, I can connect you to a live person now so you get a clear, app-specific answer.",
       "voiceResponseAlternatives": [
-        "Yes, we can keep this low-exposure. I don\u2019t have a strong local match that clearly takes less documentation than others. One option is to call first and ask for a \u201cminimum-info pre-screen\u201d before uploading anything. The Health Share rental line is **five zero three, four one six, four one zero zero**. If you want, I can connect you to a human navigator to compare the six rent-help providers and pick the one with the lightest document requirements."
+        "Yes, we can keep this low-exposure. I don\u2019t have a strong local match that clearly takes less documentation than others. One option is to call first and ask for a \u201cminimum-info pre-screen\u201d before uploading anything. The Health Share rental line is **five zero three, four one six, four one zero zero**. If you want, I can connect you to a human navigator to compare the six rent-help providers and pick the one with the lightest document requirements.",
+        "I hear you. Battery is low. Eviction help number: **8 8 8, 5 8 5, 9 6 3 8**. I\u2019ll repeat: **8 8 8, 5 8 5, 9 6 3 8**. Backup number: **8 0 0, 6 7 2, 4 9 1 9**. I\u2019ll repeat: **8 0 0, 6 7 2, 4 9 1 9**. For papers, I do not have a strong local match beyond this: **none are required at intake**. One question: do you want legal help first, or rent help first?"
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
@@ -2299,6 +2301,114 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001559#turn-5",
+      "scenarioId": "phone_dialog_0001559",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If it\u2019s quiet later, I need a place tonight where they won\u2019t share my info and can help even without documents.",
+      "normalizedQuery": "if it quiet later place tonight they won share info even without documents",
+      "voiceResponse": "I hear you. I don\u2019t have a strong local match in front of me yet for tonight\u2019s shelter with no-document help and privacy limits. We can keep this minimal. What city are you in right now, so I can narrow to nearby options, or I can connect you to a live 211 person instead.",
+      "evidenceDocIds": [
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:9d8134994edb4433",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I don\u2019t have a strong local match in front of me yet for tonight\u2019s shelter with no-document help and privacy limits. We can keep this minimal. What city are you in right now, so I can narrow to nearby options, or I can connect you to a live 211 person instead.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001669#turn-4",
+      "scenarioId": "phone_dialog_0001669",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Can you say that number again slower? Sorry, there\u2019s traffic noise and I missed the middle part.",
+      "normalizedQuery": "hi this isn phone it almost dead so give most important shelter shelters homeless overnight warming number first salem talk long he checks calls messages don have id papers they keep documents being forced work things agree say again slower sorry there traffic noise missed middle part",
+      "voiceResponse": "Of course. The number is **541\u2026 962\u2026 7994**. I\u2019ll say it once more: **5-4-1\u2026 9-6-2\u2026 7-9-9-4**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:bd5c5bd198f76c8b",
+        "service:b4ef6dca3c3f73bd",
+        "service:da479dd20eb5563d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is **541\u2026 962\u2026 7994**. I\u2019ll say it once more: **5-4-1\u2026 9-6-2\u2026 7-9-9-4**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001811#turn-6",
+      "scenarioId": "phone_dialog_0001811",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Also my battery is at like two percent, so if we get cut off, I still need that eviction help number and what papers to bring.",
+      "normalizedQuery": "also battery at like two percent so if we cut off still eviction number papers bring",
+      "voiceResponse": "I hear you. Battery is low. Eviction help number: **8 8 8, 5 8 5, 9 6 3 8**. I\u2019ll repeat: **8 8 8, 5 8 5, 9 6 3 8**. Backup number: **8 0 0, 6 7 2, 4 9 1 9**. I\u2019ll repeat: **8 0 0, 6 7 2, 4 9 1 9**. For papers, I do not have a strong local match beyond this: **none are required at intake**. One question: do you want legal help first, or rent help first?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2eacc37c3d2fbf9f",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Battery is low. Eviction help number: **8 8 8, 5 8 5, 9 6 3 8**. I\u2019ll repeat: **8 8 8, 5 8 5, 9 6 3 8**. Backup number: **8 0 0, 6 7 2, 4 9 1 9**. I\u2019ll repeat: **8 0 0, 6 7 2, 4 9 1 9**. For papers, I do not have a strong local match beyond this: **none are required at intake**. One question: do you want legal help first, or rent help first?",
+      "voiceResponseAlternatives": [
+        "Yes, we can keep this low-exposure. I don\u2019t have a strong local match that clearly takes less documentation than others. One option is to call first and ask for a \u201cminimum-info pre-screen\u201d before uploading anything. The Health Share rental line is **five zero three, four one six, four one zero zero**. If you want, I can connect you to a human navigator to compare the six rent-help providers and pick the one with the lightest document requirements.",
+        "Good question. I don\u2019t have a strong local match on wallet privacy rules from what I can see here. In most wallets, you can export a copy for yourself from each file\u2019s **Share** or **Export** menu. If you want exact access rules, I can connect you to a live person now so you get a clear, app-specific answer."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002052#turn-4",
+      "scenarioId": "phone_dialog_0002052",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "work",
+      "locationTag": "lane_county",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I don't have gas money, I can do cleaning, warehouse, anything, I just need someone to help me apply today.",
+      "normalizedQuery": "hi sorry can't really hear there's people yelling here i'm lane county job like now don't know trying freak haven't slept keep messing things up just tell go work wait was name place bus pulled missed it have gas money cleaning warehouse anything someone apply",
+      "voiceResponse": "I hear how urgent this is. I don\u2019t have a strong local match in my records for same-day application help. Let\u2019s get you to a live **211info** specialist now for job applications and possible gas or bus help today. If you feel like you might panic or be unsafe, call **911** right now. Do you want a 15-second script you can say on that call?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how urgent this is. I don\u2019t have a strong local match in my records for same-day application help. Let\u2019s get you to a live **211info** specialist now for job applications and possible gas or bus help today. If you feel like you might panic or be unsafe, call **911** right now. Do you want a 15-second script you can say on that call?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -2613,6 +2723,24 @@
       "to": "phone_dialog_0001131#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001559#turn-5",
+      "to": "phone_dialog_0001559#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001669#turn-4",
+      "to": "phone_dialog_0001669#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002052#turn-4",
+      "to": "phone_dialog_0002052#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->safety_guardrail_support"
     }
   ]
 }

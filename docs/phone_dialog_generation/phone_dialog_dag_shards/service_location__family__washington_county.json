@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__family__washington_county",
   "kind": "service_location",
   "key": "family__washington_county",
-  "nodeCount": 12,
+  "nodeCount": 17,
   "nodes": [
     {
       "id": "phone_dialog_0000125#turn-1",
@@ -293,7 +293,10 @@
       "similarCases": [],
       "assistantResponse": "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
       "voiceResponseAlternatives": [
-        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight."
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d",
+        "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
@@ -350,11 +353,164 @@
       "similarCases": [],
       "assistantResponse": "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
       "voiceResponseAlternatives": [
-        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you."
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d",
+        "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001539#turn-2",
+      "scenarioId": "phone_dialog_0001539",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I had my baby ten days ago, I\u2019m in Washington County, and I\u2019m bleeding more again with clots and I feel really weak.",
+      "normalizedQuery": "had baby ten days ago washington county bleeding more again clots feel really weak",
+      "voiceResponse": "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+      "evidenceDocIds": [
+        "service:845cbb0a29584b58",
+        "service:f3fceeca2b5dff42",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:b7bf09e450197ec7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d",
+        "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001539#turn-4",
+      "scenarioId": "phone_dialog_0001539",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that? You cut out for a second, can you repeat the crisis line slowly?",
+      "normalizedQuery": "hi this isn phone it at like two percent so give most important number first had baby ten days ago washington county bleeding more again clots feel really weak trying anything right second keep getting scary thoughts could hurt myself freaks sorry was cut repeat crisis line slowly",
+      "voiceResponse": "Yes. The crisis number is **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. Call **911 now**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The crisis number is **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. Call **911 now**.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** now. Number, slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI need child care in Washington County and want customized referrals I can contact today.\u201d",
+        "Yes. Call now: **2 \u2026 1 \u2026 1**. Again, slowly: **2 \u2026 1 \u2026 1**.",
+        "You\u2019re okay, totally understandable. I said **Lane County**. The place I named is **Lane County Diaper Bank**, in **Springfield**.",
+        "You\u2019re doing great, and I\u2019ll go very slowly. The number is: **5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6**. I\u2019ll say it once more: **5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001539#turn-5",
+      "scenarioId": "phone_dialog_0001539",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "My baby\u2019s sleeping in a car seat because I don\u2019t have a crib yet, I know it\u2019s not safe and I\u2019m trying to stay awake.",
+      "normalizedQuery": "had baby ten days ago washington county bleeding more again clots feel really weak trying anything right this second keep getting scary thoughts like could hurt myself freaks sorry was cut repeat crisis line slowly sleeping car seat because don have crib yet know it safe stay awake",
+      "voiceResponse": "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001712#turn-1",
+      "scenarioId": "phone_dialog_0001712",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling from Washington County for my sister, she had her baby like two weeks ago and I\u2019m really worried about her.",
+      "normalizedQuery": "hi calling from washington county sister she had her baby like two weeks ago really worried",
+      "voiceResponse": "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:98249e32a262b454",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called for her, that shows a lot of care. Let\u2019s do this step by step: is she in immediate danger right now, or talking about harming herself or the baby? If yes, call 911 now. If she\u2019s safe in this moment, I can get you to a live specialist right away to talk through postpartum warning signs and the fastest local support in Washington County.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001747#turn-6",
+      "scenarioId": "phone_dialog_0001747",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "After we figure out the safety part, we really need diapers too, newborn and size one, in Washington County, we\u2019re completely out.",
+      "normalizedQuery": "after we safety part really diapers diaper baby too newborn size one washington county re completely",
+      "voiceResponse": "First, if you haven\u2019t called yet, call **911 now** for her safety. For diapers right now: **Emergency Diaper Closet** at **541-864-0776**. That\u2019s **five four one, eight six four, zero seven seven six**. Address: **310 Southwest H Street, Grants Pass**. They provide emergency diapers and wipes, with no intake documents required. I\u2019m connecting a live agent now to find Washington County diaper options immediately.",
+      "evidenceDocIds": [
+        "service:c196660a779416f8",
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:0de8e3b5ff9b859a",
+        "service:5aff9bfd95858e47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you haven\u2019t called yet, call **911 now** for her safety. For diapers right now: **Emergency Diaper Closet** at **541-864-0776**. That\u2019s **five four one, eight six four, zero seven seven six**. Address: **310 Southwest H Street, Grants Pass**. They provide emergency diapers and wipes, with no intake documents required. I\u2019m connecting a live agent now to find Washington County diaper options immediately.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps. Since you\u2019re in Washington County near Hillsboro and need something bus-accessible tonight, the fastest next step is the live agent handoff already in progress so they can give the closest diaper spots by transit. If anything feels unsafe while traveling, call 9-1-1 first. Otherwise, stay on the line with me and I\u2019ll keep it brief while we connect you.",
+        "I hear you. Being treated like that is not okay. You still have options, and I\u2019m staying with you through this handoff. When they answer, you can say: \u201cWe\u2019re near Hillsboro, on the bus line, need diapers tonight, and can\u2019t travel far.\u201d If a place says no, ask for the next closest bus-accessible option right away. You don\u2019t have to prove your story to me. We\u2019ll keep this simple and get you somewhere that can help tonight.",
+        "Call **911 now** \u2014 **9-1-1**. This is an emergency. You\u2019re 10 days postpartum with heavy bleeding, clots, and weakness, and that can be life-threatening. Say: \u201cI just had a baby 10 days ago, I\u2019m bleeding with clots, I feel very weak, and I need an ambulance.\u201d Give your exact location in Washington County first. If the call drops, call **911** right back.",
+        "Call **911 now \u2014 9-1-1**. This is an urgent safety situation for both of you. While you call, move your baby from the car seat to a flat, firm sleep surface with no blankets or pillows, and stay nearby. Say: \u201cI\u2019m 10 days postpartum, very weak, and having scary thoughts. I need immediate help for me and my baby.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -427,6 +583,30 @@
     {
       "from": "phone_dialog_0000502#turn-5",
       "to": "phone_dialog_0000502#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001539#turn-2",
+      "to": "phone_dialog_0001539#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001539#turn-4",
+      "to": "phone_dialog_0001539#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001539#turn-5",
+      "to": "phone_dialog_0001539#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001712#turn-1",
+      "to": "phone_dialog_0001712#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__transportation__lane_county",
   "kind": "service_location",
   "key": "transportation__lane_county",
-  "nodeCount": 10,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000064#turn-2",
@@ -51,7 +51,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Of course. The number is **(541) 924-8738**. Slowly: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. The first number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Again: **2-1-1**."
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -77,7 +79,9 @@
       "similarCases": [],
       "assistantResponse": "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now.",
       "voiceResponseAlternatives": [
-        "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now."
+        "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
+        "Okay. Fastest step: call **2-1-1** now and say, \u201cI need a **safe ride in Lane County tonight** and I can\u2019t stay where I am.\u201d If you want, I can stay with you while we connect to a live person. If you\u2019re in immediate danger, call **9-1-1** first. You can share as little as you want, and you do not need to give your name.",
+        "You\u2019re doing the right thing. First, get to a quiet public place nearby: a hospital ER lobby, open store, or anywhere with people and cameras. When you\u2019re there, call **2-1-1**: **two \u2026 one \u2026 one**. Say: \u201cI need a safe ride in Lane County tonight. My ID is being controlled and I\u2019m being forced to work.\u201d If you feel in immediate danger at any point, call **9-1-1** right away."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -279,11 +283,98 @@
       "similarCases": [],
       "assistantResponse": "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
       "voiceResponseAlternatives": [
-        "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now."
+        "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now.",
+        "Okay. Fastest step: call **2-1-1** now and say, \u201cI need a **safe ride in Lane County tonight** and I can\u2019t stay where I am.\u201d If you want, I can stay with you while we connect to a live person. If you\u2019re in immediate danger, call **9-1-1** first. You can share as little as you want, and you do not need to give your name.",
+        "You\u2019re doing the right thing. First, get to a quiet public place nearby: a hospital ER lobby, open store, or anywhere with people and cameras. When you\u2019re there, call **2-1-1**: **two \u2026 one \u2026 one**. Say: \u201cI need a safe ride in Lane County tonight. My ID is being controlled and I\u2019m being forced to work.\u201d If you feel in immediate danger at any point, call **9-1-1** right away."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001526#turn-3",
+      "scenarioId": "phone_dialog_0001526",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I need a safe ride in Lane County, like right now if possible, because I can\u2019t stay where I am tonight.",
+      "normalizedQuery": "safe ride lane county like right now if possible because stay tonight",
+      "voiceResponse": "Okay. Fastest step: call **2-1-1** now and say, \u201cI need a **safe ride in Lane County tonight** and I can\u2019t stay where I am.\u201d If you want, I can stay with you while we connect to a live person. If you\u2019re in immediate danger, call **9-1-1** first. You can share as little as you want, and you do not need to give your name.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreib6nmht7udiukswm5qdmshwpitxtcttggofjrfwvaercrz5c2rrqy",
+        "page:bafkreigah2lp2bdts3f3gwdfch33w6ngsvbgpp6q4dy2j6rvq7ccxr5iqa",
+        "service:df6f05609bb7717a",
+        "page:bafkreibrwtwzp673s5y5nsk4qryompt2csus5eav4eeg7dkwzrfkwlc5uq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Fastest step: call **2-1-1** now and say, \u201cI need a **safe ride in Lane County tonight** and I can\u2019t stay where I am.\u201d If you want, I can stay with you while we connect to a live person. If you\u2019re in immediate danger, call **9-1-1** first. You can share as little as you want, and you do not need to give your name.",
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now.",
+        "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
+        "You\u2019re doing the right thing. First, get to a quiet public place nearby: a hospital ER lobby, open store, or anywhere with people and cameras. When you\u2019re there, call **2-1-1**: **two \u2026 one \u2026 one**. Say: \u201cI need a safe ride in Lane County tonight. My ID is being controlled and I\u2019m being forced to work.\u201d If you feel in immediate danger at any point, call **9-1-1** right away."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001526#turn-5",
+      "scenarioId": "phone_dialog_0001526",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "transportation",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat just the first number slowly? I might lose this call and I can\u2019t write much down.",
+      "normalizedQuery": "please don say name loud calls usually checked scared he tracks go safe ride lane county like right now if possible because stay tonight sorry crying keeps id papers being made work things want repeat just first number slowly might lose this call write much down",
+      "voiceResponse": "Yes. The first number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Again: **2-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The first number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Again: **2-1-1**.",
+      "voiceResponseAlternatives": [
+        "Of course. The number is **(541) 924-8738**. Slowly: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001526#turn-6",
+      "scenarioId": "phone_dialog_0001526",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s no immediate car, tell me one quiet place I can get to first and who to call when I\u2019m there.",
+      "normalizedQuery": "safe ride lane county like right now if possible because stay tonight sorry crying he keeps id papers being made work things don want repeat just first number slowly might lose this call write much down there no immediate car tell one quiet place who when",
+      "voiceResponse": "You\u2019re doing the right thing. First, get to a quiet public place nearby: a hospital ER lobby, open store, or anywhere with people and cameras. When you\u2019re there, call **2-1-1**: **two \u2026 one \u2026 one**. Say: \u201cI need a safe ride in Lane County tonight. My ID is being controlled and I\u2019m being forced to work.\u201d If you feel in immediate danger at any point, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. First, get to a quiet public place nearby: a hospital ER lobby, open store, or anywhere with people and cameras. When you\u2019re there, call **2-1-1**: **two \u2026 one \u2026 one**. Say: \u201cI need a safe ride in Lane County tonight. My ID is being controlled and I\u2019m being forced to work.\u201d If you feel in immediate danger at any point, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now.",
+        "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
+        "Okay. Fastest step: call **2-1-1** now and say, \u201cI need a **safe ride in Lane County tonight** and I can\u2019t stay where I am.\u201d If you want, I can stay with you while we connect to a live person. If you\u2019re in immediate danger, call **9-1-1** first. You can share as little as you want, and you do not need to give your name."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -334,6 +425,18 @@
       "to": "phone_dialog_0000660#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001526#turn-3",
+      "to": "phone_dialog_0001526#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001526#turn-5",
+      "to": "phone_dialog_0001526#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

@@ -3,12 +3,15 @@ from __future__ import annotations
 from collections import Counter
 
 from scripts.phone_dialog_generation_daemon import (
+    assistant_prompt,
     build_seed,
     target_mode_weight,
     TARGET_MODE_PROFILE_BY_ID,
     focus_profiles,
     enrich_dag_with_phone_variants,
     extract_first_json_object,
+    load_slot_friendly_voice_frames,
+    ScenarioSeed,
 )
 
 
@@ -60,6 +63,8 @@ def test_safety_focus_only_selects_risk_profiles() -> None:
     assert {seed.target_mode for seed in seeds}.issubset(safety_profile_ids)
     assert "safety_guardrail_check" in safety_profile_ids
     assert "medical_distress_check" in safety_profile_ids
+    assert "minor_runaway_or_exploitation_risk" in safety_profile_ids
+    assert "trafficking_or_coercive_control" in safety_profile_ids
 
 
 def test_enrich_dag_with_phone_variants_uses_assistant_responses() -> None:
@@ -130,3 +135,59 @@ def test_enrich_dag_with_phone_variants_uses_assistant_responses() -> None:
     assert first["callerArchetypeId"] == "homeless_exhausted"
     assert first["channelConditionId"] == "bad_reception"
     assert first["assistantStyleId"] == "slow_clear_repetition"
+
+
+def test_load_slot_friendly_voice_frames_reads_top_opportunities(tmp_path) -> None:
+    path = tmp_path / "rewrites.json"
+    path.write_text(
+        """
+        {
+          "opportunities": [
+            {"canonicalTemplate": "Call {phone_1}.", "familyKind": "phone_or_number", "estimatedSavedChunkCalls": 10},
+            {"canonicalTemplate": "The number is {phone_1}.", "familyKind": "phone_or_number", "estimatedSavedChunkCalls": 8}
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    frames = load_slot_friendly_voice_frames(path, limit=1)
+
+    assert frames == [
+        {
+            "template": "Call {phone_1}.",
+            "familyKind": "phone_or_number",
+            "estimatedSavedChunkCalls": 10,
+        }
+    ]
+
+
+def test_assistant_prompt_includes_slot_friendly_voice_guidance() -> None:
+    seed = ScenarioSeed(
+        seed_id="seed",
+        service_need="shelter",
+        location="Portland",
+        caller={"id": "calm_practical", "label": "Calm caller", "profile": "Direct."},
+        channel={"id": "clear_line", "label": "Clear line", "effect": "Clear."},
+        style={
+            "id": "grounded_operator",
+            "title": "Grounded operator",
+            "system_prompt": "You are Abby.",
+            "response_rules": ["Be concise."],
+        },
+        target_mode="clear_grounded_request",
+    )
+
+    prompt = assistant_prompt(
+        route="grounded_211_answer",
+        message="I need shelter in Portland.",
+        history=[],
+        evidence=[],
+        seed=seed,
+        reasons=[],
+        slot_friendly_frames=[{"template": "Call {phone_1}.", "familyKind": "phone_or_number"}],
+    )
+
+    assert "Prefer reusable TTS-friendly sentence frames" in prompt
+    assert "Call {phone_1}." in prompt
+    assert "never say the placeholder name" in prompt

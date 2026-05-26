@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__utilities__clackamas",
   "kind": "service_location",
   "key": "utilities__clackamas",
-  "nodeCount": 12,
+  "nodeCount": 14,
   "nodes": [
     {
       "id": "phone_dialog_0000088#turn-1",
@@ -27,7 +27,9 @@
       "similarCases": [],
       "assistantResponse": "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
       "voiceResponseAlternatives": [
-        "Absolutely, we can start with Portland General Electric for bill help options and discounts. Call **503-228-6322** \u2014 that\u2019s **503, 228, 6322**. Or toll-free **800-542-8818** \u2014 **800, 542, 8818**. They list utility payment assistance, and no documents are required at intake. If you want, I can stay with you and help you plan exactly what to say when they answer."
+        "Absolutely, we can start with Portland General Electric for bill help options and discounts. Call **503-228-6322** \u2014 that\u2019s **503, 228, 6322**. Or toll-free **800-542-8818** \u2014 **800, 542, 8818**. They list utility payment assistance, and no documents are required at intake. If you want, I can stay with you and help you plan exactly what to say when they answer.",
+        "I\u2019m here with you. Let\u2019s go slow. Please get into shade now. Sip cool water. If you might pass out, or have chest pain, call 9-1-1 now. For Clackamas, Portland General Electric may help with bill support. Call **5 0 3, 2 2 8, 6 3 2 2**. I\u2019ll repeat: **5 0 3, 2 2 8, 6 3 2 2**. Or **8 0 0, 5 4 2, 8 8 1 8**. Are you a PGE customer?",
+        "I\u2019m with you. You sound very weak. Very weak. Please sit or lie down now, in shade. If your legs may give out, call 9-1-1 now. Call 9-1-1 now. Your battery is at two percent. Two percent. If you can, plug in now or low-power mode now. One question: can you call 9-1-1 right now?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -193,7 +195,9 @@
       "similarCases": [],
       "assistantResponse": "Absolutely, we can start with Portland General Electric for bill help options and discounts. Call **503-228-6322** \u2014 that\u2019s **503, 228, 6322**. Or toll-free **800-542-8818** \u2014 **800, 542, 8818**. They list utility payment assistance, and no documents are required at intake. If you want, I can stay with you and help you plan exactly what to say when they answer.",
       "voiceResponseAlternatives": [
-        "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?"
+        "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
+        "I\u2019m here with you. Let\u2019s go slow. Please get into shade now. Sip cool water. If you might pass out, or have chest pain, call 9-1-1 now. For Clackamas, Portland General Electric may help with bill support. Call **5 0 3, 2 2 8, 6 3 2 2**. I\u2019ll repeat: **5 0 3, 2 2 8, 6 3 2 2**. Or **8 0 0, 5 4 2, 8 8 1 8**. Are you a PGE customer?",
+        "I\u2019m with you. You sound very weak. Very weak. Please sit or lie down now, in shade. If your legs may give out, call 9-1-1 now. Call 9-1-1 now. Your battery is at two percent. Two percent. If you can, plug in now or low-power mode now. One question: can you call 9-1-1 right now?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
@@ -334,6 +338,64 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002082#turn-1",
+      "scenarioId": "phone_dialog_0002082",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m in Clackamas and I feel really dizzy out in this heat, can you talk slow with me?",
+      "normalizedQuery": "hi sorry clackamas feel really dizzy this heat utility utilities electric talk slow",
+      "voiceResponse": "I\u2019m here with you. Let\u2019s go slow. Please get into shade now. Sip cool water. If you might pass out, or have chest pain, call 9-1-1 now. For Clackamas, Portland General Electric may help with bill support. Call **5 0 3, 2 2 8, 6 3 2 2**. I\u2019ll repeat: **5 0 3, 2 2 8, 6 3 2 2**. Or **8 0 0, 5 4 2, 8 8 1 8**. Are you a PGE customer?",
+      "evidenceDocIds": [
+        "service:d9c7707e45d265ad",
+        "service:9c4a0ab059aed565",
+        "service:ee46fefe2a001b32",
+        "service:b0fd90b106c6a4ef",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Let\u2019s go slow. Please get into shade now. Sip cool water. If you might pass out, or have chest pain, call 9-1-1 now. For Clackamas, Portland General Electric may help with bill support. Call **5 0 3, 2 2 8, 6 3 2 2**. I\u2019ll repeat: **5 0 3, 2 2 8, 6 3 2 2**. Or **8 0 0, 5 4 2, 8 8 1 8**. Are you a PGE customer?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
+        "Absolutely, we can start with Portland General Electric for bill help options and discounts. Call **503-228-6322** \u2014 that\u2019s **503, 228, 6322**. Or toll-free **800-542-8818** \u2014 **800, 542, 8818**. They list utility payment assistance, and no documents are required at intake. If you want, I can stay with you and help you plan exactly what to say when they answer.",
+        "I\u2019m with you. You sound very weak. Very weak. Please sit or lie down now, in shade. If your legs may give out, call 9-1-1 now. Call 9-1-1 now. Your battery is at two percent. Two percent. If you can, plug in now or low-power mode now. One question: can you call 9-1-1 right now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002082#turn-2",
+      "scenarioId": "phone_dialog_0002082",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m shaky and weak, like my legs might give out, and my phone battery is at like two percent.",
+      "normalizedQuery": "hi sorry clackamas feel really dizzy this heat utility utilities electric talk slow shaky weak like legs might give phone battery at two percent",
+      "voiceResponse": "I\u2019m with you. You sound very weak. Very weak. Please sit or lie down now, in shade. If your legs may give out, call 9-1-1 now. Call 9-1-1 now. Your battery is at two percent. Two percent. If you can, plug in now or low-power mode now. One question: can you call 9-1-1 right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:ee46fefe2a001b32",
+        "service:b0fd90b106c6a4ef",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. You sound very weak. Very weak. Please sit or lie down now, in shade. If your legs may give out, call 9-1-1 now. Call 9-1-1 now. Your battery is at two percent. Two percent. If you can, plug in now or low-power mode now. One question: can you call 9-1-1 right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
+        "Absolutely, we can start with Portland General Electric for bill help options and discounts. Call **503-228-6322** \u2014 that\u2019s **503, 228, 6322**. Or toll-free **800-542-8818** \u2014 **800, 542, 8818**. They list utility payment assistance, and no documents are required at intake. If you want, I can stay with you and help you plan exactly what to say when they answer.",
+        "I\u2019m here with you. Let\u2019s go slow. Please get into shade now. Sip cool water. If you might pass out, or have chest pain, call 9-1-1 now. For Clackamas, Portland General Electric may help with bill support. Call **5 0 3, 2 2 8, 6 3 2 2**. I\u2019ll repeat: **5 0 3, 2 2 8, 6 3 2 2**. Or **8 0 0, 5 4 2, 8 8 1 8**. Are you a PGE customer?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -402,6 +464,18 @@
       "to": "phone_dialog_0000808#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002082#turn-1",
+      "to": "phone_dialog_0002082#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002082#turn-2",
+      "to": "phone_dialog_0002082#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

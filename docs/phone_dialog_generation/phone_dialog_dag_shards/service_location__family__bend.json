@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__family__bend",
   "kind": "service_location",
   "key": "family__bend",
-  "nodeCount": 27,
+  "nodeCount": 41,
   "nodes": [
     {
       "id": "phone_dialog_0000098#turn-1",
@@ -206,7 +206,9 @@
       "assistantResponse": "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
       "voiceResponseAlternatives": [
         "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
-        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**."
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now.",
+        "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "bad_reception",
@@ -384,7 +386,9 @@
       "assistantResponse": "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
       "voiceResponseAlternatives": [
         "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
-        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**."
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now.",
+        "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -615,7 +619,9 @@
       "assistantResponse": "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
       "voiceResponseAlternatives": [
         "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
-        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**."
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now.",
+        "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -788,6 +794,426 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001563#turn-3",
+      "scenarioId": "phone_dialog_0001563",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend, on the east side. I\u2019m scared because I keep getting these thoughts that I could hurt my baby, and I don\u2019t want to.",
+      "normalizedQuery": "hi sorry really okay had baby nine days ago bleeding lot again like soaking pads fast say slower trying listen just panicking crying bend on east side scared because keep getting these thoughts could hurt don want",
+      "voiceResponse": "Thank you for telling me. This is an emergency. Please call **911** right now and say: \u201cI gave birth nine days ago, I\u2019m bleeding heavily, and I\u2019m having thoughts of hurting my baby.\u201d Put the baby in a safe place like a crib, and if any adult is with you, have them stay with the baby now. Do not be alone. I can stay with you while you call 911.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is an emergency. Please call **911** right now and say: \u201cI gave birth nine days ago, I\u2019m bleeding heavily, and I\u2019m having thoughts of hurting my baby.\u201d Put the baby in a safe place like a crib, and if any adult is with you, have them stay with the baby now. Do not be alone. I can stay with you while you call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001563#turn-6",
+      "scenarioId": "phone_dialog_0001563",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, bad signal, what number did you say for the crisis line? Can you repeat it one more time?",
+      "normalizedQuery": "bend on east side scared because keep getting these thoughts could hurt baby don want no haven done anything afraid be alone right now also fell asleep bouncer know safe if go checked diapers diaper too we ran yesterday have money till next week sorry bad signal number did say crisis line repeat it one more time",
+      "voiceResponse": "Yes. The crisis number is **9 1 1**. Call **9 1 1** now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The crisis number is **9 1 1**. Call **9 1 1** now.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001664#turn-1",
+      "scenarioId": "phone_dialog_0001664",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, can you hear me? I\u2019m calling about my dad in Bend. I\u2019m his daughter, and I don\u2019t think he\u2019s been getting proper care.",
+      "normalizedQuery": "hi sorry hear calling dad bend his daughter don think he been getting proper care",
+      "voiceResponse": "Yes, I hear you. You\u2019re calling about your dad in Bend, and you\u2019re worried he is not getting proper care. I heard that: worried about proper care for your dad in Bend. I can help connect you to a live specialist for this. First, one question: Is your dad in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:ebcc2eae6f267a16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. You\u2019re calling about your dad in Bend, and you\u2019re worried he is not getting proper care. I heard that: worried about proper care for your dad in Bend. I can help connect you to a live specialist for this. First, one question: Is your dad in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001690#turn-2",
+      "scenarioId": "phone_dialog_0001690",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I'm calling about my sister in Bend, she had the baby three weeks ago and she's not acting like herself, crying hard and saying she feels like a bad mom.",
+      "normalizedQuery": "hi give most important number first i'm on borrowed phone it's at like two percent calling sister bend she had baby three weeks ago she's acting herself crying hard saying feels bad mom",
+      "voiceResponse": "This could be a postpartum mental health crisis, so safety first. If she might hurt herself or the baby, call **911** now. Otherwise, call **360-521-6527** right now for immediate support. I\u2019ll repeat: **3-6-0, 5-2-1, 6-5-2-7**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This could be a postpartum mental health crisis, so safety first. If she might hurt herself or the baby, call **911** now. Otherwise, call **360-521-6527** right now for immediate support. I\u2019ll repeat: **3-6-0, 5-2-1, 6-5-2-7**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001690#turn-3",
+      "scenarioId": "phone_dialog_0001690",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? I couldn't hear you over the TV here, can you repeat that emergency number slower?",
+      "normalizedQuery": "hi give most important number first i'm on borrowed phone it's at like two percent calling sister bend she had baby three weeks ago she's acting herself crying hard saying feels bad mom sorry couldn't hear over tv here repeat emergency slower",
+      "voiceResponse": "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The emergency number is **911**. And the support number is **360-521-6527**. Slowly: **3\u2026 6\u2026 0\u2026 5\u2026 2\u2026 1\u2026 6\u2026 5\u2026 2\u2026 7**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001690#turn-6",
+      "scenarioId": "phone_dialog_0001690",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "One more thing, the baby keeps ending up asleep on the couch with her because she's exhausted, so I need safe sleep guidance and where we can go in Bend.",
+      "normalizedQuery": "sorry couldn't hear over tv here repeat emergency number slower she also said she's soaking pads really fast like heavy bleeding again so know if this er now first safe tonight diaper diapers baby too they ran has nothing morning one more keeps ending up asleep on couch her because exhausted sleep guidance we go bend",
+      "voiceResponse": "You\u2019re right to act now. **Do not let baby sleep on a couch or with an exhausted adult.** Move baby now to a separate flat sleep space, on their back, with no pillows or blankets. If baby is hard to wake, breathing oddly, or looks blue, call **911** now. For Bend local help tonight, I\u2019m connecting you to a **live 211 agent** right now for safe-sleep and emergency baby-supplies options.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to act now. **Do not let baby sleep on a couch or with an exhausted adult.** Move baby now to a separate flat sleep space, on their back, with no pillows or blankets. If baby is hard to wake, breathing oddly, or looks blue, call **911** now. For Bend local help tonight, I\u2019m connecting you to a **live 211 agent** right now for safe-sleep and emergency baby-supplies options.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001706#turn-2",
+      "scenarioId": "phone_dialog_0001706",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "What? Can you say that part again? There\u2019s a bus pulling in. I\u2019m in Bend, and I keep having these thoughts that I might hurt myself or the baby even though I don\u2019t want to.",
+      "normalizedQuery": "say part again there bus pulling bend keep having these thoughts might hurt myself baby even though don want",
+      "voiceResponse": "I hear you, and I\u2019m really glad you told me. I need you to call **9-1-1 right now**. You\u2019re bleeding after birth and having thoughts of hurting yourself or your baby, and that is an emergency. If talking is hard, hand your phone to someone nearby and have them call **9-1-1** for you now. Stay where you are at the bus stop in Bend, sit down if you can, and keep pressure on the bleeding. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m really glad you told me. I need you to call **9-1-1 right now**. You\u2019re bleeding after birth and having thoughts of hurting yourself or your baby, and that is an emergency. If talking is hard, hand your phone to someone nearby and have them call **9-1-1** for you now. Stay where you are at the bus stop in Bend, sit down if you can, and keep pressure on the bleeding. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001864#turn-1",
+      "scenarioId": "phone_dialog_0001864",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my sister in Bend, she had the baby like ten days ago and she\u2019s bleeding a lot again.",
+      "normalizedQuery": "hi calling sister bend she had baby like ten days ago bleeding lot again",
+      "voiceResponse": "I\u2019m really glad you called. Heavy bleeding 10 days after birth can be an emergency. Please call **911 now** for your sister, or go to the nearest ER in Bend immediately. If she\u2019s soaking a pad in an hour, passing large clots, feels dizzy, faint, weak, or short of breath, don\u2019t wait. Keep her lying down, don\u2019t let her drive, and stay with her. If you want, I can stay on the line while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:845cbb0a29584b58",
+        "service:f3fceeca2b5dff42",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Heavy bleeding 10 days after birth can be an emergency. Please call **911 now** for your sister, or go to the nearest ER in Bend immediately. If she\u2019s soaking a pad in an hour, passing large clots, feels dizzy, faint, weak, or short of breath, don\u2019t wait. Keep her lying down, don\u2019t let her drive, and stay with her. If you want, I can stay on the line while you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001864#turn-2",
+      "scenarioId": "phone_dialog_0001864",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s a bus pulling in, I missed that part, did you say ER now or wait for urgent care?",
+      "normalizedQuery": "hi calling sister bend she had baby like ten days ago bleeding lot again sorry there bus pulling missed part did say er now wait urgent care",
+      "voiceResponse": "You\u2019re doing the right thing by checking. **ER now, do not wait for urgent care.** Because she\u2019s bleeding heavily 10 days after birth, treat this as an emergency: **call 911 now** or go to the nearest ER right away. If she\u2019s dizzy, faint, weak, short of breath, soaking a pad in an hour, or passing large clots, don\u2019t wait. Keep her lying down, stay with her, and don\u2019t let her drive.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:845cbb0a29584b58",
+        "service:f3fceeca2b5dff42",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by checking. **ER now, do not wait for urgent care.** Because she\u2019s bleeding heavily 10 days after birth, treat this as an emergency: **call 911 now** or go to the nearest ER right away. If she\u2019s dizzy, faint, weak, short of breath, soaking a pad in an hour, or passing large clots, don\u2019t wait. Keep her lying down, stay with her, and don\u2019t let her drive.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001864#turn-3",
+      "scenarioId": "phone_dialog_0001864",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "She told me she feels scared she might hurt herself when the baby won\u2019t stop crying, and I don\u2019t know if she\u2019s safe to be alone.",
+      "normalizedQuery": "hi calling sister bend she had baby like ten days ago bleeding lot again sorry there bus pulling missed part did say er now wait urgent care told feels scared might hurt herself when won stop crying don know if safe be alone",
+      "voiceResponse": "I\u2019m really glad you told me. This is an emergency safety moment. If she might hurt herself or the baby, call **911 now** and stay with her until help arrives. Do not leave her alone. If you can, move the baby to a safe place like a crib, and remove anything she could use to hurt herself. Speak calmly and keep your voice simple: \u201cYou\u2019re not alone, help is coming.\u201d If you want, I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This is an emergency safety moment. If she might hurt herself or the baby, call **911 now** and stay with her until help arrives. Do not leave her alone. If you can, move the baby to a safe place like a crib, and remove anything she could use to hurt herself. Speak calmly and keep your voice simple: \u201cYou\u2019re not alone, help is coming.\u201d If you want, I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001864#turn-5",
+      "scenarioId": "phone_dialog_0001864",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If she is safe enough right this minute, can you help me find diapers today near Bend? They ran out last night.",
+      "normalizedQuery": "if she safe enough right this minute diapers diaper baby bend they ran last night",
+      "voiceResponse": "Absolutely, and I\u2019m glad you\u2019re planning ahead. If there\u2019s any immediate safety risk, call **911** first. For diapers today, I only have two Oregon options on hand, not in Bend: Lane County Diaper Bank in Springfield, phone **541 \u2026 221 \u2026 0824** (Mon\u2013Fri 8 to 5; OHP, WIC, or SNAP). Emergency Diaper Closet in Grants Pass, phone **541 \u2026 864 \u2026 0776** (ages 0\u20135). If you want, I can help you call and ask about same-day pickup.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:c196660a779416f8",
+        "service:25f3554514a1b499",
+        "service:5aff9bfd95858e47",
+        "service:0de8e3b5ff9b859a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and I\u2019m glad you\u2019re planning ahead. If there\u2019s any immediate safety risk, call **911** first. For diapers today, I only have two Oregon options on hand, not in Bend: Lane County Diaper Bank in Springfield, phone **541 \u2026 221 \u2026 0824** (Mon\u2013Fri 8 to 5; OHP, WIC, or SNAP). Emergency Diaper Closet in Grants Pass, phone **541 \u2026 864 \u2026 0776** (ages 0\u20135). If you want, I can help you call and ask about same-day pickup.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001864#turn-6",
+      "scenarioId": "phone_dialog_0001864",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the number slowly? My phone\u2019s at two percent and I need to text her the place before it dies.",
+      "normalizedQuery": "she told feels scared might hurt herself when baby won stop crying don know if safe be alone sleeping on couch blankets at her friend place so worried unsafe sleep too enough right this minute diapers diaper bend they ran last night repeat number slowly phone two percent text before it dies",
+      "voiceResponse": "You\u2019re doing great in a hard moment. Here it is slowly: **Lane County Diaper Bank** \u2014 **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. One more time: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If you want the other number too: **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great in a hard moment. Here it is slowly: **Lane County Diaper Bank** \u2014 **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. One more time: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If you want the other number too: **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **DIAPERS** at **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. If that doesn\u2019t work, call **Emergency Diaper Closet** at **5 4 1** \u2026 **8 6 4** \u2026 **0 7 7 6**. If you or your baby are in immediate danger, call **9 1 1** now.",
+        "Yes. The main number is: **5-4-1, 3-8-8, 6-0-1-0**. I\u2019ll say it again: **5-4-1, 3-8-8, 6-0-1-0**.",
+        "Yeah. The diaper number is **5-4-1** \u2026 **2-2-1** \u2026 **0-8-2-4**. I\u2019ll say it again: **5-4-1, 2-2-1, 0-8-2-4**.",
+        "Yes. The crisis number is **9 1 1**. Call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001946#turn-2",
+      "scenarioId": "phone_dialog_0001946",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I had my baby nine days ago, I\u2019m in Bend, and I\u2019m bleeding more again, like soaking pads fast, and I feel really shaky.",
+      "normalizedQuery": "had baby nine days ago bend bleeding more again like soaking pads fast feel really shaky",
+      "voiceResponse": "I\u2019m really glad you said this out loud. This could be an emergency after birth. Call **9-1-1 now**. Tell them: \u201cI gave birth nine days ago, I\u2019m soaking pads quickly, and I feel shaky.\u201d If you can, lie down, keep your baby with another adult if one is there, and unlock the door for EMS. Please call **9-1-1** right now. I can stay with you while you do it.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreiezx37qgwxow7kj5qvgq2dvz5huyp5v4bbllyektmajx3htce3v4m",
+        "page:bafkreihddsczo7vly3v4ueijogtqmx2gwi6qlqqeotzxsgnfszr6njkp3u",
+        "page:bafkreibbfkxcxhvux36pkaunpqi4lt7olwozbgtp65tloqxtgdjqcwbuuq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said this out loud. This could be an emergency after birth. Call **9-1-1 now**. Tell them: \u201cI gave birth nine days ago, I\u2019m soaking pads quickly, and I feel shaky.\u201d If you can, lie down, keep your baby with another adult if one is there, and unlock the door for EMS. Please call **9-1-1** right now. I can stay with you while you do it.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001946#turn-4",
+      "scenarioId": "phone_dialog_0001946",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not trying to hurt the baby, but I got scared earlier because I had this flash of wanting to disappear, and I don\u2019t feel safe being alone.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first case we disconnect had baby nine days ago bend bleeding more again soaking pads fast feel really shaky couldn hear there traffic here did say call 911 right now if heavy trying hurt got scared earlier because flash wanting disappear don safe being alone",
+      "voiceResponse": "Thank you for telling me. You did the right thing. Most important number first: **9-1-1**. Call **9-1-1 now** and say: \u201cI gave birth nine days ago, I\u2019m bleeding heavily, I feel shaky, and I don\u2019t feel safe being alone.\u201d If you can, stay where you are, keep the baby with another adult, and unlock the door. You\u2019re not alone in this. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You did the right thing. Most important number first: **9-1-1**. Call **9-1-1 now** and say: \u201cI gave birth nine days ago, I\u2019m bleeding heavily, I feel shaky, and I don\u2019t feel safe being alone.\u201d If you can, stay where you are, keep the baby with another adult, and unlock the door. You\u2019re not alone in this. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling. I can help with this now. In Bend, 211info\u2019s Child Care Team can give free, customized child care referrals. Free, customized referrals. If you or your child are in immediate danger, call 9-1-1 now. Call 9-1-1 now. Are you safe right now?",
+        "Yes. I can go slowly. You are doing okay. We will do this one step at a time. One step at a time. You need child care for tomorrow in Bend. Child care for tomorrow in Bend. I will keep it simple. What time does your work shift start tomorrow?",
+        "You are not alone. We can do this slowly. You do not need to know what you qualify for first. You do not need to know first. The 211info Child Care Team can check subsidy and voucher options, and help find safe, lower-cost care in Bend. One step now: what time does your shift start tomorrow?",
+        "I hear you. I can go slow. I do not have that phone number in front of me right now. I do not have it in front of me. I can connect you to a live 211 specialist now, and they can give the Bend child care number slowly. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -934,6 +1360,72 @@
       "to": "phone_dialog_0001128#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001563#turn-3",
+      "to": "phone_dialog_0001563#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001664#turn-1",
+      "to": "phone_dialog_0001664#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001690#turn-2",
+      "to": "phone_dialog_0001690#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001690#turn-3",
+      "to": "phone_dialog_0001690#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001706#turn-2",
+      "to": "phone_dialog_0001706#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001864#turn-1",
+      "to": "phone_dialog_0001864#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001864#turn-2",
+      "to": "phone_dialog_0001864#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001864#turn-3",
+      "to": "phone_dialog_0001864#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001864#turn-5",
+      "to": "phone_dialog_0001864#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001946#turn-2",
+      "to": "phone_dialog_0001946#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001946#turn-4",
+      "to": "phone_dialog_0001946#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

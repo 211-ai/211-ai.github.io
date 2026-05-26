@@ -48,7 +48,8 @@ URGENT_PATTERN = re.compile(
     r"\b("
     r"danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|"
     r"bleeding|cannot breathe|can't breathe|not breathing|unresponsive|"
-    r"kill myself|hurt myself|hurt someone|right now|immediate danger|911"
+    r"kill myself|hurt myself|hurt someone|right now|immediate danger|"
+    r"heavy bleeding|baby is not moving|forced sex|locked in|911"
     r")\b",
     re.I,
 )
@@ -56,7 +57,8 @@ URGENT_EMERGENCY_PATTERN = re.compile(
     r"\b("
     r"danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|"
     r"bleeding|cannot breathe|can't breathe|not breathing|unresponsive|"
-    r"kill myself|hurt myself|hurt someone|immediate danger|911"
+    r"kill myself|hurt myself|hurt someone|immediate danger|"
+    r"heavy bleeding|baby is not moving|forced sex|locked in|911"
     r")\b",
     re.I,
 )
@@ -71,7 +73,12 @@ SAFETY_GUARDRAIL_PATTERN = re.compile(
     r"don't trust myself|do not trust myself|want to disappear|"
     r"scared of myself|someone is following me|i feel threatened|"
     r"too hot|too cold|shaking|withdrawal|coming down|"
-    r"partner might find me|afraid to go back"
+    r"partner might find me|afraid to go back|"
+    r"under 18|runaway|couch surfing|couch-surfing|unsafe adult|"
+    r"phone is monitored|documents were taken|being watched|"
+    r"pregnant|postpartum|new baby|no diapers|"
+    r"insulin|inhaler|oxygen|wheelchair|walker|meds were stolen|medication was stolen|"
+    r"caregiver left|no caregiver|hasn't eaten|has not eaten|neglect"
     r")\b",
     re.I,
 )

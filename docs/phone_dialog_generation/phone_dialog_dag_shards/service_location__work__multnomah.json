@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__work__multnomah",
   "kind": "service_location",
   "key": "work__multnomah",
-  "nodeCount": 13,
+  "nodeCount": 21,
   "nodes": [
     {
       "id": "phone_dialog_0000342#turn-1",
@@ -141,7 +141,10 @@
       "similarCases": [],
       "assistantResponse": "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
       "voiceResponseAlternatives": [
-        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me."
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d",
+        "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone."
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
@@ -346,7 +349,10 @@
       "similarCases": [],
       "assistantResponse": "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
       "voiceResponseAlternatives": [
-        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`."
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d",
+        "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -380,6 +386,235 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001384#turn-2",
+      "scenarioId": "phone_dialog_0001384",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Multnomah County. My ex keeps texting that he knows where I am, and he was outside my job yesterday.",
+      "normalizedQuery": "multnomah county ex keeps texting he knows was outside job yesterday",
+      "voiceResponse": "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:e4488b03bff9c85e",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d",
+        "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001384#turn-3",
+      "scenarioId": "phone_dialog_0001384",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m trying to stay quiet because I\u2019m at a friend\u2019s place and I can\u2019t have him show up here too.",
+      "normalizedQuery": "hi sorry give most important number first this phone it at like two percent multnomah county ex keeps texting he knows was outside job yesterday trying stay quiet because friend place have him show up here too",
+      "voiceResponse": "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001384#turn-4",
+      "scenarioId": "phone_dialog_0001384",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "He shoved me last week and said if I leave for good he\u2019ll make me regret it. I\u2019m scared to go back tonight.",
+      "normalizedQuery": "hi sorry give most important number first this phone it at like two percent multnomah county ex keeps texting he knows was outside job yesterday trying stay quiet because friend place have him show up here too shoved last week said if leave good ll make regret scared go back tonight",
+      "voiceResponse": "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry this is happening. You don\u2019t have to go back tonight. If you feel in immediate danger, call **9-1-1** now. If you can stay where you are, we can keep moving with the live advocate handoff and you can talk as little as you want. If the phone dies, call back from any phone and say: \u201cLive domestic violence advocate now.\u201d You\u2019re not overreacting, and you\u2019re not alone.",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001384#turn-5",
+      "scenarioId": "phone_dialog_0001384",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you repeat that number slower? I\u2019m shaking and I don\u2019t want to mess it up.",
+      "normalizedQuery": "multnomah county ex keeps texting he knows was outside job yesterday trying stay quiet because at friend place have him show up here too shoved last week said if leave good ll make regret it scared go back tonight repeat number slower shaking don want mess",
+      "voiceResponse": "Of course. The number is **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. If you feel in immediate danger, call it right away. If not, you can stay on this line and I\u2019ll keep the handoff simple.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. If you feel in immediate danger, call it right away. If not, you can stay on this line and I\u2019ll keep the handoff simple.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Quick safety check: are you safe where you are right now? If you might be in immediate danger, call **9-1-1** now. If you can make one call for support and privacy-safe planning, call **2-1-1** and say: \u201cI need domestic violence advocacy, no callback, safe contact only.\u201d Another direct line is **5 4 1, 7 7 9, 4 3 5 7**. You can share only what feels safe."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001426#turn-3",
+      "scenarioId": "phone_dialog_0001426",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Multnomah County, near downtown Portland, and I just got out of the hospital with my mom and I can\u2019t keep missing shifts.",
+      "normalizedQuery": "hi um sorry really trying fall apart right now finding work like fast say again there so much noise this lobby missed half said multnomah county downtown portland just got hospital mom keep missing shifts",
+      "voiceResponse": "I hear how heavy this is, and you\u2019re doing the right thing by calling. Since you\u2019re in Multnomah County near downtown Portland, I\u2019m connecting you to a live 211 specialist now so they can find fast, local job options that fit your shifts. While I connect you, keep two details ready: your ZIP code and the hours you can work this week. I\u2019m staying with you through the handoff.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how heavy this is, and you\u2019re doing the right thing by calling. Since you\u2019re in Multnomah County near downtown Portland, I\u2019m connecting you to a live 211 specialist now so they can find fast, local job options that fit your shifts. While I connect you, keep two details ready: your ZIP code and the hours you can work this week. I\u2019m staying with you through the handoff.",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001426#turn-4",
+      "scenarioId": "phone_dialog_0001426",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Sorry, I\u2019m crying, I know... I just need somewhere that helps with jobs, resumes, anything, today if possible.",
+      "normalizedQuery": "hi um sorry really trying fall apart right now finding work like fast say again there so much noise this lobby missed half said multnomah county downtown portland just got hospital mom keep missing shifts crying know somewhere helps jobs resumes anything if possible",
+      "voiceResponse": "You\u2019re okay, and I\u2019m right here with you. The audio is breaking up a little, so I want to get you help fast. Please say just one word: **\u201cjobs\u201d** or **\u201cresume.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m right here with you. The audio is breaking up a little, so I want to get you help fast. Please say just one word: **\u201cjobs\u201d** or **\u201cresume.\u201d**",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001486#turn-3",
+      "scenarioId": "phone_dialog_0001486",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "He\u2019s been threatening me and showed up at my work yesterday, and I\u2019m afraid to go back to the apartment tonight.",
+      "normalizedQuery": "hi this isn phone it at like two percent so give most important number first multnomah county domestic violence survivor advocacy scared he checks calls location please keep quiet been threatening showed up work yesterday afraid go back apartment tonight",
+      "voiceResponse": "I\u2019m really glad you called. Quick safety check: are you safe where you are right now? If you might be in immediate danger, call **9-1-1** now. If you can make one call for support and privacy-safe planning, call **2-1-1** and say: \u201cI need domestic violence advocacy, no callback, safe contact only.\u201d Another direct line is **5 4 1, 7 7 9, 4 3 5 7**. You can share only what feels safe.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:2a8dfbe44adb059e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Quick safety check: are you safe where you are right now? If you might be in immediate danger, call **9-1-1** now. If you can make one call for support and privacy-safe planning, call **2-1-1** and say: \u201cI need domestic violence advocacy, no callback, safe contact only.\u201d Another direct line is **5 4 1, 7 7 9, 4 3 5 7**. You can share only what feels safe.",
+      "voiceResponseAlternatives": [
+        "Of course. The number is **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. If you feel in immediate danger, call it right away. If not, you can stay on this line and I\u2019ll keep the handoff simple."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001959#turn-4",
+      "scenarioId": "phone_dialog_0001959",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "He found her at work yesterday even after she blocked him, so I\u2019m scared this is turning into stalking and she\u2019s afraid to go back home tonight.",
+      "normalizedQuery": "hi sorry hear calling sister multnomah county she said call don know every detail please say her name loud if someone listening on end partner checks phone has been threatening all week wait slow down repeat number shaking writing this car he found at work yesterday even after blocked him so scared turning into stalking afraid go back home tonight",
+      "voiceResponse": "You\u2019re right to treat this as serious. If there\u2019s immediate danger right now, call **9-1-1** \u2014 **nine, one, one**. If it\u2019s not immediate, tonight\u2019s safest option is for her not to go home alone and stay somewhere he doesn\u2019t know. You can also help her send one neutral message to a trusted person for pickup and check-ins. If you want, I can give you a short, low-key script for that message and a call script for her workplace.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to treat this as serious. If there\u2019s immediate danger right now, call **9-1-1** \u2014 **nine, one, one**. If it\u2019s not immediate, tonight\u2019s safest option is for her not to go home alone and stay somewhere he doesn\u2019t know. You can also help her send one neutral message to a trusted person for pickup and check-ins. If you want, I can give you a short, low-key script for that message and a call script for her workplace.",
+      "voiceResponseAlternatives": [
+        "Yes, I can help with that. I can\u2019t send the message myself, but a live `2-1-1` specialist can contact services for you. When they answer, you can say: \u201cPlease ask someone to call me about employment help in Multnomah County.\u201d If you want, I can stay with you while you call: `2 \u2026 1 \u2026 1`.",
+        "Thank you for telling me where you are. You\u2019re in Multnomah County near Gresham, and I hear how scared you feel after being turned away. You\u2019re not alone right now. If you can\u2019t breathe or feel in immediate danger, call **9-1-1** now. I\u2019m connecting you to a live person who can help with local options and what to say so you\u2019re less likely to be turned away again. Stay with me.",
+        "I\u2019m really glad you said that. Most important number first: **911** if you feel in immediate danger right now. If you can, stay on this line and I\u2019ll connect you to a live advocate in Multnomah County next. You can share only what you want. If the battery dies, call back from any phone and say: \u201cI need a live domestic violence advocate now.\u201d",
+        "You\u2019re doing the right thing by staying quiet. If he shows up or you feel immediate danger, call **9-1-1** right away. If you want, we can keep this simple: stay on this line and I\u2019ll continue the live-agent handoff now, with as little talking as possible. You can also hang up and call back from any phone and just say, \u201cLive domestic violence advocate.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -454,6 +689,54 @@
       "to": "phone_dialog_0000745#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001384#turn-2",
+      "to": "phone_dialog_0001384#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001384#turn-3",
+      "to": "phone_dialog_0001384#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001384#turn-4",
+      "to": "phone_dialog_0001384#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001384#turn-5",
+      "to": "phone_dialog_0001384#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001426#turn-3",
+      "to": "phone_dialog_0001426#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001426#turn-4",
+      "to": "phone_dialog_0001426#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001486#turn-3",
+      "to": "phone_dialog_0001486#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001959#turn-4",
+      "to": "phone_dialog_0001959#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__family__lane_county",
   "kind": "service_location",
   "key": "family__lane_county",
-  "nodeCount": 16,
+  "nodeCount": 24,
   "nodes": [
     {
       "id": "phone_dialog_0000233#turn-1",
@@ -178,7 +178,9 @@
       "assistantResponse": "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
       "voiceResponseAlternatives": [
         "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
-        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**."
+        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911.",
+        "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "background_noise",
@@ -236,7 +238,9 @@
       "assistantResponse": "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
       "voiceResponseAlternatives": [
         "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
-        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**."
+        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911.",
+        "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "background_noise",
@@ -469,11 +473,253 @@
       "assistantResponse": "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
       "voiceResponseAlternatives": [
         "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
-        "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist."
+        "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
+        "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911.",
+        "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001520#turn-1",
+      "scenarioId": "phone_dialog_0001520",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m in Lane County and I had my baby two weeks ago, I\u2019m still bleeding a lot and I feel really shaky.",
+      "normalizedQuery": "hi sorry lane county had baby two weeks ago still bleeding lot feel really shaky",
+      "voiceResponse": "I\u2019m really glad you called. Heavy bleeding and feeling shaky two weeks after birth is an emergency. Please call **911 now** or have someone take you to the nearest ER immediately. If you feel faint, short of breath, or worse, do not wait and do not drive yourself. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:b7bf09e450197ec7",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:824341b52f6f4175"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Heavy bleeding and feeling shaky two weeks after birth is an emergency. Please call **911 now** or have someone take you to the nearest ER immediately. If you feel faint, short of breath, or worse, do not wait and do not drive yourself. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll say it slowly: **Lane County Diaper Bank**. That is in **Springfield**: **3-0-5-0 Game Farm Road, Springfield**. I can repeat it again, one line at a time, while you open the page.",
+        "I can do that, but I don\u2019t have a phone number showing on this page right now. I\u2019m connecting you to the live agent now, and they can read the exact number one digit at a time. If anyone is in immediate danger, call 9-1-1 now.",
+        "Thanks, I hear you. Since this is urgent child care in Lane County, I\u2019m connecting you to a live 211 specialist right now so they can find fast options for her night shift and two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, stay on the line for the transfer.",
+        "Yes, absolutely. We can still start with partial information. A live 211 specialist can check Lane County child care programs and narrow options with whatever details you have now. Stay on the line and I\u2019ll complete the transfer."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001520#turn-2",
+      "scenarioId": "phone_dialog_0001520",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I\u2019m trying to listen, I\u2019m just crying and I can\u2019t think straight.",
+      "normalizedQuery": "hi sorry lane county had baby two weeks ago still bleeding lot feel really shaky say again slower trying listen just crying think straight",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
+        "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
+        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001566#turn-6",
+      "scenarioId": "phone_dialog_0001566",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Also we\u2019re out of diapers completely, I\u2019m in Lane County, can you help me find somewhere today?",
+      "normalizedQuery": "also we re diapers diaper baby completely lane county somewhere",
+      "voiceResponse": "Yes. I can help, and your safety is still urgent: please call **911 now** first. For diapers in Lane County, contact **Lane County Diaper Bank** at **5 4 1, 2 2 1, 0 8 2 4**. Address: **3 0 5 0 Game Farm Road, Springfield, 9 7 4 7 8**. They\u2019re open Monday to Friday, 8 to 5, and can help if you have OHP, WIC, or SNAP.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:0de8e3b5ff9b859a",
+        "service:c196660a779416f8",
+        "service:0661e27999f1553c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help, and your safety is still urgent: please call **911 now** first. For diapers in Lane County, contact **Lane County Diaper Bank** at **5 4 1, 2 2 1, 0 8 2 4**. Address: **3 0 5 0 Game Farm Road, Springfield, 9 7 4 7 8**. They\u2019re open Monday to Friday, 8 to 5, and can help if you have OHP, WIC, or SNAP.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll say it slowly: **Lane County Diaper Bank**. That is in **Springfield**: **3-0-5-0 Game Farm Road, Springfield**. I can repeat it again, one line at a time, while you open the page.",
+        "I can do that, but I don\u2019t have a phone number showing on this page right now. I\u2019m connecting you to the live agent now, and they can read the exact number one digit at a time. If anyone is in immediate danger, call 9-1-1 now.",
+        "Thanks, I hear you. Since this is urgent child care in Lane County, I\u2019m connecting you to a live 211 specialist right now so they can find fast options for her night shift and two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, stay on the line for the transfer.",
+        "Yes, absolutely. We can still start with partial information. A live 211 specialist can check Lane County child care programs and narrow options with whatever details you have now. Stay on the line and I\u2019ll complete the transfer."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001775#turn-2",
+      "scenarioId": "phone_dialog_0001775",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m calling about my sister in Lane County, she had her baby two weeks ago and she\u2019s bleeding a lot again tonight.",
+      "normalizedQuery": "calling sister lane county she had her baby two weeks ago bleeding lot again tonight",
+      "voiceResponse": "This sounds urgent postpartum bleeding. Call **9-1-1 now** for immediate medical help. If you can, stay with your sister, keep her lying down, and do not wait for a callback. If she soaks a pad in an hour, passes large clots, feels dizzy, faint, or short of breath, tell 911 that right away.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:98249e32a262b454",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This sounds urgent postpartum bleeding. Call **9-1-1 now** for immediate medical help. If you can, stay with your sister, keep her lying down, and do not wait for a callback. If she soaks a pad in an hour, passes large clots, feels dizzy, faint, or short of breath, tell 911 that right away.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll say it slowly: **Lane County Diaper Bank**. That is in **Springfield**: **3-0-5-0 Game Farm Road, Springfield**. I can repeat it again, one line at a time, while you open the page.",
+        "I can do that, but I don\u2019t have a phone number showing on this page right now. I\u2019m connecting you to the live agent now, and they can read the exact number one digit at a time. If anyone is in immediate danger, call 9-1-1 now.",
+        "Thanks, I hear you. Since this is urgent child care in Lane County, I\u2019m connecting you to a live 211 specialist right now so they can find fast options for her night shift and two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, stay on the line for the transfer.",
+        "Yes, absolutely. We can still start with partial information. A live 211 specialist can check Lane County child care programs and narrow options with whatever details you have now. Stay on the line and I\u2019ll complete the transfer."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001775#turn-4",
+      "scenarioId": "phone_dialog_0001775",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what did you say? I\u2019m outside and cars are loud, can you repeat that slower?",
+      "normalizedQuery": "hi on borrowed phone it at like two percent give most important number first calling sister lane county she had her baby weeks ago bleeding lot again tonight just said don trust myself right now really scared might hurt herself sorry did say outside cars loud repeat slower",
+      "voiceResponse": "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Most important: call **9-1-1 now**. Say: \u201cPostpartum mom, heavy bleeding, and she might hurt herself or the baby.\u201d Stay with her. Keep the baby in a safe crib. Remove anything she could use to hurt herself. Do not leave her alone.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
+        "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
+        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001892#turn-5",
+      "scenarioId": "phone_dialog_0001892",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Also, I hate to ask this right now, but we\u2019re out of diapers completely. Is there anywhere in Lane County that can help today?",
+      "normalizedQuery": "also hate ask this right now we re diapers diaper baby completely there anywhere lane county",
+      "voiceResponse": "You\u2019re not wrong to ask, and I\u2019m glad you did. First, your sister should call **9-1-1 now** for your medical safety. For diapers in Lane County today, call **Lane County Diaper Bank** at **5-4-1, 2-2-1, 0-8-2-4**. They\u2019re at **3050 Game Farm Road, Springfield**, open weekdays **8 to 5**. They help if you get OHP, WIC, or SNAP, and no intake documents are required. Have your sister make that diaper call while you wait for emergency help.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:c196660a779416f8",
+        "service:0de8e3b5ff9b859a",
+        "service:cae4ac2c54d5abee"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not wrong to ask, and I\u2019m glad you did. First, your sister should call **9-1-1 now** for your medical safety. For diapers in Lane County today, call **Lane County Diaper Bank** at **5-4-1, 2-2-1, 0-8-2-4**. They\u2019re at **3050 Game Farm Road, Springfield**, open weekdays **8 to 5**. They help if you get OHP, WIC, or SNAP, and no intake documents are required. Have your sister make that diaper call while you wait for emergency help.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll say it slowly: **Lane County Diaper Bank**. That is in **Springfield**: **3-0-5-0 Game Farm Road, Springfield**. I can repeat it again, one line at a time, while you open the page.",
+        "I can do that, but I don\u2019t have a phone number showing on this page right now. I\u2019m connecting you to the live agent now, and they can read the exact number one digit at a time. If anyone is in immediate danger, call 9-1-1 now.",
+        "Thanks, I hear you. Since this is urgent child care in Lane County, I\u2019m connecting you to a live 211 specialist right now so they can find fast options for her night shift and two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, stay on the line for the transfer.",
+        "Yes, absolutely. We can still start with partial information. A live 211 specialist can check Lane County child care programs and narrow options with whatever details you have now. Stay on the line and I\u2019ll complete the transfer."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001892#turn-6",
+      "scenarioId": "phone_dialog_0001892",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the name and number slower? My phone\u2019s at like 3 percent and the noise is bad.",
+      "normalizedQuery": "don want hurt baby keep getting these scary thoughts then start crying haven done anything just trust myself tonight no alone sister here feel dizzy shaky go er now also hate ask this right we re diapers diaper completely there anywhere lane county repeat name number slower phone at like percent noise bad",
+      "voiceResponse": "Of course. The name is **Lane County Diaper Bank**. The number is **5-4-1 \u2026 2-2-1 \u2026 0-8-2-4**. I\u2019ll say it once more: **5-4-1 \u2026 2-2-1 \u2026 0-8-2-4**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Lane County Diaper Bank**. The number is **5-4-1 \u2026 2-2-1 \u2026 0-8-2-4**. I\u2019ll say it once more: **5-4-1 \u2026 2-2-1 \u2026 0-8-2-4**.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019m connecting you to a live 211 specialist now for urgent night child care in Lane County for your sister\u2019s two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, please stay on the line for the transfer.",
+        "Yes. I\u2019ll say it twice, slowly: if either child is in immediate danger, call **9-1-1**. Again: if either child is in immediate danger, call **9-1-1**. Otherwise, stay on the line and I\u2019ll transfer you to a live **2-1-1** specialist.",
+        "Of course. The number for **Right Track Resource Center** is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Yes. I\u2019ll say it slowly. You\u2019re having heavy bleeding and feeling shaky two weeks after birth. That is an emergency. Please call **911 now**. Or have someone take you to the nearest emergency room right now. Do not drive yourself. If you want, I can stay with you while you call 911."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002066#turn-1",
+      "scenarioId": "phone_dialog_0002066",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling about my mom in Lane County. I\u2019m her daughter, and she\u2019s alone most days now and not getting proper care.",
+      "normalizedQuery": "hi calling mom lane county her daughter she alone most days now getting proper care",
+      "voiceResponse": "I hear you. Your mom is in Lane County, and she is alone most days. Alone most days. I will connect you to a live specialist now for care support options. If she is in immediate danger right now, call 9-1-1. Call 9-1-1. Is she safe right now?",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1090306857226ac3",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your mom is in Lane County, and she is alone most days. Alone most days. I will connect you to a live specialist now for care support options. If she is in immediate danger right now, call 9-1-1. Call 9-1-1. Is she safe right now?",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll say it slowly: **Lane County Diaper Bank**. That is in **Springfield**: **3-0-5-0 Game Farm Road, Springfield**. I can repeat it again, one line at a time, while you open the page.",
+        "I can do that, but I don\u2019t have a phone number showing on this page right now. I\u2019m connecting you to the live agent now, and they can read the exact number one digit at a time. If anyone is in immediate danger, call 9-1-1 now.",
+        "Thanks, I hear you. Since this is urgent child care in Lane County, I\u2019m connecting you to a live 211 specialist right now so they can find fast options for her night shift and two kids. If either child is in immediate danger right now, call 9-1-1. Otherwise, stay on the line for the transfer.",
+        "Yes, absolutely. We can still start with partial information. A live 211 specialist can check Lane County child care programs and narrow options with whatever details you have now. Stay on the line and I\u2019ll complete the transfer."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -566,6 +812,42 @@
       "to": "phone_dialog_0001020#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001520#turn-1",
+      "to": "phone_dialog_0001520#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001520#turn-2",
+      "to": "phone_dialog_0001520#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001775#turn-2",
+      "to": "phone_dialog_0001775#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001775#turn-4",
+      "to": "phone_dialog_0001775#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001892#turn-5",
+      "to": "phone_dialog_0001892#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002066#turn-1",
+      "to": "phone_dialog_0002066#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

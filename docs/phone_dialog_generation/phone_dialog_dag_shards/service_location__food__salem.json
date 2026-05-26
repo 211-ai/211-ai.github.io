@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__food__salem",
   "kind": "service_location",
   "key": "food__salem",
-  "nodeCount": 25,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000128#turn-2",
@@ -740,6 +740,61 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001919#turn-6",
+      "scenarioId": "phone_dialog_0001919",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If she\u2019s stable enough to stay home, can you help me set up senior meal delivery in Salem and transport once the elevator is working, and repeat any numbers in small chunks?",
+      "normalizedQuery": "if she stable enough stay home set up senior meal delivery salem transport ride transportation bus once elevator working repeat any numbers small chunks",
+      "voiceResponse": "Yes. If she is stable, we can set both up. First, transportation: Cascades West Ride Line. Call **5 4 1, 9 2 4, 8 7 3 8**. I\u2019ll repeat: **5 4 1, 9 2 4, 8 7 3 8**. Backup: **8 6 6, 7 2 4, 2 9 7 5**. I\u2019ll repeat: **8 6 6, 7 2 4, 2 9 7 5**. Address: **1 4 0 0 Queen Avenue S E, Suite 2 0 1, Albany, Oregon 9 7 3 2 2**. One question: do you want me to draft exactly what to say when you call?",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:772d7d7943af2255",
+        "service:80bb5c1077a6fe59",
+        "service:6ee668e6330d23d8",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. If she is stable, we can set both up. First, transportation: Cascades West Ride Line. Call **5 4 1, 9 2 4, 8 7 3 8**. I\u2019ll repeat: **5 4 1, 9 2 4, 8 7 3 8**. Backup: **8 6 6, 7 2 4, 2 9 7 5**. I\u2019ll repeat: **8 6 6, 7 2 4, 2 9 7 5**. Address: **1 4 0 0 Queen Avenue S E, Suite 2 0 1, Albany, Oregon 9 7 3 2 2**. One question: do you want me to draft exactly what to say when you call?",
+      "voiceResponseAlternatives": [
+        "Absolutely, and thanks for checking. The name is: **Union Gospel Mission** \u2014 **Men\u2019s Mission Meals**. I\u2019ll say it one more time, slowly: **Union** \u2026 **Gospel** \u2026 **Mission**.",
+        "Yeah \u2014 the name is **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it in chunks: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**.",
+        "I hear you, and you\u2019re doing okay. We didn\u2019t give hours yet. I don\u2019t have verified hours on-screen for that spot right now. For a Salem clothing option, call **Hope Station** at **5 0 3, 3 3 9, 7 7 1 0** and ask, \u201cWhat are your clothing hours today?\u201d",
+        "Yes. One at a time. First place name: **Salem**. I said: **Salem**. Second place name in the address: **Madison Street**. I said: **Madison Street**. State: **Oregon**. I said: **Oregon**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001954#turn-4",
+      "scenarioId": "phone_dialog_0001954",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "He lives alone now, his walker barely fits through that bathroom door, and he says he\u2019s scared to use the stairs, so he can\u2019t safely get out for groceries.",
+      "normalizedQuery": "hi calling uncle salem he 79 mostly homebound think being neglected sorry say again little slower if re asking immediate danger right this second don there fire anything sounds weak confused told hasn had real meal since yesterday morning missed his heart pills last night because nobody came by lives alone now walker barely fits through bathroom door says scared use stairs so safely groceries",
+      "voiceResponse": "Thank you. I hear you. He is alone, weak, and cannot safely use the stairs. Cannot safely use the stairs. Quick safety check: if he has chest pain, trouble breathing, or is hard to wake, call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist right now for urgent elder safety support and food access. One question: is he alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. He is alone, weak, and cannot safely use the stairs. Cannot safely use the stairs. Quick safety check: if he has chest pain, trouble breathing, or is hard to wake, call 9-1-1 now. Call 9-1-1 now. I can connect you to a live specialist right now for urgent elder safety support and food access. One question: is he alone right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -868,6 +923,12 @@
       "to": "phone_dialog_0001044#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001954#turn-4",
+      "to": "phone_dialog_0001954#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

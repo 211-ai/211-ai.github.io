@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__broad_help__salem",
   "kind": "service_location",
   "key": "broad_help__salem",
-  "nodeCount": 12,
+  "nodeCount": 16,
   "nodes": [
     {
       "id": "phone_dialog_0000141#turn-3",
@@ -359,6 +359,116 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001623#turn-2",
+      "scenarioId": "phone_dialog_0001623",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not passed out or anything, but I\u2019m shaky and I need somewhere today that can help me get insulin fast.",
+      "normalizedQuery": "hi salem sleeping behind grocery store lot insulin bag got stolen last night passed anything shaky somewhere fast",
+      "voiceResponse": "First step: because you\u2019re shaky without insulin, call **911 now** for urgent medical help. I\u2019ll repeat: call **9-1-1** now. I don\u2019t have a verified Salem insulin service in the records I can see. If you can stay on the line after 911, I can connect you to a live 211 specialist for same-day local options.",
+      "evidenceDocIds": [
+        "service:592cd9263848a76f",
+        "service:abcc3c66c0bc8fc1",
+        "service:ab090c573c65ef97",
+        "service:0f7f4015483c103e",
+        "page:bafkreihwlo65bdua7ku23bziatzfd4eo2hdpfyq7uq6lnpgh6vhgvt6gfq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: because you\u2019re shaky without insulin, call **911 now** for urgent medical help. I\u2019ll repeat: call **9-1-1** now. I don\u2019t have a verified Salem insulin service in the records I can see. If you can stay on the line after 911, I can connect you to a live 211 specialist for same-day local options.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not alone, and you called at the right time. First step: call **541-322-8768**, extension **13**. I\u2019ll say it slowly: **five-four-one, three-two-two, eight-seven-six-eight, ext one-three**. Tell them: \u201cI\u2019m in Salem near downtown, I got an eviction paper, and I need urgent housing help today.\u201d If the call drops, text that same message to someone who can call with you right now.",
+        "Of course. You\u2019re doing okay. Here it is slowly: **Five-four-one \u2026 three-two-two \u2026 eight-seven-six-eight.** Again: **541 \u2026 322 \u2026 8768**. Extension: **one-three**.",
+        "Yes. Open the **Local Survivor Programs** screen, tap **Domestic Violence Support**, then select **HAVEN FROM DOMESTIC AND SEXUAL VIOLENCE** and press call: **5-4-1, 2-9-6, 1-6-6-2**. If you\u2019re in immediate danger right now, call **9-1-1** first.",
+        "Yes. I\u2019ll keep you on the **Local Survivor Programs** screen in **map/list view** set to **Salem**. From there, tap **Crisis Line** to call **5-4-1, 7-5-4, 0-1-1-0** now, or tap a program and press **Call**. If you\u2019re in immediate danger right now, call **9-1-1** first."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002127#turn-2",
+      "scenarioId": "phone_dialog_0002127",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Salem, and my kids and I don\u2019t have decent clothes, like jackets and shoes, I just... I can\u2019t keep this straight.",
+      "normalizedQuery": "hi sorry really breathe right keep crying don know start salem kids have decent clothes like jackets shoes just this straight",
+      "voiceResponse": "You\u2019re carrying a lot right now, and you did a good job telling me that. Your audio got a little unclear again. Please repeat just one short thing: are you asking for **clothing help in Salem** for you and your kids, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:8149fdd1582fa7a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re carrying a lot right now, and you did a good job telling me that. Your audio got a little unclear again. Please repeat just one short thing: are you asking for **clothing help in Salem** for you and your kids, yes or no?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002127#turn-3",
+      "scenarioId": "phone_dialog_0002127",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I missed that, there\u2019s noise here and my head is spinning.",
+      "normalizedQuery": "hi sorry really breathe right keep crying don know start salem kids have decent clothes like jackets shoes just this straight slow down missed there noise here head spinning",
+      "voiceResponse": "Absolutely, I\u2019ll slow down. You\u2019re doing okay. Here\u2019s the one thing I asked: Are you asking for **clothing help in Salem** for you and your kids? Please say just **\u201cyes\u201d** or **\u201cno.\u201d**",
+      "evidenceDocIds": [
+        "service:4e7a1d6f366bccc4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b6e8a3b4aab14edf",
+        "service:9c1a485121b7fe69"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019ll slow down. You\u2019re doing okay. Here\u2019s the one thing I asked: Are you asking for **clothing help in Salem** for you and your kids? Please say just **\u201cyes\u201d** or **\u201cno.\u201d**",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002127#turn-4",
+      "scenarioId": "phone_dialog_0002127",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, is that in Salem or somewhere else? I don\u2019t have a car, I need somewhere I can actually get to.",
+      "normalizedQuery": "hi sorry really breathe right keep crying don know start salem kids have decent clothes like jackets shoes just this straight slow down missed there noise here head spinning wait somewhere else car actually",
+      "voiceResponse": "You\u2019re making total sense, and thank you for saying that. From what I can see right now, the listed locations are **not in Salem**: one is in **Hermiston**, and one is in **Dallas**. Since you don\u2019t have a car, let\u2019s focus on places you can reach. I can help you find **clothing help in Salem** that\u2019s bus- or walk-accessible. Can you tell me your nearest cross street or ZIP code?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:4b3d7823ab345e79",
+        "service:5ab1b4bcdd790c81",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:4e7a1d6f366bccc4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making total sense, and thank you for saying that. From what I can see right now, the listed locations are **not in Salem**: one is in **Hermiston**, and one is in **Dallas**. Since you don\u2019t have a car, let\u2019s focus on places you can reach. I can help you find **clothing help in Salem** that\u2019s bus- or walk-accessible. Can you tell me your nearest cross street or ZIP code?",
+      "voiceResponseAlternatives": [
+        "I hear you. You need domestic violence help for you, in Salem. A confidential hotline you can call is: **541-819-2544**. That is **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**. Again: **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**. Are you safe enough to call them right now?",
+        "Yes. The agency name is **Domestic Violence Program**. I\u2019ll say it slowly: **Do-mes-tic** \u2026 **Vi-o-lence** \u2026 **Pro-gram**. Again: **Do-mes-tic** \u2026 **Vi-o-lence** \u2026 **Pro-gram**.",
+        "Thank you. One thing at a time. You asked for help with domestic violence in Salem. First step: call the Domestic Violence Program hotline. The number is **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**. Again: **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**. Are you safe enough to make that call right now?",
+        "Yes. I will say it in small chunks. The number is: **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**. Again: **5 4 1** \u2026 **8 1 9** \u2026 **2 5 4 4**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -421,6 +531,30 @@
       "to": "phone_dialog_0000609#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001623#turn-2",
+      "to": "phone_dialog_0001623#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002127#turn-2",
+      "to": "phone_dialog_0002127#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002127#turn-3",
+      "to": "phone_dialog_0002127#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002127#turn-4",
+      "to": "phone_dialog_0002127#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

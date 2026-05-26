@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__food__medford",
   "kind": "service_location",
   "key": "food__medford",
-  "nodeCount": 39,
+  "nodeCount": 47,
   "nodes": [
     {
       "id": "phone_dialog_0000055#turn-1",
@@ -1164,6 +1164,246 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001622#turn-6",
+      "scenarioId": "phone_dialog_0001622",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me find senior meal delivery in Medford and maybe urgent transport if he needs to be seen today? If you give me a number, please do it in small chunks so I can write it down.",
+      "normalizedQuery": "senior meal delivery medford maybe urgent transport ride transportation bus if he needs be seen give number please it small chunks so write down",
+      "voiceResponse": "Yes. I can help now. For urgent medical rides, call Cascades West Ride Line: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**. Again: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**. Second number: **5 4 1** \u2026 **9 6 7** \u2026 **8 6 3 0**. Again: **5 4 1** \u2026 **9 6 7** \u2026 **8 6 3 0**. If he has chest pain or trouble breathing, call **9-1-1** now. One question: is he on Oregon Health Plan Medicaid?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:156176ac73be0658",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help now. For urgent medical rides, call Cascades West Ride Line: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**. Again: **5 4 1** \u2026 **9 2 4** \u2026 **8 7 3 8**. Second number: **5 4 1** \u2026 **9 6 7** \u2026 **8 6 3 0**. Again: **5 4 1** \u2026 **9 6 7** \u2026 **8 6 3 0**. If he has chest pain or trouble breathing, call **9-1-1** now. One question: is he on Oregon Health Plan Medicaid?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing by asking. I can\u2019t see live open hours here, but the Oregon Food Bank has a pantry and meal locator for Medford sites near Main Street. If you can, we can use that now to find what\u2019s open today. If that feels like too much, I can connect you to a live person to check current openings with you.",
+        "Absolutely, that makes sense. Let\u2019s keep it simple: I don\u2019t have a confirmed walk-to pantry in Medford from this list, and I don\u2019t want to send you somewhere wrong. The best next step is a live person who can check what\u2019s open near Main Street right now and pick the closest one you can walk to. I can stay with you while we do that.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. We can keep this simple: I\u2019ll connect you now to a live specialist who can help with ride options for appointments and groceries in Medford, including same-day if available. You can share only what you\u2019re comfortable sharing, and we\u2019ll go at your pace.",
+        "You\u2019re okay. We can do this one step at a time. I can help find senior meal programs in Medford for your mom. I only need the minimum details, and we can keep this private. If anyone is in immediate danger, call 911 right now. One question first: is your mom in Medford, Oregon?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001744#turn-3",
+      "scenarioId": "phone_dialog_0001744",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "She also skipped her heart pills yesterday because nobody brought them from the pharmacy, and she can\u2019t safely do the stairs from her apartment.",
+      "normalizedQuery": "hi calling aunt medford she 79 mostly home alone think being neglected sorry hard hearing on this phone line say slower immediate danger right now awake breathing missed meals again also skipped her heart pills yesterday because nobody brought them from pharmacy safely stairs apartment",
+      "voiceResponse": "Thank you. I hear you. She missed heart pills yesterday. She missed heart pills yesterday. And she cannot safely do stairs. That is serious. If she has chest pain, trouble breathing, or suddenly gets worse, call 9-1-1. I\u2019ll repeat: if she suddenly gets worse, call 9-1-1. I can connect you to a live specialist right now for Medford elder neglect support. Can I connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. She missed heart pills yesterday. She missed heart pills yesterday. And she cannot safely do stairs. That is serious. If she has chest pain, trouble breathing, or suddenly gets worse, call 9-1-1. I\u2019ll repeat: if she suddenly gets worse, call 9-1-1. I can connect you to a live specialist right now for Medford elder neglect support. Can I connect you now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing by asking. I can\u2019t see live open hours here, but the Oregon Food Bank has a pantry and meal locator for Medford sites near Main Street. If you can, we can use that now to find what\u2019s open today. If that feels like too much, I can connect you to a live person to check current openings with you.",
+        "Absolutely, that makes sense. Let\u2019s keep it simple: I don\u2019t have a confirmed walk-to pantry in Medford from this list, and I don\u2019t want to send you somewhere wrong. The best next step is a live person who can check what\u2019s open near Main Street right now and pick the closest one you can walk to. I can stay with you while we do that.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. We can keep this simple: I\u2019ll connect you now to a live specialist who can help with ride options for appointments and groceries in Medford, including same-day if available. You can share only what you\u2019re comfortable sharing, and we\u2019ll go at your pace.",
+        "You\u2019re okay. We can do this one step at a time. I can help find senior meal programs in Medford for your mom. I only need the minimum details, and we can keep this private. If anyone is in immediate danger, call 911 right now. One question first: is your mom in Medford, Oregon?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001756#turn-1",
+      "scenarioId": "phone_dialog_0001756",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? I can hear you but only if you talk slow. I\u2019m in Medford, and I haven\u2019t had a real meal since yesterday morning.",
+      "normalizedQuery": "hello hear only if talk slow medford haven had real meal since yesterday morning",
+      "voiceResponse": "Hi, I hear you. I will speak slowly. I found one place with food and shelter: Safe Haven Maternity Home in Roseburg. Phone: **5 4 1, 4 6 4, 2 7 4 0**. Again: **5 4 1, 4 6 4, 2 7 4 0**. Address: **4 4 5 Northeast Chestnut Street, Roseburg**. Again: **4 4 5 Northeast Chestnut Street, Roseburg**. Are you pregnant, or caring for a child under age 3?",
+      "evidenceDocIds": [
+        "service:e232f8e870bdd119",
+        "service:33691fdf0a700447",
+        "service:27e274f68ae6936d",
+        "service:b3d7aa7d9150b9d1",
+        "service:bc6bf15066f03220"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Hi, I hear you. I will speak slowly. I found one place with food and shelter: Safe Haven Maternity Home in Roseburg. Phone: **5 4 1, 4 6 4, 2 7 4 0**. Again: **5 4 1, 4 6 4, 2 7 4 0**. Address: **4 4 5 Northeast Chestnut Street, Roseburg**. Again: **4 4 5 Northeast Chestnut Street, Roseburg**. Are you pregnant, or caring for a child under age 3?",
+      "voiceResponseAlternatives": [
+        "Next step: please call **Crossings in Medford** and ask if today\u2019s meals are open to the public. Their number is **5-4-1, 4-9-9, 0-8-8-0**. Address is **711 East Main Street, Suite 25, Medford, 9-7-5-0-4**. I also have one Portland option: **Food Pantry and Meals**, **5-0-3, 7-7-1, 7-9-1-4**.",
+        "Yes, the city is **Medford**. The meal site name is **Crossings in Medford**. I\u2019ll repeat slowly: **Crossings** \u2026 in **Medford**.",
+        "Yes. The phone number is **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**. I\u2019ll repeat it: **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**.",
+        "You\u2019re okay. For food today, here\u2019s the fastest option: call **five-zero-three, seven-seven-one, seven-nine-one-four**. That\u2019s a pantry and meals program, no documents required. If that\u2019s too far from Medford, use the Oregon Food Bank pantry locator to find a closer site open today. It\u2019s for pantries and meal sites statewide. If the call drops, I can repeat just the number."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001756#turn-2",
+      "scenarioId": "phone_dialog_0001756",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yes, I\u2019m safe right this second, I\u2019m inside and the door is locked, but I\u2019m weak and shaky.",
+      "normalizedQuery": "hello hear only if talk slow medford haven had real meal since yesterday morning yes safe right this second inside door locked weak shaky",
+      "voiceResponse": "Thank you for telling me. You are safe right now. You are safe right now. Please call Safe Haven now for food and shelter. Phone: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0. Address: 4 4 5 N E Chestnut Street, Roseburg, Oregon, 9 7 4 7 0. Again: 4 4 5 N E Chestnut Street, Roseburg, Oregon, 9 7 4 7 0. Are you pregnant, or caring for a child under age 3?",
+      "evidenceDocIds": [
+        "service:27e274f68ae6936d",
+        "service:c9d3b98528449e94",
+        "page:bafkreif2sibw7v542da36v5yfazjaa7na2qvht3qt3swj3bu5hh3iga47i",
+        "page:bafkreif34lkcjokgonucfdic5k6wbgd4hn6g37blebfmhzbs26eriqjbve",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You are safe right now. You are safe right now. Please call Safe Haven now for food and shelter. Phone: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0. Address: 4 4 5 N E Chestnut Street, Roseburg, Oregon, 9 7 4 7 0. Again: 4 4 5 N E Chestnut Street, Roseburg, Oregon, 9 7 4 7 0. Are you pregnant, or caring for a child under age 3?",
+      "voiceResponseAlternatives": [
+        "Next step: please call **Crossings in Medford** and ask if today\u2019s meals are open to the public. Their number is **5-4-1, 4-9-9, 0-8-8-0**. Address is **711 East Main Street, Suite 25, Medford, 9-7-5-0-4**. I also have one Portland option: **Food Pantry and Meals**, **5-0-3, 7-7-1, 7-9-1-4**.",
+        "Yes, the city is **Medford**. The meal site name is **Crossings in Medford**. I\u2019ll repeat slowly: **Crossings** \u2026 in **Medford**.",
+        "Yes. The phone number is **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**. I\u2019ll repeat it: **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**.",
+        "You\u2019re okay. For food today, here\u2019s the fastest option: call **five-zero-three, seven-seven-one, seven-nine-one-four**. That\u2019s a pantry and meals program, no documents required. If that\u2019s too far from Medford, use the Oregon Food Bank pantry locator to find a closer site open today. It\u2019s for pantries and meal sites statewide. If the call drops, I can repeat just the number."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001756#turn-3",
+      "scenarioId": "phone_dialog_0001756",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My helper was supposed to come and didn\u2019t, and I missed my heart pills last night because I couldn\u2019t get to the pharmacy.",
+      "normalizedQuery": "hello hear only if talk slow medford haven had real meal since yesterday morning yes safe right this second inside door locked weak shaky helper was supposed come didn missed heart pills last night because couldn pharmacy",
+      "voiceResponse": "I hear you. You missed your heart pills last night. You missed your heart pills last night. If you have chest pain, trouble breathing, or feel faint, call 9 1 1 now. For food and shelter now, call Safe Haven Maternity Home: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0. Are you having chest pain or trouble breathing right now?",
+      "evidenceDocIds": [
+        "service:27e274f68ae6936d",
+        "service:c9d3b98528449e94",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You missed your heart pills last night. You missed your heart pills last night. If you have chest pain, trouble breathing, or feel faint, call 9 1 1 now. For food and shelter now, call Safe Haven Maternity Home: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0. Are you having chest pain or trouble breathing right now?",
+      "voiceResponseAlternatives": [
+        "Next step: please call **Crossings in Medford** and ask if today\u2019s meals are open to the public. Their number is **5-4-1, 4-9-9, 0-8-8-0**. Address is **711 East Main Street, Suite 25, Medford, 9-7-5-0-4**. I also have one Portland option: **Food Pantry and Meals**, **5-0-3, 7-7-1, 7-9-1-4**.",
+        "Yes, the city is **Medford**. The meal site name is **Crossings in Medford**. I\u2019ll repeat slowly: **Crossings** \u2026 in **Medford**.",
+        "Yes. The phone number is **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**. I\u2019ll repeat it: **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**.",
+        "You\u2019re okay. For food today, here\u2019s the fastest option: call **five-zero-three, seven-seven-one, seven-nine-one-four**. That\u2019s a pantry and meals program, no documents required. If that\u2019s too far from Medford, use the Oregon Food Bank pantry locator to find a closer site open today. It\u2019s for pantries and meal sites statewide. If the call drops, I can repeat just the number."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001756#turn-4",
+      "scenarioId": "phone_dialog_0001756",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that number again, one piece at a time? I didn\u2019t catch it.",
+      "normalizedQuery": "hello hear only if talk slow medford haven had real meal since yesterday morning yes safe right this second inside door locked weak shaky helper was supposed come didn missed heart pills last night because couldn pharmacy say number again one piece at time catch it",
+      "voiceResponse": "Yes. I will say it slowly, one piece at a time. Five. Four. One. Four. Six. Four. Two. Seven. Four. Zero. That is: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slowly, one piece at a time. Five. Four. One. Four. Six. Four. Two. Seven. Four. Zero. That is: 5 4 1, 4 6 4, 2 7 4 0. Again: 5 4 1, 4 6 4, 2 7 4 0.",
+      "voiceResponseAlternatives": [
+        "Next step: please call **Crossings in Medford** and ask if today\u2019s meals are open to the public. Their number is **5-4-1, 4-9-9, 0-8-8-0**. Address is **711 East Main Street, Suite 25, Medford, 9-7-5-0-4**. I also have one Portland option: **Food Pantry and Meals**, **5-0-3, 7-7-1, 7-9-1-4**.",
+        "Yes, the city is **Medford**. The meal site name is **Crossings in Medford**. I\u2019ll repeat slowly: **Crossings** \u2026 in **Medford**.",
+        "Yes. The phone number is **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**. I\u2019ll repeat it: **5-4-1** \u2026 **4-9-9** \u2026 **0-8-8-0**.",
+        "You\u2019re okay. For food today, here\u2019s the fastest option: call **five-zero-three, seven-seven-one, seven-nine-one-four**. That\u2019s a pantry and meals program, no documents required. If that\u2019s too far from Medford, use the Oregon Food Bank pantry locator to find a closer site open today. It\u2019s for pantries and meal sites statewide. If the call drops, I can repeat just the number."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001943#turn-6",
+      "scenarioId": "phone_dialog_0001943",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "After the safety part, can you help me find senior meal delivery in Medford and maybe someone who can do a welfare check today?",
+      "normalizedQuery": "after safety part senior meal delivery medford maybe someone who welfare check",
+      "voiceResponse": "Yes. I can help with that now. For a same-day welfare check, call **9-1-1**. I\u2019ll repeat: **9-1-1**. For senior meal delivery in Medford, call **2-1-1** for local options and referrals. I\u2019ll repeat: **2-1-1**. If you want, I can help you with a short script for both calls.",
+      "evidenceDocIds": [
+        "page:bafkreianmqrdc6etanxfbn4yw7tz72czpifr2qr5q6rw5xffa6a3aoiebq",
+        "page:bafkreica62fzdzcoypdyul2hz3brwxsgcywesnx4uct4ecgiqiop2ax5cm",
+        "page:bafkreibn4wkeqmzupq2lzd24vxvtx63koadyscswz3e3uxfo2is3g4tlsm",
+        "page:bafkreicpdkocangeit3w2w2z5tnx7pmr6qhyvocmbizb6tih44k7jgcksy",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that now. For a same-day welfare check, call **9-1-1**. I\u2019ll repeat: **9-1-1**. For senior meal delivery in Medford, call **2-1-1** for local options and referrals. I\u2019ll repeat: **2-1-1**. If you want, I can help you with a short script for both calls.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing by asking. I can\u2019t see live open hours here, but the Oregon Food Bank has a pantry and meal locator for Medford sites near Main Street. If you can, we can use that now to find what\u2019s open today. If that feels like too much, I can connect you to a live person to check current openings with you.",
+        "Absolutely, that makes sense. Let\u2019s keep it simple: I don\u2019t have a confirmed walk-to pantry in Medford from this list, and I don\u2019t want to send you somewhere wrong. The best next step is a live person who can check what\u2019s open near Main Street right now and pick the closest one you can walk to. I can stay with you while we do that.",
+        "I\u2019m so sorry about your mom. Thank you for telling me. We can keep this simple: I\u2019ll connect you now to a live specialist who can help with ride options for appointments and groceries in Medford, including same-day if available. You can share only what you\u2019re comfortable sharing, and we\u2019ll go at your pace.",
+        "You\u2019re okay. We can do this one step at a time. I can help find senior meal programs in Medford for your mom. I only need the minimum details, and we can keep this private. If anyone is in immediate danger, call 911 right now. One question first: is your mom in Medford, Oregon?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002131#turn-4",
+      "scenarioId": "phone_dialog_0002131",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that? I didn\u2019t catch the number part, can you repeat it slowly in chunks?",
+      "normalizedQuery": "hi calling aunt medford she 79 hard hearing think being neglected before anything else we safety check alone right now tell if took her heart pills told hasn had real meal since yesterday morning just crackers caregiver didn show again sorry was catch number part repeat it slowly chunks",
+      "voiceResponse": "Yes. I\u2019ll repeat the number slowly. Oregon Deaf and Hard of Hearing Services: **8-5-5, 5-0-3, 7-2-3-3.** Again: **8-5-5, 5-0-3, 7-2-3-3.** If there is immediate danger, call **9-1-1**. Again: **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll repeat the number slowly. Oregon Deaf and Hard of Hearing Services: **8-5-5, 5-0-3, 7-2-3-3.** Again: **8-5-5, 5-0-3, 7-2-3-3.** If there is immediate danger, call **9-1-1**. Again: **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Yes. The address is: **7-1-1 East Main Street, Suite 2-5, Medford, Oregon, 9-7-5-0-4**. I\u2019ll say it once more: **7-1-1 East Main Street, Suite 2-5, Medford, 9-7-5-0-4**.",
+        "Of course. You\u2019re doing okay. The last part was: I can\u2019t see live open hours from here. Next step: use the Oregon Food Bank pantry and meal locator to find Medford sites near Main Street that are open today. If that feels like too much right now, I can connect you to a live person to check current openings with you.",
+        "Of course. I\u2019ll go slower. Here is the one question again: Is your mom in Medford, Oregon? Is your mom in Medford, Oregon? If there is immediate danger, call 9-1-1. Call 9-1-1.",
+        "Of course. The place name is **Warm Springs Senior Wellness Center**. That\u2019s **Warm Springs Senior Wellness Center**. Since you\u2019re in Medford and can\u2019t drive far, I can connect you to a live 211 specialist now for meal options closer to you."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1364,6 +1604,42 @@
       "to": "phone_dialog_0001028#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001744#turn-3",
+      "to": "phone_dialog_0001744#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001756#turn-1",
+      "to": "phone_dialog_0001756#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001756#turn-2",
+      "to": "phone_dialog_0001756#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001756#turn-3",
+      "to": "phone_dialog_0001756#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001756#turn-4",
+      "to": "phone_dialog_0001756#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002131#turn-4",
+      "to": "phone_dialog_0002131#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
     }
   ]
 }

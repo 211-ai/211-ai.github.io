@@ -735,6 +735,8 @@ def _normalize_record_list_sentence(text: str) -> str:
 
 def normalize_indextts_spoken_text(text: str) -> str:
     spoken = _strip_scraped_page_chrome(text)
+    spoken = re.sub(r"\*\*(.*?)\*\*", r"\1", spoken)
+    spoken = re.sub(r"__(.*?)__", r"\1", spoken)
     spoken = _strip_unspoken_fields(spoken)
     spoken = _strip_coordinates(spoken)
     spoken = _normalize_record_list_sentence(spoken)
@@ -749,6 +751,8 @@ def normalize_indextts_spoken_text(text: str) -> str:
     spoken = re.sub(r"(?i)\bgrounded detail\b", "detail", spoken)
     spoken = re.sub(r"(?i)\b211[\s-]?ai\b", "two one one AI", spoken)
     spoken = re.sub(r"(?i)\b211[\s-]?info\b", "two one one info", spoken)
+    spoken = re.sub(r"(?<!\d)9\s*-\s*1\s*-\s*1(?!\d)", "nine one one", spoken)
+    spoken = re.sub(r"(?<!\d)2\s*-\s*1\s*-\s*1(?!\d)", "two one one", spoken)
     spoken = re.sub(r"(?<!\d)911(?!\d)", "nine one one", spoken)
     spoken = re.sub(r"(?<!\d)211(?!\d)", "two one one", spoken)
     spoken = re.sub(r"\b(?P<tens>\d)\s+(?P<ones>\d)(?P<suffix>st|nd|rd|th)\b", r"\g<tens>\g<ones>\g<suffix>", spoken, flags=re.IGNORECASE)

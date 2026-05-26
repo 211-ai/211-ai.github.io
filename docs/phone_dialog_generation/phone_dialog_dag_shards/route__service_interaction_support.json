@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "route__service_interaction_support",
   "kind": "route",
   "key": "service_interaction_support",
-  "nodeCount": 79,
+  "nodeCount": 81,
   "nodes": [
     {
       "id": "phone_dialog_0000027#turn-6",
@@ -2140,6 +2140,56 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001344#turn-4",
+      "scenarioId": "phone_dialog_0001344",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I haven\u2019t slept in two days and I can\u2019t tell what happened first, the clinic visit or the police lights, it\u2019s all mixed up, sorry, I\u2019m talking over you.",
+      "normalizedQuery": "haven slept two days tell happened first clinic medical health visit police lights it all mixed up sorry talking over",
+      "voiceResponse": "You\u2019re doing your best, and I hear how overloaded this feels. Here\u2019s what I\u2019ve got: you were trying to get counseling, then things blurred with the police lights, and now you haven\u2019t slept for two days. Next step is one follow-up call together to the monthly pop-up medical clinic at **five four one, two three two, eight five four six** to ask for same-day support. I can give you a one-line script for that call.",
+      "evidenceDocIds": [
+        "service:69bbcbe045e0a664",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq",
+        "page:bafkreihavbkdezt4g6xqdcsjjen6qm6kaqssctctdtyl4poqifvbbvvhca",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing your best, and I hear how overloaded this feels. Here\u2019s what I\u2019ve got: you were trying to get counseling, then things blurred with the police lights, and now you haven\u2019t slept for two days. Next step is one follow-up call together to the monthly pop-up medical clinic at **five four one, two three two, eight five four six** to ask for same-day support. I can give you a one-line script for that call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001973#turn-5",
+      "scenarioId": "phone_dialog_0001973",
+      "turnIndex": 4,
+      "route": "service_interaction_support",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "What can we do tonight so he doesn\u2019t miss meds again, and is there an urgent ride or home visit option?",
+      "normalizedQuery": "we tonight so he doesn miss meds again there an urgent ride home visit option",
+      "voiceResponse": "Yes. Tonight, we make a simple safety plan. He should not be left alone. He should not be left alone. Put tonight\u2019s meds in one place, set alarms, and check each dose out loud. For urgent ride or a same-day home visit, I can connect you to a live specialist now for crisis transport and in-home support. One question: is he awake and breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "service:437ec64b59b0ac16",
+        "service:06227c05cc4eea25"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Tonight, we make a simple safety plan. He should not be left alone. He should not be left alone. Put tonight\u2019s meds in one place, set alarms, and check each dose out loud. For urgent ride or a same-day home visit, I can connect you to a live specialist now for crisis transport and in-home support. One question: is he awake and breathing right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -2532,6 +2582,18 @@
       "to": "phone_dialog_0001149#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001344#turn-4",
+      "to": "phone_dialog_0001344#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001973#turn-5",
+      "to": "phone_dialog_0001973#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
     }
   ]
 }

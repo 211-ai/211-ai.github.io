@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service__daily_needs",
   "kind": "service",
   "key": "daily_needs",
-  "nodeCount": 440,
+  "nodeCount": 494,
   "nodes": [
     {
       "id": "phone_dialog_0000023#turn-1",
@@ -9890,7 +9890,9 @@
       "assistantResponse": "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
-        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?"
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**",
+        "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
@@ -11608,7 +11610,9 @@
       "assistantResponse": "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
       "voiceResponseAlternatives": [
         "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
-        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?"
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**",
+        "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "background_noise",
@@ -12241,7 +12245,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m sorry, the audio was unclear. Next step: please repeat just one thing, slowly, your ZIP code only. Once I have that, I can try to find the closest option. Right now I still don\u2019t have a confirmed Salem shower address in the records I can see.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?"
+      ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "grounded_operator"
@@ -12528,7 +12534,9 @@
       "assistantResponse": "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
       "voiceResponseAlternatives": [
         "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
-        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?"
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**",
+        "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?"
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
@@ -13072,6 +13080,1603 @@
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001267#turn-2",
+      "scenarioId": "phone_dialog_0001267",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend, and I need domestic violence survivor advocacy, but I can\u2019t have texts or mail sent to me because he checks everything.",
+      "normalizedQuery": "bend domestic violence survivor advocacy have texts mail sent because he checks everything",
+      "voiceResponse": "Most important number: **5 4 1, 7 7 9, 4 3 5 7**. That\u2019s Community Works domestic violence survivor advocacy. They can do safety planning and support, and you can ask for **no texts, no mail, and no voicemail**. If that line doesn\u2019t work, second number: **5 4 1, 7 7 9, 2 3 9 3, extension 2 0 9**. If you\u2019re in immediate danger, call **9-1-1**.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreienlugsyfq2ximthab6ol46hzz7eampw5b6add5nsf2fckf7bk5ze",
+        "page:bafkreifobj7dii4ftnmjbulmimj5gtanaahukkpu5rodpv7rdv6npvya34",
+        "service:a704a02c64a5a445"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number: **5 4 1, 7 7 9, 4 3 5 7**. That\u2019s Community Works domestic violence survivor advocacy. They can do safety planning and support, and you can ask for **no texts, no mail, and no voicemail**. If that line doesn\u2019t work, second number: **5 4 1, 7 7 9, 2 3 9 3, extension 2 0 9**. If you\u2019re in immediate danger, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Next step: give just a first name or nickname, and I\u2019ll connect you now. You do not need to give your full name here. I only have that 211info is a contact center serving communities in Oregon and Southwest Washington; I don\u2019t have a verified data-sharing policy in front of me. If you want, I can hand you to the live specialist and you can ask privacy questions before sharing anything else.",
+        "Fastest next step: dial **2-1-1** now and ask, \u201cNearest same-day shower in downtown Bend, open right now.\u201d I don\u2019t have a confirmed Bend shower site in front of me. I do have a shower program in other cities if helpful: **9-7-1, 2-0-2, 1-7-2-1** (Portland) and **5-4-1, 9-2-6, 4-8-7-5** (Albany). If you want, I can stay with you while you place the 2-1-1 call.",
+        "You\u2019re not a mess, and you don\u2019t have to do this alone. I can get you to a live 211 specialist now to find a safe mail option in Bend, and you can share only what you\u2019re comfortable sharing. If you feel in immediate danger, please call 911 right now. If you want, we can stay on together while I connect you.",
+        "I\u2019m so sorry about your mom. You\u2019re doing something really important right now. The quickest path is a live 211 specialist who can find a real mailing address option you can use in Bend, including safer/private choices. You can share only what you want. If you\u2019d like, I can connect you now and stay with you while we do it, one step at a time."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001267#turn-3",
+      "scenarioId": "phone_dialog_0001267",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that? The bus is loud and I missed the middle part, can you repeat just the hotline number slowly?",
+      "normalizedQuery": "hi on borrowed phone it at like two percent so give one most important number first bend domestic violence survivor advocacy have texts mail sent because he checks everything sorry was bus loud missed middle part repeat just hotline slowly",
+      "voiceResponse": "Yes. The hotline number is: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7.** Again: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7.**",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5365a85b387044f7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The hotline number is: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7.** Again: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7.**",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll say the place name slowly. It\u2019s **two-one-one info**: **211info**. And the area is **Oregon** and **Southwest Washington**.",
+        "Of course, you\u2019re okay. The place name is: **St. Vincent de Paul of Lane County, First Place Family Center**. I\u2019ll say it again: **St. Vincent de Paul** \u2026 **First Place Family Center**.",
+        "Of course. The first place is **First Place Family Center**. Address: **4060 West Amazon Drive, Eugene, Oregon 97405**. Phone: **541\u2026 342\u2026 7728**. We can go one step at a time.",
+        "You\u2019re doing great. I haven\u2019t given you hours yet, and I don\u2019t want to guess. What we have is: First Place Family Center, 4060 West Amazon Drive, Eugene, Oregon 97405. Phone: 541\u2026 342\u2026 7728. If you want, I can pause while you finish writing that."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001326#turn-2",
+      "scenarioId": "phone_dialog_0001326",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Washington County, and I need domestic violence advocate help, but I can\u2019t have texts or mail sent to my address.",
+      "normalizedQuery": "washington county domestic violence advocate have texts mail sent address",
+      "voiceResponse": "Most direct number first: **Call to Safety, 8-8-8, 2-3-5, 5-3-3-3**. Backup: **5-0-3, 2-3-5, 5-3-3-3**. You can say: \u201cI need a domestic violence advocate, and I can\u2019t receive texts or mail.\u201d They can work with phone-only contact and safety planning. No documents are required at intake. If you want, stay with me while you place the call.",
+      "evidenceDocIds": [
+        "service:4d55efde415ecce2",
+        "service:e232f8e870bdd119",
+        "service:a9e000958a6504b5",
+        "service:5365a85b387044f7",
+        "service:32f1368d2a1bbe2b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most direct number first: **Call to Safety, 8-8-8, 2-3-5, 5-3-3-3**. Backup: **5-0-3, 2-3-5, 5-3-3-3**. You can say: \u201cI need a domestic violence advocate, and I can\u2019t receive texts or mail.\u201d They can work with phone-only contact and safety planning. No documents are required at intake. If you want, stay with me while you place the call.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001326#turn-3",
+      "scenarioId": "phone_dialog_0001326",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you repeat that slower? He checks my call history and tracks me, I think.",
+      "normalizedQuery": "hi borrowed this phone it at like two percent so give most important number first washington county domestic violence advocate have texts mail sent address sorry repeat slower he checks call history tracks think",
+      "voiceResponse": "Of course. Slow and simple: **Call to Safety: 8-8-8, 2-3-5, 5-3-3-3.** Backup: **5-0-3, 2-3-5, 5-3-3-3.** If those feel risky to keep in history, you can also dial **2-1-1** and ask for a domestic violence advocate with phone-only contact, no texts or mail. If you\u2019re in immediate danger, call **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:fd5de844e523fa13",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slow and simple: **Call to Safety: 8-8-8, 2-3-5, 5-3-3-3.** Backup: **5-0-3, 2-3-5, 5-3-3-3.** If those feel risky to keep in history, you can also dial **2-1-1** and ask for a domestic violence advocate with phone-only contact, no texts or mail. If you\u2019re in immediate danger, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
+        "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001326#turn-4",
+      "scenarioId": "phone_dialog_0001326",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "He threatened me tonight and said if I leave he\u2019ll find me, so I\u2019m scared to go back to the apartment.",
+      "normalizedQuery": "hi borrowed this phone it at like two percent so give most important number first washington county domestic violence advocate have texts mail sent address sorry repeat slower he checks call history tracks think threatened tonight said if leave ll scared go back apartment",
+      "voiceResponse": "You did the right thing calling. If you\u2019re in immediate danger right now, call **9-1-1** first. If you can make one safer support call next: **Call to Safety: 8-8-8, 2-3-5, 5-3-3-3**. Backup: **5-0-3, 2-3-5, 5-3-3-3**. You can just say, \u201cI\u2019m not safe going back home tonight, and I need phone-only help.\u201d No texts or mail needed. If calling feels risky, **2-1-1** can connect you fast too.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. If you\u2019re in immediate danger right now, call **9-1-1** first. If you can make one safer support call next: **Call to Safety: 8-8-8, 2-3-5, 5-3-3-3**. Backup: **5-0-3, 2-3-5, 5-3-3-3**. You can just say, \u201cI\u2019m not safe going back home tonight, and I need phone-only help.\u201d No texts or mail needed. If calling feels risky, **2-1-1** can connect you fast too.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001354#turn-5",
+      "scenarioId": "phone_dialog_0001354",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If this call drops, please tell me the exact next step first so I can get urgent laundry help today.",
+      "normalizedQuery": "if this call drops please tell exact next step first so urgent laundry",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Exact next step if this call drops: dial **9-1-1** right now, slowly: **nine\u2026 one\u2026 one**. Say: \u201cI\u2019m alone, dizzy, short of breath, and need urgent help now.\u201d Give your exact address first. Then ask them to connect you to same-day laundry/clean clothing support once medical help is on the way. If it disconnects, call **9-1-1** again immediately.",
+      "evidenceDocIds": [
+        "service:0dc5b2f433c46a55",
+        "service:be182ac33df3ef85",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "service:f92f8043c8711c0b",
+        "service:ed88848aae7354c5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Exact next step if this call drops: dial **9-1-1** right now, slowly: **nine\u2026 one\u2026 one**. Say: \u201cI\u2019m alone, dizzy, short of breath, and need urgent help now.\u201d Give your exact address first. Then ask them to connect you to same-day laundry/clean clothing support once medical help is on the way. If it disconnects, call **9-1-1** again immediately.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001399#turn-1",
+      "scenarioId": "phone_dialog_0001399",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I\u2019m trying not to cry... I don\u2019t have an address right now and I need somewhere in Salem to get my mail.",
+      "normalizedQuery": "hi sorry trying cry don have an address right now somewhere salem mail",
+      "voiceResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. I don\u2019t have a solid Salem mail-receiving listing in front of me right now, so I want to connect you to a live specialist immediately for same-day options nearby. Please stay on the line while I connect you. If you feel unsafe where you are right now, call 911.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreigshe4u2qgpbz5yo6xodrigum5vzydtcrvans3mg4cbcuzshqs73y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:fef46dc01f825fb3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. I don\u2019t have a solid Salem mail-receiving listing in front of me right now, so I want to connect you to a live specialist immediately for same-day options nearby. Please stay on the line while I connect you. If you feel unsafe where you are right now, call 911.",
+      "voiceResponseAlternatives": [
+        "I hear you, and this sounds urgent. If you are having trouble breathing, chest pain, or feel like you might pass out, call **9-1-1** right now: **9-1-1**. I\u2019m getting a live agent for you now to help with same-day support since you can\u2019t get out for mail. Stay on the line with me.",
+        "Yes. The place name is **Providence Place**. Slowly: **Pro-vi-dence Place**. Again: **Providence Place**.",
+        "First step: call Union Gospel Mission in Salem now and ask if showers are available today. The number is **503 \u2014 362 \u2014 3983**. Address is **777 Commercial Street Northeast, Salem**. If you want, I can stay with you while you make the call and help you script exactly what to say.",
+        "That makes a lot of sense, and you\u2019re doing the right thing by choosing the easiest first step. Start with **Right Track Resource Center** since they list **unrestricted eligibility** and **no required documents**. Call **541, 962, 7994**. If no answer, try **541, 910, 3056**. Say: \u201cI don\u2019t have a stable address and need a safe place to receive important mail.\u201d If you want, I can stay with you while you make that first call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001399#turn-2",
+      "scenarioId": "phone_dialog_0001399",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you hold on\u2014there\u2019s people yelling in here, I can\u2019t hear you... what did you say after Salem?",
+      "normalizedQuery": "hi sorry trying cry don have an address right now somewhere salem mail hold on there people yelling here hear did say after",
+      "voiceResponse": "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. Next step: please repeat just one thing, slowly, your ZIP code only. Once I have that, I can try to find the closest option. Right now I still don\u2019t have a confirmed Salem shower address in the records I can see."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001399#turn-6",
+      "scenarioId": "phone_dialog_0001399",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Please don\u2019t hang up, I\u2019m really overwhelmed... I just need one place today where my mail can go.",
+      "normalizedQuery": "please don hang up really overwhelmed just one place mail go",
+      "voiceResponse": "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:bd5401ad9767f8d2",
+        "service:a558e2f5ba96f584",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001429#turn-3",
+      "scenarioId": "phone_dialog_0001429",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, okay, I can hear a little better now. I'm in Bend and I need a place to shower today.",
+      "normalizedQuery": "yeah okay hear little better now i'm bend place shower",
+      "voiceResponse": "Thank you. I hear you. You need a place to shower in Bend today. A place to shower in Bend, today. I do not have a clear local shower match in front of me right now. I can connect you to a live 211 specialist to find one fast. Do you want that now?",
+      "evidenceDocIds": [
+        "service:99e8679fab689416",
+        "service:2ef319d5e12550a7",
+        "service:34d9e92d3ede5e98",
+        "service:f7f1a44948506f7a",
+        "service:3765a8082141d5b8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. You need a place to shower in Bend today. A place to shower in Bend, today. I do not have a clear local shower match in front of me right now. I can connect you to a live 211 specialist to find one fast. Do you want that now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I\u2019m glad you reached out. I don\u2019t have a Bend mail-pickup listing in this result, but I do have nearby help lines that may route you fast: St. Mary\u2019s Catholic Church Poor Fund in Corvallis at **5 4 1, 7 5 7, 1 9 8 8**. Backup: **5 4 1, 7 5 2, 4 6 8 8**. If you can, ask St. Charles front desk for the social worker while you wait. I can stay with you while you call.",
+        "I hear you, and you don\u2019t need to make a bunch of calls today. Let\u2019s do one. Ask for **St. Vincent de Paul, First Place Family Center** and tell them you need **mail services**. Main number: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**. If you want, I can help you with exactly what to say, one short sentence at a time.",
+        "Absolutely, I can guide you there step by step. Open the **Clothing Help** results near Bend. You should see: **St. Vincent de Paul Clothing Assistance** Address: **950 S-E 3rd Street, Bend** Phone: **5-4-1, 3-8-9, 6-6-4-3** **Open Door Ministries** Address: **680 N-W Bond Street, Bend** Phone: **5-4-1, 3-8-2, 1-6-7-2** Tap either one to call now for same-day clothing help.",
+        "Absolutely. I\u2019ll say them in chunks. St. Vincent de Paul Clothing Assistance: **541 \u2026 389 \u2026 6643**. I\u2019ll repeat: **541 \u2026 389 \u2026 6643**. Open Door Ministries: **541 \u2026 382 \u2026 1672**. I\u2019ll repeat: **541 \u2026 382 \u2026 1672**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001484#turn-2",
+      "scenarioId": "phone_dialog_0001484",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I need somewhere in Washington County where I can get my mail, like a mailbox or hold service, I don\u2019t even know what it\u2019s called.",
+      "normalizedQuery": "somewhere washington county mail like mailbox hold service don even know it called",
+      "voiceResponse": "I hear you. What you\u2019re asking for is usually called **USPS Hold Mail** or **General Delivery**. I\u2019m connecting you to a live agent now to find the nearest Washington County location and hours. Before I connect you, are you safe right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:f525d65d4bd89731"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. What you\u2019re asking for is usually called **USPS Hold Mail** or **General Delivery**. I\u2019m connecting you to a live agent now to find the nearest Washington County location and hours. Before I connect you, are you safe right now?",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001484#turn-3",
+      "scenarioId": "phone_dialog_0001484",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down? I missed that, there\u2019s a lot of noise here and I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry barely talk right now just lost brother keep up anything somewhere washington county mail like mailbox hold service don even know it called slow down missed there lot noise here kind panicking",
+      "voiceResponse": "Of course. I\u2019ll go slow. First: are you safe right now? If yes, I\u2019ll connect you to a live agent to find a Washington County place for USPS Hold Mail or General Delivery. If you\u2019re not safe, call 911 now, and I\u2019ll stay with you.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slow. First: are you safe right now? If yes, I\u2019ll connect you to a live agent to find a Washington County place for USPS Hold Mail or General Delivery. If you\u2019re not safe, call 911 now, and I\u2019ll stay with you.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001484#turn-4",
+      "scenarioId": "phone_dialog_0001484",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Wait, sorry, say the name again... and the number too, one more time, I\u2019m writing it down.",
+      "normalizedQuery": "hi sorry barely talk right now just lost brother keep up anything somewhere washington county mail like mailbox hold service don even know it called slow down missed there lot noise here kind panicking wait say name again number too one more time writing",
+      "voiceResponse": "Yes. The name is **USPS Hold Mail** or **General Delivery**. The emergency number is **9-1-1**. I\u2019ll say it again: **nine, one, one**. If you\u2019re safe right now, I\u2019ll connect you to a live agent next.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **USPS Hold Mail** or **General Delivery**. The emergency number is **9-1-1**. I\u2019ll say it again: **nine, one, one**. If you\u2019re safe right now, I\u2019ll connect you to a live agent next.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001493#turn-1",
+      "scenarioId": "phone_dialog_0001493",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I\u2019m sorry, I can\u2019t really stop crying... I\u2019m in Portland and I just need somewhere to do laundry today.",
+      "normalizedQuery": "hi um sorry really stop crying portland just somewhere laundry",
+      "voiceResponse": "I\u2019m here with you. The audio was a little unclear over the noise, so I want to get this right: did you say you need a place to do laundry in Portland today?",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "service:a558e2f5ba96f584",
+        "page:bafkreibtv544zo5wjxq6lmn3flnetzoygmb43ajwbhdrxwkn3o6lfoavt4",
+        "page:bafkreifrpvsv6o5pkrlek4okdphotlorlwalgu7s5ss2b2aweweexluiim"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. The audio was a little unclear over the noise, so I want to get this right: did you say you need a place to do laundry in Portland today?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001516#turn-6",
+      "scenarioId": "phone_dialog_0001516",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s a domestic violence advocate in Bend, I need a way to meet safely without texts or mail to my place.",
+      "normalizedQuery": "if there domestic violence advocate bend way meet safely without texts mail place",
+      "voiceResponse": "Yes. You can ask for a safe in-person meet and no texts or mail. No documents are required at intake. If you\u2019re in immediate danger, call 911 now. For an advocate, call Raphael House crisis line: `5 0 3` \u2026 `2 2 2` \u2026 `6 5 0 7` Backup: `5 0 3` \u2026 `2 2 2` \u2026 `6 2 2 2` You can say: \u201cI need a safe meeting in or near Bend, no texts, no mail, phone contact only.\u201d",
+      "evidenceDocIds": [
+        "service:483c5e21e2ca774d",
+        "service:e232f8e870bdd119",
+        "service:1e9e1c03469e6c2d",
+        "page:bafkreicyllaeghrcxxx4qyqowiouq3tzbvfa7ancnrxsbund27uidjhira",
+        "page:bafkreiflme5ijw3ncbcpe62cdgyogvqwsixqjf6tqbbnegtf6qssehf2xy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You can ask for a safe in-person meet and no texts or mail. No documents are required at intake. If you\u2019re in immediate danger, call 911 now. For an advocate, call Raphael House crisis line: `5 0 3` \u2026 `2 2 2` \u2026 `6 5 0 7` Backup: `5 0 3` \u2026 `2 2 2` \u2026 `6 2 2 2` You can say: \u201cI need a safe meeting in or near Bend, no texts, no mail, phone contact only.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: give just a first name or nickname, and I\u2019ll connect you now. You do not need to give your full name here. I only have that 211info is a contact center serving communities in Oregon and Southwest Washington; I don\u2019t have a verified data-sharing policy in front of me. If you want, I can hand you to the live specialist and you can ask privacy questions before sharing anything else.",
+        "Fastest next step: dial **2-1-1** now and ask, \u201cNearest same-day shower in downtown Bend, open right now.\u201d I don\u2019t have a confirmed Bend shower site in front of me. I do have a shower program in other cities if helpful: **9-7-1, 2-0-2, 1-7-2-1** (Portland) and **5-4-1, 9-2-6, 4-8-7-5** (Albany). If you want, I can stay with you while you place the 2-1-1 call.",
+        "You\u2019re not a mess, and you don\u2019t have to do this alone. I can get you to a live 211 specialist now to find a safe mail option in Bend, and you can share only what you\u2019re comfortable sharing. If you feel in immediate danger, please call 911 right now. If you want, we can stay on together while I connect you.",
+        "I\u2019m so sorry about your mom. You\u2019re doing something really important right now. The quickest path is a live 211 specialist who can find a real mailing address option you can use in Bend, including safer/private choices. You can share only what you want. If you\u2019d like, I can connect you now and stay with you while we do it, one step at a time."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001653#turn-1",
+      "scenarioId": "phone_dialog_0001653",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "\"H-hello? [static] I can't... you\u2019re cutting out... mail, uh, ma\u2014 [inaudible]\"",
+      "normalizedQuery": "hello static can't re cutting mail uh ma inaudible",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?",
+      "evidenceDocIds": [
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:5365a85b387044f7",
+        "service:987b42d4e9bb68a4",
+        "service:f487c37fdc654c07",
+        "service:a138142091c12776"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I\u2019m sorry, I could not hear that clearly. Did you say **mail help** or **housing help**?",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001653#turn-3",
+      "scenarioId": "phone_dialog_0001653",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "\"No, not hospital, sorry, I keep mixing it up, I need mail... like where I can get my mail if I don't got a steady place.\"",
+      "normalizedQuery": "no hospital sorry keep mixing it up mail like if don't got steady place",
+      "voiceResponse": "Thank you. I hear you now. You need **mail help**. You need **mail help**. I\u2019m sorry, the line is still a little unclear. Please say just your **city** so I can find mail pickup options near you.",
+      "evidenceDocIds": [
+        "service:e25fd4aa967fb6a0",
+        "service:9d8134994edb4433",
+        "service:8633bf7679779ba4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you now. You need **mail help**. You need **mail help**. I\u2019m sorry, the line is still a little unclear. Please say just your **city** so I can find mail pickup options near you.",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001653#turn-6",
+      "scenarioId": "phone_dialog_0001653",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "\"So just to make sure, this is for mail pickup or mailbox help, right? I need that, in Hillsboro.\"",
+      "normalizedQuery": "so just make sure this mail pickup mailbox right hillsboro",
+      "voiceResponse": "Yes. You are asking for mail pickup or mailbox help in Hillsboro. Mail pickup or mailbox help in Hillsboro. I can help with that. Do you want me to check **mail pickup addresses** first, or **ID rules** first?",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaquuaidqhbyxjnjf2llirjmii6nmzwlr5itflnyydztb4qhyhraq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You are asking for mail pickup or mailbox help in Hillsboro. Mail pickup or mailbox help in Hillsboro. I can help with that. Do you want me to check **mail pickup addresses** first, or **ID rules** first?",
+      "voiceResponseAlternatives": [
+        "Thanks for calling for your brother. I want to be clear: I don\u2019t have a verified Hillsboro mail-site listing in front of me right now. The fastest safe next step is to call **2-1-1** and ask for \u201cmailing address services in Hillsboro.\u201d I\u2019ll say it slowly: **two \u2026 one \u2026 one**. If you want, I can help you with exactly what to say when they answer.",
+        "Yes, I hear you. You\u2019re doing the right thing calling. In Hillsboro, 211info shows a **Laundry Products** resource list with **11 providers** in the area, and we can narrow by distance (5, 10, or 25 miles) to find the cheapest or free options first. If you want, I can start with the closest options to where you are right now and keep it minimal on personal details.",
+        "You heard almost right. I said 211info has **11 laundry-help providers** around Hillsboro, and we can filter by **5, 10, or 25 miles** to find the closest low-cost or free option. I don\u2019t have a confirmed downtown location yet. If you want, I can start with the **5-mile** list first, and we can keep this private with minimal details.",
+        "That makes total sense, and I\u2019m glad you asked. We can keep this very private: you can stay anonymous with me, share only what you want, and I can still give you nearby laundry-help options. We can start with just a rough area in Hillsboro, not your exact address. If you want, I\u2019ll keep it to the 5-mile list first and no extra personal details."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-3",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Yeah okay, I need help finding laundry, like wash place help, cheaper one... I\u2019m in Beaverton.",
+      "normalizedQuery": "yeah okay finding laundry like wash place cheaper one beaverton",
+      "voiceResponse": "Thanks. I heard Beaverton and laundry help. Your audio is still a little unclear. Your audio is still a little unclear. Please say one short choice: free laundry, low-cost laundry, or drop-off wash service.",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreig4ephu5gz5x57etein53bmnoswyqmsfqaodzpjcg5df4irdx4kxq",
+        "page:bafkreid5ck7bobsf6rfhzmuevcnifacfu3nmdlsdniusxnatyx2j4ez6ay",
+        "page:bafkreievammwq63bs37l7vv4jeshhuhcs2fmmej7rr3da3spzok2w4pndu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks. I heard Beaverton and laundry help. Your audio is still a little unclear. Your audio is still a little unclear. Please say one short choice: free laundry, low-cost laundry, or drop-off wash service.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-4",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not dry cleaning, no, I mean regular clothes wash, coin or voucher, I keep mixing it up, sorry.",
+      "normalizedQuery": "hello static can't re cutting laundr no wait inaudible sorry missed signal's bad don't hear great say it again yeah okay finding laundry like wash place cheaper one beaverton dry cleaning mean regular clothes coin voucher keep mixing up",
+      "voiceResponse": "Thank you. I heard regular clothes wash, coin or voucher. Regular clothes wash, coin or voucher. I can help with that in Beaverton. Please tell me your ZIP code, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I heard regular clothes wash, coin or voucher. Regular clothes wash, coin or voucher. I can help with that in Beaverton. Please tell me your ZIP code, slowly.",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-5",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat any address slow? Like really slow, and the number one digit at a time.",
+      "normalizedQuery": "sorry missed signal's bad don't hear great say it again yeah okay finding laundry like wash place cheaper one beaverton dry cleaning no mean regular clothes coin voucher keep mixing up repeat any address slow really number digit at time",
+      "voiceResponse": "Yes. I can repeat slowly. I do not have an address yet. I do not have an address yet. Please say your ZIP code, one digit at a time. For example: \u201cnine, seven, zero, zero, five.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can repeat slowly. I do not have an address yet. I do not have an address yet. Please say your ZIP code, one digit at a time. For example: \u201cnine, seven, zero, zero, five.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Your Life, Your Voice**. I\u2019ll say it slowly: **Your** \u2026 **Life** \u2026 **Your** \u2026 **Voice**.",
+        "Yes. The number is: **two, one, one**. I\u2019ll say it again: **2\u2026 1\u2026 1**.",
+        "Yes. I\u2019ll say it slower. Closest place I found is **Simonka Place**. For shelter and mail help. Main number: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup number: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**.",
+        "I did not give an address on Fifth. I did not give an address on Fifth. I only have phone numbers for Simonka Place: Main: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001740#turn-4",
+      "scenarioId": "phone_dialog_0001740",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If he sees call logs I\u2019m in trouble, so is there a way to get domestic violence advocate help without texts or mail to my place?",
+      "normalizedQuery": "if he sees call logs trouble so there way domestic violence advocate without texts mail place",
+      "voiceResponse": "Yes. Call **211** and ask for a **domestic violence advocate**, then say: \u201cNo texts, no voicemail, no mail to my address. Phone contact only if I call first.\u201d They can work with that and keep details minimal. If you think he may find you or you\u2019re in immediate danger right now, call **911**.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:32f1368d2a1bbe2b",
+        "service:483c5e21e2ca774d",
+        "service:e232f8e870bdd119"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call **211** and ask for a **domestic violence advocate**, then say: \u201cNo texts, no voicemail, no mail to my address. Phone contact only if I call first.\u201d They can work with that and keep details minimal. If you think he may find you or you\u2019re in immediate danger right now, call **911**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-1",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "H-hello? [static] I can't... you're cutting out... show-- shower, I, uh... [inaudible]",
+      "normalizedQuery": "hello static can't you're cutting show shower uh inaudible",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard \u201cshower.\u201d I heard \u201cshower.\u201d Did you say you need shower facilities?",
+      "evidenceDocIds": [
+        "service:0a101fddb9d7862a",
+        "service:e8a466e479abed71",
+        "service:0f62cb5986e7ce0b",
+        "service:95e4707f31d18121",
+        "service:6b31bb2f6b12bacc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard \u201cshower.\u201d I heard \u201cshower.\u201d Did you say you need shower facilities?",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-2",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, sorry, say that again? My hearing's bad and this phone keeps popping, I only caught 'county'...",
+      "normalizedQuery": "hello static can't you're cutting show shower uh inaudible wait sorry say again hearing's bad this phone keeps popping only caught 'county'",
+      "voiceResponse": "Yes. I said: **shower facilities**. I said: **shower facilities**. Did you say you need help finding a place for showers?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihjfx4crpruczveraz336oulmqpy7yvfody55oyaihpcbracik65m",
+        "page:bafkreieg6fostaqd4pefij22fhjh3ruicspnwcomvdpp5y3rvldh2hgucq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I said: **shower facilities**. I said: **shower facilities**. Did you say you need help finding a place for showers?",
+      "voiceResponseAlternatives": [
+        "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+        "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+        "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once.",
+        "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-3",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, um, I need a place to shower, like today if possible, I'm in Lane County, near Eugene, I think I said that already.",
+      "normalizedQuery": "yeah um place shower like if possible i'm lane county eugene think said already",
+      "voiceResponse": "Yes. I heard you: shower place today, near Eugene. I can give one option in Eugene. I can give one option in Eugene. St. Vincent de Paul First Place Family Center. Address: 4-0-6-0 West Amazon Drive, Eugene. That is 4-0-6-0 West Amazon Drive, Eugene. Phone: 5-4-1, 3-4-2, 7-7-2-8. Again: 5-4-1, 3-4-2, 7-7-2-8. Are you with children under 18, or pregnant?",
+      "evidenceDocIds": [
+        "service:000f383b02383270",
+        "service:10301d048461816b",
+        "service:1850ffbe9250d85c",
+        "service:3aff67ad0084106e",
+        "service:5c2197617c940d38"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I heard you: shower place today, near Eugene. I can give one option in Eugene. I can give one option in Eugene. St. Vincent de Paul First Place Family Center. Address: 4-0-6-0 West Amazon Drive, Eugene. That is 4-0-6-0 West Amazon Drive, Eugene. Phone: 5-4-1, 3-4-2, 7-7-2-8. Again: 5-4-1, 3-4-2, 7-7-2-8. Are you with children under 18, or pregnant?",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-4",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the city names slow? I misheard that, sounded like 'Spring-field' or 'Stringfield,' sorry, one more time.",
+      "normalizedQuery": "hello static can't you're cutting show shower uh inaudible wait sorry say again hearing's bad this phone keeps popping only caught 'county' yeah um place like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield one more time",
+      "voiceResponse": "Yes. Slow city names: Eu-gene. Eu-gene. Lane County, near Eu-gene. Lane County, near Eu-gene. Not Springfield. The city I gave was Eu-gene.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:cb07e10067abbb3d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow city names: Eu-gene. Eu-gene. Lane County, near Eu-gene. Lane County, near Eu-gene. Not Springfield. The city I gave was Eu-gene.",
+      "voiceResponseAlternatives": [
+        "Yes. Next step: call them now for mail services. The number is **5-4-1, 3-4-2, 7-7-2-8**. Their Lane County address is **4-0-6-0 West Amazon Drive, Eugene, Oregon, 9-7-4-0-5**. If you don\u2019t qualify, staff can help connect you to other community resources.",
+        "Yes. Please write this down now: **5-4-1 \u2026 3-4-2 \u2026 7-7-2-8**. I\u2019ll say it once more: **5-4-1 \u2026 3-4-2 \u2026 7-7-2-8**.",
+        "Absolutely, I\u2019ve got you. The place is **St. Vincent de Paul Service Station**. Address: **450 Highway 99 North, Eugene**. Phone: **541\u2026689\u20266747**. I don\u2019t have confirmed hours in front of me, so when they answer, ask: \u201cDo you have showers available right now, and what are today\u2019s check-in hours?\u201d",
+        "Yes. I\u2019ll say it slowly. Call **five four one**\u2026 **three four two**\u2026 **seven seven two eight**. Again: **five four one**\u2026 **three four two**\u2026 **seven seven two eight**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-5",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Also if there's a bus line to it, I keep losing track, and my battery is at like three percent, so just the closest one first.",
+      "normalizedQuery": "wait sorry say again hearing's bad this phone keeps popping only caught 'county' yeah um place shower like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield one more time also there's bus line it keep losing track battery at three percent so just closest first",
+      "voiceResponse": "Okay. Closest one first: in **Eu-gene**. St. Vincent de Paul First Place Family Center. Address: **4-0-6-0 West Amazon Drive, Eu-gene**. Again: **4-0-6-0 West Amazon Drive, Eu-gene**. Phone: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**. I do not have a bus line listed here. Call that number and ask for the nearest bus stop.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Closest one first: in **Eu-gene**. St. Vincent de Paul First Place Family Center. Address: **4-0-6-0 West Amazon Drive, Eu-gene**. Again: **4-0-6-0 West Amazon Drive, Eu-gene**. Phone: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**. I do not have a bus line listed here. Call that number and ask for the nearest bus stop.",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-6",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And if there's a phone number, please read it really slow, one digit at a time, I don't hear numbers right the first pass.",
+      "normalizedQuery": "yeah um place shower like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield sorry one more time also there's bus line it keep losing track battery at three percent so just closest first phone number please read really digit don't hear numbers right pass",
+      "voiceResponse": "Yes. I will read it very slow. Phone number: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8. Again: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:225c81db65f1ee12",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will read it very slow. Phone number: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8. Again: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8.",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-3",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I talk over people when I can't hear, my bad. I need a place to wash clothes, cheap, like community laundry help.",
+      "normalizedQuery": "sorry talk over people when can't hear bad place wash clothes cheap like community laundry",
+      "voiceResponse": "You\u2019re looking for **cheap community laundry help** in Beaverton. You\u2019re looking for **cheap community laundry help** in Beaverton. I can help with that. I have laundry facility listings through 211info, with many providers. One question: what is the library name or nearest cross street in Beaverton?",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re looking for **cheap community laundry help** in Beaverton. You\u2019re looking for **cheap community laundry help** in Beaverton. I can help with that. I have laundry facility listings through 211info, with many providers. One question: what is the library name or nearest cross street in Beaverton?",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-4",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not dry cleaning, no, regular wash, I got two kids and everything piled up.",
+      "normalizedQuery": "hello static can't uh laundr laund sorry you're cutting inaudible by library no wait beav beaver beaverton yes hear now talk over people when bad place wash clothes cheap like community laundry dry cleaning regular got two kids everything piled up",
+      "voiceResponse": "Thank you. Regular wash, not dry cleaning. Regular wash, not dry cleaning. I can help with low-cost community laundry in Beaverton, including family options. One question: what ZIP code are you in right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. Regular wash, not dry cleaning. Regular wash, not dry cleaning. I can help with low-cost community laundry in Beaverton, including family options. One question: what ZIP code are you in right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-5",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say the name again slowly? I misheard it as 'Beaver Town' or something.",
+      "normalizedQuery": "inaudible by library no wait beav beaver beaverton yes hear now sorry talk over people when can't bad place wash clothes cheap like community laundry dry cleaning regular got two kids everything piled up say name again slowly misheard it as 'beaver town' something",
+      "voiceResponse": "Yes. The city name is **Beaverton**. I\u2019ll say it slowly: **Bee-ver-ton**. **Beaverton. Bee-ver-ton.** You are in Beaverton, Oregon, right?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The city name is **Beaverton**. I\u2019ll say it slowly: **Bee-ver-ton**. **Beaverton. Bee-ver-ton.** You are in Beaverton, Oregon, right?",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-6",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number, please do it one digit at a time, I miss numbers on calls.",
+      "normalizedQuery": "sorry talk over people when can't hear bad place wash clothes cheap like community laundry dry cleaning no regular got two kids everything piled up say name again slowly misheard it as 'beaver town' something phone number please one digit at time miss numbers on calls",
+      "voiceResponse": "I hear you. I hear you. I do not have a provider phone number yet from what I can see. I can read it one digit at a time as soon as I have it. I can read it one digit at a time. What is your ZIP code right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I hear you. I do not have a provider phone number yet from what I can see. I can read it one digit at a time as soon as I have it. I can read it one digit at a time. What is your ZIP code right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001847#turn-1",
+      "scenarioId": "phone_dialog_0001847",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Hello? I can\u2019t really hear you, there\u2019s buses and people yelling out here. I\u2019m in Hillsboro and I need somewhere to get my mail today, like right now.",
+      "normalizedQuery": "hello really hear there buses people yelling here hillsboro somewhere mail like right now",
+      "voiceResponse": "I hear you, that sounds really stressful. Let\u2019s do this fast: I\u2019m connecting you to a live 211info specialist right now to find a same-day mail option in Hillsboro. Stay on the line if you can, and if the noise gets bad, move a few steps from traffic so you can hear the address details clearly.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, that sounds really stressful. Let\u2019s do this fast: I\u2019m connecting you to a live 211info specialist right now to find a same-day mail option in Hillsboro. Stay on the line if you can, and if the noise gets bad, move a few steps from traffic so you can hear the address details clearly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I can help fast. I only see one clothing resource in my list right now: Little Sprouts Clothing Swap in Medford. Phone: 5 4 1, 7 7 9, 5 2 4 2. Again: 5 4 1, 7 7 9, 5 2 4 2. Address: 8 2 5 East Main Street, Suite A, Medford. Do you want me to connect you to a live agent now to find same-week options in Hillsboro?",
+        "First step: call Sunnyside Shower Project now at **nine seven one, two zero two, one seven two one**. They offer showers and hygiene supplies, and eligibility is unrestricted. Address is **3520 Southeast Yamhill Street, Portland**. If you want, I can stay with you while you make that call and help with what to say.",
+        "Okay, one step right now: call Right Track Resource Center at **five four one, nine one zero, three zero five six**. That\u2019s **541, 910, 3056**. They have showers and laundry, and you don\u2019t need documents. If that line doesn\u2019t answer, try **five four one, nine six two, seven nine nine four**. I can stay with you while you call.",
+        "Yes. One place only: Right Track Resource Center. Call **five four one** \u2026 **nine one zero** \u2026 **three zero five six**. That is **541 \u2026 910 \u2026 3056**. I can wait while you write it."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001847#turn-5",
+      "scenarioId": "phone_dialog_0001847",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Please just connect me to whoever can do emergency help in Hillsboro and tell me exactly where to go for mail pickup.",
+      "normalizedQuery": "please just connect whoever emergency hillsboro tell exactly go mail pickup",
+      "voiceResponse": "I hear you, and I\u2019m staying with you. I\u2019m connecting you to a live 211info specialist now for emergency help and same-day mail options in Hillsboro. Go now to **Hillsboro Family Shelter**, **210 Southeast 12th Avenue, Hillsboro, 97123**. Phone: **503-640-3263**. If you don\u2019t feel safe where you are right now, call **911**. If the call drops, tell them: \u201curgent mail today, food benefits at risk, Hillsboro.\u201d",
+      "evidenceDocIds": [
+        "service:a927abbe60497dda",
+        "service:a558e2f5ba96f584",
+        "service:c308bf7a696f0dc4",
+        "service:3ad36b571383e0bf",
+        "service:83dfe4ee16df73e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m staying with you. I\u2019m connecting you to a live 211info specialist now for emergency help and same-day mail options in Hillsboro. Go now to **Hillsboro Family Shelter**, **210 Southeast 12th Avenue, Hillsboro, 97123**. Phone: **503-640-3263**. If you don\u2019t feel safe where you are right now, call **911**. If the call drops, tell them: \u201curgent mail today, food benefits at risk, Hillsboro.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I can help fast. I only see one clothing resource in my list right now: Little Sprouts Clothing Swap in Medford. Phone: 5 4 1, 7 7 9, 5 2 4 2. Again: 5 4 1, 7 7 9, 5 2 4 2. Address: 8 2 5 East Main Street, Suite A, Medford. Do you want me to connect you to a live agent now to find same-week options in Hillsboro?",
+        "First step: call Sunnyside Shower Project now at **nine seven one, two zero two, one seven two one**. They offer showers and hygiene supplies, and eligibility is unrestricted. Address is **3520 Southeast Yamhill Street, Portland**. If you want, I can stay with you while you make that call and help with what to say.",
+        "Okay, one step right now: call Right Track Resource Center at **five four one, nine one zero, three zero five six**. That\u2019s **541, 910, 3056**. They have showers and laundry, and you don\u2019t need documents. If that line doesn\u2019t answer, try **five four one, nine six two, seven nine nine four**. I can stay with you while you call.",
+        "Yes. One place only: Right Track Resource Center. Call **five four one** \u2026 **nine one zero** \u2026 **three zero five six**. That is **541 \u2026 910 \u2026 3056**. I can wait while you write it."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-2",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No wait, sorry, bus is loud, hold on... I need... shower, shower place, I think, in Clack... Clackamas...",
+      "normalizedQuery": "no wait sorry bus loud hold on shower place think clack clackamas",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. Your audio was unclear. I heard \u201cshower place\u201d and \u201cClackamas.\u201d Please repeat just one thing: do you mean **Clackamas County**?",
+      "evidenceDocIds": [
+        "service:d237681c757d7e5d",
+        "service:755193c3d210f2d9",
+        "service:e48215cf7cc69a4f",
+        "service:3af525274aceaedb",
+        "service:ac09c8c1cd2f5037"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. Your audio was unclear. I heard \u201cshower place\u201d and \u201cClackamas.\u201d Please repeat just one thing: do you mean **Clackamas County**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-4",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I miss words on the phone, especially names.",
+      "normalizedQuery": "hello static can't uh hear good this two one inaudible no wait sorry bus loud hold on shower place think clack clackamas yeah area i'm outside mostly right now somewhere wash up say again slower miss words phone especially names",
+      "voiceResponse": "Yes. I\u2019ll say it slower. You\u2019re in the Clackamas area. You need a shower today. I can connect you now to a live two-one-one specialist. A live two-one-one specialist can find same-day shower options near you. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0c11a529e3153ee8",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. You\u2019re in the Clackamas area. You need a shower today. I can connect you now to a live two-one-one specialist. A live two-one-one specialist can find same-day shower options near you. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Of course. Slow version. I asked for your ZIP code. Just your ZIP code. Five digits. Your ZIP code helps me find nearby same-day laundry options. You can share only that, nothing more. Your ZIP code only.",
+        "Yes. I\u2019ll say the name slowly. It is: **Two Families Now**. Again: **Two Families Now**. Full listing name is: **Two Families Now: Effective Parenting During Separation and Divorce**.",
+        "Yes. I\u2019ll say it slower. Shower option today: Union Gospel Mission. Address: 777 Commercial Street N E, Salem. I\u2019ll repeat: 777 Commercial Street N E, Salem. Phone: 5 0 3, 3 6 2, 3 9 8 3. Again: 5 0 3, 3 6 2, 3 9 8 3. Portland contact: 9 7 1, 2 2 2, 1 8 8 0. Again: 9 7 1, 2 2 2, 1 8 8 0.",
+        "Yes. Slowly. Address: 7 7 7, Commercial Street, N E, Salem. I\u2019ll repeat: 7 7 7, Commercial Street, N E, Salem. Phone: 5 0 3, then 3 6 2, then 3 9 8 3. Again: 5 0 3, then 3 6 2, then 3 9 8 3."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-5",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Is that address number 8 or A? Sorry, I heard it wrong, please do the number real slow.",
+      "normalizedQuery": "no wait sorry bus loud hold on shower place think clack clackamas yeah area i'm outside mostly right now somewhere wash up say again slower miss words phone especially names address number heard it wrong please real slow",
+      "voiceResponse": "I hear you. I\u2019ll go slow. I do not have a Clackamas address yet. I do not have a Clackamas address yet. The address in my notes is in Eugene, not Clackamas. Do you want me to connect you now to a live two-one-one specialist for a Clackamas shower location?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:755193c3d210f2d9",
+        "service:0c11a529e3153ee8",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll go slow. I do not have a Clackamas address yet. I do not have a Clackamas address yet. The address in my notes is in Eugene, not Clackamas. Do you want me to connect you now to a live two-one-one specialist for a Clackamas shower location?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not doing anything wrong by needing this. One option I can confirm is Right Track Resource Center; they can help with mail services and they don\u2019t require documents. You can call **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If Salem is reachable, Simonka Place also offers mail services: **5 0 3, 3 6 2, 7 4 8 7**. If you want, we can do this one step at a time together.",
+        "I hear you, and your safety comes first. If you can\u2019t breathe right now, call **911** immediately, or I can stay with you while you do. You matter. Once you\u2019re safe, I\u2019ll help you find a mail location in Clackamas right away.",
+        "You don\u2019t need to apologize. I\u2019m with you. If your breathing gets tight again or you feel unsafe, call **911** right now. I\u2019m getting a live specialist on the line to help with a safe mailing address in Clackamas. Stay with me and take one slow breath in, then out.",
+        "First step: call **Love INC of Clackamas County** and ask for help with a safe mailing address option while you\u2019re between places. The number is **five zero three\u2026 six five zero\u2026 zero one five three**. If it helps, I can stay with you while you make the call and help you script what to say."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001961#turn-6",
+      "scenarioId": "phone_dialog_0001961",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Please don\u2019t hang up, I\u2019m trying, I just need clothing help and I don\u2019t know where to go first.",
+      "normalizedQuery": "please don hang up trying just clothing know go first",
+      "voiceResponse": "I\u2019m here with you, and we\u2019ll keep it simple. First step for clothing help in Lane County is calling **2-1-1** right now. Say: \u201cI\u2019m near Eugene, I need same-day clothing for me and my child.\u201d If they ask where you are, just give the nearest cross street or landmark. You\u2019re doing this right. If your battery is low, make that call first: **two \u2026 one \u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e8399a8259fb5c21",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:0ce7cf31d5776b2a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and we\u2019ll keep it simple. First step for clothing help in Lane County is calling **2-1-1** right now. Say: \u201cI\u2019m near Eugene, I need same-day clothing for me and my child.\u201d If they ask where you are, just give the nearest cross street or landmark. You\u2019re doing this right. If your battery is low, make that call first: **two \u2026 one \u2026 one**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-2",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I just need a place to shower, like today, I smell awful and I\u2019m freaking out, I\u2019m in Portland.",
+      "normalizedQuery": "just place shower like smell awful freaking portland",
+      "voiceResponse": "I hear you. Let\u2019s get you a shower today. Go to Sunnyside Shower Project, **3520 SE Yamhill Street, Portland**. Call first: **971, 202, 1721**. They offer showers, clothing, and toiletries, and eligibility is unrestricted. If you feel unsafe right now, call **911**. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "service:4995f7ec89526256",
+        "service:5382d9761def72c9",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreic4a2biijrw5hogq5caqvp7kwrw3usxgumfuma43fclnpm3yc3d44",
+        "service:102c674f1762c2df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Let\u2019s get you a shower today. Go to Sunnyside Shower Project, **3520 SE Yamhill Street, Portland**. Call first: **971, 202, 1721**. They offer showers, clothing, and toiletries, and eligibility is unrestricted. If you feel unsafe right now, call **911**. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-3",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what did you say? A bus just went by\u2014can you repeat the name slower?",
+      "normalizedQuery": "hi sorry think straight right now outside it so loud still there just place shower like smell awful freaking portland wait did say bus went by repeat name slower",
+      "voiceResponse": "Yes. The name is **Sunnyside Shower Project**. Slowly: **Sun-ny-side** \u2026 **Shower** \u2026 **Project**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **Sunnyside Shower Project**. Slowly: **Sun-ny-side** \u2026 **Shower** \u2026 **Project**.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-4",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I keep losing track, sorry, I\u2019m crying, I haven\u2019t slept and I need somewhere safe I can clean up.",
+      "normalizedQuery": "hi sorry think straight right now outside it so loud still there just place shower like smell awful freaking portland wait did say bus went by repeat name slower keep losing track crying haven slept somewhere safe clean up",
+      "voiceResponse": "I\u2019m here with you. Your safety comes first: if you feel in danger right now, call **911** now. If you can stay on the line, I\u2019m connecting you to a live 211 agent right now to get you a safe place and somewhere to clean up today in Portland. Keep breathing with me while we connect.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Your safety comes first: if you feel in danger right now, call **911** now. If you can stay on the line, I\u2019m connecting you to a live 211 agent right now to get you a safe place and somewhere to clean up today in Portland. Keep breathing with me while we connect.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-5",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Is it walk-in or do I need papers? I don\u2019t have everything with me.",
+      "normalizedQuery": "just place shower like smell awful freaking portland wait did say bus went by repeat name slower keep losing track sorry crying haven slept somewhere safe clean up it walk papers don have everything",
+      "voiceResponse": "You\u2019re okay. I can\u2019t confirm paperwork from here, but we already have a live 211 agent joining now who can confirm walk-in and exactly what to bring today. Stay on the line with me. If you feel unsafe right now, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:27e274f68ae6936d",
+        "service:8e98106e040e9fe3",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. I can\u2019t confirm paperwork from here, but we already have a live 211 agent joining now who can confirm walk-in and exactly what to bring today. Stay on the line with me. If you feel unsafe right now, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-1",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "[static] Hel\u2014 hello? I, uh... mail, mail... can you hear me? [inaudible]",
+      "normalizedQuery": "static hel hello uh mail hear inaudible",
+      "voiceResponse": "Hi, yes, I\u2019m here. Your audio was unclear. I heard \u201cmail.\u201d I heard \u201cmail.\u201d Can you say just one thing: do you need help with sending mail, getting mail, or missing mail?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreicexka75msbb2guzaony7usoeqfudvnp33c33exhc7uxs2ww54vmi",
+        "service:efb550a569573456",
+        "page:bafkreicsjpei2cha7asz7rd42u4ie4lxnb5sa7ok6jw6ubvsa56y6hvd6m"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Hi, yes, I\u2019m here. Your audio was unclear. I heard \u201cmail.\u201d I heard \u201cmail.\u201d Can you say just one thing: do you need help with sending mail, getting mail, or missing mail?",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-3",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep missing what you said, can you say it slow? I\u2019m in Medford, and I need somewhere I can get my mail.",
+      "normalizedQuery": "keep missing said say it slow medford somewhere mail",
+      "voiceResponse": "Yes. I can say it slow. You are in Medford. You need a place to get mail. You need a place to get mail. I do not have a clear local mailing service listing in front of me yet. One question: do you need a temporary mailing address for yourself right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8633bf7679779ba4",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can say it slow. You are in Medford. You need a place to get mail. You need a place to get mail. I do not have a clear local mailing service listing in front of me yet. One question: do you need a temporary mailing address for yourself right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m here with you. For Medford, I have this local number: **5 4 1, 7 7 4, 2 4 0 0**. Again: **5 4 1, 7 7 4, 2 4 0 0**. Address: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Again: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Do you want me to help with a short script for what to say when they answer?",
+        "Next step: call **Low-Cost Housing Properties / Northwest Housing Alternatives** and ask for any Medford low-cost resource listings, including laundromat options. I only have housing-listing information here, not a confirmed laundry service today. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**.",
+        "Yes \u2014 the place name is **Low-Cost Housing Properties**, through **Northwest Housing Alternatives**.",
+        "Next step: call **Low-Cost Housing Properties** now and ask for the closest Medford laundry options that are open this evening and near a bus line. I don\u2019t have confirmed laundry locations or hours in my notes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**. If you want, I can repeat that number once more."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-6",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number too, please, real slow, one digit at a time.",
+      "normalizedQuery": "keep missing said say it slow medford somewhere mail po box buy mean like service place agency address stuff keeps getting sent back sorry talking over repeat street name again heard 'main' maybe 'mason' phone number too please real one digit at time",
+      "voiceResponse": "I hear you. You want the phone number, slow, one digit at a time. You want the phone number, slow, one digit at a time. I do not have a verified local number on my screen right now. I can connect you to a 211 specialist now, and they can give it slowly. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You want the phone number, slow, one digit at a time. You want the phone number, slow, one digit at a time. I do not have a verified local number on my screen right now. I can connect you to a 211 specialist now, and they can give it slowly. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m here with you. For Medford, I have this local number: **5 4 1, 7 7 4, 2 4 0 0**. Again: **5 4 1, 7 7 4, 2 4 0 0**. Address: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Again: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Do you want me to help with a short script for what to say when they answer?",
+        "Next step: call **Low-Cost Housing Properties / Northwest Housing Alternatives** and ask for any Medford low-cost resource listings, including laundromat options. I only have housing-listing information here, not a confirmed laundry service today. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**.",
+        "Yes \u2014 the place name is **Low-Cost Housing Properties**, through **Northwest Housing Alternatives**.",
+        "Next step: call **Low-Cost Housing Properties** now and ask for the closest Medford laundry options that are open this evening and near a bus line. I don\u2019t have confirmed laundry locations or hours in my notes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**. If you want, I can repeat that number once more."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002044#turn-1",
+      "scenarioId": "phone_dialog_0002044",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, sorry, I can't really breathe right now... I just, I need somewhere to do laundry, I'm in Gresham, and everything's piling up.",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere laundry i'm gresham everything's piling up",
+      "voiceResponse": "I\u2019m really glad you called. Let\u2019s do this one step at a time. If your breathing feels severe right now, please hang up and call 911 now. For laundry, I only have one listing: Right Track Resource Center, 501 3rd Street, La Grande. Phone: 541, 962, 7994. Backup: 541, 910, 3056. If you want, I can stay with you while we decide whether to call 911 first or call them now.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:2ef319d5e12550a7",
+        "service:57fcd59e218a59f6",
+        "service:3bf79b1da127b257",
+        "service:bb282e5eaf2a18e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Let\u2019s do this one step at a time. If your breathing feels severe right now, please hang up and call 911 now. For laundry, I only have one listing: Right Track Resource Center, 501 3rd Street, La Grande. Phone: 541, 962, 7994. Backup: 541, 910, 3056. If you want, I can stay with you while we decide whether to call 911 first or call them now.",
+      "voiceResponseAlternatives": [
+        "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+        "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+        "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+        "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002044#turn-2",
+      "scenarioId": "phone_dialog_0002044",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, there's people yelling in the hallway, I can't hear you good... can you say that slower?",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere laundry i'm gresham everything's piling up wait hold on there's people yelling hallway hear good say slower",
+      "voiceResponse": "You\u2019re okay, I\u2019ll go slow. If your breathing feels severe, call **911** now. For laundry, I have one place: **Right Track Resource Center** **501 3rd Street, La Grande** Main phone: **541 \u2026 962 \u2026 7994** Backup phone: **541 \u2026 910 \u2026 3056**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:bb282e5eaf2a18e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll go slow. If your breathing feels severe, call **911** now. For laundry, I have one place: **Right Track Resource Center** **501 3rd Street, La Grande** Main phone: **541 \u2026 962 \u2026 7994** Backup phone: **541 \u2026 910 \u2026 3056**.",
+      "voiceResponseAlternatives": [
+        "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+        "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+        "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+        "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002044#turn-3",
+      "scenarioId": "phone_dialog_0002044",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm crying, I'm sorry, I know I sound all over the place, I just need a place I can wash clothes today, like cheap or free if possible.",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere laundry i'm gresham everything's piling up wait hold on there's people yelling hallway hear good say slower crying know sound all over place wash clothes like cheap free if possible",
+      "voiceResponse": "You don\u2019t need to apologize, and I\u2019m with you. Let\u2019s keep this simple. If breathing gets severe, call 911 right away. For laundry, I only have one option right now: Right Track Resource Center, 501 3rd Street, La Grande. Main number: 541\u2026962\u20267994. Backup: 541\u2026910\u20263056. If you want, we can do this together: first call the main number and ask, \u201cDo you have free or low-cost laundry today?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize, and I\u2019m with you. Let\u2019s keep this simple. If breathing gets severe, call 911 right away. For laundry, I only have one option right now: Right Track Resource Center, 501 3rd Street, La Grande. Main number: 541\u2026962\u20267994. Backup: 541\u2026910\u20263056. If you want, we can do this together: first call the main number and ask, \u201cDo you have free or low-cost laundry today?\u201d",
+      "voiceResponseAlternatives": [
+        "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+        "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+        "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+        "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002044#turn-4",
+      "scenarioId": "phone_dialog_0002044",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Did you say it was on Burnside? Or Broadway? I missed it, can you repeat the address again?",
+      "normalizedQuery": "hi um sorry can't really breathe right now just somewhere laundry i'm gresham everything's piling up wait hold on there's people yelling hallway hear good say slower crying know sound all over place wash clothes like cheap free if possible did it was burnside broadway missed repeat address again",
+      "voiceResponse": "You\u2019re doing okay, and I can repeat it clearly. It\u2019s **not** Burnside or Broadway. The address I have is: **501 3rd Street, La Grande**. I\u2019ll say it once more, slowly: **501 \u2026 3rd Street \u2026 La Grande**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and I can repeat it clearly. It\u2019s **not** Burnside or Broadway. The address I have is: **501 3rd Street, La Grande**. I\u2019ll say it once more, slowly: **501 \u2026 3rd Street \u2026 La Grande**.",
+      "voiceResponseAlternatives": [
+        "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+        "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+        "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+        "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-3",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, Clacka- Clackamas, sorry, I keep losing you. I need a place to wash clothes, like cheap laundry help.",
+      "normalizedQuery": "yeah clacka clackamas sorry keep losing place wash clothes like cheap laundry",
+      "voiceResponse": "Yes, I hear you. You are in Clackamas, and you need cheap laundry help. Clackamas, cheap laundry help. I can look for **Laundry Facilities** and **Laundry Products** near you through 211. I can repeat that: Laundry Facilities and Laundry Products. One question: what is your ZIP code?",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "service:8633bf7679779ba4",
+        "page:bafkreig4ephu5gz5x57etein53bmnoswyqmsfqaodzpjcg5df4irdx4kxq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. You are in Clackamas, and you need cheap laundry help. Clackamas, cheap laundry help. I can look for **Laundry Facilities** and **Laundry Products** near you through 211. I can repeat that: Laundry Facilities and Laundry Products. One question: what is your ZIP code?",
+      "voiceResponseAlternatives": [
+        "I hear you. We can keep this private. For same-day laundry help in Clackamas, use 211info\u2019s Laundry Products search, or call **2-1-1**. That is **2-1-1**. You can ask for only nearby options and share the least info needed. If you want, I can help you with a short script to protect your privacy when you call.",
+        "I hear you. You are right to ask. I cannot see a public list of this call from here. I cannot see a public list of this call. Share only what you choose. First name only is okay. For help, you can still call **2-1-1**. That is **2-1-1**. If you want, I can give you a one-line script to ask for minimum data collection before you share anything.",
+        "Yes, I hear you. For showers today, try Union Gospel Mission in Salem: `777 Commercial Street N-E, Salem, 9 7 3 0 1.` Call `5 0 3, 3 6 2, 3 9 8 3.` Again: `5 0 3, 3 6 2, 3 9 8 3.` Can you get to Salem today, or do you need only Clackamas or Portland?",
+        "I hear you. You need the closest open now, and your battery is at two percent. Right now, I only have one confirmed number: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Address is **1 2 0 3 Willamette Street, Suite 1 0 0, Eugene**. Do you want me to give you a 10-second script to ask for a shower referral fast?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-5",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the place name slowly? I heard 'Happy Valley' maybe, or did I hear that wrong?",
+      "normalizedQuery": "wait sorry say again slower hearing's bad only caught 'where' then nothing yeah clacka clackamas keep losing place wash clothes like cheap laundry dry cleaning no just regular don't have working machines at home right now repeat name slowly heard 'happy valley' maybe did hear wrong",
+      "voiceResponse": "Yes. I said **Clackamas**. I\u2019ll say it slowly: **Clack-a-mas**. Clackamas. I did not confirm Happy Valley yet. I confirmed **Clackamas**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreifojajm4pxsel7udihfyfo4f3tqnztydzucq26vjlczwvfeq27j2e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I said **Clackamas**. I\u2019ll say it slowly: **Clack-a-mas**. Clackamas. I did not confirm Happy Valley yet. I confirmed **Clackamas**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slow version. I asked for your ZIP code. Just your ZIP code. Five digits. Your ZIP code helps me find nearby same-day laundry options. You can share only that, nothing more. Your ZIP code only.",
+        "Yes. I\u2019ll say the name slowly. It is: **Two Families Now**. Again: **Two Families Now**. Full listing name is: **Two Families Now: Effective Parenting During Separation and Divorce**.",
+        "Yes. I\u2019ll say it slower. Shower option today: Union Gospel Mission. Address: 777 Commercial Street N E, Salem. I\u2019ll repeat: 777 Commercial Street N E, Salem. Phone: 5 0 3, 3 6 2, 3 9 8 3. Again: 5 0 3, 3 6 2, 3 9 8 3. Portland contact: 9 7 1, 2 2 2, 1 8 8 0. Again: 9 7 1, 2 2 2, 1 8 8 0.",
+        "Yes. Slowly. Address: 7 7 7, Commercial Street, N E, Salem. I\u2019ll repeat: 7 7 7, Commercial Street, N E, Salem. Phone: 5 0 3, then 3 6 2, then 3 9 8 3. Again: 5 0 3, then 3 6 2, then 3 9 8 3."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-6",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "And if there's a number, please do it one digit at a time, I miss parts when the line cracks.",
+      "normalizedQuery": "yeah clacka clackamas sorry keep losing place wash clothes like cheap laundry dry cleaning no just regular don't have working machines at home right now repeat name slowly heard 'happy valley' maybe did hear wrong if there's number please it one digit time miss parts when line cracks",
+      "voiceResponse": "Yes. I can do that. I will say any number one digit at a time. One digit at a time. One question: what is your ZIP code?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can do that. I will say any number one digit at a time. One digit at a time. One question: what is your ZIP code?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not doing anything wrong by needing this. One option I can confirm is Right Track Resource Center; they can help with mail services and they don\u2019t require documents. You can call **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If Salem is reachable, Simonka Place also offers mail services: **5 0 3, 3 6 2, 7 4 8 7**. If you want, we can do this one step at a time together.",
+        "I hear you, and your safety comes first. If you can\u2019t breathe right now, call **911** immediately, or I can stay with you while you do. You matter. Once you\u2019re safe, I\u2019ll help you find a mail location in Clackamas right away.",
+        "You don\u2019t need to apologize. I\u2019m with you. If your breathing gets tight again or you feel unsafe, call **911** right now. I\u2019m getting a live specialist on the line to help with a safe mailing address in Clackamas. Stay with me and take one slow breath in, then out.",
+        "First step: call **Love INC of Clackamas County** and ask for help with a safe mailing address option while you\u2019re between places. The number is **five zero three\u2026 six five zero\u2026 zero one five three**. If it helps, I can stay with you while you make the call and help you script what to say."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002098#turn-2",
+      "scenarioId": "phone_dialog_0002098",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No wait, sorry, bus noise here\u2014mail, I said mail, or maybe address... hold on, don\u2019t hang up.",
+      "normalizedQuery": "no wait sorry bus noise here mail said maybe address hold on don hang up",
+      "voiceResponse": "I hear you. The audio was unclear. I heard: mail or address. Mail or address. Which one do you want right now: mailing help, or the street address?",
+      "evidenceDocIds": [
+        "service:d2518f1f0d90f0aa",
+        "service:67e0b8db54a778d4",
+        "service:3cad750d175008ab",
+        "service:d037a0544f088c6d",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. The audio was unclear. I heard: mail or address. Mail or address. Which one do you want right now: mailing help, or the street address?",
+      "voiceResponseAlternatives": [
+        "I hear you. The line is still unclear. You need the clothing service, right. Clothing service. Which one do you want now: phone number, or address?",
+        "You\u2019re doing okay, and I\u2019m with you. The audio was unclear with the bus noise. Can you repeat just one thing: do you need help with **mail pickup**, **mailing an application**, or **getting proof of address**?",
+        "Next step: your audio was unclear over traffic. Please say one choice so I can help fast: \u201claundry pickup\u201d or \u201csenior program\u201d?",
+        "I hear how overwhelmed you are, and I\u2019m staying with you. Your audio cut out for a second. Please say just one word so I can get you to the right place for mail today: **\u201cSalem\u201d** or **\u201canother city.\u201d**"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002127#turn-6",
+      "scenarioId": "phone_dialog_0002127",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My battery is at like two percent, if we get cut off, what place should I go to first for clothing today?",
+      "normalizedQuery": "battery at like two percent if we cut off place should go first clothing",
+      "voiceResponse": "You\u2019re doing the right thing, and we can keep this simple. If we get cut off, go first to **First Place Family Center**. They offer **on-site clothing** and **clothing vouchers** today. When you arrive, say: \u201cI need clothing help for my family today.\u201d If you have a few seconds before your phone dies, I can give you one quick backup option next.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib2s4h2iqmjym3n7d67z3qt3pditvnkjyrble433ejxbr5hngiorm",
+        "page:bafkreibxspsnq4jn6nbyjtnm3bkjcvdeccb6kkk5wzey23z47wdlufj2e4",
+        "service:b3d7aa7d9150b9d1",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and we can keep this simple. If we get cut off, go first to **First Place Family Center**. They offer **on-site clothing** and **clothing vouchers** today. When you arrive, say: \u201cI need clothing help for my family today.\u201d If you have a few seconds before your phone dies, I can give you one quick backup option next.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
     }
   ],
@@ -15469,6 +17074,270 @@
       "to": "phone_dialog_0001258#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001267#turn-2",
+      "to": "phone_dialog_0001267#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001267#turn-3",
+      "to": "phone_dialog_0001267#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001326#turn-2",
+      "to": "phone_dialog_0001326#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001326#turn-3",
+      "to": "phone_dialog_0001326#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001326#turn-4",
+      "to": "phone_dialog_0001326#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001399#turn-1",
+      "to": "phone_dialog_0001399#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001399#turn-2",
+      "to": "phone_dialog_0001399#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001429#turn-3",
+      "to": "phone_dialog_0001429#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001484#turn-2",
+      "to": "phone_dialog_0001484#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001484#turn-3",
+      "to": "phone_dialog_0001484#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001484#turn-4",
+      "to": "phone_dialog_0001484#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001493#turn-1",
+      "to": "phone_dialog_0001493#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001653#turn-1",
+      "to": "phone_dialog_0001653#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001653#turn-3",
+      "to": "phone_dialog_0001653#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-3",
+      "to": "phone_dialog_0001702#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-4",
+      "to": "phone_dialog_0001702#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-5",
+      "to": "phone_dialog_0001702#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001740#turn-4",
+      "to": "phone_dialog_0001740#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-1",
+      "to": "phone_dialog_0001763#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-2",
+      "to": "phone_dialog_0001763#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-3",
+      "to": "phone_dialog_0001763#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-4",
+      "to": "phone_dialog_0001763#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-5",
+      "to": "phone_dialog_0001763#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-3",
+      "to": "phone_dialog_0001841#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-4",
+      "to": "phone_dialog_0001841#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-5",
+      "to": "phone_dialog_0001841#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-6",
+      "to": "phone_dialog_0001841#turn-7",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001847#turn-1",
+      "to": "phone_dialog_0001847#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-2",
+      "to": "phone_dialog_0001896#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-4",
+      "to": "phone_dialog_0001896#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-5",
+      "to": "phone_dialog_0001896#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-2",
+      "to": "phone_dialog_0001963#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-3",
+      "to": "phone_dialog_0001963#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-4",
+      "to": "phone_dialog_0001963#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-5",
+      "to": "phone_dialog_0001963#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-1",
+      "to": "phone_dialog_0001976#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-3",
+      "to": "phone_dialog_0001976#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002044#turn-1",
+      "to": "phone_dialog_0002044#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002044#turn-2",
+      "to": "phone_dialog_0002044#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002044#turn-3",
+      "to": "phone_dialog_0002044#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002044#turn-4",
+      "to": "phone_dialog_0002044#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002067#turn-3",
+      "to": "phone_dialog_0002067#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002067#turn-5",
+      "to": "phone_dialog_0002067#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002098#turn-2",
+      "to": "phone_dialog_0002098#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__broad_help__clackamas",
   "kind": "service_location",
   "key": "broad_help__clackamas",
-  "nodeCount": 6,
+  "nodeCount": 7,
   "nodes": [
     {
       "id": "phone_dialog_0000127#turn-5",
@@ -51,7 +51,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
@@ -159,6 +161,33 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001957#turn-1",
+      "scenarioId": "phone_dialog_0001957",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, um, can you keep this quiet? I think my partner checks my phone, and I need help in Clackamas without anything getting mailed or texted where he can see it.",
+      "normalizedQuery": "hi um keep this quiet think partner checks phone clackamas without anything getting mailed texted he see it",
+      "voiceResponse": "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:0963e94e6b3dc85a",
+        "service:bcfe168519274472"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -185,6 +214,12 @@
       "to": "phone_dialog_0001081#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001957#turn-1",
+      "to": "phone_dialog_0001957#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
     }
   ]
 }

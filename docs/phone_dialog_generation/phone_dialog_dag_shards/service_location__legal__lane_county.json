@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__legal__lane_county",
   "kind": "service_location",
   "key": "legal__lane_county",
-  "nodeCount": 4,
+  "nodeCount": 5,
   "nodes": [
     {
       "id": "phone_dialog_0000197#turn-3",
@@ -114,6 +114,31 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002138#turn-6",
+      "scenarioId": "phone_dialog_0002138",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Please don\u2019t hang up, my phone\u2019s at like two percent, I just need the address and what papers to bring.",
+      "normalizedQuery": "say number again slower people yelling missed middle part don have money lawyer just legal aid attorney advocacy like before they lock wait hold on bus pulled up hear did lane county something please hang phone at two percent address papers bring",
+      "voiceResponse": "I\u2019m here with you. I don\u2019t have a verified address or paper list on this screen right now. If you can, call **541\u2026385\u20266950** now and ask: \u201cWhat is your Eugene address, and what documents should I bring for same-day eviction help?\u201d If you feel unsafe or can\u2019t breathe, call **9-1-1** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:fb074c67ffa3d23c",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. I don\u2019t have a verified address or paper list on this screen right now. If you can, call **541\u2026385\u20266950** now and ask: \u201cWhat is your Eugene address, and what documents should I bring for same-day eviction help?\u201d If you feel unsafe or can\u2019t breathe, call **9-1-1** immediately.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [

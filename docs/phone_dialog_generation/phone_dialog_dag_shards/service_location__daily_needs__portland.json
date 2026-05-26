@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__daily_needs__portland",
   "kind": "service_location",
   "key": "daily_needs__portland",
-  "nodeCount": 32,
+  "nodeCount": 37,
   "nodes": [
     {
       "id": "phone_dialog_0000052#turn-1",
@@ -955,6 +955,151 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001493#turn-1",
+      "scenarioId": "phone_dialog_0001493",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I\u2019m sorry, I can\u2019t really stop crying... I\u2019m in Portland and I just need somewhere to do laundry today.",
+      "normalizedQuery": "hi um sorry really stop crying portland just somewhere laundry",
+      "voiceResponse": "I\u2019m here with you. The audio was a little unclear over the noise, so I want to get this right: did you say you need a place to do laundry in Portland today?",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "service:a558e2f5ba96f584",
+        "page:bafkreibtv544zo5wjxq6lmn3flnetzoygmb43ajwbhdrxwkn3o6lfoavt4",
+        "page:bafkreifrpvsv6o5pkrlek4okdphotlorlwalgu7s5ss2b2aweweexluiim"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. The audio was a little unclear over the noise, so I want to get this right: did you say you need a place to do laundry in Portland today?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-2",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I just need a place to shower, like today, I smell awful and I\u2019m freaking out, I\u2019m in Portland.",
+      "normalizedQuery": "just place shower like smell awful freaking portland",
+      "voiceResponse": "I hear you. Let\u2019s get you a shower today. Go to Sunnyside Shower Project, **3520 SE Yamhill Street, Portland**. Call first: **971, 202, 1721**. They offer showers, clothing, and toiletries, and eligibility is unrestricted. If you feel unsafe right now, call **911**. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "service:4995f7ec89526256",
+        "service:5382d9761def72c9",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreic4a2biijrw5hogq5caqvp7kwrw3usxgumfuma43fclnpm3yc3d44",
+        "service:102c674f1762c2df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Let\u2019s get you a shower today. Go to Sunnyside Shower Project, **3520 SE Yamhill Street, Portland**. Call first: **971, 202, 1721**. They offer showers, clothing, and toiletries, and eligibility is unrestricted. If you feel unsafe right now, call **911**. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-3",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what did you say? A bus just went by\u2014can you repeat the name slower?",
+      "normalizedQuery": "hi sorry think straight right now outside it so loud still there just place shower like smell awful freaking portland wait did say bus went by repeat name slower",
+      "voiceResponse": "Yes. The name is **Sunnyside Shower Project**. Slowly: **Sun-ny-side** \u2026 **Shower** \u2026 **Project**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **Sunnyside Shower Project**. Slowly: **Sun-ny-side** \u2026 **Shower** \u2026 **Project**.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-4",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I keep losing track, sorry, I\u2019m crying, I haven\u2019t slept and I need somewhere safe I can clean up.",
+      "normalizedQuery": "hi sorry think straight right now outside it so loud still there just place shower like smell awful freaking portland wait did say bus went by repeat name slower keep losing track crying haven slept somewhere safe clean up",
+      "voiceResponse": "I\u2019m here with you. Your safety comes first: if you feel in danger right now, call **911** now. If you can stay on the line, I\u2019m connecting you to a live 211 agent right now to get you a safe place and somewhere to clean up today in Portland. Keep breathing with me while we connect.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Your safety comes first: if you feel in danger right now, call **911** now. If you can stay on the line, I\u2019m connecting you to a live 211 agent right now to get you a safe place and somewhere to clean up today in Portland. Keep breathing with me while we connect.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001963#turn-5",
+      "scenarioId": "phone_dialog_0001963",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Is it walk-in or do I need papers? I don\u2019t have everything with me.",
+      "normalizedQuery": "just place shower like smell awful freaking portland wait did say bus went by repeat name slower keep losing track sorry crying haven slept somewhere safe clean up it walk papers don have everything",
+      "voiceResponse": "You\u2019re okay. I can\u2019t confirm paperwork from here, but we already have a live 211 agent joining now who can confirm walk-in and exactly what to bring today. Stay on the line with me. If you feel unsafe right now, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:27e274f68ae6936d",
+        "service:8e98106e040e9fe3",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. I can\u2019t confirm paperwork from here, but we already have a live 211 agent joining now who can confirm walk-in and exactly what to bring today. Stay on the line with me. If you feel unsafe right now, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1131,6 +1276,36 @@
       "to": "phone_dialog_0000992#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001493#turn-1",
+      "to": "phone_dialog_0001493#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-2",
+      "to": "phone_dialog_0001963#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-3",
+      "to": "phone_dialog_0001963#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-4",
+      "to": "phone_dialog_0001963#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001963#turn-5",
+      "to": "phone_dialog_0001963#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

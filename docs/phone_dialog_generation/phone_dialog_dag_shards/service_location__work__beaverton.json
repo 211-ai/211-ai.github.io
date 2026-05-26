@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__work__beaverton",
   "kind": "service_location",
   "key": "work__beaverton",
-  "nodeCount": 24,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000018#turn-1",
@@ -707,6 +707,96 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001607#turn-4",
+      "scenarioId": "phone_dialog_0001607",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait sorry, a truck just passed, can you repeat that number slow one more time?",
+      "normalizedQuery": "hi only got like two minutes this borrowed phone battery at one percent give most important number first beaverton bus stop person checks so please keep it simple they took id being made work stuff don want scared ll come looking if leave wait sorry truck just passed repeat slow more time",
+      "voiceResponse": "Yeah. Slow: **nine\u2026 one\u2026 one**. That\u2019s **9-1-1** if you\u2019re in immediate danger. If it\u2019s safer and not immediate, the other number is **two\u2026 one\u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah. Slow: **nine\u2026 one\u2026 one**. That\u2019s **9-1-1** if you\u2019re in immediate danger. If it\u2019s safer and not immediate, the other number is **two\u2026 one\u2026 one**.",
+      "voiceResponseAlternatives": [
+        "Yes. After the area code **5 4 1**, it is **7 7** \u2026 **9**. So the middle part is **7 7 9**.",
+        "Yes. Slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. Just dial **2-1-1**.",
+        "Of course, and I\u2019m glad you asked. The phrase to use is: **\u201clive agent for employment help in Beaverton for my cousin.\u201d** I\u2019ll say it slower: **live agent** \u2026 **employment help** \u2026 **Beaverton** \u2026 **for my cousin**.",
+        "Of course. Slowly: I\u2019m connecting you to a live counselor now. They\u2019ll stay with you and help make a fast plan for today, for work and bills, including local job and work-clothing support near Beaverton. Please stay with me on the line."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001762#turn-3",
+      "scenarioId": "phone_dialog_0001762",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "He's not here this second, but he's been waiting outside my work and texting from different numbers, so I don't feel safe.",
+      "normalizedQuery": "hi um talk quietly i'm beaverton can't go back home tonight partner said if leave he'll sorry crying slow down little barely think right now he's here this second been waiting outside work texting from different numbers so don't feel safe",
+      "voiceResponse": "Thank you for telling me. I believe you, and you\u2019re not overreacting. Since he\u2019s been waiting outside and contacting you from different numbers, your safety matters right now. If he shows up or you feel in immediate danger, call 911. If you can, move to a public spot with people and don\u2019t leave alone. I can stay with you while we connect you to a live advocate for a safe place tonight and a quick plan.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. I believe you, and you\u2019re not overreacting. Since he\u2019s been waiting outside and contacting you from different numbers, your safety matters right now. If he shows up or you feel in immediate danger, call 911. If you can, move to a public spot with people and don\u2019t leave alone. I can stay with you while we connect you to a live advocate for a safe place tonight and a quick plan.",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **two-one-one info**. I\u2019ll say it again: **two-one-one info**. I\u2019m connecting you to a live 211 specialist now.",
+        "You\u2019re doing the right thing calling for him, and yes, I can hear you. I want to get your cousin connected to a live specialist who can look up work and job training options in Beaverton right now. If the line drops, call back and say, \u201cemployment help in Beaverton for my cousin,\u201d and we\u2019ll pick it up fast.",
+        "That\u2019s totally okay, and you\u2019re helping him a lot by calling. We can still move forward without full paperwork right now. I\u2019ll connect you to a live specialist who can start with whatever details you do have, then tell your cousin exactly what to gather next. If reception drops, call back and say: \u201clive agent for employment help in Beaverton for my cousin.\u201d",
+        "That makes sense, and you\u2019re giving them a solid starting point. Tell the live specialist exactly that: warehouse, delivery, and possibly office work, and that you\u2019re calling with partial details. They can still screen options and say what your cousin needs next. If the call drops, say: live agent, employment help, Beaverton, for my cousin."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001858#turn-4",
+      "scenarioId": "phone_dialog_0001858",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s traffic noise and I missed that, can you repeat just the number slowly?",
+      "normalizedQuery": "hi talk long this borrowed phone it dying give safest number call first beaverton big grocery parking lot someone keeps checking he took id work papers being forced keep working things don agree sorry there traffic noise missed repeat just slowly",
+      "voiceResponse": "Of course. The number is **9-1-1**. Again, slowly: **nine, one, one**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is **9-1-1**. Again, slowly: **nine, one, one**.",
+      "voiceResponseAlternatives": [
+        "Yes. After the area code **5 4 1**, it is **7 7** \u2026 **9**. So the middle part is **7 7 9**.",
+        "Yes. Slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. Just dial **2-1-1**.",
+        "Of course, and I\u2019m glad you asked. The phrase to use is: **\u201clive agent for employment help in Beaverton for my cousin.\u201d** I\u2019ll say it slower: **live agent** \u2026 **employment help** \u2026 **Beaverton** \u2026 **for my cousin**.",
+        "Of course. Slowly: I\u2019m connecting you to a live counselor now. They\u2019ll stay with you and help make a fast plan for today, for work and bills, including local job and work-clothing support near Beaverton. Please stay with me on the line."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -847,6 +937,24 @@
       "to": "phone_dialog_0001010#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "provider_contact_support->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001607#turn-4",
+      "to": "phone_dialog_0001607#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001762#turn-3",
+      "to": "phone_dialog_0001762#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001858#turn-4",
+      "to": "phone_dialog_0001858#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
     }
   ]
 }

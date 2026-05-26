@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__utilities__washington_county",
   "kind": "service_location",
   "key": "utilities__washington_county",
-  "nodeCount": 14,
+  "nodeCount": 17,
   "nodes": [
     {
       "id": "phone_dialog_0000034#turn-1",
@@ -85,7 +85,8 @@
       "assistantResponse": "Yes. The agency name is **Portland General Electric**. I\u2019ll say it slow: **Port-land** \u2026 **Gen-er-al** \u2026 **E-lec-tric**.",
       "voiceResponseAlternatives": [
         "Yes. The agency name is Salem Electric Public Safety Power Shutoffs. I\u2019ll repeat that: Salem Electric Public Safety Power Shutoffs. Phone number: 503, 362, 3601. Again: 503, 362, 3601. Second number: 541, 688, 8711. Again: 541, 688, 8711.",
-        "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**."
+        "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**.",
+        "You\u2019re doing great. Here\u2019s the first number, slowly, one digit at a time: **8 \u2026 0 \u2026 0 \u2026 5 \u2026 4 \u2026 4 \u2026 1 \u2026 7 \u2026 9 \u2026 5**. Again: **8-0-0, 5-4-4, 1-7-9-5**. Backup number: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 8 \u2026 6 \u2026 3 \u2026 2 \u2026 2**."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "hard_of_hearing",
@@ -375,7 +376,8 @@
       "assistantResponse": "Yes. The agency name is Salem Electric Public Safety Power Shutoffs. I\u2019ll repeat that: Salem Electric Public Safety Power Shutoffs. Phone number: 503, 362, 3601. Again: 503, 362, 3601. Second number: 541, 688, 8711. Again: 541, 688, 8711.",
       "voiceResponseAlternatives": [
         "Yes. The agency name is **Portland General Electric**. I\u2019ll say it slow: **Port-land** \u2026 **Gen-er-al** \u2026 **E-lec-tric**.",
-        "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**."
+        "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**.",
+        "You\u2019re doing great. Here\u2019s the first number, slowly, one digit at a time: **8 \u2026 0 \u2026 0 \u2026 5 \u2026 4 \u2026 4 \u2026 1 \u2026 7 \u2026 9 \u2026 5**. Again: **8-0-0, 5-4-4, 1-7-9-5**. Backup number: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 8 \u2026 6 \u2026 3 \u2026 2 \u2026 2**."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -403,11 +405,95 @@
       "assistantResponse": "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**.",
       "voiceResponseAlternatives": [
         "Yes. The agency name is **Portland General Electric**. I\u2019ll say it slow: **Port-land** \u2026 **Gen-er-al** \u2026 **E-lec-tric**.",
-        "Yes. The agency name is Salem Electric Public Safety Power Shutoffs. I\u2019ll repeat that: Salem Electric Public Safety Power Shutoffs. Phone number: 503, 362, 3601. Again: 503, 362, 3601. Second number: 541, 688, 8711. Again: 541, 688, 8711."
+        "Yes. The agency name is Salem Electric Public Safety Power Shutoffs. I\u2019ll repeat that: Salem Electric Public Safety Power Shutoffs. Phone number: 503, 362, 3601. Again: 503, 362, 3601. Second number: 541, 688, 8711. Again: 541, 688, 8711.",
+        "You\u2019re doing great. Here\u2019s the first number, slowly, one digit at a time: **8 \u2026 0 \u2026 0 \u2026 5 \u2026 4 \u2026 4 \u2026 1 \u2026 7 \u2026 9 \u2026 5**. Again: **8-0-0, 5-4-4, 1-7-9-5**. Backup number: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 8 \u2026 6 \u2026 3 \u2026 2 \u2026 2**."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001765#turn-2",
+      "scenarioId": "phone_dialog_0001765",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Washington County and they put a shutoff notice on my door, like today-today, for electric.",
+      "normalizedQuery": "washington county they put shutoff notice on door like electric",
+      "voiceResponse": "I hear how urgent this is. First call **360-521-6527** right now: **3-6-0, 5-2-1, 6-5-2-7**. If that fails, call **971-319-9793**: **9-7-1, 3-1-9, 9-7-9-3**. Say: \u201cI\u2019m in Washington County, I got an electric shutoff notice posted today, and I need a same-day shutoff hold and emergency utility help.\u201d If power is being cut right now, also call the number printed on your shutoff notice immediately.",
+      "evidenceDocIds": [
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "page:bafkreicxhaxgx3du26gmvq2c6llkv7fh4u6nacypbzt4jfgmsq5siuyqnq",
+        "service:cd4723c0c202bdcc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how urgent this is. First call **360-521-6527** right now: **3-6-0, 5-2-1, 6-5-2-7**. If that fails, call **971-319-9793**: **9-7-1, 3-1-9, 9-7-9-3**. Say: \u201cI\u2019m in Washington County, I got an electric shutoff notice posted today, and I need a same-day shutoff hold and emergency utility help.\u201d If power is being cut right now, also call the number printed on your shutoff notice immediately.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re not alone in this. Call this first: **8-0-0, 5-4-4, 1-7-9-5**. If no answer, call **5-0-3, 2-2-8, 6-3-2-2**. Say: \u201cI\u2019m in Washington County, I have kids in the home, and I got a shutoff notice today. I need a same-day shutoff hold and emergency help.\u201d If shutoff is happening right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001765#turn-3",
+      "scenarioId": "phone_dialog_0001765",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m trying to keep it together but I can\u2019t think straight, my kids are here and I can\u2019t lose power tonight.",
+      "normalizedQuery": "hi please main number first battery at like two percent this isn even phone washington county they put shutoff notice on door electric trying keep it together think straight kids here lose power tonight",
+      "voiceResponse": "I hear you, and you\u2019re not alone in this. Call this first: **8-0-0, 5-4-4, 1-7-9-5**. If no answer, call **5-0-3, 2-2-8, 6-3-2-2**. Say: \u201cI\u2019m in Washington County, I have kids in the home, and I got a shutoff notice today. I need a same-day shutoff hold and emergency help.\u201d If shutoff is happening right now, call **911**.",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:b30d1ccbf8ca9924",
+        "service:d429a1a4c44352b1",
+        "service:dbea764a4f6362d4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not alone in this. Call this first: **8-0-0, 5-4-4, 1-7-9-5**. If no answer, call **5-0-3, 2-2-8, 6-3-2-2**. Say: \u201cI\u2019m in Washington County, I have kids in the home, and I got a shutoff notice today. I need a same-day shutoff hold and emergency help.\u201d If shutoff is happening right now, call **911**.",
+      "voiceResponseAlternatives": [
+        "I hear how urgent this is. First call **360-521-6527** right now: **3-6-0, 5-2-1, 6-5-2-7**. If that fails, call **971-319-9793**: **9-7-1, 3-1-9, 9-7-9-3**. Say: \u201cI\u2019m in Washington County, I got an electric shutoff notice posted today, and I need a same-day shutoff hold and emergency utility help.\u201d If power is being cut right now, also call the number printed on your shutoff notice immediately."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001765#turn-4",
+      "scenarioId": "phone_dialog_0001765",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? You cut out, can you repeat that number slower, one digit at a time?",
+      "normalizedQuery": "hi please main number first battery at like two percent this isn even phone washington county they put shutoff notice on door electric trying keep it together think straight kids here lose power tonight sorry cut repeat slower one digit time",
+      "voiceResponse": "You\u2019re doing great. Here\u2019s the first number, slowly, one digit at a time: **8 \u2026 0 \u2026 0 \u2026 5 \u2026 4 \u2026 4 \u2026 1 \u2026 7 \u2026 9 \u2026 5**. Again: **8-0-0, 5-4-4, 1-7-9-5**. Backup number: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 8 \u2026 6 \u2026 3 \u2026 2 \u2026 2**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:b30d1ccbf8ca9924",
+        "service:d429a1a4c44352b1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great. Here\u2019s the first number, slowly, one digit at a time: **8 \u2026 0 \u2026 0 \u2026 5 \u2026 4 \u2026 4 \u2026 1 \u2026 7 \u2026 9 \u2026 5**. Again: **8-0-0, 5-4-4, 1-7-9-5**. Backup number: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 8 \u2026 6 \u2026 3 \u2026 2 \u2026 2**.",
+      "voiceResponseAlternatives": [
+        "Yes. The agency name is **Portland General Electric**. I\u2019ll say it slow: **Port-land** \u2026 **Gen-er-al** \u2026 **E-lec-tric**.",
+        "Yes. The agency name is Salem Electric Public Safety Power Shutoffs. I\u2019ll repeat that: Salem Electric Public Safety Power Shutoffs. Phone number: 503, 362, 3601. Again: 503, 362, 3601. Second number: 541, 688, 8711. Again: 541, 688, 8711.",
+        "Yes. The address is **43050 Highway 101, Port Orford, Oregon, 97465**. I\u2019ll say it again, slowly: **43050** \u2014 that is **43, 050** \u2014 **Highway 101**, **Port Orford**, **Oregon**, **97465**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -494,6 +580,24 @@
       "to": "phone_dialog_0001144#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001765#turn-2",
+      "to": "phone_dialog_0001765#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001765#turn-3",
+      "to": "phone_dialog_0001765#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001765#turn-4",
+      "to": "phone_dialog_0001765#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

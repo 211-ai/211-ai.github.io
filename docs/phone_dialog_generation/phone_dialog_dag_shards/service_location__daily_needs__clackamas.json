@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__daily_needs__clackamas",
   "kind": "service_location",
   "key": "daily_needs__clackamas",
-  "nodeCount": 21,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000023#turn-1",
@@ -635,6 +635,181 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-2",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No wait, sorry, bus is loud, hold on... I need... shower, shower place, I think, in Clack... Clackamas...",
+      "normalizedQuery": "no wait sorry bus loud hold on shower place think clack clackamas",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. Your audio was unclear. I heard \u201cshower place\u201d and \u201cClackamas.\u201d Please repeat just one thing: do you mean **Clackamas County**?",
+      "evidenceDocIds": [
+        "service:d237681c757d7e5d",
+        "service:755193c3d210f2d9",
+        "service:e48215cf7cc69a4f",
+        "service:3af525274aceaedb",
+        "service:ac09c8c1cd2f5037"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. Your audio was unclear. I heard \u201cshower place\u201d and \u201cClackamas.\u201d Please repeat just one thing: do you mean **Clackamas County**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-4",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I miss words on the phone, especially names.",
+      "normalizedQuery": "hello static can't uh hear good this two one inaudible no wait sorry bus loud hold on shower place think clack clackamas yeah area i'm outside mostly right now somewhere wash up say again slower miss words phone especially names",
+      "voiceResponse": "Yes. I\u2019ll say it slower. You\u2019re in the Clackamas area. You need a shower today. I can connect you now to a live two-one-one specialist. A live two-one-one specialist can find same-day shower options near you. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0c11a529e3153ee8",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. You\u2019re in the Clackamas area. You need a shower today. I can connect you now to a live two-one-one specialist. A live two-one-one specialist can find same-day shower options near you. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Of course. Slow version. I asked for your ZIP code. Just your ZIP code. Five digits. Your ZIP code helps me find nearby same-day laundry options. You can share only that, nothing more. Your ZIP code only.",
+        "Yes. I\u2019ll say the name slowly. It is: **Two Families Now**. Again: **Two Families Now**. Full listing name is: **Two Families Now: Effective Parenting During Separation and Divorce**.",
+        "Yes. I\u2019ll say it slower. Shower option today: Union Gospel Mission. Address: 777 Commercial Street N E, Salem. I\u2019ll repeat: 777 Commercial Street N E, Salem. Phone: 5 0 3, 3 6 2, 3 9 8 3. Again: 5 0 3, 3 6 2, 3 9 8 3. Portland contact: 9 7 1, 2 2 2, 1 8 8 0. Again: 9 7 1, 2 2 2, 1 8 8 0.",
+        "Yes. Slowly. Address: 7 7 7, Commercial Street, N E, Salem. I\u2019ll repeat: 7 7 7, Commercial Street, N E, Salem. Phone: 5 0 3, then 3 6 2, then 3 9 8 3. Again: 5 0 3, then 3 6 2, then 3 9 8 3."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001896#turn-5",
+      "scenarioId": "phone_dialog_0001896",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Is that address number 8 or A? Sorry, I heard it wrong, please do the number real slow.",
+      "normalizedQuery": "no wait sorry bus loud hold on shower place think clack clackamas yeah area i'm outside mostly right now somewhere wash up say again slower miss words phone especially names address number heard it wrong please real slow",
+      "voiceResponse": "I hear you. I\u2019ll go slow. I do not have a Clackamas address yet. I do not have a Clackamas address yet. The address in my notes is in Eugene, not Clackamas. Do you want me to connect you now to a live two-one-one specialist for a Clackamas shower location?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:755193c3d210f2d9",
+        "service:0c11a529e3153ee8",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll go slow. I do not have a Clackamas address yet. I do not have a Clackamas address yet. The address in my notes is in Eugene, not Clackamas. Do you want me to connect you now to a live two-one-one specialist for a Clackamas shower location?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not doing anything wrong by needing this. One option I can confirm is Right Track Resource Center; they can help with mail services and they don\u2019t require documents. You can call **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If Salem is reachable, Simonka Place also offers mail services: **5 0 3, 3 6 2, 7 4 8 7**. If you want, we can do this one step at a time together.",
+        "I hear you, and your safety comes first. If you can\u2019t breathe right now, call **911** immediately, or I can stay with you while you do. You matter. Once you\u2019re safe, I\u2019ll help you find a mail location in Clackamas right away.",
+        "You don\u2019t need to apologize. I\u2019m with you. If your breathing gets tight again or you feel unsafe, call **911** right now. I\u2019m getting a live specialist on the line to help with a safe mailing address in Clackamas. Stay with me and take one slow breath in, then out.",
+        "First step: call **Love INC of Clackamas County** and ask for help with a safe mailing address option while you\u2019re between places. The number is **five zero three\u2026 six five zero\u2026 zero one five three**. If it helps, I can stay with you while you make the call and help you script what to say."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-3",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, Clacka- Clackamas, sorry, I keep losing you. I need a place to wash clothes, like cheap laundry help.",
+      "normalizedQuery": "yeah clacka clackamas sorry keep losing place wash clothes like cheap laundry",
+      "voiceResponse": "Yes, I hear you. You are in Clackamas, and you need cheap laundry help. Clackamas, cheap laundry help. I can look for **Laundry Facilities** and **Laundry Products** near you through 211. I can repeat that: Laundry Facilities and Laundry Products. One question: what is your ZIP code?",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "service:8633bf7679779ba4",
+        "page:bafkreig4ephu5gz5x57etein53bmnoswyqmsfqaodzpjcg5df4irdx4kxq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. You are in Clackamas, and you need cheap laundry help. Clackamas, cheap laundry help. I can look for **Laundry Facilities** and **Laundry Products** near you through 211. I can repeat that: Laundry Facilities and Laundry Products. One question: what is your ZIP code?",
+      "voiceResponseAlternatives": [
+        "I hear you. We can keep this private. For same-day laundry help in Clackamas, use 211info\u2019s Laundry Products search, or call **2-1-1**. That is **2-1-1**. You can ask for only nearby options and share the least info needed. If you want, I can help you with a short script to protect your privacy when you call.",
+        "I hear you. You are right to ask. I cannot see a public list of this call from here. I cannot see a public list of this call. Share only what you choose. First name only is okay. For help, you can still call **2-1-1**. That is **2-1-1**. If you want, I can give you a one-line script to ask for minimum data collection before you share anything.",
+        "Yes, I hear you. For showers today, try Union Gospel Mission in Salem: `777 Commercial Street N-E, Salem, 9 7 3 0 1.` Call `5 0 3, 3 6 2, 3 9 8 3.` Again: `5 0 3, 3 6 2, 3 9 8 3.` Can you get to Salem today, or do you need only Clackamas or Portland?",
+        "I hear you. You need the closest open now, and your battery is at two percent. Right now, I only have one confirmed number: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Address is **1 2 0 3 Willamette Street, Suite 1 0 0, Eugene**. Do you want me to give you a 10-second script to ask for a shower referral fast?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-5",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the place name slowly? I heard 'Happy Valley' maybe, or did I hear that wrong?",
+      "normalizedQuery": "wait sorry say again slower hearing's bad only caught 'where' then nothing yeah clacka clackamas keep losing place wash clothes like cheap laundry dry cleaning no just regular don't have working machines at home right now repeat name slowly heard 'happy valley' maybe did hear wrong",
+      "voiceResponse": "Yes. I said **Clackamas**. I\u2019ll say it slowly: **Clack-a-mas**. Clackamas. I did not confirm Happy Valley yet. I confirmed **Clackamas**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreifojajm4pxsel7udihfyfo4f3tqnztydzucq26vjlczwvfeq27j2e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I said **Clackamas**. I\u2019ll say it slowly: **Clack-a-mas**. Clackamas. I did not confirm Happy Valley yet. I confirmed **Clackamas**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slow version. I asked for your ZIP code. Just your ZIP code. Five digits. Your ZIP code helps me find nearby same-day laundry options. You can share only that, nothing more. Your ZIP code only.",
+        "Yes. I\u2019ll say the name slowly. It is: **Two Families Now**. Again: **Two Families Now**. Full listing name is: **Two Families Now: Effective Parenting During Separation and Divorce**.",
+        "Yes. I\u2019ll say it slower. Shower option today: Union Gospel Mission. Address: 777 Commercial Street N E, Salem. I\u2019ll repeat: 777 Commercial Street N E, Salem. Phone: 5 0 3, 3 6 2, 3 9 8 3. Again: 5 0 3, 3 6 2, 3 9 8 3. Portland contact: 9 7 1, 2 2 2, 1 8 8 0. Again: 9 7 1, 2 2 2, 1 8 8 0.",
+        "Yes. Slowly. Address: 7 7 7, Commercial Street, N E, Salem. I\u2019ll repeat: 7 7 7, Commercial Street, N E, Salem. Phone: 5 0 3, then 3 6 2, then 3 9 8 3. Again: 5 0 3, then 3 6 2, then 3 9 8 3."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002067#turn-6",
+      "scenarioId": "phone_dialog_0002067",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "And if there's a number, please do it one digit at a time, I miss parts when the line cracks.",
+      "normalizedQuery": "yeah clacka clackamas sorry keep losing place wash clothes like cheap laundry dry cleaning no just regular don't have working machines at home right now repeat name slowly heard 'happy valley' maybe did hear wrong if there's number please it one digit time miss parts when line cracks",
+      "voiceResponse": "Yes. I can do that. I will say any number one digit at a time. One digit at a time. One question: what is your ZIP code?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can do that. I will say any number one digit at a time. One digit at a time. One question: what is your ZIP code?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not doing anything wrong by needing this. One option I can confirm is Right Track Resource Center; they can help with mail services and they don\u2019t require documents. You can call **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If Salem is reachable, Simonka Place also offers mail services: **5 0 3, 3 6 2, 7 4 8 7**. If you want, we can do this one step at a time together.",
+        "I hear you, and your safety comes first. If you can\u2019t breathe right now, call **911** immediately, or I can stay with you while you do. You matter. Once you\u2019re safe, I\u2019ll help you find a mail location in Clackamas right away.",
+        "You don\u2019t need to apologize. I\u2019m with you. If your breathing gets tight again or you feel unsafe, call **911** right now. I\u2019m getting a live specialist on the line to help with a safe mailing address in Clackamas. Stay with me and take one slow breath in, then out.",
+        "First step: call **Love INC of Clackamas County** and ask for help with a safe mailing address option while you\u2019re between places. The number is **five zero three\u2026 six five zero\u2026 zero one five three**. If it helps, I can stay with you while you make the call and help you script what to say."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -751,6 +926,36 @@
       "to": "phone_dialog_0001025#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-2",
+      "to": "phone_dialog_0001896#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-4",
+      "to": "phone_dialog_0001896#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001896#turn-5",
+      "to": "phone_dialog_0001896#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002067#turn-3",
+      "to": "phone_dialog_0002067#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002067#turn-5",
+      "to": "phone_dialog_0002067#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

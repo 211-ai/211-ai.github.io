@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__health__statewide",
   "kind": "service_location",
   "key": "health__statewide",
-  "nodeCount": 54,
+  "nodeCount": 86,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-1",
@@ -1241,7 +1241,8 @@
       "voiceResponseAlternatives": [
         "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
         "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
-        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?",
+        "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "rambling_and_interrupting",
@@ -1300,7 +1301,8 @@
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
         "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
-        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?",
+        "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
@@ -1329,7 +1331,8 @@
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
         "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
-        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?",
+        "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -1588,11 +1591,967 @@
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
         "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
-        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001261#turn-4",
+      "scenarioId": "phone_dialog_0001261",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was calling for detox help for both of us, but right now I think he might stop breathing.",
+      "normalizedQuery": "was calling detox both us right now think he might stop breathing",
+      "voiceResponse": "This is a life-threatening emergency right now. Call **911** now. Put your friend on his side, keep his airway clear, and stay with him. If he stops breathing or you can\u2019t feel breath, start CPR right away. Detox help can wait until EMS is on the way.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is a life-threatening emergency right now. Call **911** now. Put your friend on his side, keep his airway clear, and stay with him. If he stops breathing or you can\u2019t feel breath, start CPR right away. Detox help can wait until EMS is on the way.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001274#turn-6",
+      "scenarioId": "phone_dialog_0001274",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My phone\u2019s at like two percent, so if we get cut off I still need where to go for detox after this.",
+      "normalizedQuery": "phone at like two percent so if we cut off still go detox after this",
+      "voiceResponse": "Call **911 right now** first, before anything else. Say: \u201cPossible overdose, slow weird breathing, hard to wake.\u201d If we get cut off: stay with him on his side until EMS arrives, then ask the ER or paramedics for an **immediate detox placement**. Right now, 911 is the safest and most important step.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreihn4jp4sjavlti2ebqgirm37xffkqbdjosfytesq35i2z2abnfqtu",
+        "service:484b4523643f9b5f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call **911 right now** first, before anything else. Say: \u201cPossible overdose, slow weird breathing, hard to wake.\u201d If we get cut off: stay with him on his side until EMS arrives, then ask the ER or paramedics for an **immediate detox placement**. Right now, 911 is the safest and most important step.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001302#turn-6",
+      "scenarioId": "phone_dialog_0001302",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If he makes it through, I need detox help info too, but right now I think this is an emergency.",
+      "normalizedQuery": "if he makes it through detox info too right now think this an emergency",
+      "voiceResponse": "You\u2019re doing the right thing, and I\u2019m staying with you. Right now, call **911** immediately and say: \u201cPossible fentanyl overdose near downtown Eugene, barely wakes then goes limp.\u201d Put your phone on speaker, give naloxone if you have it, keep him on his side, and watch breathing. If breathing gets very slow or stops, start rescue breaths. After 911 is on the way, I can help connect you to detox support next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:07b702b8ba249a9b",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I\u2019m staying with you. Right now, call **911** immediately and say: \u201cPossible fentanyl overdose near downtown Eugene, barely wakes then goes limp.\u201d Put your phone on speaker, give naloxone if you have it, keep him on his side, and watch breathing. If breathing gets very slow or stops, start rescue breaths. After 911 is on the way, I can help connect you to detox support next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001315#turn-5",
+      "scenarioId": "phone_dialog_0001315",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t want cops treating us like criminals, I just need medical help and somewhere safe for us after this.",
+      "normalizedQuery": "sorry did say slow down think straight right now he on couch won really wake up like his breathing weird there people yelling here hold tell if fully just super messed don want cops treating us criminals medical somewhere safe after this",
+      "voiceResponse": "I hear you, and that fear makes sense. Right now, your friend\u2019s breathing is the emergency, so call **9-1-1** and say: \u201cWe need medical help now for possible overdose, slow breathing.\u201d You can also say, \u201cPlease send EMS fast.\u201d Keep him on his side, stay with him, and watch his breathing. After EMS is on the way, I\u2019ll help you plan a safe place for both of you next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that fear makes sense. Right now, your friend\u2019s breathing is the emergency, so call **9-1-1** and say: \u201cWe need medical help now for possible overdose, slow breathing.\u201d You can also say, \u201cPlease send EMS fast.\u201d Keep him on his side, stay with him, and watch his breathing. After EMS is on the way, I\u2019ll help you plan a safe place for both of you next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001347#turn-5",
+      "scenarioId": "phone_dialog_0001347",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was trying to find him a detox bed, but should I call 911 first?",
+      "normalizedQuery": "was trying him detox bed should call 911 first",
+      "voiceResponse": "Yes. Call **911 first, right now**. His breathing changes and hard-to-wake state are an emergency. Tell them: \u201cPossible overdose, alcohol and pills, snoring then gasping, hard to wake.\u201d Keep him on his side, keep his airway clear, and stay with him until help arrives. Detox can wait until he is medically safe.",
+      "evidenceDocIds": [
+        "service:07b702b8ba249a9b",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e",
+        "service:a80fc4c7b16e0d53",
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call **911 first, right now**. His breathing changes and hard-to-wake state are an emergency. Tell them: \u201cPossible overdose, alcohol and pills, snoring then gasping, hard to wake.\u201d Keep him on his side, keep his airway clear, and stay with him until help arrives. Detox can wait until he is medically safe.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001405#turn-6",
+      "scenarioId": "phone_dialog_0001405",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If we get through this, I still need where to take him for detox after the hospital.",
+      "normalizedQuery": "if we through this still take him detox after hospital",
+      "voiceResponse": "I hear you, and we can plan that next. Right now, please call **9-1-1** first and keep him breathing and on his side if he\u2019s breathing. After the hospital, ask the ER social worker for a direct detox placement. I also have 211info listings for \u201cMedical Detox and Clinically Managed Detox\u201d and \u201cDetoxification\u201d we can use together once EMS is on scene. Stay with me, you\u2019re not doing this alone.",
+      "evidenceDocIds": [
+        "service:c77efc86d985413b",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "page:bafkreibdwkgbg3hrufwc37bzdrhn2fxaydgdaqdzbya2lvotcwdq4hdfgy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can plan that next. Right now, please call **9-1-1** first and keep him breathing and on his side if he\u2019s breathing. After the hospital, ask the ER social worker for a direct detox placement. I also have 211info listings for \u201cMedical Detox and Clinically Managed Detox\u201d and \u201cDetoxification\u201d we can use together once EMS is on scene. Stay with me, you\u2019re not doing this alone.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001479#turn-5",
+      "scenarioId": "phone_dialog_0001479",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I think this is more than detox right now, he might be overdosing.",
+      "normalizedQuery": "think this more than detox right now he might be overdosing",
+      "voiceResponse": "You\u2019re absolutely right to treat this as an overdose emergency. Call **9-1-1 right now**: **nine\u2026 one\u2026 one**. Say: \u201cPossible overdose. Slow, gurgling breathing. Hard to wake.\u201d Keep him on his side, stay with him, and unlock the door if you can. If naloxone is nearby, give it now. I can stay with you while you place the 911 call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:a80fc4c7b16e0d53",
+        "service:ba024a031f6ac689",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re absolutely right to treat this as an overdose emergency. Call **9-1-1 right now**: **nine\u2026 one\u2026 one**. Say: \u201cPossible overdose. Slow, gurgling breathing. Hard to wake.\u201d Keep him on his side, stay with him, and unlock the door if you can. If naloxone is nearby, give it now. I can stay with you while you place the 911 call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001492#turn-4",
+      "scenarioId": "phone_dialog_0001492",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hold on, bus just went by... okay... I need a real medical place today, not next week, and I don\u2019t trust the phone right now.",
+      "normalizedQuery": "hold on bus just went by okay real medical place next week don trust phone right now",
+      "voiceResponse": "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?",
+      "evidenceDocIds": [
+        "service:755193c3d210f2d9",
+        "service:1a2047875eb85db2",
+        "service:d237681c757d7e5d",
+        "service:3bf79b1da127b257",
+        "service:e48215cf7cc69a4f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that sounds really stressful. Your audio was unclear for a moment. Please repeat just one short thing: are you asking for a **same-day medical clinic in Bend** right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001499#turn-4",
+      "scenarioId": "phone_dialog_0001499",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was trying to find detox help for him, but right now I\u2019m scared he\u2019s overdosing.",
+      "normalizedQuery": "was trying detox him right now scared he overdosing",
+      "voiceResponse": "You\u2019re right to be scared, and you\u2019re doing the right thing. This sounds like an overdose emergency, so call **911 now**. Say: \u201cHe drank alcohol, took pills, and has slow, gurgly breathing and is hard to wake.\u201d Keep him on his side, keep his airway clear, and stay with him. Don\u2019t let him sleep it off. If he stops breathing or turns blue, tell 911 immediately. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:30391c8a6f37b770"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to be scared, and you\u2019re doing the right thing. This sounds like an overdose emergency, so call **911 now**. Say: \u201cHe drank alcohol, took pills, and has slow, gurgly breathing and is hard to wake.\u201d Keep him on his side, keep his airway clear, and stay with him. Don\u2019t let him sleep it off. If he stops breathing or turns blue, tell 911 immediately. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001501#turn-5",
+      "scenarioId": "phone_dialog_0001501",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Please stay with me, I need emergency help right now, and after this I need detox info for me too.",
+      "normalizedQuery": "please stay emergency right now after this detox info too",
+      "voiceResponse": "I\u2019m right here with you. You need emergency help now, so call **9-1-1** immediately. Put your phone on speaker, say: \u201cPossible overdose, barely responsive, slow gurgling breathing.\u201d Keep him on his side, keep his airway clear, and stay with him. If his breathing stops or gets quieter, tell 911 right away and follow their instructions. After you\u2019re connected and he\u2019s getting help, I will stay with you and help you find detox support for you next.",
+      "evidenceDocIds": [
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:07b702b8ba249a9b",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m right here with you. You need emergency help now, so call **9-1-1** immediately. Put your phone on speaker, say: \u201cPossible overdose, barely responsive, slow gurgling breathing.\u201d Keep him on his side, keep his airway clear, and stay with him. If his breathing stops or gets quieter, tell 911 right away and follow their instructions. After you\u2019re connected and he\u2019s getting help, I will stay with you and help you find detox support for you next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001514#turn-4",
+      "scenarioId": "phone_dialog_0001514",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don't have a ride and I can't walk that far with my bad knee, so I need transportation help, like a bus pass or medical ride.",
+      "normalizedQuery": "don't have ride can't walk far bad knee so transportation transport bus like pass medical",
+      "voiceResponse": "Next step: call Cascades West Ride Line now for a non-emergency medical ride. The number is **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. I\u2019ll repeat: **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. They coordinate rides to covered medical services for eligible Oregon Health Plan and InterCommunity Health Network members. If needed, a second number is **5-4-1 \u2026 9-6-7 \u2026 8-6-3-0**. If you feel shaky, confused, or sick, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:a52e78bc8469df64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Cascades West Ride Line now for a non-emergency medical ride. The number is **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. I\u2019ll repeat: **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. They coordinate rides to covered medical services for eligible Oregon Health Plan and InterCommunity Health Network members. If needed, a second number is **5-4-1 \u2026 9-6-7 \u2026 8-6-3-0**. If you feel shaky, confused, or sick, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001514#turn-6",
+      "scenarioId": "phone_dialog_0001514",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at three percent, so if we get disconnected, can you give me the quickest next step first?",
+      "normalizedQuery": "was number please say it slower i'm hard hearing this phone keeps cutting don't have ride can't walk far bad knee so transportation transport bus like pass medical sorry repeat address small parts forgot street name already battery at three percent if we disconnected give quickest next step first",
+      "voiceResponse": "Quickest next step: if we disconnect, call Cascades West Ride Line right away at **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. I\u2019ll repeat: **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. If that line does not connect, try **5-4-1 \u2026 9-6-7 \u2026 8-6-3-0**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:156176ac73be0658",
+        "service:a52e78bc8469df64",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quickest next step: if we disconnect, call Cascades West Ride Line right away at **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. I\u2019ll repeat: **5-4-1 \u2026 9-2-4 \u2026 8-7-3-8**. If that line does not connect, try **5-4-1 \u2026 9-6-7 \u2026 8-6-3-0**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001649#turn-4",
+      "scenarioId": "phone_dialog_0001649",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I wanted detox help for both of us, but right now I think he might be overdosing.",
+      "normalizedQuery": "wanted detox both us right now think he might be overdosing",
+      "voiceResponse": "You\u2019re doing the right thing, and I know this is scary. Right now, treat this as an overdose emergency: call **911** now. Say, \u201cPossible overdose, hard to wake, abnormal breathing, pills and alcohol.\u201d Keep him on his side, clear his airway, and stay with him. If he stops breathing or won\u2019t wake at all, tell 911 immediately. After EMS is on the way, I can help you both find detox support next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I know this is scary. Right now, treat this as an overdose emergency: call **911** now. Say, \u201cPossible overdose, hard to wake, abnormal breathing, pills and alcohol.\u201d Keep him on his side, clear his airway, and stay with him. If he stops breathing or won\u2019t wake at all, tell 911 immediately. After EMS is on the way, I can help you both find detox support next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001649#turn-5",
+      "scenarioId": "phone_dialog_0001649",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m shaking, my phone\u2019s at like three percent, please don\u2019t hang up on me.",
+      "normalizedQuery": "he won really wake up like opens his eyes then drops back breathing sounds weird cut say again slower wanted detox both us right now think might be overdosing shaking phone at three percent please don hang on",
+      "voiceResponse": "I\u2019m with you. You\u2019re not alone. Quick safety check: is he breathing right now? If yes, keep him on his side and call **911 now**. Say: \u201cPossible overdose, hard to wake, abnormal breathing, pills and alcohol.\u201d Put me on speaker if you can. If your phone dies, call 911 back immediately from any phone nearby. If he stops breathing or won\u2019t wake at all, tell 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:303f1003525d7f18"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. You\u2019re not alone. Quick safety check: is he breathing right now? If yes, keep him on his side and call **911 now**. Say: \u201cPossible overdose, hard to wake, abnormal breathing, pills and alcohol.\u201d Put me on speaker if you can. If your phone dies, call 911 back immediately from any phone nearby. If he stops breathing or won\u2019t wake at all, tell 911 right away.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001653#turn-2",
+      "scenarioId": "phone_dialog_0001653",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "\"Wait, sorry, say that again slower, I don't hear good... is this the 2-1-1 people or medical or what?\"",
+      "normalizedQuery": "hello static can't re cutting mail uh ma inaudible wait sorry say again slower don't hear good this people medical",
+      "voiceResponse": "Yes. This is **2-1-1**. This is **two-one-one**. We help with community services, not emergency medical care. I was asking: did you want **mail help** or **housing help**?",
+      "evidenceDocIds": [
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. This is **2-1-1**. This is **two-one-one**. We help with community services, not emergency medical care. I was asking: did you want **mail help** or **housing help**?",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**: **two \u2026 one \u2026 one**. If he is in immediate danger, call **9-1-1**: **nine \u2026 one \u2026 one**.",
+        "Yes. Write this down now: **541 \u2026 924 \u2026 8738**. I\u2019ll say it once more: **five four one \u2026 nine two four \u2026 eight seven three eight**.",
+        "You\u2019re right to check. I did **not** say you must bring ID and medical papers. For that clinic, the listed documents are: Insurance info, if you have it. And proof of income, only if you want sliding-scale fees. That\u2019s it.",
+        "Of course. The next step is: call first to confirm what papers they need for your case. Call Oregon Vital Records at **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**. Again: **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001692#turn-4",
+      "scenarioId": "phone_dialog_0001692",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I wanted detox numbers for both of us, but right now I don't know if he's overdosing.",
+      "normalizedQuery": "wanted detox numbers both us right now don't know if he's overdosing",
+      "voiceResponse": "I hear you. With slow, irregular breathing and hard to wake, treat this as an overdose emergency right now. Call **911 now** and say: \u201cPossible overdose, pills and vodka, in Oregon City, slow breathing and hard to wake.\u201d Put him on his side, keep his airway open, and stay with him. After 911 is on the way, I can give detox numbers for both of you.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:2ef319d5e12550a7",
+        "service:28acd183a54cc8a5",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. With slow, irregular breathing and hard to wake, treat this as an overdose emergency right now. Call **911 now** and say: \u201cPossible overdose, pills and vodka, in Oregon City, slow breathing and hard to wake.\u201d Put him on his side, keep his airway open, and stay with him. After 911 is on the way, I can give detox numbers for both of you.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001749#turn-6",
+      "scenarioId": "phone_dialog_0001749",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Please get me a live person right now, and if he makes it, I need detox help info for him too.",
+      "normalizedQuery": "please live person right now if he makes it detox info him too",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Right now, call **911** immediately for a live responder and say: \u201cPossible overdose, very slow breathing, not waking up.\u201d Put it on speaker, keep him on his side, and watch his breathing. I\u2019ll stay with you through this. Once EMS is on scene and he\u2019s safer, I\u2019ll help you get connected to a live person for detox support next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:5959bd235cc13850"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Right now, call **911** immediately for a live responder and say: \u201cPossible overdose, very slow breathing, not waking up.\u201d Put it on speaker, keep him on his side, and watch his breathing. I\u2019ll stay with you through this. Once EMS is on scene and he\u2019s safer, I\u2019ll help you get connected to a live person for detox support next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001752#turn-6",
+      "scenarioId": "phone_dialog_0001752",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If he makes it, I still need detox help for me too, but right now it\u2019s him.",
+      "normalizedQuery": "if he makes it still detox too right now him",
+      "voiceResponse": "You\u2019re right to focus on him first. Call **911 now** if you are not already connected, and say: \u201cPossible overdose, slow breathing, may stop breathing.\u201d Keep him on his side and stay with him. I\u2019m connecting you to a live person now. After 911 is on the way, we will get you detox help next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:5959bd235cc13850"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to focus on him first. Call **911 now** if you are not already connected, and say: \u201cPossible overdose, slow breathing, may stop breathing.\u201d Keep him on his side and stay with him. I\u2019m connecting you to a live person now. After 911 is on the way, we will get you detox help next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001786#turn-5",
+      "scenarioId": "phone_dialog_0001786",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I also need detox help for me, but right now he's the main thing, he's not responding when I shake him.",
+      "normalizedQuery": "also detox right now he's main responding when shake him",
+      "voiceResponse": "This is life-threatening. Call `911` right now and say: \u201cPossible overdose, not responding, slow/abnormal breathing.\u201d If you\u2019re alone, put your phone on speaker. Keep him on his side, airway clear, and do not give food or drink. If he stops breathing, tell `911` immediately and follow their instructions. After help is on the way, I can help you with detox options for you.",
+      "evidenceDocIds": [
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:a80fc4c7b16e0d53",
+        "service:2ef319d5e12550a7",
+        "service:078087b57125137d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is life-threatening. Call `911` right now and say: \u201cPossible overdose, not responding, slow/abnormal breathing.\u201d If you\u2019re alone, put your phone on speaker. Keep him on his side, airway clear, and do not give food or drink. If he stops breathing, tell `911` immediately and follow their instructions. After help is on the way, I can help you with detox options for you.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001807#turn-3",
+      "scenarioId": "phone_dialog_0001807",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m shaky, I haven\u2019t slept, I can\u2019t think straight... I was trying to find detox for both of us.",
+      "normalizedQuery": "shaky haven slept think straight was trying detox both us",
+      "voiceResponse": "I\u2019m with you, and I hear how overwhelmed you are. Your audio is breaking up, so I may miss words. If he still won\u2019t wake up or breathing is strange, call 911 now. To keep this simple, say just one word: **\u201c911\u201d** if it\u2019s still an emergency, or **\u201cdetox\u201d** if he\u2019s awake and you want treatment options next.",
+      "evidenceDocIds": [
+        "service:e232f8e870bdd119",
+        "service:33691fdf0a700447",
+        "service:27e274f68ae6936d",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you, and I hear how overwhelmed you are. Your audio is breaking up, so I may miss words. If he still won\u2019t wake up or breathing is strange, call 911 now. To keep this simple, say just one word: **\u201c911\u201d** if it\u2019s still an emergency, or **\u201cdetox\u201d** if he\u2019s awake and you want treatment options next.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001807#turn-5",
+      "scenarioId": "phone_dialog_0001807",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Please don\u2019t hang up, my battery is at like two percent.",
+      "normalizedQuery": "say again keep cutting he won really wake up his breathing sounds weird shaky haven slept think straight was trying detox both us wait hello there kind gurgling slumped over on couch please don hang battery at like two percent",
+      "voiceResponse": "I\u2019m here with you. You\u2019re not alone. Right now, plug your phone in if you can, put it on speaker, and call **911** immediately. Say: \u201cHe\u2019s gurgling, slumped over, and hard to wake after pills and alcohol.\u201d If this call drops, dial **911 first** and stay with him on his side. If you can, say one word back to me: **\u201ccalling.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. You\u2019re not alone. Right now, plug your phone in if you can, put it on speaker, and call **911** immediately. Say: \u201cHe\u2019s gurgling, slumped over, and hard to wake after pills and alcohol.\u201d If this call drops, dial **911 first** and stay with him on his side. If you can, say one word back to me: **\u201ccalling.\u201d**",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001859#turn-4",
+      "scenarioId": "phone_dialog_0001859",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m shaky, I haven\u2019t slept, I keep losing my words... I was trying to find detox help too, but right now he looks really bad.",
+      "normalizedQuery": "shaky haven slept keep losing words was trying detox too right now he looks really bad",
+      "voiceResponse": "You\u2019re doing the right thing. This is an emergency right now. Call **911** immediately and say: \u201cPossible overdose, barely responsive, abnormal breathing with long pauses.\u201d Put your phone on speaker, lay him on his side, and stay with him. If he stops breathing, start CPR and follow 911 instructions. Don\u2019t give him food, drink, or more substances. Detox help can wait until EMS is there.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. This is an emergency right now. Call **911** immediately and say: \u201cPossible overdose, barely responsive, abnormal breathing with long pauses.\u201d Put your phone on speaker, lay him on his side, and stay with him. If he stops breathing, start CPR and follow 911 instructions. Don\u2019t give him food, drink, or more substances. Detox help can wait until EMS is there.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001859#turn-5",
+      "scenarioId": "phone_dialog_0001859",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "No, I don\u2019t think he can stand, he just slumps over when I move him.",
+      "normalizedQuery": "sorry cut say again slower he won really wake up like his eyes open then close breathing sounds weird kind long gaps shaky haven slept keep losing words was trying detox too right now looks bad no don think stand just slumps over when move him",
+      "voiceResponse": "That means he is not stable. Call **911 now** if you haven\u2019t already. Say: \u201cPossible overdose, barely responsive, abnormal breathing, cannot stand.\u201d Do not try to make him stand. Lay him on his **side** on the floor and stay with him. If breathing stops or you can\u2019t feel breath, start **CPR** and follow 911 instructions.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That means he is not stable. Call **911 now** if you haven\u2019t already. Say: \u201cPossible overdose, barely responsive, abnormal breathing, cannot stand.\u201d Do not try to make him stand. Lay him on his **side** on the floor and stay with him. If breathing stops or you can\u2019t feel breath, start **CPR** and follow 911 instructions.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001905#turn-5",
+      "scenarioId": "phone_dialog_0001905",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If he pulls through, I need detox help too, for me and maybe him, but right now he\u2019s not responding when I shake him.",
+      "normalizedQuery": "if he pulls through detox too maybe him right now responding when shake",
+      "voiceResponse": "This is an emergency. **Call 911 now** and put your phone on speaker. Say: \u201cPossible overdose, not responding, abnormal breathing.\u201d Do not shake him. Lay him on his side, clear his airway, and give Narcan now: one spray in one nostril. If he is not breathing normally, start CPR. After 911 takes over, I can help you both find detox support.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:30391c8a6f37b770"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is an emergency. **Call 911 now** and put your phone on speaker. Say: \u201cPossible overdose, not responding, abnormal breathing.\u201d Do not shake him. Lay him on his side, clear his airway, and give Narcan now: one spray in one nostril. If he is not breathing normally, start CPR. After 911 takes over, I can help you both find detox support.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001948#turn-3",
+      "scenarioId": "phone_dialog_0001948",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was trying to find detox help for him, but right now I\u2019m scared this is an overdose.",
+      "normalizedQuery": "was trying detox him right now scared this an overdose",
+      "voiceResponse": "I hear how scared you are, and you\u2019re right to treat this as an overdose emergency. Call **911 right now** if you haven\u2019t already, and say: \u201cPossible overdose, pills plus alcohol, hard to wake, breathing slow and weird.\u201d Keep him on his side, stay with him, and watch each breath. Do not give food, water, or anything else. If breathing stops, gets very shallow, or he turns blue, tell 911 immediately. Detox can come next, after he\u2019s safe.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:a80fc4c7b16e0d53",
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scared you are, and you\u2019re right to treat this as an overdose emergency. Call **911 right now** if you haven\u2019t already, and say: \u201cPossible overdose, pills plus alcohol, hard to wake, breathing slow and weird.\u201d Keep him on his side, stay with him, and watch each breath. Do not give food, water, or anything else. If breathing stops, gets very shallow, or he turns blue, tell 911 immediately. Detox can come next, after he\u2019s safe.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-2",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No wait, sorry, bus is loud\u2014 I said my m- my mailing thing, not medical, mailing...",
+      "normalizedQuery": "static hel hello uh mail hear inaudible no wait sorry bus loud said mailing medical",
+      "voiceResponse": "Thanks, I hear you. Mailing, not medical. Mailing, not medical. Your audio is still unclear on my end. Please repeat one short thing: do you need help with a temporary mailing address?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreihnaujhmygqtpncczy5mv7y2htihnnnvyxn7v44phxgqd7wcrulva",
+        "page:bafkreiav36hcetfu7vrmvdpugb7rbzi6tftms6asw6q2w3oqv2nywa3ghy",
+        "page:bafkreidiznpih7bokk3ubivz5f267o46mkfey5aggtcw72tnar3copz4lq",
+        "service:46f4b2310fc412d0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks, I hear you. Mailing, not medical. Mailing, not medical. Your audio is still unclear on my end. Please repeat one short thing: do you need help with a temporary mailing address?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001993#turn-5",
+      "scenarioId": "phone_dialog_0001993",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If he's not dying right this second, I also need detox help for him, like tonight if possible.",
+      "normalizedQuery": "if he's dying right this second also detox him like tonight possible",
+      "voiceResponse": "I hear you, and we can do both. Right now, with slow, weird breathing and not waking, treat this as life-threatening and call **9-1-1** now. Then ask 911 for transport options and next-step detox placement tonight. After that, call detox directly: **five-four-one, five-two-three, four-zero-four-nine**. Backup: **five-four-one, four-zero-six, four-three-six-three**. I can repeat those numbers.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:45707f0c70045863",
+        "service:078087b57125137d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can do both. Right now, with slow, weird breathing and not waking, treat this as life-threatening and call **9-1-1** now. Then ask 911 for transport options and next-step detox placement tonight. After that, call detox directly: **five-four-one, five-two-three, four-zero-four-nine**. Backup: **five-four-one, four-zero-six, four-three-six-three**. I can repeat those numbers.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001993#turn-6",
+      "scenarioId": "phone_dialog_0001993",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone's at like two percent, so please repeat any number slow.",
+      "normalizedQuery": "shook him yelled he just kind groans goes back please real person right now if this an overdose he's dying second also detox like tonight possible phone's at two percent so repeat any number slow",
+      "voiceResponse": "You\u2019re doing great staying on this. Here are the numbers, slow: Nine-one-one. Detox line one: five-four-one\u2026 five-two-three\u2026 four-zero-four-nine. Backup line: five-four-one\u2026 four-zero-six\u2026 four-three-six-three. If you can, call nine-one-one first, then ask them to help with detox tonight.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:2ef319d5e12550a7",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great staying on this. Here are the numbers, slow: Nine-one-one. Detox line one: five-four-one\u2026 five-two-three\u2026 four-zero-four-nine. Backup line: five-four-one\u2026 four-zero-six\u2026 four-three-six-three. If you can, call nine-one-one first, then ask them to help with detox tonight.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**: **two \u2026 one \u2026 one**. If he is in immediate danger, call **9-1-1**: **nine \u2026 one \u2026 one**.",
+        "Yes. Write this down now: **541 \u2026 924 \u2026 8738**. I\u2019ll say it once more: **five four one \u2026 nine two four \u2026 eight seven three eight**.",
+        "You\u2019re right to check. I did **not** say you must bring ID and medical papers. For that clinic, the listed documents are: Insurance info, if you have it. And proof of income, only if you want sliding-scale fees. That\u2019s it.",
+        "Of course. The next step is: call first to confirm what papers they need for your case. Call Oregon Vital Records at **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**. Again: **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002056#turn-4",
+      "scenarioId": "phone_dialog_0002056",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have a car or money for a ride, so if there\u2019s a bus route or medical ride option, please tell me that too.",
+      "normalizedQuery": "don have car money ride so if there bus route medical option please tell too",
+      "voiceResponse": "Next step: stay on the line and I\u2019ll connect you to a live 211 specialist now for Multnomah County bus and medical ride options today. I only have one ride number in my data, and it\u2019s for Grants Pass, not near 82nd: **five four one** \u2026 **four seven four** \u2026 **five four five two**. If your shaking gets worse, or you feel confused or vomit, call **911** right away.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:0f54d8a0521f759c",
+        "service:156176ac73be0658",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on the line and I\u2019ll connect you to a live 211 specialist now for Multnomah County bus and medical ride options today. I only have one ride number in my data, and it\u2019s for Grants Pass, not near 82nd: **five four one** \u2026 **four seven four** \u2026 **five four five two**. If your shaking gets worse, or you feel confused or vomit, call **911** right away.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002086#turn-4",
+      "scenarioId": "phone_dialog_0002086",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have much money, is there like a low-cost dental place, maybe today, please?",
+      "normalizedQuery": "don have much money there like low cost dental dentist clinic place maybe please",
+      "voiceResponse": "Yes. I can get you to a live 211 specialist now to find the fastest low-cost dental care today near Hillsboro. If you have trouble breathing, fever, or major swelling in your face or throat, call 911 right now. If not, stay on the line with me and I\u2019ll connect you now.",
+      "evidenceDocIds": [
+        "service:a939d0834914cd25",
+        "page:bafkreiami56m62hue6oxuosjgy6lqtowqnzeuue4ppdc6kceqda6clwajm",
+        "page:bafkreigzcf4f33vx4cmfalu3ljox2omvwvq6yklkn4rakjqd2gbmtge57u",
+        "service:2acbc3c96c48d7bf",
+        "page:bafkreifp5pj6v675aibxcktp2nnt4i3gr4pmwoewchshdexnqlhnklyhnq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can get you to a live 211 specialist now to find the fastest low-cost dental care today near Hillsboro. If you have trouble breathing, fever, or major swelling in your face or throat, call 911 right now. If not, stay on the line with me and I\u2019ll connect you now.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002112#turn-5",
+      "scenarioId": "phone_dialog_0002112",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was trying to find detox help for him, but this feels really bad right now.",
+      "normalizedQuery": "was trying detox him this feels really bad right now",
+      "voiceResponse": "You\u2019re right to trust that feeling. This is an emergency right now, not a detox call. Call 911 now and say: \u201cPossible overdose, slow gurgling breathing, hard to wake.\u201d Put them on speaker. Keep him on his side, clear his mouth if you see anything, and do not give food, drink, or pills. If he stops breathing or turns blue, tell 911 immediately. I can help you with detox options after EMS is on the way.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:2ef319d5e12550a7",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to trust that feeling. This is an emergency right now, not a detox call. Call 911 now and say: \u201cPossible overdose, slow gurgling breathing, hard to wake.\u201d Put them on speaker. Keep him on his side, clear his mouth if you see anything, and do not give food, drink, or pills. If he stops breathing or turns blue, tell 911 immediately. I can help you with detox options after EMS is on the way.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002145#turn-5",
+      "scenarioId": "phone_dialog_0002145",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I was trying to find detox for him tonight, but right now I don't know if this is an overdose.",
+      "normalizedQuery": "was trying detox him tonight right now don't know if this an overdose",
+      "voiceResponse": "You\u2019re trying to help him, and you\u2019re doing the right thing. With slow, strange breathing and needing shaking to wake, treat this as an overdose right now, not detox. Call 911 now. Say: \u201cpossible Xanax and alcohol overdose, slow breathing, hard to wake.\u201d Put him on his side, keep his airway clear, and watch his breathing. If it slows more or stops, tell 911 immediately. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e8399a8259fb5c21",
+        "service:a80fc4c7b16e0d53",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re trying to help him, and you\u2019re doing the right thing. With slow, strange breathing and needing shaking to wake, treat this as an overdose right now, not detox. Call 911 now. Say: \u201cpossible Xanax and alcohol overdose, slow breathing, hard to wake.\u201d Put him on his side, keep his airway clear, and watch his breathing. If it slows more or stops, tell 911 immediately. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1821,6 +2780,150 @@
     {
       "from": "phone_dialog_0001190#turn-5",
       "to": "phone_dialog_0001190#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001261#turn-4",
+      "to": "phone_dialog_0001261#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001315#turn-5",
+      "to": "phone_dialog_0001315#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001347#turn-5",
+      "to": "phone_dialog_0001347#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001479#turn-5",
+      "to": "phone_dialog_0001479#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001492#turn-4",
+      "to": "phone_dialog_0001492#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001499#turn-4",
+      "to": "phone_dialog_0001499#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001514#turn-4",
+      "to": "phone_dialog_0001514#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001649#turn-4",
+      "to": "phone_dialog_0001649#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001649#turn-5",
+      "to": "phone_dialog_0001649#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001653#turn-2",
+      "to": "phone_dialog_0001653#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001692#turn-4",
+      "to": "phone_dialog_0001692#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001786#turn-5",
+      "to": "phone_dialog_0001786#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001807#turn-3",
+      "to": "phone_dialog_0001807#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001807#turn-5",
+      "to": "phone_dialog_0001807#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001859#turn-4",
+      "to": "phone_dialog_0001859#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001859#turn-5",
+      "to": "phone_dialog_0001859#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001905#turn-5",
+      "to": "phone_dialog_0001905#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001948#turn-3",
+      "to": "phone_dialog_0001948#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-2",
+      "to": "phone_dialog_0001976#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001993#turn-5",
+      "to": "phone_dialog_0001993#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002056#turn-4",
+      "to": "phone_dialog_0002056#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002086#turn-4",
+      "to": "phone_dialog_0002086#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002112#turn-5",
+      "to": "phone_dialog_0002112#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002145#turn-5",
+      "to": "phone_dialog_0002145#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

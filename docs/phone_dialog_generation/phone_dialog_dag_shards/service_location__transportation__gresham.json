@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__transportation__gresham",
   "kind": "service_location",
   "key": "transportation__gresham",
-  "nodeCount": 2,
+  "nodeCount": 3,
   "nodes": [
     {
       "id": "phone_dialog_0000334#turn-1",
@@ -27,7 +27,8 @@
       "similarCases": [],
       "assistantResponse": "Yes, I hear you. Your safety comes first. If you\u2019re in immediate danger, call **911** right now. If you can make one call for help in Gresham, call Gresham Police at **503 \u2026 618 \u2026 2318**. If that doesn\u2019t connect, call **503 \u2026 618 \u2026 3000**. Tell them: \u201cI need a safe ride tonight and I\u2019m under crisis.\u201d",
       "voiceResponseAlternatives": [
-        "I hear you. You\u2019re 19, and this is about safety right now. If you\u2019re in immediate danger, call **911** now. For tonight, call **503 \u2026 618 \u2026 2318** and say: \u201cI\u2019m 19, I can\u2019t safely go home, and I need a safe ride now. Please stay on the line until I\u2019m connected to help.\u201d"
+        "I hear you. You\u2019re 19, and this is about safety right now. If you\u2019re in immediate danger, call **911** now. For tonight, call **503 \u2026 618 \u2026 2318** and say: \u201cI\u2019m 19, I can\u2019t safely go home, and I need a safe ride now. Please stay on the line until I\u2019m connected to help.\u201d",
+        "Thanks for telling me. You\u2019re not in immediate danger this second, so we can keep this low-key. If you can, stay near people, lights, or staff and avoid going back alone. I can connect you to a live advocate right now for a safe ride and place to stay, even without papers. If things turn immediate or someone shows up, call 911 right away. If you want the handoff now, just say \u201cconnect me.\u201d"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
@@ -54,11 +55,40 @@
       "similarCases": [],
       "assistantResponse": "I hear you. You\u2019re 19, and this is about safety right now. If you\u2019re in immediate danger, call **911** now. For tonight, call **503 \u2026 618 \u2026 2318** and say: \u201cI\u2019m 19, I can\u2019t safely go home, and I need a safe ride now. Please stay on the line until I\u2019m connected to help.\u201d",
       "voiceResponseAlternatives": [
-        "Yes, I hear you. Your safety comes first. If you\u2019re in immediate danger, call **911** right now. If you can make one call for help in Gresham, call Gresham Police at **503 \u2026 618 \u2026 2318**. If that doesn\u2019t connect, call **503 \u2026 618 \u2026 3000**. Tell them: \u201cI need a safe ride tonight and I\u2019m under crisis.\u201d"
+        "Yes, I hear you. Your safety comes first. If you\u2019re in immediate danger, call **911** right now. If you can make one call for help in Gresham, call Gresham Police at **503 \u2026 618 \u2026 2318**. If that doesn\u2019t connect, call **503 \u2026 618 \u2026 3000**. Tell them: \u201cI need a safe ride tonight and I\u2019m under crisis.\u201d",
+        "Thanks for telling me. You\u2019re not in immediate danger this second, so we can keep this low-key. If you can, stay near people, lights, or staff and avoid going back alone. I can connect you to a live advocate right now for a safe ride and place to stay, even without papers. If things turn immediate or someone shows up, call 911 right away. If you want the handoff now, just say \u201cconnect me.\u201d"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001531#turn-4",
+      "scenarioId": "phone_dialog_0001531",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Not right this second, I'm in public, but they said they'd come looking if I'm not back soon.",
+      "normalizedQuery": "hi keep this short i'm at bus stop gresham think somebody checks phone sorry just went by missed safe ride police showing up 19 they hold id make work sometimes stuff men money can't papers on right second public said they'd come looking if back soon",
+      "voiceResponse": "Thanks for telling me. You\u2019re not in immediate danger this second, so we can keep this low-key. If you can, stay near people, lights, or staff and avoid going back alone. I can connect you to a live advocate right now for a safe ride and place to stay, even without papers. If things turn immediate or someone shows up, call 911 right away. If you want the handoff now, just say \u201cconnect me.\u201d",
+      "evidenceDocIds": [
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for telling me. You\u2019re not in immediate danger this second, so we can keep this low-key. If you can, stay near people, lights, or staff and avoid going back alone. I can connect you to a live advocate right now for a safe ride and place to stay, even without papers. If things turn immediate or someone shows up, call 911 right away. If you want the handoff now, just say \u201cconnect me.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. Your safety comes first. If you\u2019re in immediate danger, call **911** right now. If you can make one call for help in Gresham, call Gresham Police at **503 \u2026 618 \u2026 2318**. If that doesn\u2019t connect, call **503 \u2026 618 \u2026 3000**. Tell them: \u201cI need a safe ride tonight and I\u2019m under crisis.\u201d",
+        "I hear you. You\u2019re 19, and this is about safety right now. If you\u2019re in immediate danger, call **911** now. For tonight, call **503 \u2026 618 \u2026 2318** and say: \u201cI\u2019m 19, I can\u2019t safely go home, and I need a safe ride now. Please stay on the line until I\u2019m connected to help.\u201d"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -71,6 +101,12 @@
     {
       "from": "phone_dialog_0000334#turn-3",
       "to": "phone_dialog_0000334#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001531#turn-4",
+      "to": "phone_dialog_0001531#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

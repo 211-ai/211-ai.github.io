@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__family__medford",
   "kind": "service_location",
   "key": "family__medford",
-  "nodeCount": 25,
+  "nodeCount": 33,
   "nodes": [
     {
       "id": "phone_dialog_0000016#turn-1",
@@ -293,7 +293,9 @@
       "assistantResponse": "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
       "voiceResponseAlternatives": [
         "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
-        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**."
+        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
+        "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next.",
+        "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "background_noise",
@@ -351,7 +353,9 @@
       "assistantResponse": "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
       "voiceResponseAlternatives": [
         "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
-        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**."
+        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
+        "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next.",
+        "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call."
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "background_noise",
@@ -739,11 +743,248 @@
       "assistantResponse": "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
       "voiceResponseAlternatives": [
         "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
-        "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**."
+        "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
+        "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next.",
+        "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001727#turn-6",
+      "scenarioId": "phone_dialog_0001727",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Also we ran out of diapers completely today, can you please give me a place in Medford and repeat the number slow so I can write it down?",
+      "normalizedQuery": "also we ran diapers diaper baby completely please give place medford repeat number slow so write it down",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next.",
+      "evidenceDocIds": [
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "service:72a4239cdad3e299",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next.",
+      "voiceResponseAlternatives": [
+        "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
+        "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
+        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
+        "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001850#turn-1",
+      "scenarioId": "phone_dialog_0001850",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m calling for my sister in Medford, she had the baby like nine days ago and she\u2019s bleeding again, kind of heavy.",
+      "normalizedQuery": "hi sorry calling sister medford she had baby like nine days ago bleeding again kind heavy",
+      "voiceResponse": "I\u2019m really glad you called. Heavy bleeding nine days after birth can be an emergency. Please call **911 now** or go to the nearest ER immediately with her. If she\u2019s soaking a pad in an hour, passing large clots, dizzy, faint, or very weak, treat this as urgent right now. Stay with her while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie7mnw7msqhsfx2vazcjakn2waehorv7xgfafyd3goxrrrhmf6ve4",
+        "page:bafkreiezx37qgwxow7kj5qvgq2dvz5huyp5v4bbllyektmajx3htce3v4m"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Heavy bleeding nine days after birth can be an emergency. Please call **911 now** or go to the nearest ER immediately with her. If she\u2019s soaking a pad in an hour, passing large clots, dizzy, faint, or very weak, treat this as urgent right now. Stay with her while you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I\u2019m really glad you did. Let\u2019s get you help now: try the Emergency Diaper Closet in Grants Pass at **5 4 1, 8 6 4, 0 7 7 6**. They provide emergency diapers, wipes, and formula, and no documents are required at intake. If you have WIC, SNAP, or OHP, there\u2019s also a diaper bank at **5 4 1, 2 2 1, 0 8 2 4**. If anyone is in immediate danger, call 911.",
+        "Yes, WIC office, like **W-I-C** benefits, not \u201cweek.\u201d You\u2019re okay. Let me repeat it slowly: the diaper bank number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. They help people with **WIC, SNAP, or OHP**, and no documents are required at intake. If you want, I can repeat that number one more time.",
+        "I\u2019m so sorry about your mom. You\u2019re carrying a lot, and you\u2019re not alone right now. Let\u2019s do one step for today: call the diaper bank at **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** and ask for size 4 diapers and wipes. If they can\u2019t do today, call the emergency closet at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, I can bring a live person on now and stay with you.",
+        "Of course. You\u2019re doing your best in a hard moment. Here it is slowly: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. I\u2019ll say it once more: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If that one can\u2019t do today, backup is **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, read back just the first number and I\u2019ll confirm it before your battery dies."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001850#turn-2",
+      "scenarioId": "phone_dialog_0001850",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a second? I\u2019m really overwhelmed, I didn\u2019t catch that part about when it\u2019s an emergency.",
+      "normalizedQuery": "hi sorry calling sister medford she had baby like nine days ago bleeding again kind heavy slow down second really overwhelmed didn catch part when it an emergency",
+      "voiceResponse": "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The emergency part is this: if she is soaking one pad in an hour, passing large clots, feeling dizzy, faint, or very weak, treat it as an emergency right now. Since the bleeding is heavy nine days after birth, call 911 now or go to the nearest ER immediately. Stay with her while you call.",
+      "voiceResponseAlternatives": [
+        "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
+        "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
+        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
+        "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001850#turn-4",
+      "scenarioId": "phone_dialog_0001850",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Also the baby was sleeping on a couch earlier and that freaked me out, I moved him but I need to know what\u2019s safe.",
+      "normalizedQuery": "hi sorry calling sister medford she had baby like nine days ago bleeding again kind heavy slow down second really overwhelmed didn catch part when it an emergency keeps saying feels bad mom scared might hurt herself maybe don know if should call 911 right now also was sleeping on couch earlier freaked moved him safe",
+      "voiceResponse": "You did the right thing moving him. A couch is not safe for sleep. Put baby on their back, alone, in a crib, bassinet, or pack-and-play with a firm flat mattress and no pillows or blankets. Since your sister may be in immediate danger and there are safety concerns for both of them, call **911 now** and tell them both: postpartum heavy bleeding and possible mental health crisis. Stay with your sister and keep baby with a safe adult.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing moving him. A couch is not safe for sleep. Put baby on their back, alone, in a crib, bassinet, or pack-and-play with a firm flat mattress and no pillows or blankets. Since your sister may be in immediate danger and there are safety concerns for both of them, call **911 now** and tell them both: postpartum heavy bleeding and possible mental health crisis. Stay with your sister and keep baby with a safe adult.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I\u2019m really glad you did. Let\u2019s get you help now: try the Emergency Diaper Closet in Grants Pass at **5 4 1, 8 6 4, 0 7 7 6**. They provide emergency diapers, wipes, and formula, and no documents are required at intake. If you have WIC, SNAP, or OHP, there\u2019s also a diaper bank at **5 4 1, 2 2 1, 0 8 2 4**. If anyone is in immediate danger, call 911.",
+        "Yes, WIC office, like **W-I-C** benefits, not \u201cweek.\u201d You\u2019re okay. Let me repeat it slowly: the diaper bank number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. They help people with **WIC, SNAP, or OHP**, and no documents are required at intake. If you want, I can repeat that number one more time.",
+        "I\u2019m so sorry about your mom. You\u2019re carrying a lot, and you\u2019re not alone right now. Let\u2019s do one step for today: call the diaper bank at **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** and ask for size 4 diapers and wipes. If they can\u2019t do today, call the emergency closet at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, I can bring a live person on now and stay with you.",
+        "Of course. You\u2019re doing your best in a hard moment. Here it is slowly: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. I\u2019ll say it once more: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If that one can\u2019t do today, backup is **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, read back just the first number and I\u2019ll confirm it before your battery dies."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001850#turn-5",
+      "scenarioId": "phone_dialog_0001850",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "If she\u2019s stable enough after we handle the safety part, we have no diapers left at all, can you find anywhere open today near Medford?",
+      "normalizedQuery": "if she stable enough after we handle safety part have no diapers diaper baby left at all anywhere open medford",
+      "voiceResponse": "Quick safety check first: if she says she might hurt herself or the baby, seems faint/confused, or the heavy bleeding returns, call **911 now**. If she\u2019s stable right now, go to **211info** and search **\u201cDiapers\u201d** near **Medford**; that list shows local diaper providers and who\u2019s open today. I can stay with you while you do it.",
+      "evidenceDocIds": [
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "service:25f3554514a1b499",
+        "service:72a4239cdad3e299",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quick safety check first: if she says she might hurt herself or the baby, seems faint/confused, or the heavy bleeding returns, call **911 now**. If she\u2019s stable right now, go to **211info** and search **\u201cDiapers\u201d** near **Medford**; that list shows local diaper providers and who\u2019s open today. I can stay with you while you do it.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001850#turn-6",
+      "scenarioId": "phone_dialog_0001850",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you repeat the number and address one more time, please? My phone\u2019s at like two percent and I\u2019m writing fast.",
+      "normalizedQuery": "she keeps saying feels like bad mom scared might hurt herself maybe baby don know if should call 911 right now also was sleeping on couch earlier freaked moved him safe stable enough after we handle safety part have no diapers diaper left at all anywhere open medford repeat number address one more time please phone two percent writing fast",
+      "voiceResponse": "Yes. The emergency number is **9-1-1**: **nine, one, one**. Call that now if there\u2019s any risk to her or the baby, or heavy bleeding returns. For diapers after safety is handled, use **211info** online and search \u201cDiapers\u201d near Medford. I don\u2019t have a confirmed street address to give you from what I can see.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The emergency number is **9-1-1**: **nine, one, one**. Call that now if there\u2019s any risk to her or the baby, or heavy bleeding returns. For diapers after safety is handled, use **211info** online and search \u201cDiapers\u201d near Medford. I don\u2019t have a confirmed street address to give you from what I can see.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I\u2019m really glad you did. Let\u2019s get you help now: try the Emergency Diaper Closet in Grants Pass at **5 4 1, 8 6 4, 0 7 7 6**. They provide emergency diapers, wipes, and formula, and no documents are required at intake. If you have WIC, SNAP, or OHP, there\u2019s also a diaper bank at **5 4 1, 2 2 1, 0 8 2 4**. If anyone is in immediate danger, call 911.",
+        "Yes, WIC office, like **W-I-C** benefits, not \u201cweek.\u201d You\u2019re okay. Let me repeat it slowly: the diaper bank number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. They help people with **WIC, SNAP, or OHP**, and no documents are required at intake. If you want, I can repeat that number one more time.",
+        "I\u2019m so sorry about your mom. You\u2019re carrying a lot, and you\u2019re not alone right now. Let\u2019s do one step for today: call the diaper bank at **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** and ask for size 4 diapers and wipes. If they can\u2019t do today, call the emergency closet at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, I can bring a live person on now and stay with you.",
+        "Of course. You\u2019re doing your best in a hard moment. Here it is slowly: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. I\u2019ll say it once more: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If that one can\u2019t do today, backup is **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, read back just the first number and I\u2019ll confirm it before your battery dies."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002065#turn-1",
+      "scenarioId": "phone_dialog_0002065",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Medford, I just had my baby two weeks ago and I\u2019m bleeding again, like more than spotting, and I feel really shaky.",
+      "normalizedQuery": "hi medford just had baby two weeks ago bleeding again like more than spotting feel really shaky",
+      "voiceResponse": "I\u2019m really glad you called, and I\u2019m sorry you\u2019re going through this. Because you\u2019re two weeks postpartum, bleeding more than spotting, and feeling shaky, this could be an emergency. Please call 911 now, or have someone nearby call for you right now. If you can, sit or lie down and don\u2019t drive yourself. If you\u2019re at a shelter or lobby, tell staff, \u201cI just had a baby and I\u2019m bleeding heavily and feel shaky. I need emergency help now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:98249e32a262b454",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, and I\u2019m sorry you\u2019re going through this. Because you\u2019re two weeks postpartum, bleeding more than spotting, and feeling shaky, this could be an emergency. Please call 911 now, or have someone nearby call for you right now. If you can, sit or lie down and don\u2019t drive yourself. If you\u2019re at a shelter or lobby, tell staff, \u201cI just had a baby and I\u2019m bleeding heavily and feel shaky. I need emergency help now.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling, and I\u2019m really glad you did. Let\u2019s get you help now: try the Emergency Diaper Closet in Grants Pass at **5 4 1, 8 6 4, 0 7 7 6**. They provide emergency diapers, wipes, and formula, and no documents are required at intake. If you have WIC, SNAP, or OHP, there\u2019s also a diaper bank at **5 4 1, 2 2 1, 0 8 2 4**. If anyone is in immediate danger, call 911.",
+        "Yes, WIC office, like **W-I-C** benefits, not \u201cweek.\u201d You\u2019re okay. Let me repeat it slowly: the diaper bank number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. They help people with **WIC, SNAP, or OHP**, and no documents are required at intake. If you want, I can repeat that number one more time.",
+        "I\u2019m so sorry about your mom. You\u2019re carrying a lot, and you\u2019re not alone right now. Let\u2019s do one step for today: call the diaper bank at **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** and ask for size 4 diapers and wipes. If they can\u2019t do today, call the emergency closet at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, I can bring a live person on now and stay with you.",
+        "Of course. You\u2019re doing your best in a hard moment. Here it is slowly: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. I\u2019ll say it once more: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If that one can\u2019t do today, backup is **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. If you want, read back just the first number and I\u2019ll confirm it before your battery dies."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002065#turn-2",
+      "scenarioId": "phone_dialog_0002065",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s a bus pulling in, I missed that, can you say it again louder?",
+      "normalizedQuery": "hi medford just had baby two weeks ago bleeding again like more than spotting feel really shaky sorry there bus pulling missed say it louder",
+      "voiceResponse": "I hear you. I\u2019ll repeat clearly: this may be an emergency. Please call **911 now**, or have someone near you call **911** for you right now. Do **not** drive yourself. Sit or lie down if you can. If staff are nearby, say: \u201cI had a baby two weeks ago, I\u2019m bleeding more than spotting, and I feel shaky. I need emergency help now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll repeat clearly: this may be an emergency. Please call **911 now**, or have someone near you call **911** for you right now. Do **not** drive yourself. Sit or lie down if you can. If staff are nearby, say: \u201cI had a baby two weeks ago, I\u2019m bleeding more than spotting, and I feel shaky. I need emergency help now.\u201d",
+      "voiceResponseAlternatives": [
+        "Of course. The provider name is: **Lane County Diaper Bank**. Slowly: **Lane**\u2026 **County**\u2026 **Diaper**\u2026 **Bank**.",
+        "Yes. Go inside the hospital now and tell the front desk: \u201cI need urgent medical help.\u201d If your breathing gets worse or you feel faint, call **911** right now. After you\u2019re stabilized, the diaper line number is: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**.",
+        "Yes. The number is **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**. I\u2019ll repeat: **five four one** \u2026 **eight six four** \u2026 **zero seven seven six**.",
+        "I hear you, and you\u2019re doing the right thing by asking. First, the urgent step is **9-1-1** right now. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Tell them: \u201cTwo weeks postpartum, heavy bleeding, feeling shaky, and scared thoughts.\u201d After help is on the way, I can help you find Medford diaper places next."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -884,6 +1125,42 @@
       "to": "phone_dialog_0001156#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001850#turn-1",
+      "to": "phone_dialog_0001850#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001850#turn-2",
+      "to": "phone_dialog_0001850#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001850#turn-4",
+      "to": "phone_dialog_0001850#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001850#turn-5",
+      "to": "phone_dialog_0001850#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002065#turn-1",
+      "to": "phone_dialog_0002065#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002065#turn-2",
+      "to": "phone_dialog_0002065#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

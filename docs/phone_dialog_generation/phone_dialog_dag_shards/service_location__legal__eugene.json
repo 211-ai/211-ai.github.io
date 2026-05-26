@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__legal__eugene",
   "kind": "service_location",
   "key": "legal__eugene",
-  "nodeCount": 2,
+  "nodeCount": 4,
   "nodes": [
     {
       "id": "phone_dialog_0000197#turn-2",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Start here: **5-4-1, 4-8-5, 1-0-1-7**. That\u2019s General Legal Aid in Eugene. If helpful, ask for intake for general civil legal help. They can tell you next steps, and you can share only what you want. If you reach voicemail, leave your name and a safe callback number. Address if needed: **101 East Broadway, Suite 200, Eugene**. If anyone is in immediate danger, call **9-1-1**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to go to an office right now. Just call **2-1-1** from where you are, and they\u2019ll connect you to the right local housing and legal-aid help in Eugene by phone. If you feel in immediate physical danger, call **9-1-1**."
+      ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
@@ -55,6 +57,58 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001300#turn-5",
+      "scenarioId": "phone_dialog_0001300",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "legal",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Wait, sorry, what office was that, is it in Eugene or do I have to go somewhere else?",
+      "normalizedQuery": "eugene by station landlord taped something on door scared getting kicked don even understand paper please say again missed number bus just went couldn hear crying know have money lawyer legal aid attorney advocacy like if possible wait sorry office was it go somewhere else",
+      "voiceResponse": "You don\u2019t need to go to an office right now. Just call **2-1-1** from where you are, and they\u2019ll connect you to the right local housing and legal-aid help in Eugene by phone. If you feel in immediate physical danger, call **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to go to an office right now. Just call **2-1-1** from where you are, and they\u2019ll connect you to the right local housing and legal-aid help in Eugene by phone. If you feel in immediate physical danger, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Start here: **5-4-1, 4-8-5, 1-0-1-7**. That\u2019s General Legal Aid in Eugene. If helpful, ask for intake for general civil legal help. They can tell you next steps, and you can share only what you want. If you reach voicemail, leave your name and a safe callback number. Address if needed: **101 East Broadway, Suite 200, Eugene**. If anyone is in immediate danger, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001300#turn-6",
+      "scenarioId": "phone_dialog_0001300",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "legal",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Please stay with me a second, I\u2019m panicking and my phone battery is at like three percent.",
+      "normalizedQuery": "please say again missed number bus just went by couldn hear crying know don have money lawyer legal aid attorney advocacy like if possible wait sorry office was it eugene go somewhere else stay second panicking phone battery at three percent",
+      "voiceResponse": "I\u2019m with you. First, are you physically safe right now? If not, call 9-1-1 immediately. If you are safe, take one slow breath with me: in for 4, out for 6. With 3% battery, call 2-1-1 now and say, \u201cI\u2019m in Eugene, I need legal aid today.\u201d I\u2019ll keep this short so you can make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e0530c5806065ca3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. First, are you physically safe right now? If not, call 9-1-1 immediately. If you are safe, take one slow breath with me: in for 4, out for 6. With 3% battery, call 2-1-1 now and say, \u201cI\u2019m in Eugene, I need legal aid today.\u201d I\u2019ll keep this short so you can make that call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -69,6 +123,12 @@
       "to": "phone_dialog_0000431#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001300#turn-5",
+      "to": "phone_dialog_0001300#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__health__medford",
   "kind": "service_location",
   "key": "health__medford",
-  "nodeCount": 23,
+  "nodeCount": 32,
   "nodes": [
     {
       "id": "phone_dialog_0000068#turn-2",
@@ -381,7 +381,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m with you. Chest tightness plus shaking and vomiting can be dangerous. Please call **9 1 1** right now, especially if breathing feels hard. If you can, unlock your door and sit upright while you wait. If you\u2019re able after that, for detox help call **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can repeat any part slowly.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. Quick safety check first: is your friend awake, breathing okay, and not in immediate danger? If there\u2019s any risk right now, call 911. For detox help, I have **Medical Detox and Clinically Managed Detox** at Recovery Village Center. Call: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. If you want, I can stay with you while you make the call."
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
@@ -685,6 +687,273 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001339#turn-1",
+      "scenarioId": "phone_dialog_0001339",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, I\u2019m kind of panicking. I\u2019m in Medford with my friend and I was trying to find detox help for him.",
+      "normalizedQuery": "hi sorry kind panicking medford friend was trying detox him",
+      "voiceResponse": "You\u2019re doing the right thing by calling, and I\u2019m here with you. Quick safety check first: is your friend awake, breathing okay, and not in immediate danger? If there\u2019s any risk right now, call 911. For detox help, I have **Medical Detox and Clinically Managed Detox** at Recovery Village Center. Call: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling, and I\u2019m here with you. Quick safety check first: is your friend awake, breathing okay, and not in immediate danger? If there\u2019s any risk right now, call 911. For detox help, I have **Medical Detox and Clinically Managed Detox** at Recovery Village Center. Call: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. Chest tightness plus shaking and vomiting can be dangerous. Please call **9 1 1** right now, especially if breathing feels hard. If you can, unlock your door and sit upright while you wait. If you\u2019re able after that, for detox help call **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can repeat any part slowly."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001339#turn-2",
+      "scenarioId": "phone_dialog_0001339",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you slow down a second? I didn\u2019t catch that last part, there\u2019s people yelling in the background.",
+      "normalizedQuery": "hi sorry kind panicking medford friend was trying detox him slow down second didn catch last part there people yelling background",
+      "voiceResponse": "Absolutely. You\u2019re doing great. Here it is slowly: First number: **5-4-1 \u2026 5-2-3 \u2026 4-0-4-9**. Second number: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. If your friend is in immediate danger, call **9-1-1** now. If not, call one of those detox lines, and I can stay with you while you do it.",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You\u2019re doing great. Here it is slowly: First number: **5-4-1 \u2026 5-2-3 \u2026 4-0-4-9**. Second number: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. If your friend is in immediate danger, call **9-1-1** now. If not, call one of those detox lines, and I can stay with you while you do it.",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001339#turn-3",
+      "scenarioId": "phone_dialog_0001339",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "He was drinking and took pills, I don\u2019t know what kind, and now he\u2019s barely answering me.",
+      "normalizedQuery": "hi sorry kind panicking medford friend was trying detox him slow down second didn catch last part there people yelling background he drinking took pills don know now barely answering",
+      "voiceResponse": "I hear how scary this is. This could be an overdose, so call **9-1-1 now**. Put your phone on speaker while you call. If you can, lay him on his side, keep him awake if possible, and do not give him more pills, alcohol, food, or drink. Tell dispatch: \u201cHe was drinking, took unknown pills, and is barely responsive.\u201d Stay with him and watch his breathing. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scary this is. This could be an overdose, so call **9-1-1 now**. Put your phone on speaker while you call. If you can, lay him on his side, keep him awake if possible, and do not give him more pills, alcohol, food, or drink. Tell dispatch: \u201cHe was drinking, took unknown pills, and is barely responsive.\u201d Stay with him and watch his breathing. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001339#turn-4",
+      "scenarioId": "phone_dialog_0001339",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Wait, hold on... he just slid to the floor. His breathing is really weird, like long gaps.",
+      "normalizedQuery": "hi sorry kind panicking medford friend was trying detox him slow down second didn catch last part there people yelling background he drinking took pills don know now barely answering wait hold on just slid floor his breathing really weird like long gaps",
+      "voiceResponse": "I\u2019m with you. Call **9-1-1 right now**. This is an emergency. Put me on speaker, then put him on his side, keep his airway clear, and watch his chest for breathing. If he stops breathing or you can\u2019t wake him, tell dispatch immediately and start CPR if they instruct you. Say: \u201cHe drank alcohol, took unknown pills, and now has long breathing gaps.\u201d Stay with him.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. Call **9-1-1 right now**. This is an emergency. Put me on speaker, then put him on his side, keep his airway clear, and watch his chest for breathing. If he stops breathing or you can\u2019t wake him, tell dispatch immediately and start CPR if they instruct you. Say: \u201cHe drank alcohol, took unknown pills, and now has long breathing gaps.\u201d Stay with him.",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001363#turn-1",
+      "scenarioId": "phone_dialog_0001363",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Can you hear me? I'm in Medford and I need detox help, for me and maybe my friend too.",
+      "normalizedQuery": "hello hear i'm medford detox maybe friend too",
+      "voiceResponse": "Yeah, I hear you. I\u2019m glad you called, and you\u2019re doing the right thing. For detox help, call **Recovery Village Center** at **541\u2026523\u20264049**. Backup number: **541\u2026406\u20264363**. If you want, you and your friend can both call, one right after the other. If the line drops, call those numbers directly now.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:45707f0c70045863",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. I\u2019m glad you called, and you\u2019re doing the right thing. For detox help, call **Recovery Village Center** at **541\u2026523\u20264049**. Backup number: **541\u2026406\u20264363**. If you want, you and your friend can both call, one right after the other. If the line drops, call those numbers directly now.",
+      "voiceResponseAlternatives": [
+        "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y.",
+        "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?",
+        "I hear you, and you\u2019re doing the right thing by asking now. The detox line I can confirm today is FORA Health at **5 0 3, 5 3 5, 1 1 5 1** in Portland. I also have Right Track Resource Center at **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If your shaking or vomiting gets worse, or you feel faint or confused, call **9 1 1** right now.",
+        "I hear you, and I\u2019m really glad you said that out loud. Let\u2019s keep this simple: I can help you find detox options in Medford through 211info right now, starting near Main Street. Stay with me one step at a time. If you feel like you might pass out or hurt yourself, call 911 now. Otherwise, say \u201cready,\u201d and I\u2019ll walk you through the next step to get you connected quickly."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001363#turn-2",
+      "scenarioId": "phone_dialog_0001363",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, signal's bad, can you say that again? He took pills and alcohol and now he's like... not really waking up.",
+      "normalizedQuery": "hello hear i'm medford detox maybe friend too sorry signal's bad say again he took pills alcohol now he's like really waking up",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing calling back. Repeat: **Recovery Village Center** is **541\u2026523\u20264049**. Backup is **541\u2026406\u20264363**. But if he took pills and alcohol and isn\u2019t really waking up, this is an emergency: **call 911 right now**. Stay with him, keep him on his side if you can, and tell 911 exactly what he took.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:437ec64b59b0ac16",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing calling back. Repeat: **Recovery Village Center** is **541\u2026523\u20264049**. Backup is **541\u2026406\u20264363**. But if he took pills and alcohol and isn\u2019t really waking up, this is an emergency: **call 911 right now**. Stay with him, keep him on his side if you can, and tell 911 exactly what he took.",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001363#turn-3",
+      "scenarioId": "phone_dialog_0001363",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I shook him and he just groans, his breathing sounds weird, kind of slow.",
+      "normalizedQuery": "hello hear i'm medford detox maybe friend too sorry signal's bad say again he took pills alcohol now he's like really waking up shook him just groans his breathing sounds weird kind slow",
+      "voiceResponse": "I\u2019m really glad you told me. This is an emergency now. Call **911** right now. Say: \u201cHe took pills and alcohol, he\u2019s hard to wake, and breathing is slow and weird.\u201d Put him on his side, keep his airway clear, and stay with him. Don\u2019t give him food, drink, or more substances. If you want, I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:437ec64b59b0ac16",
+        "service:0aa4f4d85cc3f6b8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This is an emergency now. Call **911** right now. Say: \u201cHe took pills and alcohol, he\u2019s hard to wake, and breathing is slow and weird.\u201d Put him on his side, keep his airway clear, and stay with him. Don\u2019t give him food, drink, or more substances. If you want, I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y.",
+        "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?",
+        "I hear you, and you\u2019re doing the right thing by asking now. The detox line I can confirm today is FORA Health at **5 0 3, 5 3 5, 1 1 5 1** in Portland. I also have Right Track Resource Center at **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If your shaking or vomiting gets worse, or you feel faint or confused, call **9 1 1** right now.",
+        "I hear you, and I\u2019m really glad you said that out loud. Let\u2019s keep this simple: I can help you find detox options in Medford through 211info right now, starting near Main Street. Stay with me one step at a time. If you feel like you might pass out or hurt yourself, call 911 now. Otherwise, say \u201cready,\u201d and I\u2019ll walk you through the next step to get you connected quickly."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-4",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not a PO box I buy, I mean like a service place or agency address, my stuff keeps getting sent back.",
+      "normalizedQuery": "static hel hello uh mail hear inaudible no wait sorry bus loud said mailing medical keep missing say it slow medford somewhere po box buy mean like service place agency address stuff keeps getting sent back",
+      "voiceResponse": "I hear you. Not a paid P.O. box. You need a service or agency mailing address. You need a service or agency mailing address. I do not have a clear Medford mailing-address listing in front of me right now. I can connect you to a 211 specialist who can find agencies near you. Do you want that now?",
+      "evidenceDocIds": [
+        "service:9fc8a4423060d526",
+        "service:0c199a9aef4e80f0",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Not a paid P.O. box. You need a service or agency mailing address. You need a service or agency mailing address. I do not have a clear Medford mailing-address listing in front of me right now. I can connect you to a 211 specialist who can find agencies near you. Do you want that now?",
+      "voiceResponseAlternatives": [
+        "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y.",
+        "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?",
+        "I hear you, and you\u2019re doing the right thing by asking now. The detox line I can confirm today is FORA Health at **5 0 3, 5 3 5, 1 1 5 1** in Portland. I also have Right Track Resource Center at **5 4 1, 9 6 2, 7 9 9 4** or **5 4 1, 9 1 0, 3 0 5 6**. If your shaking or vomiting gets worse, or you feel faint or confused, call **9 1 1** right now.",
+        "I hear you, and I\u2019m really glad you said that out loud. Let\u2019s keep this simple: I can help you find detox options in Medford through 211info right now, starting near Main Street. Stay with me one step at a time. If you feel like you might pass out or hurt yourself, call 911 now. Otherwise, say \u201cready,\u201d and I\u2019ll walk you through the next step to get you connected quickly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-5",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m talking over you\u2014 can you repeat the street name again? I heard 'Main' or maybe 'Mason'?",
+      "normalizedQuery": "no wait sorry bus loud said mailing medical keep missing say it slow medford somewhere mail po box buy mean like service place agency address stuff keeps getting sent back talking over repeat street name again heard 'main' maybe 'mason'",
+      "voiceResponse": "I did not say a street name yet. I did not say a street name yet. I said: I can connect you to a 211 specialist to find a service or agency mailing address in Medford. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:e25fd4aa967fb6a0",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I did not say a street name yet. I did not say a street name yet. I said: I can connect you to a 211 specialist to find a service or agency mailing address in Medford. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -807,6 +1076,60 @@
       "to": "phone_dialog_0001203#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001339#turn-1",
+      "to": "phone_dialog_0001339#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001339#turn-2",
+      "to": "phone_dialog_0001339#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001339#turn-3",
+      "to": "phone_dialog_0001339#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001339#turn-4",
+      "to": "phone_dialog_0001339#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001363#turn-1",
+      "to": "phone_dialog_0001363#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001363#turn-2",
+      "to": "phone_dialog_0001363#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001363#turn-3",
+      "to": "phone_dialog_0001363#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-4",
+      "to": "phone_dialog_0001976#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-5",
+      "to": "phone_dialog_0001976#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

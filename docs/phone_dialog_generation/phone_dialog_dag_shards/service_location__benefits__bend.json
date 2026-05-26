@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__benefits__bend",
   "kind": "service_location",
   "key": "benefits__bend",
-  "nodeCount": 37,
+  "nodeCount": 66,
   "nodes": [
     {
       "id": "phone_dialog_0000202#turn-1",
@@ -326,7 +326,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re doing the right thing. For proof, use wallet files that show three basics: identity, address, and income or benefits. Upload clear photos, and include both sides if there\u2019s text on both sides. In the app, go to **Documents**, then **Proof Upload**, and send one file at a time. If you want, I can repeat those three proof types slowly.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "First step: protect your info and recover your wallet documents on your phone right now. Open the wallet app, go to **Recovery** or **Lost wallet**, and start replacing your ID and bus-pass proof there. Don\u2019t share photos of your ID in text. I can\u2019t confirm a downtown Bend walkable site from the records I have here. If you want, I can help you with a one-sentence script to ask 211 for the closest downtown option when you call."
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
@@ -942,7 +944,10 @@
       "similarCases": [],
       "assistantResponse": "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
       "voiceResponseAlternatives": [
-        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**"
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?",
+        "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -969,7 +974,10 @@
       "similarCases": [],
       "assistantResponse": "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
       "voiceResponseAlternatives": [
-        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?"
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?",
+        "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -1094,6 +1102,867 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001309#turn-1",
+      "scenarioId": "phone_dialog_0001309",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I keep losing the thread, um, I'm in Bend and I need mental health help, I think, but the voices keep cutting in when I try to explain.",
+      "normalizedQuery": "hi sorry keep losing thread um i'm bend mental health think voices cutting when try explain",
+      "voiceResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. Let\u2019s keep it simple: in Bend, try **Mosaic Community Health \u2013 Courtney Health Center** and ask for mental health support and the soonest intake. Phone: **(541) 383-3005** \u2014 that\u2019s **541, 383, 3005**. Address: **2577 Northeast Courtney Drive, Suite 100, Bend**. If you want, I can help you with exactly what to say when they answer.",
+      "evidenceDocIds": [
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "service:f38249eeec5cb9a4",
+        "service:7c0f4996bd2c65e3",
+        "service:1a380c54e711a994"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. Let\u2019s keep it simple: in Bend, try **Mosaic Community Health \u2013 Courtney Health Center** and ask for mental health support and the soonest intake. Phone: **(541) 383-3005** \u2014 that\u2019s **541, 383, 3005**. Address: **2577 Northeast Courtney Drive, Suite 100, Bend**. If you want, I can help you with exactly what to say when they answer.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001309#turn-2",
+      "scenarioId": "phone_dialog_0001309",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, I'm not on drugs, I already know you'll ask that, it's like my neighbors are running messages through the vents and then the radio repeats my thoughts back at me.",
+      "normalizedQuery": "hi sorry keep losing thread um i'm bend mental health think voices cutting when try explain no on drugs already know you'll ask it's like neighbors running messages through vents then radio repeats thoughts back at",
+      "voiceResponse": "I hear how intense and scary that feels, and I\u2019m glad you told me. Let\u2019s focus on one next step right now: call Mosaic Community Health, Courtney Health Center, and ask for urgent mental health intake. The number is 541, 383, 3005. If they pick up, say: \u201cI\u2019m in Bend, I\u2019m hearing things, and I need same-day mental health support.\u201d If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how intense and scary that feels, and I\u2019m glad you told me. Let\u2019s focus on one next step right now: call Mosaic Community Health, Courtney Health Center, and ask for urgent mental health intake. The number is 541, 383, 3005. If they pick up, say: \u201cI\u2019m in Bend, I\u2019m hearing things, and I need same-day mental health support.\u201d If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001309#turn-4",
+      "scenarioId": "phone_dialog_0001309",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I can go somewhere if it's quiet, not the ER if possible, last time they restrained me and I can't do that again, sorry, I'm talking too fast.",
+      "normalizedQuery": "hi sorry keep losing thread um i'm bend mental health think voices cutting when try explain no on drugs already know you'll ask it's like neighbors running messages through vents then radio repeats thoughts back at wait did safety right now mean shaking haven't slept two nights trying stay put apartment go somewhere if quiet er possible last time they restrained can't again talking too fast",
+      "voiceResponse": "You\u2019re not talking too fast, you\u2019re doing your best, and I hear you. Quick safety check: are you able to stay safe right now, without hurting yourself or anyone else? If yes, we can avoid the ER and try a quieter step: call Mosaic Community Health, Courtney Health Center at 541, 383, 3005 and ask for urgent same-day mental health intake in a non-ER setting. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not talking too fast, you\u2019re doing your best, and I hear you. Quick safety check: are you able to stay safe right now, without hurting yourself or anyone else? If yes, we can avoid the ER and try a quieter step: call Mosaic Community Health, Courtney Health Center at 541, 383, 3005 and ask for urgent same-day mental health intake in a non-ER setting. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Let\u2019s go slowly, one step at a time. First, quick safety check: are you in immediate danger, or thinking about hurting yourself right now? If yes, say \u201cyes\u201d and I\u2019ll stay with you while we do the next step. If no, we\u2019ll keep it simple and choose one: 1) urgent crisis help now, or 2) non-urgent counseling support.",
+        "First, quick safety check: if you feel very weak, confused, are vomiting, or having trouble breathing, call **911** now. If you can make a call, contact **Volunteers in Medicine Clinic of the Cascades** now at **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. I\u2019ll repeat: **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. Address: **2300 NE Neff Road, Bend**. Ask for urgent help replacing lost insulin today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001343#turn-4",
+      "scenarioId": "phone_dialog_0001343",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Wait, hold on... I shook him and he's barely responding, his breathing sounds slow, like long gaps.",
+      "normalizedQuery": "hello sorry your voice cutting i'm bend friend mixed xanax vodka think now freaking say again didn't catch it he was talking weird like ten minutes ago he's just slumped on couch don't know if this overdose wanted mental health crisis detox info really waking up wait hold shook him barely responding his breathing sounds slow long gaps",
+      "voiceResponse": "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?",
+        "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001400#turn-6",
+      "scenarioId": "phone_dialog_0001400",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s a crisis team in Bend that can meet me somewhere safe, yes, that, please, I can\u2019t keep track of the steps.",
+      "normalizedQuery": "mental health think lost place again phone at like three percent keep forgetting why called trying hurt anyone just tell real right now thinking somebody outside door supposed go slowly if someone stay on line because drifting there crisis team bend meet somewhere safe yes please track steps",
+      "voiceResponse": "Yes. We\u2019ll keep it to one step: call **911 now**. Say: \u201cI\u2019m in Bend, I can\u2019t tell what\u2019s real, and I need mental health help. Please send a crisis team to meet me somewhere safe.\u201d Stay inside, lock the door, and move away from windows while you call. I\u2019m here with you.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:afe5dce291e752b0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We\u2019ll keep it to one step: call **911 now**. Say: \u201cI\u2019m in Bend, I can\u2019t tell what\u2019s real, and I need mental health help. Please send a crisis team to meet me somewhere safe.\u201d Stay inside, lock the door, and move away from windows while you call. I\u2019m here with you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001492#turn-1",
+      "scenarioId": "phone_dialog_0001492",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I keep losing the thread... I\u2019m in Bend, I think by the old Safeway, and I need a clinic because my head won\u2019t settle.",
+      "normalizedQuery": "hi sorry keep losing thread bend think by old safeway clinic medical health because head won settle",
+      "voiceResponse": "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?",
+      "evidenceDocIds": [
+        "service:35dc05f6d1dcb822",
+        "service:1a380c54e711a994",
+        "service:6d8268878ab43742",
+        "page:bafkreigxnr3ak3v2jf2s3cnxj2ljtoyi32puwirzncxp5tteom3jeajfga",
+        "service:7a8f64f224c2c5ea"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001492#turn-6",
+      "scenarioId": "phone_dialog_0001492",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at like two percent, can you stay with me and get a person on the line who can help me get to a clinic in Bend right now?",
+      "normalizedQuery": "battery at like two percent stay person on line who clinic medical health bend right now",
+      "voiceResponse": "I\u2019m with you, and you did the right thing calling. Since you don\u2019t feel safe and your battery is at two percent, call 911 now so a real person can help you get immediate care in Bend. Say: \u201cI\u2019m hearing voices, I don\u2019t feel safe alone, and I need immediate mental health help and transport to a clinic.\u201d If 911 doesn\u2019t connect, try `9 7 1`\u2026 `3 1 9`\u2026 `9 7 9 3`.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+        "service:929eeefd245d3386"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you, and you did the right thing calling. Since you don\u2019t feel safe and your battery is at two percent, call 911 now so a real person can help you get immediate care in Bend. Say: \u201cI\u2019m hearing voices, I don\u2019t feel safe alone, and I need immediate mental health help and transport to a clinic.\u201d If 911 doesn\u2019t connect, try `9 7 1`\u2026 `3 1 9`\u2026 `9 7 9 3`.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001535#turn-3",
+      "scenarioId": "phone_dialog_0001535",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "What? You cut out. Can you say that number slower, in chunks? I'm hard of hearing and the traffic noise is bad here.",
+      "normalizedQuery": "hi sorry hear i'm bend sleeping car by third street insulin bag got stolen last night crashing right this second only have little left pen clinic medical health like morning if possible cut say number slower chunks hard hearing traffic noise bad here",
+      "voiceResponse": "Yes. The number is **9-1-1**. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**. If you feel shaky, confused, very weak, or like you might pass out, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibjt5oesroyrchoypkej6a2xhrgcxlrusousbf5t6vhvcmvb5gqky",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreibzgmr3a6ftcs7lqkmm5phfwpive4ta7jl7kqafh5wabuaddiuqh4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. I\u2019ll say it slowly: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**. If you feel shaky, confused, very weak, or like you might pass out, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001535#turn-4",
+      "scenarioId": "phone_dialog_0001535",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "My phone is on three percent, so if we get disconnected I need one place close to a bus line and one backup place.",
+      "normalizedQuery": "hi sorry hear i'm bend sleeping car by third street insulin bag got stolen last night crashing right this second only have little left pen clinic medical health like morning if possible cut say number slower chunks hard hearing traffic noise bad here phone on three percent so we disconnected one place close bus line backup",
+      "voiceResponse": "First step: stay with me now so I can hand you to a live 211 specialist for one nearby clinic and one backup. I do not have verified clinic names, bus-line details, phone numbers, or addresses in this record. If we disconnect and you get shaky, confused, very weak, or feel faint, call **9-1-1**: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: stay with me now so I can hand you to a live 211 specialist for one nearby clinic and one backup. I do not have verified clinic names, bus-line details, phone numbers, or addresses in this record. If we disconnect and you get shaky, confused, very weak, or feel faint, call **9-1-1**: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001549#turn-5",
+      "scenarioId": "phone_dialog_0001549",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If it gets quiet later, I need a safe plan and somewhere I can go without him finding out.",
+      "normalizedQuery": "bend domestic violence sorry repeat slower trying hear he keeps id bank card decides sleep when leave work there yelling right now other room so if hang up call back just ask advocacy it gets quiet later safe plan somewhere go without him finding",
+      "voiceResponse": "Yes. We can keep this low-profile. If it gets quiet later, ask for \u201cadvocacy and safety planning first,\u201d and share only what you want. A simple plan is: one safe word with a trusted person, a small go-bag hidden outside the home, and a place to go he doesn\u2019t know about. You can also ask for help replacing ID and card without contacting him. If danger turns immediate, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this low-profile. If it gets quiet later, ask for \u201cadvocacy and safety planning first,\u201d and share only what you want. A simple plan is: one safe word with a trusted person, a small go-bag hidden outside the home, and a place to go he doesn\u2019t know about. You can also ask for help replacing ID and card without contacting him. If danger turns immediate, call 911.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001574#turn-5",
+      "scenarioId": "phone_dialog_0001574",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "wallet_document_support",
+      "user": "I don't have a car and the bus pass I had is gone with my wallet, so I need somewhere near downtown Bend.",
+      "normalizedQuery": "i'm crashing right this second only have little left pen so clinic medical health like as soon possible sorry say slower hard hearing on ear there's traffic by phone battery at two percent give number chunks maybe closest place walk don't car bus pass had gone wallet somewhere downtown bend",
+      "voiceResponse": "First step: protect your info and recover your wallet documents on your phone right now. Open the wallet app, go to **Recovery** or **Lost wallet**, and start replacing your ID and bus-pass proof there. Don\u2019t share photos of your ID in text. I can\u2019t confirm a downtown Bend walkable site from the records I have here. If you want, I can help you with a one-sentence script to ask 211 for the closest downtown option when you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:98249e32a262b454",
+        "service:2a2b8bcfc5b75747"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: protect your info and recover your wallet documents on your phone right now. Open the wallet app, go to **Recovery** or **Lost wallet**, and start replacing your ID and bus-pass proof there. Don\u2019t share photos of your ID in text. I can\u2019t confirm a downtown Bend walkable site from the records I have here. If you want, I can help you with a one-sentence script to ask 211 for the closest downtown option when you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. For proof, use wallet files that show three basics: identity, address, and income or benefits. Upload clear photos, and include both sides if there\u2019s text on both sides. In the app, go to **Documents**, then **Proof Upload**, and send one file at a time. If you want, I can repeat those three proof types slowly."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001587#turn-4",
+      "scenarioId": "phone_dialog_0001587",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have a plan exactly, but I did think about just not being here tonight, and that scared me.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first bend head all over place calm down keep thinking people would be better off without say again couldn hear there traffic kind shaking don have plan exactly did think just being here tonight scared",
+      "voiceResponse": "Thank you for telling me. This is urgent. Please call **9-1-1 now** and say: **\u201cI\u2019m not safe with myself and need immediate mental health help.\u201d** If you can, stay where other people are and do not be alone. If this phone dies, dial **9-1-1** first.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent. Please call **9-1-1 now** and say: **\u201cI\u2019m not safe with myself and need immediate mental health help.\u201d** If you can, stay where other people are and do not be alone. If this phone dies, dial **9-1-1** first.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001601#turn-1",
+      "scenarioId": "phone_dialog_0001601",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi... sorry, I keep losing my train of thought. I\u2019m in Bend and I don\u2019t really know who to call for mental health help.",
+      "normalizedQuery": "hi sorry keep losing train thought bend don really know who call mental health",
+      "voiceResponse": "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?",
+      "evidenceDocIds": [
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "service:1a380c54e711a994",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:f38249eeec5cb9a4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and I\u2019m here with you. The audio was a little unclear, so let\u2019s do one quick step: are you looking for **(1) urgent crisis help right now**, or **(2) non-urgent counseling support**?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001601#turn-2",
+      "scenarioId": "phone_dialog_0001601",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down a little? I\u2019m trying to listen, I\u2019m just kind of panicking and not hearing everything.",
+      "normalizedQuery": "hi sorry keep losing train thought bend don really know who call mental health slow down little trying listen just kind panicking hearing everything",
+      "voiceResponse": "Absolutely. Let\u2019s go slowly, one step at a time. First, quick safety check: are you in immediate danger, or thinking about hurting yourself right now? If yes, say \u201cyes\u201d and I\u2019ll stay with you while we do the next step. If no, we\u2019ll keep it simple and choose one: 1) urgent crisis help now, or 2) non-urgent counseling support.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:0371faf23a9ac44e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Let\u2019s go slowly, one step at a time. First, quick safety check: are you in immediate danger, or thinking about hurting yourself right now? If yes, say \u201cyes\u201d and I\u2019ll stay with you while we do the next step. If no, we\u2019ll keep it simple and choose one: 1) urgent crisis help now, or 2) non-urgent counseling support.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not talking too fast, you\u2019re doing your best, and I hear you. Quick safety check: are you able to stay safe right now, without hurting yourself or anyone else? If yes, we can avoid the ER and try a quieter step: call Mosaic Community Health, Courtney Health Center at 541, 383, 3005 and ask for urgent same-day mental health intake in a non-ER setting. I can stay with you while you make that call.",
+        "First, quick safety check: if you feel very weak, confused, are vomiting, or having trouble breathing, call **911** now. If you can make a call, contact **Volunteers in Medicine Clinic of the Cascades** now at **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. I\u2019ll repeat: **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. Address: **2300 NE Neff Road, Bend**. Ask for urgent help replacing lost insulin today."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001601#turn-3",
+      "scenarioId": "phone_dialog_0001601",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I haven\u2019t done anything, but I keep thinking people would be better off if I just disappeared.",
+      "normalizedQuery": "hi sorry keep losing train thought bend don really know who call mental health slow down little trying listen just kind panicking hearing everything haven done anything thinking people would be better off if disappeared",
+      "voiceResponse": "Thank you for telling me that. I\u2019m really glad you said it out loud. Right now, your safety comes first: if you might act on this, call **9-1-1** now, and I can stay with you while you do it. If you can, put some space between you and anything you could use to hurt yourself. Then tell me just one thing: are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. I\u2019m really glad you said it out loud. Right now, your safety comes first: if you might act on this, call **9-1-1** now, and I can stay with you while you do it. If you can, put some space between you and anything you could use to hurt yourself. Then tell me just one thing: are you alone right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001706#turn-3",
+      "scenarioId": "phone_dialog_0001706",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "No, I don\u2019t have a plan right this second, I just feel out of control and haven\u2019t slept at all.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop had baby two weeks ago bleeding more again really scared say part there pulling bend keep having these thoughts might hurt myself even though don want no have plan right this second just feel control haven slept all",
+      "voiceResponse": "Thank you for telling me. I hear how scared and exhausted you are. You still need emergency help right now. Please call 9-1-1 now, or hand your phone to someone nearby and say, \u201cPostpartum bleeding and unsafe thoughts, I need an ambulance.\u201d Stay seated, keep pressure on the bleeding, and keep your baby with another safe adult if possible. You are not alone in this. I can stay with you while you make the 9-1-1 call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. I hear how scared and exhausted you are. You still need emergency help right now. Please call 9-1-1 now, or hand your phone to someone nearby and say, \u201cPostpartum bleeding and unsafe thoughts, I need an ambulance.\u201d Stay seated, keep pressure on the bleeding, and keep your baby with another safe adult if possible. You are not alone in this. I can stay with you while you make the 9-1-1 call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001706#turn-4",
+      "scenarioId": "phone_dialog_0001706",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "The baby slept in the car seat last night because I was so exhausted, and I know that\u2019s not safe.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop had baby two weeks ago bleeding more again really scared say part there pulling bend keep having these thoughts might hurt myself even though don want no have plan right this second just feel control haven slept all car seat last night because was so exhausted know safe",
+      "voiceResponse": "Thank you for saying that out loud. You\u2019re exhausted, and I\u2019m really glad you told me. Right now, with the bleeding and feeling out of control, I need you to call **9-1-1** now. Say: \u201cI\u2019m two weeks postpartum, bleeding, and having unsafe thoughts. I need an ambulance.\u201d If you can\u2019t call, hand your phone to someone nearby and ask them to call **9-1-1** for you. Stay seated, keep pressure on the bleeding, and keep baby with another adult.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for saying that out loud. You\u2019re exhausted, and I\u2019m really glad you told me. Right now, with the bleeding and feeling out of control, I need you to call **9-1-1** now. Say: \u201cI\u2019m two weeks postpartum, bleeding, and having unsafe thoughts. I need an ambulance.\u201d If you can\u2019t call, hand your phone to someone nearby and ask them to call **9-1-1** for you. Stay seated, keep pressure on the bleeding, and keep baby with another adult.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001846#turn-1",
+      "scenarioId": "phone_dialog_0001846",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, are you still there? The line keeps chopping... I\u2019m in Bend, and I need mental health help, I think, but the neighbors are piping messages through the vent again.",
+      "normalizedQuery": "hi sorry still there line keeps chopping bend mental health think neighbors piping messages through vent again",
+      "voiceResponse": "I\u2019m here with you, and I\u2019m really glad you called. Your audio cut out, so I may have missed part of that. Quick choice so I can help fast: do you want me to focus right now on getting you a mental health crisis line, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+        "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta",
+        "service:ab88a568a3ec69f1",
+        "service:eed94fb568001665",
+        "service:61f5ec7482881c97"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and I\u2019m really glad you called. Your audio cut out, so I may have missed part of that. Quick choice so I can help fast: do you want me to focus right now on getting you a mental health crisis line, yes or no?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001846#turn-2",
+      "scenarioId": "phone_dialog_0001846",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, no, I\u2019m not making this up, the voices started around 3 a.m. and they keep saying don\u2019t trust anyone, even this number, so if I pause I\u2019m listening to them.",
+      "normalizedQuery": "hi sorry still there line keeps chopping bend mental health think neighbors piping messages through vent again no making this up voices started around they keep saying don trust anyone even number so if pause listening them",
+      "voiceResponse": "I hear how intense and scary this is, and I believe you\u2019re feeling it right now. Let\u2019s keep this simple: stay with me, take one slow breath, and look around for one place you feel a little safer, like a room with a door you can close. If you feel at risk of hurting yourself or anyone else, call 911 now. If you can, I can stay with you while we get you to a local mental health crisis line next.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how intense and scary this is, and I believe you\u2019re feeling it right now. Let\u2019s keep this simple: stay with me, take one slow breath, and look around for one place you feel a little safer, like a room with a door you can close. If you feel at risk of hurting yourself or anyone else, call 911 now. If you can, I can stay with you while we get you to a local mental health crisis line next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001846#turn-4",
+      "scenarioId": "phone_dialog_0001846",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I had a therapist last year, maybe St. Charles area? Or maybe that was my lab work, sorry, I keep mixing timelines; can you just tell me where to go today in Bend?",
+      "normalizedQuery": "hi sorry still there line keeps chopping bend mental health think neighbors piping messages through vent again no making this up voices started around they keep saying don trust anyone even number so if pause listening them wait did ask safe right now locked door haven slept two days tell real hallway had therapist last year maybe st charles area was lab work mixing timelines just go",
+      "voiceResponse": "You\u2019re not doing anything wrong, and it makes sense that this feels mixed up right now. Let\u2019s make this simple for today: go to the nearest emergency department in Bend for same-day mental health help. If getting there feels hard or you feel unsafe even for a moment, call 911 and say you need immediate mental health support. Stay on this line with me while we set your next step.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not doing anything wrong, and it makes sense that this feels mixed up right now. Let\u2019s make this simple for today: go to the nearest emergency department in Bend for same-day mental health help. If getting there feels hard or you feel unsafe even for a moment, call 911 and say you need immediate mental health support. Stay on this line with me while we set your next step.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001975#turn-5",
+      "scenarioId": "phone_dialog_0001975",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t think he sees me right this second, but he\u2019s been following me around this week and I need a quiet plan.",
+      "normalizedQuery": "bend hiding car by grocery lot ex keeps texting he knows shoved last night said if go back home ll make regret it so scared return there repeat number slower crying missed middle part don think sees right this second been following around week quiet plan",
+      "voiceResponse": "You\u2019re doing a strong job staying alert. Quiet next step: call **2\u20261\u20261** now and ask for a **live domestic violence advocate** to make a safe, private plan with you. You can say: \u201cI\u2019m in Bend, in my car, he\u2019s been following me this week, and I need a quiet safety plan.\u201d If risk jumps at any moment, call **9-1-1**. If you want, I can stay with you while you dial **2\u20261\u20261**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a strong job staying alert. Quiet next step: call **2\u20261\u20261** now and ask for a **live domestic violence advocate** to make a safe, private plan with you. You can say: \u201cI\u2019m in Bend, in my car, he\u2019s been following me this week, and I need a quiet safety plan.\u201d If risk jumps at any moment, call **9-1-1**. If you want, I can stay with you while you dial **2\u20261\u20261**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002071#turn-1",
+      "scenarioId": "phone_dialog_0002071",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m in Bend, and I need help finding a clinic today. I\u2019m diabetic and my insulin got lost when we got pushed out of camp last night.",
+      "normalizedQuery": "hi bend finding clinic medical health diabetic insulin got lost when we pushed camp last night",
+      "voiceResponse": "First, quick safety check: if you feel very weak, confused, are vomiting, or having trouble breathing, call **911** now. If you can make a call, contact **Volunteers in Medicine Clinic of the Cascades** now at **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. I\u2019ll repeat: **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. Address: **2300 NE Neff Road, Bend**. Ask for urgent help replacing lost insulin today.",
+      "evidenceDocIds": [
+        "service:b5da2a0d427cbdee",
+        "service:03aee577542f2228",
+        "service:fa597809b842c38b",
+        "page:bafkreibxxhqm7xa3jktehgkyuc7xjc65a57jmraqu2nby7uzyw3npxznym",
+        "page:bafkreicfrpwu5cpsosbx7nu5yosya7mqkfrhlggae7uluyxzczau65pxvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, quick safety check: if you feel very weak, confused, are vomiting, or having trouble breathing, call **911** now. If you can make a call, contact **Volunteers in Medicine Clinic of the Cascades** now at **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. I\u2019ll repeat: **5 4 1 \u2026 3 3 0 \u2026 9 0 0 1**. Address: **2300 NE Neff Road, Bend**. Ask for urgent help replacing lost insulin today.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not talking too fast, you\u2019re doing your best, and I hear you. Quick safety check: are you able to stay safe right now, without hurting yourself or anyone else? If yes, we can avoid the ER and try a quieter step: call Mosaic Community Health, Courtney Health Center at 541, 383, 3005 and ask for urgent same-day mental health intake in a non-ER setting. I can stay with you while you make that call.",
+        "Absolutely. Let\u2019s go slowly, one step at a time. First, quick safety check: are you in immediate danger, or thinking about hurting yourself right now? If yes, say \u201cyes\u201d and I\u2019ll stay with you while we do the next step. If no, we\u2019ll keep it simple and choose one: 1) urgent crisis help now, or 2) non-urgent counseling support."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002071#turn-2",
+      "scenarioId": "phone_dialog_0002071",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m hard of hearing on this phone, can you say that slower? If there\u2019s a number, do it in small chunks.",
+      "normalizedQuery": "hi bend finding clinic medical health diabetic insulin got lost when we pushed camp last night sorry hard hearing on this phone say slower if there number it small chunks",
+      "voiceResponse": "First step: if you feel very weak, confused, vomiting, or short of breath, call **911** now. If you can call the clinic, the number is: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. I\u2019ll repeat: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. Address: **2300 NE Neff Road, Bend**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:03aee577542f2228"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if you feel very weak, confused, vomiting, or short of breath, call **911** now. If you can call the clinic, the number is: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. I\u2019ll repeat: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. Address: **2300 NE Neff Road, Bend**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002071#turn-3",
+      "scenarioId": "phone_dialog_0002071",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m shaky and kinda nauseous, but I\u2019m still awake and talking. I don\u2019t think I\u2019m dying this second, I just can\u2019t wait till tomorrow.",
+      "normalizedQuery": "hi bend finding clinic medical health diabetic insulin got lost when we pushed camp last night sorry hard hearing on this phone say slower if there number it small chunks shaky kinda nauseous still awake talking don think dying second just wait till tomorrow",
+      "voiceResponse": "Next step: please call **911 now** and say, \u201cI have diabetes, I lost my insulin, I\u2019m shaky and nauseous.\u201d If you can still make one clinic call right now: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. I\u2019ll repeat: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. Ask for urgent same-day help replacing insulin.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call **911 now** and say, \u201cI have diabetes, I lost my insulin, I\u2019m shaky and nauseous.\u201d If you can still make one clinic call right now: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. I\u2019ll repeat: **5 4 1** \u2026 **3 3 0** \u2026 **9 0 0 1**. Ask for urgent same-day help replacing insulin.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002101#turn-2",
+      "scenarioId": "phone_dialog_0002101",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend, and I really need mental health help tonight, my head is all over the place.",
+      "normalizedQuery": "bend really mental health tonight head all over place",
+      "voiceResponse": "You did the right thing calling. If you might hurt yourself or feel unsafe right now, call **911** immediately. If you can make one call now for help in Bend, call **5 4 1, 3 8 3, 3 0 0 5**. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:ec676e3d5e124760",
+        "service:f38249eeec5cb9a4",
+        "service:7c0f4996bd2c65e3",
+        "service:1c2972fe0c781d85",
+        "service:1cabc48714fc7bf5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. If you might hurt yourself or feel unsafe right now, call **911** immediately. If you can make one call now for help in Bend, call **5 4 1, 3 8 3, 3 0 0 5**. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002101#turn-3",
+      "scenarioId": "phone_dialog_0002101",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I keep thinking people would be better off without me... I don\u2019t know, I\u2019m just really tired of being here.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first bend really mental health tonight head all over place keep thinking people would be better off without don know just tired being here",
+      "voiceResponse": "I\u2019m sorry, your audio cut out. What I did hear sounds serious. If you might hurt yourself right now, call **9 1 1** now. If you can, say just one word: **\u201csafe\u201d** or **\u201cunsafe.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio cut out. What I did hear sounds serious. If you might hurt yourself right now, call **9 1 1** now. If you can, say just one word: **\u201csafe\u201d** or **\u201cunsafe.\u201d**",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+        "Your audio is a little unclear, but this sounds like a life-threatening overdose. Call **911 now** and say: \u201cPossible Xanax and alcohol overdose, barely responsive, slow breathing with long gaps.\u201d Put him on his side and keep his airway clear. One quick repeat: **is he breathing right now, yes or no?**",
+        "I hear how overwhelmed you feel, and we can take this one step at a time. Your audio cut out a bit, so I may have missed part of it. Can you say just one thing: do you want a **mental health/crisis clinic** or a **general medical clinic** in Bend?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002101#turn-4",
+      "scenarioId": "phone_dialog_0002101",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you say that again? There\u2019s traffic and I missed the middle part.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first bend really mental health tonight head all over place keep thinking people would be better off without don know just tired being here wait say again there traffic missed middle part",
+      "voiceResponse": "Of course. If you might hurt yourself right now, call **9-1-1** now. If you can, tell me just one word: **\u201csafe\u201d** or **\u201cunsafe.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. If you might hurt yourself right now, call **9-1-1** now. If you can, tell me just one word: **\u201csafe\u201d** or **\u201cunsafe.\u201d**",
+      "voiceResponseAlternatives": [
+        "You didn\u2019t miss it, there isn\u2019t an address for this one. It\u2019s a phone line: the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**.",
+        "Of course. I said **Bend**, Oregon, not \u201cBen.\u201d That\u2019s **Bend**, like \u201csend\u201d with a **B**. If you\u2019re safe, I\u2019ll connect you to a live person now for disability benefits help in Bend. If you\u2019re not safe right now, call **9-1-1** immediately.",
+        "I don\u2019t have a phone number on my screen to repeat yet. I can connect you to a live person right now. If you are not safe, call 9-1-1 now.",
+        "Of course. I\u2019ll go slow. Call **9-1-1 now**. Say: \u201cI\u2019m in Bend. I don\u2019t feel safe being by myself. I need immediate mental health help.\u201d Then stay where you are, and don\u2019t be alone. I can stay with you while you call."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002101#turn-5",
+      "scenarioId": "phone_dialog_0002101",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not saying I have a plan right this second, but I\u2019m scared of where my thoughts are going.",
+      "normalizedQuery": "bend really mental health tonight head all over place keep thinking people would be better off without don know just tired being here wait say again there traffic missed middle part saying have plan right this second scared thoughts going",
+      "voiceResponse": "Thank you for telling me. This is urgent. If you feel you might act on these thoughts, call **9-1-1** right now. If you can make one call for local help in Bend, call **5 4 1, 3 8 3, 3 0 0 5** now. Stay with me and say one word: **safe** or **unsafe**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent. If you feel you might act on these thoughts, call **9-1-1** right now. If you can make one call for local help in Bend, call **5 4 1, 3 8 3, 3 0 0 5** now. Stay with me and say one word: **safe** or **unsafe**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002148#turn-4",
+      "scenarioId": "phone_dialog_0002148",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I'm not saying I have a plan, but I've been thinking people might be better off if I just wasn't here.",
+      "normalizedQuery": "hi um don't really know start i'm bend can't head quiet down sorry slow keep missing parts you're saying mental health like if possible because doing great have plan i've been thinking people might be better off just wasn't here",
+      "voiceResponse": "Thank you for telling me. This is a safety warning sign, and you deserve immediate support. If you might act on these thoughts, call **911** right now. If you can stay safe, call **Behavioral Health** now for same-day crisis help: **541\u2026 618\u2026 1380**. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is a safety warning sign, and you deserve immediate support. If you might act on these thoughts, call **911** right now. If you can stay safe, call **Behavioral Health** now for same-day crisis help: **541\u2026 618\u2026 1380**. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1294,6 +2163,168 @@
       "to": "phone_dialog_0001216#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001309#turn-1",
+      "to": "phone_dialog_0001309#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001309#turn-2",
+      "to": "phone_dialog_0001309#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001309#turn-4",
+      "to": "phone_dialog_0001309#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001343#turn-4",
+      "to": "phone_dialog_0001343#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001492#turn-1",
+      "to": "phone_dialog_0001492#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001535#turn-3",
+      "to": "phone_dialog_0001535#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001535#turn-4",
+      "to": "phone_dialog_0001535#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001549#turn-5",
+      "to": "phone_dialog_0001549#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001574#turn-5",
+      "to": "phone_dialog_0001574#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001587#turn-4",
+      "to": "phone_dialog_0001587#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001601#turn-1",
+      "to": "phone_dialog_0001601#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001601#turn-2",
+      "to": "phone_dialog_0001601#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001601#turn-3",
+      "to": "phone_dialog_0001601#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001706#turn-3",
+      "to": "phone_dialog_0001706#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001706#turn-4",
+      "to": "phone_dialog_0001706#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001846#turn-1",
+      "to": "phone_dialog_0001846#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001846#turn-2",
+      "to": "phone_dialog_0001846#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001846#turn-4",
+      "to": "phone_dialog_0001846#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001975#turn-5",
+      "to": "phone_dialog_0001975#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002071#turn-1",
+      "to": "phone_dialog_0002071#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002071#turn-2",
+      "to": "phone_dialog_0002071#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002071#turn-3",
+      "to": "phone_dialog_0002071#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002101#turn-2",
+      "to": "phone_dialog_0002101#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002101#turn-3",
+      "to": "phone_dialog_0002101#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002101#turn-4",
+      "to": "phone_dialog_0002101#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002101#turn-5",
+      "to": "phone_dialog_0002101#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002148#turn-4",
+      "to": "phone_dialog_0002148#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

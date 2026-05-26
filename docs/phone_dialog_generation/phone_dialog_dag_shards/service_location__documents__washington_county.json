@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__documents__washington_county",
   "kind": "service_location",
   "key": "documents__washington_county",
-  "nodeCount": 11,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000333#turn-1",
@@ -26,7 +26,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re okay. We can do this step by step. For Southwest Washington, WA 211 now handles local 211 help. WA 211 handles that now. If you feel unsafe right now, call 911. Call 911. One question: are you in Southwest Washington right now?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you. If you\u2019re in immediate danger, call **9-1-1** right now. If you\u2019re safe this second, I\u2019m connecting you to a live agent now to give you the fastest nearby option in Washington County before your battery dies. Stay on the line.",
+        "Thank you for telling me. You\u2019re not overreacting. If you\u2019re in immediate danger, call **9-1-1** now. If you want a quieter option, I can connect you to a live **WA 211** person right now for a same-day safety plan. You can share only what feels safe, and you do not need to give extra details. If speaking is risky, you can hang up and call back from a safer phone when you can."
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "slow_clear_repetition"
@@ -305,6 +308,62 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001484#turn-6",
+      "scenarioId": "phone_dialog_0001484",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "My phone battery is at like two percent, please just give me the fastest place near me in Washington County.",
+      "normalizedQuery": "slow down missed there lot noise here kind panicking wait sorry say name again number too one more time writing it keep crying forgetting tell if they re open id phone battery at like two percent please just give fastest place washington county",
+      "voiceResponse": "I hear you. If you\u2019re in immediate danger, call **9-1-1** right now. If you\u2019re safe this second, I\u2019m connecting you to a live agent now to give you the fastest nearby option in Washington County before your battery dies. Stay on the line.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. If you\u2019re in immediate danger, call **9-1-1** right now. If you\u2019re safe this second, I\u2019m connecting you to a live agent now to give you the fastest nearby option in Washington County before your battery dies. Stay on the line.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this step by step. For Southwest Washington, WA 211 now handles local 211 help. WA 211 handles that now. If you feel unsafe right now, call 911. Call 911. One question: are you in Southwest Washington right now?",
+        "Thank you for telling me. You\u2019re not overreacting. If you\u2019re in immediate danger, call **9-1-1** now. If you want a quieter option, I can connect you to a live **WA 211** person right now for a same-day safety plan. You can share only what feels safe, and you do not need to give extra details. If speaking is risky, you can hang up and call back from a safer phone when you can."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001631#turn-2",
+      "scenarioId": "phone_dialog_0001631",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Washington County right now. The person I\u2019m with keeps my ID and says I can\u2019t leave alone.",
+      "normalizedQuery": "washington county right now person keeps id says leave alone",
+      "voiceResponse": "Thank you for telling me. You\u2019re not overreacting. If you\u2019re in immediate danger, call **9-1-1** now. If you want a quieter option, I can connect you to a live **WA 211** person right now for a same-day safety plan. You can share only what feels safe, and you do not need to give extra details. If speaking is risky, you can hang up and call back from a safer phone when you can.",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "page:bafkreib4ozk6icnke7h2icegdhgp37wo6u6kbcoqxxyxj5lbglv3fed65u",
+        "service:99ef598a9c3da2d3",
+        "service:a49dc3f54b733b72",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re not overreacting. If you\u2019re in immediate danger, call **9-1-1** now. If you want a quieter option, I can connect you to a live **WA 211** person right now for a same-day safety plan. You can share only what feels safe, and you do not need to give extra details. If speaking is risky, you can hang up and call back from a safer phone when you can.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this step by step. For Southwest Washington, WA 211 now handles local 211 help. WA 211 handles that now. If you feel unsafe right now, call 911. Call 911. One question: are you in Southwest Washington right now?",
+        "I hear you. If you\u2019re in immediate danger, call **9-1-1** right now. If you\u2019re safe this second, I\u2019m connecting you to a live agent now to give you the fastest nearby option in Washington County before your battery dies. Stay on the line."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -361,6 +420,12 @@
       "to": "phone_dialog_0001008#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001631#turn-2",
+      "to": "phone_dialog_0001631#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

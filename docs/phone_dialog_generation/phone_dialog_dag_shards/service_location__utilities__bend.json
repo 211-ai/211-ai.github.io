@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__utilities__bend",
   "kind": "service_location",
   "key": "utilities__bend",
-  "nodeCount": 10,
+  "nodeCount": 11,
   "nodes": [
     {
       "id": "phone_dialog_0000007#turn-1",
@@ -87,7 +87,8 @@
       "similarCases": [],
       "assistantResponse": "Next step: call the Utility Assistance Bend office and ask about electric-bill help and whether city water discounts apply to you. For your question: the **water discount** is for **City of Bend customers**. The number is **5 4 1 \u2026 5 4 8 \u2026 2 3 8 0**. I can repeat the number again slowly.",
       "voiceResponseAlternatives": [
-        "You\u2019re right to check that. I can\u2019t verify a specific Oregon fund for medically necessary refrigeration from what I have here, so I don\u2019t want to guess. Two low-pressure options: we can stay with your current utility and ask for a **medical baseline or medical certificate exception**, or I can hand you to a live specialist now to confirm county and statewide programs in real time. If you want, use: \u201cI need protection for medically necessary refrigeration and manual review.\u201d"
+        "You\u2019re right to check that. I can\u2019t verify a specific Oregon fund for medically necessary refrigeration from what I have here, so I don\u2019t want to guess. Two low-pressure options: we can stay with your current utility and ask for a **medical baseline or medical certificate exception**, or I can hand you to a live specialist now to confirm county and statewide programs in real time. If you want, use: \u201cI need protection for medically necessary refrigeration and manual review.\u201d",
+        "Yes, I\u2019m here with you. This sounds urgent heat illness. Please get into shade now, sit or lie down, and sip water slowly. If you feel faint, confused, have chest pain, or trouble breathing, call 911 now, or ask someone nearby to call for you. Stay on the line with me while I connect the live agent."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "clear_line",
@@ -228,7 +229,8 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re right to check that. I can\u2019t verify a specific Oregon fund for medically necessary refrigeration from what I have here, so I don\u2019t want to guess. Two low-pressure options: we can stay with your current utility and ask for a **medical baseline or medical certificate exception**, or I can hand you to a live specialist now to confirm county and statewide programs in real time. If you want, use: \u201cI need protection for medically necessary refrigeration and manual review.\u201d",
       "voiceResponseAlternatives": [
-        "Next step: call the Utility Assistance Bend office and ask about electric-bill help and whether city water discounts apply to you. For your question: the **water discount** is for **City of Bend customers**. The number is **5 4 1 \u2026 5 4 8 \u2026 2 3 8 0**. I can repeat the number again slowly."
+        "Next step: call the Utility Assistance Bend office and ask about electric-bill help and whether city water discounts apply to you. For your question: the **water discount** is for **City of Bend customers**. The number is **5 4 1 \u2026 5 4 8 \u2026 2 3 8 0**. I can repeat the number again slowly.",
+        "Yes, I\u2019m here with you. This sounds urgent heat illness. Please get into shade now, sit or lie down, and sip water slowly. If you feel faint, confused, have chest pain, or trouble breathing, call 911 now, or ask someone nearby to call for you. Stay on the line with me while I connect the live agent."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
@@ -293,6 +295,34 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001294#turn-2",
+      "scenarioId": "phone_dialog_0001294",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Can you stay with me a second? I\u2019m in Bend, near downtown, and the heat is getting to me.",
+      "normalizedQuery": "stay second bend downtown heat utility utilities electric getting",
+      "voiceResponse": "Yes, I\u2019m here with you. This sounds urgent heat illness. Please get into shade now, sit or lie down, and sip water slowly. If you feel faint, confused, have chest pain, or trouble breathing, call 911 now, or ask someone nearby to call for you. Stay on the line with me while I connect the live agent.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019m here with you. This sounds urgent heat illness. Please get into shade now, sit or lie down, and sip water slowly. If you feel faint, confused, have chest pain, or trouble breathing, call 911 now, or ask someone nearby to call for you. Stay on the line with me while I connect the live agent.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Utility Assistance Bend office and ask about electric-bill help and whether city water discounts apply to you. For your question: the **water discount** is for **City of Bend customers**. The number is **5 4 1 \u2026 5 4 8 \u2026 2 3 8 0**. I can repeat the number again slowly.",
+        "You\u2019re right to check that. I can\u2019t verify a specific Oregon fund for medically necessary refrigeration from what I have here, so I don\u2019t want to guess. Two low-pressure options: we can stay with your current utility and ask for a **medical baseline or medical certificate exception**, or I can hand you to a live specialist now to confirm county and statewide programs in real time. If you want, use: \u201cI need protection for medically necessary refrigeration and manual review.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -355,6 +385,12 @@
       "to": "phone_dialog_0001049#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001294#turn-2",
+      "to": "phone_dialog_0001294#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "generatedAt": "2026-05-26T07:41:46.418174+00:00",
   "id": "service_location__utilities__oregon_city",
   "kind": "service_location",
   "key": "utilities__oregon_city",
-  "nodeCount": 9,
+  "nodeCount": 12,
   "nodes": [
     {
       "id": "phone_dialog_0000331#turn-4",
@@ -28,7 +28,8 @@
       "assistantResponse": "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
       "voiceResponseAlternatives": [
         "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
-        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?"
+        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?",
+        "Okay. Slower. I heard: Oregon City, dizzy, weak legs. If you feel like you might pass out, call **9-1-1** now. Call **9-1-1** now if you might pass out. One choice now: Do you want **cooling help now**? Or **utility bill help**?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
@@ -114,7 +115,8 @@
       "assistantResponse": "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
       "voiceResponseAlternatives": [
         "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
-        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?"
+        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?",
+        "Okay. Slower. I heard: Oregon City, dizzy, weak legs. If you feel like you might pass out, call **9-1-1** now. Call **9-1-1** now if you might pass out. One choice now: Do you want **cooling help now**? Or **utility bill help**?"
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
@@ -250,10 +252,90 @@
       "assistantResponse": "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?",
       "voiceResponseAlternatives": [
         "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
-        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**."
+        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
+        "Okay. Slower. I heard: Oregon City, dizzy, weak legs. If you feel like you might pass out, call **9-1-1** now. Call **9-1-1** now if you might pass out. One choice now: Do you want **cooling help now**? Or **utility bill help**?"
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001270#turn-1",
+      "scenarioId": "phone_dialog_0001270",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I can barely hear you out here by the buses... I\u2019m in Oregon City and I feel really dizzy from the heat.",
+      "normalizedQuery": "hi sorry barely hear here by buses oregon city feel really dizzy from heat utility utilities electric",
+      "voiceResponse": "I\u2019m sorry, the bus noise cut out part of what you said. I heard Oregon City and dizzy from heat. If you feel like you might pass out, call 9-1-1 now. Can you say just one thing: do you want **cooling help now** or **utility bill help**?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:6c757db4a03b77e1",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the bus noise cut out part of what you said. I heard Oregon City and dizzy from heat. If you feel like you might pass out, call 9-1-1 now. Can you say just one thing: do you want **cooling help now** or **utility bill help**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001270#turn-2",
+      "scenarioId": "phone_dialog_0001270",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I\u2019m shaky and kinda confused, like my legs are weak.",
+      "normalizedQuery": "hi sorry barely hear here by buses oregon city feel really dizzy from heat utility utilities electric say slower shaky kinda confused like legs weak",
+      "voiceResponse": "Okay. Slower. I heard: Oregon City, dizzy, weak legs. If you feel like you might pass out, call **9-1-1** now. Call **9-1-1** now if you might pass out. One choice now: Do you want **cooling help now**? Or **utility bill help**?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:6c757db4a03b77e1",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Slower. I heard: Oregon City, dizzy, weak legs. If you feel like you might pass out, call **9-1-1** now. Call **9-1-1** now if you might pass out. One choice now: Do you want **cooling help now**? Or **utility bill help**?",
+      "voiceResponseAlternatives": [
+        "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
+        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
+        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001445#turn-2",
+      "scenarioId": "phone_dialog_0001445",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Oregon City, outside by the bus stop, and I got really dizzy in this heat and my legs feel weak.",
+      "normalizedQuery": "oregon city outside by bus stop got really dizzy this heat utility utilities electric legs feel weak",
+      "voiceResponse": "Thank you for telling me. This could be heat illness. You need emergency help now. Call **9-1-1** now. I\u2019ll repeat: call **9-1-1** now. Sit or lie down in shade. If you can, sip cool water. Keep your legs up. Can you call 9-1-1 right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This could be heat illness. You need emergency help now. Call **9-1-1** now. I\u2019ll repeat: call **9-1-1** now. Sit or lie down in shade. If you can, sip cool water. Keep your legs up. Can you call 9-1-1 right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "slow_clear_repetition"
     }
   ],
@@ -311,6 +393,24 @@
       "to": "phone_dialog_0001249#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001270#turn-1",
+      "to": "phone_dialog_0001270#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001270#turn-2",
+      "to": "phone_dialog_0001270#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001445#turn-2",
+      "to": "phone_dialog_0001445#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }
