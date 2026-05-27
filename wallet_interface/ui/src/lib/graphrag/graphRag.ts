@@ -27,6 +27,7 @@ interface GraphRagPromptOptions {
   excerptCharacters?: number;
   graphNodeLimit?: number;
   graphEdgeLimit?: number;
+  slottedResponseContext?: string;
 }
 
 export async function build211GraphRagEvidence(
@@ -170,6 +171,9 @@ ${formatGraphContext(evidence.nodes, evidence.edges, {
   nodeLimit: options.graphNodeLimit ?? 8,
   edgeLimit: options.graphEdgeLimit ?? 8,
 })}
+
+Prerendered response-frame retrieval:
+${options.slottedResponseContext || "No prerendered slotted response frame was retrieved."}
 
 Write the answer in this format:
 - Direct answer: 1-2 short sentences. Cite each factual sentence with [1], [2], etc.

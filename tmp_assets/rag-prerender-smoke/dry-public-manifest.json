@@ -1,0 +1,606 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-27T20:48:53Z",
+  "provider": "IndexTeam/IndexTTS-2-Demo",
+  "spaceUrl": "https://indexteam-indextts-2-demo.hf.space",
+  "referenceAudio": "abby-reference.wav",
+  "voiceDescription": "Same as the voice reference",
+  "responseCount": 12,
+  "sources": {
+    "dag": "docs/211_conversation_dag.json",
+    "results": "docs/211_chatbot_simulation_results.json",
+    "includeAssistantResponses": true,
+    "includeVoiceResponses": true,
+    "idScheme": "abby-tts-{sha256(spoken_normalized_text)[:20]}"
+  },
+  "normalization": {
+    "emergencyNumbers": {
+      "211": "two one one",
+      "911": "nine one one"
+    },
+    "addresses": {
+      "directions": {
+        "n": "North",
+        "s": "South",
+        "e": "East",
+        "w": "West",
+        "ne": "North East",
+        "nw": "North West",
+        "se": "South East",
+        "sw": "South West"
+      },
+      "streetSuffixes": {
+        "aly": "Alley",
+        "allee": "Alley",
+        "aly.": "Alley",
+        "ave": "Avenue",
+        "ave.": "Avenue",
+        "aven": "Avenue",
+        "avenu": "Avenue",
+        "avenue": "Avenue",
+        "blvd": "Boulevard",
+        "blvd.": "Boulevard",
+        "boul": "Boulevard",
+        "boulevard": "Boulevard",
+        "cir": "Circle",
+        "cir.": "Circle",
+        "circle": "Circle",
+        "ct": "Court",
+        "ct.": "Court",
+        "court": "Court",
+        "dr": "Drive",
+        "dr.": "Drive",
+        "drive": "Drive",
+        "hwy": "Highway",
+        "hwy.": "Highway",
+        "highway": "Highway",
+        "ln": "Lane",
+        "ln.": "Lane",
+        "lane": "Lane",
+        "loop": "Loop",
+        "pkwy": "Parkway",
+        "pkwy.": "Parkway",
+        "parkway": "Parkway",
+        "pl": "Place",
+        "pl.": "Place",
+        "place": "Place",
+        "rd": "Road",
+        "rd.": "Road",
+        "road": "Road",
+        "st": "Street",
+        "st.": "Street",
+        "street": "Street",
+        "ter": "Terrace",
+        "ter.": "Terrace",
+        "terrace": "Terrace",
+        "trl": "Trail",
+        "trl.": "Trail",
+        "trail": "Trail",
+        "way": "Way"
+      },
+      "unitLabels": {
+        "apt": "Apartment",
+        "apt.": "Apartment",
+        "bldg": "Building",
+        "bldg.": "Building",
+        "fl": "Floor",
+        "fl.": "Floor",
+        "ste": "Suite",
+        "ste.": "Suite",
+        "suite": "Suite",
+        "unit": "Unit"
+      },
+      "numberedStreetOrdinals": true
+    }
+  },
+  "mp3": {
+    "enabled": true,
+    "bitrate": "64k",
+    "preferred": true,
+    "wavDeprecated": true
+  },
+  "batchInference": {
+    "remoteBatchSize": 1,
+    "batchApiName": "/gen_batch",
+    "enabled": true,
+    "requiresBatch": false
+  },
+  "responses": [
+    {
+      "id": "abby-tts-00ecbcd52b27549deb90",
+      "textHash": "00ecbcd52b27549deb90",
+      "text": "I found Oregon Health Plan Application Assistance. The address is 1108 South West fourth Street, Ontario, Oregon. ZIP code nine seven nine one four. You can call five four one, eight eight nine, seven two seven nine. Eligibility: Ages nineteen to sixty four and low income households. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is OREGON HEALTH PLAN APPLICATION ASSISTANCE. The record lists 1108 SW 4th Street Ontario, OR 97914. Phone: (541) 889-7279. Eligibility: Age 19-64 and low income households. Source: https://www.211info.org/agency/3464/20848/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "oregon_health_plan_salem#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-01649520c88d1f9ef83d",
+      "textHash": "01649520c88d1f9ef83d",
+      "text": "I found Homeless Day Center. The address is 12264 South West Hall Boulevard, Tigard, Oregon. ZIP code nine seven two two three. You can call five zero three, six two four, four six six six. Eligibility: age eighteen and older experiencing homelessness. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is HOMELESS DAY CENTER. The record lists 12264 SW Hall Boulevard Tigard, OR 97223. Phone: (503) 624-4666. Eligibility: Age 18 and older experiencing homelessness. Source: https://gethelp.211info.org/agency/22135/18474/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "youth_day_center#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0939c4312256a0e777d2",
+      "textHash": "0939c4312256a0e777d2",
+      "text": "I found Foreclosure Avoidance and Eviction Prevention. The address is 528 Cottage Street North East Suite 1C, Salem, Oregon. ZIP code nine seven three zero one. You can call five zero three, seven seven nine, two six eight zero. Another number is five zero three, seven seven nine, two six eight two. Eligibility is unrestricted. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is FORECLOSURE AVOIDANCE AND EVICTION PREVENTION. The record lists 528 Cottage Street NE Suite 1C Salem, OR 97301. Phone: (503) 779-2680, (503) 779-2682. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/10786/21755/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "matrix_eviction_prevention_salem#turn-1",
+        "stress_0133_eviction_prevention_salem_1#turn-1",
+        "stress_0341_eviction_prevention_salem_5#turn-1",
+        "stress_0549_eviction_prevention_salem_9#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-09d59b2c5ad396126fd7",
+      "textHash": "09d59b2c5ad396126fd7",
+      "text": "I found Eugene Service Station. The address is 450 Highway ninety nine North Eugene, Oregon. ZIP code nine seven four zero two. You can call five four one, six eight nine, six seven four seven. Eligibility: Low-income and homeless adults without minor children. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is EUGENE SERVICE STATION. The record lists 450 Highway 99 N Eugene, OR 97402. Phone: (541) 689-6747. Eligibility: Low-income and homeless adults without minor children. Source: https://gethelp.211info.org/agency/19761/6338/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "matrix_community_meals_eugene#turn-1",
+        "matrix_senior_meals_eugene#turn-1",
+        "matrix_laundry_eugene#turn-1",
+        "matrix_mail_service_eugene#turn-1",
+        "matrix_clothing_eugene#turn-1",
+        "stress_0157_community_meals_eugene_1#turn-1",
+        "stress_0173_senior_meals_eugene_5#turn-1",
+        "stress_0179_clothing_eugene_11#turn-2",
+        "stress_0365_community_meals_eugene_5#turn-1",
+        "stress_0381_senior_meals_eugene_9#turn-1",
+        "stress_0384_laundry_eugene_0#turn-1",
+        "stress_0387_clothing_eugene_3#turn-1",
+        "stress_0573_community_meals_eugene_9#turn-1",
+        "stress_0589_senior_meals_eugene_1#turn-1",
+        "stress_0594_mail_service_eugene_6#turn-2"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0a7d05b3d7836f38d123",
+      "textHash": "0a7d05b3d7836f38d123",
+      "text": "I found Housing Related Coordinated Entry for Veterans. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is Housing Related Coordinated Entry * Veterans - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/get-help/housing-shelter/housing-related-coordinated-entry-veterans/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "stress_0172_veteran_housing_eugene_4#turn-1",
+        "stress_0328_veteran_housing_clackamas_4#turn-1",
+        "stress_0484_veteran_housing_beaverton_4#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0b03883e26ae3b6bc7b9",
+      "textHash": "0b03883e26ae3b6bc7b9",
+      "text": "I found Eviction Prevention Assistance. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is Eviction Prevention Assistance - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://gethelp.211info.org/get-help/housing-shelter/eviction-prevention-assistance/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "stress_0158_rent_assistance_eugene_2#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0c289114ad0aac9416a3",
+      "textHash": "0c289114ad0aac9416a3",
+      "text": "I found Multnomah County Health Department North East Health Center and Dental Clinic Healthy Birth Initiative. The address is 5329 North East Martin Luther King Jr Boulevard, Portland, Oregon. ZIP code nine seven two one one. You can call five zero three, nine eight eight, three three eight seven. Eligibility: Home visiting. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE. The record lists 5329 NE Martin Luther King Jr Boulevard Portland, OR 97211. Phone: (503) 988-3387. Eligibility: Home visiting. Source: https://www.211info.org/get-help/health-care/prenatal-postnatal-home-visitation-programs-african-american-community/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "dental_clinic_portland#turn-1",
+        "matrix_dental_clinic_portland#turn-1",
+        "matrix_dental_clinic_gresham#turn-1",
+        "matrix_dental_clinic_clackamas#turn-1",
+        "matrix_dental_clinic_medford#turn-1",
+        "matrix_broad_then_dental_clinic_clackamas#turn-2",
+        "stress_0009_dental_clinic_portland_9#turn-1",
+        "stress_0035_dental_clinic_gresham_11#turn-2",
+        "stress_0113_dental_clinic_clackamas_5#turn-1",
+        "stress_0191_dental_clinic_medford_11#turn-2",
+        "stress_0217_dental_clinic_portland_1#turn-1",
+        "stress_0243_dental_clinic_gresham_3#turn-1",
+        "stress_0321_dental_clinic_clackamas_9#turn-1",
+        "stress_0399_dental_clinic_medford_3#turn-1",
+        "stress_0529_dental_clinic_clackamas_1#turn-1",
+        "stress_0633_dental_clinic_portland_9#turn-1",
+        "stress_0659_dental_clinic_gresham_11#turn-2"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0e8d589b28744abba8f7",
+      "textHash": "0e8d589b28744abba8f7",
+      "text": "I found Behavioral Health Services. The address is 11010 South East Division Street Suite 202, Portland, Oregon. ZIP code nine seven two six six. You can call five zero three, three three five, five nine seven five. Another number is five zero three, three three five, five nine seven four. Eligibility is unrestricted. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is BEHAVIORAL HEALTH SERVICES. The record lists 11010 SE Division Street Suite 202 Portland, OR 97266. Phone: (503) 335-5975, (503) 335-5974. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/11051/6118/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "mental_health_crisis_nonurgent#turn-1",
+        "matrix_mental_health_portland#turn-1",
+        "matrix_broad_then_mental_health_portland#turn-2",
+        "stress_0218_mental_health_portland_2#turn-1",
+        "stress_0426_mental_health_portland_6#turn-2"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0ec06bc1c8075b3678a0",
+      "textHash": "0ec06bc1c8075b3678a0",
+      "text": "I found Southern Oregon Head Start Listo Family Literacy Program Medford Listo Family Literacy Program. The address is 1001 Beall Lane, Central Point, Oregon. ZIP code nine seven five zero two. There may be more locations in the service details. You can call five four one, seven three four, five one five zero. Another number is five zero three, nine nine two, zero zero seven eight. Eligibility: Low-income Spanish-speaking women and their children, ages 6 weeks-5 years. Unrestricted. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is SOUTHERN OREGON HEAD START LISTO FAMILY LITERACY PROGRAM MEDFORD LISTO FAMILY LITERACY PROGRAM. The record lists 1001 Beall Lane Central Point, OR 97502, 2030 Main Street Suite A Forest Grove, OR 97116. Phone: (541) 734-5150, (503) 992-0078. Eligibility: Low-income Spanish-speaking women and their children, ages 6 weeks-5 years; Unrestricted. Source: https://www.211info.org/get-help/education/adult-basic-education-hispanic-latino-community/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "stress_0205_clothing_medford_1#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-11cebaed56a602bd55f3",
+      "textHash": "11cebaed56a602bd55f3",
+      "text": "I can help. What city are you in, and what kind of help do you need most?",
+      "originalTexts": [],
+      "routes": [
+        "clarifying_prompt"
+      ],
+      "serviceTags": [
+        "benefits",
+        "broad_help"
+      ],
+      "locationTags": [
+        "statewide"
+      ],
+      "sourceTypes": [
+        "dag.voiceResponse"
+      ],
+      "sourceIds": [
+        "broad_help#turn-1",
+        "broad_help_then_food#turn-1",
+        "broad_help_then_urgent_shelter#turn-1",
+        "broad_need_help_no_location#turn-1",
+        "where_do_i_start#turn-1",
+        "family_needs_help#turn-1",
+        "new_to_oregon_help#turn-1",
+        "cannot_pay_bills_unspecified#turn-1",
+        "friend_needs_resources#turn-1",
+        "voice_short_help#turn-1",
+        "sms_need_help#turn-1",
+        "broad_then_rent#turn-1",
+        "broad_then_legal#turn-1",
+        "broad_then_medical#turn-1",
+        "broad_then_transport#turn-1",
+        "broad_then_benefits_documents_then_repeat#turn-1",
+        "matrix_broad_then_food_pantry_portland#turn-1",
+        "matrix_broad_then_community_meals_gresham#turn-1",
+        "matrix_broad_then_rent_assistance_beaverton#turn-1",
+        "matrix_broad_then_eviction_prevention_hillsboro#turn-1",
+        "matrix_broad_then_utility_assistance_clackamas#turn-1",
+        "matrix_broad_then_legal_aid_portland#turn-1",
+        "matrix_broad_then_id_replacement_gresham#turn-1",
+        "matrix_broad_then_transportation_beaverton#turn-1",
+        "matrix_broad_then_medical_clinic_hillsboro#turn-1",
+        "matrix_broad_then_dental_clinic_clackamas#turn-1",
+        "matrix_broad_then_mental_health_portland#turn-1",
+        "matrix_broad_then_detox_gresham#turn-1",
+        "matrix_broad_then_domestic_violence_advocacy_beaverton#turn-1",
+        "matrix_broad_then_diapers_hillsboro#turn-1",
+        "matrix_broad_then_child_care_clackamas#turn-1",
+        "matrix_broad_then_employment_portland#turn-1",
+        "matrix_broad_then_veteran_housing_gresham#turn-1",
+        "matrix_broad_then_senior_meals_beaverton#turn-1",
+        "stress_0006_id_replacement_portland_6#turn-1",
+        "stress_0011_detox_portland_11#turn-1",
+        "stress_0018_youth_day_center_portland_6#turn-1",
+        "stress_0023_clothing_portland_11#turn-1",
+        "stress_0030_utility_assistance_gresham_6#turn-1",
+        "stress_0035_dental_clinic_gresham_11#turn-1",
+        "stress_0042_veteran_housing_gresham_6#turn-1",
+        "stress_0047_showers_gresham_11#turn-1",
+        "stress_0054_rent_assistance_beaverton_6#turn-1",
+        "stress_0059_transportation_beaverton_11#turn-1",
+        "stress_0066_child_care_beaverton_6#turn-1",
+        "stress_0071_disability_benefits_beaverton_11#turn-1",
+        "stress_0078_food_pantry_hillsboro_6#turn-1",
+        "stress_0083_legal_aid_hillsboro_11#turn-1",
+        "stress_0090_domestic_violence_advocacy_hillsboro_6#turn-1",
+        "stress_0095_senior_meals_hillsboro_11#turn-1",
+        "stress_0102_warming_center_hillsboro_6#turn-1",
+        "stress_0107_eviction_prevention_clackamas_11#turn-1",
+        "stress_0114_mental_health_clackamas_6#turn-1",
+        "stress_0119_employment_clackamas_11#turn-1",
+        "stress_0126_mail_service_clackamas_6#turn-1",
+        "stress_0131_community_meals_salem_11#turn-1",
+        "stress_0138_medical_clinic_salem_6#turn-1",
+        "stress_0143_diapers_salem_11#turn-1",
+        "stress_0150_laundry_salem_6#turn-1",
+        "stress_0155_cooling_center_salem_11#turn-1",
+        "stress_0162_id_replacement_eugene_6#turn-1",
+        "stress_0167_detox_eugene_11#turn-1",
+        "stress_0174_youth_day_center_eugene_6#turn-1",
+        "stress_0179_clothing_eugene_11#turn-1",
+        "stress_0186_utility_assistance_medford_6#turn-1",
+        "stress_0191_dental_clinic_medford_11#turn-1",
+        "stress_0198_veteran_housing_medford_6#turn-1",
+        "stress_0203_showers_medford_11#turn-1",
+        "stress_0210_rent_assistance_portland_6#turn-1",
+        "stress_0215_transportation_portland_11#turn-1",
+        "stress_0222_child_care_portland_6#turn-1",
+        "stress_0227_disability_benefits_portland_11#turn-1",
+        "stress_0234_food_pantry_gresham_6#turn-1",
+        "stress_0239_legal_aid_gresham_11#turn-1",
+        "stress_0246_domestic_violence_advocacy_gresham_6#turn-1",
+        "stress_0251_senior_meals_gresham_11#turn-1",
+        "stress_0258_warming_center_gresham_6#turn-1",
+        "stress_0263_eviction_prevention_beaverton_11#turn-1",
+        "stress_0270_mental_health_beaverton_6#turn-1",
+        "stress_0275_employment_beaverton_11#turn-1",
+        "stress_0282_mail_service_beaverton_6#turn-1",
+        "stress_0287_community_meals_hillsboro_11#turn-1",
+        "stress_0294_medical_clinic_hillsboro_6#turn-1",
+        "stress_0299_diapers_hillsboro_11#turn-1",
+        "stress_0306_laundry_hillsboro_6#turn-1",
+        "stress_0311_cooling_center_hillsboro_11#turn-1",
+        "stress_0318_id_replacement_clackamas_6#turn-1",
+        "stress_0323_detox_clackamas_11#turn-1",
+        "stress_0330_youth_day_center_clackamas_6#turn-1",
+        "stress_0335_clothing_clackamas_11#turn-1",
+        "stress_0342_utility_assistance_salem_6#turn-1",
+        "stress_0347_dental_clinic_salem_11#turn-1",
+        "stress_0354_veteran_housing_salem_6#turn-1",
+        "stress_0359_showers_salem_11#turn-1",
+        "stress_0366_rent_assistance_eugene_6#turn-1",
+        "stress_0371_transportation_eugene_11#turn-1",
+        "stress_0378_child_care_eugene_6#turn-1",
+        "stress_0383_disability_benefits_eugene_11#turn-1",
+        "stress_0390_food_pantry_medford_6#turn-1",
+        "stress_0395_legal_aid_medford_11#turn-1",
+        "stress_0402_domestic_violence_advocacy_medford_6#turn-1",
+        "stress_0407_senior_meals_medford_11#turn-1",
+        "stress_0414_warming_center_medford_6#turn-1",
+        "stress_0419_eviction_prevention_portland_11#turn-1",
+        "stress_0426_mental_health_portland_6#turn-1",
+        "stress_0431_employment_portland_11#turn-1",
+        "stress_0438_mail_service_portland_6#turn-1",
+        "stress_0443_community_meals_gresham_11#turn-1",
+        "stress_0450_medical_clinic_gresham_6#turn-1",
+        "stress_0455_diapers_gresham_11#turn-1",
+        "stress_0462_laundry_gresham_6#turn-1",
+        "stress_0467_cooling_center_gresham_11#turn-1",
+        "stress_0474_id_replacement_beaverton_6#turn-1",
+        "stress_0479_detox_beaverton_11#turn-1",
+        "stress_0486_youth_day_center_beaverton_6#turn-1",
+        "stress_0491_clothing_beaverton_11#turn-1",
+        "stress_0498_utility_assistance_hillsboro_6#turn-1",
+        "stress_0503_dental_clinic_hillsboro_11#turn-1",
+        "stress_0510_veteran_housing_hillsboro_6#turn-1",
+        "stress_0515_showers_hillsboro_11#turn-1",
+        "stress_0522_rent_assistance_clackamas_6#turn-1",
+        "stress_0527_transportation_clackamas_11#turn-1",
+        "stress_0534_child_care_clackamas_6#turn-1",
+        "stress_0539_disability_benefits_clackamas_11#turn-1",
+        "stress_0546_food_pantry_salem_6#turn-1",
+        "stress_0551_legal_aid_salem_11#turn-1",
+        "stress_0558_domestic_violence_advocacy_salem_6#turn-1",
+        "stress_0563_senior_meals_salem_11#turn-1",
+        "stress_0570_warming_center_salem_6#turn-1",
+        "stress_0575_eviction_prevention_eugene_11#turn-1",
+        "stress_0582_mental_health_eugene_6#turn-1",
+        "stress_0587_employment_eugene_11#turn-1",
+        "stress_0594_mail_service_eugene_6#turn-1",
+        "stress_0599_community_meals_medford_11#turn-1",
+        "stress_0606_medical_clinic_medford_6#turn-1",
+        "stress_0611_diapers_medford_11#turn-1",
+        "stress_0618_laundry_medford_6#turn-1",
+        "stress_0623_cooling_center_medford_11#turn-1",
+        "stress_0630_id_replacement_portland_6#turn-1",
+        "stress_0635_detox_portland_11#turn-1",
+        "stress_0642_youth_day_center_portland_6#turn-1",
+        "stress_0647_clothing_portland_11#turn-1",
+        "stress_0654_utility_assistance_gresham_6#turn-1",
+        "stress_0659_dental_clinic_gresham_11#turn-1",
+        "stress_0666_veteran_housing_gresham_6#turn-1",
+        "stress_0671_showers_gresham_11#turn-1",
+        "stress_0678_rent_assistance_beaverton_6#turn-1",
+        "stress_0683_transportation_beaverton_11#turn-1",
+        "stress_0690_child_care_beaverton_6#turn-1",
+        "stress_0695_disability_benefits_beaverton_11#turn-1",
+        "stress_0702_food_pantry_hillsboro_6#turn-1",
+        "stress_0707_legal_aid_hillsboro_11#turn-1",
+        "stress_0714_domestic_violence_advocacy_hillsboro_6#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-149582736753867e2d2f",
+      "textHash": "149582736753867e2d2f",
+      "text": "I found Low-Cost Housing Properties. You can call five zero three, six five five, eight five seven five. Eligibility: Low-income families, older adults, and people with special needs. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is LOW-COST HOUSING PROPERTIES. The record lists location not listed in this record. Phone: (503) 655-8575. Eligibility: Low-income families, older adults, and people with special needs. Source: https://gethelp.211info.org/agency/989/17875/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "medical_clinic_portland#turn-1"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-15dbdbbc1eac96add805",
+      "textHash": "15dbdbbc1eac96add805",
+      "text": "I found Mental Health Services. The address is 1580 Valley River Drive Suite 290, Eugene, Oregon. ZIP code nine seven four zero one. You can call five four one, nine zero four, five two one six. Another number is five four one, five two seven, four three four seven. Eligibility is unrestricted. Please confirm details before you go, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is MENTAL HEALTH SERVICES. The record lists 1580 Valley River Drive Suite 290 Eugene, OR 97401. Phone: (541) 904-5216, (541) 527-4347. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/28572/23379/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "matrix_mental_health_eugene#turn-1",
+        "stress_0374_mental_health_eugene_2#turn-1",
+        "stress_0582_mental_health_eugene_6#turn-2"
+      ],
+      "status": "planned",
+      "audioPath": "",
+      "mp3Path": "",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    }
+  ]
+}

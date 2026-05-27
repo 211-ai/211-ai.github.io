@@ -7,6 +7,8 @@ import {
   DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
   format211GraphRagDisplayedAnswer,
   get211CorpusBaseUrl,
+  buildSlottedResponseRagContext,
+  findSlottedResponseMatch,
   isGrounded211GraphRagAnswer,
   load211ArtifactManifest,
   load211GeneratedManifest,
@@ -524,6 +526,7 @@ export async function answer211InfoQuestion(
   if (!trimmedQuestion) {
     throw new Error("Question is required");
   }
+  const slottedResponseMatchPromise = findSlottedResponseMatch(trimmedQuestion);
   const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding, options.walletApiConfig);
 
   const initialFilters = preferredServiceFilters(6, options);
@@ -570,7 +573,8 @@ export async function answer211InfoQuestion(
     };
   }
 
-  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence);
+  const slottedResponseContext = buildSlottedResponseRagContext(await slottedResponseMatchPromise);
+  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence, { slottedResponseContext });
   const maxTokens = options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS;
   if (options.walletApiConfig?.actorDid) {
     try {
