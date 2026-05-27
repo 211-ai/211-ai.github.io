@@ -17,6 +17,7 @@ import threading
 import time
 import uuid
 import wave
+import zipfile
 import secrets
 from email.message import EmailMessage
 from email.utils import make_msgid
@@ -5749,7 +5750,7 @@ def _run_indextts_gradio_batch_tts(
         stage_start = time.perf_counter()
         result = _indextts_wait_for_result(session_hash)
         timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
-        audio_refs = _find_gradio_audio_references(result)
+        audio_refs = _indextts_batch_audio_references(result)
         if len(audio_refs) < len(prompts):
             raise ValueError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(prompts)} texts")
         items: List[Dict[str, Any]] = []
@@ -5955,7 +5956,7 @@ def _indextts_batch_request_data(
     if raw_template:
         rendered = (
             raw_template.replace("{texts}", json.dumps(text_list))
-            .replace("{text}", json.dumps("\n".join(text_list)))
+            .replace("{text}", json.dumps(json.dumps(text_list)))
             .replace("{voice_description}", json.dumps(voice_description or ""))
             .replace("{reference_audio}", json.dumps(reference_audio) if reference_audio else "null")
         )
@@ -5963,13 +5964,34 @@ def _indextts_batch_request_data(
         if not isinstance(parsed, list):
             raise ValueError("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE must render to a JSON array")
         return parsed
-    # Local upgraded Spaces can expose /gen_batch with this compact order. Set
-    # WALLET_INDEXTTS_BATCH_DATA_TEMPLATE if the Gradio input order differs.
+    # Publicus/IndexTTS-2-Demo /gen_batch uses a Gradio Textbox, but the
+    # backend batch parser expects a JSON-encoded list string in that textbox.
     return [
         "Same as the voice reference",
         reference_audio,
-        text_list,
+        json.dumps(text_list),
+        None,
+        0.8,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
         voice_description or "",
+        False,
+        120,
+        len(text_list) if len(text_list) > 1 else 0,
+        True,
+        0.8,
+        30,
+        0.8,
+        0.0,
+        3,
+        10.0,
+        1500,
     ]
 
 
@@ -6064,7 +6086,90 @@ def _find_gradio_audio_references(value: Any) -> List[Any]:
     return found
 
 
+def _gradio_update_value(value: Any) -> Any:
+    if isinstance(value, Mapping) and value.get("__type__") == "update":
+        return value.get("value")
+    return value
+
+
+def _gradio_output_values(result: Mapping[str, Any]) -> List[Any]:
+    data = result.get("data")
+    if isinstance(data, list):
+        return [_gradio_update_value(item) for item in data]
+    return []
+
+
+def _gradio_file_key(reference: Any) -> str:
+    if isinstance(reference, Mapping):
+        return str(reference.get("url") or reference.get("path") or reference.get("name") or json.dumps(reference, sort_keys=True, default=str))
+    return str(reference)
+
+
+def _dedupe_gradio_references(references: Sequence[Any]) -> List[Any]:
+    deduped: List[Any] = []
+    seen: set[str] = set()
+    for reference in references:
+        key = _gradio_file_key(reference)
+        if key and key not in seen:
+            seen.add(key)
+            deduped.append(reference)
+    return deduped
+
+
+def _indextts_batch_audio_references(result: Mapping[str, Any]) -> List[Any]:
+    outputs = _gradio_output_values(result)
+    if len(outputs) >= 2:
+        generated_files = _find_gradio_audio_references(outputs[1])
+        if generated_files:
+            return _dedupe_gradio_references(generated_files)
+    if len(outputs) >= 3:
+        zip_ref = _find_gradio_file_reference(outputs[2], suffixes=(".zip",))
+        if zip_ref:
+            try:
+                archive, _mime_type = _fetch_gradio_file(zip_ref)
+                extracted = _extract_audio_files_from_zip(archive)
+                if extracted:
+                    return extracted
+            except Exception:
+                pass
+    return _dedupe_gradio_references(_find_gradio_audio_references(result))
+
+
+def _find_gradio_file_reference(value: Any, *, suffixes: Sequence[str]) -> Any:
+    suffix_tuple = tuple(suffix.lower() for suffix in suffixes)
+    if isinstance(value, Mapping):
+        if any(key in value for key in ("path", "url", "name")) and not value.get("is_stream"):
+            pathish = str(value.get("path") or value.get("url") or value.get("name") or "").lower()
+            if pathish.endswith(suffix_tuple) or any(f"/file=" in pathish and suffix in pathish for suffix in suffix_tuple):
+                return value
+        for item in value.values():
+            found = _find_gradio_file_reference(item, suffixes=suffix_tuple)
+            if found:
+                return found
+    if isinstance(value, list):
+        for item in value:
+            found = _find_gradio_file_reference(item, suffixes=suffix_tuple)
+            if found:
+                return found
+    if isinstance(value, str) and value.lower().endswith(suffix_tuple):
+        return value
+    return None
+
+
+def _extract_audio_files_from_zip(data: bytes) -> List[Dict[str, Any]]:
+    extracted: List[Dict[str, Any]] = []
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        for name in sorted(archive.namelist()):
+            if name.endswith("/") or not name.lower().endswith((".wav", ".mp3", ".flac", ".ogg")):
+                continue
+            extracted.append({"name": name, "_inline_bytes": archive.read(name)})
+    return extracted
+
+
 def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
+    if isinstance(reference, Mapping) and isinstance(reference.get("_inline_bytes"), (bytes, bytearray)):
+        name = str(reference.get("name") or reference.get("path") or "")
+        return bytes(reference["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
     if isinstance(reference, Mapping):
         url = str(reference.get("url") or "").strip()
         path = str(reference.get("path") or reference.get("name") or "").strip()

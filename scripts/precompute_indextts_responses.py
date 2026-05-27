@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import io
 import json
 import mimetypes
 import os
@@ -12,6 +13,7 @@ import re
 import subprocess
 import time
 import uuid
+import zipfile
 from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -1082,7 +1084,7 @@ def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any],
     if raw_template:
         rendered = (
             raw_template.replace("{texts}", json.dumps(text_list))
-            .replace("{text}", json.dumps("\n".join(text_list)))
+            .replace("{text}", json.dumps(json.dumps(text_list)))
             .replace("{voice_description}", json.dumps(voice_description))
             .replace("{reference_audio}", json.dumps(reference_audio))
         )
@@ -1090,11 +1092,34 @@ def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any],
         if not isinstance(parsed, list):
             raise RuntimeError("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE must render to a JSON array")
         return parsed
+    # Publicus/IndexTTS-2-Demo /gen_batch uses a Gradio Textbox, but the
+    # backend batch parser expects a JSON-encoded list string in that textbox.
     return [
         "Same as the voice reference",
         reference_audio,
-        text_list,
+        json.dumps(text_list),
+        None,
+        0.8,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
         voice_description,
+        False,
+        120,
+        len(text_list) if len(text_list) > 1 else 0,
+        True,
+        0.8,
+        30,
+        0.8,
+        0.0,
+        3,
+        10.0,
+        1500,
     ]
 
 
@@ -1170,7 +1195,90 @@ def find_audio_references(value: Any) -> list[Any]:
     return refs
 
 
+def gradio_update_value(value: Any) -> Any:
+    if isinstance(value, Mapping) and value.get("__type__") == "update":
+        return value.get("value")
+    return value
+
+
+def gradio_output_values(result: Mapping[str, Any]) -> list[Any]:
+    data = result.get("data")
+    if isinstance(data, list):
+        return [gradio_update_value(item) for item in data]
+    return []
+
+
+def gradio_file_key(reference: Any) -> str:
+    if isinstance(reference, Mapping):
+        return str(reference.get("url") or reference.get("path") or reference.get("name") or json.dumps(reference, sort_keys=True, default=str))
+    return str(reference)
+
+
+def dedupe_gradio_references(references: Sequence[Any]) -> list[Any]:
+    deduped: list[Any] = []
+    seen: set[str] = set()
+    for reference in references:
+        key = gradio_file_key(reference)
+        if key and key not in seen:
+            seen.add(key)
+            deduped.append(reference)
+    return deduped
+
+
+def find_file_reference(value: Any, *, suffixes: Sequence[str]) -> Any:
+    suffix_tuple = tuple(suffix.lower() for suffix in suffixes)
+    if isinstance(value, Mapping):
+        if any(key in value for key in ("path", "url", "name")) and not value.get("is_stream"):
+            pathish = str(value.get("path") or value.get("url") or value.get("name") or "").lower()
+            if pathish.endswith(suffix_tuple) or any(f"/file=" in pathish and suffix in pathish for suffix in suffix_tuple):
+                return value
+        for item in value.values():
+            found = find_file_reference(item, suffixes=suffix_tuple)
+            if found:
+                return found
+    if isinstance(value, list):
+        for item in value:
+            found = find_file_reference(item, suffixes=suffix_tuple)
+            if found:
+                return found
+    if isinstance(value, str) and value.lower().endswith(suffix_tuple):
+        return value
+    return None
+
+
+def extract_audio_files_from_zip(data: bytes) -> list[dict[str, Any]]:
+    extracted: list[dict[str, Any]] = []
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        for name in sorted(archive.namelist()):
+            if name.endswith("/") or not name.lower().endswith((".wav", ".mp3", ".flac", ".ogg")):
+                continue
+            extracted.append({"name": name, "_inline_bytes": archive.read(name)})
+    return extracted
+
+
+def batch_audio_references(result: Mapping[str, Any]) -> list[Any]:
+    outputs = gradio_output_values(result)
+    if len(outputs) >= 2:
+        generated_files = find_audio_references(outputs[1])
+        if generated_files:
+            return dedupe_gradio_references(generated_files)
+    if len(outputs) >= 3:
+        zip_ref = find_file_reference(outputs[2], suffixes=(".zip",))
+        if zip_ref:
+            try:
+                archive, _mime_type = fetch_gradio_file(zip_ref)
+                extracted = extract_audio_files_from_zip(archive)
+                if extracted:
+                    return extracted
+            except Exception:
+                pass
+    return dedupe_gradio_references(find_audio_references(result))
+
+
 def fetch_gradio_file(ref: Any) -> tuple[bytes, str]:
+    if isinstance(ref, Mapping) and isinstance(ref.get("_inline_bytes"), (bytes, bytearray)):
+        name = str(ref.get("name") or ref.get("path") or "")
+        return bytes(ref["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
     if isinstance(ref, Mapping):
         url = str(ref.get("url") or "")
         path = str(ref.get("path") or ref.get("name") or "")
@@ -1235,7 +1343,7 @@ def synthesize_batch(
                 },
             )
             result = wait_for_result(session_hash)
-            audio_refs = find_audio_references(result)
+            audio_refs = batch_audio_references(result)
             if len(audio_refs) < len(text_list):
                 raise RuntimeError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(text_list)} texts")
             batch_latency_ms = int((time.perf_counter() - start) * 1000)

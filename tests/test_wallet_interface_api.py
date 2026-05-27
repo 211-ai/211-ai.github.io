@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import io
 import json
+import zipfile
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -3594,7 +3596,13 @@ def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
     monkeypatch.setattr(
         wallet_api_module,
         "_indextts_wait_for_result",
-        lambda session_hash: {"data": [{"path": "/tmp/one.wav"}, {"path": "/tmp/two.wav"}]},
+        lambda session_hash: {
+            "data": [
+                {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
+                {"__type__": "update", "value": [{"path": "/tmp/one.wav"}, {"path": "/tmp/two.wav"}]},
+                {"__type__": "update", "value": None},
+            ]
+        },
     )
     monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
 
@@ -3603,8 +3611,50 @@ def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
     assert result["mode"] == "batch"
     assert result["batchSize"] == 2
     assert queued_payloads[0]["fn_index"] == 23
-    assert queued_payloads[0]["data"][2] == ["Call two one one.", "Meet at South East thirty second Avenue."]
+    assert queued_payloads[0]["data"][2] == '["Call two one one.", "Meet at South East thirty second Avenue."]'
+    assert queued_payloads[0]["data"][16] == 2
     assert [item["text"] for item in result["items"]] == ["Call two one one.", "Meet at South East thirty second Avenue."]
+
+
+def test_indextts_batch_prefers_generated_file_list_over_preview(monkeypatch) -> None:
+    result = {
+        "data": [
+            {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
+            {
+                "__type__": "update",
+                "value": [
+                    {"path": "/tmp/item-1.wav"},
+                    {"path": "/tmp/item-2.wav"},
+                ],
+            },
+            {"__type__": "update", "value": None},
+        ]
+    }
+
+    assert wallet_api_module._indextts_batch_audio_references(result) == [
+        {"path": "/tmp/item-1.wav"},
+        {"path": "/tmp/item-2.wav"},
+    ]
+
+
+def test_indextts_batch_extracts_audio_from_zip_output(monkeypatch) -> None:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("spk-item-1.wav", b"RIFFoneWAVE")
+        archive.writestr("spk-item-2.wav", b"RIFFtwoWAVE")
+    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (buffer.getvalue(), "application/zip"))
+    result = {
+        "data": [
+            {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
+            {"__type__": "update", "value": []},
+            {"__type__": "update", "value": {"path": "/tmp/batch.zip"}},
+        ]
+    }
+
+    refs = wallet_api_module._indextts_batch_audio_references(result)
+
+    assert [ref["name"] for ref in refs] == ["spk-item-1.wav", "spk-item-2.wav"]
+    assert refs[0]["_inline_bytes"] == b"RIFFoneWAVE"
 
 
 def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
