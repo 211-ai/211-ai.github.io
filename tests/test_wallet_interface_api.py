@@ -3568,6 +3568,45 @@ def test_indextts_proxy_sends_normalized_speech_text(monkeypatch) -> None:
     assert queued_payloads[0]["data"][2] == "Visit South East thirty second Avenue or call two one one."
 
 
+def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
+    wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
+    wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
+    wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
+    queued_payloads: list[Mapping[str, object]] = []
+
+    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
+        if url.endswith("/config"):
+            return {"dependencies": [{"id": 17, "api_name": "/gen_single"}, {"id": 23, "api_name": "/gen_batch"}]}
+        if url.endswith("/gradio_api/queue/join"):
+            assert payload is not None
+            queued_payloads.append(payload)
+            return {}
+        raise AssertionError(url)
+
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "gen_batch")
+    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
+    monkeypatch.setattr(
+        wallet_api_module,
+        "_gradio_upload_file",
+        lambda data, file_name, mime_type: {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name},
+    )
+    monkeypatch.setattr(
+        wallet_api_module,
+        "_indextts_wait_for_result",
+        lambda session_hash: {"data": [{"path": "/tmp/one.wav"}, {"path": "/tmp/two.wav"}]},
+    )
+    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+
+    result = wallet_api_module._run_indextts_gradio_batch_tts(texts=["Call 211.", "Meet at SE 32nd ave."])
+
+    assert result["mode"] == "batch"
+    assert result["batchSize"] == 2
+    assert queued_payloads[0]["fn_index"] == 23
+    assert queued_payloads[0]["data"][2] == ["Call two one one.", "Meet at South East thirty second Avenue."]
+    assert [item["text"] for item in result["items"]] == ["Call two one one.", "Meet at South East thirty second Avenue."]
+
+
 def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
     from ipfs_datasets_py import llm_router
 

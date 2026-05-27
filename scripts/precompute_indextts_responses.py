@@ -14,7 +14,7 @@ import time
 import uuid
 from collections import Counter
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
@@ -1022,6 +1022,31 @@ def indextts_fn_index(config: Mapping[str, Any]) -> int:
     raise RuntimeError(f"IndexTTS api_name {api_name!r} was not found")
 
 
+def indextts_batch_api_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_BATCH_API_NAME", "/gen_batch").strip()
+
+
+def indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
+    raw = os.getenv("WALLET_INDEXTTS_BATCH_FN_INDEX", "").strip()
+    if raw:
+        return int(raw)
+    api_name = indextts_batch_api_name()
+    api_candidates = {api_name, api_name.lstrip("/"), f"/{api_name.lstrip('/')}"}
+    dependencies = config.get("dependencies")
+    if not isinstance(dependencies, list):
+        raise RuntimeError("IndexTTS config did not include dependencies")
+    for dependency in dependencies:
+        if not isinstance(dependency, Mapping):
+            continue
+        if str(dependency.get("api_name") or "") in api_candidates:
+            value = dependency.get("id")
+            if isinstance(value, int):
+                return value
+            if isinstance(value, str) and value.isdigit():
+                return int(value)
+    raise RuntimeError(f"IndexTTS batch api_name {api_name!r} was not found")
+
+
 def request_data(text: str, reference_audio: Mapping[str, Any], voice_description: str) -> list[Any]:
     return [
         "Same as the voice reference",
@@ -1048,6 +1073,28 @@ def request_data(text: str, reference_audio: Mapping[str, Any], voice_descriptio
         3,
         10.0,
         1500,
+    ]
+
+
+def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any], voice_description: str) -> list[Any]:
+    text_list = [str(text) for text in texts]
+    raw_template = os.getenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", "").strip()
+    if raw_template:
+        rendered = (
+            raw_template.replace("{texts}", json.dumps(text_list))
+            .replace("{text}", json.dumps("\n".join(text_list)))
+            .replace("{voice_description}", json.dumps(voice_description))
+            .replace("{reference_audio}", json.dumps(reference_audio))
+        )
+        parsed = json.loads(rendered)
+        if not isinstance(parsed, list):
+            raise RuntimeError("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE must render to a JSON array")
+        return parsed
+    return [
+        "Same as the voice reference",
+        reference_audio,
+        text_list,
+        voice_description,
     ]
 
 
@@ -1099,6 +1146,30 @@ def find_audio_reference(value: Any) -> Any:
     return None
 
 
+def find_audio_references(value: Any) -> list[Any]:
+    refs: list[Any] = []
+    seen: set[str] = set()
+
+    def visit(item: Any) -> None:
+        if isinstance(item, Mapping):
+            direct = find_audio_reference(item)
+            if direct is item:
+                key = json.dumps(item, sort_keys=True, default=str)
+                if key not in seen:
+                    seen.add(key)
+                    refs.append(item)
+                return
+            for child in item.values():
+                visit(child)
+            return
+        if isinstance(item, list):
+            for child in item:
+                visit(child)
+
+    visit(value)
+    return refs
+
+
 def fetch_gradio_file(ref: Any) -> tuple[bytes, str]:
     if isinstance(ref, Mapping):
         url = str(ref.get("url") or "")
@@ -1136,6 +1207,61 @@ def synthesize(text: str, config: Mapping[str, Any], fn_index: int, reference_au
         "mimeType": "audio/wav" if audio.startswith(b"RIFF") and b"WAVE" in audio[:16] else mime_type,
         "latencyMs": int((time.perf_counter() - start) * 1000),
     }
+
+
+def synthesize_batch(
+    texts: Sequence[str],
+    config: Mapping[str, Any],
+    single_fn_index: int,
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+) -> list[dict[str, Any]]:
+    text_list = [str(text) for text in texts]
+    if not text_list:
+        return []
+    batch_enabled = os.getenv("WALLET_INDEXTTS_BATCH_ENABLED", "1").strip().lower() not in {"0", "false", "no"}
+    require_batch = os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "").strip().lower() in {"1", "true", "yes"}
+    if batch_enabled:
+        start = time.perf_counter()
+        try:
+            session_hash = uuid.uuid4().hex
+            http_json(
+                "POST",
+                f"{indextts_base_url()}/gradio_api/queue/join",
+                {
+                    "data": batch_request_data(text_list, reference_audio, voice_description),
+                    "fn_index": indextts_batch_fn_index(config),
+                    "session_hash": session_hash,
+                },
+            )
+            result = wait_for_result(session_hash)
+            audio_refs = find_audio_references(result)
+            if len(audio_refs) < len(text_list):
+                raise RuntimeError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(text_list)} texts")
+            batch_latency_ms = int((time.perf_counter() - start) * 1000)
+            outputs: list[dict[str, Any]] = []
+            for ref in audio_refs[: len(text_list)]:
+                audio, mime_type = fetch_gradio_file(ref)
+                outputs.append(
+                    {
+                        "audio": audio,
+                        "mimeType": "audio/wav" if audio.startswith(b"RIFF") and b"WAVE" in audio[:16] else mime_type,
+                        "latencyMs": batch_latency_ms,
+                        "batchLatencyMs": batch_latency_ms,
+                        "batchMode": "batch",
+                    }
+                )
+            return outputs
+        except Exception:
+            if require_batch:
+                raise
+    return [
+        {
+            **synthesize(text, config, single_fn_index, reference_audio, voice_description),
+            "batchMode": "sequential-fallback" if batch_enabled else "sequential",
+        }
+        for text in text_list
+    ]
 
 
 def add_response_source(
@@ -1256,6 +1382,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mp3", dest="write_mp3", action="store_true", default=True)
     parser.add_argument("--no-mp3", dest="write_mp3", action="store_false")
     parser.add_argument("--mp3-bitrate", default="64k")
+    parser.add_argument(
+        "--remote-batch-size",
+        type=int,
+        default=int(os.getenv("WALLET_INDEXTTS_REMOTE_BATCH_SIZE", "1") or "1"),
+        help="Send this many uncached responses to the IndexTTS batch endpoint at once when available.",
+    )
     parser.add_argument("--delete-wav-after-mp3", action="store_true", default=True)
     parser.add_argument("--keep-wav", dest="delete_wav_after_mp3", action="store_false")
     parser.add_argument("--stop-on-error", action="store_true")
@@ -1301,6 +1433,68 @@ def main() -> None:
         config = indextts_config()
         fn_index = indextts_fn_index(config)
         reference = upload_reference(args.reference_audio)
+        remote_batch_size = max(1, int(args.remote_batch_size or 1))
+        pending: list[tuple[int, dict[str, Any], Path, Path]] = []
+
+        def flush_pending() -> None:
+            if not pending:
+                return
+            batch = list(pending)
+            pending.clear()
+            texts = [item["text"] for _, item, _, _ in batch]
+            try:
+                print(f"synthesizing remote batch of {len(batch)} response(s)")
+                results = synthesize_batch(texts, config, fn_index, reference, args.voice_description)
+                if len(results) != len(batch):
+                    raise RuntimeError(f"IndexTTS batch returned {len(results)} result(s) for {len(batch)} response(s)")
+                for (index, item, audio_path, mp3_path), result in zip(batch, results):
+                    audio_path.write_bytes(result["audio"])
+                    if args.write_mp3:
+                        convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=True)
+                    wav_deleted = maybe_delete_wav(audio_path, mp3_path, delete_wav=args.write_mp3 and args.delete_wav_after_mp3)
+                    entry = {
+                        **item,
+                        "status": "generated_mp3" if wav_deleted else "generated",
+                        "audioPath": "" if wav_deleted else display_path(audio_path),
+                        "mimeType": "" if wav_deleted else result["mimeType"],
+                        "audioBytes": 0 if wav_deleted else file_size(audio_path),
+                        "latencyMs": result["latencyMs"],
+                        "batchMode": result.get("batchMode", "batch" if len(batch) > 1 else "single"),
+                        "wavDeprecated": bool(wav_deleted),
+                    }
+                    if result.get("batchLatencyMs") is not None:
+                        entry["batchLatencyMs"] = result["batchLatencyMs"]
+                    if args.write_mp3 and mp3_path.exists():
+                        entry.update(
+                            {
+                                "mp3Path": display_path(mp3_path),
+                                "mp3MimeType": "audio/mpeg",
+                                "mp3Bytes": file_size(mp3_path),
+                                "preferredAudioPath": display_path(mp3_path),
+                                "preferredMimeType": "audio/mpeg",
+                            }
+                        )
+                    else:
+                        entry.update({"mp3Path": "", "preferredAudioPath": display_path(audio_path), "preferredMimeType": result["mimeType"]})
+                    manifest_entries.append(entry)
+                    print(f"[{index}/{len(responses)}] generated {mp3_path.name if mp3_path.exists() else audio_path.name}")
+                    write_progress(args.progress_json, manifest_entries, len(responses), started_at)
+            except Exception as exc:
+                for index, item, _audio_path, _mp3_path in batch:
+                    print(f"[{index}/{len(responses)}] failed {item['id']}: {exc}")
+                    manifest_entries.append(
+                        {
+                            **item,
+                            "status": "failed",
+                            "audioPath": "",
+                            "mp3Path": "",
+                            "error": f"{type(exc).__name__}: {exc}",
+                        }
+                    )
+                    write_progress(args.progress_json, manifest_entries, len(responses), started_at)
+                if args.stop_on_error:
+                    raise
+
         for index, item in enumerate(responses, start=1):
             if args.max_runtime_seconds is not None and time.time() - started_at >= args.max_runtime_seconds:
                 print(f"[{index}/{len(responses)}] stopping before new work: max runtime reached")
@@ -1354,52 +1548,18 @@ def main() -> None:
                 print(f"[{index}/{len(responses)}] cached {audio_path.name}")
                 write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 continue
-            try:
-                print(f"[{index}/{len(responses)}] synthesizing {item['id']}: {item['text']}")
-                result = synthesize(item["text"], config, fn_index, reference, args.voice_description)
-                audio_path.write_bytes(result["audio"])
-                if args.write_mp3:
-                    convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=True)
-                wav_deleted = maybe_delete_wav(audio_path, mp3_path, delete_wav=args.write_mp3 and args.delete_wav_after_mp3)
-                entry = {
-                    **item,
-                    "status": "generated_mp3" if wav_deleted else "generated",
-                    "audioPath": "" if wav_deleted else display_path(audio_path),
-                    "mimeType": "" if wav_deleted else result["mimeType"],
-                    "audioBytes": 0 if wav_deleted else file_size(audio_path),
-                    "latencyMs": result["latencyMs"],
-                    "wavDeprecated": bool(wav_deleted),
-                }
-                if args.write_mp3 and mp3_path.exists():
-                    entry.update(
-                        {
-                            "mp3Path": display_path(mp3_path),
-                            "mp3MimeType": "audio/mpeg",
-                            "mp3Bytes": file_size(mp3_path),
-                            "preferredAudioPath": display_path(mp3_path),
-                            "preferredMimeType": "audio/mpeg",
-                        }
-                    )
-                else:
-                    entry.update({"mp3Path": "", "preferredAudioPath": display_path(audio_path), "preferredMimeType": result["mimeType"]})
-                manifest_entries.append(
-                    entry
-                )
-                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
-            except Exception as exc:
-                print(f"[{index}/{len(responses)}] failed {item['id']}: {exc}")
-                manifest_entries.append(
-                    {
-                        **item,
-                        "status": "failed",
-                        "audioPath": "",
-                        "mp3Path": "",
-                        "error": f"{type(exc).__name__}: {exc}",
-                    }
-                )
-                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
-                if args.stop_on_error:
+            print(f"[{index}/{len(responses)}] queued {item['id']}: {item['text']}")
+            pending.append((index, item, audio_path, mp3_path))
+            if len(pending) >= remote_batch_size:
+                try:
+                    flush_pending()
+                except Exception:
                     break
+        if pending:
+            try:
+                flush_pending()
+            except Exception:
+                pass
 
     payload = {
         "schemaVersion": 1,
@@ -1433,6 +1593,12 @@ def main() -> None:
             "bitrate": args.mp3_bitrate,
             "preferred": bool(args.write_mp3),
             "wavDeprecated": bool(args.write_mp3 and args.delete_wav_after_mp3),
+        },
+        "batchInference": {
+            "remoteBatchSize": max(1, int(args.remote_batch_size or 1)),
+            "batchApiName": indextts_batch_api_name(),
+            "enabled": os.getenv("WALLET_INDEXTTS_BATCH_ENABLED", "1").strip().lower() not in {"0", "false", "no"},
+            "requiresBatch": os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "").strip().lower() in {"1", "true", "yes"},
         },
         "responses": manifest_entries,
     }

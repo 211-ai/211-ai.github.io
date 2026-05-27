@@ -20,6 +20,7 @@ DEFAULT_PROGRESS_DIR = REPO_ROOT / "docs/211_indextts_precompute_progress"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--remote-batch-size", type=int, default=32)
     parser.add_argument("--max-runtime-seconds", type=float, default=8 * 60 * 60)
     parser.add_argument("--start-offset", type=int, default=0)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
@@ -82,6 +83,8 @@ def main() -> None:
             str(args.public_manifest),
             "--progress-json",
             str(progress),
+            "--remote-batch-size",
+            str(args.remote_batch_size),
         ]
         if args.force:
             cmd.append("--force")
