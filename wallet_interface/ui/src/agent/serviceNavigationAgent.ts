@@ -44,6 +44,7 @@ export interface ServiceNavigationAnswerResponse {
   recordIds: string[];
   usedLocalModel: boolean;
   nextSteps: string[];
+  metadata?: GraphRagAnswer["metadata"];
 }
 
 export interface ServiceNavigationAgentOptions {
@@ -129,6 +130,7 @@ export async function answerServiceNavigationQuestion(
     recordIds: graphRagAnswer.evidence.results.map((result) => result.docId),
     usedLocalModel: graphRagAnswer.usedLocalModel,
     nextSteps,
+    metadata: graphRagAnswer.metadata,
   };
 }
 

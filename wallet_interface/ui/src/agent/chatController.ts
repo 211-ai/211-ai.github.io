@@ -413,7 +413,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       intentId: intent.id,
       planId: plan.id,
       toolResultIds: successfulResults.map((result) => result.id),
-      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? [])
+      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? []),
+      metadata: mergeToolResultMetadata(successfulResults),
     }));
     markPlanComplete(plan.id);
   }
@@ -449,7 +450,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
     } catch (error) {
@@ -516,7 +518,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
       pushProgress("complete", "Confirmed action complete.");
@@ -765,6 +768,25 @@ function getEvidenceBundleFromResult(result: AgentToolResult): EvidenceBundle | 
   const output = result.output;
   if (isAppActionResult(output) && output.ok && isEvidenceBundle(output.evidenceBundle)) {
     return output.evidenceBundle;
+  }
+  return undefined;
+}
+
+function mergeToolResultMetadata(results: AgentToolResult[]): Record<string, unknown> | undefined {
+  const merged = results.reduce<Record<string, unknown>>((metadata, result) => {
+    const next = getMetadataFromResult(result);
+    if (next) {
+      Object.assign(metadata, next);
+    }
+    return metadata;
+  }, {});
+  return Object.keys(merged).length ? merged : undefined;
+}
+
+function getMetadataFromResult(result: AgentToolResult): Record<string, unknown> | undefined {
+  const output = result.output;
+  if (isAppActionResult(output) && output.ok && isRecord(output.metadata)) {
+    return output.metadata;
   }
   return undefined;
 }

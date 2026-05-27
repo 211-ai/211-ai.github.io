@@ -13,11 +13,26 @@ import {
 } from "./serviceDocument";
 import { generateWalletRouterText, type WalletApiConfig } from "../../services/walletApi";
 
+export interface GraphRagSlottedResponseMetadata {
+  canonicalQueryTemplate: string;
+  route: string;
+  exact: boolean;
+  score: number;
+  responseFrameId: string;
+  responseSignature: string;
+  evidenceDocIds: string[];
+}
+
+export interface GraphRagAnswerMetadata {
+  slottedResponse?: GraphRagSlottedResponseMetadata;
+}
+
 export interface GraphRagAnswer {
   question: string;
   answer: string;
   evidence: GraphRagEvidence;
   usedLocalModel: boolean;
+  metadata?: GraphRagAnswerMetadata;
 }
 
 export const DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS = 512;
