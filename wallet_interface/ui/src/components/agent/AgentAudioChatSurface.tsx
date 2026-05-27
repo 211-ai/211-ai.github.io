@@ -708,6 +708,7 @@ export function AgentAudioChatSurface({
     const precomputedAudioReply = await findPrecomputedAudioReply({
       candidateTexts: [message.content, fallbackText, voiceInferenceRequest.fallbackText],
       routeHints: resolvePrecomputedAudioRouteHints(message),
+      slottedResponse: resolvePrecomputedAudioSlottedHints(message),
     });
     pendingVoiceTranscriptRef.current = "";
     try {
@@ -1257,13 +1258,45 @@ export function resolveVoiceGeneratedReplyText(generatedText: string, fallbackTe
 }
 
 function resolvePrecomputedAudioRouteHints(message: AgentMessage): string[] {
-  const slottedResponse = asRecord(message.metadata?.slottedResponse);
+  const slottedResponse = readPrecomputedAudioSlottedResponseMetadata(message);
   const route = typeof slottedResponse?.route === "string" ? slottedResponse.route.trim() : "";
   return route ? [route] : [];
 }
 
+function resolvePrecomputedAudioSlottedHints(message: AgentMessage): {
+  intentId?: string;
+  canonicalQueryTemplate?: string;
+  responseFrameId?: string;
+  responseSignature?: string;
+  edgeId?: string;
+} | undefined {
+  const slottedResponse = readPrecomputedAudioSlottedResponseMetadata(message);
+  if (!slottedResponse) {
+    return undefined;
+  }
+  const hints = {
+    intentId: typeof slottedResponse.intentId === "string" ? slottedResponse.intentId.trim() : undefined,
+    canonicalQueryTemplate:
+      typeof slottedResponse.canonicalQueryTemplate === "string"
+        ? slottedResponse.canonicalQueryTemplate.trim()
+        : undefined,
+    responseFrameId:
+      typeof slottedResponse.responseFrameId === "string" ? slottedResponse.responseFrameId.trim() : undefined,
+    responseSignature:
+      typeof slottedResponse.responseSignature === "string" ? slottedResponse.responseSignature.trim() : undefined,
+    edgeId: typeof slottedResponse.edgeId === "string" ? slottedResponse.edgeId.trim() : undefined,
+  };
+  return Object.values(hints).some(Boolean) ? hints : undefined;
+}
+
+function readPrecomputedAudioSlottedResponseMetadata(message: AgentMessage): Record<string, unknown> | undefined {
+  return asRecord(message.metadata?.slottedResponse);
+}
+
 function asRecord(value: unknown): Record<string, unknown> | undefined {
-  return typeof value === "object" && value !== null && !Array.isArray(value) ? value : undefined;
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 async function primeOpeningClipPlayback(): Promise<HTMLAudioElement | null> {

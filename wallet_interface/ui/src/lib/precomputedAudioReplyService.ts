@@ -7,10 +7,23 @@ interface PrecomputedAudioManifestEntry {
   text?: string;
   originalTexts?: string[];
   routes?: string[];
+  slottedIntentIds?: string[];
+  slottedCanonicalQueryTemplates?: string[];
+  slottedResponseFrameIds?: string[];
+  slottedResponseSignatures?: string[];
+  slottedEdgeIds?: string[];
   status?: string;
   audioUrl?: string;
   mp3Url?: string;
   preferredAudioUrl?: string;
+}
+
+export interface PrecomputedAudioSlottedHints {
+  intentId?: string;
+  canonicalQueryTemplate?: string;
+  responseFrameId?: string;
+  responseSignature?: string;
+  edgeId?: string;
 }
 
 interface PreparedPrecomputedAudioEntry extends PrecomputedAudioManifestEntry {
@@ -18,6 +31,11 @@ interface PreparedPrecomputedAudioEntry extends PrecomputedAudioManifestEntry {
   normalizedText: string;
   normalizedOriginalTexts: string[];
   normalizedRoutes: Set<string>;
+  normalizedSlottedIntentIds: Set<string>;
+  normalizedSlottedCanonicalQueryTemplates: Set<string>;
+  normalizedSlottedResponseFrameIds: Set<string>;
+  normalizedSlottedResponseSignatures: Set<string>;
+  normalizedSlottedEdgeIds: Set<string>;
 }
 
 export interface PrecomputedAudioReplyMatch {
@@ -35,6 +53,7 @@ let manifestPromise: Promise<PreparedPrecomputedAudioEntry[] | undefined> | unde
 export async function findPrecomputedAudioReply(input: {
   candidateTexts: string[];
   routeHints?: string[];
+  slottedResponse?: PrecomputedAudioSlottedHints;
 }): Promise<PrecomputedAudioReplyMatch | undefined> {
   const manifest = await loadPrecomputedAudioManifest();
   if (!manifest?.length) {
@@ -46,6 +65,7 @@ export async function findPrecomputedAudioReply(input: {
     return undefined;
   }
   const normalizedRouteHints = new Set((input.routeHints || []).map(normalizeRouteHint).filter(Boolean));
+  const normalizedSlottedHints = normalizeSlottedHints(input.slottedResponse);
 
   let bestMatch:
     | {
@@ -55,18 +75,20 @@ export async function findPrecomputedAudioReply(input: {
       }
     | undefined;
   for (const entry of manifest) {
+    const identifierScore = scoreSlottedIdentifierMatch(entry, normalizedSlottedHints);
     const matchedOriginalText = entry.normalizedOriginalTexts.find((candidate) => normalizedCandidates.includes(candidate));
     const matchedText = normalizedCandidates.find((candidate) => candidate === entry.normalizedText) || matchedOriginalText;
-    if (!matchedText) {
+    if (!matchedText && identifierScore <= 0) {
       continue;
     }
     const score =
-      (matchedText === entry.normalizedText ? 2 : 1) +
+      identifierScore +
+      (matchedText ? (matchedText === entry.normalizedText ? 2 : 1) : 0) +
       (hasMatchingRoute(entry.normalizedRoutes, normalizedRouteHints) ? 0.25 : 0);
     if (!bestMatch || score > bestMatch.score) {
       bestMatch = {
         entry,
-        matchedText,
+        matchedText: matchedText || "",
         score,
       };
     }
@@ -115,6 +137,17 @@ function prepareManifestEntries(entries: PrecomputedAudioManifestEntry[]): Prepa
         normalizedText: normalizePrecomputedAudioText(entry.text || ""),
         normalizedOriginalTexts: dedupeStrings((entry.originalTexts || []).map(normalizePrecomputedAudioText).filter(Boolean)),
         normalizedRoutes: new Set((entry.routes || []).map(normalizeRouteHint).filter(Boolean)),
+        normalizedSlottedIntentIds: new Set((entry.slottedIntentIds || []).map(normalizeSlottedValue).filter(Boolean)),
+        normalizedSlottedCanonicalQueryTemplates: new Set(
+          (entry.slottedCanonicalQueryTemplates || []).map(normalizeSlottedValue).filter(Boolean),
+        ),
+        normalizedSlottedResponseFrameIds: new Set(
+          (entry.slottedResponseFrameIds || []).map(normalizeSlottedValue).filter(Boolean),
+        ),
+        normalizedSlottedResponseSignatures: new Set(
+          (entry.slottedResponseSignatures || []).map(normalizeSlottedValue).filter(Boolean),
+        ),
+        normalizedSlottedEdgeIds: new Set((entry.slottedEdgeIds || []).map(normalizeSlottedValue).filter(Boolean)),
       };
     })
     .filter((entry): entry is PreparedPrecomputedAudioEntry => Boolean(entry));
@@ -144,6 +177,46 @@ function hasMatchingRoute(entryRoutes: Set<string>, routeHints: Set<string>): bo
   return false;
 }
 
+function normalizeSlottedHints(hints: PrecomputedAudioSlottedHints | undefined): PrecomputedAudioSlottedHints | undefined {
+  if (!hints) {
+    return undefined;
+  }
+  const normalized: PrecomputedAudioSlottedHints = {
+    intentId: normalizeSlottedValue(hints.intentId),
+    canonicalQueryTemplate: normalizeSlottedValue(hints.canonicalQueryTemplate),
+    responseFrameId: normalizeSlottedValue(hints.responseFrameId),
+    responseSignature: normalizeSlottedValue(hints.responseSignature),
+    edgeId: normalizeSlottedValue(hints.edgeId),
+  };
+  return Object.values(normalized).some(Boolean) ? normalized : undefined;
+}
+
+function scoreSlottedIdentifierMatch(
+  entry: PreparedPrecomputedAudioEntry,
+  hints: PrecomputedAudioSlottedHints | undefined,
+): number {
+  if (!hints) {
+    return 0;
+  }
+  let score = 0;
+  if (hints.responseFrameId && entry.normalizedSlottedResponseFrameIds.has(hints.responseFrameId)) {
+    score += 6;
+  }
+  if (hints.responseSignature && entry.normalizedSlottedResponseSignatures.has(hints.responseSignature)) {
+    score += 4;
+  }
+  if (hints.intentId && entry.normalizedSlottedIntentIds.has(hints.intentId)) {
+    score += 3;
+  }
+  if (hints.canonicalQueryTemplate && entry.normalizedSlottedCanonicalQueryTemplates.has(hints.canonicalQueryTemplate)) {
+    score += 2.5;
+  }
+  if (hints.edgeId && entry.normalizedSlottedEdgeIds.has(hints.edgeId)) {
+    score += 2;
+  }
+  return score;
+}
+
 function normalizePrecomputedAudioText(value: string): string {
   return value
     .toLowerCase()
@@ -157,6 +230,13 @@ function normalizePrecomputedAudioText(value: string): string {
 
 function normalizeRouteHint(value: string): string {
   return value.trim().toLowerCase();
+}
+
+function normalizeSlottedValue(value: string | undefined): string {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function dedupeStrings(values: string[]): string[] {

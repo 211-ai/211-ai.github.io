@@ -638,7 +638,9 @@ function buildGraphRagAnswerMetadata(slottedResponseMatch: SlottedResponseMatch 
   }
   return {
     slottedResponse: {
+      intentId: slottedResponseMatch.intent.id,
       canonicalQueryTemplate: slottedResponseMatch.canonicalQueryTemplate,
+      edgeId: slottedResponseMatch.edge.id,
       route: slottedResponseMatch.route,
       exact: slottedResponseMatch.exact,
       score: slottedResponseMatch.score,

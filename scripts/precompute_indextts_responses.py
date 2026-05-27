@@ -30,6 +30,7 @@ DEFAULT_REFERENCE = REPO_ROOT / "tmp_assets/abby-reference.wav"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "wallet_interface/ui/public/assets/audio/precomputed/211-dag-indextts"
 DEFAULT_MANIFEST = REPO_ROOT / "docs/211_indextts_precompute_manifest.json"
 DEFAULT_PUBLIC_MANIFEST = DEFAULT_OUTPUT_DIR / "manifest.json"
+DEFAULT_SLOTTED_RESPONSE_INDEX = REPO_ROOT / "wallet_interface/ui/public/assets/rag/slotted-response-index.json"
 
 
 def stable_id(text: str) -> str:
@@ -1416,7 +1417,185 @@ def add_response_source(
         item["sourceIds"].append(source_id)
 
 
-def load_audio_responses(dag_path: Path, results_path: Path, *, include_assistant: bool = True, include_voice: bool = True) -> list[dict[str, Any]]:
+def empty_slotted_annotation() -> dict[str, set[str]]:
+    return {
+        "slottedIntentIds": set(),
+        "slottedCanonicalQueryTemplates": set(),
+        "slottedResponseFrameIds": set(),
+        "slottedResponseSignatures": set(),
+        "slottedEdgeIds": set(),
+    }
+
+
+def add_slotted_annotation(
+    annotation: dict[str, set[str]],
+    *,
+    intent_id: str = "",
+    canonical_query_template: str = "",
+    response_frame_id: str = "",
+    response_signature: str = "",
+    edge_id: str = "",
+) -> None:
+    if intent_id:
+        annotation["slottedIntentIds"].add(intent_id)
+    if canonical_query_template:
+        annotation["slottedCanonicalQueryTemplates"].add(canonical_query_template)
+    if response_frame_id:
+        annotation["slottedResponseFrameIds"].add(response_frame_id)
+    if response_signature:
+        annotation["slottedResponseSignatures"].add(response_signature)
+    if edge_id:
+        annotation["slottedEdgeIds"].add(edge_id)
+
+
+def merge_slotted_annotation(target: dict[str, set[str]], source: Mapping[str, Sequence[str]] | None) -> None:
+    if not source:
+        return
+    for key in target:
+        for value in source.get(key, ()):
+            normalized = str(value or "").strip()
+            if normalized:
+                target[key].add(normalized)
+
+
+def slotted_annotation_payload(annotation: dict[str, set[str]]) -> dict[str, list[str]]:
+    return {key: sorted(values) for key, values in annotation.items() if values}
+
+
+def normalize_slotted_audio_lookup_text(text: str) -> str:
+    collapsed = " ".join(str(text or "").split())
+    if not collapsed:
+        return ""
+    return normalize_indextts_spoken_text(collapsed)
+
+
+def load_slotted_response_annotations(index_path: Path) -> dict[str, dict[str, dict[str, set[str]]]]:
+    if not index_path.exists():
+        return {"byRecordId": {}, "byNormalizedAssistantText": {}}
+
+    payload = json.loads(index_path.read_text(encoding="utf-8"))
+    intents = payload.get("intents") or []
+    response_frames = payload.get("responseFrames") or []
+    edges = payload.get("edges") or []
+    intents_by_id = {str(intent.get("id") or ""): intent for intent in intents}
+    response_frames_by_id = {str(frame.get("id") or ""): frame for frame in response_frames}
+    by_record_id: dict[str, dict[str, set[str]]] = {}
+    by_normalized_assistant_text: dict[str, dict[str, set[str]]] = {}
+
+    def ensure_record_annotation(record_id: str) -> dict[str, set[str]]:
+        return by_record_id.setdefault(record_id, empty_slotted_annotation())
+
+    def ensure_text_annotation(text: str) -> dict[str, set[str]]:
+        return by_normalized_assistant_text.setdefault(text, empty_slotted_annotation())
+
+    def annotate_example(
+        *,
+        record_id: str,
+        assistant_text: str = "",
+        intent_id: str = "",
+        canonical_query_template: str = "",
+        response_frame_id: str = "",
+        response_signature: str = "",
+        edge_id: str = "",
+    ) -> None:
+        if record_id:
+            add_slotted_annotation(
+                ensure_record_annotation(record_id),
+                intent_id=intent_id,
+                canonical_query_template=canonical_query_template,
+                response_frame_id=response_frame_id,
+                response_signature=response_signature,
+                edge_id=edge_id,
+            )
+        normalized_assistant_text = normalize_slotted_audio_lookup_text(assistant_text)
+        if normalized_assistant_text:
+            add_slotted_annotation(
+                ensure_text_annotation(normalized_assistant_text),
+                intent_id=intent_id,
+                canonical_query_template=canonical_query_template,
+                response_frame_id=response_frame_id,
+                response_signature=response_signature,
+                edge_id=edge_id,
+            )
+
+    for intent in intents:
+        intent_id = str(intent.get("id") or "")
+        canonical_query_template = str(intent.get("canonicalQueryTemplate") or "")
+        for example in intent.get("examples") or []:
+            annotate_example(
+                record_id=str(example.get("recordId") or ""),
+                intent_id=intent_id,
+                canonical_query_template=canonical_query_template,
+            )
+
+    for frame in response_frames:
+        response_frame_id = str(frame.get("id") or "")
+        response_signature = str(frame.get("responseSignature") or "")
+        for example in frame.get("examples") or []:
+            annotate_example(
+                record_id=str(example.get("recordId") or ""),
+                assistant_text=str(example.get("assistant") or ""),
+                response_frame_id=response_frame_id,
+                response_signature=response_signature,
+            )
+
+    for edge in edges:
+        edge_id = str(edge.get("id") or "")
+        intent = intents_by_id.get(str(edge.get("source") or ""), {})
+        response_frame = response_frames_by_id.get(str(edge.get("target") or ""), {})
+        intent_id = str(intent.get("id") or "")
+        canonical_query_template = str(intent.get("canonicalQueryTemplate") or "")
+        response_frame_id = str(response_frame.get("id") or "")
+        response_signature = str(response_frame.get("responseSignature") or "")
+        for example in edge.get("examples") or []:
+            annotate_example(
+                record_id=str(example.get("recordId") or ""),
+                assistant_text=str(example.get("assistant") or ""),
+                intent_id=intent_id,
+                canonical_query_template=canonical_query_template,
+                response_frame_id=response_frame_id,
+                response_signature=response_signature,
+                edge_id=edge_id,
+            )
+
+    return {
+        "byRecordId": by_record_id,
+        "byNormalizedAssistantText": by_normalized_assistant_text,
+    }
+
+
+def annotate_audio_responses_with_slotted_metadata(
+    responses: list[dict[str, Any]],
+    index_path: Path | None,
+) -> None:
+    if index_path is None:
+        return
+    annotations = load_slotted_response_annotations(index_path)
+    by_record_id = annotations.get("byRecordId") or {}
+    by_normalized_assistant_text = annotations.get("byNormalizedAssistantText") or {}
+    if not by_record_id and not by_normalized_assistant_text:
+        return
+
+    for item in responses:
+      annotation = empty_slotted_annotation()
+      for source_id in item.get("sourceIds") or []:
+          merge_slotted_annotation(annotation, by_record_id.get(str(source_id or "")))
+      merge_slotted_annotation(annotation, by_normalized_assistant_text.get(str(item.get("text") or "")))
+      for original_text in item.get("originalTexts") or []:
+          normalized_original = normalize_slotted_audio_lookup_text(str(original_text or ""))
+          if normalized_original:
+              merge_slotted_annotation(annotation, by_normalized_assistant_text.get(normalized_original))
+      item.update(slotted_annotation_payload(annotation))
+
+
+def load_audio_responses(
+    dag_path: Path,
+    results_path: Path,
+    *,
+    include_assistant: bool = True,
+    include_voice: bool = True,
+    slotted_response_index: Path | None = None,
+) -> list[dict[str, Any]]:
     by_text: dict[str, dict[str, Any]] = {}
     if include_voice:
         dag = json.loads(dag_path.read_text(encoding="utf-8"))
@@ -1454,6 +1633,7 @@ def load_audio_responses(dag_path: Path, results_path: Path, *, include_assistan
                 "sourceTypes": sorted(item["sourceTypes"]),
             }
         )
+    annotate_audio_responses_with_slotted_metadata(responses, slotted_response_index)
     responses.sort(key=lambda item: item["id"])
     return responses
 
@@ -1483,6 +1663,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--public-manifest", type=Path, default=DEFAULT_PUBLIC_MANIFEST)
+    parser.add_argument("--slotted-response-index", type=Path, default=DEFAULT_SLOTTED_RESPONSE_INDEX)
     parser.add_argument("--voice-description", default="Same as the voice reference")
     parser.add_argument("--offset", type=int, default=0, help="Skip this many deduplicated responses before applying --limit.")
     parser.add_argument("--limit", type=int, default=None)
@@ -1522,6 +1703,7 @@ def main() -> None:
         args.results,
         include_assistant=include_assistant,
         include_voice=include_voice,
+        slotted_response_index=args.slotted_response_index,
     )
     if args.offset:
         responses = responses[max(0, args.offset) :]
@@ -1680,6 +1862,7 @@ def main() -> None:
         "sources": {
             "dag": str(args.dag),
             "results": str(args.results),
+            "slottedResponseIndex": str(args.slotted_response_index) if args.slotted_response_index.exists() else "",
             "includeAssistantResponses": include_assistant,
             "includeVoiceResponses": include_voice,
             "idScheme": "abby-tts-{sha256(spoken_normalized_text)[:20]}",

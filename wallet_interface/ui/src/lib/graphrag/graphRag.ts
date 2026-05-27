@@ -13,8 +13,10 @@ import {
 } from "./serviceDocument";
 import { generateWalletRouterText, type WalletApiConfig } from "../../services/walletApi";
 
-export interface GraphRagSlottedResponseMetadata {
+export interface GraphRagSlottedResponseMetadata extends Record<string, unknown> {
+  intentId: string;
   canonicalQueryTemplate: string;
+  edgeId: string;
   route: string;
   exact: boolean;
   score: number;
@@ -23,7 +25,7 @@ export interface GraphRagSlottedResponseMetadata {
   evidenceDocIds: string[];
 }
 
-export interface GraphRagAnswerMetadata {
+export interface GraphRagAnswerMetadata extends Record<string, unknown> {
   slottedResponse?: GraphRagSlottedResponseMetadata;
 }
 
