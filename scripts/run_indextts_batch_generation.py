@@ -28,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--progress-dir", type=Path, default=DEFAULT_PROGRESS_DIR)
     parser.add_argument("--output-dir", type=Path, default=REPO_ROOT / "wallet_interface/ui/public/assets/audio/precomputed/211-dag-indextts")
     parser.add_argument("--public-manifest", type=Path, default=REPO_ROOT / "wallet_interface/ui/public/assets/audio/precomputed/211-dag-indextts/manifest.json")
+    parser.add_argument("--response-manifest", type=Path, default=None)
     parser.add_argument("--dag", type=Path, default=REPO_ROOT / "docs/211_conversation_dag.json")
     parser.add_argument("--results", type=Path, default=REPO_ROOT / "docs/211_chatbot_simulation_results.json")
     parser.add_argument("--stop-on-error", action="store_true")
@@ -35,9 +36,11 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def total_response_count(dag: Path, results: Path) -> int:
-    from scripts.precompute_indextts_responses import load_audio_responses
+def total_response_count(response_manifest: Path | None, dag: Path, results: Path) -> int:
+    from scripts.precompute_indextts_responses import load_audio_responses, load_audio_responses_from_manifest
 
+    if response_manifest is not None:
+        return len(load_audio_responses_from_manifest(response_manifest))
     return len(load_audio_responses(dag, results))
 
 
@@ -52,7 +55,7 @@ def main() -> None:
     args.progress_dir.mkdir(parents=True, exist_ok=True)
     started_at = time.time()
     deadline = started_at + max(0.0, args.max_runtime_seconds)
-    total = total_response_count(args.dag, args.results)
+    total = total_response_count(args.response_manifest, args.dag, args.results)
     offset = max(0, args.start_offset)
     batches_completed = 0
     failures = 0
@@ -65,10 +68,6 @@ def main() -> None:
         cmd = [
             "python3",
             str(REPO_ROOT / "scripts/precompute_indextts_responses.py"),
-            "--dag",
-            str(args.dag),
-            "--results",
-            str(args.results),
             "--offset",
             str(offset),
             "--limit",
@@ -86,6 +85,10 @@ def main() -> None:
             "--remote-batch-size",
             str(args.remote_batch_size),
         ]
+        if args.response_manifest is not None:
+            cmd.extend(["--response-manifest", str(args.response_manifest)])
+        else:
+            cmd.extend(["--dag", str(args.dag), "--results", str(args.results)])
         if args.force:
             cmd.append("--force")
         if args.stop_on_error:

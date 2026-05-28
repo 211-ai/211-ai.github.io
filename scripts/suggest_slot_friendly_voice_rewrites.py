@@ -123,8 +123,7 @@ def load_dedupe(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def build_rewrite_opportunities(args: argparse.Namespace) -> dict[str, Any]:
-    dedupe = load_dedupe(args.dedupe)
+def build_rewrite_opportunities_from_dedupe(dedupe: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
     templates = dedupe.get("maskedTemplates") or dedupe.get("topMaskedTemplates") or []
     chunks_by_id = {chunk["id"]: chunk for chunk in dedupe.get("chunks", [])}
     families: dict[str, dict[str, Any]] = {}
@@ -204,6 +203,11 @@ def build_rewrite_opportunities(args: argparse.Namespace) -> dict[str, Any]:
         },
         "opportunities": selected,
     }
+
+
+def build_rewrite_opportunities(args: argparse.Namespace) -> dict[str, Any]:
+    dedupe = load_dedupe(args.dedupe)
+    return build_rewrite_opportunities_from_dedupe(dedupe, args)
 
 
 def parse_args() -> argparse.Namespace:

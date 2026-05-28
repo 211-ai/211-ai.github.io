@@ -24,6 +24,7 @@ from scripts.precompute_indextts_responses import (  # noqa: E402
     DEFAULT_DAG,
     DEFAULT_RESULTS,
     load_audio_responses,
+    load_audio_responses_from_manifest,
     normalize_indextts_spoken_text,
     stable_id,
 )
@@ -373,6 +374,13 @@ def classify_phrase(phrase: str, phrase_counts: Counter[str]) -> str:
 
 
 def load_response_items(args: argparse.Namespace) -> list[dict[str, Any]]:
+    if args.response_manifest is not None:
+        responses = load_audio_responses_from_manifest(args.response_manifest)
+        if args.voice_responses_only:
+            return [item for item in responses if "dag.voiceResponse" in set(item.get("sourceTypes") or [])]
+        if args.assistant_responses_only:
+            return [item for item in responses if "simulation.assistant" in set(item.get("sourceTypes") or [])]
+        return responses
     return load_audio_responses(
         args.dag,
         args.results,
@@ -485,8 +493,9 @@ def build_analysis(args: argparse.Namespace) -> dict[str, Any]:
     return {
         "schemaVersion": 1,
         "inputs": {
-            "dag": str(args.dag),
-            "results": str(args.results),
+            "dag": "" if args.response_manifest is not None else str(args.dag),
+            "results": "" if args.response_manifest is not None else str(args.results),
+            "responseManifest": str(args.response_manifest) if args.response_manifest is not None else "",
             "includeAssistantResponses": not args.voice_responses_only,
             "includeVoiceResponses": not args.assistant_responses_only,
             "maxChunkChars": args.max_chunk_chars,
@@ -526,6 +535,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dag", type=Path, default=DEFAULT_DAG)
     parser.add_argument("--results", type=Path, default=DEFAULT_RESULTS)
+    parser.add_argument("--response-manifest", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--max-chunk-chars", type=int, default=220)
     parser.add_argument("--top", type=int, default=40)

@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import argparse
 import base64
+import difflib
 import hashlib
+import importlib.util
 import io
 import json
 import mimetypes
 import os
 import re
 import subprocess
+import sys
 import time
 import uuid
 import zipfile
@@ -21,9 +24,7 @@ from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-IPFS_DATASETS_ROOT = REPO_ROOT / "ipfs_datasets_py"
-if str(IPFS_DATASETS_ROOT) not in os.sys.path:
-    os.sys.path.insert(0, str(IPFS_DATASETS_ROOT))
+IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
 DEFAULT_RESULTS = REPO_ROOT / "docs/211_chatbot_simulation_results.json"
 DEFAULT_REFERENCE = REPO_ROOT / "tmp_assets/abby-reference.wav"
@@ -31,6 +32,13 @@ DEFAULT_OUTPUT_DIR = REPO_ROOT / "wallet_interface/ui/public/assets/audio/precom
 DEFAULT_MANIFEST = REPO_ROOT / "docs/211_indextts_precompute_manifest.json"
 DEFAULT_PUBLIC_MANIFEST = DEFAULT_OUTPUT_DIR / "manifest.json"
 DEFAULT_SLOTTED_RESPONSE_INDEX = REPO_ROOT / "wallet_interface/ui/public/assets/rag/slotted-response-index.json"
+SLOTTED_RESPONSE_FIELDS = (
+    "slottedIntentIds",
+    "slottedCanonicalQueryTemplates",
+    "slottedResponseFrameIds",
+    "slottedResponseSignatures",
+    "slottedEdgeIds",
+)
 
 
 def stable_id(text: str) -> str:
@@ -179,6 +187,8 @@ _OMITTED_VOICE_FIELDS = (
     "schema",
     "metadata",
 )
+
+_RESOLVE_SECRET = None
 
 
 def _number_to_words(value: int) -> str:
@@ -818,6 +828,73 @@ def normalize_indextts_spoken_text(text: str) -> str:
     return spoken.lstrip(".,; ")
 
 
+def normalize_numeric_sequence(value: str) -> str:
+    normalized = re.sub(r"(\d)[-](\d)", r"\1 \2", str(value or ""))
+    normalized = re.sub(r"\d", lambda match: _digits_to_words(match.group(0)), normalized)
+    normalized = re.sub(r"\s*,\s*", ", ", normalized)
+    normalized = re.sub(r"\s*;\s*", "; ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized)
+    return normalized.strip(" ,;")
+
+
+def normalize_slot_value_text(kind: str, value: str) -> str:
+    raw_value = " ".join(str(value or "").split())
+    if not raw_value:
+        return ""
+
+    digits_only = re.sub(r"\D", "", raw_value)
+    spoken = raw_value
+    normalized_kind = str(kind or "").strip().lower()
+
+    if normalized_kind == "phone" and digits_only:
+        if len(digits_only) == 11 and digits_only.startswith("1"):
+            digits_only = digits_only[1:]
+        if len(digits_only) == 10:
+            spoken = f"{_digits_to_words(digits_only[:3])}, {_digits_to_words(digits_only[3:6])}, {_digits_to_words(digits_only[6:])}"
+        else:
+            spoken = normalize_numeric_sequence(raw_value)
+    elif normalized_kind == "zip" and digits_only:
+        if len(digits_only) == 9:
+            spoken = f"{_digits_to_words(digits_only[:5])} dash {_digits_to_words(digits_only[5:])}"
+        elif len(digits_only) == 5:
+            spoken = _digits_to_words(digits_only)
+        else:
+            spoken = normalize_numeric_sequence(raw_value)
+    elif normalized_kind == "number" and digits_only:
+        if re.fullmatch(r"\d{1,4}", raw_value):
+            spoken = _number_to_words(int(raw_value))
+        else:
+            spoken = normalize_numeric_sequence(raw_value)
+    elif re.search(r"\d", raw_value):
+        spoken = normalize_numeric_sequence(raw_value)
+
+    return " ".join(normalize_indextts_spoken_text(spoken).split())
+
+
+def infer_slot_kinds_from_record(record: Mapping[str, Any]) -> list[str]:
+    slot_kinds = {
+        str(item or "").strip().lower()
+        for item in (record.get("slotKinds") or [])
+        if str(item or "").strip()
+    }
+    for source_id in record.get("sourceIds") or []:
+        match = re.match(r"audio-slot::(?P<kind>[^:]+)::", str(source_id or "").strip())
+        if match:
+            slot_kinds.add(match.group("kind").strip().lower())
+    preferred_order = ["phone", "zip", "number"]
+    ordered = [kind for kind in preferred_order if kind in slot_kinds]
+    ordered.extend(sorted(slot_kinds - set(ordered)))
+    return ordered
+
+
+def normalize_manifest_record_text(raw_text: str, record: Mapping[str, Any]) -> str:
+    for slot_kind in infer_slot_kinds_from_record(record):
+        normalized = normalize_slot_value_text(slot_kind, raw_text)
+        if normalized:
+            return normalized
+    return normalize_indextts_spoken_text(raw_text)
+
+
 def display_path(path: Path) -> str:
     try:
         return str(path.relative_to(REPO_ROOT))
@@ -837,6 +914,145 @@ def audio_url_for(path_text: str) -> str:
         return ""
     path = Path(path_text)
     return f"/assets/audio/precomputed/211-dag-indextts/{path.name}"
+
+
+def resolve_repo_path(path_text: str) -> Path:
+    path = Path(str(path_text or "").strip())
+    if path.is_absolute():
+        return path
+    return REPO_ROOT / path
+
+
+_WHISPER_MODELS: dict[str, Any] = {}
+
+
+def prefer_system_torch_installation() -> None:
+    user_site = Path.home() / ".local" / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages"
+    system_site = Path("/usr/local/lib") / f"python{sys.version_info.major}.{sys.version_info.minor}" / "dist-packages"
+    user_torch_global_deps = user_site / "torch" / "lib" / "libtorch_global_deps.so"
+    system_torch_global_deps = system_site / "torch" / "lib" / "libtorch_global_deps.so"
+    if user_torch_global_deps.exists() or not system_torch_global_deps.exists():
+        return
+
+    user_site_text = str(user_site)
+    system_site_text = str(system_site)
+    if system_site_text in sys.path:
+        sys.path.remove(system_site_text)
+    if user_site_text in sys.path:
+        insert_at = sys.path.index(user_site_text)
+        sys.path.insert(insert_at, system_site_text)
+    else:
+        sys.path.insert(0, system_site_text)
+
+    for module_name in list(sys.modules):
+        if module_name == "torch" or module_name.startswith("torch."):
+            sys.modules.pop(module_name, None)
+
+
+def load_whisper_model(model_name: str) -> Any:
+    model = _WHISPER_MODELS.get(model_name)
+    if model is not None:
+        return model
+
+    prefer_system_torch_installation()
+    try:
+        import whisper  # type: ignore
+    except ImportError as exc:
+        raise RuntimeError(
+            "Transcript validation requires the 'whisper' package. Install it with 'python3 -m pip install openai-whisper'."
+        ) from exc
+
+    model = whisper.load_model(model_name)
+    _WHISPER_MODELS[model_name] = model
+    return model
+
+
+def transcribe_audio_file(audio_path: Path, *, model_name: str, language: str) -> str:
+    model = load_whisper_model(model_name)
+    result = model.transcribe(
+        str(audio_path),
+        language=language,
+        task="transcribe",
+        fp16=False,
+        verbose=False,
+        condition_on_previous_text=False,
+    )
+    return " ".join(str(result.get("text") or "").split())
+
+
+def normalize_transcript_comparison_text(text: str, record: Mapping[str, Any]) -> str:
+    normalized = normalize_manifest_record_text(text, record).lower()
+    normalized = re.sub(r"\band\b", " ", normalized)
+    normalized = re.sub(r"[^a-z0-9 ]+", " ", normalized)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def validate_audio_manifest_entries(
+    entries: list[dict[str, Any]],
+    *,
+    limit: int,
+    model_name: str,
+    language: str,
+    similarity_threshold: float,
+) -> dict[str, Any]:
+    validated_count = 0
+    failures: list[dict[str, Any]] = []
+
+    for entry in entries:
+        if validated_count >= limit:
+            break
+        preferred_path_text = str(entry.get("preferredAudioPath") or entry.get("mp3Path") or entry.get("audioPath") or "").strip()
+        if not preferred_path_text:
+            continue
+        audio_path = resolve_repo_path(preferred_path_text)
+        if not audio_path.exists():
+            continue
+
+        expected_text = normalize_transcript_comparison_text(str(entry.get("text") or ""), entry)
+        transcript_text = transcribe_audio_file(audio_path, model_name=model_name, language=language)
+        normalized_transcript = normalize_transcript_comparison_text(transcript_text, entry)
+        similarity = round(difflib.SequenceMatcher(None, expected_text, normalized_transcript).ratio(), 4)
+        passed = similarity >= similarity_threshold
+        validation_payload = {
+            "model": model_name,
+            "language": language,
+            "audioPath": display_path(audio_path),
+            "transcript": transcript_text,
+            "normalizedTranscript": normalized_transcript,
+            "normalizedExpectedText": expected_text,
+            "similarity": similarity,
+            "threshold": similarity_threshold,
+            "passed": passed,
+        }
+        entry["transcriptValidation"] = validation_payload
+        validated_count += 1
+
+        print(
+            f"transcript validation [{validated_count}/{limit}] {entry.get('id', 'unknown')}: "
+            f"{'pass' if passed else 'FAIL'} similarity={similarity:.4f} transcript={transcript_text!r}"
+        )
+        if not passed:
+            failures.append({
+                "id": entry.get("id", "unknown"),
+                "audioPath": display_path(audio_path),
+                "expected": expected_text,
+                "transcript": transcript_text,
+                "normalizedTranscript": normalized_transcript,
+                "similarity": similarity,
+            })
+
+    if limit > 0 and validated_count == 0:
+        raise RuntimeError("Transcript validation was requested, but no generated or cached audio files were available to validate.")
+
+    return {
+        "enabled": True,
+        "validatedCount": validated_count,
+        "failureCount": len(failures),
+        "model": model_name,
+        "language": language,
+        "similarityThreshold": similarity_threshold,
+        "failures": failures,
+    }
 
 
 def convert_wav_to_mp3(wav_path: Path, mp3_path: Path, *, bitrate: str = "64k", force: bool = False) -> None:
@@ -868,12 +1084,33 @@ def maybe_delete_wav(wav_path: Path, mp3_path: Path, *, delete_wav: bool) -> boo
     return True
 
 
+def load_resolve_secret() -> Any:
+    global _RESOLVE_SECRET
+    if _RESOLVE_SECRET is not None:
+        return _RESOLVE_SECRET
+    if not IPFS_DATASETS_SECRETS_MODULE.exists():
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "ipfs_datasets_py_utils_secrets",
+            IPFS_DATASETS_SECRETS_MODULE,
+        )
+        if spec is None or spec.loader is None:
+            return None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve_secret = getattr(module, "resolve_secret", None)
+        if callable(resolve_secret):
+            _RESOLVE_SECRET = resolve_secret
+            return resolve_secret
+    except Exception:
+        return None
+    return None
+
+
 def load_secret_env() -> None:
     """Best-effort load HF token/billing env from ~/.ipfs_datasets/secrets.json."""
-    try:
-        from ipfs_datasets_py.utils.secrets import resolve_secret  # type: ignore
-    except Exception:
-        resolve_secret = None  # type: ignore[assignment]
+    resolve_secret = load_resolve_secret()
     if resolve_secret:
         token = (
             resolve_secret(
@@ -1417,6 +1654,84 @@ def add_response_source(
         item["sourceIds"].append(source_id)
 
 
+def add_response_record(
+    by_text: dict[str, dict[str, Any]],
+    record: Mapping[str, Any],
+    *,
+    default_source: str = "manifest.response",
+) -> None:
+    raw_text = " ".join(str(record.get("text") or "").split())
+    if not raw_text:
+        return
+    normalized = normalize_manifest_record_text(raw_text, record)
+    if not normalized:
+        return
+    text_hash = stable_id(normalized)
+    item = by_text.setdefault(
+        normalized,
+        {
+            "id": f"abby-tts-{text_hash}",
+            "textHash": text_hash,
+            "text": normalized,
+            "originalTexts": [],
+            "routes": set(),
+            "serviceTags": set(),
+            "locationTags": set(),
+            "sourceTypes": set(),
+            "sourceIds": [],
+            "priorityScore": 0.0,
+            "priorityRank": None,
+        },
+    )
+    priority_score = float(record.get("priorityScore") or 0.0)
+    if priority_score > float(item.get("priorityScore") or 0.0):
+        item["priorityScore"] = priority_score
+    raw_priority_rank = record.get("priorityRank")
+    if raw_priority_rank is not None and str(raw_priority_rank).strip() != "":
+        priority_rank = int(raw_priority_rank)
+        current_rank = item.get("priorityRank")
+        if current_rank is None or priority_rank < int(current_rank):
+            item["priorityRank"] = priority_rank
+    if raw_text != normalized and raw_text not in item["originalTexts"]:
+        item["originalTexts"].append(raw_text)
+    for original_text in record.get("originalTexts") or []:
+        collapsed = " ".join(str(original_text or "").split())
+        if collapsed and collapsed != normalized and collapsed not in item["originalTexts"]:
+            item["originalTexts"].append(collapsed)
+    for route in record.get("routes") or []:
+        normalized_route = str(route or "").strip()
+        if normalized_route:
+            item["routes"].add(normalized_route)
+    for service_tag in record.get("serviceTags") or []:
+        normalized_service_tag = str(service_tag or "").strip()
+        if normalized_service_tag:
+            item["serviceTags"].add(normalized_service_tag)
+    for location_tag in record.get("locationTags") or []:
+        normalized_location_tag = str(location_tag or "").strip()
+        if normalized_location_tag:
+            item["locationTags"].add(normalized_location_tag)
+    source_types = [str(source or "").strip() for source in (record.get("sourceTypes") or [])]
+    if not any(source_types):
+        source_types = [default_source]
+    for source_type in source_types:
+        if source_type:
+            item["sourceTypes"].add(source_type)
+    for source_id in record.get("sourceIds") or []:
+        normalized_source_id = str(source_id or "").strip()
+        if normalized_source_id and normalized_source_id not in item["sourceIds"]:
+            item["sourceIds"].append(normalized_source_id)
+    for field in SLOTTED_RESPONSE_FIELDS:
+        values = [str(value or "").strip() for value in (record.get(field) or [])]
+        normalized_values = {value for value in values if value}
+        if not normalized_values:
+            continue
+        existing = item.setdefault(field, set())
+        if not isinstance(existing, set):
+            existing = set(existing)
+            item[field] = existing
+        existing.update(normalized_values)
+
+
 def empty_slotted_annotation() -> dict[str, set[str]]:
     return {
         "slottedIntentIds": set(),
@@ -1577,15 +1892,55 @@ def annotate_audio_responses_with_slotted_metadata(
         return
 
     for item in responses:
-      annotation = empty_slotted_annotation()
-      for source_id in item.get("sourceIds") or []:
-          merge_slotted_annotation(annotation, by_record_id.get(str(source_id or "")))
-      merge_slotted_annotation(annotation, by_normalized_assistant_text.get(str(item.get("text") or "")))
-      for original_text in item.get("originalTexts") or []:
-          normalized_original = normalize_slotted_audio_lookup_text(str(original_text or ""))
-          if normalized_original:
-              merge_slotted_annotation(annotation, by_normalized_assistant_text.get(normalized_original))
-      item.update(slotted_annotation_payload(annotation))
+        annotation = empty_slotted_annotation()
+        for field in SLOTTED_RESPONSE_FIELDS:
+            for value in item.get(field) or []:
+                normalized_value = str(value or "").strip()
+                if normalized_value:
+                    annotation[field].add(normalized_value)
+        for source_id in item.get("sourceIds") or []:
+            merge_slotted_annotation(annotation, by_record_id.get(str(source_id or "")))
+        merge_slotted_annotation(annotation, by_normalized_assistant_text.get(str(item.get("text") or "")))
+        for original_text in item.get("originalTexts") or []:
+            normalized_original = normalize_slotted_audio_lookup_text(str(original_text or ""))
+            if normalized_original:
+                merge_slotted_annotation(annotation, by_normalized_assistant_text.get(normalized_original))
+        item.update(slotted_annotation_payload(annotation))
+
+
+def finalize_audio_responses(by_text: Mapping[str, Mapping[str, Any]]) -> list[dict[str, Any]]:
+    responses: list[dict[str, Any]] = []
+    for item in by_text.values():
+        response = {
+            "id": str(item.get("id") or ""),
+            "textHash": str(item.get("textHash") or ""),
+            "text": str(item.get("text") or ""),
+            "originalTexts": list(item.get("originalTexts") or []),
+            "routes": sorted(item.get("routes") or []),
+            "serviceTags": sorted(item.get("serviceTags") or []),
+            "locationTags": sorted(item.get("locationTags") or []),
+            "sourceTypes": sorted(item.get("sourceTypes") or []),
+            "sourceIds": list(item.get("sourceIds") or []),
+        }
+        priority_score = float(item.get("priorityScore") or 0.0)
+        if priority_score:
+            response["priorityScore"] = priority_score
+        priority_rank = item.get("priorityRank")
+        if priority_rank is not None:
+            response["priorityRank"] = int(priority_rank)
+        for field in SLOTTED_RESPONSE_FIELDS:
+            values = item.get(field) or []
+            if values:
+                response[field] = sorted(values)
+        responses.append(response)
+    responses.sort(
+        key=lambda item: (
+            -float(item.get("priorityScore") or 0.0),
+            int(item.get("priorityRank") or 10**9),
+            str(item["id"]),
+        )
+    )
+    return responses
 
 
 def load_audio_responses(
@@ -1621,20 +1976,24 @@ def load_audio_responses(
                     source_id=f"{scenario_id}#turn-{turn_index}",
                     route=str(turn.get("route") or ""),
                 )
-    responses: list[dict[str, Any]] = []
-    for item in by_text.values():
-        responses.append(
-            {
-                **item,
-                "originalTexts": list(item["originalTexts"]),
-                "routes": sorted(item["routes"]),
-                "serviceTags": sorted(item["serviceTags"]),
-                "locationTags": sorted(item["locationTags"]),
-                "sourceTypes": sorted(item["sourceTypes"]),
-            }
-        )
+    responses = finalize_audio_responses(by_text)
     annotate_audio_responses_with_slotted_metadata(responses, slotted_response_index)
-    responses.sort(key=lambda item: item["id"])
+    return responses
+
+
+def load_audio_responses_from_manifest(
+    manifest_path: Path,
+    *,
+    slotted_response_index: Path | None = None,
+) -> list[dict[str, Any]]:
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    response_records = payload if isinstance(payload, list) else payload.get("responses") or []
+    by_text: dict[str, dict[str, Any]] = {}
+    for record in response_records:
+        if isinstance(record, Mapping):
+            add_response_record(by_text, record)
+    responses = finalize_audio_responses(by_text)
+    annotate_audio_responses_with_slotted_metadata(responses, slotted_response_index)
     return responses
 
 
@@ -1659,6 +2018,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dag", type=Path, default=DEFAULT_DAG)
     parser.add_argument("--results", type=Path, default=DEFAULT_RESULTS)
+    parser.add_argument(
+        "--response-manifest",
+        type=Path,
+        default=None,
+        help="Load deduplicated pregenerated text responses from a manifest instead of --dag/--results.",
+    )
     parser.add_argument("--reference-audio", type=Path, default=DEFAULT_REFERENCE)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -1690,6 +2055,38 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--voice-responses-only", action="store_true")
     parser.add_argument("--assistant-responses-only", action="store_true")
+    parser.add_argument(
+        "--validate-transcripts",
+        action="store_true",
+        help="Transcribe generated or cached audio with Whisper and compare it to the expected normalized spoken text.",
+    )
+    parser.add_argument(
+        "--transcript-validation-limit",
+        type=int,
+        default=1,
+        help="Validate up to this many generated or cached audio files when --validate-transcripts is enabled.",
+    )
+    parser.add_argument(
+        "--transcript-validation-model",
+        default=os.getenv("WALLET_INDEXTTS_TRANSCRIPTION_MODEL", "tiny.en"),
+        help="Whisper model name to use for transcript validation.",
+    )
+    parser.add_argument(
+        "--transcript-validation-language",
+        default=os.getenv("WALLET_INDEXTTS_TRANSCRIPTION_LANGUAGE", "en"),
+        help="Language hint passed to Whisper for transcript validation.",
+    )
+    parser.add_argument(
+        "--transcript-validation-threshold",
+        type=float,
+        default=0.72,
+        help="Minimum normalized transcript similarity required for validation to pass.",
+    )
+    parser.add_argument(
+        "--transcript-validation-soft-fail",
+        action="store_true",
+        help="Record transcript validation failures in the manifest but still exit successfully.",
+    )
     return parser.parse_args()
 
 
@@ -1698,13 +2095,25 @@ def main() -> None:
     started_at = time.time()
     include_assistant = not args.voice_responses_only
     include_voice = not args.assistant_responses_only
-    responses = load_audio_responses(
-        args.dag,
-        args.results,
-        include_assistant=include_assistant,
-        include_voice=include_voice,
-        slotted_response_index=args.slotted_response_index,
-    )
+    if args.response_manifest is not None and (args.voice_responses_only or args.assistant_responses_only):
+        raise ValueError("--response-manifest cannot be combined with --voice-responses-only or --assistant-responses-only")
+    if args.validate_transcripts and args.transcript_validation_limit < 1:
+        raise ValueError("--transcript-validation-limit must be at least 1 when --validate-transcripts is enabled")
+    if not 0.0 <= args.transcript_validation_threshold <= 1.0:
+        raise ValueError("--transcript-validation-threshold must be between 0.0 and 1.0")
+    if args.response_manifest is not None:
+        responses = load_audio_responses_from_manifest(
+            args.response_manifest,
+            slotted_response_index=args.slotted_response_index,
+        )
+    else:
+        responses = load_audio_responses(
+            args.dag,
+            args.results,
+            include_assistant=include_assistant,
+            include_voice=include_voice,
+            slotted_response_index=args.slotted_response_index,
+        )
     if args.offset:
         responses = responses[max(0, args.offset) :]
     if args.limit is not None:
@@ -1716,15 +2125,24 @@ def main() -> None:
         for item in responses:
             manifest_entries.append({**item, "status": "planned", "audioPath": "", "mp3Path": ""})
     else:
-        load_secret_env()
-        if not args.reference_audio.exists():
-            raise FileNotFoundError(args.reference_audio)
-        print(f"IndexTTS auth: {describe_indextts_auth()}")
-        config = indextts_config()
-        fn_index = indextts_fn_index(config)
-        reference = upload_reference(args.reference_audio)
+        config: dict[str, Any] | None = None
+        fn_index: int | None = None
+        reference: Any | None = None
         remote_batch_size = max(1, int(args.remote_batch_size or 1))
         pending: list[tuple[int, dict[str, Any], Path, Path]] = []
+
+        def ensure_remote_client() -> tuple[dict[str, Any], int, Any]:
+            nonlocal config, fn_index, reference
+            if config is not None and fn_index is not None and reference is not None:
+                return config, fn_index, reference
+            load_secret_env()
+            if not args.reference_audio.exists():
+                raise FileNotFoundError(args.reference_audio)
+            print(f"IndexTTS auth: {describe_indextts_auth()}")
+            config = indextts_config()
+            fn_index = indextts_fn_index(config)
+            reference = upload_reference(args.reference_audio)
+            return config, fn_index, reference
 
         def flush_pending() -> None:
             if not pending:
@@ -1733,8 +2151,9 @@ def main() -> None:
             pending.clear()
             texts = [item["text"] for _, item, _, _ in batch]
             try:
+                active_config, active_fn_index, active_reference = ensure_remote_client()
                 print(f"synthesizing remote batch of {len(batch)} response(s)")
-                results = synthesize_batch(texts, config, fn_index, reference, args.voice_description)
+                results = synthesize_batch(texts, active_config, active_fn_index, active_reference, args.voice_description)
                 if len(results) != len(batch):
                     raise RuntimeError(f"IndexTTS batch returned {len(results)} result(s) for {len(batch)} response(s)")
                 for (index, item, audio_path, mp3_path), result in zip(batch, results):
@@ -1860,8 +2279,9 @@ def main() -> None:
         "voiceDescription": args.voice_description,
         "responseCount": len(manifest_entries),
         "sources": {
-            "dag": str(args.dag),
-            "results": str(args.results),
+            "dag": "" if args.response_manifest is not None else str(args.dag),
+            "results": "" if args.response_manifest is not None else str(args.results),
+            "responseManifest": str(args.response_manifest) if args.response_manifest is not None else "",
             "slottedResponseIndex": str(args.slotted_response_index) if args.slotted_response_index.exists() else "",
             "includeAssistantResponses": include_assistant,
             "includeVoiceResponses": include_voice,
@@ -1893,6 +2313,14 @@ def main() -> None:
         },
         "responses": manifest_entries,
     }
+    if args.validate_transcripts:
+        payload["transcriptValidation"] = validate_audio_manifest_entries(
+            manifest_entries,
+            limit=args.transcript_validation_limit,
+            model_name=args.transcript_validation_model,
+            language=args.transcript_validation_language,
+            similarity_threshold=args.transcript_validation_threshold,
+        )
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     args.manifest.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     args.public_manifest.parent.mkdir(parents=True, exist_ok=True)
@@ -1912,6 +2340,9 @@ def main() -> None:
     args.public_manifest.write_text(json.dumps(public_payload, indent=2), encoding="utf-8")
     print(f"Wrote {args.manifest}")
     print(f"Wrote {args.public_manifest}")
+    if args.validate_transcripts and payload["transcriptValidation"]["failureCount"] and not args.transcript_validation_soft_fail:
+        failure_summary = payload["transcriptValidation"]["failures"]
+        raise RuntimeError(f"Transcript validation failed for {len(failure_summary)} audio file(s): {failure_summary}")
 
 
 if __name__ == "__main__":
