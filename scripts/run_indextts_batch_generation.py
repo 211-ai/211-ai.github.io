@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -20,7 +21,8 @@ DEFAULT_PROGRESS_DIR = REPO_ROOT / "docs/211_indextts_precompute_progress"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--batch-size", type=int, default=32)
-    parser.add_argument("--remote-batch-size", type=int, default=32)
+    parser.add_argument("--remote-batch-size", type=int, default=int(os.getenv("WALLET_INDEXTTS_REMOTE_BATCH_SIZE", "32") or "32"))
+    parser.add_argument("--parallel-workers", type=int, default=int(os.getenv("WALLET_INDEXTTS_PARALLEL_WORKERS", "1") or "1"))
     parser.add_argument("--max-runtime-seconds", type=float, default=8 * 60 * 60)
     parser.add_argument("--start-offset", type=int, default=0)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
@@ -33,6 +35,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--results", type=Path, default=REPO_ROOT / "docs/211_chatbot_simulation_results.json")
     parser.add_argument("--stop-on-error", action="store_true")
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--validate-transcripts", action="store_true")
+    parser.add_argument("--transcript-validation-limit", type=int, default=1)
+    parser.add_argument("--transcript-validation-model", default="tiny.en")
+    parser.add_argument("--transcript-validation-language", default="en")
+    parser.add_argument("--transcript-validation-device", default="auto")
+    parser.add_argument("--transcript-validation-threshold", type=float, default=0.72)
+    parser.add_argument("--transcript-validation-soft-fail", action="store_true")
     return parser.parse_args()
 
 
@@ -84,6 +93,8 @@ def main() -> None:
             str(progress),
             "--remote-batch-size",
             str(args.remote_batch_size),
+            "--parallel-workers",
+            str(args.parallel_workers),
         ]
         if args.response_manifest is not None:
             cmd.extend(["--response-manifest", str(args.response_manifest)])
@@ -93,6 +104,24 @@ def main() -> None:
             cmd.append("--force")
         if args.stop_on_error:
             cmd.append("--stop-on-error")
+        if args.validate_transcripts:
+            cmd.extend(
+                [
+                    "--validate-transcripts",
+                    "--transcript-validation-limit",
+                    str(args.transcript_validation_limit),
+                    "--transcript-validation-model",
+                    args.transcript_validation_model,
+                    "--transcript-validation-language",
+                    args.transcript_validation_language,
+                    "--transcript-validation-device",
+                    args.transcript_validation_device,
+                    "--transcript-validation-threshold",
+                    str(args.transcript_validation_threshold),
+                ]
+            )
+        if args.transcript_validation_soft_fail:
+            cmd.append("--transcript-validation-soft-fail")
 
         print(f"[batch {batch_index}] offset={offset} size={args.batch_size} remaining={remaining_seconds}s")
         completed = subprocess.run(cmd, cwd=REPO_ROOT)

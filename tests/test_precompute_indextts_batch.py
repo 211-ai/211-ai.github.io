@@ -37,6 +37,44 @@ def test_batch_request_data_default_matches_indextts_gradio_schema(monkeypatch) 
     assert data[16] == 2
 
 
+def test_request_data_defaults_to_legacy_single_contract() -> None:
+    reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
+
+    data = precompute.request_data("one", reference, "Same voice")
+
+    assert len(data) == 24
+    assert data[2] == "one"
+    assert data[13] == "Same voice"
+    assert data[16] is True
+
+
+def test_request_data_supports_new_segments_bucket_contract() -> None:
+    reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
+
+    data = precompute.request_data("one", reference, "Same voice", input_count=25)
+
+    assert len(data) == 25
+    assert data[16] == 0
+    assert data[17] is True
+
+
+def test_batch_request_data_supports_legacy_batch_contract() -> None:
+    reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
+
+    data = precompute.batch_request_data(["one", "two"], reference, "Same voice", input_count=24)
+
+    assert len(data) == 24
+    assert data[2] == '["one", "two"]'
+    assert data[16] is True
+
+
+def test_lookup_dependency_input_count_reads_dependency_inputs() -> None:
+    assert precompute.lookup_dependency_input_count(
+        {"dependencies": [{"id": 6, "api_name": "/gen_single", "inputs": list(range(25))}]},
+        6,
+    ) == 25
+
+
 def test_synthesize_batch_falls_back_to_single_when_batch_missing(monkeypatch) -> None:
     calls: list[str] = []
 
@@ -63,6 +101,52 @@ def test_synthesize_batch_falls_back_to_single_when_batch_missing(monkeypatch) -
 
     assert calls == ["hello", "world"]
     assert [item["batchMode"] for item in result] == ["sequential-fallback", "sequential-fallback"]
+    assert all("not found" in str(item.get("batchFallbackReason") or "") for item in result)
+
+
+def test_indextts_contract_summary_reports_missing_batch_alias(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "/gen_batch")
+
+    summary = precompute.indextts_contract_summary(
+        {"dependencies": [{"id": 6, "api_name": "/gen_single", "inputs": list(range(24))}]},
+        6,
+    )
+
+    assert summary["singleContract"] == "legacy-24-field"
+    assert summary["batchRegistered"] is False
+    assert summary["recommendedMode"] == "parallel-gen-single"
+    assert "/gen_single" in summary["registeredApiNames"]
+    assert "deploymentDriftReason" in summary
+
+
+def test_indextts_contract_summary_reports_registered_batch_alias(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "/gen_batch")
+
+    summary = precompute.indextts_contract_summary(
+        {
+            "dependencies": [
+                {"id": 6, "api_name": "/gen_single", "inputs": list(range(25))},
+                {"id": 9, "api_name": "/gen_batch", "inputs": list(range(25))},
+            ]
+        },
+        6,
+    )
+
+    assert summary["singleContract"] == "segments-bucket-25-field"
+    assert summary["batchRegistered"] is True
+    assert summary["batchFnIndex"] == 9
+    assert summary["batchContract"] == "segments-bucket-25-field"
+    assert summary["recommendedMode"] == "gen_batch"
+
+
+def test_normalize_slot_value_text_keeps_address_digits_spaced_and_ordinals_intact() -> None:
+    normalized = precompute.normalize_slot_value_text("address", "530 NW 27th Street Corvallis, OR 97330")
+
+    assert "five three zero" in normalized
+    assert "twenty seventh Street" in normalized
+    assert "nine seven three three zero" in normalized
+    assert "fivethreezero" not in normalized
+    assert "twoseventh" not in normalized
 
 
 def test_batch_audio_references_prefers_generated_file_list() -> None:

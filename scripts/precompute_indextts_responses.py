@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import concurrent.futures
 import difflib
 import hashlib
 import importlib.util
@@ -830,7 +831,7 @@ def normalize_indextts_spoken_text(text: str) -> str:
 
 def normalize_numeric_sequence(value: str) -> str:
     normalized = re.sub(r"(\d)[-](\d)", r"\1 \2", str(value or ""))
-    normalized = re.sub(r"\d", lambda match: _digits_to_words(match.group(0)), normalized)
+    normalized = re.sub(r"\b\d+\b", lambda match: _digits_to_words(match.group(0)), normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
     normalized = re.sub(r"\s*;\s*", "; ", normalized)
     normalized = re.sub(r"\s+", " ", normalized)
@@ -865,6 +866,10 @@ def normalize_slot_value_text(kind: str, value: str) -> str:
             spoken = _number_to_words(int(raw_value))
         else:
             spoken = normalize_numeric_sequence(raw_value)
+    elif normalized_kind == "address":
+        spoken = normalize_indextts_spoken_text(raw_value)
+        spoken = re.sub(r"^\d{1,6}\b", lambda match: _digits_to_words(match.group(0)), spoken)
+        return " ".join(spoken.split())
     elif re.search(r"\d", raw_value):
         spoken = normalize_numeric_sequence(raw_value)
 
@@ -923,7 +928,7 @@ def resolve_repo_path(path_text: str) -> Path:
     return REPO_ROOT / path
 
 
-_WHISPER_MODELS: dict[str, Any] = {}
+_WHISPER_MODELS: dict[tuple[str, str], Any] = {}
 
 
 def prefer_system_torch_installation() -> None:
@@ -932,6 +937,11 @@ def prefer_system_torch_installation() -> None:
     user_torch_global_deps = user_site / "torch" / "lib" / "libtorch_global_deps.so"
     system_torch_global_deps = system_site / "torch" / "lib" / "libtorch_global_deps.so"
     if user_torch_global_deps.exists() or not system_torch_global_deps.exists():
+        return
+
+    loaded_torch = sys.modules.get("torch")
+    loaded_torch_file = Path(str(getattr(loaded_torch, "__file__", "") or "")).resolve() if loaded_torch is not None else None
+    if loaded_torch_file is not None and system_site in loaded_torch_file.parents:
         return
 
     user_site_text = str(user_site)
@@ -949,8 +959,29 @@ def prefer_system_torch_installation() -> None:
             sys.modules.pop(module_name, None)
 
 
-def load_whisper_model(model_name: str) -> Any:
-    model = _WHISPER_MODELS.get(model_name)
+def whisper_cuda_available() -> bool:
+    prefer_system_torch_installation()
+    try:
+        import torch  # type: ignore
+    except ImportError:
+        return False
+    return bool(torch.cuda.is_available())
+
+
+def resolve_whisper_device(requested_device: str) -> str:
+    normalized = str(requested_device or "auto").strip().lower()
+    if normalized in {"", "auto"}:
+        return "cuda" if whisper_cuda_available() else "cpu"
+    if normalized == "cuda" and not whisper_cuda_available():
+        raise RuntimeError("Transcript validation requested CUDA, but torch.cuda.is_available() is false on this host.")
+    if normalized not in {"cpu", "cuda"}:
+        raise ValueError(f"Unsupported transcript validation device: {requested_device}")
+    return normalized
+
+
+def load_whisper_model(model_name: str, *, device: str) -> Any:
+    cache_key = (device, model_name)
+    model = _WHISPER_MODELS.get(cache_key)
     if model is not None:
         return model
 
@@ -962,22 +993,24 @@ def load_whisper_model(model_name: str) -> Any:
             "Transcript validation requires the 'whisper' package. Install it with 'python3 -m pip install openai-whisper'."
         ) from exc
 
-    model = whisper.load_model(model_name)
-    _WHISPER_MODELS[model_name] = model
+    model = whisper.load_model(model_name, device=device)
+    _WHISPER_MODELS[cache_key] = model
     return model
 
 
-def transcribe_audio_file(audio_path: Path, *, model_name: str, language: str) -> str:
-    model = load_whisper_model(model_name)
+def transcribe_audio_file(audio_path: Path, *, model_name: str, language: str, device: str) -> tuple[str, str, bool]:
+    resolved_device = resolve_whisper_device(device)
+    model = load_whisper_model(model_name, device=resolved_device)
+    use_fp16 = resolved_device == "cuda"
     result = model.transcribe(
         str(audio_path),
         language=language,
         task="transcribe",
-        fp16=False,
+        fp16=use_fp16,
         verbose=False,
         condition_on_previous_text=False,
     )
-    return " ".join(str(result.get("text") or "").split())
+    return " ".join(str(result.get("text") or "").split()), resolved_device, use_fp16
 
 
 def normalize_transcript_comparison_text(text: str, record: Mapping[str, Any]) -> str:
@@ -993,6 +1026,7 @@ def validate_audio_manifest_entries(
     limit: int,
     model_name: str,
     language: str,
+    device: str,
     similarity_threshold: float,
 ) -> dict[str, Any]:
     validated_count = 0
@@ -1009,13 +1043,20 @@ def validate_audio_manifest_entries(
             continue
 
         expected_text = normalize_transcript_comparison_text(str(entry.get("text") or ""), entry)
-        transcript_text = transcribe_audio_file(audio_path, model_name=model_name, language=language)
+        transcript_text, resolved_device, use_fp16 = transcribe_audio_file(
+            audio_path,
+            model_name=model_name,
+            language=language,
+            device=device,
+        )
         normalized_transcript = normalize_transcript_comparison_text(transcript_text, entry)
         similarity = round(difflib.SequenceMatcher(None, expected_text, normalized_transcript).ratio(), 4)
         passed = similarity >= similarity_threshold
         validation_payload = {
             "model": model_name,
             "language": language,
+            "device": resolved_device,
+            "fp16": use_fp16,
             "audioPath": display_path(audio_path),
             "transcript": transcript_text,
             "normalizedTranscript": normalized_transcript,
@@ -1029,7 +1070,8 @@ def validate_audio_manifest_entries(
 
         print(
             f"transcript validation [{validated_count}/{limit}] {entry.get('id', 'unknown')}: "
-            f"{'pass' if passed else 'FAIL'} similarity={similarity:.4f} transcript={transcript_text!r}"
+            f"{'pass' if passed else 'FAIL'} device={resolved_device} fp16={use_fp16} "
+            f"similarity={similarity:.4f} transcript={transcript_text!r}"
         )
         if not passed:
             failures.append({
@@ -1050,6 +1092,7 @@ def validate_audio_manifest_entries(
         "failureCount": len(failures),
         "model": model_name,
         "language": language,
+        "device": resolve_whisper_device(device),
         "similarityThreshold": similarity_threshold,
         "failures": failures,
     }
@@ -1266,11 +1309,7 @@ def indextts_batch_api_name() -> str:
     return os.getenv("WALLET_INDEXTTS_BATCH_API_NAME", "/gen_batch").strip()
 
 
-def indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
-    raw = os.getenv("WALLET_INDEXTTS_BATCH_FN_INDEX", "").strip()
-    if raw:
-        return int(raw)
-    api_name = indextts_batch_api_name()
+def lookup_dependency_id_by_api_name(config: Mapping[str, Any], api_name: str) -> int | None:
     api_candidates = {api_name, api_name.lstrip("/"), f"/{api_name.lstrip('/')}"}
     dependencies = config.get("dependencies")
     if not isinstance(dependencies, list):
@@ -1284,11 +1323,106 @@ def indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
                 return value
             if isinstance(value, str) and value.isdigit():
                 return int(value)
+    return None
+
+
+def lookup_dependency_input_count(config: Mapping[str, Any], dependency_id: int) -> int | None:
+    dependencies = config.get("dependencies")
+    if not isinstance(dependencies, list):
+        raise RuntimeError("IndexTTS config did not include dependencies")
+    for dependency in dependencies:
+        if not isinstance(dependency, Mapping):
+            continue
+        value = dependency.get("id")
+        candidate_id = None
+        if isinstance(value, int):
+            candidate_id = value
+        elif isinstance(value, str) and value.isdigit():
+            candidate_id = int(value)
+        if candidate_id != dependency_id:
+            continue
+        inputs = dependency.get("inputs")
+        if isinstance(inputs, list):
+            return len(inputs)
+        return None
+    return None
+
+
+def dependency_api_names(config: Mapping[str, Any]) -> list[str]:
+    dependencies = config.get("dependencies")
+    if not isinstance(dependencies, list):
+        raise RuntimeError("IndexTTS config did not include dependencies")
+    names: list[str] = []
+    for dependency in dependencies:
+        if not isinstance(dependency, Mapping):
+            continue
+        api_name = str(dependency.get("api_name") or "").strip()
+        if api_name:
+            names.append(api_name)
+    return sorted(dict.fromkeys(names))
+
+
+def indextts_contract_name(input_count: int | None) -> str:
+    if input_count is None:
+        return "unknown"
+    if input_count >= 25:
+        return "segments-bucket-25-field"
+    if input_count == 24:
+        return "legacy-24-field"
+    return f"{input_count}-field"
+
+
+def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | None = None) -> dict[str, Any]:
+    resolved_single_fn_index = int(single_fn_index if single_fn_index is not None else indextts_fn_index(config))
+    single_input_count = lookup_dependency_input_count(config, resolved_single_fn_index)
+    batch_api_name = indextts_batch_api_name()
+    batch_fn_index = lookup_dependency_id_by_api_name(config, batch_api_name)
+    batch_input_count = lookup_dependency_input_count(config, batch_fn_index) if batch_fn_index is not None else None
+    summary: dict[str, Any] = {
+        "singleApiName": os.getenv("WALLET_INDEXTTS_API_NAME", "/gen_single").strip() or "/gen_single",
+        "singleFnIndex": resolved_single_fn_index,
+        "singleInputCount": single_input_count,
+        "singleContract": indextts_contract_name(single_input_count),
+        "batchApiName": batch_api_name,
+        "batchRegistered": batch_fn_index is not None,
+        "batchFnIndex": batch_fn_index,
+        "batchInputCount": batch_input_count,
+        "batchContract": indextts_contract_name(batch_input_count),
+        "registeredApiNames": dependency_api_names(config),
+    }
+    if batch_fn_index is None:
+        summary["recommendedMode"] = "parallel-gen-single"
+        summary["deploymentDriftReason"] = (
+            f"Configured batch api_name {batch_api_name!r} is not registered by the live Space dependencies"
+        )
+    else:
+        summary["recommendedMode"] = "gen_batch"
+    return summary
+
+
+def indextts_batch_available(config: Mapping[str, Any]) -> bool:
+    return lookup_dependency_id_by_api_name(config, indextts_batch_api_name()) is not None
+
+
+def indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
+    raw = os.getenv("WALLET_INDEXTTS_BATCH_FN_INDEX", "").strip()
+    if raw:
+        return int(raw)
+    api_name = indextts_batch_api_name()
+    value = lookup_dependency_id_by_api_name(config, api_name)
+    if value is not None:
+        return value
     raise RuntimeError(f"IndexTTS batch api_name {api_name!r} was not found")
 
 
-def request_data(text: str, reference_audio: Mapping[str, Any], voice_description: str) -> list[Any]:
-    return [
+def request_data(
+    text: str,
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+    *,
+    input_count: int | None = None,
+) -> list[Any]:
+    data = [
         "Same as the voice reference",
         reference_audio,
         text,
@@ -1305,18 +1439,33 @@ def request_data(text: str, reference_audio: Mapping[str, Any], voice_descriptio
         voice_description,
         False,
         120,
-        True,
-        0.8,
-        30,
-        0.8,
-        0.0,
-        3,
-        10.0,
-        1500,
     ]
+    if input_count is None:
+        input_count = 24
+    if input_count >= 25:
+        data.append(0)
+    data.extend(
+        [
+            True,
+            0.8,
+            30,
+            0.8,
+            0.0,
+            3,
+            10.0,
+            1500,
+        ]
+    )
+    return data
 
 
-def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any], voice_description: str) -> list[Any]:
+def batch_request_data(
+    texts: Sequence[str],
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+    *,
+    input_count: int | None = None,
+) -> list[Any]:
     text_list = [str(text) for text in texts]
     raw_template = os.getenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", "").strip()
     if raw_template:
@@ -1330,9 +1479,9 @@ def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any],
         if not isinstance(parsed, list):
             raise RuntimeError("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE must render to a JSON array")
         return parsed
-    # Publicus/IndexTTS-2-Demo /gen_batch uses a Gradio Textbox, but the
-    # backend batch parser expects a JSON-encoded list string in that textbox.
-    return [
+    if input_count is None:
+        input_count = 25
+    data = [
         "Same as the voice reference",
         reference_audio,
         json.dumps(text_list),
@@ -1349,16 +1498,24 @@ def batch_request_data(texts: Sequence[str], reference_audio: Mapping[str, Any],
         voice_description,
         False,
         120,
-        len(text_list) if len(text_list) > 1 else 0,
-        True,
-        0.8,
-        30,
-        0.8,
-        0.0,
-        3,
-        10.0,
-        1500,
     ]
+    if input_count >= 25:
+        # The newer batch-capable Gradio contract inserts segments_bucket_max_size
+        # before the decoding arguments.
+        data.append(len(text_list) if len(text_list) > 1 else 0)
+    data.extend(
+        [
+            True,
+            0.8,
+            30,
+            0.8,
+            0.0,
+            3,
+            10.0,
+            1500,
+        ]
+    )
+    return data
 
 
 def wait_for_result(session_hash: str) -> dict[str, Any]:
@@ -1538,10 +1695,15 @@ def fetch_gradio_file(ref: Any) -> tuple[bytes, str]:
 def synthesize(text: str, config: Mapping[str, Any], fn_index: int, reference_audio: Mapping[str, Any], voice_description: str) -> dict[str, Any]:
     start = time.perf_counter()
     session_hash = uuid.uuid4().hex
+    input_count = lookup_dependency_input_count(config, fn_index)
     http_json(
         "POST",
         f"{indextts_base_url()}/gradio_api/queue/join",
-        {"data": request_data(text, reference_audio, voice_description), "fn_index": fn_index, "session_hash": session_hash},
+        {
+            "data": request_data(text, reference_audio, voice_description, input_count=input_count),
+            "fn_index": fn_index,
+            "session_hash": session_hash,
+        },
     )
     result = wait_for_result(session_hash)
     audio_ref = find_audio_reference(result)
@@ -1561,22 +1723,39 @@ def synthesize_batch(
     single_fn_index: int,
     reference_audio: Mapping[str, Any],
     voice_description: str,
+    *,
+    parallel_workers: int = 1,
 ) -> list[dict[str, Any]]:
     text_list = [str(text) for text in texts]
     if not text_list:
         return []
     batch_enabled = os.getenv("WALLET_INDEXTTS_BATCH_ENABLED", "1").strip().lower() not in {"0", "false", "no"}
     require_batch = os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "").strip().lower() in {"1", "true", "yes"}
+    attempted_batch = bool(batch_enabled)
+    batch_available = indextts_batch_available(config)
+    batch_fallback_reason = ""
+    if batch_enabled and not batch_available:
+        batch_fallback_reason = f"IndexTTS batch api_name {indextts_batch_api_name()!r} was not found in the live Space config"
+        if require_batch:
+            raise RuntimeError(batch_fallback_reason)
+        batch_enabled = False
     if batch_enabled:
         start = time.perf_counter()
         try:
             session_hash = uuid.uuid4().hex
+            batch_fn_index = indextts_batch_fn_index(config)
+            batch_input_count = lookup_dependency_input_count(config, batch_fn_index)
             http_json(
                 "POST",
                 f"{indextts_base_url()}/gradio_api/queue/join",
                 {
-                    "data": batch_request_data(text_list, reference_audio, voice_description),
-                    "fn_index": indextts_batch_fn_index(config),
+                    "data": batch_request_data(
+                        text_list,
+                        reference_audio,
+                        voice_description,
+                        input_count=batch_input_count,
+                    ),
+                    "fn_index": batch_fn_index,
                     "session_hash": session_hash,
                 },
             )
@@ -1598,13 +1777,33 @@ def synthesize_batch(
                     }
                 )
             return outputs
-        except Exception:
+        except Exception as exc:
+            batch_fallback_reason = f"{type(exc).__name__}: {exc}"
             if require_batch:
                 raise
+
+    worker_count = max(1, min(int(parallel_workers or 1), len(text_list)))
+    fallback_mode = "parallel-fallback" if attempted_batch else "parallel"
+    if worker_count > 1:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+            futures = [
+                executor.submit(synthesize, text, config, single_fn_index, reference_audio, voice_description)
+                for text in text_list
+            ]
+            return [
+                {
+                    **future.result(),
+                    "batchMode": fallback_mode,
+                    **({"batchFallbackReason": batch_fallback_reason} if batch_fallback_reason else {}),
+                }
+                for future in futures
+            ]
+
     return [
         {
             **synthesize(text, config, single_fn_index, reference_audio, voice_description),
-            "batchMode": "sequential-fallback" if batch_enabled else "sequential",
+            "batchMode": "sequential-fallback" if attempted_batch else "sequential",
+            **({"batchFallbackReason": batch_fallback_reason} if batch_fallback_reason else {}),
         }
         for text in text_list
     ]
@@ -2042,6 +2241,12 @@ def parse_args() -> argparse.Namespace:
         default=int(os.getenv("WALLET_INDEXTTS_REMOTE_BATCH_SIZE", "1") or "1"),
         help="Send this many uncached responses to the IndexTTS batch endpoint at once when available.",
     )
+    parser.add_argument(
+        "--parallel-workers",
+        type=int,
+        default=int(os.getenv("WALLET_INDEXTTS_PARALLEL_WORKERS", "1") or "1"),
+        help="Use this many concurrent gen_single requests when the batch endpoint is unavailable or disabled.",
+    )
     parser.add_argument("--delete-wav-after-mp3", action="store_true", default=True)
     parser.add_argument("--keep-wav", dest="delete_wav_after_mp3", action="store_false")
     parser.add_argument("--stop-on-error", action="store_true")
@@ -2077,6 +2282,11 @@ def parse_args() -> argparse.Namespace:
         help="Language hint passed to Whisper for transcript validation.",
     )
     parser.add_argument(
+        "--transcript-validation-device",
+        default=os.getenv("WALLET_INDEXTTS_TRANSCRIPTION_DEVICE", "auto"),
+        help="Whisper device for transcript validation: auto, cpu, or cuda.",
+    )
+    parser.add_argument(
         "--transcript-validation-threshold",
         type=float,
         default=0.72,
@@ -2086,6 +2296,11 @@ def parse_args() -> argparse.Namespace:
         "--transcript-validation-soft-fail",
         action="store_true",
         help="Record transcript validation failures in the manifest but still exit successfully.",
+    )
+    parser.add_argument(
+        "--print-indextts-contract",
+        action="store_true",
+        help="Fetch the live IndexTTS Gradio config, print the detected single/batch contract summary, and exit.",
     )
     return parser.parse_args()
 
@@ -2101,6 +2316,17 @@ def main() -> None:
         raise ValueError("--transcript-validation-limit must be at least 1 when --validate-transcripts is enabled")
     if not 0.0 <= args.transcript_validation_threshold <= 1.0:
         raise ValueError("--transcript-validation-threshold must be between 0.0 and 1.0")
+    if args.parallel_workers < 1:
+        raise ValueError("--parallel-workers must be at least 1")
+    if args.validate_transcripts:
+        resolve_whisper_device(args.transcript_validation_device)
+    if args.print_indextts_contract:
+        load_secret_env()
+        print(f"IndexTTS auth: {describe_indextts_auth()}")
+        config = indextts_config()
+        fn_index = indextts_fn_index(config)
+        print(json.dumps(indextts_contract_summary(config, fn_index), indent=2))
+        return
     if args.response_manifest is not None:
         responses = load_audio_responses_from_manifest(
             args.response_manifest,
@@ -2128,11 +2354,12 @@ def main() -> None:
         config: dict[str, Any] | None = None
         fn_index: int | None = None
         reference: Any | None = None
+        contract_summary: dict[str, Any] | None = None
         remote_batch_size = max(1, int(args.remote_batch_size or 1))
         pending: list[tuple[int, dict[str, Any], Path, Path]] = []
 
         def ensure_remote_client() -> tuple[dict[str, Any], int, Any]:
-            nonlocal config, fn_index, reference
+            nonlocal config, fn_index, reference, contract_summary
             if config is not None and fn_index is not None and reference is not None:
                 return config, fn_index, reference
             load_secret_env()
@@ -2141,6 +2368,9 @@ def main() -> None:
             print(f"IndexTTS auth: {describe_indextts_auth()}")
             config = indextts_config()
             fn_index = indextts_fn_index(config)
+            contract_summary = indextts_contract_summary(config, fn_index)
+            if contract_summary.get("deploymentDriftReason"):
+                print(f"IndexTTS batch drift: {contract_summary['deploymentDriftReason']}")
             reference = upload_reference(args.reference_audio)
             return config, fn_index, reference
 
@@ -2152,8 +2382,15 @@ def main() -> None:
             texts = [item["text"] for _, item, _, _ in batch]
             try:
                 active_config, active_fn_index, active_reference = ensure_remote_client()
-                print(f"synthesizing remote batch of {len(batch)} response(s)")
-                results = synthesize_batch(texts, active_config, active_fn_index, active_reference, args.voice_description)
+                print(f"processing remote chunk of {len(batch)} response(s)")
+                results = synthesize_batch(
+                    texts,
+                    active_config,
+                    active_fn_index,
+                    active_reference,
+                    args.voice_description,
+                    parallel_workers=args.parallel_workers,
+                )
                 if len(results) != len(batch):
                     raise RuntimeError(f"IndexTTS batch returned {len(results)} result(s) for {len(batch)} response(s)")
                 for (index, item, audio_path, mp3_path), result in zip(batch, results):
@@ -2173,6 +2410,8 @@ def main() -> None:
                     }
                     if result.get("batchLatencyMs") is not None:
                         entry["batchLatencyMs"] = result["batchLatencyMs"]
+                    if result.get("batchFallbackReason"):
+                        entry["batchFallbackReason"] = result["batchFallbackReason"]
                     if args.write_mp3 and mp3_path.exists():
                         entry.update(
                             {
@@ -2307,18 +2546,22 @@ def main() -> None:
         },
         "batchInference": {
             "remoteBatchSize": max(1, int(args.remote_batch_size or 1)),
+            "parallelWorkers": max(1, int(args.parallel_workers or 1)),
             "batchApiName": indextts_batch_api_name(),
             "enabled": os.getenv("WALLET_INDEXTTS_BATCH_ENABLED", "1").strip().lower() not in {"0", "false", "no"},
             "requiresBatch": os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "").strip().lower() in {"1", "true", "yes"},
         },
         "responses": manifest_entries,
     }
+    if not args.dry_run and 'contract_summary' in locals() and contract_summary is not None:
+        payload["batchInference"]["contract"] = contract_summary
     if args.validate_transcripts:
         payload["transcriptValidation"] = validate_audio_manifest_entries(
             manifest_entries,
             limit=args.transcript_validation_limit,
             model_name=args.transcript_validation_model,
             language=args.transcript_validation_language,
+            device=args.transcript_validation_device,
             similarity_threshold=args.transcript_validation_threshold,
         )
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
