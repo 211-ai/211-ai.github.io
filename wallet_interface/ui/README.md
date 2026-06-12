@@ -341,12 +341,22 @@ In the repository settings, set Pages source to "GitHub Actions".
 The workflow can also write `public/runtime-config.json` from non-secret GitHub
 Actions variables before the build. Use repository or environment variables
 such as `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
-`ABBY_PAGES_ACTOR_DID`, and optional `ABBY_PAGES_FILECOIN_UPLOAD_URL` when you
-want the Pages sandbox to point at a live backend like `https://211-ai.com`
-without committing a runtime-config change. A bundled same-origin deployment can
-set `ABBY_RUNTIME_FILECOIN_UPLOAD_URL=/filecoin-upload`; a Pages sandbox should
+`ABBY_PAGES_ACTOR_DID`, optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`, and optional
+`ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL` when you want the Pages sandbox to
+point at live backend/runtime assets like `https://211-ai.com` without
+committing a runtime-config change. A bundled same-origin deployment can set
+`ABBY_RUNTIME_FILECOIN_UPLOAD_URL=/filecoin-upload`; a Pages sandbox should
 usually point `ABBY_PAGES_FILECOIN_UPLOAD_URL` at the live origin explicitly,
-for example `https://211-ai.com/filecoin-upload`.
+for example `https://211-ai.com/filecoin-upload`. The same runtime config can
+override Abby's precomputed audio manifest at runtime with:
+
+```json
+{
+  "precomputedAudio": {
+    "manifestUrl": "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/main/audio/abby-tts/current/metadata/abby_tts_runtime_manifest.json"
+  }
+}
+```
 
 The UI is mobile-first and also includes desktop layouts. The mobile home screen
 keeps the required primary actions as two cards: "Emergency contacts" followed

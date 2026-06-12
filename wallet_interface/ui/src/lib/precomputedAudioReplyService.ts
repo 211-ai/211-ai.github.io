@@ -1,3 +1,5 @@
+import { readRuntimePrecomputedAudioManifestUrl } from "./runtimeConfig";
+
 interface PrecomputedAudioManifest {
   responses?: PrecomputedAudioManifestEntry[];
 }
@@ -46,7 +48,9 @@ export interface PrecomputedAudioReplyMatch {
   route?: string;
 }
 
-const PRECOMPUTED_AUDIO_MANIFEST_URL = "/assets/audio/precomputed/211-dag-indextts/manifest.json";
+const LOCAL_PRECOMPUTED_AUDIO_MANIFEST_URL = "/assets/audio/precomputed/211-dag-indextts/manifest.json";
+const DEFAULT_REMOTE_PRECOMPUTED_AUDIO_MANIFEST_URL =
+  "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/main/audio/abby-tts/current/metadata/abby_tts_runtime_manifest.json";
 
 let manifestPromise: Promise<PreparedPrecomputedAudioEntry[] | undefined> | undefined;
 
@@ -108,20 +112,42 @@ export async function findPrecomputedAudioReply(input: {
 
 async function loadPrecomputedAudioManifest(): Promise<PreparedPrecomputedAudioEntry[] | undefined> {
   if (!manifestPromise) {
-    manifestPromise = fetch(PRECOMPUTED_AUDIO_MANIFEST_URL, { cache: "force-cache" })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`Precomputed audio manifest unavailable (${response.status})`);
-        }
-        const manifest = (await response.json()) as PrecomputedAudioManifest;
-        return prepareManifestEntries(manifest.responses || []);
-      })
-      .catch((error) => {
-        console.warn("Precomputed audio manifest unavailable; continuing with generated speech.", error);
-        return undefined;
-      });
+    manifestPromise = loadFirstAvailableManifest(getPrecomputedAudioManifestUrls()).catch((error) => {
+      console.warn("Precomputed audio manifest unavailable; continuing with generated speech.", error);
+      return undefined;
+    });
   }
   return manifestPromise;
+}
+
+async function loadFirstAvailableManifest(urls: string[]): Promise<PreparedPrecomputedAudioEntry[] | undefined> {
+  let lastError: Error | undefined;
+  for (const manifestUrl of urls) {
+    try {
+      const response = await fetch(manifestUrl, { cache: "force-cache" });
+      if (!response.ok) {
+        throw new Error(`Precomputed audio manifest unavailable (${response.status}) at ${manifestUrl}`);
+      }
+      const manifest = (await response.json()) as PrecomputedAudioManifest;
+      return prepareManifestEntries(manifest.responses || []);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error || `Failed to load ${manifestUrl}`));
+    }
+  }
+  if (lastError) {
+    throw lastError;
+  }
+  return undefined;
+}
+
+function getPrecomputedAudioManifestUrls(): string[] {
+  const runtimeUrl = readRuntimePrecomputedAudioManifestUrl();
+  const envUrl = normalizeOptionalString(import.meta.env?.VITE_ABBY_TTS_MANIFEST_URL as string | undefined);
+  return dedupeStrings(
+    [runtimeUrl, envUrl, DEFAULT_REMOTE_PRECOMPUTED_AUDIO_MANIFEST_URL, LOCAL_PRECOMPUTED_AUDIO_MANIFEST_URL].filter(
+      (value): value is string => Boolean(value),
+    ),
+  );
 }
 
 function prepareManifestEntries(entries: PrecomputedAudioManifestEntry[]): PreparedPrecomputedAudioEntry[] {
@@ -237,6 +263,11 @@ function normalizeSlottedValue(value: string | undefined): string {
     .trim()
     .replace(/\s+/g, " ")
     .toLowerCase();
+}
+
+function normalizeOptionalString(value: string | undefined): string | undefined {
+  const normalized = String(value || "").trim();
+  return normalized || undefined;
 }
 
 function dedupeStrings(values: string[]): string[] {

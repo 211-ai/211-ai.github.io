@@ -3405,35 +3405,44 @@ def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch
     wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
     wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
     wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
-    calls = {"config": 0, "join": 0, "upload": 0}
 
-    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
-        if url.endswith("/config"):
+    calls = {"config": 0, "join": 0, "upload": 0, "wait": 0, "fetch": 0}
+
+    class FakeClient:
+        def get_config(self) -> dict[str, object]:
             calls["config"] += 1
             return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
-        if url.endswith("/gradio_api/queue/join"):
-            calls["join"] += 1
-            assert payload and payload["fn_index"] == 17
-            return {}
-        raise AssertionError(url)
 
-    def fake_upload(data: bytes, file_name: str, mime_type: str) -> dict[str, object]:
-        calls["upload"] += 1
-        return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+        def resolve_fn_index(self, api_name: str, config: Mapping[str, object], *, fallback_markers=()):
+            return 17
+
+        def upload_file(self, file_name: str, data: bytes, mime_type: str) -> dict[str, object]:
+            calls["upload"] += 1
+            return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+        def queue_join(self, fn_index: int, data: Sequence[object], *, session_hash: str | None = None) -> str:
+            calls["join"] += 1
+            assert fn_index == 17
+            return session_hash or "session-123"
+
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5) -> dict[str, object]:
+            calls["wait"] += 1
+            return {"path": "/tmp/out.wav"}
+
+        def fetch_file(self, reference: object, *, accept: str = "audio/*, application/octet-stream") -> tuple[bytes, str]:
+            calls["fetch"] += 1
+            return b"RIFFstubWAVE", "audio/wav"
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
-    monkeypatch.setattr(wallet_api_module, "_gradio_upload_file", fake_upload)
-    monkeypatch.setattr(wallet_api_module, "_indextts_wait_for_result", lambda session_hash: {"path": "/tmp/out.wav"})
-    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
 
     first = wallet_api_module._run_indextts_gradio_tts(text="hello")
     second = wallet_api_module._run_indextts_gradio_tts(text="again")
 
     assert first["latency"]["total_ms"] >= 0
     assert second["latency"]["config_ms"] == 0
-    assert calls == {"config": 1, "join": 2, "upload": 1}
+    assert calls == {"config": 1, "join": 2, "upload": 1, "wait": 2, "fetch": 2}
 
 
 def test_indextts_spoken_text_normalizes_numbers_and_address_abbreviations() -> None:
@@ -3540,79 +3549,86 @@ def test_indextts_proxy_sends_normalized_speech_text(monkeypatch) -> None:
     wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
     wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
     wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
-    queued_payloads: list[Mapping[str, object]] = []
 
-    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
-        if url.endswith("/config"):
+    queued_payloads: list[tuple[int, list[object]]] = []
+
+    class FakeClient:
+        def get_config(self) -> dict[str, object]:
             return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
-        if url.endswith("/gradio_api/queue/join"):
-            assert payload is not None
-            queued_payloads.append(payload)
-            return {}
-        raise AssertionError(url)
+
+        def resolve_fn_index(self, api_name: str, config: Mapping[str, object], *, fallback_markers=()):
+            return 17
+
+        def upload_file(self, file_name: str, data: bytes, mime_type: str) -> dict[str, object]:
+            return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+        def queue_join(self, fn_index: int, data: Sequence[object], *, session_hash: str | None = None) -> str:
+            queued_payloads.append((fn_index, list(data)))
+            return session_hash or "session-123"
+
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5) -> dict[str, object]:
+            return {"path": "/tmp/out.wav"}
+
+        def fetch_file(self, reference: object, *, accept: str = "audio/*, application/octet-stream") -> tuple[bytes, str]:
+            return b"RIFFstubWAVE", "audio/wav"
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
-    monkeypatch.setattr(
-        wallet_api_module,
-        "_gradio_upload_file",
-        lambda data, file_name, mime_type: {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name},
-    )
-    monkeypatch.setattr(wallet_api_module, "_indextts_wait_for_result", lambda session_hash: {"path": "/tmp/out.wav"})
-    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Visit SE 32nd ave or call 211.")
 
     assert result["text"] == "Visit South East thirty second Avenue or call two one one."
     assert result["originalText"] == "Visit SE 32nd ave or call 211."
     assert queued_payloads
-    assert queued_payloads[0]["data"][2] == "Visit South East thirty second Avenue or call two one one."
+    assert queued_payloads[0][0] == 17
+    assert queued_payloads[0][1][2] == "Visit South East thirty second Avenue or call two one one."
 
 
 def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
     wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
     wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
     wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
-    queued_payloads: list[Mapping[str, object]] = []
 
-    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
-        if url.endswith("/config"):
+    queued_payloads: list[tuple[int, list[object]]] = []
+
+    class FakeClient:
+        def get_config(self) -> dict[str, object]:
             return {"dependencies": [{"id": 17, "api_name": "/gen_single"}, {"id": 23, "api_name": "/gen_batch"}]}
-        if url.endswith("/gradio_api/queue/join"):
-            assert payload is not None
-            queued_payloads.append(payload)
-            return {}
-        raise AssertionError(url)
+
+        def resolve_fn_index(self, api_name: str, config: Mapping[str, object], *, fallback_markers=()):
+            return 23 if "batch" in api_name else 17
+
+        def upload_file(self, file_name: str, data: bytes, mime_type: str) -> dict[str, object]:
+            return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+        def queue_join(self, fn_index: int, data: Sequence[object], *, session_hash: str | None = None) -> str:
+            queued_payloads.append((fn_index, list(data)))
+            return session_hash or "session-123"
+
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5) -> dict[str, object]:
+            return {
+                "data": [
+                    {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
+                    {"__type__": "update", "value": [{"path": "/tmp/one.wav"}, {"path": "/tmp/two.wav"}]},
+                    {"__type__": "update", "value": None},
+                ]
+            }
+
+        def fetch_file(self, reference: object, *, accept: str = "audio/*, application/octet-stream") -> tuple[bytes, str]:
+            return b"RIFFstubWAVE", "audio/wav"
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "gen_batch")
-    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
-    monkeypatch.setattr(
-        wallet_api_module,
-        "_gradio_upload_file",
-        lambda data, file_name, mime_type: {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name},
-    )
-    monkeypatch.setattr(
-        wallet_api_module,
-        "_indextts_wait_for_result",
-        lambda session_hash: {
-            "data": [
-                {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
-                {"__type__": "update", "value": [{"path": "/tmp/one.wav"}, {"path": "/tmp/two.wav"}]},
-                {"__type__": "update", "value": None},
-            ]
-        },
-    )
-    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_batch_tts(texts=["Call 211.", "Meet at SE 32nd ave."])
 
     assert result["mode"] == "batch"
     assert result["batchSize"] == 2
-    assert queued_payloads[0]["fn_index"] == 23
-    assert queued_payloads[0]["data"][2] == '["Call two one one.", "Meet at South East thirty second Avenue."]'
-    assert queued_payloads[0]["data"][16] == 2
+    assert queued_payloads[0][0] == 23
+    assert queued_payloads[0][1][2] == '["Call two one one.", "Meet at South East thirty second Avenue."]'
+    assert queued_payloads[0][1][16] == 2
     assert [item["text"] for item in result["items"]] == ["Call two one one.", "Meet at South East thirty second Avenue."]
 
 

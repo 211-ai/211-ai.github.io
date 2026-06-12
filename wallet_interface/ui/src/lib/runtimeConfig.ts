@@ -37,6 +37,10 @@ export type RuntimeVoiceProxyConfig = {
   fallbackModel?: string;
 };
 
+export type RuntimePrecomputedAudioConfig = {
+  manifestUrl?: string;
+};
+
 export type ResolvedRuntimeVoiceProxyConfig = {
   enabled?: boolean;
   model?: string;
@@ -50,10 +54,15 @@ export type ResolvedRuntimeVoiceProxyConfig = {
   fallbackModel?: string;
 };
 
+export type ResolvedRuntimePrecomputedAudioConfig = {
+  manifestUrl: string;
+};
+
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
   voiceProxy?: RuntimeVoiceProxyConfig;
+  precomputedAudio?: RuntimePrecomputedAudioConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
@@ -108,6 +117,14 @@ export function readRuntimeVoiceProxyConfig(): ResolvedRuntimeVoiceProxyConfig |
   return normalizeVoiceProxyConfig(readRuntimeConfig().voiceProxy);
 }
 
+export function readRuntimePrecomputedAudioConfig(): ResolvedRuntimePrecomputedAudioConfig | undefined {
+  return normalizePrecomputedAudioConfig(readRuntimeConfig().precomputedAudio);
+}
+
+export function readRuntimePrecomputedAudioManifestUrl(): string | undefined {
+  return readRuntimePrecomputedAudioConfig()?.manifestUrl;
+}
+
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -117,10 +134,12 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
   const walletApi = normalizeWalletApiConfig(payload?.walletApi) ?? normalizeWalletApiBaseConfig(payload?.walletApi);
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
+  const precomputedAudio = normalizePrecomputedAudioConfig(payload?.precomputedAudio);
   return {
     ...(walletApi ? { walletApi } : {}),
     ...(filecoinStorage ? { filecoinStorage } : {}),
-    ...(voiceProxy ? { voiceProxy } : {})
+    ...(voiceProxy ? { voiceProxy } : {}),
+    ...(precomputedAudio ? { precomputedAudio } : {}),
   };
 }
 
@@ -201,6 +220,15 @@ function normalizeVoiceProxyConfig(
     ...(fallbackSttUrl ? { fallbackSttUrl } : {}),
     ...(fallbackModel ? { fallbackModel } : {}),
   };
+}
+
+function normalizePrecomputedAudioConfig(
+  config: RuntimePrecomputedAudioConfig | null | undefined
+): ResolvedRuntimePrecomputedAudioConfig | undefined {
+  if (!config) return undefined;
+  const manifestUrl = normalizeOptionalString(config.manifestUrl);
+  if (!manifestUrl) return undefined;
+  return { manifestUrl };
 }
 
 function normalizeOptionalString(value: string | null | undefined): string | undefined {

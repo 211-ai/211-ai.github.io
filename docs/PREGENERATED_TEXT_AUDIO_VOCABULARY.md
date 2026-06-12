@@ -4,16 +4,18 @@ Audio plan input: docs/pregenerated_text_audio_slot_plan.json
 Browser corpus input: wallet_interface/ui/public/corpus/211-info/current
 Vocabulary inventory: docs/pregenerated_text_audio_vocabulary_inventory.json
 Vocabulary manifest: docs/pregenerated_text_audio_vocabulary_manifest.json
+BM25-only manifest: docs/pregenerated_text_audio_bm25_manifest.json
 GraphRAG candidates: docs/graphrag_audio_prerender_candidates.json
 
 ## Summary
 
 - Audio-plan normalized values considered: 96
-- BM25 reuse terms retained: 11864
+- BM25 reuse terms retained: 11611
+- BM25-only precompute entries: 11608
 - GraphRAG entity-name candidates retained: 180
 - GraphRAG phone candidates retained: 180
 - GraphRAG address candidates retained: 180
-- Combined precompute-ready vocabulary entries: 12468
+- Combined precompute-ready vocabulary entries: 12225
 
 ## Top Combined Candidates
 
@@ -34,7 +36,7 @@ GraphRAG candidates: docs/graphrag_audio_prerender_candidates.json
 - Salem: priority=4489.1284, candidate_kinds=audio_plan_slot_value, bm25_term, slot_kinds=location, term
 - summer: priority=4339.5375, candidate_kinds=bm25_term, slot_kinds=term
 - Road: priority=4320.9277, candidate_kinds=bm25_term, slot_kinds=term
-- ebt: priority=4315.0651, candidate_kinds=bm25_term, slot_kinds=term
+- E B T: priority=4315.0651, candidate_kinds=bm25_term, slot_kinds=term
 - center: priority=4311.3948, candidate_kinds=bm25_term, slot_kinds=term
 - family: priority=4030.345, candidate_kinds=bm25_term, slot_kinds=term
 
@@ -57,7 +59,7 @@ GraphRAG candidates: docs/graphrag_audio_prerender_candidates.json
 - salem: bm25_score=4466.128, matched_docs=676, df=2184
 - summer: bm25_score=4339.537, matched_docs=519, df=1912
 - Road: bm25_score=4320.928, matched_docs=748, df=2505
-- ebt: bm25_score=4315.065, matched_docs=161, df=529
+- E B T: bm25_score=4315.065, matched_docs=161, df=529
 - center: bm25_score=4311.395, matched_docs=1414, df=7509
 - family: bm25_score=4030.345, matched_docs=1212, df=7668
 

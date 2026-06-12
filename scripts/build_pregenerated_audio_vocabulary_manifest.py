@@ -30,6 +30,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.precompute_indextts_responses import (  # noqa: E402
+    _digits_to_words,
     normalize_indextts_spoken_text,
     normalize_slot_value_text,
     stable_id,
@@ -46,6 +47,7 @@ DEFAULT_AUDIO_PLAN = REPO_ROOT / "docs" / "pregenerated_text_audio_slot_plan.jso
 DEFAULT_BROWSER_CORPUS_DIR = REPO_ROOT / "wallet_interface" / "ui" / "public" / "corpus" / "211-info" / "current"
 DEFAULT_VOCAB_INVENTORY = REPO_ROOT / "docs" / "pregenerated_text_audio_vocabulary_inventory.json"
 DEFAULT_VOCAB_MANIFEST = REPO_ROOT / "docs" / "pregenerated_text_audio_vocabulary_manifest.json"
+DEFAULT_BM25_MANIFEST = REPO_ROOT / "docs" / "pregenerated_text_audio_bm25_manifest.json"
 DEFAULT_GRAPHRAG_CANDIDATES = REPO_ROOT / "docs" / "graphrag_audio_prerender_candidates.json"
 DEFAULT_REPORT = REPO_ROOT / "docs" / "PREGENERATED_TEXT_AUDIO_VOCABULARY.md"
 
@@ -76,18 +78,34 @@ STOP_WORDS = {
 GENERIC_BM25_TERMS = {
     "address",
     "addresses",
+    "amp",
     "apply",
+    "aspx",
     "assistance",
     "call",
+    "click",
+    "com",
     "contact",
     "details",
     "email",
+    "gethelp",
+    "gov",
     "help",
+    "html",
     "hours",
+    "http",
+    "https",
+    "inc",
     "information",
+    "llc",
     "location",
     "locations",
     "main",
+    "org",
+    "pdf",
+    "per",
+    "php",
+    "print",
     "number",
     "numbers",
     "office",
@@ -98,8 +116,43 @@ GENERIC_BM25_TERMS = {
     "providers",
     "service",
     "services",
+    "share",
+    "use",
     "visit",
     "website",
+    "www",
+}
+
+BM25_ALLOWED_ALPHANUMERIC_TERMS = {
+    "dd214",
+    "lgbtq2",
+    "lgbtqia2s",
+}
+
+BM25_SPELLED_TOKENS = {
+    "caf",
+    "cco",
+    "dd214",
+    "dhs",
+    "ebt",
+    "fpl",
+    "ged",
+    "hiv",
+    "hud",
+    "id",
+    "lgbtq",
+    "lgbtq2",
+    "lgbtqia",
+    "lgbtqia2s",
+    "nara",
+    "nw",
+    "ohp",
+    "snap",
+    "ssdi",
+    "ssi",
+    "tanf",
+    "va",
+    "wic",
 }
 
 
@@ -109,6 +162,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--browser-corpus-dir", type=Path, default=DEFAULT_BROWSER_CORPUS_DIR)
     parser.add_argument("--vocab-inventory", type=Path, default=DEFAULT_VOCAB_INVENTORY)
     parser.add_argument("--vocab-manifest", type=Path, default=DEFAULT_VOCAB_MANIFEST)
+    parser.add_argument("--bm25-manifest", type=Path, default=DEFAULT_BM25_MANIFEST)
     parser.add_argument("--graphrag-candidates", type=Path, default=DEFAULT_GRAPHRAG_CANDIDATES)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     parser.add_argument("--doc-type", action="append", default=["service"], help="GraphRAG document type(s) to consider.")
@@ -153,6 +207,27 @@ def normalize_phone_key(value: str) -> str:
     return f"{digits}x{ext}" if ext else digits
 
 
+def spell_bm25_token_for_speech(value: str) -> str:
+    compact = re.sub(r"[^A-Za-z0-9]+", "", str(value or ""))
+    parts: list[str] = []
+    for chunk in re.findall(r"[A-Za-z]+|\d+", compact):
+        if chunk.isdigit():
+            parts.append(_digits_to_words(chunk))
+        else:
+            parts.append(" ".join(char.upper() for char in chunk.upper()))
+    return " ".join(part for part in parts if part)
+
+
+def normalize_bm25_spoken_term(raw_value: str) -> str:
+    cleaned = normalize_text(raw_value)
+    compact = re.sub(r"[^A-Za-z0-9]+", "", cleaned)
+    if not compact:
+        return cleaned
+    if compact.casefold() in BM25_SPELLED_TOKENS:
+        return spell_bm25_token_for_speech(compact)
+    return cleaned
+
+
 @functools.lru_cache(maxsize=32768)
 def normalized_candidate_value(kind: str, raw_value: str) -> str:
     normalized_kind = str(kind or "").strip().lower()
@@ -176,20 +251,25 @@ def spoken_candidate_text(kind: str, raw_value: str) -> str:
     if not cleaned:
         return ""
     if normalized_kind == "bm25_term":
-        return " ".join(normalize_indextts_spoken_text(cleaned).split())
+        return " ".join(normalize_indextts_spoken_text(normalize_bm25_spoken_term(cleaned)).split())
     spoken = normalize_slot_value_text(normalized_kind, cleaned)
     return spoken or " ".join(normalize_indextts_spoken_text(cleaned).split())
 
 
 def is_useful_bm25_term(term: str, *, minimum_document_frequency: int, document_frequency: int) -> bool:
     normalized = normalized_candidate_value("bm25_term", term)
+    compact = re.sub(r"[^a-z0-9]+", "", normalized)
     if not normalized:
         return False
-    if normalized in STOP_WORDS or normalized in GENERIC_BM25_TERMS:
+    if normalized in STOP_WORDS or normalized in GENERIC_BM25_TERMS or compact in STOP_WORDS or compact in GENERIC_BM25_TERMS:
         return False
     if document_frequency < minimum_document_frequency:
         return False
     if normalized.isdigit():
+        return False
+    if re.fullmatch(r"\d{1,2}\s*(?:am|pm)", normalized):
+        return False
+    if re.search(r"\d", compact) and compact not in BM25_ALLOWED_ALPHANUMERIC_TERMS:
         return False
     if len(normalized) < 3:
         return False
@@ -582,6 +662,7 @@ def build_inventory(
     bm25_terms: list[dict[str, Any]],
     graphrag_candidates: Mapping[str, list[dict[str, Any]]],
     manifest: Mapping[str, Any],
+    bm25_manifest: Mapping[str, Any],
     args: argparse.Namespace,
 ) -> dict[str, Any]:
     return {
@@ -593,6 +674,7 @@ def build_inventory(
         "summary": {
             "audioPlanValueCount": len(audio_plan_values),
             "bm25TermCount": len(bm25_terms),
+            "bm25ManifestCount": len(bm25_manifest.get("responses") or []),
             "graphragEntityNameCount": len(graphrag_candidates.get("entityNames") or []),
             "graphragPhoneCount": len(graphrag_candidates.get("phones") or []),
             "graphragAddressCount": len(graphrag_candidates.get("addresses") or []),
@@ -617,12 +699,14 @@ def build_report(
         f"Browser corpus input: {args.browser_corpus_dir.relative_to(REPO_ROOT)}",
         f"Vocabulary inventory: {args.vocab_inventory.relative_to(REPO_ROOT)}",
         f"Vocabulary manifest: {args.vocab_manifest.relative_to(REPO_ROOT)}",
+        f"BM25-only manifest: {args.bm25_manifest.relative_to(REPO_ROOT)}",
         f"GraphRAG candidates: {args.graphrag_candidates.relative_to(REPO_ROOT)}",
         "",
         "## Summary",
         "",
         f"- Audio-plan normalized values considered: {summary.get('audioPlanValueCount', 0)}",
         f"- BM25 reuse terms retained: {summary.get('bm25TermCount', 0)}",
+        f"- BM25-only precompute entries: {summary.get('bm25ManifestCount', 0)}",
         f"- GraphRAG entity-name candidates retained: {summary.get('graphragEntityNameCount', 0)}",
         f"- GraphRAG phone candidates retained: {summary.get('graphragPhoneCount', 0)}",
         f"- GraphRAG address candidates retained: {summary.get('graphragAddressCount', 0)}",
@@ -676,7 +760,39 @@ def build_outputs(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, A
         graphrag_candidates.get("phones") or [],
         graphrag_candidates.get("addresses") or [],
     )
-    inventory = build_inventory(audio_plan_values, bm25_terms, graphrag_candidates, manifest, args)
+    bm25_manifest = {
+        "schemaVersion": 1,
+        "purpose": "BM25-only reusable audio vocabulary for batched IndexTTS precompute.",
+        "summary": {
+            "responseCount": 0,
+            "sourceTypeCounts": {"graphrag.bm25_term": 0},
+            "candidateKindCounts": {"bm25_term": 0},
+            "topResponses": [],
+        },
+        "responses": [],
+    }
+    bm25_responses = [
+        response
+        for response in (manifest.get("responses") or [])
+        if "graphrag.bm25_term" in set(response.get("sourceTypes") or [])
+    ]
+    for index, response in enumerate(bm25_responses, start=1):
+        bm25_manifest["responses"].append({**response, "priorityRank": index})
+    bm25_manifest["summary"] = {
+        "responseCount": len(bm25_manifest["responses"]),
+        "sourceTypeCounts": {"graphrag.bm25_term": len(bm25_manifest["responses"])},
+        "candidateKindCounts": {"bm25_term": len(bm25_manifest["responses"])},
+        "topResponses": [
+            {
+                "text": item["text"],
+                "priorityScore": item["priorityScore"],
+                "candidateKinds": item["candidateKinds"],
+                "slotKinds": item["slotKinds"],
+            }
+            for item in bm25_manifest["responses"][:20]
+        ],
+    }
+    inventory = build_inventory(audio_plan_values, bm25_terms, graphrag_candidates, manifest, bm25_manifest, args)
     graphrag_inventory = {
         "schemaVersion": 1,
         "sourceBrowserCorpusDir": str(args.browser_corpus_dir),
@@ -687,17 +803,19 @@ def build_outputs(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, A
         },
         **graphrag_candidates,
     }
-    return inventory, manifest, graphrag_inventory
+    return inventory, manifest, bm25_manifest, graphrag_inventory
 
 
 def main() -> None:
     args = parse_args()
-    inventory, manifest, graphrag_inventory = build_outputs(args)
+    inventory, manifest, bm25_manifest, graphrag_inventory = build_outputs(args)
 
     args.vocab_inventory.parent.mkdir(parents=True, exist_ok=True)
     args.vocab_inventory.write_text(json.dumps(inventory, indent=2), encoding="utf-8")
     args.vocab_manifest.parent.mkdir(parents=True, exist_ok=True)
     args.vocab_manifest.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    args.bm25_manifest.parent.mkdir(parents=True, exist_ok=True)
+    args.bm25_manifest.write_text(json.dumps(bm25_manifest, indent=2), encoding="utf-8")
     args.graphrag_candidates.parent.mkdir(parents=True, exist_ok=True)
     args.graphrag_candidates.write_text(json.dumps(graphrag_inventory, indent=2), encoding="utf-8")
     args.report.parent.mkdir(parents=True, exist_ok=True)
@@ -708,11 +826,13 @@ def main() -> None:
             {
                 "vocabInventory": str(args.vocab_inventory),
                 "vocabManifest": str(args.vocab_manifest),
+                "bm25Manifest": str(args.bm25_manifest),
                 "graphragCandidates": str(args.graphrag_candidates),
                 "report": str(args.report),
                 "summary": {
                     "audioPlanValueCount": inventory.get("summary", {}).get("audioPlanValueCount", 0),
                     "bm25TermCount": inventory.get("summary", {}).get("bm25TermCount", 0),
+                    "bm25ManifestCount": inventory.get("summary", {}).get("bm25ManifestCount", 0),
                     "graphRagEntityNameCount": inventory.get("summary", {}).get("graphragEntityNameCount", 0),
                     "graphRagPhoneCount": inventory.get("summary", {}).get("graphragPhoneCount", 0),
                     "graphRagAddressCount": inventory.get("summary", {}).get("graphragAddressCount", 0),

@@ -13,8 +13,10 @@ import json
 import mimetypes
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 import zipfile
@@ -23,6 +25,8 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
+
+from ipfs_accelerate_py.hf_space_inference import HFSpaceClient
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
@@ -40,6 +44,78 @@ SLOTTED_RESPONSE_FIELDS = (
     "slottedResponseSignatures",
     "slottedEdgeIds",
 )
+
+
+class IndexTTSQuotaExceededError(RuntimeError):
+    def __init__(self, message: str, *, retry_after: str = "") -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+def indextts_retry_after_hint(value: Any) -> str:
+    match = re.search(r"Try again in (?P<retry>\d{1,2}:\d{2}:\d{2})", str(value or ""), flags=re.IGNORECASE)
+    return match.group("retry") if match else ""
+
+
+def is_indextts_quota_exceeded_error(value: Any) -> bool:
+    text = str(value or "")
+    lowered = text.casefold()
+    return (
+        "zerogpu quota exceeded" in lowered
+        or ("zerogpu quota" in lowered and "exceed" in lowered)
+        or ("quota exceeded" in lowered and "try again in" in lowered)
+    )
+
+
+def raise_if_indextts_quota_exceeded(value: Any) -> None:
+    if not is_indextts_quota_exceeded_error(value):
+        return
+    retry_after = indextts_retry_after_hint(value)
+    message = str(value or "IndexTTS ZeroGPU quota exceeded")
+    raise IndexTTSQuotaExceededError(message, retry_after=retry_after)
+
+
+def is_indextts_transient_worker_error(value: Any) -> bool:
+    text = str(value or "")
+    lowered = text.casefold()
+    return any(
+        marker in lowered
+        for marker in (
+            "zerogpu worker error",
+            "acceleratorerror",
+            "queue full",
+            "queue_full",
+            "temporarily unavailable",
+            "service unavailable",
+            "bad gateway",
+            "gateway timeout",
+            "timed out",
+            "connection reset",
+            "remote disconnected",
+        )
+    )
+
+
+def batch_failure_result(
+    error: Exception,
+    *,
+    batch_mode: str,
+    fallback_reason: str,
+    requested_batch_size: int,
+    executed_batch_size: int,
+    split_depth: int,
+) -> dict[str, Any]:
+    retry_after = indextts_retry_after_hint(error)
+    return {
+        "error": f"{type(error).__name__}: {error}",
+        "retriable": is_indextts_transient_worker_error(error) or bool(retry_after),
+        **({"retryAfter": retry_after} if retry_after else {}),
+        "batchMode": batch_mode,
+        "batchFallbackReason": fallback_reason,
+        "batchRequestedSize": requested_batch_size,
+        "batchExecutedSize": executed_batch_size,
+        "batchSplitDepth": split_depth,
+    }
 
 
 def stable_id(text: str) -> str:
@@ -1215,7 +1291,106 @@ def describe_indextts_auth() -> str:
     return f"hf_auth={'yes' if auth.startswith('Bearer ') else 'no'} hf_token_chars={max(0, len(auth) - len('Bearer '))} hf_bill_to={bill_to or 'unset'}"
 
 
+_INDEXTTS_SPACE_CLIENT: HFSpaceClient | None = None
+_INDEXTTS_SPACE_CLIENT_KEY = ""
+
+
+def indextts_space_client() -> HFSpaceClient:
+    global _INDEXTTS_SPACE_CLIENT
+    global _INDEXTTS_SPACE_CLIENT_KEY
+    cache_key = "|".join(
+        (
+            indextts_base_url(),
+            str(indextts_timeout()),
+            str(os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACEHUB_API_TOKEN") or os.getenv("IPFS_DATASETS_PY_HF_API_TOKEN") or ""),
+            str(os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus"),
+        )
+    )
+    if _INDEXTTS_SPACE_CLIENT is not None and cache_key == _INDEXTTS_SPACE_CLIENT_KEY:
+        return _INDEXTTS_SPACE_CLIENT
+    _INDEXTTS_SPACE_CLIENT = HFSpaceClient(
+        indextts_base_url(),
+        timeout_seconds=indextts_timeout(),
+        headers_factory=lambda: indextts_headers(),
+    )
+    _INDEXTTS_SPACE_CLIENT_KEY = cache_key
+    return _INDEXTTS_SPACE_CLIENT
+
+
+def bucket_sync_targets(bucket_uri: str) -> dict[str, str]:
+    base = str(bucket_uri or "").strip().rstrip("/")
+    if not base:
+        return {}
+    return {
+        "bucketUri": base,
+        "audioUri": f"{base}/audio",
+        "metadataUri": f"{base}/metadata",
+    }
+
+
+def hf_cli_executable() -> str:
+    configured = str(os.getenv("HF_CLI_BIN") or "hf").strip() or "hf"
+    if os.path.sep in configured:
+        if not Path(configured).exists():
+            raise RuntimeError(f"HF CLI executable was not found at {configured}")
+        return configured
+    resolved = shutil.which(configured)
+    if not resolved:
+        raise RuntimeError("HF CLI executable was not found on PATH. Install it or set HF_CLI_BIN.")
+    return resolved
+
+
+def run_hf_sync(local_path: Path, remote_uri: str) -> dict[str, str]:
+    load_secret_env()
+    command = [hf_cli_executable(), "sync", str(local_path), str(remote_uri)]
+    completed = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        env=os.environ.copy(),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = "\n".join(part for part in (completed.stdout.strip(), completed.stderr.strip()) if part).strip()
+    if completed.returncode != 0:
+        raise RuntimeError(f"hf sync failed for {display_path(local_path)} -> {remote_uri}: {output or 'unknown error'}")
+    return {
+        "localPath": display_path(local_path),
+        "remoteUri": str(remote_uri),
+        **({"output": output} if output else {}),
+    }
+
+
+def sync_generated_outputs_to_bucket(
+    output_dir: Path,
+    manifest_path: Path,
+    public_manifest_path: Path,
+    bucket_uri: str,
+) -> dict[str, Any]:
+    targets = bucket_sync_targets(bucket_uri)
+    if not targets:
+        return {}
+    if not output_dir.exists():
+        raise FileNotFoundError(output_dir)
+    with tempfile.TemporaryDirectory(prefix="abby-tts-bucket-sync-") as tmpdir:
+        metadata_dir = Path(tmpdir) / "metadata"
+        metadata_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(manifest_path, metadata_dir / manifest_path.name)
+        shutil.copy2(public_manifest_path, metadata_dir / public_manifest_path.name)
+        audio_sync = run_hf_sync(output_dir, targets["audioUri"])
+        metadata_sync = run_hf_sync(metadata_dir, targets["metadataUri"])
+    return {
+        **targets,
+        "audioSync": audio_sync,
+        "metadataSync": metadata_sync,
+    }
+
+
 def http_json(method: str, url: str, payload: Any | None = None) -> Any:
+    base_url = indextts_base_url().rstrip("/")
+    if str(url).startswith(base_url):
+        path = str(url)[len(base_url) :].lstrip("/")
+        return indextts_space_client().request_json(method, path, payload)
     data = None if payload is None else json.dumps(payload).encode("utf-8")
     headers = indextts_headers()
     if data is not None:
@@ -1227,28 +1402,9 @@ def http_json(method: str, url: str, payload: Any | None = None) -> Any:
 
 def upload_reference(path: Path) -> dict[str, Any]:
     data = path.read_bytes()
-    boundary = f"----211AiIndexTtsPrecompute{uuid.uuid4().hex}"
     safe_name = path.name or "abby-reference.wav"
     mime_type = mimetypes.guess_type(str(path))[0] or "audio/wav"
-    body = b"".join(
-        [
-            f"--{boundary}\r\n".encode("utf-8"),
-            f'Content-Disposition: form-data; name="files"; filename="{safe_name}"\r\n'.encode("utf-8"),
-            f"Content-Type: {mime_type}\r\n\r\n".encode("utf-8"),
-            data,
-            f"\r\n--{boundary}--\r\n".encode("utf-8"),
-        ]
-    )
-    headers = indextts_headers()
-    headers["Content-Type"] = f"multipart/form-data; boundary={boundary}"
-    request = urllib_request.Request(
-        f"{indextts_base_url()}/gradio_api/upload",
-        data=body,
-        headers=headers,
-        method="POST",
-    )
-    with urllib_request.urlopen(request, timeout=indextts_timeout()) as response:
-        parsed = json.loads(response.read().decode("utf-8"))
+    parsed = indextts_space_client().upload_file(safe_name, data, mime_type)
     upload_path = first_upload_path(parsed)
     if not upload_path:
         raise RuntimeError("IndexTTS upload did not return a reference path")
@@ -1276,33 +1432,22 @@ def first_upload_path(value: Any) -> str:
 
 
 def indextts_config() -> dict[str, Any]:
-    return dict(http_json("GET", f"{indextts_base_url()}/config"))
+    config = indextts_space_client().get_config()
+    return dict(config)
 
 
 def indextts_fn_index(config: Mapping[str, Any]) -> int:
     api_name = os.getenv("WALLET_INDEXTTS_API_NAME", "/gen_single")
-    api_candidates = {api_name, api_name.lstrip("/"), f"/{api_name.lstrip('/')}"}
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise RuntimeError("IndexTTS config did not include dependencies")
-    for dependency in dependencies:
-        if not isinstance(dependency, Mapping):
-            continue
-        if str(dependency.get("api_name") or "") in api_candidates:
-            value = dependency.get("id")
-            if isinstance(value, int):
-                return value
-            if isinstance(value, str) and value.isdigit():
-                return int(value)
-    for dependency in dependencies:
-        if not isinstance(dependency, Mapping):
-            continue
-        name = str(dependency.get("api_name") or dependency.get("id") or "").lower()
-        if any(marker in name for marker in ("tts", "synth", "generate", "infer", "predict")):
-            value = dependency.get("id")
-            if isinstance(value, int):
-                return value
-    raise RuntimeError(f"IndexTTS api_name {api_name!r} was not found")
+    try:
+        return int(
+            indextts_space_client().resolve_fn_index(
+                api_name,
+                config,
+                fallback_markers=("tts", "synth", "generate", "infer", "predict"),
+            )
+        )
+    except Exception as exc:
+        raise RuntimeError(f"IndexTTS api_name {api_name!r} was not found") from exc
 
 
 def indextts_batch_api_name() -> str:
@@ -1310,56 +1455,18 @@ def indextts_batch_api_name() -> str:
 
 
 def lookup_dependency_id_by_api_name(config: Mapping[str, Any], api_name: str) -> int | None:
-    api_candidates = {api_name, api_name.lstrip("/"), f"/{api_name.lstrip('/')}"}
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise RuntimeError("IndexTTS config did not include dependencies")
-    for dependency in dependencies:
-        if not isinstance(dependency, Mapping):
-            continue
-        if str(dependency.get("api_name") or "") in api_candidates:
-            value = dependency.get("id")
-            if isinstance(value, int):
-                return value
-            if isinstance(value, str) and value.isdigit():
-                return int(value)
-    return None
+    try:
+        return int(indextts_space_client().resolve_fn_index(api_name, config))
+    except Exception:
+        return None
 
 
 def lookup_dependency_input_count(config: Mapping[str, Any], dependency_id: int) -> int | None:
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise RuntimeError("IndexTTS config did not include dependencies")
-    for dependency in dependencies:
-        if not isinstance(dependency, Mapping):
-            continue
-        value = dependency.get("id")
-        candidate_id = None
-        if isinstance(value, int):
-            candidate_id = value
-        elif isinstance(value, str) and value.isdigit():
-            candidate_id = int(value)
-        if candidate_id != dependency_id:
-            continue
-        inputs = dependency.get("inputs")
-        if isinstance(inputs, list):
-            return len(inputs)
-        return None
-    return None
+    return indextts_space_client().lookup_dependency_input_count(int(dependency_id), config)
 
 
 def dependency_api_names(config: Mapping[str, Any]) -> list[str]:
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise RuntimeError("IndexTTS config did not include dependencies")
-    names: list[str] = []
-    for dependency in dependencies:
-        if not isinstance(dependency, Mapping):
-            continue
-        api_name = str(dependency.get("api_name") or "").strip()
-        if api_name:
-            names.append(api_name)
-    return sorted(dict.fromkeys(names))
+    return indextts_space_client().dependency_api_names(config)
 
 
 def indextts_contract_name(input_count: int | None) -> str:
@@ -1519,31 +1626,15 @@ def batch_request_data(
 
 
 def wait_for_result(session_hash: str) -> dict[str, Any]:
-    deadline = time.time() + indextts_timeout()
-    url = f"{indextts_base_url()}/gradio_api/queue/data?session_hash={urllib_parse.quote(session_hash)}"
-    while time.time() < deadline:
-        request = urllib_request.Request(url, headers=indextts_headers())
-        with urllib_request.urlopen(request, timeout=min(30.0, indextts_timeout())) as response:
-            for raw_line in response:
-                line = raw_line.decode("utf-8", errors="replace").strip()
-                if not line.startswith("data:"):
-                    continue
-                payload_text = line.removeprefix("data:").strip()
-                if not payload_text:
-                    continue
-                event = json.loads(payload_text)
-                if not isinstance(event, Mapping):
-                    continue
-                message = str(event.get("msg") or "")
-                if message == "process_completed":
-                    if event.get("success") is False:
-                        raise RuntimeError(f"IndexTTS queue failed: {event.get('output') or event}")
-                    output = event.get("output")
-                    return dict(output) if isinstance(output, Mapping) else dict(event)
-                if message in {"process_failed", "queue_full"}:
-                    raise RuntimeError(f"IndexTTS queue failed: {event}")
-        time.sleep(0.5)
-    raise TimeoutError("IndexTTS queue timed out")
+    try:
+        return indextts_space_client().wait_for_queue_result(
+            session_hash,
+            timeout_seconds=indextts_timeout(),
+            poll_interval_seconds=0.5,
+        )
+    except Exception as exc:
+        raise_if_indextts_quota_exceeded(exc)
+        raise
 
 
 def find_audio_reference(value: Any) -> Any:
@@ -1675,35 +1766,19 @@ def fetch_gradio_file(ref: Any) -> tuple[bytes, str]:
         name = str(ref.get("name") or ref.get("path") or "")
         return bytes(ref["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
     if isinstance(ref, Mapping):
-        url = str(ref.get("url") or "")
-        path = str(ref.get("path") or ref.get("name") or "")
         mime_type = str(ref.get("mime_type") or ref.get("mimeType") or "")
     else:
-        url = str(ref or "")
-        path = url
         mime_type = ""
-    if url.startswith("http://") or url.startswith("https://"):
-        file_url = url
-    else:
-        encoded_path = urllib_parse.quote(path, safe="/:")
-        file_url = f"{indextts_base_url()}/gradio_api/file={encoded_path}"
-    request = urllib_request.Request(file_url, headers=indextts_headers(accept="audio/*, application/octet-stream"))
-    with urllib_request.urlopen(request, timeout=indextts_timeout()) as response:
-        return response.read(), mime_type or response.headers.get_content_type() or "audio/wav"
+    data, resolved_mime_type = indextts_space_client().fetch_file(ref)
+    return data, mime_type or resolved_mime_type or "audio/wav"
 
 
 def synthesize(text: str, config: Mapping[str, Any], fn_index: int, reference_audio: Mapping[str, Any], voice_description: str) -> dict[str, Any]:
     start = time.perf_counter()
-    session_hash = uuid.uuid4().hex
     input_count = lookup_dependency_input_count(config, fn_index)
-    http_json(
-        "POST",
-        f"{indextts_base_url()}/gradio_api/queue/join",
-        {
-            "data": request_data(text, reference_audio, voice_description, input_count=input_count),
-            "fn_index": fn_index,
-            "session_hash": session_hash,
-        },
+    session_hash = indextts_space_client().queue_join(
+        int(fn_index),
+        request_data(text, reference_audio, voice_description, input_count=input_count),
     )
     result = wait_for_result(session_hash)
     audio_ref = find_audio_reference(result)
@@ -1715,6 +1790,162 @@ def synthesize(text: str, config: Mapping[str, Any], fn_index: int, reference_au
         "mimeType": "audio/wav" if audio.startswith(b"RIFF") and b"WAVE" in audio[:16] else mime_type,
         "latencyMs": int((time.perf_counter() - start) * 1000),
     }
+
+
+def direct_batch_synthesis(
+    texts: Sequence[str],
+    config: Mapping[str, Any],
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+) -> list[dict[str, Any]]:
+    text_list = [str(text) for text in texts]
+    if not text_list:
+        return []
+    start = time.perf_counter()
+    batch_fn_index = indextts_batch_fn_index(config)
+    batch_input_count = lookup_dependency_input_count(config, batch_fn_index)
+    session_hash = indextts_space_client().queue_join(
+        int(batch_fn_index),
+        batch_request_data(
+            text_list,
+            reference_audio,
+            voice_description,
+            input_count=batch_input_count,
+        ),
+    )
+    result = wait_for_result(session_hash)
+    audio_refs = batch_audio_references(result)
+    if len(audio_refs) < len(text_list):
+        raise RuntimeError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(text_list)} texts")
+    batch_latency_ms = int((time.perf_counter() - start) * 1000)
+    outputs: list[dict[str, Any]] = []
+    for ref in audio_refs[: len(text_list)]:
+        audio, mime_type = fetch_gradio_file(ref)
+        outputs.append(
+            {
+                "audio": audio,
+                "mimeType": "audio/wav" if audio.startswith(b"RIFF") and b"WAVE" in audio[:16] else mime_type,
+                "latencyMs": batch_latency_ms,
+                "batchLatencyMs": batch_latency_ms,
+                "batchMode": "batch",
+            }
+        )
+    return outputs
+
+
+def annotate_split_batch_outputs(
+    outputs: Sequence[Mapping[str, Any]],
+    *,
+    root_batch_size: int,
+    executed_batch_size: int,
+    split_depth: int,
+    fallback_reason: str,
+) -> list[dict[str, Any]]:
+    annotated: list[dict[str, Any]] = []
+    for output in outputs:
+        item = dict(output)
+        base_mode = str(item.get("batchMode") or "batch")
+        if split_depth > 0:
+            if base_mode.endswith("-split-fallback"):
+                item["batchMode"] = base_mode
+            elif base_mode == "batch":
+                item["batchMode"] = "batch-split-fallback"
+            elif base_mode in {"sequential", "sequential-fallback"}:
+                item["batchMode"] = "sequential-split-fallback"
+            elif base_mode in {"parallel", "parallel-fallback"}:
+                item["batchMode"] = "parallel-split-fallback"
+            else:
+                item["batchMode"] = f"{base_mode}-split-fallback"
+            item["batchRequestedSize"] = root_batch_size
+            item["batchExecutedSize"] = executed_batch_size
+            item["batchSplitDepth"] = split_depth
+        if fallback_reason:
+            existing_reason = str(item.get("batchFallbackReason") or "").strip()
+            item["batchFallbackReason"] = fallback_reason if not existing_reason else f"{fallback_reason} | {existing_reason}"
+        annotated.append(item)
+    return annotated
+
+
+def adaptive_split_batch_synthesis(
+    texts: Sequence[str],
+    config: Mapping[str, Any],
+    single_fn_index: int,
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+    *,
+    require_batch: bool,
+    root_batch_size: int | None = None,
+    split_depth: int = 0,
+    fallback_reason: str = "",
+) -> list[dict[str, Any]]:
+    text_list = [str(text) for text in texts]
+    if not text_list:
+        return []
+    requested_batch_size = root_batch_size or len(text_list)
+    try:
+        outputs = direct_batch_synthesis(text_list, config, reference_audio, voice_description)
+        if split_depth > 0:
+            outputs = annotate_split_batch_outputs(
+                outputs,
+                root_batch_size=requested_batch_size,
+                executed_batch_size=len(text_list),
+                split_depth=split_depth,
+                fallback_reason=fallback_reason,
+            )
+        return outputs
+    except Exception as exc:
+        if isinstance(exc, IndexTTSQuotaExceededError):
+            raise
+        failure_reason = f"{type(exc).__name__}: {exc}"
+        inherited_reason = fallback_reason or failure_reason
+        if len(text_list) > 1 and is_indextts_transient_worker_error(exc):
+            midpoint = max(1, len(text_list) // 2)
+            left = adaptive_split_batch_synthesis(
+                text_list[:midpoint],
+                config,
+                single_fn_index,
+                reference_audio,
+                voice_description,
+                require_batch=require_batch,
+                root_batch_size=requested_batch_size,
+                split_depth=split_depth + 1,
+                fallback_reason=inherited_reason,
+            )
+            right = adaptive_split_batch_synthesis(
+                text_list[midpoint:],
+                config,
+                single_fn_index,
+                reference_audio,
+                voice_description,
+                require_batch=require_batch,
+                root_batch_size=requested_batch_size,
+                split_depth=split_depth + 1,
+                fallback_reason=inherited_reason,
+            )
+            return [*left, *right]
+        if require_batch:
+            return [
+                batch_failure_result(
+                    exc,
+                    batch_mode="batch-failed",
+                    fallback_reason=inherited_reason,
+                    requested_batch_size=requested_batch_size,
+                    executed_batch_size=len(text_list),
+                    split_depth=split_depth,
+                )
+                for _text in text_list
+            ]
+        output = {
+            **synthesize(text_list[0], config, single_fn_index, reference_audio, voice_description),
+            "batchMode": "sequential-split-fallback",
+        }
+        return annotate_split_batch_outputs(
+            [output],
+            root_batch_size=requested_batch_size,
+            executed_batch_size=1,
+            split_depth=max(1, split_depth),
+            fallback_reason=inherited_reason,
+        )
 
 
 def synthesize_batch(
@@ -1740,43 +1971,16 @@ def synthesize_batch(
             raise RuntimeError(batch_fallback_reason)
         batch_enabled = False
     if batch_enabled:
-        start = time.perf_counter()
         try:
-            session_hash = uuid.uuid4().hex
-            batch_fn_index = indextts_batch_fn_index(config)
-            batch_input_count = lookup_dependency_input_count(config, batch_fn_index)
-            http_json(
-                "POST",
-                f"{indextts_base_url()}/gradio_api/queue/join",
-                {
-                    "data": batch_request_data(
-                        text_list,
-                        reference_audio,
-                        voice_description,
-                        input_count=batch_input_count,
-                    ),
-                    "fn_index": batch_fn_index,
-                    "session_hash": session_hash,
-                },
+            return adaptive_split_batch_synthesis(
+                text_list,
+                config,
+                single_fn_index,
+                reference_audio,
+                voice_description,
+                require_batch=require_batch,
+                root_batch_size=len(text_list),
             )
-            result = wait_for_result(session_hash)
-            audio_refs = batch_audio_references(result)
-            if len(audio_refs) < len(text_list):
-                raise RuntimeError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(text_list)} texts")
-            batch_latency_ms = int((time.perf_counter() - start) * 1000)
-            outputs: list[dict[str, Any]] = []
-            for ref in audio_refs[: len(text_list)]:
-                audio, mime_type = fetch_gradio_file(ref)
-                outputs.append(
-                    {
-                        "audio": audio,
-                        "mimeType": "audio/wav" if audio.startswith(b"RIFF") and b"WAVE" in audio[:16] else mime_type,
-                        "latencyMs": batch_latency_ms,
-                        "batchLatencyMs": batch_latency_ms,
-                        "batchMode": "batch",
-                    }
-                )
-            return outputs
         except Exception as exc:
             batch_fallback_reason = f"{type(exc).__name__}: {exc}"
             if require_batch:
@@ -2215,6 +2419,11 @@ def write_progress(path: Path | None, entries: list[dict[str, Any]], total: int,
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--space-url",
+        default="",
+        help="Override the IndexTTS Space base URL for this invocation.",
+    )
     parser.add_argument("--dag", type=Path, default=DEFAULT_DAG)
     parser.add_argument("--results", type=Path, default=DEFAULT_RESULTS)
     parser.add_argument(
@@ -2302,11 +2511,18 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Fetch the live IndexTTS Gradio config, print the detected single/batch contract summary, and exit.",
     )
+    parser.add_argument(
+        "--bucket-uri",
+        default=os.getenv("WALLET_INDEXTTS_BUCKET_URI", "").strip(),
+        help="If set, sync generated audio to <bucket-uri>/audio and local manifests to <bucket-uri>/metadata using the hf CLI.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    if str(args.space_url or "").strip():
+        os.environ["WALLET_INDEXTTS_SPACE_URL"] = str(args.space_url).strip()
     started_at = time.time()
     include_assistant = not args.voice_responses_only
     include_voice = not args.assistant_responses_only
@@ -2347,6 +2563,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     manifest_entries: list[dict[str, Any]] = []
+    fatal_exception: Exception | None = None
     if args.dry_run:
         for item in responses:
             manifest_entries.append({**item, "status": "planned", "audioPath": "", "mp3Path": ""})
@@ -2394,6 +2611,24 @@ def main() -> None:
                 if len(results) != len(batch):
                     raise RuntimeError(f"IndexTTS batch returned {len(results)} result(s) for {len(batch)} response(s)")
                 for (index, item, audio_path, mp3_path), result in zip(batch, results):
+                    if result.get("error"):
+                        entry = {
+                            **item,
+                            "status": "failed",
+                            "audioPath": "",
+                            "mp3Path": "",
+                            "error": str(result.get("error") or "Unknown batch failure"),
+                            "batchMode": result.get("batchMode", "batch" if len(batch) > 1 else "single"),
+                        }
+                        for key in ("batchFallbackReason", "batchRequestedSize", "batchExecutedSize", "batchSplitDepth", "retryAfter"):
+                            if result.get(key) is not None:
+                                entry[key] = result[key]
+                        if result.get("retriable"):
+                            entry["retriable"] = True
+                        manifest_entries.append(entry)
+                        print(f"[{index}/{len(responses)}] failed {item['id']}: {entry['error']}")
+                        write_progress(args.progress_json, manifest_entries, len(responses), started_at)
+                        continue
                     audio_path.write_bytes(result["audio"])
                     if args.write_mp3:
                         convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=True)
@@ -2412,6 +2647,9 @@ def main() -> None:
                         entry["batchLatencyMs"] = result["batchLatencyMs"]
                     if result.get("batchFallbackReason"):
                         entry["batchFallbackReason"] = result["batchFallbackReason"]
+                    for key in ("batchRequestedSize", "batchExecutedSize", "batchSplitDepth"):
+                        if result.get(key) is not None:
+                            entry[key] = result[key]
                     if args.write_mp3 and mp3_path.exists():
                         entry.update(
                             {
@@ -2428,6 +2666,7 @@ def main() -> None:
                     print(f"[{index}/{len(responses)}] generated {mp3_path.name if mp3_path.exists() else audio_path.name}")
                     write_progress(args.progress_json, manifest_entries, len(responses), started_at)
             except Exception as exc:
+                retry_after = exc.retry_after if isinstance(exc, IndexTTSQuotaExceededError) else indextts_retry_after_hint(exc)
                 for index, item, _audio_path, _mp3_path in batch:
                     print(f"[{index}/{len(responses)}] failed {item['id']}: {exc}")
                     manifest_entries.append(
@@ -2437,10 +2676,11 @@ def main() -> None:
                             "audioPath": "",
                             "mp3Path": "",
                             "error": f"{type(exc).__name__}: {exc}",
+                            **({"retriable": True, "retryAfter": retry_after} if retry_after else {}),
                         }
                     )
                     write_progress(args.progress_json, manifest_entries, len(responses), started_at)
-                if args.stop_on_error:
+                if isinstance(exc, IndexTTSQuotaExceededError) or args.stop_on_error:
                     raise
 
         for index, item in enumerate(responses, start=1):
@@ -2501,13 +2741,14 @@ def main() -> None:
             if len(pending) >= remote_batch_size:
                 try:
                     flush_pending()
-                except Exception:
+                except Exception as exc:
+                    fatal_exception = exc
                     break
         if pending:
             try:
                 flush_pending()
-            except Exception:
-                pass
+            except Exception as exc:
+                fatal_exception = exc
 
     payload = {
         "schemaVersion": 1,
@@ -2553,6 +2794,19 @@ def main() -> None:
         },
         "responses": manifest_entries,
     }
+    bucket_targets = bucket_sync_targets(args.bucket_uri)
+    if bucket_targets:
+        payload["bucketUpload"] = {
+            **bucket_targets,
+            "enabled": True,
+            "tool": "hf sync",
+        }
+    if isinstance(fatal_exception, IndexTTSQuotaExceededError):
+        payload["batchInference"]["rateLimitDetected"] = {
+            "type": type(fatal_exception).__name__,
+            "message": str(fatal_exception),
+            "retryAfter": fatal_exception.retry_after,
+        }
     if not args.dry_run and 'contract_summary' in locals() and contract_summary is not None:
         payload["batchInference"]["contract"] = contract_summary
     if args.validate_transcripts:
@@ -2583,10 +2837,20 @@ def main() -> None:
     args.public_manifest.write_text(json.dumps(public_payload, indent=2), encoding="utf-8")
     print(f"Wrote {args.manifest}")
     print(f"Wrote {args.public_manifest}")
+    if bucket_targets and not args.dry_run:
+        sync_summary = sync_generated_outputs_to_bucket(args.output_dir, args.manifest, args.public_manifest, args.bucket_uri)
+        print(f"Synced generated audio to {sync_summary['audioUri']}")
+        print(f"Synced manifests to {sync_summary['metadataUri']}")
+    if fatal_exception is not None:
+        raise fatal_exception
     if args.validate_transcripts and payload["transcriptValidation"]["failureCount"] and not args.transcript_validation_soft_fail:
         failure_summary = payload["transcriptValidation"]["failures"]
         raise RuntimeError(f"Transcript validation failed for {len(failure_summary)} audio file(s): {failure_summary}")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except IndexTTSQuotaExceededError as exc:
+        print(f"IndexTTS quota exhausted: {exc}", file=sys.stderr)
+        raise SystemExit(75) from exc

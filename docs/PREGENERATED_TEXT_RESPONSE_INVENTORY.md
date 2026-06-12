@@ -1,15 +1,15 @@
 # Pregenerated Text Response Inventory
 
-Generated at: 2026-05-27T22:28:41Z
+Generated at: 2026-06-06T03:51:49Z
 Unified manifest: docs/pregenerated_text_response_manifest.json
 
 ## Findings
 
 - Unified pregenerated text responses: 13809
 - Legacy-only responses retained from historical manifests: 7
-- Responses referenced by a served public manifest: 14
+- Responses referenced by a served public manifest: 0
 - Responses with historical audio artifacts or URLs recorded: 65
-- Public 211 audio directory MP3 files present: 69
+- Public 211 audio directory MP3 files present: 0
 
 ## Canonical Source Families
 
@@ -23,7 +23,6 @@ Unified manifest: docs/pregenerated_text_response_manifest.json
 | Family | Role | Responses | Unique text | Served public | Status counts | Path |
 | --- | --- | ---: | ---: | --- | --- | --- |
 | 211 | legacy_manifest | 142 | 142 | no | planned:142 | docs/211_indextts_precompute_manifest.json |
-| 211 | served_public_manifest | 14 | 14 | yes | failed:14 | wallet_interface/ui/public/assets/audio/precomputed/211-dag-indextts/manifest.json |
 | 211 | historical_batch_manifest | 32 | 32 | no | generated_mp3:32 | docs/211_indextts_precompute_batches/batch-00000-offset-000000.json |
 | 211 | historical_batch_manifest | 32 | 32 | no | generated_mp3:32 | docs/211_indextts_precompute_batches/batch-00001-offset-000032.json |
 | 211 | historical_batch_manifest | 32 | 32 | no | failed:31, generated_mp3:1 | docs/211_indextts_precompute_batches/batch-00002-offset-000064.json |

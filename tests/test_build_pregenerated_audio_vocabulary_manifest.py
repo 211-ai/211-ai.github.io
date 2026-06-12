@@ -101,11 +101,15 @@ def test_build_outputs_merges_bm25_slot_values_and_graphrag_candidates(tmp_path:
         report=tmp_path / "report.md",
     )
 
-    inventory, manifest, graphrag_inventory = vocab.build_outputs(args)
+    inventory, manifest, bm25_manifest, graphrag_inventory = vocab.build_outputs(args)
 
     assert inventory["summary"]["bm25TermCount"] == 1
+    assert inventory["summary"]["bm25ManifestCount"] == 1
     assert inventory["bm25Terms"][0]["spokenText"] == "pantry"
     assert inventory["bm25Terms"][0]["matchedDocumentCount"] == 2
+    assert bm25_manifest["summary"]["responseCount"] == 1
+    assert bm25_manifest["responses"][0]["text"] == "pantry"
+    assert bm25_manifest["responses"][0]["sourceTypes"] == ["graphrag.bm25_term"]
 
     assert graphrag_inventory["summary"]["entityNameCount"] >= 2
     assert graphrag_inventory["summary"]["phoneCount"] == 1
@@ -145,3 +149,63 @@ def test_build_bm25_term_candidates_keeps_all_repeated_terms_when_uncapped() -> 
     candidates = vocab.build_bm25_term_candidates(payload, args)
 
     assert [item["normalizedValue"] for item in candidates] == ["pantry", "shelter"]
+
+
+def test_build_bm25_term_candidates_filters_artifacts_and_spells_supported_tokens() -> None:
+    payload = {
+        "documentFrequency": {
+            "30 PM": 2,
+            "20cooling": 2,
+            "ebt": 2,
+            "dd214": 2,
+            "lgbtqia2s": 2,
+        },
+        "documents": [
+            {
+                "doc_id": "service:1",
+                "doc_type": "service",
+                "terms": {
+                    "30 PM": 2.0,
+                    "20cooling": 2.0,
+                    "ebt": 2.0,
+                    "dd214": 2.0,
+                    "lgbtqia2s": 2.0,
+                },
+                "term_idf": {
+                    "30 PM": 1.0,
+                    "20cooling": 1.0,
+                    "ebt": 1.0,
+                    "dd214": 1.0,
+                    "lgbtqia2s": 1.0,
+                },
+            },
+            {
+                "doc_id": "service:2",
+                "doc_type": "service",
+                "terms": {
+                    "30 PM": 1.0,
+                    "20cooling": 1.0,
+                    "ebt": 1.0,
+                    "dd214": 1.0,
+                    "lgbtqia2s": 1.0,
+                },
+                "term_idf": {
+                    "30 PM": 1.0,
+                    "20cooling": 1.0,
+                    "ebt": 1.0,
+                    "dd214": 1.0,
+                    "lgbtqia2s": 1.0,
+                },
+            },
+        ],
+    }
+    args = SimpleNamespace(doc_type=["service"], top_bm25_terms=0, min_bm25_document_frequency=2)
+
+    candidates = vocab.build_bm25_term_candidates(payload, args)
+
+    by_value = {item["normalizedValue"]: item for item in candidates}
+    assert "30 pm" not in by_value
+    assert "20cooling" not in by_value
+    assert by_value["ebt"]["spokenText"] == "E B T"
+    assert by_value["dd214"]["spokenText"] == "D D two one four"
+    assert by_value["lgbtqia2s"]["spokenText"] == "L G B T Q I A two S"

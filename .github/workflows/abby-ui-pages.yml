@@ -51,6 +51,7 @@ jobs:
           ABBY_PAGES_WALLET_ID: ${{ vars.ABBY_PAGES_WALLET_ID }}
           ABBY_PAGES_ACTOR_DID: ${{ vars.ABBY_PAGES_ACTOR_DID }}
           ABBY_PAGES_FILECOIN_UPLOAD_URL: ${{ vars.ABBY_PAGES_FILECOIN_UPLOAD_URL }}
+          ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL: ${{ vars.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL }}
         run: |
           node <<'EOF'
           const fs = require('fs');
@@ -66,6 +67,7 @@ jobs:
           const walletId = normalize(process.env.ABBY_PAGES_WALLET_ID);
           const actorDid = normalize(process.env.ABBY_PAGES_ACTOR_DID);
           const filecoinUploadUrl = normalize(process.env.ABBY_PAGES_FILECOIN_UPLOAD_URL);
+          const precomputedAudioManifestUrl = normalize(process.env.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL);
 
           if (walletApiBaseUrl && walletId) {
             config.walletApi = { apiBaseUrl: walletApiBaseUrl, walletId };
@@ -74,6 +76,10 @@ jobs:
 
           if (filecoinUploadUrl) {
             config.filecoinStorage = { uploadUrl: filecoinUploadUrl };
+          }
+
+          if (precomputedAudioManifestUrl) {
+            config.precomputedAudio = { manifestUrl: precomputedAudioManifestUrl };
           }
 
           fs.writeFileSync('public/runtime-config.json', JSON.stringify(config, null, 2) + '\n');

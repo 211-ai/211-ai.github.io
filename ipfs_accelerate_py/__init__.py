@@ -2,6 +2,30 @@
 
 from __future__ import annotations
 
-from . import llm_router
+from . import hf_space_inference, llm_router
 
-__all__ = ["llm_router"]
+from .hf_space_inference import (
+	BatchProcessor,
+	BatchState,
+	EndpointContract,
+	HFBucketBackend,
+	HFSpaceClient,
+	LocalFileSystemBackend,
+	OutputBackend,
+	SpaceRuntimeInfo,
+)
+
+__all__ = [
+	# Modules
+	"llm_router",
+	"hf_space_inference",
+	# Generic HF Space inference provider
+	"HFSpaceClient",
+	"OutputBackend",
+	"LocalFileSystemBackend",
+	"HFBucketBackend",
+	"BatchProcessor",
+	"BatchState",
+	"EndpointContract",
+	"SpaceRuntimeInfo",
+]
