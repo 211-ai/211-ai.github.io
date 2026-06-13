@@ -11,7 +11,9 @@ Covers:
 
 from __future__ import annotations
 
+import asyncio
 import json
+import os
 
 import pytest
 
@@ -21,12 +23,15 @@ from ipfs_accelerate_py.llm_consensus import (
     P2P_RESPONSE_SCHEMA_VERSION,
     ConsensusRequest,
     OperatorResponse,
+    P2PConsensusPeer,
     ProofReceipt,
     build_consensus_request,
     build_p2p_request_payload,
     normalized_output_hash,
     parse_p2p_response_payload,
     receipt_content_hash,
+    run_p2p_consensus,
+    run_p2p_consensus_async,
 )
 
 
@@ -626,3 +631,181 @@ def test_receipt_content_hash_changes_when_output_changes() -> None:
     )
 
     assert receipt_content_hash(base) != receipt_content_hash(altered)
+
+
+# ---------------------------------------------------------------------------
+# libp2p fan-out runner
+# ---------------------------------------------------------------------------
+
+
+def _peers() -> list[P2PConsensusPeer]:
+    return [
+        P2PConsensusPeer("peer-a", "/ip4/127.0.0.1/tcp/4101/p2p/peer-a"),
+        P2PConsensusPeer("peer-b", "/ip4/127.0.0.1/tcp/4102/p2p/peer-b"),
+        P2PConsensusPeer("peer-c", "/ip4/127.0.0.1/tcp/4103/p2p/peer-c"),
+    ]
+
+
+def _completed_task(peer_id: str, output_text: str = '{"answer":"4"}') -> dict:
+    return {
+        "task_id": f"task-{peer_id}",
+        "task_type": P2P_REQUEST_SCHEMA_VERSION,
+        "status": "completed",
+        "error": None,
+        "result": {
+            "schema_version": P2P_RESPONSE_SCHEMA_VERSION,
+            "operator_id": peer_id,
+            "peer_id": peer_id,
+            "provider": "openai",
+            "model_name": "gpt-4o-mini",
+            "output_text": output_text,
+            "metadata": {"node_version": "test"},
+        },
+    }
+
+
+def test_run_p2p_consensus_submits_payloads_and_waits_concurrently() -> None:
+    async def _exercise() -> tuple[object, list[dict], list[str]]:
+        request = _build_request(quorum=2, min_operators=3)
+        submissions: list[dict] = []
+        wait_started: list[str] = []
+        all_waiting = asyncio.Event()
+
+        async def submit_task(*, remote, task_type, model_name, payload):
+            submissions.append(
+                {
+                    "peer_id": remote.peer_id,
+                    "task_type": task_type,
+                    "model_name": model_name,
+                    "payload": payload,
+                }
+            )
+            return {"task_id": f"task-{remote.peer_id}"}
+
+        async def wait_task(*, remote, task_id, timeout_s):
+            wait_started.append(remote.peer_id)
+            if len(wait_started) == 3:
+                all_waiting.set()
+            await asyncio.wait_for(all_waiting.wait(), timeout=0.5)
+            assert task_id == f"task-{remote.peer_id}"
+            return _completed_task(remote.peer_id)
+
+        receipt = await run_p2p_consensus_async(
+            request=request,
+            prompt="What is 2+2?",
+            peers=_peers(),
+            timeout_s=1.0,
+            per_peer_timeout_s=0.5,
+            submit_task_fn=submit_task,
+            wait_task_fn=wait_task,
+            created_at="2026-06-13T12:00:00Z",
+        )
+        return receipt, submissions, wait_started
+
+    receipt, submissions, wait_started = asyncio.run(_exercise())
+
+    assert receipt.consensus.accepted is True
+    assert receipt.consensus.selected_operator_ids == ["peer-a", "peer-b", "peer-c"]
+    assert receipt.text == '{"answer":"4"}'
+    assert set(wait_started) == {"peer-a", "peer-b", "peer-c"}
+    assert len(submissions) == 3
+    for submission in submissions:
+        assert submission["task_type"] == P2P_REQUEST_SCHEMA_VERSION
+        assert submission["model_name"] == "gpt-4o-mini"
+        assert submission["payload"]["schema_version"] == P2P_REQUEST_SCHEMA_VERSION
+        assert submission["payload"]["request_id"] == receipt.request.request_id
+        assert submission["payload"]["request_hash"] == receipt.request.request_hash
+    assert {response.transport for response in receipt.responses} == {"libp2p"}
+
+
+def test_run_p2p_consensus_tolerates_missing_peer_when_quorum_is_met() -> None:
+    async def _exercise():
+        request = _build_request(quorum=2, min_operators=3)
+
+        async def submit_task(*, remote, task_type, model_name, payload):
+            return f"task-{remote.peer_id}"
+
+        async def wait_task(*, remote, task_id, timeout_s):
+            if remote.peer_id == "peer-c":
+                return None
+            return _completed_task(remote.peer_id)
+
+        return await run_p2p_consensus_async(
+            request=request,
+            prompt="What is 2+2?",
+            peers=_peers(),
+            timeout_s=1.0,
+            per_peer_timeout_s=0.5,
+            submit_task_fn=submit_task,
+            wait_task_fn=wait_task,
+        )
+
+    receipt = asyncio.run(_exercise())
+
+    assert receipt.consensus.accepted is True
+    assert receipt.consensus.selected_operator_ids == ["peer-a", "peer-b"]
+    errors = {response.operator_id: response.error for response in receipt.responses}
+    assert errors["peer-c"] == "timeout"
+
+
+def test_run_p2p_consensus_returns_degraded_receipt_when_fail_open() -> None:
+    async def _exercise():
+        request = _build_request(quorum=2, min_operators=3)
+
+        async def submit_task(*, remote, task_type, model_name, payload):
+            return f"task-{remote.peer_id}"
+
+        async def wait_task(*, remote, task_id, timeout_s):
+            if remote.peer_id == "peer-a":
+                return _completed_task(remote.peer_id)
+            return None
+
+        return await run_p2p_consensus_async(
+            request=request,
+            prompt="What is 2+2?",
+            peers=_peers(),
+            timeout_s=1.0,
+            per_peer_timeout_s=0.5,
+            submit_task_fn=submit_task,
+            wait_task_fn=wait_task,
+            fail_closed=False,
+        )
+
+    receipt = asyncio.run(_exercise())
+
+    assert receipt.consensus.accepted is False
+    assert receipt.consensus.reason == "quorum_not_met"
+    assert receipt.text == ""
+    assert receipt.consensus.total_successful == 1
+
+
+def test_run_p2p_consensus_does_not_mutate_remote_peer_env_vars(monkeypatch) -> None:
+    env_names = [
+        "IPFS_ACCELERATE_PY_TASK_P2P_REMOTE_PEER_ID",
+        "IPFS_ACCELERATE_PY_TASK_P2P_REMOTE_MULTIADDR",
+        "IPFS_DATASETS_PY_TASK_P2P_REMOTE_PEER_ID",
+        "IPFS_DATASETS_PY_TASK_P2P_REMOTE_MULTIADDR",
+    ]
+    for name in env_names:
+        monkeypatch.setenv(name, f"original-{name}")
+    before = {name: os.environ.get(name) for name in env_names}
+
+    async def submit_task(*, remote, task_type, model_name, payload):
+        return f"task-{remote.peer_id}"
+
+    async def wait_task(*, remote, task_id, timeout_s):
+        return _completed_task(remote.peer_id)
+
+    receipt = run_p2p_consensus(
+        request=_build_request(quorum=2, min_operators=3),
+        prompt="What is 2+2?",
+        peers=_peers(),
+        timeout_s=1.0,
+        per_peer_timeout_s=0.5,
+        submit_task_fn=submit_task,
+        wait_task_fn=wait_task,
+    )
+
+    assert receipt.consensus.accepted is True
+    after = {name: os.environ.get(name) for name in env_names}
+    assert after == before

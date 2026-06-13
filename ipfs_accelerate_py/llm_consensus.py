@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+import inspect
 import json
 import hashlib
 import hmac
@@ -44,6 +46,9 @@ NONDETERMINISTIC_KEYS = (
 )
 ADVISORY_COMPARISON_MODES = {"semantic"}
 SUPPORTED_COMPARISON_MODES = {"exact", "canonical_json", "normalized_text", "semantic"}
+P2P_COMPLETED_STATUSES = {"completed", "done", "success", "succeeded"}
+P2P_FAILED_STATUSES = {"cancelled", "error", "failed"}
+P2P_PENDING_STATUSES = {"pending", "queued", "running"}
 
 
 class LLMConsensusError(RuntimeError):
@@ -1038,6 +1043,7 @@ def parse_p2p_response_payload(
     peer_id: str | None = None,
     operator_id: str | None = None,
     latency_ms: int = 0,
+    comparison: str = "exact",
 ) -> OperatorResponse:
     """Parse a libp2p consensus response into an :class:`OperatorResponse`."""
 
@@ -1055,6 +1061,15 @@ def parse_p2p_response_payload(
     output_hash = str(data.get("output_hash") or "")
     if not output_hash and output_text:
         output_hash = sha256_digest(output_text)
+    resolved_error = str(data["error"]) if data.get("error") is not None else None
+
+    normalized_hash = str(data.get("normalized_output_hash") or "")
+    if not normalized_hash and output_text and not resolved_error:
+        try:
+            normalized_hash = normalized_output_hash(output_text, comparison=comparison)
+        except Exception as exc:
+            resolved_error = f"{type(exc).__name__}: {exc}"
+            output_hash = ""
 
     parsed_latency = data.get("latency_ms")
     try:
@@ -1071,13 +1086,24 @@ def parse_p2p_response_payload(
         model_name=str(data["model_name"]) if data.get("model_name") is not None else None,
         output_text=output_text,
         output_hash=output_hash,
-        normalized_output_hash=str(data.get("normalized_output_hash") or ""),
+        normalized_output_hash=normalized_hash,
         latency_ms=resolved_latency_ms,
-        error=str(data["error"]) if data.get("error") is not None else None,
+        error=resolved_error,
         signature=str(data["signature"]) if data.get("signature") is not None else None,
         attestation=attestation if isinstance(attestation, dict) else None,
         metadata=_dict_value(data, "metadata"),
     )
+
+
+@dataclass(frozen=True)
+class P2PConsensusPeer:
+    """Explicit libp2p peer configuration for consensus fan-out."""
+
+    peer_id: str
+    multiaddr: str
+    operator_id: str | None = None
+    provider: str | None = None
+    model_name: str | None = None
 
 
 @dataclass(frozen=True)
@@ -1194,6 +1220,494 @@ def _invoke_local_operator(operator: Any, index: int, request: ConsensusRequest)
         return _error_response(operator, index, request, error=exc, latency_ms=latency_ms)
 
 
+@dataclass(frozen=True)
+class _ResolvedP2PPeer:
+    remote: Any
+    peer_id: str
+    multiaddr: str
+    operator_id: str
+    provider: str
+    model_name: str | None
+
+
+def _load_p2p_task_client() -> tuple[Any, Callable[..., Any], Callable[..., Any]]:
+    try:
+        from ipfs_datasets_py.ml.accelerate_integration import p2p_task_client
+    except Exception as exc:
+        raise LLMConsensusError("libp2p task client is not available") from exc
+    return p2p_task_client.RemoteQueue, p2p_task_client.submit_task, p2p_task_client.wait_task
+
+
+def _peer_config_value(peer: Any, key: str, default: Any = None) -> Any:
+    if isinstance(peer, dict):
+        return peer.get(key, default)
+    return getattr(peer, key, default)
+
+
+def _extract_peer_id_from_multiaddr(multiaddr: str) -> str:
+    text = str(multiaddr or "").strip()
+    if not text:
+        return ""
+    match = re.search(r"/p2p/([^/]+)(?:/)?$", text)
+    return (match.group(1) if match else "").strip()
+
+
+def _resolve_p2p_peers(
+    peers: list[Any] | tuple[Any, ...],
+    *,
+    remote_queue_factory: Any | None = None,
+) -> list[_ResolvedP2PPeer]:
+    resolved: list[_ResolvedP2PPeer] = []
+    for index, peer in enumerate(peers or ()):
+        multiaddr = str(_peer_config_value(peer, "multiaddr", "") or "").strip()
+        peer_id = str(_peer_config_value(peer, "peer_id", "") or "").strip()
+        if not peer_id:
+            peer_id = _extract_peer_id_from_multiaddr(multiaddr)
+        if not peer_id:
+            peer_id = f"peer-{index}"
+        operator_id = str(_peer_config_value(peer, "operator_id", None) or peer_id)
+        provider = str(_peer_config_value(peer, "provider", "") or "")
+        model_name_value = _peer_config_value(peer, "model_name", None)
+        model_name = str(model_name_value) if model_name_value is not None else None
+
+        if remote_queue_factory is None:
+            remote = peer if hasattr(peer, "peer_id") and hasattr(peer, "multiaddr") else P2PConsensusPeer(peer_id, multiaddr)
+        elif isinstance(remote_queue_factory, type) and isinstance(peer, remote_queue_factory):
+            remote = peer
+        else:
+            remote = remote_queue_factory(peer_id=peer_id, multiaddr=multiaddr)
+
+        resolved.append(
+            _ResolvedP2PPeer(
+                remote=remote,
+                peer_id=peer_id,
+                multiaddr=multiaddr,
+                operator_id=operator_id,
+                provider=provider,
+                model_name=model_name,
+            )
+        )
+    return resolved
+
+
+def _p2p_empty_response(
+    peer: _ResolvedP2PPeer,
+    request: ConsensusRequest,
+    *,
+    error: str,
+    latency_ms: int,
+) -> OperatorResponse:
+    metadata = {"peer_id": peer.peer_id}
+    if peer.multiaddr:
+        metadata["multiaddr"] = peer.multiaddr
+    return OperatorResponse(
+        operator_id=peer.operator_id,
+        transport="libp2p",
+        peer_id=peer.peer_id,
+        provider=peer.provider or str(request.provider or ""),
+        model_name=peer.model_name or request.model_name,
+        output_text="",
+        output_hash="",
+        normalized_output_hash="",
+        latency_ms=max(0, int(latency_ms)),
+        error=error,
+        metadata=metadata,
+    )
+
+
+def _p2p_timeout_response(peer: _ResolvedP2PPeer, request: ConsensusRequest, *, timeout_s: float) -> OperatorResponse:
+    return _p2p_empty_response(
+        peer,
+        request,
+        error="timeout",
+        latency_ms=int(max(0.0, float(timeout_s)) * 1000),
+    )
+
+
+def _p2p_error_response(
+    peer: _ResolvedP2PPeer,
+    request: ConsensusRequest,
+    *,
+    error: BaseException | str,
+    latency_ms: int,
+) -> OperatorResponse:
+    message = str(error) if isinstance(error, str) else f"{type(error).__name__}: {error}"
+    return _p2p_empty_response(peer, request, error=message, latency_ms=latency_ms)
+
+
+async def _maybe_await_call(fn: Callable[..., Any], **kwargs: Any) -> Any:
+    value = fn(**kwargs)
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+
+def _p2p_task_id(submission: Any) -> str:
+    if isinstance(submission, str):
+        return submission.strip()
+    if isinstance(submission, dict):
+        for key in ("task_id", "id"):
+            value = submission.get(key)
+            if value is not None and str(value).strip():
+                return str(value).strip()
+    return ""
+
+
+def _has_p2p_response_fields(data: dict[str, Any]) -> bool:
+    response_keys = {
+        "attestation",
+        "error",
+        "normalized_output_hash",
+        "operator_id",
+        "output_hash",
+        "output_text",
+        "signature",
+    }
+    if str(data.get("schema_version") or "") == P2P_RESPONSE_SCHEMA_VERSION:
+        return True
+    return any(key in data and data.get(key) not in (None, "") for key in response_keys)
+
+
+def _extract_text_from_p2p_result(value: Any) -> str:
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, dict):
+        for key in ("text", "generated_text", "output_text", "completion", "content", "response"):
+            item = value.get(key)
+            if isinstance(item, str) and item.strip():
+                return item.strip()
+        for key in ("result", "data", "output", "payload"):
+            nested = _extract_text_from_p2p_result(value.get(key))
+            if nested:
+                return nested
+        choices = value.get("choices")
+        if isinstance(choices, list) and choices:
+            first = choices[0]
+            if isinstance(first, dict):
+                message = first.get("message")
+                if isinstance(message, dict) and isinstance(message.get("content"), str):
+                    return str(message["content"]).strip()
+                if isinstance(first.get("text"), str):
+                    return str(first["text"]).strip()
+    return ""
+
+
+def _p2p_payload_from_task_result(result: Any, *, status: str = "") -> tuple[dict[str, Any], str]:
+    if isinstance(result, OperatorResponse):
+        return result.to_dict(), status
+    if isinstance(result, str):
+        return {"output_text": result}, status
+    if not isinstance(result, dict):
+        return {"output_text": str(result or "")}, status
+
+    current_status = str(result.get("status") or status or "").strip().lower()
+    if current_status in P2P_FAILED_STATUSES:
+        return {
+            "output_text": "",
+            "output_hash": "",
+            "normalized_output_hash": "",
+            "error": str(result.get("error") or current_status),
+            "metadata": {"task_status": current_status},
+        }, current_status
+    if current_status in P2P_PENDING_STATUSES:
+        return {
+            "output_text": "",
+            "output_hash": "",
+            "normalized_output_hash": "",
+            "error": "timeout",
+            "metadata": {"task_status": current_status},
+        }, current_status
+    if current_status in P2P_COMPLETED_STATUSES and result.get("result") is not None:
+        return _p2p_payload_from_task_result(result.get("result"), status=current_status)
+    if _has_p2p_response_fields(result):
+        return dict(result), current_status
+
+    for key in ("result", "output", "data", "payload"):
+        nested = result.get(key)
+        if nested is not None:
+            return _p2p_payload_from_task_result(nested, status=current_status)
+
+    return {"output_text": _extract_text_from_p2p_result(result)}, current_status
+
+
+def _operator_response_from_p2p_result(
+    result: Any,
+    *,
+    peer: _ResolvedP2PPeer,
+    request: ConsensusRequest,
+    latency_ms: int,
+) -> OperatorResponse:
+    if result is None:
+        return _p2p_empty_response(peer, request, error="timeout", latency_ms=latency_ms)
+
+    payload, status = _p2p_payload_from_task_result(result)
+    payload = dict(payload)
+    payload.setdefault("operator_id", peer.operator_id)
+    payload.setdefault("peer_id", peer.peer_id)
+    payload.setdefault("provider", peer.provider or str(request.provider or ""))
+    payload.setdefault("model_name", peer.model_name or request.model_name)
+
+    metadata = dict(payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {})
+    if status:
+        metadata.setdefault("task_status", status)
+    if peer.multiaddr:
+        metadata.setdefault("multiaddr", peer.multiaddr)
+    payload["metadata"] = metadata
+
+    return parse_p2p_response_payload(
+        payload,
+        peer_id=peer.peer_id,
+        operator_id=peer.operator_id,
+        latency_ms=latency_ms,
+        comparison=request.comparison,
+    )
+
+
+async def _query_p2p_peer(
+    peer: _ResolvedP2PPeer,
+    *,
+    request: ConsensusRequest,
+    payload: dict[str, Any],
+    submit_task_fn: Callable[..., Any],
+    wait_task_fn: Callable[..., Any],
+    task_type: str,
+    per_peer_timeout_s: float,
+) -> OperatorResponse:
+    started = time.monotonic()
+    try:
+        submission = await asyncio.wait_for(
+            _maybe_await_call(
+                submit_task_fn,
+                remote=peer.remote,
+                task_type=task_type,
+                model_name=str(request.model_name or ""),
+                payload=dict(payload),
+            ),
+            timeout=max(0.0, float(per_peer_timeout_s)),
+        )
+        task_id = _p2p_task_id(submission)
+        if not task_id:
+            raise LLMConsensusError(f"p2p submit_task did not return a task_id: {submission!r}")
+
+        result = await asyncio.wait_for(
+            _maybe_await_call(
+                wait_task_fn,
+                remote=peer.remote,
+                task_id=task_id,
+                timeout_s=max(0.0, float(per_peer_timeout_s)),
+            ),
+            timeout=max(0.0, float(per_peer_timeout_s)),
+        )
+        latency_ms = int((time.monotonic() - started) * 1000)
+        return _operator_response_from_p2p_result(
+            result,
+            peer=peer,
+            request=request,
+            latency_ms=latency_ms,
+        )
+    except asyncio.TimeoutError:
+        return _p2p_timeout_response(peer, request, timeout_s=per_peer_timeout_s)
+    except asyncio.CancelledError:
+        raise
+    except Exception as exc:
+        latency_ms = int((time.monotonic() - started) * 1000)
+        return _p2p_error_response(peer, request, error=exc, latency_ms=latency_ms)
+
+
+async def fan_out_p2p_consensus(
+    *,
+    request: ConsensusRequest,
+    prompt: str,
+    peers: list[Any] | tuple[Any, ...],
+    timeout_s: float = 60.0,
+    per_peer_timeout_s: float | None = None,
+    submit_task_fn: Callable[..., Any] | None = None,
+    wait_task_fn: Callable[..., Any] | None = None,
+    remote_queue_factory: Any | None = None,
+    task_type: str = P2P_REQUEST_SCHEMA_VERSION,
+    redact_prompt_in_receipt: bool = True,
+    operator_metadata: dict[str, Any] | None = None,
+) -> list[OperatorResponse]:
+    """Submit one consensus request payload to explicit libp2p peers concurrently."""
+
+    if not peers:
+        raise LLMConsensusError("At least one p2p consensus peer is required")
+
+    if submit_task_fn is None or wait_task_fn is None:
+        default_remote_queue, default_submit_task, default_wait_task = _load_p2p_task_client()
+        remote_queue_factory = remote_queue_factory or default_remote_queue
+        submit_task_fn = submit_task_fn or default_submit_task
+        wait_task_fn = wait_task_fn or default_wait_task
+
+    resolved_peers = _resolve_p2p_peers(list(peers), remote_queue_factory=remote_queue_factory)
+    payload = build_p2p_request_payload(
+        request,
+        prompt,
+        redact_prompt_in_receipt=redact_prompt_in_receipt,
+        operator_metadata=operator_metadata,
+    )
+    effective_timeout_s = max(0.0, float(timeout_s))
+    effective_per_peer_timeout_s = (
+        max(0.0, float(per_peer_timeout_s))
+        if per_peer_timeout_s is not None
+        else effective_timeout_s
+    )
+
+    task_map = {
+        asyncio.create_task(
+            _query_p2p_peer(
+                peer,
+                request=request,
+                payload=payload,
+                submit_task_fn=submit_task_fn,
+                wait_task_fn=wait_task_fn,
+                task_type=task_type,
+                per_peer_timeout_s=effective_per_peer_timeout_s,
+            )
+        ): peer
+        for peer in resolved_peers
+    }
+    done, pending = await asyncio.wait(task_map, timeout=effective_timeout_s)
+
+    responses: list[OperatorResponse] = []
+    for task in done:
+        peer = task_map[task]
+        try:
+            responses.append(task.result())
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            responses.append(_p2p_error_response(peer, request, error=exc, latency_ms=0))
+
+    for task in pending:
+        peer = task_map[task]
+        task.cancel()
+        responses.append(_p2p_timeout_response(peer, request, timeout_s=effective_timeout_s))
+    if pending:
+        await asyncio.gather(*pending, return_exceptions=True)
+
+    return sorted(responses, key=lambda response: response.operator_id)
+
+
+def _selected_text_from_responses(responses: list[OperatorResponse], consensus: ConsensusResult) -> str:
+    if not consensus.accepted:
+        return ""
+    for response in responses:
+        if (
+            response.operator_id in consensus.selected_operator_ids
+            and response.output_hash == consensus.selected_output_hash
+            and response.normalized_output_hash == consensus.selected_normalized_hash
+        ):
+            return response.output_text
+    return ""
+
+
+async def run_p2p_consensus_async(
+    *,
+    request: ConsensusRequest,
+    prompt: str,
+    peers: list[Any] | tuple[Any, ...],
+    timeout_s: float = 60.0,
+    per_peer_timeout_s: float | None = None,
+    fail_closed: bool = True,
+    proof: ProofReceipt | None = None,
+    created_at: str | None = None,
+    receipt_path: str | os.PathLike[str] | None = None,
+    receipt_jsonl_path: str | os.PathLike[str] | None = None,
+    submit_task_fn: Callable[..., Any] | None = None,
+    wait_task_fn: Callable[..., Any] | None = None,
+    remote_queue_factory: Any | None = None,
+    task_type: str = P2P_REQUEST_SCHEMA_VERSION,
+    redact_prompt_in_receipt: bool = True,
+    operator_metadata: dict[str, Any] | None = None,
+) -> ConsensusReceipt:
+    """Run libp2p fan-out consensus and return a receipt."""
+
+    responses = await fan_out_p2p_consensus(
+        request=request,
+        prompt=prompt,
+        peers=peers,
+        timeout_s=timeout_s,
+        per_peer_timeout_s=per_peer_timeout_s,
+        submit_task_fn=submit_task_fn,
+        wait_task_fn=wait_task_fn,
+        remote_queue_factory=remote_queue_factory,
+        task_type=task_type,
+        redact_prompt_in_receipt=redact_prompt_in_receipt,
+        operator_metadata=operator_metadata,
+    )
+    consensus = select_consensus_result(
+        responses,
+        quorum=request.quorum,
+        comparison=request.comparison,
+        fail_closed=fail_closed,
+    )
+    resolved_proof = proof or ProofReceipt(
+        policy=str(request.proof_policy.get("mode") or "receipt_only"),
+        verified=False,
+    )
+    receipt = ConsensusReceipt(
+        request=request,
+        responses=responses,
+        consensus=consensus,
+        proof=resolved_proof,
+        text=_selected_text_from_responses(responses, consensus),
+        created_at=created_at or utc_now_iso(),
+    )
+    if receipt_path:
+        persist_consensus_receipt(receipt, path=receipt_path, append_jsonl=False)
+    if receipt_jsonl_path:
+        persist_consensus_receipt(receipt, path=receipt_jsonl_path, append_jsonl=True)
+    return receipt
+
+
+def run_p2p_consensus(
+    *,
+    request: ConsensusRequest,
+    prompt: str,
+    peers: list[Any] | tuple[Any, ...],
+    timeout_s: float = 60.0,
+    per_peer_timeout_s: float | None = None,
+    fail_closed: bool = True,
+    proof: ProofReceipt | None = None,
+    created_at: str | None = None,
+    receipt_path: str | os.PathLike[str] | None = None,
+    receipt_jsonl_path: str | os.PathLike[str] | None = None,
+    submit_task_fn: Callable[..., Any] | None = None,
+    wait_task_fn: Callable[..., Any] | None = None,
+    remote_queue_factory: Any | None = None,
+    task_type: str = P2P_REQUEST_SCHEMA_VERSION,
+    redact_prompt_in_receipt: bool = True,
+    operator_metadata: dict[str, Any] | None = None,
+) -> ConsensusReceipt:
+    """Synchronous wrapper for :func:`run_p2p_consensus_async`."""
+
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(
+            run_p2p_consensus_async(
+                request=request,
+                prompt=prompt,
+                peers=peers,
+                timeout_s=timeout_s,
+                per_peer_timeout_s=per_peer_timeout_s,
+                fail_closed=fail_closed,
+                proof=proof,
+                created_at=created_at,
+                receipt_path=receipt_path,
+                receipt_jsonl_path=receipt_jsonl_path,
+                submit_task_fn=submit_task_fn,
+                wait_task_fn=wait_task_fn,
+                remote_queue_factory=remote_queue_factory,
+                task_type=task_type,
+                redact_prompt_in_receipt=redact_prompt_in_receipt,
+                operator_metadata=operator_metadata,
+            )
+        )
+    raise LLMConsensusError("run_p2p_consensus_async must be used from a running event loop")
+
+
 def run_local_consensus(
     *,
     request: ConsensusRequest,
@@ -1295,10 +1809,12 @@ __all__ = [
     "ProofReceipt",
     "ConsensusReceipt",
     "LocalConsensusOperator",
+    "P2PConsensusPeer",
     "build_p2p_request_payload",
     "build_consensus_request",
     "canonical_request_hash",
     "canonical_request_payload",
+    "fan_out_p2p_consensus",
     "is_advisory_comparison",
     "load_consensus_config",
     "normalize_output_text",
@@ -1309,6 +1825,8 @@ __all__ = [
     "receipt_content_hash",
     "receipt_persistence_record",
     "run_local_consensus",
+    "run_p2p_consensus",
+    "run_p2p_consensus_async",
     "select_consensus_result",
     "sha256_digest",
     "sign_operator_response",
