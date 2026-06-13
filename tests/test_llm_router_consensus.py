@@ -6,10 +6,14 @@ from typing import Any
 
 from ipfs_accelerate_py import llm_router
 from ipfs_accelerate_py.llm_consensus import (
-    ConsensusRequest,
     ConsensusReceipt,
     LocalConsensusOperator,
     load_consensus_config,
+)
+from ipfs_accelerate_py.llm_router import (
+    ChatCompletionResponse,
+    _canonicalize_messages,
+    chat_completions_create_consensus,
 )
 
 
@@ -191,3 +195,134 @@ def test_generate_text_consensus_uses_env_config_when_explicit_config_missing(mo
     assert isinstance(receipt, ConsensusReceipt)
     assert receipt.request.comparison == "canonical_json"
     assert receipt.request.request_id == "env-nonce"
+
+
+# ---------------------------------------------------------------------------
+# chat_completions_create_consensus tests
+# ---------------------------------------------------------------------------
+
+def test_canonicalize_messages_produces_deterministic_string() -> None:
+    messages = [
+        {"role": "system", "content": "You are helpful."},
+        {"role": "user", "content": "What is 2+2?"},
+    ]
+    result = _canonicalize_messages(messages)
+    assert result == "system: You are helpful.\nuser: What is 2+2?"
+
+
+def test_canonicalize_messages_stable_across_calls() -> None:
+    messages = [
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hi there"},
+        {"role": "user", "content": "Bye"},
+    ]
+    assert _canonicalize_messages(messages) == _canonicalize_messages(messages)
+
+
+def test_chat_completions_create_consensus_returns_response_object() -> None:
+    operators = [
+        LocalConsensusOperator("op-a", lambda _: "Paris", provider="mock"),
+        LocalConsensusOperator("op-b", lambda _: "Paris", provider="mock"),
+    ]
+    messages = [
+        {"role": "user", "content": "What is the capital of France?"},
+    ]
+    response = chat_completions_create_consensus(
+        messages,
+        consensus={"comparison": "exact", "quorum": 2, "min_operators": 2, "nonce": "chat-nonce"},
+        operators=operators,
+    )
+    assert isinstance(response, ChatCompletionResponse)
+    assert len(response.choices) == 1
+    assert response.choices[0].message.content == "Paris"
+    assert response.choices[0].message.role == "assistant"
+    assert isinstance(response.receipt, ConsensusReceipt)
+    assert response.receipt.consensus.accepted is True
+
+
+def test_chat_completions_create_consensus_choices_message_content_access() -> None:
+    """Verify choices[0].message.content access pattern works."""
+    operators = [LocalConsensusOperator("op-a", lambda _: "42", provider="mock")]
+    messages = [{"role": "user", "content": "What is the answer?"}]
+    response = chat_completions_create_consensus(
+        messages,
+        consensus={"comparison": "exact", "quorum": 1, "min_operators": 1, "nonce": "n1"},
+        operators=operators,
+    )
+    assert response.choices[0].message.content == "42"
+
+
+def test_chat_completions_create_consensus_multi_turn_messages() -> None:
+    """Multi-turn messages are canonicalized deterministically."""
+    messages = [
+        {"role": "system", "content": "Be concise."},
+        {"role": "user", "content": "Hello"},
+        {"role": "assistant", "content": "Hi"},
+        {"role": "user", "content": "Thanks"},
+    ]
+    # Verify canonicalization is stable across calls
+    expected_prompt = (
+        "system: Be concise.\n"
+        "user: Hello\n"
+        "assistant: Hi\n"
+        "user: Thanks"
+    )
+    assert _canonicalize_messages(messages) == expected_prompt
+
+    response = chat_completions_create_consensus(
+        messages,
+        consensus={"comparison": "exact", "quorum": 1, "min_operators": 1, "nonce": "n2"},
+        operators=[LocalConsensusOperator("op-a", lambda _: "Sure", provider="mock")],
+    )
+    assert response.choices[0].message.content == "Sure"
+
+
+def test_chat_completions_create_consensus_without_receipt() -> None:
+    """return_receipt=False still produces a valid response."""
+    operators = [LocalConsensusOperator("op-a", lambda _: "result text", provider="mock")]
+    messages = [{"role": "user", "content": "Say something"}]
+    response = chat_completions_create_consensus(
+        messages,
+        consensus={"comparison": "exact", "quorum": 1, "min_operators": 1, "nonce": "n3"},
+        operators=operators,
+        return_receipt=False,
+    )
+    assert isinstance(response, ChatCompletionResponse)
+    assert response.choices[0].message.content == "result text"
+    assert response.receipt is None
+
+
+def test_chat_completions_create_consensus_normalizes_provider() -> None:
+    """Provider alias normalization is applied when delegating."""
+    seen: dict[str, Any] = {}
+
+    def _op(request: ConsensusRequest) -> str:
+        seen["provider"] = request.provider
+        return "ok"
+
+    messages = [{"role": "user", "content": "test"}]
+    response = chat_completions_create_consensus(
+        messages,
+        provider="hf",
+        consensus={"comparison": "exact", "quorum": 1, "min_operators": 1, "nonce": "n4"},
+        operators=[LocalConsensusOperator("op-a", _op)],
+    )
+    assert seen["provider"] == "hf_inference_api"
+    assert response.choices[0].message.content == "ok"
+
+
+def test_chat_completions_create_consensus_consensus_failure_propagates() -> None:
+    """When operators disagree and quorum is 2, consensus is not accepted."""
+    operators = [
+        LocalConsensusOperator("op-a", lambda _: "answer A", provider="mock"),
+        LocalConsensusOperator("op-b", lambda _: "answer B", provider="mock"),
+    ]
+    messages = [{"role": "user", "content": "Pick one"}]
+    response = chat_completions_create_consensus(
+        messages,
+        consensus={"comparison": "exact", "quorum": 2, "min_operators": 2, "nonce": "n5", "fail_closed": False},
+        operators=operators,
+    )
+    assert isinstance(response, ChatCompletionResponse)
+    assert response.receipt is not None
+    assert response.receipt.consensus.accepted is False
