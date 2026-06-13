@@ -352,7 +352,7 @@ Track guide:
 - Acceptance: `chat_completions_create_consensus` accepts OpenAI-style messages, delegates to text consensus through deterministic message canonicalization or native chat operators, and returns an object compatible with existing `choices[0].message.content` access.
 
 ## CLZKML-270 Downstream Wallet/API Consensus Policy
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P2
 - Track: wallet
