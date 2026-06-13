@@ -57,10 +57,12 @@ def _tee_meta(
     model_commitment: str = "sha256:model-v1",
     tee_measurement: str = "pcr0:aabbcc",
     tee_signer: str = "cert:tee-signer-pub",
-    tee_nonce: str = "tee-nonce-1",
+    tee_nonce: str = "nonce-unique-1",
     tee_expiry_unix_ms: int = 9_999_999_999_000,
+    tee_policy_mode: str = "tee_or_zkml",
+    nonce: str | None = None,
 ) -> dict:
-    return {
+    meta = {
         "request_hash": request_hash,
         "output_hash": output_hash,
         "model_commitment": model_commitment,
@@ -69,6 +71,26 @@ def _tee_meta(
         "tee_nonce": tee_nonce,
         "tee_expiry_unix_ms": tee_expiry_unix_ms,
     }
+    if tee_policy_mode:
+        meta["tee_policy_mode"] = tee_policy_mode
+    if nonce is not None:
+        meta["nonce"] = nonce
+    return meta
+
+
+def _tee_verifier(
+    *,
+    now_unix_ms: int = 1_000_000,
+    tee_measurement_allowlist: tuple[str, ...] = ("pcr0:aabbcc",),
+    tee_signer_allowlist: tuple[str, ...] = ("cert:tee-signer-pub",),
+    expected_policy_mode: str | None = "tee_or_zkml",
+) -> TEEVerifier:
+    return TEEVerifier(
+        now_unix_ms=now_unix_ms,
+        tee_measurement_allowlist=tee_measurement_allowlist,
+        tee_signer_allowlist=tee_signer_allowlist,
+        expected_policy_mode=expected_policy_mode,
+    )
 
 
 def _zkml_verifier() -> ZKMLVerifier:
@@ -207,14 +229,14 @@ class TestReceiptOnlyVerifier:
 
 class TestTEEVerifier:
     def test_valid_metadata_returns_verified(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         result = verifier.verify(_tee_meta(), _ctx())
         assert result.verified is True
         assert result.verifier == "tee-verifier-v1"
         assert result.reason == "tee_attestation_verified"
 
     def test_missing_proof_request_hash_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         del meta["request_hash"]
         result = verifier.verify(meta, _ctx())
@@ -222,7 +244,7 @@ class TestTEEVerifier:
         assert "request_hash" in result.reason
 
     def test_missing_proof_output_hash_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         del meta["output_hash"]
         result = verifier.verify(meta, _ctx())
@@ -230,7 +252,7 @@ class TestTEEVerifier:
         assert "output_hash" in result.reason
 
     def test_missing_model_commitment_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         del meta["model_commitment"]
         result = verifier.verify(meta, _ctx())
@@ -238,28 +260,28 @@ class TestTEEVerifier:
         assert "model_commitment" in result.reason
 
     def test_mismatched_request_hash_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta(request_hash="sha256:wrong")
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert result.reason == "request_hash_mismatch"
 
     def test_mismatched_output_hash_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta(output_hash="sha256:wrong")
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert result.reason == "output_hash_mismatch"
 
     def test_mismatched_model_commitment_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta(model_commitment="sha256:wrong-model")
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert result.reason == "model_commitment_mismatch"
 
     def test_missing_tee_measurement_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         meta["tee_measurement"] = ""
         result = verifier.verify(meta, _ctx())
@@ -267,7 +289,7 @@ class TestTEEVerifier:
         assert "tee_measurement" in result.reason
 
     def test_missing_tee_signer_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         del meta["tee_signer"]
         result = verifier.verify(meta, _ctx())
@@ -275,26 +297,107 @@ class TestTEEVerifier:
         assert "tee_signer" in result.reason
 
     def test_missing_tee_nonce_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         meta = _tee_meta()
         del meta["tee_nonce"]
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert "tee_nonce" in result.reason
 
+    def test_tee_nonce_must_match_context_nonce(self) -> None:
+        verifier = _tee_verifier()
+        result = verifier.verify(
+            _tee_meta(tee_nonce="tee-nonce-1"),
+            _ctx(nonce="ctx-nonce-1"),
+        )
+        assert result.verified is False
+        assert result.reason == "tee_nonce_mismatch"
+
+    def test_optional_top_level_nonce_must_match_tee_nonce(self) -> None:
+        verifier = _tee_verifier()
+        result = verifier.verify(
+            _tee_meta(tee_nonce="tee-nonce-1", nonce="different-nonce"),
+            _ctx(nonce="tee-nonce-1"),
+        )
+        assert result.verified is False
+        assert result.reason == "nonce_mismatch"
+
     def test_expired_attestation_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=10_000_000_000_000)
+        verifier = _tee_verifier(now_unix_ms=10_000_000_000_000)
         meta = _tee_meta(tee_expiry_unix_ms=1_000)
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert result.reason == "tee_attestation_expired"
 
-    def test_replayed_tee_nonce_fails(self) -> None:
+    def test_missing_measurement_allowlist_fails_closed(self) -> None:
+        verifier = TEEVerifier(
+            now_unix_ms=1_000_000,
+            tee_signer_allowlist=("cert:tee-signer-pub",),
+        )
+        result = verifier.verify(_tee_meta(), _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_measurement_allowlist_missing"
+
+    def test_measurement_outside_allowlist_fails(self) -> None:
+        verifier = _tee_verifier()
+        result = verifier.verify(_tee_meta(tee_measurement="pcr0:unknown"), _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_measurement_not_allowed"
+
+    def test_missing_signer_allowlist_fails_closed(self) -> None:
+        verifier = TEEVerifier(
+            now_unix_ms=1_000_000,
+            tee_measurement_allowlist=("pcr0:aabbcc",),
+        )
+        result = verifier.verify(_tee_meta(), _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_signer_allowlist_missing"
+
+    def test_signer_outside_allowlist_fails(self) -> None:
+        verifier = _tee_verifier()
+        result = verifier.verify(_tee_meta(tee_signer="cert:unknown-signer"), _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_signer_not_allowed"
+
+    def test_metadata_allowlists_can_supply_policy(self) -> None:
         verifier = TEEVerifier(now_unix_ms=1_000_000)
+        meta = _tee_meta()
+        meta["proof_policy"] = {
+            "mode": "tee_or_zkml",
+            "tee_measurement_allowlist": ["pcr0:aabbcc"],
+            "tee_signer_allowlist": ["cert:tee-signer-pub"],
+        }
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is True
+
+    def test_missing_policy_mode_fails(self) -> None:
+        verifier = _tee_verifier()
+        meta = _tee_meta()
+        del meta["tee_policy_mode"]
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_policy_mode_missing"
+
+    def test_disallowed_policy_mode_fails(self) -> None:
+        verifier = _tee_verifier()
+        result = verifier.verify(_tee_meta(tee_policy_mode="receipt_only"), _ctx())
+        assert result.verified is False
+        assert result.reason == "tee_policy_mode_not_allowed"
+
+    def test_policy_mode_can_come_from_nested_proof_policy(self) -> None:
+        verifier = _tee_verifier()
+        meta = _tee_meta()
+        del meta["tee_policy_mode"]
+        meta["proof_policy"] = {"mode": "tee_or_zkml"}
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is True
+
+    def test_replayed_tee_nonce_fails(self) -> None:
+        verifier = _tee_verifier()
         meta1 = _tee_meta(tee_nonce="tee-nonce-1")
         meta2 = _tee_meta(tee_nonce="tee-nonce-1")
-        ctx1 = _ctx(nonce="unique-ctx-1")
-        ctx2 = _ctx(nonce="unique-ctx-2")
+        ctx1 = _ctx(nonce="tee-nonce-1")
+        ctx2 = _ctx(nonce="tee-nonce-1")
         first = verifier.verify(meta1, ctx1)
         assert first.verified is True
         second = verifier.verify(meta2, ctx2)
@@ -302,15 +405,19 @@ class TestTEEVerifier:
         assert second.reason == "replayed_nonce"
 
     def test_empty_proof_meta_fails(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         result = verifier.verify({}, _ctx())
         assert result.verified is False
 
     def test_result_metadata_includes_measurement_and_signer(self) -> None:
-        verifier = TEEVerifier(now_unix_ms=1_000_000)
+        verifier = _tee_verifier()
         result = verifier.verify(_tee_meta(), _ctx())
         assert result.metadata["tee_measurement"] == "pcr0:aabbcc"
         assert result.metadata["tee_signer"] == "cert:tee-signer-pub"
+        assert result.metadata["evidence_type"] == "tee_attestation"
+        assert result.metadata["proof_type"] == "tee_attestation"
+        assert result.metadata["zkml_proof"] is False
+        assert result.metadata["tee_policy_mode"] == "tee_or_zkml"
 
 
 # ===========================================================================
