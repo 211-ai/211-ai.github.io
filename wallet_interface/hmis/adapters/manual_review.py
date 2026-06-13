@@ -77,15 +77,19 @@ class ManualReviewHmisAdapter:
                 fixture.get("name") or fixture.get("household_name") or fixture.get("program_name")
             )
             candidate_dob = _normalized_text(fixture.get("date_of_birth"))
-            candidate_program = _normalized_text(
-                fixture.get("program_ref") or fixture.get("external_program_id") or fixture.get("local_program_ref")
-            )
+            candidate_program_values = {
+                _normalized_text(fixture.get("program_ref")),
+                _normalized_text(fixture.get("local_program_ref")),
+                _normalized_text(fixture.get("external_program_id")),
+                _normalized_text(fixture.get("external_project_id")),
+            }
+            candidate_program_values.discard("")
 
             if name_query and name_query not in candidate_name:
                 continue
             if dob_query and dob_query != candidate_dob:
                 continue
-            if program_query and program_query != candidate_program:
+            if program_query and program_query not in candidate_program_values:
                 continue
             matches.append(dict(fixture))
         return matches

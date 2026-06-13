@@ -454,6 +454,34 @@ def test_filecoin_upload_bridge_can_handoff_to_filecoin_pin_sidecar(monkeypatch)
     )
 
     assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-uploaded-file"
+    assert payload["requestId"] == "pin-123"
+    assert payload["filecoinPinRequestId"] == "pin-123"
+    assert payload["filecoinPinStatus"] == "queued"
+    assert payload["statusUrl"] == "/filecoin-upload/status/pin-123"
+    assert "queued for Filecoin persistence" in payload["message"]
+    assert added == [b"proof-bundle"]
+    assert handoff_request["url"] == "http://filecoin-pin:3456/pins"
+    assert handoff_request["timeout"] == 9.0
+    assert handoff_request["headers"] == {
+        "authorization": "Bearer sidecar-token",
+        "content-type": "application/json",
+    }
+    assert handoff_request["body"] == {
+        "cid": "bafy-uploaded-file",
+        "meta": {
+            "fileName": "proofs.json",
+            "mimeType": "application/json",
+            "source": "211-ai-wallet",
+            "walletId": "wallet-demo",
+        },
+        "name": "proofs.json",
+        "origins": [
+            "/dns/kubo/tcp/4001/p2p/12D3KooWExample",
+            "/dns/kubo-2/tcp/4001/p2p/12D3KooWExampleTwo",
+        ],
+    }
 
 
 def test_hmis_client_lookup_returns_fixture_candidates_and_audits() -> None:
@@ -686,34 +714,6 @@ def test_hmis_referral_draft_validate_marks_validated_and_returns_warnings() -> 
     assert audit_response.status_code == 200
     actions = [event["action"] for event in audit_response.json()["audit_events"]]
     assert "hmis/validate_referral_draft" in actions
-    payload = response.json()
-    assert payload["ipfsCid"] == "bafy-uploaded-file"
-    assert payload["requestId"] == "pin-123"
-    assert payload["filecoinPinRequestId"] == "pin-123"
-    assert payload["filecoinPinStatus"] == "queued"
-    assert payload["statusUrl"] == "/filecoin-upload/status/pin-123"
-    assert "queued for Filecoin persistence" in payload["message"]
-    assert added == [b"proof-bundle"]
-    assert handoff_request["url"] == "http://filecoin-pin:3456/pins"
-    assert handoff_request["timeout"] == 9.0
-    assert handoff_request["headers"] == {
-        "authorization": "Bearer sidecar-token",
-        "content-type": "application/json",
-    }
-    assert handoff_request["body"] == {
-        "cid": "bafy-uploaded-file",
-        "meta": {
-            "fileName": "proofs.json",
-            "mimeType": "application/json",
-            "source": "211-ai-wallet",
-            "walletId": "wallet-demo",
-        },
-        "name": "proofs.json",
-        "origins": [
-            "/dns/kubo/tcp/4001/p2p/12D3KooWExample",
-            "/dns/kubo-2/tcp/4001/p2p/12D3KooWExampleTwo",
-        ],
-    }
 
 
 def test_filecoin_upload_bridge_supports_mock_filecoin_pin_mode(monkeypatch) -> None:
@@ -776,12 +776,6 @@ def test_ipfs_proxy_rejects_non_allowlisted_cid(monkeypatch) -> None:
 
     assert response.status_code == 403
     assert response.json()["detail"] == "CID is not allowed by WALLET_IPFS_PROXY_ALLOWED_CIDS"
-    assert payload["filecoinPinInfo"] == {
-        "provider": "mock-filecoin-pin",
-        "cid": "bafy-uploaded-file",
-        "mock": True,
-    }
-    assert added == [b"proof-bundle"]
 
 
 def test_filecoin_upload_bridge_supports_mock_ipfs_and_mock_filecoin_without_external_backends(monkeypatch) -> None:

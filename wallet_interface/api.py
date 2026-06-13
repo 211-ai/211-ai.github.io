@@ -1081,6 +1081,20 @@ def _send_sms_notification(
     )
 
 
+def _external_sms_notification_metadata(record: Any) -> Dict[str, Any]:
+    internal_keys = {"ipldLinks", "phoneIdentityCids", "phoneIdentitySchema"}
+    metadata = {
+        str(key): value
+        for key, value in dict(getattr(record, "metadata", {}) or {}).items()
+        if str(key) not in internal_keys
+    }
+    metadata["notification_id"] = str(getattr(record, "notification_id", "") or "")
+    reason = str(getattr(record, "reason", "") or "").strip()
+    if reason:
+        metadata["reason"] = reason
+    return metadata
+
+
 def _send_auth_email_notification(
     *,
     to_email: str,
@@ -2050,7 +2064,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 message=record.message,
                 wallet_id=record.wallet_id,
                 external_reference=record.notification_id,
-                metadata={**dict(record.metadata), "notification_id": record.notification_id, "reason": record.reason},
+                metadata=_external_sms_notification_metadata(record),
             )
             updated = app_service.mark_sms_notification_sent(
                 wallet_id,
@@ -2713,14 +2727,18 @@ def create_app(*, service: WalletInterfaceService | None = None):
             content_type = request.headers.get("content-type", "")
             if "application/json" in content_type:
                 payload = FilecoinRecordUploadRequest(**(await request.json()))
-                encrypted_record = app_service.export_record_encrypted_blobs(
+                data = app_service.export_record_plaintext(
                     payload.walletId,
                     payload.recordId,
                     actor_did=payload.actorDid,
+                    grant_id=payload.grantId,
+                    actor_secret=_key_from_optional_hex(payload.actorKeyHex),
                 )
-                return _publish_encrypted_record_graph_to_ipfs(
-                    encrypted_record,
-                    file_name=payload.fileName,
+                return _publish_bytes_to_ipfs(
+                    data,
+                    file_name=payload.fileName or None,
+                    source_record_id=payload.recordId,
+                    wallet_id=payload.walletId,
                 )
 
             if file is None:
@@ -4158,6 +4176,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
     def audit_timeline(wallet_id: str) -> Dict[str, Any]:
         try:
             return {"events": app_service.audit_timeline(wallet_id)}
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/audit-events")
+    def audit_events(wallet_id: str) -> Dict[str, Any]:
+        try:
+            return {"audit_events": app_service.audit_timeline(wallet_id)}
         except Exception as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -6340,7 +6365,7 @@ def _publish_bytes_to_ipfs(
     wallet_id: str | None = None,
 ) -> Dict[str, Any]:
     cid = _publish_bytes_via_ipfs_backend(data)
-    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "/ipfs-proxy").rstrip("/")
+    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "https://w3s.link/ipfs").rstrip("/")
     payload: Dict[str, Any] = {
         "cid": cid,
         "gatewayUrl": f"{gateway_base_url}/{cid}",
