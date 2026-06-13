@@ -232,7 +232,7 @@ Track guide:
 - Acceptance: `ReceiptOnlyVerifier`, `TEEVerifier`, `ZKMLVerifier`, and `ChainlinkCREVerifier` interfaces exist with fail-closed defaults, request/output/model binding checks, and unit tests for valid, missing, mismatched, and replayed proof metadata.
 
 ## CLZKML-150 No-Leak Receipt Boundary Tests
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: privacy
