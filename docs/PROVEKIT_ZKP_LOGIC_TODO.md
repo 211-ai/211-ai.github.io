@@ -187,7 +187,7 @@ Track guide:
 - Acceptance: `ZKPTDFOLProver`, `ZKPCECProver`, and `ZKPFLogicProver` can select `zkp_backend="provekit"` through their existing constructors, verify generated proof envelopes, and retain standard proving fallback behavior where allowed.
 
 ## PROVEKIT-140 Deontic LegalNormIR Guidance Commitments
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: privacy
