@@ -157,7 +157,7 @@ Track guide:
 - Acceptance: A bounded TDFOL trace witness schema is defined, Python-side validation rejects non-derivable traces before proving, and the schema reuses existing canonicalization and `TDFOL_v1` semantics.
 
 ## PROVEKIT-110 TDFOL V1 Trace Noir Circuit
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: platform
