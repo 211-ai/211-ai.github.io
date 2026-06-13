@@ -282,7 +282,7 @@ Track guide:
 - Acceptance: When gated integration tests are enabled and libp2p dependencies are available, three local workers can produce 2-of-3 consensus, one divergent worker is rejected, and unavailable environments skip with a clear reason.
 
 ## CLZKML-200 Chainlink CRE Bridge Client Skeleton
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: chainlink
