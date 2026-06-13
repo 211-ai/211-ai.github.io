@@ -7,6 +7,7 @@ from scripts import agent_chat_implementation_supervisor as agent_supervisor
 from scripts import manage_implementation_services as manager
 from scripts import portal_implementation_supervisor as portal_supervisor
 from scripts import portland_graphrag_implementation_supervisor as graphrag_supervisor
+from scripts import provekit_implementation_supervisor as provekit_supervisor
 from scripts import wallet_implementation_supervisor as wallet_supervisor
 
 
@@ -45,6 +46,66 @@ def test_service_command_requires_explicit_implementation_mode():
     assert command[command.index("--implementation-command") + 1] == "python fake_worker.py"
     assert command[command.index("--implementation-timeout") + 1] == "12.5"
     assert "--no-ephemeral-worktree" in command
+
+
+def test_service_command_can_run_until_complete_mode():
+    spec = manager.SERVICES["worldid-backend"]
+
+    command = spec.command(
+        log_level="INFO",
+        check_interval=5.0,
+        daemon_interval=5.0,
+        until_complete=True,
+        implement=True,
+        implementation_command="",
+        implementation_timeout=1800.0,
+        use_ephemeral_worktree=True,
+    )
+
+    assert "--until-complete" in command
+    assert command[command.index("--todo-path") + 1] == "docs/WORLD_ID_IDKIT_WALLET_TODO.md"
+    assert command[command.index("--task-prefix") + 1] == "## WORLDID-"
+    assert command[command.index("--allowed-tracks") + 1] == "proofs,core,wallet,privacy,ops"
+    assert command[command.index("--allowed-task-ids") + 1] == "WORLDID-170"
+
+
+def test_worldid_ui_service_targets_ui_group():
+    spec = manager.SERVICES["worldid-ui"]
+
+    command = spec.command(
+        log_level="INFO",
+        check_interval=5.0,
+        daemon_interval=5.0,
+        until_complete=True,
+        implement=True,
+        implementation_command="",
+        implementation_timeout=1800.0,
+        use_ephemeral_worktree=True,
+    )
+
+    assert "--until-complete" in command
+    assert command[command.index("--todo-path") + 1] == "docs/WORLD_ID_IDKIT_WALLET_TODO.md"
+    assert command[command.index("--allowed-tracks") + 1] == "ui"
+    assert command[command.index("--allowed-task-ids") + 1] == "WORLDID-180"
+
+
+def test_chainlink_zkml_service_targets_chainlink_todo():
+    spec = manager.SERVICES["chainlink-zkml"]
+
+    command = spec.command(
+        log_level="INFO",
+        check_interval=5.0,
+        daemon_interval=5.0,
+        until_complete=True,
+        implement=True,
+        implementation_command="",
+        implementation_timeout=1800.0,
+        use_ephemeral_worktree=True,
+    )
+
+    assert "--until-complete" in command
+    assert command[command.index("--todo-path") + 1] == "docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md"
+    assert command[command.index("--task-prefix") + 1] == "## CLZKML-"
 
 
 def test_service_command_preserves_copilot_implementation_command():
@@ -90,6 +151,13 @@ def test_parser_accepts_explicit_monitor_only_mode():
     assert args.implement is False
 
 
+def test_wallet_supervisor_accepts_until_complete_mode():
+    args = wallet_supervisor.parse_args(["--once", "--until-complete", "--allowed-tracks", "ui"])
+
+    assert args.until_complete is True
+    assert args.allowed_tracks == ["ui"]
+
+
 def test_parser_accepts_graphrag_service():
     args = manager.parse_args(["status", "graphrag"])
 
@@ -102,10 +170,49 @@ def test_parser_accepts_wallet_service():
     assert args.service == "wallet"
 
 
-def test_all_service_selection_includes_graphrag_and_wallet():
+def test_parser_accepts_provekit_service():
+    args = manager.parse_args(["status", "provekit"])
+
+    assert args.service == "provekit"
+
+
+def test_parser_accepts_worldid_wallet_service():
+    args = manager.parse_args(["status", "worldid-wallet"])
+
+    assert args.service == "worldid-wallet"
+
+
+def test_parser_accepts_worldid_backend_service():
+    args = manager.parse_args(["status", "worldid-backend"])
+
+    assert args.service == "worldid-backend"
+
+
+def test_parser_accepts_worldid_ui_service():
+    args = manager.parse_args(["status", "worldid-ui"])
+
+    assert args.service == "worldid-ui"
+
+
+def test_parser_accepts_chainlink_zkml_service():
+    args = manager.parse_args(["status", "chainlink-zkml"])
+
+    assert args.service == "chainlink-zkml"
+
+
+def test_all_service_selection_includes_registered_implementation_services():
     services = manager._selected_services("all")
 
-    assert [service.name for service in services] == ["portal", "agent", "graphrag", "wallet"]
+    assert [service.name for service in services] == [
+        "portal",
+        "agent",
+        "graphrag",
+        "wallet",
+        "provekit",
+        "worldid-backend",
+        "worldid-ui",
+        "chainlink-zkml",
+    ]
 
 
 def test_status_mode_detects_requested_implementation_mode():
@@ -150,6 +257,7 @@ def test_supervisor_entrypoints_default_to_implementation_mode():
         agent_supervisor,
         graphrag_supervisor,
         wallet_supervisor,
+        provekit_supervisor,
     ):
         assert module.parse_args(["--once"]).implement is True
         assert module.parse_args(["--once", "--implement"]).implement is True

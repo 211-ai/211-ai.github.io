@@ -1,0 +1,1221 @@
+"""Consensus receipt models for verified LLM router outputs."""
+
+from __future__ import annotations
+
+import json
+import hashlib
+import hmac
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor, wait
+from dataclasses import dataclass, field, replace
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable, ClassVar
+
+
+CONSENSUS_RECEIPT_SCHEMA_VERSION = "llm-router-consensus-receipt-v1"
+DEFAULT_DOMAIN_SEPARATOR = "ipfs-accelerate-llm-consensus-v1"
+SECRET_KEY_MARKERS = (
+    "api_key",
+    "apikey",
+    "authorization",
+    "bearer",
+    "cookie",
+    "credential",
+    "password",
+    "private_key",
+    "secret",
+    "token",
+)
+NONDETERMINISTIC_KEYS = (
+    "created_at",
+    "duration_ms",
+    "elapsed_ms",
+    "latency_ms",
+    "request_time",
+    "span_id",
+    "timestamp",
+    "trace_id",
+    "updated_at",
+)
+ADVISORY_COMPARISON_MODES = {"semantic"}
+SUPPORTED_COMPARISON_MODES = {"exact", "canonical_json", "normalized_text", "semantic"}
+
+
+class LLMConsensusError(RuntimeError):
+    """Raised when LLM consensus receipt handling fails."""
+
+
+def utc_now_iso() -> str:
+    """Return a compact UTC timestamp suitable for receipts."""
+
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _jsonable(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        return {str(key): _jsonable(item) for key, item in value.items()}
+    if isinstance(value, set):
+        items = [_jsonable(item) for item in value]
+        return sorted(items, key=lambda item: _stable_json({"value": item}))
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item) for item in value]
+    to_dict = getattr(value, "to_dict", None)
+    if callable(to_dict):
+        return _jsonable(to_dict())
+    return str(value)
+
+
+def _stable_json(data: dict[str, Any]) -> str:
+    return json.dumps(_jsonable(data), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _dict_value(data: dict[str, Any], key: str) -> dict[str, Any]:
+    value = data.get(key)
+    return value if isinstance(value, dict) else {}
+
+
+def _list_value(data: dict[str, Any], key: str) -> list[Any]:
+    value = data.get(key)
+    return list(value) if isinstance(value, list) else []
+
+
+def _safe_key(key: object) -> str:
+    return str(key or "").strip()
+
+
+def _is_sensitive_or_transient_key(key: object) -> bool:
+    lowered = _safe_key(key).lower()
+    if not lowered:
+        return False
+    return any(marker in lowered for marker in SECRET_KEY_MARKERS) or lowered in NONDETERMINISTIC_KEYS
+
+
+def _sanitize_canonical_value(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        sanitized: dict[str, Any] = {}
+        for key, item in value.items():
+            safe_key = _safe_key(key)
+            if not safe_key or _is_sensitive_or_transient_key(safe_key):
+                continue
+            sanitized[safe_key] = _sanitize_canonical_value(item)
+        return sanitized
+    if isinstance(value, set):
+        items = [_sanitize_canonical_value(item) for item in value]
+        return sorted(items, key=lambda item: _stable_json({"value": item}))
+    if isinstance(value, (list, tuple)):
+        return [_sanitize_canonical_value(item) for item in value]
+    return str(value)
+
+
+def sha256_digest(value: bytes | str) -> str:
+    raw = value.encode("utf-8") if isinstance(value, str) else bytes(value)
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+
+def receipt_content_hash(receipt: "ConsensusReceipt") -> str:
+    return sha256_digest(receipt.to_json())
+
+
+def operator_signature_payload(request: "ConsensusRequest", response: "OperatorResponse") -> dict[str, Any]:
+    return {
+        "domain_separator": str(request.metadata.get("domain_separator") or DEFAULT_DOMAIN_SEPARATOR),
+        "nonce": str(request.metadata.get("nonce") or ""),
+        "request_hash": request.request_hash or "",
+        "operator_id": response.operator_id,
+        "output_hash": response.output_hash,
+        "normalized_output_hash": response.normalized_output_hash,
+    }
+
+
+def _signature_digest(payload: dict[str, Any], signing_key: str | bytes) -> str:
+    key = signing_key.encode("utf-8") if isinstance(signing_key, str) else bytes(signing_key)
+    return hmac.new(key, _stable_json(payload).encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def sign_operator_response(
+    request: "ConsensusRequest",
+    response: "OperatorResponse",
+    *,
+    signing_key: str | bytes,
+    key_id: str = "dev-key",
+) -> "OperatorResponse":
+    signature = f"hmac-sha256:{key_id}:{_signature_digest(operator_signature_payload(request, response), signing_key)}"
+    metadata = dict(response.metadata)
+    metadata["signature_key_id"] = key_id
+    metadata["signature_algorithm"] = "hmac-sha256"
+    return replace(response, signature=signature, metadata=metadata)
+
+
+def verify_operator_response_signature(
+    request: "ConsensusRequest",
+    response: "OperatorResponse",
+    *,
+    key_lookup: dict[str, str | bytes] | None = None,
+    allow_unsigned_receipt_only: bool = True,
+) -> bool:
+    signature = str(response.signature or "")
+    if not signature:
+        policy_mode = str(request.proof_policy.get("mode") or "receipt_only")
+        return bool(allow_unsigned_receipt_only and policy_mode == "receipt_only")
+
+    parts = signature.split(":", 2)
+    if len(parts) != 3 or parts[0] != "hmac-sha256":
+        return False
+    _, key_id, provided = parts
+    key = (key_lookup or {}).get(key_id)
+    if key is None:
+        return False
+    expected = _signature_digest(operator_signature_payload(request, response), key)
+    return hmac.compare_digest(provided, expected)
+
+
+def canonical_request_payload(
+    *,
+    prompt: str,
+    provider: str | None = None,
+    model_name: str | None = None,
+    model_commitment: str | None = None,
+    tokenizer_commitment: str | None = None,
+    generation_params: dict[str, Any] | None = None,
+    response_schema: dict[str, Any] | None = None,
+    proof_policy: dict[str, Any] | None = None,
+    nonce: str | None = None,
+    deadline_unix_ms: int = 0,
+    prompt_cid: str | None = None,
+    context_cids: list[str] | tuple[str, ...] | None = None,
+    prompt_redaction_policy: str = "hash_only",
+    comparison: str = "exact",
+    quorum: int = 1,
+    min_operators: int = 1,
+    metadata: dict[str, Any] | None = None,
+    domain_separator: str = DEFAULT_DOMAIN_SEPARATOR,
+) -> dict[str, Any]:
+    """Return the deterministic request payload used for request hashing."""
+
+    safe_context_cids = [str(item) for item in context_cids or () if str(item or "").strip()]
+    return {
+        "domain_separator": str(domain_separator or DEFAULT_DOMAIN_SEPARATOR),
+        "prompt_hash": sha256_digest(prompt or ""),
+        "prompt_cid": str(prompt_cid) if prompt_cid is not None else None,
+        "prompt_redaction_policy": str(prompt_redaction_policy or "hash_only"),
+        "provider": str(provider) if provider is not None else None,
+        "model_name": str(model_name) if model_name is not None else None,
+        "model_commitment": str(model_commitment) if model_commitment is not None else None,
+        "tokenizer_commitment": str(tokenizer_commitment) if tokenizer_commitment is not None else None,
+        "generation_params": _sanitize_canonical_value(generation_params or {}),
+        "response_schema": _sanitize_canonical_value(response_schema or {}),
+        "proof_policy": _sanitize_canonical_value(proof_policy or {}),
+        "nonce": str(nonce or ""),
+        "deadline_unix_ms": int(deadline_unix_ms or 0),
+        "context_cids": safe_context_cids,
+        "comparison": str(comparison or "exact"),
+        "quorum": int(quorum),
+        "min_operators": int(min_operators),
+        "metadata": _sanitize_canonical_value(metadata or {}),
+    }
+
+
+def canonical_request_hash(**kwargs: Any) -> str:
+    return sha256_digest(_stable_json(canonical_request_payload(**kwargs)))
+
+
+def normalize_output_text(text: str, *, comparison: str = "exact") -> str:
+    """Normalize model output for consensus comparison."""
+
+    mode = str(comparison or "exact").strip().lower()
+    if mode not in SUPPORTED_COMPARISON_MODES:
+        raise LLMConsensusError(f"Unsupported consensus comparison mode: {comparison}")
+
+    raw = str(text or "")
+    if mode == "exact":
+        return raw.strip()
+    if mode == "canonical_json":
+        try:
+            parsed = json.loads(raw)
+        except Exception as exc:
+            raise LLMConsensusError("canonical_json comparison requires valid JSON output") from exc
+        return json.dumps(_jsonable(parsed), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+    normalized = " ".join(raw.split()).lower()
+    if mode == "normalized_text":
+        return normalized
+    return "semantic-advisory:" + normalized
+
+
+def normalized_output_hash(text: str, *, comparison: str = "exact") -> str:
+    return sha256_digest(normalize_output_text(text, comparison=comparison))
+
+
+def is_advisory_comparison(comparison: str) -> bool:
+    return str(comparison or "").strip().lower() in ADVISORY_COMPARISON_MODES
+
+
+def _coerce_bool(value: Any, *, default: bool) -> bool:
+    if value is None:
+        return bool(default)
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _first_config_value(options: dict[str, Any], env: dict[str, str], aliases: tuple[str, ...], env_name: str, default: Any) -> Any:
+    for alias in aliases:
+        if alias in options and options[alias] is not None:
+            return options[alias]
+    if env_name in env and str(env[env_name]).strip():
+        return env[env_name]
+    return default
+
+
+def _split_csv(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple, set)):
+        return [str(item).strip() for item in value if str(item or "").strip()]
+    return [part.strip() for part in str(value).split(",") if part.strip()]
+
+
+def load_consensus_config(
+    options: dict[str, Any] | None = None,
+    *,
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Load normalized consensus options from explicit values and environment."""
+
+    explicit = dict(options or {})
+    resolved_env = dict(os.environ if env is None else env)
+    prefix = "IPFS_ACCELERATE_PY_LLM_CONSENSUS_"
+
+    mode = str(
+        _first_config_value(explicit, resolved_env, ("mode",), prefix + "MODE", "local_quorum")
+        or "local_quorum"
+    )
+    comparison = str(
+        _first_config_value(explicit, resolved_env, ("comparison",), prefix + "COMPARISON", "exact")
+        or "exact"
+    ).strip().lower()
+    if comparison not in SUPPORTED_COMPARISON_MODES:
+        raise LLMConsensusError(f"Unsupported consensus comparison mode: {comparison}")
+
+    quorum = int(_first_config_value(explicit, resolved_env, ("quorum",), prefix + "QUORUM", 1))
+    min_operators = int(
+        _first_config_value(
+            explicit,
+            resolved_env,
+            ("min_operators", "minOperators"),
+            prefix + "MIN_OPERATORS",
+            quorum,
+        )
+    )
+    if quorum < 1:
+        raise LLMConsensusError("Consensus quorum must be at least 1")
+    if min_operators < 1:
+        raise LLMConsensusError("Consensus min_operators must be at least 1")
+    if quorum > min_operators:
+        raise LLMConsensusError("Consensus quorum cannot exceed min_operators")
+
+    timeout_s = float(
+        _first_config_value(
+            explicit,
+            resolved_env,
+            ("timeout_s", "timeout"),
+            prefix + "TIMEOUT_S",
+            60.0,
+        )
+    )
+    if timeout_s < 0:
+        raise LLMConsensusError("Consensus timeout_s cannot be negative")
+
+    operator_timeout_value = _first_config_value(
+        explicit,
+        resolved_env,
+        ("operator_timeout_s", "operatorTimeout"),
+        prefix + "OPERATOR_TIMEOUT_S",
+        None,
+    )
+    operator_timeout_s = float(operator_timeout_value) if operator_timeout_value not in (None, "") else None
+    if operator_timeout_s is not None and operator_timeout_s < 0:
+        raise LLMConsensusError("Consensus operator_timeout_s cannot be negative")
+
+    fail_closed = _coerce_bool(
+        _first_config_value(
+            explicit,
+            resolved_env,
+            ("fail_closed", "failClosed"),
+            prefix + "FAIL_CLOSED",
+            True,
+        ),
+        default=True,
+    )
+    enabled = _coerce_bool(
+        _first_config_value(explicit, resolved_env, ("enabled",), prefix + "ENABLED", True),
+        default=True,
+    )
+
+    return {
+        "enabled": enabled,
+        "mode": mode,
+        "comparison": comparison,
+        "quorum": quorum,
+        "min_operators": min_operators,
+        "timeout_s": timeout_s,
+        "operator_timeout_s": operator_timeout_s,
+        "fail_closed": fail_closed,
+        "nonce": _first_config_value(explicit, resolved_env, ("nonce",), prefix + "NONCE", None),
+        "deadline_unix_ms": int(
+            _first_config_value(
+                explicit,
+                resolved_env,
+                ("deadline_unix_ms", "deadlineUnixMs"),
+                prefix + "DEADLINE_UNIX_MS",
+                0,
+            )
+            or 0
+        ),
+        "prompt_cid": _first_config_value(
+            explicit,
+            resolved_env,
+            ("prompt_cid", "promptCid"),
+            prefix + "PROMPT_CID",
+            None,
+        ),
+        "context_cids": _split_csv(
+            _first_config_value(
+                explicit,
+                resolved_env,
+                ("context_cids", "contextCids"),
+                prefix + "CONTEXT_CIDS",
+                None,
+            )
+        ),
+        "prompt_redaction_policy": str(
+            _first_config_value(
+                explicit,
+                resolved_env,
+                ("prompt_redaction_policy", "promptRedactionPolicy"),
+                prefix + "PROMPT_REDACTION_POLICY",
+                "hash_only",
+            )
+            or "hash_only"
+        ),
+        "request_id": _first_config_value(
+            explicit,
+            resolved_env,
+            ("request_id", "requestId"),
+            prefix + "REQUEST_ID",
+            None,
+        ),
+        "operator_id": _first_config_value(
+            explicit,
+            resolved_env,
+            ("operator_id", "operatorId"),
+            prefix + "OPERATOR_ID",
+            "local-router",
+        ),
+        "model_commitment": _first_config_value(
+            explicit,
+            resolved_env,
+            ("model_commitment", "modelCommitment"),
+            prefix + "MODEL_COMMITMENT",
+            None,
+        ),
+        "tokenizer_commitment": _first_config_value(
+            explicit,
+            resolved_env,
+            ("tokenizer_commitment", "tokenizerCommitment"),
+            prefix + "TOKENIZER_COMMITMENT",
+            None,
+        ),
+        "receipt_path": _first_config_value(
+            explicit,
+            resolved_env,
+            ("receipt_path", "receiptPath"),
+            prefix + "RECEIPT_PATH",
+            None,
+        ),
+        "receipt_jsonl_path": _first_config_value(
+            explicit,
+            resolved_env,
+            ("receipt_jsonl_path", "receiptJsonlPath"),
+            prefix + "RECEIPT_JSONL_PATH",
+            None,
+        ),
+    }
+
+
+def select_consensus_result(
+    responses: list["OperatorResponse"] | tuple["OperatorResponse", ...],
+    *,
+    quorum: int,
+    comparison: str,
+    fail_closed: bool = True,
+) -> ConsensusResult:
+    """Select a deterministic quorum result from operator responses."""
+
+    response_list = list(responses or ())
+    if quorum < 1:
+        message = "Consensus quorum must be at least 1"
+        if fail_closed:
+            raise LLMConsensusError(message)
+        return ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash="",
+            quorum=int(quorum),
+            total_successful=0,
+            comparison=str(comparison or "exact"),
+            reason="invalid_quorum",
+        )
+
+    successful = [
+        response
+        for response in response_list
+        if not response.error and response.normalized_output_hash and response.output_hash
+    ]
+    if not successful:
+        message = "Consensus quorum not met: no successful operator responses"
+        if fail_closed:
+            raise LLMConsensusError(message)
+        return ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash="",
+            selected_operator_ids=[],
+            rejected_operator_ids=sorted({response.operator_id for response in response_list}),
+            quorum=int(quorum),
+            total_successful=0,
+            comparison=str(comparison or "exact"),
+            reason="no_successful_responses",
+        )
+
+    groups: dict[str, list[OperatorResponse]] = {}
+    for response in successful:
+        groups.setdefault(response.normalized_output_hash, []).append(response)
+
+    ordered_groups = sorted(
+        groups.items(),
+        key=lambda item: (-len(item[1]), item[0]),
+    )
+    selected_normalized_hash, selected_group = ordered_groups[0]
+    selected_count = len(selected_group)
+    tied_hashes = [
+        normalized_hash
+        for normalized_hash, group in ordered_groups
+        if len(group) == selected_count
+    ]
+
+    if len(tied_hashes) > 1:
+        message = "Consensus quorum not met: tied normalized outputs"
+        if fail_closed:
+            raise LLMConsensusError(message)
+        return ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash="",
+            selected_operator_ids=[],
+            rejected_operator_ids=sorted({response.operator_id for response in response_list}),
+            quorum=int(quorum),
+            total_successful=len(successful),
+            comparison=str(comparison or "exact"),
+            reason="tie",
+        )
+
+    if selected_count < quorum:
+        message = f"Consensus quorum not met: {selected_count} of {quorum}"
+        if fail_closed:
+            raise LLMConsensusError(message)
+        return ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash=selected_normalized_hash,
+            selected_operator_ids=[],
+            rejected_operator_ids=sorted({response.operator_id for response in response_list}),
+            quorum=int(quorum),
+            total_successful=len(successful),
+            comparison=str(comparison or "exact"),
+            reason="quorum_not_met",
+        )
+
+    selected_group_sorted = sorted(selected_group, key=lambda response: response.operator_id)
+    selected_operator_ids = [response.operator_id for response in selected_group_sorted]
+    selected_operator_set = set(selected_operator_ids)
+    rejected_operator_ids = sorted(
+        {
+            response.operator_id
+            for response in response_list
+            if response.operator_id not in selected_operator_set
+        }
+    )
+
+    return ConsensusResult(
+        accepted=True,
+        selected_output_hash=selected_group_sorted[0].output_hash,
+        selected_normalized_hash=selected_normalized_hash,
+        selected_operator_ids=selected_operator_ids,
+        rejected_operator_ids=rejected_operator_ids,
+        quorum=int(quorum),
+        total_successful=len(successful),
+        comparison=str(comparison or "exact"),
+        reason="quorum_met",
+    )
+
+
+def build_consensus_request(
+    *,
+    prompt: str,
+    request_id: str | None = None,
+    provider: str | None = None,
+    model_name: str | None = None,
+    model_commitment: str | None = None,
+    tokenizer_commitment: str | None = None,
+    generation_params: dict[str, Any] | None = None,
+    response_schema: dict[str, Any] | None = None,
+    proof_policy: dict[str, Any] | None = None,
+    nonce: str | None = None,
+    deadline_unix_ms: int = 0,
+    prompt_cid: str | None = None,
+    context_cids: list[str] | tuple[str, ...] | None = None,
+    prompt_redaction_policy: str = "hash_only",
+    comparison: str = "exact",
+    quorum: int = 1,
+    min_operators: int = 1,
+    metadata: dict[str, Any] | None = None,
+    domain_separator: str = DEFAULT_DOMAIN_SEPARATOR,
+) -> "ConsensusRequest":
+    """Build a sanitized consensus request and bind it to a stable hash."""
+
+    payload = canonical_request_payload(
+        prompt=prompt,
+        provider=provider,
+        model_name=model_name,
+        model_commitment=model_commitment,
+        tokenizer_commitment=tokenizer_commitment,
+        generation_params=generation_params,
+        response_schema=response_schema,
+        proof_policy=proof_policy,
+        nonce=nonce,
+        deadline_unix_ms=deadline_unix_ms,
+        prompt_cid=prompt_cid,
+        context_cids=context_cids,
+        prompt_redaction_policy=prompt_redaction_policy,
+        comparison=comparison,
+        quorum=quorum,
+        min_operators=min_operators,
+        metadata=metadata,
+        domain_separator=domain_separator,
+    )
+    request_hash = sha256_digest(_stable_json(payload))
+    resolved_request_id = str(request_id or nonce or request_hash)
+    request_metadata = {
+        "context_cids": payload["context_cids"],
+        "domain_separator": payload["domain_separator"],
+        "nonce": payload["nonce"],
+        "request_hash_payload": {
+            "response_schema": payload["response_schema"],
+            "metadata": payload["metadata"],
+        },
+    }
+    return ConsensusRequest(
+        request_id=resolved_request_id,
+        request_hash=request_hash,
+        prompt_hash=str(payload["prompt_hash"]),
+        prompt_cid=payload["prompt_cid"],
+        prompt_redaction_policy=str(payload["prompt_redaction_policy"]),
+        provider=payload["provider"],
+        model_name=payload["model_name"],
+        model_commitment=payload["model_commitment"],
+        tokenizer_commitment=payload["tokenizer_commitment"],
+        generation_params=payload["generation_params"],
+        comparison=str(payload["comparison"]),
+        quorum=int(payload["quorum"]),
+        min_operators=int(payload["min_operators"]),
+        deadline_unix_ms=int(payload["deadline_unix_ms"]),
+        proof_policy=payload["proof_policy"],
+        metadata=request_metadata,
+    )
+
+
+@dataclass(frozen=True)
+class ConsensusRequest:
+    """Canonical request metadata that all operators must answer."""
+
+    request_id: str
+    prompt_hash: str
+    request_hash: str | None = None
+    prompt_cid: str | None = None
+    prompt_redaction_policy: str = "raw"
+    provider: str | None = None
+    model_name: str | None = None
+    model_commitment: str | None = None
+    tokenizer_commitment: str | None = None
+    generation_params: dict[str, Any] = field(default_factory=dict)
+    comparison: str = "exact"
+    quorum: int = 1
+    min_operators: int = 1
+    deadline_unix_ms: int = 0
+    proof_policy: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "request_id": self.request_id,
+            "request_hash": self.request_hash,
+            "prompt_hash": self.prompt_hash,
+            "prompt_cid": self.prompt_cid,
+            "prompt_redaction_policy": self.prompt_redaction_policy,
+            "provider": self.provider,
+            "model_name": self.model_name,
+            "model_commitment": self.model_commitment,
+            "tokenizer_commitment": self.tokenizer_commitment,
+            "generation_params": _jsonable(self.generation_params),
+            "comparison": self.comparison,
+            "quorum": int(self.quorum),
+            "min_operators": int(self.min_operators),
+            "deadline_unix_ms": int(self.deadline_unix_ms),
+            "proof_policy": _jsonable(self.proof_policy),
+            "metadata": _jsonable(self.metadata),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ConsensusRequest":
+        return cls(
+            request_id=str(data.get("request_id") or ""),
+            request_hash=str(data["request_hash"]) if data.get("request_hash") is not None else None,
+            prompt_hash=str(data.get("prompt_hash") or ""),
+            prompt_cid=str(data["prompt_cid"]) if data.get("prompt_cid") is not None else None,
+            prompt_redaction_policy=str(data.get("prompt_redaction_policy") or "raw"),
+            provider=str(data["provider"]) if data.get("provider") is not None else None,
+            model_name=str(data["model_name"]) if data.get("model_name") is not None else None,
+            model_commitment=str(data["model_commitment"]) if data.get("model_commitment") is not None else None,
+            tokenizer_commitment=str(data["tokenizer_commitment"]) if data.get("tokenizer_commitment") is not None else None,
+            generation_params=_dict_value(data, "generation_params"),
+            comparison=str(data.get("comparison") or "exact"),
+            quorum=int(data.get("quorum") or 1),
+            min_operators=int(data.get("min_operators") or 1),
+            deadline_unix_ms=int(data.get("deadline_unix_ms") or 0),
+            proof_policy=_dict_value(data, "proof_policy"),
+            metadata=_dict_value(data, "metadata"),
+        )
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    @classmethod
+    def from_json(cls, text: str) -> "ConsensusRequest":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("ConsensusRequest JSON must decode to an object")
+        return cls.from_dict(data)
+
+
+@dataclass(frozen=True)
+class OperatorResponse:
+    """One operator's response to a consensus request."""
+
+    operator_id: str
+    transport: str
+    provider: str
+    output_text: str
+    output_hash: str
+    normalized_output_hash: str
+    peer_id: str | None = None
+    model_name: str | None = None
+    latency_ms: int = 0
+    error: str | None = None
+    signature: str | None = None
+    attestation: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "operator_id": self.operator_id,
+            "transport": self.transport,
+            "peer_id": self.peer_id,
+            "provider": self.provider,
+            "model_name": self.model_name,
+            "output_text": self.output_text,
+            "output_hash": self.output_hash,
+            "normalized_output_hash": self.normalized_output_hash,
+            "latency_ms": int(self.latency_ms),
+            "error": self.error,
+            "signature": self.signature,
+            "attestation": _jsonable(self.attestation) if self.attestation is not None else None,
+            "metadata": _jsonable(self.metadata),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "OperatorResponse":
+        attestation = data.get("attestation")
+        return cls(
+            operator_id=str(data.get("operator_id") or ""),
+            transport=str(data.get("transport") or ""),
+            peer_id=str(data["peer_id"]) if data.get("peer_id") is not None else None,
+            provider=str(data.get("provider") or ""),
+            model_name=str(data["model_name"]) if data.get("model_name") is not None else None,
+            output_text=str(data.get("output_text") or ""),
+            output_hash=str(data.get("output_hash") or ""),
+            normalized_output_hash=str(data.get("normalized_output_hash") or ""),
+            latency_ms=int(data.get("latency_ms") or 0),
+            error=str(data["error"]) if data.get("error") is not None else None,
+            signature=str(data["signature"]) if data.get("signature") is not None else None,
+            attestation=attestation if isinstance(attestation, dict) else None,
+            metadata=_dict_value(data, "metadata"),
+        )
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    @classmethod
+    def from_json(cls, text: str) -> "OperatorResponse":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("OperatorResponse JSON must decode to an object")
+        return cls.from_dict(data)
+
+
+@dataclass(frozen=True)
+class ConsensusResult:
+    """Quorum outcome for a set of operator responses."""
+
+    accepted: bool
+    selected_output_hash: str
+    selected_normalized_hash: str
+    selected_operator_ids: list[str] = field(default_factory=list)
+    rejected_operator_ids: list[str] = field(default_factory=list)
+    quorum: int = 1
+    total_successful: int = 0
+    comparison: str = "exact"
+    reason: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "accepted": bool(self.accepted),
+            "selected_output_hash": self.selected_output_hash,
+            "selected_normalized_hash": self.selected_normalized_hash,
+            "selected_operator_ids": list(self.selected_operator_ids),
+            "rejected_operator_ids": list(self.rejected_operator_ids),
+            "quorum": int(self.quorum),
+            "total_successful": int(self.total_successful),
+            "comparison": self.comparison,
+            "reason": self.reason,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ConsensusResult":
+        return cls(
+            accepted=bool(data.get("accepted")),
+            selected_output_hash=str(data.get("selected_output_hash") or ""),
+            selected_normalized_hash=str(data.get("selected_normalized_hash") or ""),
+            selected_operator_ids=[str(item) for item in _list_value(data, "selected_operator_ids")],
+            rejected_operator_ids=[str(item) for item in _list_value(data, "rejected_operator_ids")],
+            quorum=int(data.get("quorum") or 1),
+            total_successful=int(data.get("total_successful") or 0),
+            comparison=str(data.get("comparison") or "exact"),
+            reason=str(data.get("reason") or ""),
+        )
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    @classmethod
+    def from_json(cls, text: str) -> "ConsensusResult":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("ConsensusResult JSON must decode to an object")
+        return cls.from_dict(data)
+
+
+@dataclass(frozen=True)
+class ProofReceipt:
+    """Verification evidence attached to a consensus receipt."""
+
+    policy: str
+    verified: bool = False
+    verifier: str | None = None
+    proof_cid: str | None = None
+    public_inputs_hash: str | None = None
+    tee_attestation_hash: str | None = None
+    cre_workflow_id: str | None = None
+    cre_report_id: str | None = None
+    chain_id: str | None = None
+    tx_hash: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "policy": self.policy,
+            "verifier": self.verifier,
+            "proof_cid": self.proof_cid,
+            "public_inputs_hash": self.public_inputs_hash,
+            "tee_attestation_hash": self.tee_attestation_hash,
+            "cre_workflow_id": self.cre_workflow_id,
+            "cre_report_id": self.cre_report_id,
+            "chain_id": self.chain_id,
+            "tx_hash": self.tx_hash,
+            "verified": bool(self.verified),
+            "metadata": _jsonable(self.metadata),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ProofReceipt":
+        return cls(
+            policy=str(data.get("policy") or ""),
+            verifier=str(data["verifier"]) if data.get("verifier") is not None else None,
+            proof_cid=str(data["proof_cid"]) if data.get("proof_cid") is not None else None,
+            public_inputs_hash=str(data["public_inputs_hash"]) if data.get("public_inputs_hash") is not None else None,
+            tee_attestation_hash=str(data["tee_attestation_hash"]) if data.get("tee_attestation_hash") is not None else None,
+            cre_workflow_id=str(data["cre_workflow_id"]) if data.get("cre_workflow_id") is not None else None,
+            cre_report_id=str(data["cre_report_id"]) if data.get("cre_report_id") is not None else None,
+            chain_id=str(data["chain_id"]) if data.get("chain_id") is not None else None,
+            tx_hash=str(data["tx_hash"]) if data.get("tx_hash") is not None else None,
+            verified=bool(data.get("verified")),
+            metadata=_dict_value(data, "metadata"),
+        )
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    @classmethod
+    def from_json(cls, text: str) -> "ProofReceipt":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("ProofReceipt JSON must decode to an object")
+        return cls.from_dict(data)
+
+
+@dataclass(frozen=True)
+class ConsensusReceipt:
+    """Portable receipt for one consensus-verified LLM output."""
+
+    request: ConsensusRequest
+    responses: list[OperatorResponse]
+    consensus: ConsensusResult
+    proof: ProofReceipt
+    text: str
+    created_at: str = field(default_factory=utc_now_iso)
+    schema_version: str = CONSENSUS_RECEIPT_SCHEMA_VERSION
+
+    EXPECTED_SCHEMA_VERSION: ClassVar[str] = CONSENSUS_RECEIPT_SCHEMA_VERSION
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": self.schema_version,
+            "request": self.request.to_dict(),
+            "responses": [response.to_dict() for response in self.responses],
+            "consensus": self.consensus.to_dict(),
+            "proof": self.proof.to_dict(),
+            "text": self.text,
+            "created_at": self.created_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ConsensusReceipt":
+        schema_version = str(data.get("schema_version") or "")
+        if schema_version != cls.EXPECTED_SCHEMA_VERSION:
+            raise ValueError(f"Unsupported consensus receipt schema_version: {schema_version}")
+
+        request_data = data.get("request")
+        consensus_data = data.get("consensus")
+        proof_data = data.get("proof")
+        if not isinstance(request_data, dict):
+            raise ValueError("ConsensusReceipt request must be an object")
+        if not isinstance(consensus_data, dict):
+            raise ValueError("ConsensusReceipt consensus must be an object")
+        if not isinstance(proof_data, dict):
+            raise ValueError("ConsensusReceipt proof must be an object")
+
+        responses: list[OperatorResponse] = []
+        for item in _list_value(data, "responses"):
+            if not isinstance(item, dict):
+                raise ValueError("ConsensusReceipt responses must contain objects")
+            responses.append(OperatorResponse.from_dict(item))
+
+        return cls(
+            schema_version=schema_version,
+            request=ConsensusRequest.from_dict(request_data),
+            responses=responses,
+            consensus=ConsensusResult.from_dict(consensus_data),
+            proof=ProofReceipt.from_dict(proof_data),
+            text=str(data.get("text") or ""),
+            created_at=str(data.get("created_at") or utc_now_iso()),
+        )
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    @classmethod
+    def from_json(cls, text: str) -> "ConsensusReceipt":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("ConsensusReceipt JSON must decode to an object")
+        return cls.from_dict(data)
+
+
+def receipt_persistence_record(receipt: ConsensusReceipt) -> dict[str, Any]:
+    return {
+        "schema_version": "llm-router-consensus-persistence-record-v1",
+        "receipt_hash": receipt_content_hash(receipt),
+        "receipt": receipt.to_dict(),
+        "persisted_at": utc_now_iso(),
+    }
+
+
+def persist_consensus_receipt(
+    receipt: ConsensusReceipt,
+    *,
+    path: str | os.PathLike[str],
+    append_jsonl: bool | None = None,
+) -> dict[str, Any]:
+    """Persist a receipt to a local JSON or JSONL path and return the record."""
+
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    append = output_path.suffix.lower() == ".jsonl" if append_jsonl is None else bool(append_jsonl)
+    record = receipt_persistence_record(receipt)
+    rendered = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    if append:
+        with output_path.open("a", encoding="utf-8") as handle:
+            handle.write(rendered)
+            handle.write("\n")
+    else:
+        output_path.write_text(rendered + "\n", encoding="utf-8")
+    return record
+
+
+@dataclass(frozen=True)
+class LocalConsensusOperator:
+    """Synchronous local operator adapter for deterministic consensus tests."""
+
+    operator_id: str
+    handler: Callable[[ConsensusRequest], str | OperatorResponse]
+    provider: str = "local"
+    transport: str = "local"
+    model_name: str | None = None
+
+    def respond(self, request: ConsensusRequest) -> str | OperatorResponse:
+        return self.handler(request)
+
+
+def _operator_id(operator: Any, index: int) -> str:
+    value = getattr(operator, "operator_id", None)
+    text = str(value or "").strip()
+    return text or f"operator-{index}"
+
+
+def _operator_provider(operator: Any) -> str:
+    value = getattr(operator, "provider", None)
+    text = str(value or "").strip()
+    return text or "local"
+
+
+def _operator_transport(operator: Any) -> str:
+    value = getattr(operator, "transport", None)
+    text = str(value or "").strip()
+    return text or "local"
+
+
+def _operator_model_name(operator: Any, request: ConsensusRequest) -> str | None:
+    value = getattr(operator, "model_name", None)
+    if value is not None and str(value).strip():
+        return str(value)
+    return request.model_name
+
+
+def _timeout_response(operator: Any, index: int, request: ConsensusRequest, *, timeout_s: float) -> OperatorResponse:
+    return OperatorResponse(
+        operator_id=_operator_id(operator, index),
+        transport=_operator_transport(operator),
+        provider=_operator_provider(operator),
+        model_name=_operator_model_name(operator, request),
+        output_text="",
+        output_hash="",
+        normalized_output_hash="",
+        latency_ms=int(max(0.0, timeout_s) * 1000),
+        error="timeout",
+    )
+
+
+def _error_response(operator: Any, index: int, request: ConsensusRequest, *, error: BaseException, latency_ms: int) -> OperatorResponse:
+    return OperatorResponse(
+        operator_id=_operator_id(operator, index),
+        transport=_operator_transport(operator),
+        provider=_operator_provider(operator),
+        model_name=_operator_model_name(operator, request),
+        output_text="",
+        output_hash="",
+        normalized_output_hash="",
+        latency_ms=latency_ms,
+        error=f"{type(error).__name__}: {error}",
+    )
+
+
+def _coerce_operator_response(
+    result: str | OperatorResponse,
+    *,
+    operator: Any,
+    index: int,
+    request: ConsensusRequest,
+    latency_ms: int,
+) -> OperatorResponse:
+    if isinstance(result, OperatorResponse):
+        return replace(result, latency_ms=result.latency_ms or latency_ms)
+
+    output_text = str(result or "")
+    return OperatorResponse(
+        operator_id=_operator_id(operator, index),
+        transport=_operator_transport(operator),
+        provider=_operator_provider(operator),
+        model_name=_operator_model_name(operator, request),
+        output_text=output_text,
+        output_hash=sha256_digest(output_text),
+        normalized_output_hash=normalized_output_hash(output_text, comparison=request.comparison),
+        latency_ms=latency_ms,
+    )
+
+
+def _invoke_local_operator(operator: Any, index: int, request: ConsensusRequest) -> OperatorResponse:
+    started = time.monotonic()
+    try:
+        responder = getattr(operator, "respond", None)
+        if callable(responder):
+            result = responder(request)
+        elif callable(operator):
+            result = operator(request)
+        else:
+            raise TypeError("operator must be callable or expose respond(request)")
+        latency_ms = int((time.monotonic() - started) * 1000)
+        return _coerce_operator_response(
+            result,
+            operator=operator,
+            index=index,
+            request=request,
+            latency_ms=latency_ms,
+        )
+    except BaseException as exc:
+        latency_ms = int((time.monotonic() - started) * 1000)
+        return _error_response(operator, index, request, error=exc, latency_ms=latency_ms)
+
+
+def run_local_consensus(
+    *,
+    request: ConsensusRequest,
+    operators: list[Any] | tuple[Any, ...],
+    timeout_s: float = 60.0,
+    operator_timeout_s: float | None = None,
+    fail_closed: bool = True,
+    proof: ProofReceipt | None = None,
+    created_at: str | None = None,
+    receipt_path: str | os.PathLike[str] | None = None,
+    receipt_jsonl_path: str | os.PathLike[str] | None = None,
+) -> ConsensusReceipt:
+    """Run consensus against explicit local operators and return a receipt."""
+
+    operator_list = list(operators or ())
+    if not operator_list:
+        raise LLMConsensusError("At least one consensus operator is required")
+
+    max_workers = max(1, len(operator_list))
+    executor = ThreadPoolExecutor(max_workers=max_workers)
+    future_map = {
+        executor.submit(_invoke_local_operator, operator, index, request): (operator, index)
+        for index, operator in enumerate(operator_list)
+    }
+
+    effective_timeout_s = max(0.0, float(timeout_s))
+    done, pending = wait(future_map, timeout=effective_timeout_s)
+    responses: list[OperatorResponse] = []
+
+    for future in done:
+        operator, index = future_map[future]
+        try:
+            response = future.result()
+        except BaseException as exc:
+            response = _error_response(operator, index, request, error=exc, latency_ms=0)
+        if operator_timeout_s is not None and response.latency_ms > int(max(0.0, float(operator_timeout_s)) * 1000):
+            response = replace(
+                response,
+                output_text="",
+                output_hash="",
+                normalized_output_hash="",
+                error="timeout",
+            )
+        responses.append(response)
+
+    for future in pending:
+        operator, index = future_map[future]
+        future.cancel()
+        responses.append(_timeout_response(operator, index, request, timeout_s=effective_timeout_s))
+
+    executor.shutdown(wait=False, cancel_futures=True)
+    responses = sorted(responses, key=lambda response: response.operator_id)
+
+    consensus = select_consensus_result(
+        responses,
+        quorum=request.quorum,
+        comparison=request.comparison,
+        fail_closed=fail_closed,
+    )
+    selected_text = ""
+    if consensus.accepted:
+        for response in responses:
+            if (
+                response.operator_id in consensus.selected_operator_ids
+                and response.output_hash == consensus.selected_output_hash
+                and response.normalized_output_hash == consensus.selected_normalized_hash
+            ):
+                selected_text = response.output_text
+                break
+
+    resolved_proof = proof or ProofReceipt(
+        policy=str(request.proof_policy.get("mode") or "receipt_only"),
+        verified=False,
+    )
+    receipt = ConsensusReceipt(
+        request=request,
+        responses=responses,
+        consensus=consensus,
+        proof=resolved_proof,
+        text=selected_text,
+        created_at=created_at or utc_now_iso(),
+    )
+    if receipt_path:
+        persist_consensus_receipt(receipt, path=receipt_path, append_jsonl=False)
+    if receipt_jsonl_path:
+        persist_consensus_receipt(receipt, path=receipt_jsonl_path, append_jsonl=True)
+    return receipt
+
+
+__all__ = [
+    "CONSENSUS_RECEIPT_SCHEMA_VERSION",
+    "DEFAULT_DOMAIN_SEPARATOR",
+    "LLMConsensusError",
+    "ConsensusRequest",
+    "OperatorResponse",
+    "ConsensusResult",
+    "ProofReceipt",
+    "ConsensusReceipt",
+    "LocalConsensusOperator",
+    "build_consensus_request",
+    "canonical_request_hash",
+    "canonical_request_payload",
+    "is_advisory_comparison",
+    "load_consensus_config",
+    "normalize_output_text",
+    "normalized_output_hash",
+    "operator_signature_payload",
+    "persist_consensus_receipt",
+    "receipt_content_hash",
+    "receipt_persistence_record",
+    "run_local_consensus",
+    "select_consensus_result",
+    "sha256_digest",
+    "sign_operator_response",
+    "utc_now_iso",
+    "verify_operator_response_signature",
+]

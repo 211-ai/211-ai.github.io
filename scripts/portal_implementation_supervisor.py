@@ -171,6 +171,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-restarts", type=int, default=0)
     parser.add_argument("--daemon-interval", type=float, default=300.0)
     parser.add_argument(
+        "--until-complete",
+        action="store_true",
+        help="Supervise the daemon until every parsed todo task is completed, then stop",
+    )
+    parser.add_argument(
         "--task-prefix",
         default=TASK_HEADER_PREFIX,
         help="Markdown heading prefix for tasks, for example '## PORTAL-' or '## AGENT-'",
@@ -179,6 +184,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--state-prefix",
         default="portal",
         help="State file prefix inside --state-dir",
+    )
+    parser.add_argument(
+        "--allowed-tracks",
+        action="append",
+        default=[],
+        help="Comma-separated task tracks this supervisor may select; repeatable. Defaults to all tracks.",
+    )
+    parser.add_argument(
+        "--allowed-task-ids",
+        action="append",
+        default=[],
+        help="Comma-separated task IDs this supervisor may select; repeatable. Defaults to all task IDs.",
     )
     implement_group = parser.add_mutually_exclusive_group()
     implement_group.add_argument(
@@ -232,6 +249,7 @@ def build_supervisor(args: argparse.Namespace) -> PortalImplementationSupervisor
             check_interval=args.check_interval,
             max_restarts=args.max_restarts,
             daemon_interval=args.daemon_interval,
+            until_complete=args.until_complete,
             task_prefix=args.task_prefix,
             state_prefix=args.state_prefix,
             repo_root=REPO_ROOT,
@@ -241,6 +259,8 @@ def build_supervisor(args: argparse.Namespace) -> PortalImplementationSupervisor
             implementation_timeout=args.implementation_timeout,
             use_ephemeral_worktree=args.implement and not args.no_ephemeral_worktree,
             worktree_root=args.worktree_root,
+            allowed_tracks=tuple(item.strip().lower() for value in args.allowed_tracks for item in value.split(",") if item.strip()),
+            allowed_task_ids=tuple(item.strip().lower() for value in args.allowed_task_ids for item in value.split(",") if item.strip()),
         )
     )
 

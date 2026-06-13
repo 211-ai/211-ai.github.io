@@ -752,6 +752,21 @@ class WalletServiceMatchRequest(BaseModel):
     limit: int = 10
 
 
+class WorldIdRpSignatureRequest(BaseModel):
+    actor_did: str
+    action: str | None = None
+
+
+class WorldIdVerificationRequest(BaseModel):
+    actor_did: str
+    idkit_payload: Dict[str, Any]
+
+
+class WorldIdBindingRevokeRequest(BaseModel):
+    actor_did: str
+    reason: str = ""
+
+
 class AnalyticsTemplateRequest(BaseModel):
     template_id: str
     title: str
@@ -1382,6 +1397,11 @@ def create_app(*, service: WalletInterfaceService | None = None):
     def health() -> Dict[str, str]:
         return {"status": "ok"}
 
+    def _world_id_http_exception(exc: Exception) -> HTTPException:
+        message = str(exc)
+        status_code = 409 if "already bound" in message.lower() or "replay" in message.lower() else 400
+        return HTTPException(status_code=status_code, detail=message)
+
     @app.post("/auth/magic-link/request")
     def request_magic_login_link(request: MagicLoginRequest) -> Dict[str, Any]:
         try:
@@ -1501,6 +1521,60 @@ def create_app(*, service: WalletInterfaceService | None = None):
             return app_service.get_wallet(wallet_id).to_dict()
         except Exception as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/world-id/config")
+    def get_world_id_config(wallet_id: str) -> Dict[str, Any]:
+        try:
+            app_service.get_wallet(wallet_id)
+            return app_service.get_world_id_config()
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/world-id/status")
+    def get_world_id_status(wallet_id: str, actor_did: str) -> Dict[str, Any]:
+        try:
+            app_service._require_portal_actor(wallet_id, actor_did)
+            return app_service.get_world_id_status(wallet_id)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/world-id/rp-signature")
+    def create_world_id_rp_signature(wallet_id: str, request: WorldIdRpSignatureRequest) -> Dict[str, Any]:
+        try:
+            return app_service.create_world_id_rp_signature(
+                wallet_id=wallet_id,
+                actor_did=request.actor_did,
+                action=request.action,
+            )
+        except Exception as exc:
+            raise _world_id_http_exception(exc) from exc
+
+    @app.post("/wallets/{wallet_id}/world-id/verifications")
+    def register_world_id_verification(wallet_id: str, request: WorldIdVerificationRequest) -> Dict[str, Any]:
+        try:
+            return app_service.register_world_id_verification(
+                wallet_id,
+                actor_did=request.actor_did,
+                idkit_payload=request.idkit_payload,
+            )
+        except Exception as exc:
+            raise _world_id_http_exception(exc) from exc
+
+    @app.post("/wallets/{wallet_id}/world-id/bindings/{binding_id}/revoke")
+    def revoke_world_id_binding(
+        wallet_id: str,
+        binding_id: str,
+        request: WorldIdBindingRevokeRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.revoke_world_id_binding(
+                wallet_id,
+                binding_id,
+                actor_did=request.actor_did,
+                reason=request.reason,
+            ).to_dict()
+        except Exception as exc:
+            raise _world_id_http_exception(exc) from exc
 
     @app.post("/wallets/{wallet_id}/controllers")
     def add_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:

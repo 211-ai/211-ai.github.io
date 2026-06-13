@@ -69,6 +69,7 @@ class ServiceSpec:
         log_level: str,
         check_interval: float,
         daemon_interval: float,
+        until_complete: bool = False,
         implement: bool,
         implementation_command: str,
         implementation_timeout: float,
@@ -87,6 +88,8 @@ class ServiceSpec:
             "--daemon-interval",
             str(daemon_interval),
         ]
+        if until_complete:
+            command.append("--until-complete")
         if implement:
             command.append("--implement")
             if implementation_command:
@@ -150,16 +153,115 @@ SERVICES = {
             "wallet",
         ),
     ),
+    "provekit": ServiceSpec(
+        name="provekit",
+        supervisor_script=REPO_ROOT / "scripts" / "provekit_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "provekit_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "provekit_implementation" / "state",
+        state_prefix="provekit",
+        supervisor_args=(
+            "--state-dir",
+            "data/provekit_implementation/state",
+            "--state-prefix",
+            "provekit",
+        ),
+    ),
+    "worldid-wallet": ServiceSpec(
+        name="worldid-wallet",
+        supervisor_script=REPO_ROOT / "scripts" / "wallet_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "wallet_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "world_id_implementation" / "state",
+        state_prefix="worldid",
+        supervisor_args=(
+            "--todo-path",
+            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "--task-prefix",
+            "## WORLDID-",
+            "--state-prefix",
+            "worldid",
+            "--state-dir",
+            "data/world_id_implementation/state",
+        ),
+    ),
+    "worldid-backend": ServiceSpec(
+        name="worldid-backend",
+        supervisor_script=REPO_ROOT / "scripts" / "wallet_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "wallet_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "world_id_backend_implementation" / "state",
+        state_prefix="worldid_backend",
+        supervisor_args=(
+            "--todo-path",
+            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "--task-prefix",
+            "## WORLDID-",
+            "--state-prefix",
+            "worldid_backend",
+            "--state-dir",
+            "data/world_id_backend_implementation/state",
+            "--allowed-tracks",
+            "proofs,core,wallet,privacy,ops",
+            "--allowed-task-ids",
+            "WORLDID-170",
+        ),
+    ),
+    "worldid-ui": ServiceSpec(
+        name="worldid-ui",
+        supervisor_script=REPO_ROOT / "scripts" / "wallet_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "wallet_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "world_id_ui_implementation" / "state",
+        state_prefix="worldid_ui",
+        supervisor_args=(
+            "--todo-path",
+            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "--task-prefix",
+            "## WORLDID-",
+            "--state-prefix",
+            "worldid_ui",
+            "--state-dir",
+            "data/world_id_ui_implementation/state",
+            "--allowed-tracks",
+            "ui",
+            "--allowed-task-ids",
+            "WORLDID-180",
+        ),
+    ),
+    "chainlink-zkml": ServiceSpec(
+        name="chainlink-zkml",
+        supervisor_script=REPO_ROOT / "scripts" / "portal_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "portal_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "chainlink_zkml_implementation" / "state",
+        state_prefix="clzkml",
+        supervisor_args=(
+            "--todo-path",
+            "docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md",
+            "--task-prefix",
+            "## CLZKML-",
+            "--state-prefix",
+            "clzkml",
+            "--state-dir",
+            "data/chainlink_zkml_implementation/state",
+        ),
+    ),
 }
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manage long-running implementation supervisor services")
     parser.add_argument("action", choices=("status", "start", "stop", "restart"))
-    parser.add_argument("service", choices=("portal", "agent", "graphrag", "wallet", "all"), default="all", nargs="?")
+    parser.add_argument(
+        "service",
+        choices=tuple([*SERVICES.keys(), "all"]),
+        default="all",
+        nargs="?",
+    )
     parser.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     parser.add_argument("--check-interval", type=float, default=60.0)
     parser.add_argument("--daemon-interval", type=float, default=300.0)
+    parser.add_argument(
+        "--until-complete",
+        action="store_true",
+        help="Run the selected supervisor until the parsed todo backlog is complete, then let the wrapper exit on success.",
+    )
     parser.add_argument("--restart-delay", type=int, default=5)
     parser.add_argument("--startup-wait", type=float, default=2.0)
     implement_group = parser.add_mutually_exclusive_group()
@@ -192,7 +294,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def _selected_services(name: str) -> list[ServiceSpec]:
     if name == "all":
-        return [SERVICES["portal"], SERVICES["agent"], SERVICES["graphrag"], SERVICES["wallet"]]
+        return [
+            SERVICES["portal"],
+            SERVICES["agent"],
+            SERVICES["graphrag"],
+            SERVICES["wallet"],
+            SERVICES["provekit"],
+            SERVICES["worldid-backend"],
+            SERVICES["worldid-ui"],
+            SERVICES["chainlink-zkml"],
+        ]
     return [SERVICES[name]]
 
 
@@ -321,6 +432,7 @@ def service_status(spec: ServiceSpec) -> dict[str, Any]:
         "daemon_command": daemon_command,
         "implementation_enabled": _command_has_flag(wrapper_command, "--implement")
         and _command_has_flag(daemon_command, "--implement"),
+        "until_complete_enabled": _command_has_flag(wrapper_command, "--until-complete"),
         "ephemeral_worktree_enabled": not _command_has_flag(wrapper_command, "--no-ephemeral-worktree")
         and not _command_has_flag(daemon_command, "--no-ephemeral-worktree"),
         "supervisor_status": supervisor_status_value,
@@ -336,9 +448,13 @@ def _status_matches_requested_mode(
     *,
     implement: bool,
     use_ephemeral_worktree: bool,
+    until_complete: bool = False,
 ) -> bool:
     wrapper_command = str(status.get("wrapper_command") or "")
     daemon_command = str(status.get("daemon_command") or "")
+    has_until_complete = _command_has_flag(wrapper_command, "--until-complete")
+    if until_complete != has_until_complete:
+        return False
     if implement:
         if not _command_has_flag(wrapper_command, "--implement"):
             return False
@@ -359,6 +475,7 @@ def start_service(
     log_level: str,
     check_interval: float,
     daemon_interval: float,
+    until_complete: bool,
     restart_delay: int,
     startup_wait: float,
     implement: bool,
@@ -371,6 +488,7 @@ def start_service(
     if status["wrapper_pid_alive"]:
         if _status_matches_requested_mode(
             status,
+            until_complete=until_complete,
             implement=implement,
             use_ephemeral_worktree=use_ephemeral_worktree,
         ):
@@ -379,6 +497,7 @@ def start_service(
     if status["supervisor_pid_alive"]:
         if _status_matches_requested_mode(
             status,
+            until_complete=until_complete,
             implement=implement,
             use_ephemeral_worktree=use_ephemeral_worktree,
         ):
@@ -396,6 +515,7 @@ def start_service(
             log_level=log_level,
             check_interval=check_interval,
             daemon_interval=daemon_interval,
+            until_complete=until_complete,
             implement=implement,
             implementation_command=implementation_command,
             implementation_timeout=implementation_timeout,
@@ -406,6 +526,7 @@ def start_service(
         launch_mode="nohup_loop",
         restart_delay_seconds=restart_delay,
         restart_message=f"{spec.name} implementation supervisor exited with code",
+        restart_on_success=not until_complete,
     )
     deadline = time.monotonic() + max(0.0, startup_wait)
     while time.monotonic() < deadline:
@@ -418,6 +539,7 @@ def start_service(
         "action": "start",
         "result": "started",
         "implementation_enabled": implement,
+        "until_complete": until_complete,
         "launcher_mode": launch.mode,
         "launcher_pid": launch.pid,
         "status": service_status(spec),
@@ -486,6 +608,7 @@ def restart_service(
     log_level: str,
     check_interval: float,
     daemon_interval: float,
+    until_complete: bool,
     restart_delay: int,
     startup_wait: float,
     implement: bool,
@@ -502,6 +625,7 @@ def restart_service(
             log_level=log_level,
             check_interval=check_interval,
             daemon_interval=daemon_interval,
+            until_complete=until_complete,
             restart_delay=restart_delay,
             startup_wait=startup_wait,
             implement=implement,
@@ -525,6 +649,7 @@ def main(argv: list[str] | None = None) -> int:
                     log_level=args.log_level,
                     check_interval=args.check_interval,
                     daemon_interval=args.daemon_interval,
+                    until_complete=args.until_complete,
                     restart_delay=args.restart_delay,
                     startup_wait=args.startup_wait,
                     implement=args.implement,
@@ -542,6 +667,7 @@ def main(argv: list[str] | None = None) -> int:
                     log_level=args.log_level,
                     check_interval=args.check_interval,
                     daemon_interval=args.daemon_interval,
+                    until_complete=args.until_complete,
                     restart_delay=args.restart_delay,
                     startup_wait=args.startup_wait,
                     implement=args.implement,

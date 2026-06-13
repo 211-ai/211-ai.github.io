@@ -145,6 +145,10 @@ See:
 - `MIGRATION_GUIDE.md` - How to refactor IndexTTS scripts
 - `space_inference_example.py` - Working code examples
 - `tests/test_hf_space_inference.py` - Test suite showing usage patterns
+- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_PLAN.md` - Plan for
+  Chainlink CRE/ZKML-backed LLM router consensus
+- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md` - Daemon-consumable
+  implementation backlog for the consensus feature
 
 ## Next Steps
 
