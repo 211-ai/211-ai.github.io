@@ -6,6 +6,7 @@ import json
 import hashlib
 import hmac
 import os
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor, wait
 from dataclasses import dataclass, field, replace
@@ -15,6 +16,8 @@ from typing import Any, Callable, ClassVar
 
 
 CONSENSUS_RECEIPT_SCHEMA_VERSION = "llm-router-consensus-receipt-v1"
+P2P_REQUEST_SCHEMA_VERSION = "llm-consensus-generate-v1"
+P2P_RESPONSE_SCHEMA_VERSION = "llm-consensus-generate-v1-response"
 DEFAULT_DOMAIN_SEPARATOR = "ipfs-accelerate-llm-consensus-v1"
 SECRET_KEY_MARKERS = (
     "api_key",
@@ -91,7 +94,18 @@ def _is_sensitive_or_transient_key(key: object) -> bool:
     lowered = _safe_key(key).lower()
     if not lowered:
         return False
-    return any(marker in lowered for marker in SECRET_KEY_MARKERS) or lowered in NONDETERMINISTIC_KEYS
+    if lowered in NONDETERMINISTIC_KEYS:
+        return True
+    parts = [part for part in re.split(r"[^a-z0-9]+", lowered) if part]
+    normalized = "_".join(parts)
+    for marker in SECRET_KEY_MARKERS:
+        if marker == "token":
+            if marker in parts:
+                return True
+            continue
+        if marker in normalized:
+            return True
+    return False
 
 
 def _sanitize_canonical_value(value: Any) -> Any:
@@ -784,8 +798,8 @@ class ConsensusResult:
     """Quorum outcome for a set of operator responses."""
 
     accepted: bool
-    selected_output_hash: str
-    selected_normalized_hash: str
+    selected_output_hash: str = ""
+    selected_normalized_hash: str = ""
     selected_operator_ids: list[str] = field(default_factory=list)
     rejected_operator_ids: list[str] = field(default_factory=list)
     quorum: int = 1
@@ -986,6 +1000,84 @@ def persist_consensus_receipt(
     else:
         output_path.write_text(rendered + "\n", encoding="utf-8")
     return record
+
+
+def build_p2p_request_payload(
+    request: ConsensusRequest,
+    prompt: str,
+    *,
+    redact_prompt_in_receipt: bool = True,
+    operator_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the libp2p request payload for remote consensus operators."""
+
+    payload: dict[str, Any] = {
+        "schema_version": P2P_REQUEST_SCHEMA_VERSION,
+        "request_id": request.request_id,
+        "request_hash": request.request_hash or "",
+        "model_name": request.model_name or "",
+        "provider": request.provider or "",
+        "prompt": str(prompt or ""),
+        "generation_params": _sanitize_canonical_value(request.generation_params),
+        "proof_policy": _sanitize_canonical_value(request.proof_policy),
+        "comparison": request.comparison or "exact",
+        "quorum": int(request.quorum),
+        "min_operators": int(request.min_operators),
+        "nonce": str(request.metadata.get("nonce") or ""),
+        "deadline_unix_ms": int(request.deadline_unix_ms or 0),
+        "redact_prompt_in_receipt": bool(redact_prompt_in_receipt),
+    }
+    if operator_metadata:
+        payload["operator_metadata"] = _sanitize_canonical_value(operator_metadata)
+    return _jsonable(payload)
+
+
+def parse_p2p_response_payload(
+    data: dict[str, Any],
+    *,
+    peer_id: str | None = None,
+    operator_id: str | None = None,
+    latency_ms: int = 0,
+) -> OperatorResponse:
+    """Parse a libp2p consensus response into an :class:`OperatorResponse`."""
+
+    schema_version = str(data.get("schema_version") or "")
+    if schema_version and schema_version != P2P_RESPONSE_SCHEMA_VERSION:
+        raise ValueError(
+            f"Unsupported p2p response schema_version: {schema_version!r}. "
+            f"Expected: {P2P_RESPONSE_SCHEMA_VERSION!r}"
+        )
+
+    resolved_peer_id = peer_id or data.get("peer_id")
+    resolved_peer_id = str(resolved_peer_id) if resolved_peer_id is not None else None
+    resolved_operator_id = operator_id or data.get("operator_id") or resolved_peer_id or "unknown"
+    output_text = str(data.get("output_text") or "")
+    output_hash = str(data.get("output_hash") or "")
+    if not output_hash and output_text:
+        output_hash = sha256_digest(output_text)
+
+    parsed_latency = data.get("latency_ms")
+    try:
+        resolved_latency_ms = int(parsed_latency) if parsed_latency is not None else int(latency_ms)
+    except (TypeError, ValueError):
+        resolved_latency_ms = int(latency_ms)
+
+    attestation = data.get("attestation")
+    return OperatorResponse(
+        operator_id=str(resolved_operator_id),
+        transport="libp2p",
+        peer_id=resolved_peer_id,
+        provider=str(data.get("provider") or ""),
+        model_name=str(data["model_name"]) if data.get("model_name") is not None else None,
+        output_text=output_text,
+        output_hash=output_hash,
+        normalized_output_hash=str(data.get("normalized_output_hash") or ""),
+        latency_ms=resolved_latency_ms,
+        error=str(data["error"]) if data.get("error") is not None else None,
+        signature=str(data["signature"]) if data.get("signature") is not None else None,
+        attestation=attestation if isinstance(attestation, dict) else None,
+        metadata=_dict_value(data, "metadata"),
+    )
 
 
 @dataclass(frozen=True)
@@ -1193,6 +1285,8 @@ def run_local_consensus(
 
 __all__ = [
     "CONSENSUS_RECEIPT_SCHEMA_VERSION",
+    "P2P_REQUEST_SCHEMA_VERSION",
+    "P2P_RESPONSE_SCHEMA_VERSION",
     "DEFAULT_DOMAIN_SEPARATOR",
     "LLMConsensusError",
     "ConsensusRequest",
@@ -1201,6 +1295,7 @@ __all__ = [
     "ProofReceipt",
     "ConsensusReceipt",
     "LocalConsensusOperator",
+    "build_p2p_request_payload",
     "build_consensus_request",
     "canonical_request_hash",
     "canonical_request_payload",
@@ -1209,6 +1304,7 @@ __all__ = [
     "normalize_output_text",
     "normalized_output_hash",
     "operator_signature_payload",
+    "parse_p2p_response_payload",
     "persist_consensus_receipt",
     "receipt_content_hash",
     "receipt_persistence_record",
