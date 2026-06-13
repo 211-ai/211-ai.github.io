@@ -197,7 +197,7 @@ Track guide:
 - Acceptance: Deontic `LegalNormIR`, parser capability records, prover syntax readiness, and repair/compiler guidance metadata flow into stable public commitments and `compiler_guidance_ref` fields without exposing private legal text or parser witness data.
 
 ## PROVEKIT-150 Proof Cache And IPFS Public Payload Hardening
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: privacy
