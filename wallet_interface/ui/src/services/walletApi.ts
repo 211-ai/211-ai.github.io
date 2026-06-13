@@ -461,6 +461,142 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface WorldIdWalletConfig {
+  enabled: boolean;
+  environment: "staging" | "production" | string;
+  app_id: string;
+  rp_id: string;
+  allowed_actions: string[];
+  default_action: string;
+  credential_policy: string;
+  allow_legacy_proofs: boolean;
+  require_user_presence: boolean;
+  rp_signature_ttl_seconds?: number;
+  verify_base_url?: string;
+  http_timeout_seconds?: number;
+}
+
+export interface WorldIdBinding {
+  binding_id: string;
+  wallet_id: string;
+  actor_did: string;
+  rp_id: string;
+  action: string;
+  protocol_version: string;
+  environment: string;
+  nullifier_ref: string;
+  app_id?: string;
+  credential_identifiers?: string[];
+  issuer_schema_ids?: number[];
+  proof_receipt_id?: string | null;
+  session_id?: string;
+  signal_hash_ref?: string;
+  verification_status?: string;
+  status: "active" | "revoked" | string;
+  verified_at: string;
+  expires_at_min?: number | null;
+  created_at?: string;
+  updated_at?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface WorldIdWalletStatus {
+  enabled: boolean;
+  environment: "staging" | "production" | string;
+  app_id: string;
+  rp_id: string;
+  allowed_actions: string[];
+  default_action: string;
+  credential_policy: string;
+  configured?: {
+    rp_signing_key?: boolean;
+    nullifier_hmac_key?: boolean;
+  };
+  wallet?: {
+    wallet_id: string;
+    binding_count: number;
+    active_binding_count: number;
+    bindings: WorldIdBinding[];
+  };
+}
+
+export interface WorldIdRpSignatureResponse {
+  rp_id: string;
+  sig: string;
+  signature: string;
+  nonce: string;
+  created_at: number;
+  expires_at: number;
+  action: string;
+}
+
+export interface WorldIdRpSignatureRequest {
+  action?: string;
+}
+
+export type WorldIdIdkitPayload = Record<string, unknown>;
+
+export interface WorldIdVerificationRequest {
+  idkitPayload: WorldIdIdkitPayload;
+}
+
+export interface WorldIdVerificationResult {
+  success: boolean;
+  action?: string;
+  nullifier?: string;
+  created_at?: string;
+  environment?: string;
+  session_id?: string;
+  message?: string;
+  results?: Array<Record<string, unknown>>;
+}
+
+export interface WorldIdVerificationResponse {
+  binding: WorldIdBinding;
+  proof?: ProofReceiptView;
+  verification: WorldIdVerificationResult;
+}
+
+export interface WorldIdBindingRevokeRequest {
+  reason?: string;
+}
+
+export type WorldIdWalletApiErrorCode =
+  | "disabled"
+  | "replayed"
+  | "conflict"
+  | "expired"
+  | "verification_failed"
+  | "request_failed";
+
+export class WorldIdWalletApiError extends Error {
+  readonly code: WorldIdWalletApiErrorCode;
+  readonly status: number;
+  readonly detail: unknown;
+
+  constructor({
+    code,
+    detail,
+    message,
+    status
+  }: {
+    code: WorldIdWalletApiErrorCode;
+    detail: unknown;
+    message: string;
+    status: number;
+  }) {
+    super(message);
+    this.name = "WorldIdWalletApiError";
+    this.code = code;
+    this.status = status;
+    this.detail = detail;
+  }
+}
+
+export function isWorldIdWalletApiError(error: unknown): error is WorldIdWalletApiError {
+  return error instanceof WorldIdWalletApiError;
+}
+
 export interface WalletMagicUcan {
   profile: string;
   issuer?: string;
@@ -798,6 +934,73 @@ export async function listWalletProofReceipts(
   const data = await fetchJson<ProofReceiptsApiResponse>(url, "Proof receipts");
   return data.proofs.map(toProofReceiptView);
 }
+
+export async function loadWalletWorldIdConfig(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WorldIdWalletConfig> {
+  const url = new URL(`/wallets/${config.walletId}/world-id/config`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchWorldIdJson<WorldIdWalletConfig>(url, "World ID config");
+}
+
+export async function loadWalletWorldIdStatus(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId" | "actorDid">
+): Promise<WorldIdWalletStatus> {
+  const url = new URL(`/wallets/${config.walletId}/world-id/status`, normalizedBaseUrl(config.apiBaseUrl));
+  url.searchParams.set("actor_did", requiredActorDid(config));
+  return fetchWorldIdJson<WorldIdWalletStatus>(url, "World ID status");
+}
+
+export async function createWalletWorldIdRpSignature(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId" | "actorDid">,
+  { action }: WorldIdRpSignatureRequest = {}
+): Promise<WorldIdRpSignatureResponse> {
+  const url = new URL(`/wallets/${config.walletId}/world-id/rp-signature`, normalizedBaseUrl(config.apiBaseUrl));
+  return postWorldIdJson<WorldIdRpSignatureResponse>(url, "World ID RP signature", {
+    actor_did: requiredActorDid(config),
+    action
+  });
+}
+
+export async function registerWalletWorldIdVerification(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId" | "actorDid">,
+  { idkitPayload }: WorldIdVerificationRequest
+): Promise<WorldIdVerificationResponse> {
+  const url = new URL(`/wallets/${config.walletId}/world-id/verifications`, normalizedBaseUrl(config.apiBaseUrl));
+  const data = await postWorldIdJson<{
+    binding: WorldIdBinding;
+    proof?: ProofReceiptApiRecord | null;
+    verification: WorldIdVerificationResult;
+  }>(url, "World ID verification", {
+    actor_did: requiredActorDid(config),
+    idkit_payload: idkitPayload
+  });
+  return {
+    binding: data.binding,
+    proof: data.proof ? toProofReceiptView(data.proof) : undefined,
+    verification: data.verification
+  };
+}
+
+export async function revokeWalletWorldIdBinding(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId" | "actorDid">,
+  bindingId: string,
+  { reason = "" }: WorldIdBindingRevokeRequest = {}
+): Promise<WorldIdBinding> {
+  const url = new URL(
+    `/wallets/${config.walletId}/world-id/bindings/${bindingId}/revoke`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  return postWorldIdJson<WorldIdBinding>(url, "World ID binding revoke", {
+    actor_did: requiredActorDid(config),
+    reason
+  });
+}
+
+export const loadWorldIdConfig = loadWalletWorldIdConfig;
+export const loadWorldIdStatus = loadWalletWorldIdStatus;
+export const createWorldIdRpSignature = createWalletWorldIdRpSignature;
+export const registerWorldIdVerification = registerWalletWorldIdVerification;
+export const revokeWorldIdBinding = revokeWalletWorldIdBinding;
 
 export async function listAnalyticsTemplates({
   apiBaseUrl,
@@ -2480,6 +2683,11 @@ async function fetchJson<T>(url: URL, label: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+async function fetchWorldIdJson<T>(url: URL, label: string): Promise<T> {
+  const response = await fetch(url);
+  return readWorldIdResponse<T>(response, label);
+}
+
 async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -2490,6 +2698,90 @@ async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
     throw new Error(`${label} request failed with status ${response.status}`);
   }
   return (await response.json()) as T;
+}
+
+async function postWorldIdJson<T>(url: URL, label: string, body: unknown): Promise<T> {
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+  return readWorldIdResponse<T>(response, label);
+}
+
+async function readWorldIdResponse<T>(response: Response, label: string): Promise<T> {
+  if (!response.ok) {
+    throw await toWorldIdWalletApiError(response, label);
+  }
+  return (await response.json()) as T;
+}
+
+async function toWorldIdWalletApiError(response: Response, label: string): Promise<WorldIdWalletApiError> {
+  const detail = await readErrorResponseDetail(response);
+  const message = detailMessage(detail) || `${label} request failed with status ${response.status}`;
+  return new WorldIdWalletApiError({
+    code: classifyWorldIdError(response.status, message, detail),
+    detail,
+    message,
+    status: response.status
+  });
+}
+
+async function readErrorResponseDetail(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text.trim()) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return text;
+  }
+}
+
+function detailMessage(detail: unknown): string {
+  if (typeof detail === "string") {
+    return detail;
+  }
+  if (isPlainRecord(detail)) {
+    const nested = detail.detail;
+    if (typeof nested === "string") {
+      return nested;
+    }
+    if (Array.isArray(nested)) {
+      return nested.map(detailMessage).filter(Boolean).join("; ");
+    }
+    if (typeof detail.message === "string") {
+      return detail.message;
+    }
+    if (typeof detail.error === "string") {
+      return detail.error;
+    }
+  }
+  return "";
+}
+
+function classifyWorldIdError(
+  status: number,
+  message: string,
+  detail: unknown
+): WorldIdWalletApiErrorCode {
+  const rendered = `${message} ${typeof detail === "string" ? detail : JSON.stringify(detail ?? "")}`.toLowerCase();
+  if (rendered.includes("disabled")) return "disabled";
+  if (rendered.includes("expired") || rendered.includes("expires_at") || rendered.includes("expires at")) return "expired";
+  if (
+    rendered.includes("verification failed") ||
+    rendered.includes("verification_failed") ||
+    rendered.includes("verification-failed") ||
+    rendered.includes("verification was not successful") ||
+    rendered.includes("not successful") ||
+    rendered.includes("verify failed")
+  ) {
+    return "verification_failed";
+  }
+  if (rendered.includes("replay") || rendered.includes("replayed") || rendered.includes("nullifier_replayed")) return "replayed";
+  if (rendered.includes("already bound") || rendered.includes("conflict") || status === 409) return "conflict";
+  return "request_failed";
 }
 
 async function putJson<T>(url: URL, label: string, body: unknown): Promise<T> {
@@ -2541,7 +2833,7 @@ async function postAccessRequestDecision(
   return postJson<AccessRequestApiRecord>(url, `Access request ${action}`, body);
 }
 
-function requiredActorDid(config: WalletApiConfig): string {
+function requiredActorDid(config: Pick<WalletApiConfig, "actorDid">): string {
   if (!config.actorDid) {
     throw new Error("VITE_DEMO_ACTOR_DID is required for wallet mutations");
   }

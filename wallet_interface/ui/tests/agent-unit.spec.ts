@@ -83,6 +83,14 @@ import type { ClientLlmPromptInput } from "../src/lib/clientLlmPrompting";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { answer211InfoQuestion, build211InfoFallbackSummary } from "../src/services/graphRagService";
+import {
+  createWalletWorldIdRpSignature,
+  isWorldIdWalletApiError,
+  loadWalletWorldIdConfig,
+  loadWalletWorldIdStatus,
+  registerWalletWorldIdVerification,
+  revokeWalletWorldIdBinding,
+} from "../src/services/walletApi";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 import { resolvePublicHttpsUrl } from "../src/lib/publicEndpointPolicy";
@@ -257,6 +265,41 @@ function installMemoryLocalStorage() {
   };
 }
 
+interface FetchMockCall {
+  url: string;
+  method: string;
+  body?: unknown;
+}
+
+function installJsonFetchMock(
+  handler: (call: FetchMockCall) => { status?: number; json?: unknown; text?: string },
+) {
+  const originalFetch = globalThis.fetch;
+  const calls: FetchMockCall[] = [];
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+    const body = typeof init?.body === "string" ? JSON.parse(init.body) as unknown : undefined;
+    const call = {
+      url,
+      method: init?.method ?? "GET",
+      body,
+    };
+    calls.push(call);
+    const result = handler(call);
+    const status = result.status ?? 200;
+    return new Response(result.text ?? JSON.stringify(result.json ?? {}), {
+      headers: { "Content-Type": "application/json" },
+      status,
+    });
+  }) as typeof fetch;
+  return {
+    calls,
+    restore: () => {
+      globalThis.fetch = originalFetch;
+    },
+  };
+}
+
 interface TestAudioWorkerRequest {
   id: string;
   type: "generateAudio" | "generateVoiceReply" | "warmUp";
@@ -332,6 +375,247 @@ test.describe("agent unit contracts", () => {
     expect(AUDIO_CHAT_CONFIG.requestTimeoutMs).toBe(12000);
     expect(AUDIO_CHAT_CONFIG.warmupTimeoutMs).toBe(10000);
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
+  });
+
+  test("fetches World ID wallet routes and maps verification proof receipts", async () => {
+    const apiConfig = {
+      apiBaseUrl: "https://wallet.example.test",
+      walletId: "wallet-1",
+      actorDid: "did:key:owner",
+    };
+    const fetchMock = installJsonFetchMock((call) => {
+      const url = new URL(call.url);
+      if (url.pathname === "/wallets/wallet-1/world-id/config") {
+        return {
+          json: {
+            enabled: true,
+            environment: "staging",
+            app_id: "app_test_123",
+            rp_id: "rp_test_123",
+            allowed_actions: ["wallet-attach-world-id-v1"],
+            default_action: "wallet-attach-world-id-v1",
+            credential_policy: "proof_of_human",
+            allow_legacy_proofs: true,
+            require_user_presence: false,
+            rp_signature_ttl_seconds: 300,
+          },
+        };
+      }
+      if (url.pathname === "/wallets/wallet-1/world-id/status") {
+        return {
+          json: {
+            enabled: true,
+            environment: "staging",
+            app_id: "app_test_123",
+            rp_id: "rp_test_123",
+            allowed_actions: ["wallet-attach-world-id-v1"],
+            default_action: "wallet-attach-world-id-v1",
+            credential_policy: "proof_of_human",
+            wallet: {
+              wallet_id: "wallet-1",
+              binding_count: 1,
+              active_binding_count: 1,
+              bindings: [{
+                binding_id: "binding-1",
+                wallet_id: "wallet-1",
+                actor_did: "did:key:owner",
+                rp_id: "rp_test_123",
+                action: "wallet-attach-world-id-v1",
+                protocol_version: "4.0",
+                environment: "staging",
+                nullifier_ref: "worldid-nullifier-ref:v1:abc",
+                app_id: "app_test_123",
+                credential_identifiers: ["proof_of_human"],
+                proof_receipt_id: "proof-world-id",
+                verification_status: "verified",
+                status: "active",
+                verified_at: NOW,
+              }],
+            },
+          },
+        };
+      }
+      if (url.pathname === "/wallets/wallet-1/world-id/rp-signature") {
+        return {
+          json: {
+            rp_id: "rp_test_123",
+            sig: "0xsig",
+            signature: "0xsig",
+            nonce: "0xnonce",
+            created_at: 1_700_000_000,
+            expires_at: 1_700_000_300,
+            action: "wallet-attach-world-id-v1",
+          },
+        };
+      }
+      if (url.pathname === "/wallets/wallet-1/world-id/verifications") {
+        return {
+          json: {
+            binding: {
+              binding_id: "binding-1",
+              wallet_id: "wallet-1",
+              actor_did: "did:key:owner",
+              rp_id: "rp_test_123",
+              action: "wallet-attach-world-id-v1",
+              protocol_version: "4.0",
+              environment: "staging",
+              nullifier_ref: "worldid-nullifier-ref:v1:abc",
+              app_id: "app_test_123",
+              credential_identifiers: ["proof_of_human"],
+              proof_receipt_id: "proof-world-id",
+              verification_status: "verified",
+              status: "active",
+              verified_at: NOW,
+            },
+            proof: {
+              proof_id: "proof-world-id",
+              proof_type: "world_id_proof_of_human",
+              statement: {
+                claim: "wallet_bound_world_id_proof_of_human",
+              },
+              verifier_id: "world_id_developer_portal_v4",
+              public_inputs: {
+                claim: "World ID proof of human is bound to this wallet",
+                rp_id: "rp_test_123",
+                app_id: "app_test_123",
+                action: "wallet-attach-world-id-v1",
+                credential_policy: "proof_of_human",
+                nullifier_commitment: "hmac-sha256:abc",
+                result_count: 1,
+              },
+              proof_hash: "sha256:proof",
+              witness_record_ids: ["wallet://wallet-1/world-id-bindings/binding-1"],
+              is_simulated: false,
+              proof_system: "world_id_idkit_v4",
+              circuit_id: "world-id-proof-of-human-v4",
+              verifier_digest: "sha256:verifier",
+              proof_artifact_ref: null,
+              verification_status: "verified",
+              created_at: NOW,
+            },
+            verification: {
+              success: true,
+              action: "wallet-attach-world-id-v1",
+              nullifier: "[redacted]",
+              environment: "staging",
+              message: "verified",
+            },
+          },
+        };
+      }
+      if (url.pathname === "/wallets/wallet-1/world-id/bindings/binding-1/revoke") {
+        return {
+          json: {
+            binding_id: "binding-1",
+            wallet_id: "wallet-1",
+            actor_did: "did:key:owner",
+            rp_id: "rp_test_123",
+            action: "wallet-attach-world-id-v1",
+            protocol_version: "4.0",
+            environment: "staging",
+            nullifier_ref: "worldid-nullifier-ref:v1:abc",
+            app_id: "app_test_123",
+            verification_status: "verified",
+            status: "revoked",
+            verified_at: NOW,
+          },
+        };
+      }
+      return { status: 404, json: { detail: `Unexpected World ID route ${url.pathname}` } };
+    });
+
+    try {
+      const config = await loadWalletWorldIdConfig(apiConfig);
+      const status = await loadWalletWorldIdStatus(apiConfig);
+      const signature = await createWalletWorldIdRpSignature(apiConfig, { action: "wallet-attach-world-id-v1" });
+      const verification = await registerWalletWorldIdVerification(apiConfig, {
+        idkitPayload: {
+          action: "wallet-attach-world-id-v1",
+          environment: "staging",
+          responses: [{ identifier: "proof_of_human", nullifier: "0xraw-nullifier" }],
+        },
+      });
+      const revoked = await revokeWalletWorldIdBinding(apiConfig, "binding-1", { reason: "user disconnected" });
+
+      expect(config).toMatchObject({ enabled: true, app_id: "app_test_123", rp_id: "rp_test_123" });
+      expect(status.wallet?.active_binding_count).toBe(1);
+      expect(signature).toMatchObject({ rp_id: "rp_test_123", sig: "0xsig", signature: "0xsig" });
+      expect(verification.binding.binding_id).toBe("binding-1");
+      expect(verification.verification.nullifier).toBe("[redacted]");
+      expect(verification.proof).toMatchObject({
+        id: "proof-world-id",
+        proofType: "world_id_proof_of_human",
+        claim: "World ID proof of human is bound to this wallet",
+        proofSystem: "world_id_idkit_v4",
+        verificationStatus: "verified",
+        simulated: false,
+      });
+      expect(verification.proof?.publicInputs.result_count).toBe("1");
+      expect(revoked.status).toBe("revoked");
+      expect(fetchMock.calls.map((call) => `${call.method} ${new URL(call.url).pathname}`)).toEqual([
+        "GET /wallets/wallet-1/world-id/config",
+        "GET /wallets/wallet-1/world-id/status",
+        "POST /wallets/wallet-1/world-id/rp-signature",
+        "POST /wallets/wallet-1/world-id/verifications",
+        "POST /wallets/wallet-1/world-id/bindings/binding-1/revoke",
+      ]);
+      expect(new URL(fetchMock.calls[1].url).searchParams.get("actor_did")).toBe("did:key:owner");
+      expect(fetchMock.calls[2].body).toMatchObject({
+        actor_did: "did:key:owner",
+        action: "wallet-attach-world-id-v1",
+      });
+      expect(fetchMock.calls[3].body).toMatchObject({
+        actor_did: "did:key:owner",
+        idkit_payload: {
+          action: "wallet-attach-world-id-v1",
+        },
+      });
+      expect(fetchMock.calls[4].body).toMatchObject({
+        actor_did: "did:key:owner",
+        reason: "user disconnected",
+      });
+    } finally {
+      fetchMock.restore();
+    }
+  });
+
+  test("surfaces typed World ID wallet API errors", async () => {
+    const apiConfig = {
+      apiBaseUrl: "https://wallet.example.test",
+      walletId: "wallet-1",
+      actorDid: "did:key:owner",
+    };
+    const cases = [
+      { detail: "World ID is disabled", status: 400, code: "disabled" },
+      { detail: "nullifier replay detected", status: 409, code: "replayed" },
+      { detail: "World ID raw nullifier is already bound", status: 409, code: "conflict" },
+      { detail: "World ID proof has expired", status: 400, code: "expired" },
+      {
+        detail: "World ID verification was not successful: verification failed",
+        status: 400,
+        code: "verification_failed",
+      },
+    ] as const;
+
+    for (const item of cases) {
+      const fetchMock = installJsonFetchMock(() => ({ status: item.status, json: { detail: item.detail } }));
+      try {
+        let thrown: unknown;
+        try {
+          await createWalletWorldIdRpSignature(apiConfig, { action: "wallet-attach-world-id-v1" });
+        } catch (error) {
+          thrown = error;
+        }
+        expect(isWorldIdWalletApiError(thrown)).toBe(true);
+        if (isWorldIdWalletApiError(thrown)) {
+          expect(thrown.code).toBe(item.code);
+          expect(thrown.status).toBe(item.status);
+          expect(thrown.message).toBe(item.detail);
+        }
+      } finally {
+        fetchMock.restore();
+      }
+    }
   });
 
   test("patches the LiquidAI audio demo runner with local bundled dependencies", () => {

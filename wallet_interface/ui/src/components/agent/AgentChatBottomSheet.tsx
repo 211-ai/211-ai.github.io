@@ -42,6 +42,7 @@ export function AgentChatBottomSheet({
   onOpenAudio,
   onOpenText,
   onOpenServiceDetail,
+  onAudioReply,
   onSend
 }: {
   activeRouteLabel: string;

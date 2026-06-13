@@ -43,6 +43,7 @@ export function AgentChatDrawer({
   onOpenAudio,
   onOpenText,
   onOpenServiceDetail,
+  onAudioReply,
   onSend
 }: {
   activeRouteLabel: string;
