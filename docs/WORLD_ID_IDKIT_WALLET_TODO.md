@@ -165,7 +165,7 @@ Track guide:
 - Acceptance: The UI wallet API client defines World ID config/status/signature/verification types, fetches all new routes, maps returned proof receipts through the existing proof receipt view mapper, and surfaces typed errors for disabled, replayed, conflict, expired, and verification-failed states.
 
 ## WORLDID-120 IDKit Dependency And UI Runtime Guard
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
