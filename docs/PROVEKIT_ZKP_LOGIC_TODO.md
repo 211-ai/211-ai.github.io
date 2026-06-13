@@ -23,6 +23,13 @@ service manager, use:
 python scripts/manage_implementation_services.py start provekit --implement
 ```
 
+In a shared dirty checkout where follow-up tasks must build on uncommitted
+agent work, run the same persistent background loop in-place:
+
+```bash
+python scripts/manage_implementation_services.py start provekit --implement --no-ephemeral-worktree
+```
+
 Priority guide:
 
 - `P0`: foundation, safety, or production blocker work
@@ -140,7 +147,7 @@ Track guide:
 - Acceptance: When `IPFS_DATASETS_RUN_PROVEKIT_TESTS=1` and a ProveKit binary is configured, the integration test prepares keys, generates a real proof, verifies it through ProveKit, serializes it through `ZKPProof`, and verifies that disabled or unavailable environments skip or fail closed as intended.
 
 ## PROVEKIT-100 TDFOL Trace Schema And Python Prevalidation
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: platform
