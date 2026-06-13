@@ -29,6 +29,7 @@ All verifiers perform:
 from __future__ import annotations
 
 import abc
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -230,12 +231,16 @@ class TEEVerifier(ProofVerifier):
     - ``tee_signer``: public key or certificate that signed the attestation.
     - ``tee_nonce``: per-request TEE nonce (also used for replay prevention).
     - ``tee_expiry_unix_ms``: attestation expiry as a Unix timestamp in ms.
+    - ``tee_policy_mode`` (or ``proof_policy.mode``): the requested proof mode.
 
     Fail-closed: any missing or mismatched field produces ``verified=False``.
-    Expired attestations are rejected.
+    Expired attestations are rejected.  Measurements and signers are checked
+    against verifier-configured allowlists when present, otherwise against
+    allowlists supplied in the proof policy metadata.
     """
 
     verifier_id = "tee-verifier-v1"
+    _DEFAULT_ALLOWED_POLICY_MODES = frozenset({"tee_or_zkml", "tee_required"})
 
     _REQUIRED_TEE_FIELDS = (
         "tee_measurement",
@@ -244,9 +249,68 @@ class TEEVerifier(ProofVerifier):
         "tee_expiry_unix_ms",
     )
 
-    def __init__(self, *, now_unix_ms: int | None = None) -> None:
+    _MEASUREMENT_ALLOWLIST_FIELDS = (
+        "tee_measurement_allowlist",
+        "measurement_allowlist",
+        "allowed_tee_measurements",
+    )
+    _SIGNER_ALLOWLIST_FIELDS = (
+        "tee_signer_allowlist",
+        "signer_allowlist",
+        "allowed_tee_signers",
+    )
+    _SIGNER_IDENTITY_FIELDS = (
+        "tee_signer_identity",
+        "tee_expected_signer",
+        "expected_tee_signer",
+        "expected_signer",
+    )
+    _POLICY_MODE_FIELDS = (
+        "tee_policy_mode",
+        "proof_policy_mode",
+        "policy_mode",
+        "policy",
+        "mode",
+    )
+
+    def __init__(
+        self,
+        *,
+        now_unix_ms: int | None = None,
+        tee_measurement_allowlist: Iterable[str] | None = None,
+        measurement_allowlist: Iterable[str] | None = None,
+        allowed_measurements: Iterable[str] | None = None,
+        tee_signer_allowlist: Iterable[str] | None = None,
+        signer_allowlist: Iterable[str] | None = None,
+        allowed_signers: Iterable[str] | None = None,
+        expected_signer: str | None = None,
+        expected_policy_mode: str | None = None,
+        allowed_policy_modes: Iterable[str] | None = None,
+        require_measurement_allowlist: bool = True,
+        require_signer_allowlist: bool = True,
+    ) -> None:
         self._seen_nonces: set[str] = set()
         self._now_unix_ms = now_unix_ms  # injectable for testing
+        self._measurement_allowlist = self._merge_string_sets(
+            tee_measurement_allowlist,
+            measurement_allowlist,
+            allowed_measurements,
+        )
+        self._signer_allowlist = self._merge_string_sets(
+            tee_signer_allowlist,
+            signer_allowlist,
+            allowed_signers,
+            expected_signer,
+        )
+        self._require_measurement_allowlist = require_measurement_allowlist
+        self._require_signer_allowlist = require_signer_allowlist
+
+        if expected_policy_mode:
+            self._allowed_policy_modes = {str(expected_policy_mode)}
+        elif allowed_policy_modes is not None:
+            self._allowed_policy_modes = self._coerce_string_set(allowed_policy_modes)
+        else:
+            self._allowed_policy_modes = set(self._DEFAULT_ALLOWED_POLICY_MODES)
 
     @property
     def _current_unix_ms(self) -> int:
@@ -255,6 +319,90 @@ class TEEVerifier(ProofVerifier):
         import time
 
         return int(time.time() * 1000)
+
+    @staticmethod
+    def _coerce_string_set(value: Any) -> set[str]:
+        """Normalize scalar or iterable policy values to non-empty strings."""
+        if value is None:
+            return set()
+        if isinstance(value, str):
+            return {value} if value else set()
+        if isinstance(value, dict):
+            values = value.values()
+        elif isinstance(value, Iterable):
+            values = value
+        else:
+            text = str(value)
+            return {text} if text else set()
+
+        coerced: set[str] = set()
+        for item in values:
+            if item is None:
+                continue
+            text = str(item)
+            if text:
+                coerced.add(text)
+        return coerced
+
+    @classmethod
+    def _merge_string_sets(cls, *values: Any) -> set[str]:
+        merged: set[str] = set()
+        for value in values:
+            merged.update(cls._coerce_string_set(value))
+        return merged
+
+    @classmethod
+    def _string_set_from_fields(
+        cls,
+        proof_meta: dict[str, Any],
+        fields: tuple[str, ...],
+    ) -> set[str]:
+        for field_name in fields:
+            values = cls._coerce_string_set(proof_meta.get(field_name))
+            if values:
+                return values
+        proof_policy = proof_meta.get("proof_policy")
+        if isinstance(proof_policy, dict):
+            for field_name in fields:
+                values = cls._coerce_string_set(proof_policy.get(field_name))
+                if values:
+                    return values
+        return set()
+
+    def _measurement_policy(self, proof_meta: dict[str, Any]) -> set[str]:
+        if self._measurement_allowlist:
+            return set(self._measurement_allowlist)
+        return self._string_set_from_fields(
+            proof_meta,
+            self._MEASUREMENT_ALLOWLIST_FIELDS,
+        )
+
+    def _signer_policy(self, proof_meta: dict[str, Any]) -> set[str]:
+        if self._signer_allowlist:
+            return set(self._signer_allowlist)
+        signer_allowlist = self._string_set_from_fields(
+            proof_meta,
+            self._SIGNER_ALLOWLIST_FIELDS,
+        )
+        if signer_allowlist:
+            return signer_allowlist
+        return self._string_set_from_fields(
+            proof_meta,
+            self._SIGNER_IDENTITY_FIELDS,
+        )
+
+    def _proof_policy_mode(self, proof_meta: dict[str, Any]) -> str:
+        for field_name in self._POLICY_MODE_FIELDS:
+            value = proof_meta.get(field_name)
+            if value:
+                return str(value)
+
+        proof_policy = proof_meta.get("proof_policy")
+        if isinstance(proof_policy, dict):
+            mode = proof_policy.get("mode")
+            if mode:
+                return str(mode)
+        return ""
 
     def verify(
         self,
@@ -296,7 +444,7 @@ class TEEVerifier(ProofVerifier):
                 verifier=self.verifier_id,
                 reason="tee_expiry_invalid",
             )
-        if expiry_int < self._current_unix_ms:
+        if expiry_int <= self._current_unix_ms:
             return VerificationResult(
                 verified=False,
                 verifier=self.verifier_id,
@@ -304,6 +452,71 @@ class TEEVerifier(ProofVerifier):
             )
 
         tee_nonce = str(proof_meta["tee_nonce"])
+        if not context.nonce:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="context_nonce_missing",
+            )
+        if tee_nonce != context.nonce:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_nonce_mismatch",
+            )
+
+        proof_nonce = proof_meta.get("nonce")
+        if proof_nonce and str(proof_nonce) != tee_nonce:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="nonce_mismatch",
+            )
+
+        tee_measurement = str(proof_meta["tee_measurement"])
+        measurement_allowlist = self._measurement_policy(proof_meta)
+        if not measurement_allowlist and self._require_measurement_allowlist:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_measurement_allowlist_missing",
+            )
+        if measurement_allowlist and tee_measurement not in measurement_allowlist:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_measurement_not_allowed",
+            )
+
+        tee_signer = str(proof_meta["tee_signer"])
+        signer_allowlist = self._signer_policy(proof_meta)
+        if not signer_allowlist and self._require_signer_allowlist:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_signer_allowlist_missing",
+            )
+        if signer_allowlist and tee_signer not in signer_allowlist:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_signer_not_allowed",
+            )
+
+        policy_mode = self._proof_policy_mode(proof_meta)
+        if not policy_mode:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_policy_mode_missing",
+            )
+        if policy_mode not in self._allowed_policy_modes:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="tee_policy_mode_not_allowed",
+            )
+
         if tee_nonce in self._seen_nonces:
             return VerificationResult(
                 verified=False, verifier=self.verifier_id, reason="replayed_nonce"
@@ -315,8 +528,13 @@ class TEEVerifier(ProofVerifier):
             verifier=self.verifier_id,
             reason="tee_attestation_verified",
             metadata={
-                "tee_measurement": proof_meta["tee_measurement"],
-                "tee_signer": proof_meta["tee_signer"],
+                "evidence_type": "tee_attestation",
+                "proof_type": "tee_attestation",
+                "zkml_proof": False,
+                "tee_measurement": tee_measurement,
+                "tee_signer": tee_signer,
+                "tee_policy_mode": policy_mode,
+                "tee_expiry_unix_ms": expiry_int,
             },
         )
 
