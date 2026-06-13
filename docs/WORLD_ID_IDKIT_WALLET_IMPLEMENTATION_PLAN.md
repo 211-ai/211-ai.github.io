@@ -500,6 +500,49 @@ because existing login/session code already resolves wallet config and actor
 DID. A later login phase can add "Continue with World ID" once the binding and
 recovery policy are proven durable.
 
+## UI/UX Workflow Gap Review
+
+The backend design and initial UI tasks cover the main routes and components,
+but the workflow needs an explicit contract so parallel agents do not leave
+World ID stranded as a backend-only feature. The UI implementation must prove
+the following surfaces end to end:
+
+- `ProofCenterScreen`: primary launch point, status, proof card, audit refresh,
+  and retry/conflict messaging.
+- `Wallet`/uploads: wallet status badge near file proof and QR/export actions.
+- `Register`/client intake: optional completion step and bot-check replacement
+  only when World ID is enabled, with a visible manual fallback.
+- `Security`: verified-human status, local revoke/unlink language, and
+  reverify action.
+- QR proof review and export/import: sanitized World ID metadata appears, while
+  raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, and
+  user PII do not.
+
+Add a workflow contract matrix before full-stack Playwright work. Each row
+should name the surface, user intent, required backend routes, API error states,
+required UI state transitions, privacy assertions, and desktop/mobile test
+coverage. The matrix should also pin user-facing language: proof-of-human is not
+legal identity, age, citizenship, or document possession.
+
+Required UI states:
+
+- feature disabled or missing public runtime config
+- wallet API unavailable
+- actor DID or wallet ID missing
+- RP signature fetch pending, expired, or failed
+- IDKit cancel/close
+- credential unavailable
+- backend verification failed
+- same-wallet replay/idempotent success
+- different-wallet nullifier conflict
+- local revoke/unlink success
+- verified status after proof/audit refresh
+
+Do not rely only on route-level mocks. The final UI evidence must include a
+full-stack Playwright harness that launches the Abby UI and a live wallet API
+with mocked World Developer Portal verification, then exercises the browser
+transport client against the actual FastAPI routes.
+
 ## Provider And Shelter Workflows
 
 For client-side provider intake:
@@ -566,6 +609,7 @@ Add tests in `tests/test_wallet_interface_api.py` or a dedicated
 - config route hides secrets.
 - RP signature route requires authorized actor.
 - verification route forwards payload as-is to a mocked Developer Portal client.
+- route response shapes and error codes match the TypeScript wallet API client.
 - failed Developer Portal verification returns 400 and creates no binding.
 - successful verification creates binding, proof receipt, and audit event.
 - same nullifier/same wallet is idempotent.
@@ -578,12 +622,44 @@ Add tests in `tests/test_wallet_interface_api.py` or a dedicated
 Add Playwright/unit coverage:
 
 - World ID panel loads disabled state when feature is off.
+- World ID panel fetches a fresh RP signature only when the user starts IDKit.
+- IDKit result payload is passed to the backend verification route without
+  client-side field remapping.
 - Successful mocked IDKit flow refreshes proofs.
 - Backend verification failure shows a retryable error.
 - `nullifier_replayed` and credential-unavailable states are handled.
 - Proof Center displays the World ID proof receipt without exposing raw
   nullifier.
 - Mobile QR/invite-code display fits existing layouts.
+
+### Full-Stack Playwright Tests
+
+Add a dedicated Playwright suite that starts the real wallet API, configures a
+mock World Developer Portal verification client, and drives the deployed Abby UI
+against that API. It must cover:
+
+- disabled config and missing actor/wallet guards.
+- RP signature request, IDKit completion callback, backend verification, proof
+  refresh, status refresh, and audit refresh.
+- same-wallet replay/idempotency and different-wallet nullifier conflict.
+- revoke/unlink flow wording and status refresh.
+- QR proof bundle and export/import review with no raw nullifier, IDKit proof,
+  RP signature, Developer Portal response, or user PII in visible UI or exported
+  public metadata.
+- desktop Chrome, mobile Chrome, and mobile Safari projects from the existing
+  Playwright config.
+
+### UX And Accessibility Regression Tests
+
+Add Playwright evidence across Proof Center, Wallet/uploads, Register/intake,
+Security, and QR proof review:
+
+- no horizontal overflow or incoherent text overlap at mobile and desktop
+  breakpoints.
+- keyboard focus reaches the World ID controls and error/retry actions.
+- accessible names describe the controls without overclaiming legal identity.
+- manual fallback remains visible for emergency or essential-service workflows.
+- screenshots or traces are archived for production signoff.
 
 ### Manual/Staging Tests
 
@@ -648,6 +724,7 @@ Deliverable: API can create RP signatures and persist mocked verified bindings.
 - Add wallet API client methods and TypeScript models.
 - Add World ID verification panel.
 - Add Proof Center and Wallet status badges.
+- Add the UI/backend workflow contract matrix and shared Playwright fixtures.
 - Add frontend tests with mocked IDKit responses.
 
 Deliverable: users can complete a mocked or staging World ID flow in Abby.
@@ -675,6 +752,8 @@ Deliverable: client intake can use World ID as a real anti-duplication proof.
 
 - Add ops health checks.
 - Add rate limits and structured redacted logs.
+- Run full-stack Playwright World ID workflow coverage.
+- Run UX/accessibility/no-leak Playwright review across all World ID surfaces.
 - Run staging simulator checklist.
 - Rotate test credentials into production credentials.
 - Complete wallet target signoff packet.
@@ -709,6 +788,9 @@ Deliverable: production feature flag can be enabled for a pilot cohort.
 - [ ] Add World ID verification panel.
 - [ ] Add Proof Center, Wallet, Register, and Security integration.
 - [ ] Add frontend mocked IDKit tests.
+- [ ] Add UI/backend workflow matrix and shared World ID test fixtures.
+- [ ] Add full-stack Playwright coverage against live wallet API routes.
+- [ ] Add UX/accessibility/no-leak Playwright evidence across World ID surfaces.
 - [ ] Add staging simulator runbook.
 - [ ] Add ops readiness checks.
 - [ ] Complete production signoff before enabling production credentials.

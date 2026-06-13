@@ -222,7 +222,7 @@ Track guide:
 - Depends on: WORLDID-090, WORLDID-160
 - Outputs: tests/test_world_id_wallet_api.py, tests/test_wallet_interface_api.py
 - Validation: pytest tests/test_world_id_wallet_api.py tests/test_wallet_interface_api.py -q
-- Acceptance: API tests cover disabled config, signature authorization, mocked Developer Portal success/failure, action and signal enforcement, idempotent same-wallet replay, different-wallet conflict, proof/audit creation, snapshot save/load, and sanitized export behavior.
+- Acceptance: API tests cover disabled config, signature authorization, mocked Developer Portal success/failure, action and signal enforcement, route response/error shapes consumed by the TypeScript wallet API client, idempotent same-wallet replay, different-wallet conflict, proof/audit creation, snapshot save/load, and sanitized export behavior.
 
 ## WORLDID-180 Frontend Mocked IDKit Tests
 - Status: todo
@@ -234,12 +234,42 @@ Track guide:
 - Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts; npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
 - Acceptance: Playwright tests mock IDKit and wallet API responses to verify disabled state, successful verification, proof refresh, backend failure, nullifier conflict messaging, mobile layout, and no raw nullifier exposure in visible UI.
 
+## WORLDID-181 UI Workflow Contract Matrix And Fixtures
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: WORLDID-150, WORLDID-170
+- Outputs: docs/WORLD_ID_IDKIT_UI_WORKFLOW_MATRIX.md, wallet_interface/ui/tests/fixtures/world-id-fixtures.ts
+- Validation: python scripts/wallet_implementation_daemon.py --once --no-implement --todo-path docs/WORLD_ID_IDKIT_WALLET_TODO.md --task-prefix "## WORLDID-" --state-dir data/world_id_implementation/state --state-prefix worldid; npm --prefix wallet_interface/ui run build
+- Acceptance: A workflow matrix maps Proof Center, Wallet/uploads, Register/intake, Security, QR proof review, and export/import journeys to backend routes, TypeScript API calls, user-visible states, error/fallback copy, privacy no-leak assertions, and desktop/mobile Playwright coverage; shared fixtures provide deterministic IDKit, RP signature, status, proof receipt, conflict, revoke, and sanitizer sentinel payloads.
+
+## WORLDID-182 Full-Stack World ID Playwright Harness
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: WORLDID-170, WORLDID-180, WORLDID-181
+- Outputs: wallet_interface/ui/tests/world-id-fullstack.spec.ts, wallet_interface/ui/tests/fixtures/world-id-fixtures.ts
+- Validation: pytest tests/test_world_id_wallet_api.py tests/test_wallet_interface_api.py -q; npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts
+- Acceptance: Playwright launches the real Abby UI and live wallet API with a mocked World Developer Portal verification path, then verifies disabled/missing-config guards, RP signature creation, IDKit completion, backend verification, proof/status/audit refresh, same-wallet idempotent replay, different-wallet nullifier conflict, revoke/status refresh, and sanitized QR/export review without exposing raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, or PII.
+
+## WORLDID-183 Cross-Surface UX Accessibility And No-Leak Review
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: WORLDID-182, WORLDID-210
+- Outputs: wallet_interface/ui/tests/world-id-ux.spec.ts, wallet_interface/ui/tests/wallet-ux-review.spec.ts, artifacts/world-id-idkit-ui-review
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/world-id-ux.spec.ts; npm --prefix wallet_interface/ui test -- tests/wallet-ux-review.spec.ts
+- Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari Playwright coverage proves World ID controls across Proof Center, Wallet/uploads, Register/intake, Security, and QR proof review have keyboard focus, accessible names, no horizontal overflow or incoherent text overlap, visible fallback paths for emergency/essential access, no legal-identity overclaiming, and archived screenshot or trace evidence for signoff.
+
 ## WORLDID-190 Ops Health And Production Readiness Checks
 - Status: todo
 - Completion: evidence
 - Priority: P1
 - Track: ops
-- Depends on: WORLDID-090, WORLDID-170
+- Depends on: WORLDID-090, WORLDID-170, WORLDID-182
 - Outputs: wallet_interface/ops.py, tests/test_wallet_interface_ops.py, docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md
 - Validation: pytest tests/test_wallet_interface_ops.py tests/test_world_id_wallet_api.py -q; python -m wallet_interface.ops --validate-production-readiness
 - Acceptance: Ops readiness fails when World ID is enabled without app/RP IDs, signing secret refs, nullifier commitment secret refs, vector-tested RP signing, production verify endpoint reachability, production environment selection, or proof sanitization evidence.
@@ -249,7 +279,7 @@ Track guide:
 - Completion: evidence
 - Priority: P1
 - Track: ops
-- Depends on: WORLDID-180, WORLDID-190
+- Depends on: WORLDID-182, WORLDID-190
 - Outputs: docs/WORLD_ID_IDKIT_STAGING_RUNBOOK.md, docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md
 - Validation: python scripts/wallet_implementation_daemon.py --once --no-implement --todo-path docs/WORLD_ID_IDKIT_WALLET_TODO.md --task-prefix "## WORLDID-" --state-dir data/world_id_implementation/state --state-prefix worldid
 - Acceptance: A staging runbook documents Developer Portal setup, simulator use, local env, successful verification, same-wallet retry, different-wallet conflict, snapshot save/load, QR proof review, and evidence expected for signoff.
@@ -299,10 +329,10 @@ Track guide:
 - Completion: evidence
 - Priority: P1
 - Track: ops
-- Depends on: WORLDID-190, WORLDID-200, WORLDID-210
+- Depends on: WORLDID-183, WORLDID-190, WORLDID-200, WORLDID-210
 - Outputs: docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md, docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json, artifacts/world-id-idkit-signoff
 - Validation: python -m wallet_interface.ops --validate-production-readiness; python -m wallet_interface.ops --validate-target-signoff-packet
-- Acceptance: Pilot launch has archived staging evidence, production credential secret references, readiness output, accessibility/fallback review, privacy/nullifier review, security signoff, support playbook, and product-owner approval before `WORLD_ID_ENVIRONMENT=production` is enabled.
+- Acceptance: Pilot launch has archived staging evidence, production credential secret references, readiness output, full-stack Playwright evidence, accessibility/fallback review, privacy/nullifier review, security signoff, support playbook, and product-owner approval before `WORLD_ID_ENVIRONMENT=production` is enabled.
 
 ## WORLDID-260 Parallel-Agent Coordination Notes
 - Status: completed

@@ -80,7 +80,17 @@ Recommended order: complete WORLDID-160 → then WORLDID-180.
 |------|-------|---------|
 | WORLDID-170 | quality | `tests/test_world_id_wallet_api.py`, `tests/test_wallet_interface_api.py` |
 
-### Wave 7 – After WORLDID-090 and WORLDID-170
+### Wave 6b – After WORLDID-150 and WORLDID-170
+| Task | Track | Outputs |
+|------|-------|---------|
+| WORLDID-181 | ui | `docs/WORLD_ID_IDKIT_UI_WORKFLOW_MATRIX.md`, `ui/tests/fixtures/world-id-fixtures.ts` |
+
+### Wave 6c – After WORLDID-170, WORLDID-180, and WORLDID-181
+| Task | Track | Outputs |
+|------|-------|---------|
+| WORLDID-182 | ui | `ui/tests/world-id-fullstack.spec.ts`, `ui/tests/fixtures/world-id-fixtures.ts` |
+
+### Wave 7 – After WORLDID-090, WORLDID-170, and WORLDID-182
 | Task | Track | Outputs |
 |------|-------|---------|
 | WORLDID-190 | ops | `wallet_interface/ops.py`, `tests/test_wallet_interface_ops.py`, `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` |
@@ -90,7 +100,16 @@ Recommended order: complete WORLDID-160 → then WORLDID-180.
 |------|-------|---------|
 | WORLDID-210 | ui | `App.tsx`, `smoke.spec.ts`, `fullstack-wallet.spec.ts` |
 
-### Wave 8 – After WORLDID-180 and WORLDID-190
+WORLDID-210 may run while WORLDID-181 or WORLDID-182 is active because its
+listed files do not overlap with the new workflow fixture and full-stack spec
+files. It must finish before WORLDID-183.
+
+### Wave 7c – After WORLDID-182 and WORLDID-210
+| Task | Track | Outputs |
+|------|-------|---------|
+| WORLDID-183 | ui | `world-id-ux.spec.ts`, `wallet-ux-review.spec.ts`, `artifacts/world-id-idkit-ui-review` |
+
+### Wave 8 – After WORLDID-182 and WORLDID-190
 | Task | Track | Outputs |
 |------|-------|---------|
 | WORLDID-200 | ops | `docs/WORLD_ID_IDKIT_STAGING_RUNBOOK.md`, `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` |
@@ -105,7 +124,7 @@ WORLDID-230 and WORLDID-240 both write
 | WORLDID-230 | privacy | implementation plan, signoff doc |
 | WORLDID-240 | privacy | implementation plan, signoff doc |
 
-### Wave 9b – After WORLDID-190, WORLDID-200, and WORLDID-210
+### Wave 9b – After WORLDID-183, WORLDID-190, WORLDID-200, and WORLDID-210
 | Task | Track | Outputs |
 |------|-------|---------|
 | WORLDID-250 | ops | `WALLET_TARGET_PRODUCTION_SIGNOFF.md`, `*.template.json`, `artifacts/` |
@@ -172,6 +191,7 @@ task first).
 | `wallet_interface/ui/src/styles/global.css` | 130, 140, 150 | serial 130 → 140 → 150 |
 | `wallet_interface/ui/tests/smoke.spec.ts` | 140, 150, 180, 210, 220 | serial per wave order |
 | `wallet_interface/ui/tests/fullstack-wallet.spec.ts` | 160, 180, 210 | complete 160 before 180; 210 after both |
+| `wallet_interface/ui/tests/fixtures/world-id-fixtures.ts` | 181, 182 | complete 181 before 182 |
 | `tests/test_world_id_wallet_api.py` | 90, 160, 170, 220 | serial per dependency order |
 | `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` | 190, 200, 230, 240, 250 | serial per dependency order |
 | `docs/WORLD_ID_IDKIT_WALLET_IMPLEMENTATION_PLAN.md` | 230, 240 | complete 230 before 240 (or 240 before 230) |
@@ -269,6 +289,20 @@ npm --prefix wallet_interface/ui run build
 npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts
 npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
 
+# WORLDID-181
+python scripts/wallet_implementation_daemon.py --once --no-implement --todo-path docs/WORLD_ID_IDKIT_WALLET_TODO.md --task-prefix "## WORLDID-" --state-dir data/world_id_implementation/state --state-prefix worldid
+npm --prefix wallet_interface/ui run build
+
+# WORLDID-182
+pytest tests/test_world_id_wallet_api.py tests/test_wallet_interface_api.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts
+
+# WORLDID-183
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/world-id-ux.spec.ts
+npm --prefix wallet_interface/ui test -- tests/wallet-ux-review.spec.ts
+
 # WORLDID-210
 npm --prefix wallet_interface/ui run build
 npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
@@ -293,17 +327,20 @@ pytest tests/test_world_id_wallet_api.py tests/test_wallet_interface_api.py -q
 ## 5. Quick-Reference: Which Tasks May Run Concurrently
 
 ```
-Wave 1:  090 ║ 100 ║ 260            (no file conflicts)
-Wave 2:  110 ║ 120                   (no file conflicts)
-Wave 3:  130                         (single task)
-Wave 4:  140 → 150                   (⚠ serialize – shared files)
-Wave 5:  160 → 180                   (⚠ serialize – shared fullstack-wallet.spec.ts)
-Wave 6:  170                         (single task)
-Wave 7:  190 ║ 210                   (no file conflicts)
-Wave 8:  200                         (single task)
-Wave 9:  230 → 240                   (⚠ serialize – shared docs)
-         250                         (single task)
-After:   220                         (single task)
+Wave 1:   090 ║ 100 ║ 260            (no file conflicts)
+Wave 2:   110 ║ 120                  (no file conflicts)
+Wave 3:   130                        (single task)
+Wave 4:   140 → 150                  (⚠ serialize – shared files)
+Wave 5:   160 → 180                  (⚠ serialize – shared fullstack-wallet.spec.ts)
+Wave 6:   170                        (single task)
+Wave 6b:  181                        (workflow matrix and fixtures)
+Wave 6c:  182                        (full-stack World ID Playwright)
+Wave 7:   190 ║ 210                  (no file conflicts)
+Wave 7c:  183                        (after 182 and 210)
+Wave 8:   200                        (single task)
+Wave 9:   230 → 240                  (⚠ serialize – shared docs)
+          250                        (single task)
+After:    220                        (single task)
 ```
 
 Notation: `A ║ B` = concurrent; `A → B` = must serialize (A first).
