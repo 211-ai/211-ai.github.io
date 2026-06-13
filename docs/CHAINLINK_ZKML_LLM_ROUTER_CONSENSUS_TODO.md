@@ -262,7 +262,7 @@ Track guide:
 - Acceptance: `llm-consensus-generate-v1` request and response payload helpers serialize canonical requests, proof policy, operator metadata, and output records in a backward-compatible JSON form with schema-version tests.
 
 ## CLZKML-180 libp2p Fan-Out Runner
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: p2p
