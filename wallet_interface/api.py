@@ -696,6 +696,8 @@ class WalletLlmRouterRequest(WalletRouterBaseRequest):
     prompt: str
     system_prompt: str | None = None
     max_new_tokens: int | None = 350
+    consensus: Dict[str, Any] | None = None
+    proof_policy: Dict[str, Any] | None = None
 
 
 class WalletMultimodalRouterRequest(WalletRouterBaseRequest):
@@ -2516,26 +2518,70 @@ def create_app(*, service: WalletInterfaceService | None = None):
             if request.system_prompt:
                 prompt = f"system: {request.system_prompt}\nuser: {request.prompt}"
             kwargs = _prepare_hf_router_environment(request.kwargs)
-            from ipfs_datasets_py import llm_router  # noqa: WPS433
+            from ipfs_accelerate_py import llm_router  # noqa: WPS433
 
             if request.max_new_tokens is not None:
                 kwargs.setdefault("max_new_tokens", request.max_new_tokens)
             model_name = request.model_name or os.getenv("WALLET_AI_ROUTER_LLM_MODEL", "Qwen/Qwen3.5-2B")
-            text = llm_router.generate_text(
-                prompt,
-                model_name=model_name,
-                provider=request.provider,
-                **kwargs,
-            )
-            return {
-                "router": "llm_router",
-                "wallet_id": wallet_id,
-                "wallet_cid": wallet_cid,
-                "provider": request.provider,
-                "model_name": model_name,
-                "rate_limit": limit,
-                "text": text,
-            }
+
+            env_policy = _wallet_llm_consensus_policy()
+            consensus_opts = request.consensus if request.consensus is not None else env_policy
+            use_consensus = consensus_opts is not None
+
+            if use_consensus:
+                from ipfs_accelerate_py.llm_router import generate_text_consensus  # noqa: WPS433
+
+                proof_policy = dict(request.proof_policy or {"mode": "receipt_only"})
+                result = generate_text_consensus(
+                    prompt,
+                    model_name=model_name,
+                    provider=request.provider,
+                    consensus=dict(consensus_opts),
+                    proof_policy=proof_policy,
+                    **kwargs,
+                )
+                if hasattr(result, "to_dict"):
+                    receipt_dict = result.to_dict()
+                    text = str(result.text) if hasattr(result, "text") else str(result)
+                    consensus_meta: Dict[str, Any] = {
+                        "schema_version": receipt_dict.get("schema_version"),
+                        "mode": str((receipt_dict.get("request") or {}).get("metadata", {}).get("mode") or consensus_opts.get("mode", "")),
+                        "quorum_reached": (receipt_dict.get("consensus") or {}).get("quorum_reached"),
+                        "operator_count": len(receipt_dict.get("responses") or []),
+                        "proof_mode": str((receipt_dict.get("proof") or {}).get("mode") or proof_policy.get("mode", "receipt_only")),
+                        "created_at": receipt_dict.get("created_at"),
+                    }
+                else:
+                    text = str(result)
+                    consensus_meta = {"mode": consensus_opts.get("mode", ""), "proof_mode": "receipt_only"}
+                return {
+                    "router": "llm_router",
+                    "wallet_id": wallet_id,
+                    "wallet_cid": wallet_cid,
+                    "provider": request.provider,
+                    "model_name": model_name,
+                    "rate_limit": limit,
+                    "text": text,
+                    "consensus": consensus_meta,
+                }
+            else:
+                from ipfs_datasets_py import llm_router as _ds_llm_router  # noqa: WPS433
+
+                text = _ds_llm_router.generate_text(
+                    prompt,
+                    model_name=model_name,
+                    provider=request.provider,
+                    **kwargs,
+                )
+                return {
+                    "router": "llm_router",
+                    "wallet_id": wallet_id,
+                    "wallet_cid": wallet_cid,
+                    "provider": request.provider,
+                    "model_name": model_name,
+                    "rate_limit": limit,
+                    "text": text,
+                }
         except ValueError as exc:
             raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
         except Exception as exc:
@@ -4396,6 +4442,22 @@ def _wallet_router_rate_limit_per_day() -> int:
         return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_DAY", "500")))
     except Exception:
         return 500
+
+
+def _wallet_llm_consensus_policy() -> Dict[str, Any] | None:
+    """Return the environment-level wallet LLM consensus policy, or None if not configured."""
+    mode = os.getenv("WALLET_AI_ROUTER_CONSENSUS_MODE", "").strip()
+    if not mode:
+        return None
+    fail_closed_raw = os.getenv("WALLET_AI_ROUTER_CONSENSUS_FAIL_CLOSED", "true").strip().lower()
+    fail_closed = fail_closed_raw not in ("0", "false", "no", "off")
+    return {
+        "mode": mode,
+        "fail_closed": fail_closed,
+        "comparison": os.getenv("WALLET_AI_ROUTER_CONSENSUS_COMPARISON", "exact").strip(),
+        "quorum": int(os.getenv("WALLET_AI_ROUTER_CONSENSUS_QUORUM", "1")),
+        "min_operators": int(os.getenv("WALLET_AI_ROUTER_CONSENSUS_MIN_OPERATORS", "1")),
+    }
 
 
 def _check_wallet_router_rate_limit(wallet_subject: str, *, cost: int = 1) -> Dict[str, Any]:
