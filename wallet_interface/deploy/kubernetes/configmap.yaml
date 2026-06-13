@@ -23,3 +23,21 @@ data:
   WALLET_OPS_INTERVAL_SECONDS: "300"
   WALLET_OPS_ALERT_ON: "error"
   WALLET_ALERT_RETENTION_POLICY_REF: replace-with-alert-retention-policy-id
+  # World ID / IDKit public configuration — backend secrets belong in the Secret.
+  WORLD_ID_ENABLED: "true"
+  WORLD_ID_ENVIRONMENT: production
+  WORLD_ID_APP_ID: app_replace-with-world-id-app-id
+  WORLD_ID_RP_ID: rp_replace-with-world-id-rp-id
+  WORLD_ID_VERIFY_BASE_URL: https://developer.world.org
+  WORLD_ID_HTTP_TIMEOUT_SECONDS: "15"
+  WORLD_ID_RP_SIGNATURE_TTL_SECONDS: "300"
+  WORLD_ID_ALLOWED_ACTIONS: wallet-attach-world-id-v1
+  WORLD_ID_DEFAULT_ACTION: wallet-attach-world-id-v1
+  WORLD_ID_CREDENTIAL_POLICY: proof_of_human
+  WORLD_ID_ALLOW_LEGACY_PROOFS: "true"
+  WORLD_ID_REQUIRE_USER_PRESENCE: "false"
+  # Public UI runtime flags for the wallet-ui container (consumed by 40-runtime-config.sh).
+  ABBY_RUNTIME_WORLD_ID_ENABLED: "true"
+  ABBY_RUNTIME_WORLD_ID_APP_ID: app_replace-with-world-id-app-id
+  ABBY_RUNTIME_WORLD_ID_ACTION: wallet-attach-world-id-v1
+  ABBY_RUNTIME_WORLD_ID_ENVIRONMENT: production

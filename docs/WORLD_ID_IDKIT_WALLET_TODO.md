@@ -135,7 +135,7 @@ Track guide:
 - Acceptance: `WalletInterfaceService` exposes World ID config, status, RP signature creation, verification/binding registration, and local revocation helpers, persists configured wallet snapshots after successful mutations, and preserves the existing wallet authorization boundary.
 
 ## WORLDID-090 FastAPI World ID Routes
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P0
 - Track: wallet
@@ -145,7 +145,7 @@ Track guide:
 - Acceptance: FastAPI exposes `/wallets/{wallet_id}/world-id/config`, `/status`, `/rp-signature`, `/verifications`, and a guarded revoke route with request/response models, actor authorization checks, secret redaction, replay/conflict errors, and proof/audit refresh behavior.
 
 ## WORLDID-100 Deployment And Runtime Configuration Wiring
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ops
@@ -305,7 +305,7 @@ Track guide:
 - Acceptance: Pilot launch has archived staging evidence, production credential secret references, readiness output, accessibility/fallback review, privacy/nullifier review, security signoff, support playbook, and product-owner approval before `WORLD_ID_ENVIRONMENT=production` is enabled.
 
 ## WORLDID-260 Parallel-Agent Coordination Notes
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P3
 - Track: ops
