@@ -1,0 +1,263 @@
+from __future__ import annotations
+
+import json
+
+import pytest
+from fastapi.testclient import TestClient
+
+from wallet_interface import WalletInterfaceService, create_app
+from wallet_interface.world_id import DEFAULT_WORLD_ID_ACTION, WorldIdVerificationError, load_world_id_config
+
+
+OWNER = "did:key:owner"
+ADVOCATE = "did:key:advocate"
+
+
+def enabled_env(**overrides: str) -> dict[str, str]:
+    env = {
+        "WORLD_ID_ENABLED": "1",
+        "WORLD_ID_ENVIRONMENT": "staging",
+        "WORLD_ID_APP_ID": "app_test_123",
+        "WORLD_ID_RP_ID": "rp_test_123",
+        "WORLD_ID_RP_SIGNING_KEY": "0x" + "11" * 32,
+        "WORLD_ID_NULLIFIER_HMAC_KEY": "nullifier-hmac-secret",
+    }
+    env.update(overrides)
+    return env
+
+
+def sample_v4_idkit_payload(nullifier: str = "0xraw-world-id-nullifier") -> dict[str, object]:
+    return {
+        "protocol_version": "4.0",
+        "nonce": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "action": DEFAULT_WORLD_ID_ACTION,
+        "environment": "staging",
+        "user_presence_completed": True,
+        "responses": [
+            {
+                "identifier": "proof_of_human",
+                "signal_hash": "0x0",
+                "proof": ["0x1a", "0x2b", "0x3c", "0x4d", "0x5e"],
+                "nullifier": nullifier,
+                "issuer_schema_id": 1,
+                "expires_at_min": 1_756_166_400,
+            }
+        ],
+    }
+
+
+def test_wallet_interface_world_id_config_status_and_rp_signature() -> None:
+    config = load_world_id_config(env=enabled_env())
+    app = WalletInterfaceService(world_id_config=config, services=[], auto_persist=False)
+    wallet = app.create_wallet(OWNER)
+
+    public_config = app.get_world_id_config()
+    status = app.get_world_id_status(wallet.wallet_id)
+    signature = app.create_world_id_rp_signature(
+        wallet_id=wallet.wallet_id,
+        actor_did=OWNER,
+        action=DEFAULT_WORLD_ID_ACTION,
+        random_bytes=bytes(range(32)),
+        created_at=1_700_000_000,
+    )
+
+    assert public_config["enabled"] is True
+    assert "signing" not in json.dumps(public_config).lower()
+    assert status["wallet"]["binding_count"] == 0
+    assert signature["rp_id"] == "rp_test_123"
+    assert signature["sig"] == signature["signature"]
+    assert signature["action"] == DEFAULT_WORLD_ID_ACTION
+    with pytest.raises(ValueError, match="not authorized"):
+        app.create_world_id_rp_signature(wallet_id=wallet.wallet_id, actor_did=ADVOCATE)
+
+
+def test_wallet_interface_verifies_registers_persists_and_revokes_world_id_binding(tmp_path) -> None:
+    config = load_world_id_config(env=enabled_env())
+    raw_nullifier = "0xraw-world-id-nullifier"
+    calls: list[tuple[str, str, object, dict[str, str], float]] = []
+
+    def fake_request_json(method, url, request_payload, headers, timeout_seconds):
+        calls.append((method, url, request_payload, dict(headers), timeout_seconds))
+        return {
+            "success": True,
+            "results": [
+                {
+                    "success": True,
+                    "identifier": "proof_of_human",
+                    "nullifier": raw_nullifier,
+                }
+            ],
+            "action": DEFAULT_WORLD_ID_ACTION,
+            "nullifier": raw_nullifier,
+            "created_at": "2026-06-13T00:00:00Z",
+            "environment": "staging",
+            "message": "verified",
+        }
+
+    app = WalletInterfaceService(
+        world_id_config=config,
+        world_id_request_json=fake_request_json,
+        repository_root=tmp_path / "repo",
+        services=[],
+    )
+    wallet = app.create_wallet(OWNER)
+
+    result = app.register_world_id_verification(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        idkit_payload=sample_v4_idkit_payload(raw_nullifier),
+    )
+
+    binding = result["binding"]
+    proof = result["proof"]
+    rendered_result = json.dumps(result, sort_keys=True)
+    snapshot_path = app.repository.wallet_path(wallet.wallet_id)
+    snapshot_payload = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    rendered_snapshot = json.dumps(snapshot_payload, sort_keys=True)
+
+    assert calls[0][1] == "https://developer.world.org/api/v4/verify/rp_test_123"
+    assert binding["nullifier_ref"].startswith("worldid-nullifier-ref:v1:")
+    assert binding["nullifier_ref"] != raw_nullifier
+    assert binding["proof_receipt_id"] == proof["proof_id"]
+    assert proof["proof_type"] == "world_id_proof_of_human"
+    assert proof["proof_system"] == "world_id_idkit_v4"
+    assert result["verification"]["nullifier"] == "[redacted]"
+    assert raw_nullifier not in rendered_result
+    assert raw_nullifier not in rendered_snapshot
+    assert snapshot_payload["snapshot"]["world_id_bindings"][0]["binding_id"] == binding["binding_id"]
+    assert app.get_world_id_status(wallet.wallet_id)["wallet"]["active_binding_count"] == 1
+
+    with pytest.raises(ValueError, match="not authorized"):
+        app.revoke_world_id_binding(wallet.wallet_id, binding["binding_id"], actor_did=ADVOCATE)
+    revoked = app.revoke_world_id_binding(
+        wallet.wallet_id,
+        binding["binding_id"],
+        actor_did=OWNER,
+        reason="user disconnected",
+    )
+
+    assert revoked.status == "revoked"
+    assert app.get_world_id_status(wallet.wallet_id)["wallet"]["active_binding_count"] == 0
+    assert "wallet/world_id_revoke" in [event.action for event in app.wallet_service.get_audit_log(wallet.wallet_id)]
+
+
+def test_wallet_interface_world_id_registration_preserves_authorization_and_config_boundaries() -> None:
+    config = load_world_id_config(env=enabled_env())
+    app = WalletInterfaceService(world_id_config=config, services=[], auto_persist=False)
+    wallet = app.create_wallet(OWNER)
+
+    with pytest.raises(ValueError, match="not authorized"):
+        app.register_world_id_verification(
+            wallet.wallet_id,
+            actor_did=ADVOCATE,
+            idkit_payload=sample_v4_idkit_payload(),
+            request_json=lambda *_: {"success": True},
+        )
+
+    bad_action = sample_v4_idkit_payload()
+    bad_action["action"] = "other-action"
+    with pytest.raises(ValueError, match="not allowed"):
+        app.register_world_id_verification(
+            wallet.wallet_id,
+            actor_did=OWNER,
+            idkit_payload=bad_action,
+            request_json=lambda *_: {"success": True},
+        )
+
+    disabled = WalletInterfaceService(world_id_config=load_world_id_config(env={}), services=[], auto_persist=False)
+    disabled_wallet = disabled.create_wallet(OWNER)
+    with pytest.raises(WorldIdVerificationError, match="disabled"):
+        disabled.register_world_id_verification(
+            disabled_wallet.wallet_id,
+            actor_did=OWNER,
+            idkit_payload=sample_v4_idkit_payload(),
+            request_json=lambda *_: {"success": True},
+        )
+
+
+def test_world_id_fastapi_routes_cover_config_signature_registration_replay_and_revoke(tmp_path) -> None:
+    config = load_world_id_config(env=enabled_env())
+    raw_nullifier = "0xraw-world-id-nullifier"
+
+    def fake_request_json(*_):
+        return {
+            "success": True,
+            "results": [{"success": True, "identifier": "proof_of_human", "nullifier": raw_nullifier}],
+            "action": DEFAULT_WORLD_ID_ACTION,
+            "nullifier": raw_nullifier,
+            "created_at": "2026-06-13T00:00:00Z",
+            "environment": "staging",
+            "message": "verified",
+        }
+
+    service = WalletInterfaceService(
+        world_id_config=config,
+        world_id_request_json=fake_request_json,
+        repository_root=tmp_path / "repo",
+        services=[],
+    )
+    client = TestClient(create_app(service=service))
+    wallet = client.post("/wallets", json={"owner_did": OWNER}).json()
+    wallet_id = wallet["wallet_id"]
+
+    config_response = client.get(f"/wallets/{wallet_id}/world-id/config")
+    status_response = client.get(f"/wallets/{wallet_id}/world-id/status", params={"actor_did": OWNER})
+    denied_status = client.get(f"/wallets/{wallet_id}/world-id/status", params={"actor_did": ADVOCATE})
+    signature_response = client.post(
+        f"/wallets/{wallet_id}/world-id/rp-signature",
+        json={"actor_did": OWNER, "action": DEFAULT_WORLD_ID_ACTION},
+    )
+    denied_signature = client.post(
+        f"/wallets/{wallet_id}/world-id/rp-signature",
+        json={"actor_did": ADVOCATE, "action": DEFAULT_WORLD_ID_ACTION},
+    )
+
+    assert config_response.status_code == 200, config_response.text
+    assert config_response.json()["enabled"] is True
+    assert status_response.status_code == 200, status_response.text
+    assert status_response.json()["wallet"]["binding_count"] == 0
+    assert denied_status.status_code == 400
+    assert signature_response.status_code == 200, signature_response.text
+    assert signature_response.json()["rp_id"] == "rp_test_123"
+    assert denied_signature.status_code == 400
+
+    verify_response = client.post(
+        f"/wallets/{wallet_id}/world-id/verifications",
+        json={"actor_did": OWNER, "idkit_payload": sample_v4_idkit_payload(raw_nullifier)},
+    )
+    assert verify_response.status_code == 200, verify_response.text
+    body = verify_response.json()
+    rendered = json.dumps(body, sort_keys=True)
+    binding_id = body["binding"]["binding_id"]
+
+    assert body["binding"]["nullifier_ref"].startswith("worldid-nullifier-ref:v1:")
+    assert body["proof"]["proof_type"] == "world_id_proof_of_human"
+    assert body["verification"]["nullifier"] == "[redacted]"
+    assert raw_nullifier not in rendered
+
+    second_wallet = client.post("/wallets", json={"owner_did": "did:key:other-owner"}).json()
+    replay_response = client.post(
+        f"/wallets/{second_wallet['wallet_id']}/world-id/verifications",
+        json={
+            "actor_did": "did:key:other-owner",
+            "idkit_payload": sample_v4_idkit_payload(raw_nullifier),
+        },
+    )
+    assert replay_response.status_code == 409, replay_response.text
+
+    denied_revoke = client.post(
+        f"/wallets/{wallet_id}/world-id/bindings/{binding_id}/revoke",
+        json={"actor_did": ADVOCATE, "reason": "not allowed"},
+    )
+    revoke_response = client.post(
+        f"/wallets/{wallet_id}/world-id/bindings/{binding_id}/revoke",
+        json={"actor_did": OWNER, "reason": "user disconnected"},
+    )
+    final_status = client.get(f"/wallets/{wallet_id}/world-id/status", params={"actor_did": OWNER})
+    snapshot_text = service.repository.wallet_path(wallet_id).read_text(encoding="utf-8")
+
+    assert denied_revoke.status_code == 400
+    assert revoke_response.status_code == 200, revoke_response.text
+    assert revoke_response.json()["status"] == "revoked"
+    assert final_status.json()["wallet"]["active_binding_count"] == 0
+    assert raw_nullifier not in snapshot_text
