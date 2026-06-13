@@ -222,7 +222,7 @@ Track guide:
 - Acceptance: Operator IDs, signing key references, signature fields, and verification stubs bind signatures to request hash, output hash, nonce, and domain separator, with unsigned operators allowed only under `receipt_only` development policy.
 
 ## CLZKML-140 Proof Verifier Interface
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: proofs
@@ -252,7 +252,7 @@ Track guide:
 - Acceptance: The design specifies how to fan out to multiple `RemoteQueue` peers using existing libp2p task client APIs, how task payloads are shaped, how timeouts and partial failures are represented, and why global environment mutation is avoided.
 
 ## CLZKML-170 libp2p Consensus Payload Contract
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: p2p
