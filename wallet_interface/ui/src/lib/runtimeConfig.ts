@@ -58,16 +58,43 @@ export type ResolvedRuntimePrecomputedAudioConfig = {
   manifestUrl: string;
 };
 
+export type RuntimeWorldIdEnvironment = "staging" | "production";
+
+export type RuntimeWorldIdDisabledReason =
+  | "backend_disabled"
+  | "missing_app_id"
+  | "missing_action";
+
+export type RuntimeWorldIdConfig = {
+  enabled?: boolean | string;
+  appId?: string;
+  action?: string;
+  environment?: string;
+};
+
+export type ResolvedRuntimeWorldIdConfig = {
+  enabled: boolean;
+  backendEnabled: boolean;
+  environment: RuntimeWorldIdEnvironment;
+  action: string;
+  appId?: string;
+  disabledReason?: RuntimeWorldIdDisabledReason;
+};
+
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
   voiceProxy?: RuntimeVoiceProxyConfig;
   precomputedAudio?: RuntimePrecomputedAudioConfig;
+  worldId?: RuntimeWorldIdConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
   __ABBY_RUNTIME_CONFIG__?: AbbyRuntimeConfig;
 };
+
+const DEFAULT_WORLD_ID_ACTION = "wallet-attach-world-id-v1";
+const DEFAULT_WORLD_ID_ENVIRONMENT: RuntimeWorldIdEnvironment = "staging";
 
 export async function loadRuntimeConfig(): Promise<void> {
   if (typeof window === "undefined") return;
@@ -125,6 +152,17 @@ export function readRuntimePrecomputedAudioManifestUrl(): string | undefined {
   return readRuntimePrecomputedAudioConfig()?.manifestUrl;
 }
 
+export function readRuntimeWorldIdConfig(): ResolvedRuntimeWorldIdConfig {
+  return (
+    resolveWorldIdConfig(readRuntimeConfig().worldId ?? readEnvWorldIdConfig()) ??
+    createDisabledWorldIdConfig("backend_disabled")
+  );
+}
+
+export function isRuntimeWorldIdEnabled(config = readRuntimeWorldIdConfig()): boolean {
+  return config.enabled;
+}
+
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -135,11 +173,13 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   const precomputedAudio = normalizePrecomputedAudioConfig(payload?.precomputedAudio);
+  const worldId = normalizeRuntimeWorldIdConfig(payload?.worldId);
   return {
     ...(walletApi ? { walletApi } : {}),
     ...(filecoinStorage ? { filecoinStorage } : {}),
     ...(voiceProxy ? { voiceProxy } : {}),
     ...(precomputedAudio ? { precomputedAudio } : {}),
+    ...(worldId ? { worldId } : {}),
   };
 }
 
@@ -229,6 +269,86 @@ function normalizePrecomputedAudioConfig(
   const manifestUrl = normalizeOptionalString(config.manifestUrl);
   if (!manifestUrl) return undefined;
   return { manifestUrl };
+}
+
+function normalizeRuntimeWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined
+): RuntimeWorldIdConfig | undefined {
+  if (!config) return undefined;
+  const enabled = normalizeOptionalBoolean(config.enabled) ?? false;
+  const appId = normalizeOptionalString(config.appId);
+  const action = normalizeOptionalString(config.action);
+  const environment = normalizeWorldIdEnvironment(config.environment);
+  return {
+    enabled,
+    environment,
+    ...(appId ? { appId } : {}),
+    ...(action ? { action } : {}),
+  };
+}
+
+function resolveWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined
+): ResolvedRuntimeWorldIdConfig | undefined {
+  if (!config) return undefined;
+  const backendEnabled = normalizeOptionalBoolean(config.enabled) ?? false;
+  const appId = normalizeOptionalString(config.appId);
+  const action = normalizeOptionalString(config.action);
+  const environment = normalizeWorldIdEnvironment(config.environment);
+  const disabledReason = getWorldIdDisabledReason({ appId, backendEnabled, action });
+
+  return {
+    enabled: !disabledReason,
+    backendEnabled,
+    environment,
+    action: action ?? DEFAULT_WORLD_ID_ACTION,
+    ...(appId ? { appId } : {}),
+    ...(disabledReason ? { disabledReason } : {}),
+  };
+}
+
+function readEnvWorldIdConfig(): RuntimeWorldIdConfig | undefined {
+  const enabled = normalizeOptionalBoolean(import.meta.env?.VITE_WORLD_ID_ENABLED);
+  const appId = normalizeOptionalString(import.meta.env?.VITE_WORLD_ID_APP_ID);
+  const action = normalizeOptionalString(import.meta.env?.VITE_WORLD_ID_ACTION);
+  const environment = normalizeOptionalString(import.meta.env?.VITE_WORLD_ID_ENVIRONMENT);
+  if (enabled === undefined && !appId && !action && !environment) return undefined;
+  return {
+    ...(enabled !== undefined ? { enabled } : {}),
+    ...(appId ? { appId } : {}),
+    ...(action ? { action } : {}),
+    ...(environment ? { environment } : {}),
+  };
+}
+
+function createDisabledWorldIdConfig(disabledReason: RuntimeWorldIdDisabledReason): ResolvedRuntimeWorldIdConfig {
+  return {
+    enabled: false,
+    backendEnabled: false,
+    environment: DEFAULT_WORLD_ID_ENVIRONMENT,
+    action: DEFAULT_WORLD_ID_ACTION,
+    disabledReason,
+  };
+}
+
+function getWorldIdDisabledReason({
+  appId,
+  backendEnabled,
+  action
+}: {
+  appId?: string;
+  backendEnabled: boolean;
+  action?: string;
+}): RuntimeWorldIdDisabledReason | undefined {
+  if (!backendEnabled) return "backend_disabled";
+  if (!appId) return "missing_app_id";
+  if (!action) return "missing_action";
+  return undefined;
+}
+
+function normalizeWorldIdEnvironment(value: string | null | undefined): RuntimeWorldIdEnvironment {
+  const normalized = normalizeOptionalString(value)?.toLowerCase();
+  return normalized === "production" ? "production" : DEFAULT_WORLD_ID_ENVIRONMENT;
 }
 
 function normalizeOptionalString(value: string | null | undefined): string | undefined {
