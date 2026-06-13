@@ -257,7 +257,7 @@ Track guide:
 - Acceptance: The team has a documented decision on ProveKit recursive verifier/Gnark export, whether it should integrate with the existing Groth16/EVM verifier path, and which tests are required before any on-chain ProveKit route is production-exposed.
 
 ## PROVEKIT-210 Security Review And Threat Model
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: privacy
