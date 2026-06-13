@@ -177,7 +177,7 @@ Track guide:
 - Acceptance: `ZkpAttestationBridgeAdapter(prover_kwargs={"backend": "provekit"})` emits verified LegalIR ZKP attestation records, public inputs, proof-gate details, and graph triples while preserving the existing bridge output shape.
 
 ## PROVEKIT-130 Hybrid TDFOL CEC And F-Logic Compatibility
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: platform
