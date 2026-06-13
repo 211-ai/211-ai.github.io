@@ -237,7 +237,7 @@ Track guide:
 - Acceptance: Golden vectors cover theorem canonicalization, axiom commitments, Prover.toml rendering, public inputs, attestation refs, and verifier-key digests; property tests cover determinism and failure cases.
 
 ## PROVEKIT-190 ProveKit FFI Feasibility And Wrapper Prototype
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P2
 - Track: runtime
