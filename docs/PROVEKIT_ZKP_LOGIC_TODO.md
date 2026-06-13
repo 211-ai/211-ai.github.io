@@ -217,7 +217,7 @@ Track guide:
 - Acceptance: A `provekit` optional dependency/build path is documented and test-covered, package data rules cover approved backend assets, and no Rust build, network clone, or artifact preparation runs at import time.
 
 ## PROVEKIT-170 Ops Readiness And Backend Health Checks
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops
