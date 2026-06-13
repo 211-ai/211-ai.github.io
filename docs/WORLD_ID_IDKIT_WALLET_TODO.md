@@ -155,7 +155,7 @@ Track guide:
 - Acceptance: Local, Docker, and Kubernetes deployment examples document World ID public config, secret references, staging/production environment selection, nullifier commitment key requirements, and runtime UI flags without placing secrets in public runtime config.
 
 ## WORLDID-110 TypeScript Wallet API Client
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
