@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__multnomah",
   "kind": "service_location",
   "key": "benefits__multnomah",
-  "nodeCount": 39,
+  "nodeCount": 63,
   "nodes": [
     {
       "id": "phone_dialog_0000121#turn-1",
@@ -860,7 +860,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. I\u2019ll say it in chunks. The phone number is: **503** \u2026 **988** \u2026 **3387**. Again: **503** \u2026 **988** \u2026 **3387**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio was a little unclear. If you want, I can give you the closest clinic near Gresham right now: **3505 Southeast 182nd Avenue, Gresham**, phone **503, 988, 5488**. Do you want me to repeat that slowly?",
+        "I\u2019m here with you. The audio was unclear and I missed part of what you said. Are you in immediate danger right now, yes or no?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
@@ -1164,6 +1167,722 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001246#turn-4",
+      "scenarioId": "phone_dialog_0001246",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not saying I did anything, but I keep thinking it\u2019d be easier if I just didn\u2019t wake up.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first multnomah county portland head right tonight keep thoughts straight say again cut mental health now next week saying did anything thinking be easier if just didn wake up",
+      "voiceResponse": "Thank you for telling me that. Your safety comes first right now: if you might act on this, call **9-1-1** now. If you can make one call for immediate mental health help, call **5-0-3, 8-4-6, 4-5-2-8**. Backup: **5-0-3, 2-9-1, 9-1-1-1**. Call the first number now while we\u2019re still connected.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. Your safety comes first right now: if you might act on this, call **9-1-1** now. If you can make one call for immediate mental health help, call **5-0-3, 8-4-6, 4-5-2-8**. Backup: **5-0-3, 2-9-1, 9-1-1-1**. Call the first number now while we\u2019re still connected.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001246#turn-5",
+      "scenarioId": "phone_dialog_0001246",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m alone and I don\u2019t really trust myself for the rest of the night, so what do I do first?",
+      "normalizedQuery": "multnomah county portland head right tonight keep thoughts straight say again cut mental health like now next week saying did anything thinking it be easier if just didn wake up alone don really trust myself rest night so first",
+      "voiceResponse": "I\u2019m really glad you said that. First step right now: if you don\u2019t trust yourself to stay safe tonight, call **9-1-1**. If you can make one non-911 call, dial **5-0-3, 8-4-6, 4-5-2-8** now. Backup: **5-0-3, 2-9-1, 9-1-1-1**. Put it on speaker, stay where there are lights or people, and say: \u201cI\u2019m alone and I don\u2019t feel safe tonight.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. First step right now: if you don\u2019t trust yourself to stay safe tonight, call **9-1-1**. If you can make one non-911 call, dial **5-0-3, 8-4-6, 4-5-2-8** now. Backup: **5-0-3, 2-9-1, 9-1-1-1**. Put it on speaker, stay where there are lights or people, and say: \u201cI\u2019m alone and I don\u2019t feel safe tonight.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001435#turn-1",
+      "scenarioId": "phone_dialog_0001435",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I keep losing the thread... I need a clinic, like a regular medical clinic, I\u2019m in Multnomah County, near Gresham I think, but the street signs keep changing on me.",
+      "normalizedQuery": "hi sorry keep losing thread clinic medical health like regular multnomah county gresham think street signs changing on",
+      "voiceResponse": "I\u2019m sorry, your audio was a little unclear. If you want, I can give you the closest clinic near Gresham right now: **3505 Southeast 182nd Avenue, Gresham**, phone **503, 988, 5488**. Do you want me to repeat that slowly?",
+      "evidenceDocIds": [
+        "service:38030d3e45dfbe6f",
+        "service:884ef6eb4fa67b6a",
+        "service:04249d713d0e3c85",
+        "service:de85f1b902c2cd56",
+        "service:8f70984155a0111a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was a little unclear. If you want, I can give you the closest clinic near Gresham right now: **3505 Southeast 182nd Avenue, Gresham**, phone **503, 988, 5488**. Do you want me to repeat that slowly?",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it in chunks. The phone number is: **503** \u2026 **988** \u2026 **3387**. Again: **503** \u2026 **988** \u2026 **3387**.",
+        "I\u2019m here with you. The audio was unclear and I missed part of what you said. Are you in immediate danger right now, yes or no?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001435#turn-2",
+      "scenarioId": "phone_dialog_0001435",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, wait, don\u2019t send police, okay? The voices are saying the phones are tagged, and if I say my full name they\u2019ll find me first.",
+      "normalizedQuery": "hi sorry keep losing thread clinic medical health like regular multnomah county gresham think street signs changing on no wait don send police okay voices saying phones tagged if say full name they ll first",
+      "voiceResponse": "I hear you, and you do not need to share your full name. I\u2019m not sending police. I need to check safety first: are you in immediate danger, or thinking about hurting yourself or anyone else right now? If yes, call 911 now. If no, I\u2019ll stay with you and we can get you to that Gresham clinic step by step.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreialxyxycidklksfen4mv4msjaknukaypouhbn63jcjp52e25wf6uu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you do not need to share your full name. I\u2019m not sending police. I need to check safety first: are you in immediate danger, or thinking about hurting yourself or anyone else right now? If yes, call 911 now. If no, I\u2019ll stay with you and we can get you to that Gresham clinic step by step.",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001435#turn-3",
+      "scenarioId": "phone_dialog_0001435",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to be dramatic, I just need my chest checked and maybe my meds, but every place I walk into feels like the same building with different doors.",
+      "normalizedQuery": "hi sorry keep losing thread clinic medical health like regular multnomah county gresham think street signs changing on no wait don send police okay voices saying phones tagged if say full name they ll first trying be dramatic just chest checked maybe meds every place walk into feels same building different doors",
+      "voiceResponse": "Thank you for telling me. You do not need to share your name. If your chest pain is severe, or you feel short of breath, faint, or unsafe, call 911 now. If not, go to the Gresham clinic: 3505 Southeast 182nd Avenue. Phone: 503, 988, 5488. I can stay with you and repeat that slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You do not need to share your name. If your chest pain is severe, or you feel short of breath, faint, or unsafe, call 911 now. If not, go to the Gresham clinic: 3505 Southeast 182nd Avenue. Phone: 503, 988, 5488. I can stay with you and repeat that slowly.",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001435#turn-5",
+      "scenarioId": "phone_dialog_0001435",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I interrupted you again. If you can give me one clinic that takes walk-ins today in Multnomah County, I can try to get there before my phone dies.",
+      "normalizedQuery": "sorry interrupted again if give one clinic medical health takes walk ins multnomah county try there before phone dies",
+      "voiceResponse": "You\u2019re doing the right thing. One walk-in option in Multnomah County is Outside In Medical Clinic, 1132 Southwest 13th Avenue, Portland. Phone: 503, 535, 3860. If your chest pain gets worse, you feel short of breath, or you feel unsafe, call 911 right now.",
+      "evidenceDocIds": [
+        "service:49f391264d00676f",
+        "service:9fa9218ec67d4993",
+        "service:51e37f6187a1922a",
+        "service:38b7d2664b9ec642",
+        "service:e83b2cbbcbf486fb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. One walk-in option in Multnomah County is Outside In Medical Clinic, 1132 Southwest 13th Avenue, Portland. Phone: 503, 535, 3860. If your chest pain gets worse, you feel short of breath, or you feel unsafe, call 911 right now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001651#turn-1",
+      "scenarioId": "phone_dialog_0001651",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I don't really know where to start... I'm in Multnomah County and I need mental health help, like today.",
+      "normalizedQuery": "hi um don't really know start i'm multnomah county mental health like",
+      "voiceResponse": "I\u2019m here with you. The audio was unclear and I missed part of what you said. Are you in immediate danger right now, yes or no?",
+      "evidenceDocIds": [
+        "service:e4488b03bff9c85e",
+        "service:90c7ca5c66c5c48e",
+        "service:56b06f24d0db91fe",
+        "service:f0dc8dae97168e5b",
+        "service:2e62720fc8f3a11c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. The audio was unclear and I missed part of what you said. Are you in immediate danger right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it in chunks. The phone number is: **503** \u2026 **988** \u2026 **3387**. Again: **503** \u2026 **988** \u2026 **3387**.",
+        "I\u2019m sorry, your audio was a little unclear. If you want, I can give you the closest clinic near Gresham right now: **3505 Southeast 182nd Avenue, Gresham**, phone **503, 988, 5488**. Do you want me to repeat that slowly?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001651#turn-2",
+      "scenarioId": "phone_dialog_0001651",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down? I'm trying to listen but my head is all over the place, and I keep thinking everybody would be better off without me.",
+      "normalizedQuery": "hi um don't really know start i'm multnomah county mental health like sorry slow down trying listen head all over place keep thinking everybody would be better off without",
+      "voiceResponse": "I hear you, and I\u2019ll go slow. You said your head feels all over the place and you\u2019re thinking people would be better off without you. That\u2019s a safety concern, and I want to keep you safe. Are you in immediate danger right now, yes or no? If you might act on these thoughts, call 911 now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreig6z2uokewunv4timqnoujzjwvprg7olg3bv3vrmcyvgd332hsoeq",
+        "service:adf5f446c9478ca8",
+        "page:bafkreihuxkpph6u2jfwg7ep6kb4mpnswhandu75fkuk3jmkbw23qwj7qbm",
+        "page:bafkreiale4g2flfihhfrq3bv34y4ynnowuzclq46qpr6qd4iojgxwsq5sq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019ll go slow. You said your head feels all over the place and you\u2019re thinking people would be better off without you. That\u2019s a safety concern, and I want to keep you safe. Are you in immediate danger right now, yes or no? If you might act on these thoughts, call 911 now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great staying with me. Here it is slowly: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. If that line doesn\u2019t answer: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "I\u2019m sorry, I don\u2019t have the **Outside In** phone number confirmed on this line. I don\u2019t have that number confirmed. Do you want me to repeat the **Volunteers In Medicine** number instead?",
+        "Of course. For same-day mental health help in Multnomah County, call **211INFO** at **5 0 3\u2026 2 2 2\u2026 5 5 5 5**. Another line is **5 0 3\u2026 2 2 6\u2026 3 0 9 9**. You can say: \u201cI need mental health help today.\u201d If you\u2019re in immediate danger, call **9 1 1**.",
+        "Next step is simple. Call the clinic now. Main number: **503, 988, 3387**. Again: **503, 988, 3387**. Say: \u201cI need a low-cost dental appointment in Multnomah County.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001651#turn-3",
+      "scenarioId": "phone_dialog_0001651",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, I don't have, like, a plan right this second, but I keep having those thoughts and it's scaring me.",
+      "normalizedQuery": "hi um don't really know start i'm multnomah county mental health like sorry slow down trying listen head all over place keep thinking everybody would be better off without no have plan right this second having those thoughts it's scaring",
+      "voiceResponse": "Thank you for telling me. What you\u2019re describing is a real safety concern, and you deserve help right now. Please stay with me and reach a live crisis counselor now. If at any point you feel you might act on these thoughts, call 911 immediately. For this moment, can you tell me where you are right now so we can keep you safe?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. What you\u2019re describing is a real safety concern, and you deserve help right now. Please stay with me and reach a live crisis counselor now. If at any point you feel you might act on these thoughts, call 911 immediately. For this moment, can you tell me where you are right now so we can keep you safe?",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001651#turn-4",
+      "scenarioId": "phone_dialog_0001651",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that number again? I missed the middle part, there's a lot of noise where I am.",
+      "normalizedQuery": "hi um don't really know start i'm multnomah county mental health like sorry slow down trying listen head all over place keep thinking everybody would be better off without no have plan right this second having those thoughts it's scaring say number again missed middle part there's lot noise",
+      "voiceResponse": "Absolutely. The number is **2-1-1**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. If you feel like you might act on those thoughts, call **9-1-1** right away. Do you want me to stay with you while you dial **2-1-1**?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. The number is **2-1-1**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. If you feel like you might act on those thoughts, call **9-1-1** right away. Do you want me to stay with you while you dial **2-1-1**?",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001715#turn-4",
+      "scenarioId": "phone_dialog_0001715",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at three percent, so if we get cut off I need one place I can get to today.",
+      "normalizedQuery": "hi multnomah county gateway bus area backpack got stolen last night insulin it sleeping outside right now starting feel shaky still talk walk sorry hard hearing on this phone say clinic medical health name slower battery at three percent so if we cut off one place",
+      "voiceResponse": "Right now, call **9-1-1**. Say: \u201cI have diabetes, my insulin was stolen, I\u2019m shaky, and I\u2019m outside near Gateway in Multnomah County.\u201d I\u2019ll repeat the number slowly: **9-1-1**. **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Right now, call **9-1-1**. Say: \u201cI have diabetes, my insulin was stolen, I\u2019m shaky, and I\u2019m outside near Gateway in Multnomah County.\u201d I\u2019ll repeat the number slowly: **9-1-1**. **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001808#turn-5",
+      "scenarioId": "phone_dialog_0001808",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m talking too fast, my battery is at two percent, can you get me a real crisis counselor in Multnomah County and repeat the number slowly?",
+      "normalizedQuery": "no wait don put on hold yet already called two places they kept asking birthday voices got louder when tried answer mental health think police okay just someone who talk tonight because haven slept like three days did ask if safe trying hurt anyone keep thinking should disappear so stop tracking sorry talking too fast battery at percent real crisis counselor multnomah county repeat number slowly",
+      "voiceResponse": "Yes. I\u2019m connecting you to a live crisis counselor now, and I\u2019ll stay with you while it starts. If you feel you can\u2019t stay safe, call **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. Keep this call open with me.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019m connecting you to a live crisis counselor now, and I\u2019ll stay with you while it starts. If you feel you can\u2019t stay safe, call **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. Keep this call open with me.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great staying with me. Here it is slowly: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. If that line doesn\u2019t answer: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "I\u2019m sorry, I don\u2019t have the **Outside In** phone number confirmed on this line. I don\u2019t have that number confirmed. Do you want me to repeat the **Volunteers In Medicine** number instead?",
+        "Of course. For same-day mental health help in Multnomah County, call **211INFO** at **5 0 3\u2026 2 2 2\u2026 5 5 5 5**. Another line is **5 0 3\u2026 2 2 6\u2026 3 0 9 9**. You can say: \u201cI need mental health help today.\u201d If you\u2019re in immediate danger, call **9 1 1**.",
+        "Next step is simple. Call the clinic now. Main number: **503, 988, 3387**. Again: **503, 988, 3387**. Say: \u201cI need a low-cost dental appointment in Multnomah County.\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001885#turn-1",
+      "scenarioId": "phone_dialog_0001885",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Hi, yeah, sorry, I keep losing the thread, I'm in Multnomah County and I need mental health help, but the walls are kind of talking over me right now.",
+      "normalizedQuery": "hi yeah sorry keep losing thread i'm multnomah county mental health walls kind talking over right now",
+      "voiceResponse": "I\u2019m really glad you called. What you\u2019re describing sounds urgent, and your safety comes first. If you might hurt yourself or someone else, call 911 right now. If you can, stay on the line with me and I\u2019ll get a live crisis agent connected immediately.",
+      "evidenceDocIds": [
+        "service:e4488b03bff9c85e",
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "service:90c7ca5c66c5c48e",
+        "service:56b06f24d0db91fe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. What you\u2019re describing sounds urgent, and your safety comes first. If you might hurt yourself or someone else, call 911 right now. If you can, stay on the line with me and I\u2019ll get a live crisis agent connected immediately.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001885#turn-2",
+      "scenarioId": "phone_dialog_0001885",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "No, I'm not joking, the voices keep saying don't trust the phone, and my neighbor's TV is sending me instructions, or maybe it's the streetlight, I know how that sounds.",
+      "normalizedQuery": "hi yeah sorry keep losing thread i'm multnomah county mental health walls kind talking over right now no joking voices saying don't trust phone neighbor's tv sending instructions maybe it's streetlight know how sounds",
+      "voiceResponse": "I believe you, and this sounds like a mental health emergency. Your safety is first. If you might act on what the voices are saying, call 911 now, or ask someone nearby to call for you. Stay with me on this line if you can, and I\u2019ll connect you to a live crisis agent right now.",
+      "evidenceDocIds": [
+        "service:01fa99fed3711557",
+        "service:15571749aff504f0",
+        "service:99e79e74de65a168",
+        "service:ddefbb40f88f4e21",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I believe you, and this sounds like a mental health emergency. Your safety is first. If you might act on what the voices are saying, call 911 now, or ask someone nearby to call for you. Stay with me on this line if you can, and I\u2019ll connect you to a live crisis agent right now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001885#turn-4",
+      "scenarioId": "phone_dialog_0001885",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I keep trying to explain this logically and then it scrambles, sorry, can you just tell me the one next step again, like very slowly?",
+      "normalizedQuery": "hi yeah sorry keep losing thread i'm multnomah county mental health walls kind talking over right now no joking voices saying don't trust phone neighbor's tv sending instructions maybe it's streetlight know how sounds wait did ask safe mean inside door locked haven't slept like two days can't tell what's real trying explain this logically then it scrambles just one next step again very slowly",
+      "voiceResponse": "Yes. One next step: stay on this call with me right now while I connect you to a live crisis agent. If you feel you might hurt yourself or anyone else at any point, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One next step: stay on this call with me right now while I connect you to a live crisis agent. If you feel you might hurt yourself or anyone else at any point, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001920#turn-4",
+      "scenarioId": "phone_dialog_0001920",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not passing out or anything yet, just shaky and really thirsty, but if I can\u2019t get it by tonight this could get bad fast.",
+      "normalizedQuery": "hi hear multnomah county by 82nd avenue bus line insulin got stolen bag sleeping outside right now phone at like three percent so somewhere next week sorry cut repeat clinic medical health name slower passing anything yet just shaky really thirsty if it tonight this could bad fast",
+      "voiceResponse": "First step: if your shakiness or thirst gets worse, or you feel confused, weak, or like you might pass out, call **911** right now. Since this could get bad fast tonight, I\u2019m connecting you to a **live 211 specialist now** to find the fastest insulin option near 82nd Avenue. Stay on the line with me.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if your shakiness or thirst gets worse, or you feel confused, weak, or like you might pass out, call **911** right now. Since this could get bad fast tonight, I\u2019m connecting you to a **live 211 specialist now** to find the fastest insulin option near 82nd Avenue. Stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001932#turn-3",
+      "scenarioId": "phone_dialog_0001932",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, dental. A clinic. Cheap if possible. I'm in Multnomah County, near Portland.",
+      "normalizedQuery": "yeah dental dentist clinic medical health cheap if possible i'm multnomah county portland",
+      "voiceResponse": "Yes. Dental clinic in Multnomah County. Try Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: **503, 988, 3387**. Again: **503, 988, 3387**. Address: **5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211**. Again: **5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211**. Do you want me to repeat just the phone number, slowly?",
+      "evidenceDocIds": [
+        "service:119ca1b7c61c8ad1",
+        "service:1277e7a84dfeb48e",
+        "service:96d8aa19d315c2bb",
+        "service:9be65dd99896b229",
+        "service:12625a2dc4f2fd29"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Dental clinic in Multnomah County. Try Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: **503, 988, 3387**. Again: **503, 988, 3387**. Address: **5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211**. Again: **5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211**. Do you want me to repeat just the phone number, slowly?",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001932#turn-5",
+      "scenarioId": "phone_dialog_0001932",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the number too, one digit at a time please, I keep missing the middle part.",
+      "normalizedQuery": "no sorry cut got buses people here said tooth some place um yeah dental dentist clinic medical health cheap if possible i'm multnomah county portland wait say name again slower hear bad on this phone number too one digit at time please keep missing middle part",
+      "voiceResponse": "Yes. Number, one digit at a time: **5, 0, 3, 9, 8, 8, 3, 3, 8, 7**. Again: **5, 0, 3, 9, 8, 8, 3, 3, 8, 7**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidc6skebkc54co5zho222zelnr3warf6hwielrdx7xm2inwhjzkoe",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Number, one digit at a time: **5, 0, 3, 9, 8, 8, 3, 3, 8, 7**. Again: **5, 0, 3, 9, 8, 8, 3, 3, 8, 7**.",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001932#turn-6",
+      "scenarioId": "phone_dialog_0001932",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I know I'm repeating myself, pain's got me scattered, but I need somewhere that can see me soon.",
+      "normalizedQuery": "yeah dental dentist clinic medical health cheap if possible i'm multnomah county portland wait say name again slower hear bad on this phone number too one digit at time please keep missing middle part sorry know repeating myself pain's got scattered somewhere see soon",
+      "voiceResponse": "You are not repeating too much. You\u2019re in pain, and that matters. For soonest dental care, call this clinic now: **5 0 3, 9 8 8, 3 3 8 7**. Again: **5 0 3, 9 8 8, 3 3 8 7**. It is **North East Health Center and Dental Clinic** in Portland. Do you want me to say a short script you can read when they answer?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You are not repeating too much. You\u2019re in pain, and that matters. For soonest dental care, call this clinic now: **5 0 3, 9 8 8, 3 3 8 7**. Again: **5 0 3, 9 8 8, 3 3 8 7**. It is **North East Health Center and Dental Clinic** in Portland. Do you want me to say a short script you can read when they answer?",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002227#turn-1",
+      "scenarioId": "phone_dialog_0002227",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it's really loud out here, can you hear me? I need mental health help, I\u2019m in Multnomah County, near downtown Portland.",
+      "normalizedQuery": "hi sorry it's really loud here hear mental health multnomah county downtown portland",
+      "voiceResponse": "I can hear you. You did the right thing calling. If you might hurt yourself or someone else, call 911 now. For immediate mental health support, call 988. If you want, I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "service:01fa99fed3711557",
+        "service:15571749aff504f0",
+        "service:99e79e74de65a168",
+        "service:ddefbb40f88f4e21",
+        "service:66d4e31f739226a1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you. You did the right thing calling. If you might hurt yourself or someone else, call 911 now. For immediate mental health support, call 988. If you want, I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002227#turn-2",
+      "scenarioId": "phone_dialog_0002227",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t know, my thoughts are all over the place and I keep feeling like everyone would be better off if I just disappeared.",
+      "normalizedQuery": "hi sorry it's really loud here hear mental health multnomah county downtown portland don know thoughts all over place keep feeling like everyone would be better off if just disappeared",
+      "voiceResponse": "I\u2019m really glad you told me. This is a crisis signal, and your safety comes first. Please call 988 right now for immediate mental health support. If you might act on these thoughts, call 911 now. Are you in immediate danger right this second?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This is a crisis signal, and your safety comes first. Please call 988 right now for immediate mental health support. If you might act on these thoughts, call 911 now. Are you in immediate danger right this second?",
+      "voiceResponseAlternatives": [
+        "Yes, let\u2019s keep it simple. A solid place to start is Multnomah County Health Department, North East Health Center and Dental Clinic. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. You can call and ask about low-cost dental options and current intake steps. If you want, I can help you script exactly what to say in a 20-second call.",
+        "That makes sense, and you\u2019re not too late to start. A practical next step is to call Multnomah County Health Department, North East Health Center and Dental Clinic and ask for low-cost general dental care before specialist referral. Phone: 503, 988, 3387. Address: 5329 Northeast Martin Luther King Junior Boulevard, Portland, 97211. If helpful, I can give you a 20-second call script so you can get straight to cost and intake.",
+        "Yes. Thanks for that. East Portland is a good match. Wallace Rockwood Medical and Dental Clinic can do checkups and blood pressure screening. Phone: 5 0 3, 4 8 9, 1 7 6 0. Again: 5 0 3, 4 8 9, 1 7 6 0. Address: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1, Portland, 9 7 2 3 3. Again: 1 8 6 3 3 Southeast Stark Street, Suite 4 0 1. Want a short call script for your neighbor?",
+        "You\u2019re not alone. We can start simple. In Multnomah County, 211info shows a **Social Security Issues** service list with **4 matching providers**. I\u2019ll repeat that: **4 matching providers** for SSI and Social Security help. Do you want help finding the best one based on where you are right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002227#turn-3",
+      "scenarioId": "phone_dialog_0002227",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? Sorry, bus just went by, I missed that part. Can you say it again slower?",
+      "normalizedQuery": "hi sorry it's really loud here hear mental health multnomah county downtown portland don know thoughts all over place keep feeling like everyone would be better off if just disappeared bus went by missed part say it again slower",
+      "voiceResponse": "Yes. I\u2019ll say it slower. This is a crisis signal, and your safety comes first. Call 988 now for immediate mental health support. If you might act on these thoughts, call 911 now. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. This is a crisis signal, and your safety comes first. Call 988 now for immediate mental health support. If you might act on these thoughts, call 911 now. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great staying with me. Here it is slowly: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. If that line doesn\u2019t answer: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "I\u2019m sorry, I don\u2019t have the **Outside In** phone number confirmed on this line. I don\u2019t have that number confirmed. Do you want me to repeat the **Volunteers In Medicine** number instead?",
+        "Of course. For same-day mental health help in Multnomah County, call **211INFO** at **5 0 3\u2026 2 2 2\u2026 5 5 5 5**. Another line is **5 0 3\u2026 2 2 6\u2026 3 0 9 9**. You can say: \u201cI need mental health help today.\u201d If you\u2019re in immediate danger, call **9 1 1**.",
+        "Next step is simple. Call the clinic now. Main number: **503, 988, 3387**. Again: **503, 988, 3387**. Say: \u201cI need a low-cost dental appointment in Multnomah County.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002336#turn-3",
+      "scenarioId": "phone_dialog_0002336",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s not right in front of me this second, but he said he\u2019d be waiting when I get off work, so I need a plan before I leave here.",
+      "normalizedQuery": "hi um on coworker phone it at like two percent give most important number first case this drops multnomah county sorry crying ex keeps showing up texting threats scared go back apartment tonight he right front second said be waiting when off work so plan before leave here",
+      "voiceResponse": "Main number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. You\u2019re doing the right thing planning before you leave. If you want, we can make a quick exit plan now: leave with a coworker, go to a public place instead of home, and keep your location private. If he shows up or you feel in immediate danger, call 911 right away. Backup number: 971-319-9793.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. You\u2019re doing the right thing planning before you leave. If you want, we can make a quick exit plan now: leave with a coworker, go to a public place instead of home, and keep your location private. If he shows up or you feel in immediate danger, call 911 right away. Backup number: 971-319-9793.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002336#turn-4",
+      "scenarioId": "phone_dialog_0002336",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Can we do this quietly? I don\u2019t want anything mailed or called to my regular phone, he checks it.",
+      "normalizedQuery": "hi um on coworker phone it at like two percent give most important number first case this drops multnomah county sorry crying ex keeps showing up texting threats scared go back apartment tonight he right front second said be waiting when off work so plan before leave here we quietly don want anything mailed called regular checks",
+      "voiceResponse": "Yes. We can keep this quiet. I can note: no mail, and no calls to your regular phone. We can use only this borrowed phone, or a safe callback number you choose. Main number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. If you want, next we can do a 30-second leave-work safety plan for tonight.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this quiet. I can note: no mail, and no calls to your regular phone. We can use only this borrowed phone, or a safe callback number you choose. Main number: 360-521-6527. I\u2019ll repeat: 360, 521, 6527. If you want, next we can do a 30-second leave-work safety plan for tonight.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by calling, and I\u2019m here with you. If you might hurt yourself or can\u2019t stay safe right now, call **911** immediately. For a live local person tonight in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5** (211info line). If they don\u2019t pick up, try **5 0 3, 2 2 6, 3 0 9 9**. If you want, I can help you with exactly what to say when they answer.",
+        "I\u2019m here with you. You\u2019re not alone right now. Let\u2019s keep this simple: take one slow breath in through your nose, then out through your mouth. If you feel you might pass out, hurt yourself, or can\u2019t stay safe, call **911** now. For immediate mental health help in Multnomah County, call **5 0 3, 2 2 2, 5 5 5 5**. If no answer, call **5 0 3, 2 2 6, 3 0 9 9**.",
+        "I\u2019m really glad you called. You don\u2019t have to hold this alone right now. If you might hurt yourself or you feel in immediate danger, call 911 now. For same-day local help in Multnomah County, call 211INFO at **5 0 3, 2 2 2, 5 5 5 5**. Another line is **5 0 3, 2 2 6, 3 0 9 9**. You can say, \u201cI need mental health help today.\u201d",
+        "Next step: please stay on the line while I connect you to a live 211 specialist right now. I only have clinics listed in John Day and Lafayette, not a confirmed Multnomah County clinic with this-week availability. The live specialist can check current openings near you quickly."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1388,6 +2107,138 @@
       "to": "phone_dialog_0001145#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001246#turn-4",
+      "to": "phone_dialog_0001246#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001435#turn-1",
+      "to": "phone_dialog_0001435#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001435#turn-2",
+      "to": "phone_dialog_0001435#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001435#turn-3",
+      "to": "phone_dialog_0001435#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001435#turn-5",
+      "to": "phone_dialog_0001435#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001651#turn-1",
+      "to": "phone_dialog_0001651#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001651#turn-2",
+      "to": "phone_dialog_0001651#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001651#turn-3",
+      "to": "phone_dialog_0001651#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001651#turn-4",
+      "to": "phone_dialog_0001651#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001715#turn-4",
+      "to": "phone_dialog_0001715#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001808#turn-5",
+      "to": "phone_dialog_0001808#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001885#turn-1",
+      "to": "phone_dialog_0001885#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001885#turn-2",
+      "to": "phone_dialog_0001885#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001885#turn-4",
+      "to": "phone_dialog_0001885#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001920#turn-4",
+      "to": "phone_dialog_0001920#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001932#turn-3",
+      "to": "phone_dialog_0001932#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001932#turn-5",
+      "to": "phone_dialog_0001932#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002227#turn-1",
+      "to": "phone_dialog_0002227#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002227#turn-2",
+      "to": "phone_dialog_0002227#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002227#turn-3",
+      "to": "phone_dialog_0002227#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002336#turn-3",
+      "to": "phone_dialog_0002336#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002336#turn-4",
+      "to": "phone_dialog_0002336#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

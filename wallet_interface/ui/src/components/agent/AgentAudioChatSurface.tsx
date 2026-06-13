@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../../agent/types";
+import type { AgentMessageAudioRecord } from "../../agent/chatController";
 import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import { clientLLMWorkerService } from "../../lib/clientLLMWorkerService";
+import { findPrecomputedAudioReply } from "../../lib/precomputedAudioReplyService";
 import { AgentCitationLink } from "./AgentCitationLink";
 import {
   buildVoiceFallbackText,
@@ -139,7 +141,8 @@ export function AgentAudioChatSurface({
   responding,
   surface = "drawer",
   onClose,
-  onSend
+  onSend,
+  onAudioReply,
 }: {
   activeRouteLabel: string;
   evidenceBundles?: EvidenceBundle[];
@@ -149,6 +152,7 @@ export function AgentAudioChatSurface({
   surface?: AgentAudioSurface;
   onClose: () => void;
   onSend: (message: string) => void;
+  onAudioReply?: (messageId: string, record: AgentMessageAudioRecord) => void;
 }) {
   const [sessionState, setSessionState] = useState<AudioSessionState>("ready");
   const [interimTranscript, setInterimTranscript] = useState("");
@@ -180,6 +184,7 @@ export function AgentAudioChatSurface({
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
+  const audioUrlIsObjectRef = useRef(false);
   const playbackAudioContextRef = useRef<BrowserAudioContext | null>(null);
   const playbackSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -703,8 +708,30 @@ export function AgentAudioChatSurface({
       pendingVoiceTranscript,
       audioBlob: lastCapturedVoiceBlobRef.current || undefined,
     });
+    const precomputedAudioReply = await findPrecomputedAudioReply({
+      candidateTexts: [message.content, fallbackText, voiceInferenceRequest.fallbackText],
+      routeHints: resolvePrecomputedAudioRouteHints(message),
+      slottedResponse: resolvePrecomputedAudioSlottedHints(message),
+    });
     pendingVoiceTranscriptRef.current = "";
     try {
+      if (precomputedAudioReply) {
+        lastCapturedVoiceBlobRef.current = null;
+        setModelProgress(null);
+        onAudioReply?.(message.id, {
+          precomputedId: precomputedAudioReply.id,
+          audioUrl: precomputedAudioReply.audioUrl,
+          spokenText: precomputedAudioReply.text || fallbackText,
+          provider: "precomputed",
+          playedAt: new Date().toISOString(),
+        });
+        await playAudioUrlSource(precomputedAudioReply.audioUrl, precomputedAudioReply.text || fallbackText, requestId, {
+          revokeObjectUrl: false,
+          statusDetail: "Playing prerendered voice reply.",
+        });
+        return;
+      }
+
       let preferredSpeechText = voiceInferenceRequest.fallbackText || fallbackText || message.content;
       if (message.status !== "failed" && !clientAudioReplyService.shouldPreferRemoteAudioBeforeLocalText()) {
         const generatedReply = await clientLLMWorkerService.tryGenerateText(
@@ -737,6 +764,15 @@ export function AgentAudioChatSurface({
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       lastCapturedVoiceBlobRef.current = null;
+      if (ttsResult.kind === "audio") {
+        onAudioReply?.(message.id, {
+          spokenText: preferredSpeechText,
+          provider: ttsResult.provider,
+          mimeType: ttsResult.mimeType,
+          modelName: ttsResult.modelName,
+          playedAt: new Date().toISOString(),
+        });
+      }
       await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
@@ -746,6 +782,15 @@ export function AgentAudioChatSurface({
           onProgress: (progress) => updateModelProgress(requestId, progress),
         });
         lastCapturedVoiceBlobRef.current = null;
+        if (result.kind === "audio") {
+          onAudioReply?.(message.id, {
+            spokenText: voiceInferenceRequest.fallbackText || fallbackText,
+            provider: result.provider,
+            mimeType: result.mimeType,
+            modelName: result.modelName,
+            playedAt: new Date().toISOString(),
+          });
+        }
         await playAudioReplyResult(result, voiceInferenceRequest.fallbackText || fallbackText, requestId);
         return;
       } catch (voiceInferenceError) {
@@ -767,14 +812,45 @@ export function AgentAudioChatSurface({
     if (!openRef.current || mutedRef.current) return;
     if (result.kind === "audio") {
       const audioUrl = URL.createObjectURL(result.audioBlob);
-      audioUrlRef.current = audioUrl;
-      const audio = new Audio(audioUrl);
-      audioRef.current = audio;
-      let usedPlaybackFallback = false;
-      const fallbackToBrowserSpeech = async () => {
-        if (usedPlaybackFallback) return;
-        usedPlaybackFallback = true;
-        const playedWithWebAudio = await playAudioBlobWithWebAudio(result.audioBlob, () => {
+      await playAudioUrlSource(audioUrl, fallbackText, requestId, {
+        revokeObjectUrl: true,
+        statusDetail: "Playing audio reply.",
+        webAudioBlob: result.audioBlob,
+      });
+      return;
+    }
+    setStatusDetail("Using browser speech output.");
+    setAudioDiagnostic(result.fallbackReason);
+    playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
+  }
+
+  async function playAudioUrlSource(
+    audioUrl: string,
+    fallbackText: string,
+    requestId: number,
+    options: {
+      revokeObjectUrl: boolean;
+      statusDetail: string;
+      webAudioBlob?: Blob;
+    },
+  ) {
+    if (audioProgressRequestIdRef.current !== requestId || !openRef.current || mutedRef.current) {
+      if (options.revokeObjectUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+      return;
+    }
+    revokeAudioUrl();
+    audioUrlRef.current = audioUrl;
+    audioUrlIsObjectRef.current = options.revokeObjectUrl;
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    let usedPlaybackFallback = false;
+    const fallbackToBrowserSpeech = async () => {
+      if (usedPlaybackFallback) return;
+      usedPlaybackFallback = true;
+      if (options.webAudioBlob) {
+        const playedWithWebAudio = await playAudioBlobWithWebAudio(options.webAudioBlob, () => {
           setSessionState("ready");
           restartVoiceActivityDetectionSoon();
         });
@@ -782,36 +858,34 @@ export function AgentAudioChatSurface({
           detachAudioElement(audio);
           revokeAudioUrl();
           audioRef.current = null;
-          setStatusDetail("Playing audio reply.");
+          setStatusDetail(options.statusDetail);
           setAudioDiagnostic("");
           return;
         }
-        detachAudioElement(audio);
-        revokeAudioUrl();
-        audioRef.current = null;
-        setStatusDetail("Using browser speech output.");
-        setAudioDiagnostic("Generated audio could not be played in this browser.");
-        playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
-      };
-      audio.onended = () => {
-        detachAudioElement(audio);
-        revokeAudioUrl();
-        audioRef.current = null;
-        setSessionState("ready");
-        restartVoiceActivityDetectionSoon();
-      };
-      audio.onerror = () => {
-        void fallbackToBrowserSpeech();
-      };
-      await audio.play().catch((error) => {
-        if (isInterruptedPlaybackError(error)) return undefined;
-        return fallbackToBrowserSpeech();
-      });
-      return;
-    }
-    setStatusDetail("Using browser speech output.");
-    setAudioDiagnostic(result.fallbackReason);
-    playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
+      }
+      detachAudioElement(audio);
+      revokeAudioUrl();
+      audioRef.current = null;
+      setStatusDetail("Using browser speech output.");
+      setAudioDiagnostic("Generated audio could not be played in this browser.");
+      playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
+    };
+    audio.onended = () => {
+      detachAudioElement(audio);
+      revokeAudioUrl();
+      audioRef.current = null;
+      setSessionState("ready");
+      restartVoiceActivityDetectionSoon();
+    };
+    audio.onerror = () => {
+      void fallbackToBrowserSpeech();
+    };
+    setStatusDetail(options.statusDetail);
+    setAudioDiagnostic("");
+    await audio.play().catch((error) => {
+      if (isInterruptedPlaybackError(error)) return undefined;
+      return fallbackToBrowserSpeech();
+    });
   }
 
   function updateModelProgress(requestId: number, progress: ClientAudioProgress) {
@@ -957,8 +1031,11 @@ export function AgentAudioChatSurface({
 
   function revokeAudioUrl() {
     if (audioUrlRef.current) {
-      URL.revokeObjectURL(audioUrlRef.current);
+      if (audioUrlIsObjectRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+      }
       audioUrlRef.current = null;
+      audioUrlIsObjectRef.current = false;
     }
   }
 
@@ -1206,6 +1283,48 @@ export function resolveVoiceGeneratedReplyText(generatedText: string, fallbackTe
       .replace(/^Assistant\s*:\s*/i, "")
       .trim() || fallbackText.trim()
   );
+}
+
+function resolvePrecomputedAudioRouteHints(message: AgentMessage): string[] {
+  const slottedResponse = readPrecomputedAudioSlottedResponseMetadata(message);
+  const route = typeof slottedResponse?.route === "string" ? slottedResponse.route.trim() : "";
+  return route ? [route] : [];
+}
+
+function resolvePrecomputedAudioSlottedHints(message: AgentMessage): {
+  intentId?: string;
+  canonicalQueryTemplate?: string;
+  responseFrameId?: string;
+  responseSignature?: string;
+  edgeId?: string;
+} | undefined {
+  const slottedResponse = readPrecomputedAudioSlottedResponseMetadata(message);
+  if (!slottedResponse) {
+    return undefined;
+  }
+  const hints = {
+    intentId: typeof slottedResponse.intentId === "string" ? slottedResponse.intentId.trim() : undefined,
+    canonicalQueryTemplate:
+      typeof slottedResponse.canonicalQueryTemplate === "string"
+        ? slottedResponse.canonicalQueryTemplate.trim()
+        : undefined,
+    responseFrameId:
+      typeof slottedResponse.responseFrameId === "string" ? slottedResponse.responseFrameId.trim() : undefined,
+    responseSignature:
+      typeof slottedResponse.responseSignature === "string" ? slottedResponse.responseSignature.trim() : undefined,
+    edgeId: typeof slottedResponse.edgeId === "string" ? slottedResponse.edgeId.trim() : undefined,
+  };
+  return Object.values(hints).some(Boolean) ? hints : undefined;
+}
+
+function readPrecomputedAudioSlottedResponseMetadata(message: AgentMessage): Record<string, unknown> | undefined {
+  return asRecord(message.metadata?.slottedResponse);
+}
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 async function primeOpeningClipPlayback(): Promise<HTMLAudioElement | null> {

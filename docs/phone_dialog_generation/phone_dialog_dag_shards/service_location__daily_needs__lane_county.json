@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__lane_county",
   "kind": "service_location",
   "key": "daily_needs__lane_county",
-  "nodeCount": 20,
+  "nodeCount": 26,
   "nodes": [
     {
       "id": "phone_dialog_0000025#turn-1",
@@ -600,6 +600,181 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-3",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, um, I need a place to shower, like today if possible, I'm in Lane County, near Eugene, I think I said that already.",
+      "normalizedQuery": "yeah um place shower like if possible i'm lane county eugene think said already",
+      "voiceResponse": "Yes. I heard you: shower place today, near Eugene. I can give one option in Eugene. I can give one option in Eugene. St. Vincent de Paul First Place Family Center. Address: 4-0-6-0 West Amazon Drive, Eugene. That is 4-0-6-0 West Amazon Drive, Eugene. Phone: 5-4-1, 3-4-2, 7-7-2-8. Again: 5-4-1, 3-4-2, 7-7-2-8. Are you with children under 18, or pregnant?",
+      "evidenceDocIds": [
+        "service:000f383b02383270",
+        "service:10301d048461816b",
+        "service:1850ffbe9250d85c",
+        "service:3aff67ad0084106e",
+        "service:5c2197617c940d38"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I heard you: shower place today, near Eugene. I can give one option in Eugene. I can give one option in Eugene. St. Vincent de Paul First Place Family Center. Address: 4-0-6-0 West Amazon Drive, Eugene. That is 4-0-6-0 West Amazon Drive, Eugene. Phone: 5-4-1, 3-4-2, 7-7-2-8. Again: 5-4-1, 3-4-2, 7-7-2-8. Are you with children under 18, or pregnant?",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-4",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the city names slow? I misheard that, sounded like 'Spring-field' or 'Stringfield,' sorry, one more time.",
+      "normalizedQuery": "hello static can't you're cutting show shower uh inaudible wait sorry say again hearing's bad this phone keeps popping only caught 'county' yeah um place like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield one more time",
+      "voiceResponse": "Yes. Slow city names: Eu-gene. Eu-gene. Lane County, near Eu-gene. Lane County, near Eu-gene. Not Springfield. The city I gave was Eu-gene.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:cb07e10067abbb3d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow city names: Eu-gene. Eu-gene. Lane County, near Eu-gene. Lane County, near Eu-gene. Not Springfield. The city I gave was Eu-gene.",
+      "voiceResponseAlternatives": [
+        "Yes. Next step: call them now for mail services. The number is **5-4-1, 3-4-2, 7-7-2-8**. Their Lane County address is **4-0-6-0 West Amazon Drive, Eugene, Oregon, 9-7-4-0-5**. If you don\u2019t qualify, staff can help connect you to other community resources.",
+        "Yes. Please write this down now: **5-4-1 \u2026 3-4-2 \u2026 7-7-2-8**. I\u2019ll say it once more: **5-4-1 \u2026 3-4-2 \u2026 7-7-2-8**.",
+        "Absolutely, I\u2019ve got you. The place is **St. Vincent de Paul Service Station**. Address: **450 Highway 99 North, Eugene**. Phone: **541\u2026689\u20266747**. I don\u2019t have confirmed hours in front of me, so when they answer, ask: \u201cDo you have showers available right now, and what are today\u2019s check-in hours?\u201d",
+        "Yes. I\u2019ll say it slowly. Call **five four one**\u2026 **three four two**\u2026 **seven seven two eight**. Again: **five four one**\u2026 **three four two**\u2026 **seven seven two eight**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-5",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Also if there's a bus line to it, I keep losing track, and my battery is at like three percent, so just the closest one first.",
+      "normalizedQuery": "wait sorry say again hearing's bad this phone keeps popping only caught 'county' yeah um place shower like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield one more time also there's bus line it keep losing track battery at three percent so just closest first",
+      "voiceResponse": "Okay. Closest one first: in **Eu-gene**. St. Vincent de Paul First Place Family Center. Address: **4-0-6-0 West Amazon Drive, Eu-gene**. Again: **4-0-6-0 West Amazon Drive, Eu-gene**. Phone: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**. I do not have a bus line listed here. Call that number and ask for the nearest bus stop.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Closest one first: in **Eu-gene**. St. Vincent de Paul First Place Family Center. Address: **4-0-6-0 West Amazon Drive, Eu-gene**. Again: **4-0-6-0 West Amazon Drive, Eu-gene**. Phone: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**. I do not have a bus line listed here. Call that number and ask for the nearest bus stop.",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001763#turn-6",
+      "scenarioId": "phone_dialog_0001763",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And if there's a phone number, please read it really slow, one digit at a time, I don't hear numbers right the first pass.",
+      "normalizedQuery": "yeah um place shower like if possible i'm lane county eugene think said already repeat city names slow misheard sounded 'spring field' 'stringfield sorry one more time also there's bus line it keep losing track battery at three percent so just closest first phone number please read really digit don't hear numbers right pass",
+      "voiceResponse": "Yes. I will read it very slow. Phone number: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8. Again: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:225c81db65f1ee12",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will read it very slow. Phone number: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8. Again: 5. 4. 1. 3. 4. 2. 7. 7. 2. 8.",
+      "voiceResponseAlternatives": [
+        "First step: call St. Vincent de Paul First Place Family Center now and ask for **mail services** help since you can\u2019t get out. The number is **5-4-1, 3-4-2, 7-7-2-8**. If you qualify, they provide mail services. Their Lane County location is **4060 West Amazon Drive, Eugene**. If you don\u2019t qualify, their staff may help connect you to other community resources.",
+        "Absolutely. One local option is **Springfield Oasis Drop-In Day Center** through Catholic Community Services. Phone: **541, 345, 3628**. Address: **1025 G Street, Springfield, Oregon, 97477**. They prioritize households experiencing homelessness with at least one child age 17 or younger. There are also multiple Lane County laundry-related providers listed through 211. If you want, I can give you one more option next.",
+        "That makes sense. A practical low-cost option is **Springfield Oasis Drop-In Day Center**: phone **541, 345, 3628**, address **1025 G Street, Springfield**. Also, 211 has a **Laundry Facilities** list with many Lane County options this week. If you want, I can give you one more nearby option right now and a short call script so you can ask about cost, hours, and same-week access.",
+        "Absolutely. We can keep this minimal. You don\u2019t need to share anything beyond what helps find a laundry spot near Eugene. I can give options and a short call script without personal details. If you call providers, you can also ask anonymously about cost, hours, and bus access first, then decide what to share. If you want, we can stick to just locations and phone numbers next."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002231#turn-2",
+      "scenarioId": "phone_dialog_0002231",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Lane County, near Eugene, and I need domestic violence survivor help, but not anything that sends mail or calls me back.",
+      "normalizedQuery": "lane county eugene domestic violence survivor anything sends mail calls back",
+      "voiceResponse": "Okay. For Lane County, try Domestic Violence Support in Florence. Call 541, 997, 4444. Backup number: 541, 997, 2816. You can say, \u201cI need survivor support, no mail, and no callback.\u201d No documents are required. If it doesn\u2019t feel safe, hang up anytime.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:29e33c4115645e64",
+        "service:2a8dfbe44adb059e",
+        "service:eec5f9e1e439a0d0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. For Lane County, try Domestic Violence Support in Florence. Call 541, 997, 4444. Backup number: 541, 997, 2816. You can say, \u201cI need survivor support, no mail, and no callback.\u201d No documents are required. If it doesn\u2019t feel safe, hang up anytime.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and I know this is frustrating. One place in Eugene clearly lists both: **St. Vincent de Paul Service Station**, **450 Highway 99 North**. Their number is **541\u2026689\u20266747**. If you call now, say: \u201cI\u2019m near Eugene and need a shower today. Do you have showers available right now, and what\u2019s check-in like?\u201d If you want, I can stay with you while you make that call.",
+        "First step: call the Clothing Boutique at **5 0 3 \u2026 7 8 8 \u2026 7 0 0 0** and say this exactly: \u201cHi, I need an appointment for free clothing. I can come by bus. I need adult clothes and a warm jacket. What\u2019s your soonest opening?\u201d If they ask anything else, just repeat that sentence once.",
+        "Yes. Fast next step first. Call **five four one, six eight nine, six seven four seven**. Again: **five four one, six eight nine, six seven four seven**. Ask for the Eugene Service Station laundry access this week. Address: **four five zero Highway ninety-nine North, Eugene**. Again: **four five zero Highway ninety-nine North, Eugene**. If needed, second line is **five four one, nine four two, two one seven six**. Is your brother currently homeless?",
+        "First step: call **five four one, three four two, seven seven two eight** right after this drops. Again: **five four one, three four two, seven seven two eight**. Ask for the **First Place Family Center** and laundry access this week. If that line does not answer, call **five four one, three four five, three six two eight**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002231#turn-3",
+      "scenarioId": "phone_dialog_0002231",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "lane_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, can you repeat that slower? I\u2019m shaking and I keep missing words.",
+      "normalizedQuery": "hi um keep this short phone might be checked talk like normal lane county eugene domestic violence survivor anything sends mail calls back sorry repeat slower shaking missing words",
+      "voiceResponse": "You\u2019re doing okay. Quick safety check: are you safe enough to stay on this call right now? If yes, here it is slowly. Call 541, 686, 7878. I\u2019ll repeat: 541, 686, 7878. You can say: \u201cI need domestic violence survivor help. No mail, and no callback.\u201d No documents are required at intake. If you\u2019re in immediate danger, call 911.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "service:2a8dfbe44adb059e",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreigll3i7al6snsud5wa5rxhmp5kazx6anqrxomsbhkg7qemsymeoya",
+        "service:e232f8e870bdd119"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay. Quick safety check: are you safe enough to stay on this call right now? If yes, here it is slowly. Call 541, 686, 7878. I\u2019ll repeat: 541, 686, 7878. You can say: \u201cI need domestic violence survivor help. No mail, and no callback.\u201d No documents are required at intake. If you\u2019re in immediate danger, call 911.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -710,6 +885,36 @@
       "to": "phone_dialog_0001114#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "app_surface_navigation->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-3",
+      "to": "phone_dialog_0001763#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-4",
+      "to": "phone_dialog_0001763#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001763#turn-5",
+      "to": "phone_dialog_0001763#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002231#turn-2",
+      "to": "phone_dialog_0002231#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002231#turn-3",
+      "to": "phone_dialog_0002231#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

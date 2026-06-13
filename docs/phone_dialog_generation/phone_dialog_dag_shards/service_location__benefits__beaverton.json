@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__benefits__beaverton",
   "kind": "service_location",
   "key": "benefits__beaverton",
-  "nodeCount": 47,
+  "nodeCount": 73,
   "nodes": [
     {
       "id": "phone_dialog_0000148#turn-2",
@@ -922,7 +922,10 @@
       "similarCases": [],
       "assistantResponse": "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**.",
       "voiceResponseAlternatives": [
-        "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?"
+        "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?",
+        "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+        "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+        "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "bad_reception",
@@ -1009,7 +1012,10 @@
       "similarCases": [],
       "assistantResponse": "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?",
       "voiceResponseAlternatives": [
-        "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**."
+        "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**.",
+        "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+        "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+        "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -1395,6 +1401,781 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001194#turn-1",
+      "scenarioId": "phone_dialog_0001194",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, wait, sorry, are you still there? My phone keeps cutting out... I need a clinic, like medical, in Beaverton, I think.",
+      "normalizedQuery": "hi wait sorry still there phone keeps cutting clinic medical health like beaverton think",
+      "voiceResponse": "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+      "evidenceDocIds": [
+        "service:ad8146a84abd0b66",
+        "service:391554d70c7586af",
+        "service:f271a5c8d14f9de1",
+        "service:31a22008e2b10cbf",
+        "service:5d7b69e27cf0f47a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+      "voiceResponseAlternatives": [
+        "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**.",
+        "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?",
+        "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+        "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001194#turn-2",
+      "scenarioId": "phone_dialog_0001194",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I haven\u2019t slept in two days and the neighbors are sending messages through the vents, and now the voices are saying don\u2019t trust anybody, so can you just tell me where to go.",
+      "normalizedQuery": "hi wait sorry still there phone keeps cutting clinic medical health like beaverton think haven slept two days neighbors sending messages through vents now voices saying don trust anybody so just tell go",
+      "voiceResponse": "I\u2019m really glad you said this. I\u2019m concerned for your safety right now. If you might act on what the voices are saying, call 911 now. If you can, go to the nearest emergency room right away and stay with another person you trust. I can stay with you on the line and get a live 211 specialist to help you find immediate local care in Beaverton.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:98249e32a262b454",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said this. I\u2019m concerned for your safety right now. If you might act on what the voices are saying, call 911 now. If you can, go to the nearest emergency room right away and stay with another person you trust. I can stay with you on the line and get a live 211 specialist to help you find immediate local care in Beaverton.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001194#turn-3",
+      "scenarioId": "phone_dialog_0001194",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, I\u2019m not making sense, I know, but my chest feels weird and my head is buzzing, and I keep forgetting what you just asked me.",
+      "normalizedQuery": "hi wait sorry still there phone keeps cutting clinic medical health like beaverton think haven slept two days neighbors sending messages through vents now voices saying don trust anybody so just tell go no making sense know chest feels weird head buzzing keep forgetting asked",
+      "voiceResponse": "Thank you for telling me. This sounds like an emergency. Chest symptoms plus the voices mean you need help right now. Please call **911** now, or tell me your location and I\u2019ll get emergency help started. If you can, unlock your door and stay with another person while we do this. I\u2019m staying with you.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This sounds like an emergency. Chest symptoms plus the voices mean you need help right now. Please call **911** now, or tell me your location and I\u2019ll get emergency help started. If you can, unlock your door and stay with another person while we do this. I\u2019m staying with you.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001206#turn-6",
+      "scenarioId": "phone_dialog_0001206",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "If he makes it, I need mental health and addiction help nearby too, for both of us, in Beaverton.",
+      "normalizedQuery": "if he makes it mental health addiction nearby too both us beaverton",
+      "voiceResponse": "I hear you, and that\u2019s a strong plan. First, keep 911 going right now while he\u2019s gray and unresponsive. After emergency care starts, nearby in Beaverton you can call LifeWorks NW Outpatient Mental Health Care at **(503) 641-1475** \u2014 that\u2019s **503, 641, 1475** \u2014 or **(503) 645-9010** \u2014 **503, 645, 9010**. Address: **10700 Southwest Beaverton-Hillside Highway, Suite 110, Beaverton**. I can stay with you and repeat that slowly.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:ba024a031f6ac689",
+        "service:f0565939ed66ab54",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:0eb8fe666cad31a1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that\u2019s a strong plan. First, keep 911 going right now while he\u2019s gray and unresponsive. After emergency care starts, nearby in Beaverton you can call LifeWorks NW Outpatient Mental Health Care at **(503) 641-1475** \u2014 that\u2019s **503, 641, 1475** \u2014 or **(503) 645-9010** \u2014 **503, 645, 9010**. Address: **10700 Southwest Beaverton-Hillside Highway, Suite 110, Beaverton**. I can stay with you and repeat that slowly.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001291#turn-4",
+      "scenarioId": "phone_dialog_0001291",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me make a quiet plan first, like where I can go without him finding me?",
+      "normalizedQuery": "hi um keep this private beaverton don know if partner see who call sorry say slower kind panicking he been tracking waiting outside job bleeding right now said go back apartment tonight ll regret it believe him make quiet plan first like without finding",
+      "voiceResponse": "Yes. Quiet plan, step by step. First, don\u2019t go to the apartment tonight. Go to a public place he won\u2019t expect, with people around, and stay inside. Second, use a safer phone if you can, and turn off location sharing for now. Third, tell one trusted person your location and a code word for help. If he shows up, follows you, or you feel immediate danger, call 911 right away. I can stay with you while you choose the first place.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Quiet plan, step by step. First, don\u2019t go to the apartment tonight. Go to a public place he won\u2019t expect, with people around, and stay inside. Second, use a safer phone if you can, and turn off location sharing for now. Third, tell one trusted person your location and a code word for help. If he shows up, follows you, or you feel immediate danger, call 911 right away. I can stay with you while you choose the first place.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001320#turn-1",
+      "scenarioId": "phone_dialog_0001320",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m at the bus stop and it\u2019s loud out here, but I need mental health help in Beaverton.",
+      "normalizedQuery": "hi sorry at bus stop it loud here mental health beaverton",
+      "voiceResponse": "I\u2019m really glad you reached out. Let\u2019s make this easy at the bus stop: in Beaverton, you can call LifeWorks NW for outpatient mental health help at **503-641-1475**. I\u2019ll repeat: **5-0-3, 6-4-1, 1-4-7-5**. Backup number: **503-645-9010**. They\u2019re at **10700 Southwest Beaverton-Hillsdale Highway, Suite 110**. If you want, I can stay with you while you make the call and help with what to say.",
+      "evidenceDocIds": [
+        "service:0eb8fe666cad31a1",
+        "service:843bb5003193d004",
+        "service:7b76539f63e37721",
+        "service:df15bfd5df7ead05",
+        "service:7e3108949416ac6a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you reached out. Let\u2019s make this easy at the bus stop: in Beaverton, you can call LifeWorks NW for outpatient mental health help at **503-641-1475**. I\u2019ll repeat: **5-0-3, 6-4-1, 1-4-7-5**. Backup number: **503-645-9010**. They\u2019re at **10700 Southwest Beaverton-Hillsdale Highway, Suite 110**. If you want, I can stay with you while you make the call and help with what to say.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001320#turn-2",
+      "scenarioId": "phone_dialog_0001320",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m 22 and I kinda don\u2019t trust going to hospitals, I just need somewhere I won\u2019t get turned away.",
+      "normalizedQuery": "hi sorry at bus stop it loud here mental health beaverton 22 kinda don trust going hospitals just somewhere won turned away",
+      "voiceResponse": "That makes total sense, and you\u2019re not wrong to want a safer option. You can skip the hospital and call LifeWorks NW in Beaverton, outpatient mental health. Tell them: \u201cI\u2019m 22, I need an intake for mental health, and I\u2019m scared of being turned away.\u201d Main number: 5-0-3, 6-4-1, 1-4-7-5. Backup: 5-0-3, 6-4-5, 9-0-1-0. Eligibility can vary by program, but ask for the soonest intake and any same-day openings.",
+      "evidenceDocIds": [
+        "service:0eb8fe666cad31a1",
+        "service:843bb5003193d004",
+        "service:979c19c89bb0884f",
+        "service:7e3108949416ac6a",
+        "service:b4be8d85fae52f6d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re not wrong to want a safer option. You can skip the hospital and call LifeWorks NW in Beaverton, outpatient mental health. Tell them: \u201cI\u2019m 22, I need an intake for mental health, and I\u2019m scared of being turned away.\u201d Main number: 5-0-3, 6-4-1, 1-4-7-5. Backup: 5-0-3, 6-4-5, 9-0-1-0. Eligibility can vary by program, but ask for the soonest intake and any same-day openings.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001320#turn-3",
+      "scenarioId": "phone_dialog_0001320",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just went by, I missed the name.",
+      "normalizedQuery": "hi sorry at bus stop it loud here mental health beaverton 22 kinda don trust going hospitals just somewhere won turned away say again went by missed name",
+      "voiceResponse": "Yeah, absolutely. The name is **LifeWorks NW** in Beaverton. I\u2019ll say it slow: **Life-Works N-W**. If you want to call now, the main number is **5-0-3, 6-4-1, 1-4-7-5**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:0eb8fe666cad31a1",
+        "service:979c19c89bb0884f",
+        "service:843bb5003193d004",
+        "service:7e3108949416ac6a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, absolutely. The name is **LifeWorks NW** in Beaverton. I\u2019ll say it slow: **Life-Works N-W**. If you want to call now, the main number is **5-0-3, 6-4-1, 1-4-7-5**.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Most important number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "Of course. The name is: **Beaverton Wellness Center Dental Clinic**. I\u2019ll say it slowly: **Beaverton**\u2026 **Wellness Center**\u2026 **Dental Clinic**.",
+        "Yes. Here it is, one part at a time: **2725** **Southwest Cedar Hills Boulevard** **Suite 200** **Beaverton, Oregon** **9-7-0-0-5**",
+        "Yes. The office name is the **Oregon benefits line**. Call **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **Oregon benefits line** \u2014 **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001344#turn-5",
+      "scenarioId": "phone_dialog_0001344",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at like two percent, can you just get me whoever can stay on the line with me now, like crisis or mental health, in Beaverton.",
+      "normalizedQuery": "battery at like two percent just whoever stay on line now crisis mental health beaverton",
+      "voiceResponse": "I hear the urgency, and you did the right thing telling me now. Stay with me while I connect you to a live crisis-support line. If we get disconnected and you feel in immediate danger, call 911 right away. Backup numbers you can call now are: **nine seven one, three one nine, nine seven nine three** or **three six zero, five two one, six five two seven**. Keep your charger plugged in while we do this.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "service:6355a9aeaf555886",
+        "service:f519b9665fa17230",
+        "service:907999d48cd2bc6a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear the urgency, and you did the right thing telling me now. Stay with me while I connect you to a live crisis-support line. If we get disconnected and you feel in immediate danger, call 911 right away. Backup numbers you can call now are: **nine seven one, three one nine, nine seven nine three** or **three six zero, five two one, six five two seven**. Keep your charger plugged in while we do this.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001412#turn-1",
+      "scenarioId": "phone_dialog_0001412",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, can you hear me? My phone keeps cutting out... I need a clinic, like a real doctor clinic in Beaverton, I think.",
+      "normalizedQuery": "hi sorry hear phone keeps cutting clinic medical health like real doctor beaverton think",
+      "voiceResponse": "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+      "evidenceDocIds": [
+        "service:ad8146a84abd0b66",
+        "service:391554d70c7586af",
+        "service:f271a5c8d14f9de1",
+        "service:31a22008e2b10cbf",
+        "service:5d7b69e27cf0f47a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+      "voiceResponseAlternatives": [
+        "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**.",
+        "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?",
+        "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+        "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001412#turn-2",
+      "scenarioId": "phone_dialog_0001412",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No, wait, not the ER, they watch me there... the voices are louder when I go inside places with bright lights, so I can't, I can't do that.",
+      "normalizedQuery": "hi sorry hear phone keeps cutting clinic medical health like real doctor beaverton think no wait er they watch there voices louder when go inside places bright lights so can't",
+      "voiceResponse": "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:391554d70c7586af",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:9fa9218ec67d4993"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That sounds really overwhelming, and I\u2019m glad you stayed on with me. Your audio was unclear for a second, so I missed part of that. Quick choice so I can help right now: do you want a **general doctor clinic** or a **reproductive health clinic** in Beaverton?",
+      "voiceResponseAlternatives": [
+        "Yes. The local clinic number is **503\u2026 352\u2026 6000**. Again: **503\u2026 352\u2026 6000**.",
+        "I hear you. The audio is still unclear. You need a medical clinic in Beaverton. You need a medical clinic in Beaverton. One quick choice: do you want the clinic on **1-2-2-2-0 Southwest 1st Street, Suite 2-0-0**, or **2-7-2-5 Southwest Cedar Hills Boulevard, Suite 2-0-0**?",
+        "I\u2019m here. Your audio was unclear for a second. Do you want me to give you the Beaverton clinic phone number now?",
+        "You\u2019re doing okay, and I can help. Your audio cut out, so I missed part of that. Quick check: are you looking for a **general doctor clinic** or a **reproductive health clinic** in Beaverton?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001412#turn-3",
+      "scenarioId": "phone_dialog_0001412",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What did you ask? Sorry, say it again slower... I didn\u2019t sleep and I keep losing the order of things.",
+      "normalizedQuery": "hi sorry hear phone keeps cutting clinic medical health like real doctor beaverton think no wait er they watch there voices louder when go inside places bright lights so can't did ask say it again slower didn sleep keep losing order things",
+      "voiceResponse": "You\u2019re okay, thanks for sticking with me. I\u2019ll say it slowly: I need one choice from you. In Beaverton, do you want a **general doctor clinic** or a **reproductive health clinic**?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, thanks for sticking with me. I\u2019ll say it slowly: I need one choice from you. In Beaverton, do you want a **general doctor clinic** or a **reproductive health clinic**?",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Most important number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "Of course. The name is: **Beaverton Wellness Center Dental Clinic**. I\u2019ll say it slowly: **Beaverton**\u2026 **Wellness Center**\u2026 **Dental Clinic**.",
+        "Yes. Here it is, one part at a time: **2725** **Southwest Cedar Hills Boulevard** **Suite 200** **Beaverton, Oregon** **9-7-0-0-5**",
+        "Yes. The office name is the **Oregon benefits line**. Call **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **Oregon benefits line** \u2014 **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001412#turn-4",
+      "scenarioId": "phone_dialog_0001412",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need my chest checked and maybe infection medicine, but also someone keeps talking through the wall vents about me, so I don\u2019t know what\u2019s real.",
+      "normalizedQuery": "hi sorry hear phone keeps cutting clinic medical health like real doctor beaverton think no wait er they watch there voices louder when go inside places bright lights so can't did ask say it again slower didn sleep keep losing order things chest checked maybe infection medicine also someone talking through wall vents don know",
+      "voiceResponse": "Thank you for telling me that. That sounds scary, and we can take this one step at a time. First, let\u2019s focus on your body symptoms: if you have chest pain, trouble breathing, fever, or feel faint, please go to urgent care now, or call 911 if it feels severe. After that, we can line up same-day mental health support too. Right now, is your chest hurting this minute, or is it more cough, fever, and possible infection?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. That sounds scary, and we can take this one step at a time. First, let\u2019s focus on your body symptoms: if you have chest pain, trouble breathing, fever, or feel faint, please go to urgent care now, or call 911 if it feels severe. After that, we can line up same-day mental health support too. Right now, is your chest hurting this minute, or is it more cough, fever, and possible infection?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001577#turn-6",
+      "scenarioId": "phone_dialog_0001577",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "After the safety steps, can you help me find diaper banks near Beaverton and maybe a postpartum mental health clinic we can get to by bus?",
+      "normalizedQuery": "after safety steps diaper diapers baby banks beaverton maybe postpartum mental health clinic medical we by bus",
+      "voiceResponse": "Yes. First, if she is still bleeding heavily or unsafe, call **911 now**. After that, I can connect you to a **live 211 specialist** to find **diaper banks near Beaverton** and a **postpartum mental health clinic on a bus line** right now. If you want, I\u2019ll stay with you while we do that.",
+      "evidenceDocIds": [
+        "service:c3df1f7ad18b318a",
+        "page:bafkreie3so76wprkn3of4wftklqvnckzivwc6lmyz2oehblt7wzem4miz4",
+        "page:bafkreihwfqzvmcjflq6i5yiqywktglcspv2ul4apy4oz4gqcijk7uwvuzy",
+        "service:294f15d3b2d480a8",
+        "service:5dd0583efca9b751"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First, if she is still bleeding heavily or unsafe, call **911 now**. After that, I can connect you to a **live 211 specialist** to find **diaper banks near Beaverton** and a **postpartum mental health clinic on a bus line** right now. If you want, I\u2019ll stay with you while we do that.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001708#turn-5",
+      "scenarioId": "phone_dialog_0001708",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I can\u2019t store papers or texts here, so I need help that won\u2019t leave a trail on my phone.",
+      "normalizedQuery": "beaverton right now cedar hills he keeps id bank card so leave on own sorry crying makes go men money says owe him if don follows tell immediate danger first then maybe quiet plan away later tonight store papers texts here won trail phone",
+      "voiceResponse": "You\u2019re making a smart call. We can keep this low-trace. Options: use a borrowed phone, call from a public place, or ask for a \u201cwrong number\u201d callback phrase if someone checks. Avoid saving contacts, texts, or notes. Use memory only, then clear recent calls when safe. If he\u2019s close or you fear harm soon, call **9-1-1** now. If you want, I can connect you to a live specialist right now, and you can answer only yes or no.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:9ec0f5096970bbfd",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making a smart call. We can keep this low-trace. Options: use a borrowed phone, call from a public place, or ask for a \u201cwrong number\u201d callback phrase if someone checks. Avoid saving contacts, texts, or notes. Use memory only, then clear recent calls when safe. If he\u2019s close or you fear harm soon, call **9-1-1** now. If you want, I can connect you to a live specialist right now, and you can answer only yes or no.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001777#turn-4",
+      "scenarioId": "phone_dialog_0001777",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that name, was that on Burnside or Beaverton? I don\u2019t hear great on this phone.",
+      "normalizedQuery": "static hello uh den tal hear sorry you're cutting got buses loud here tooth clinic medical health can't catch this yeah okay portland back hurts bad low cost dental dentist wait missed name was on burnside beaverton don great phone",
+      "voiceResponse": "The clinic name is: Multnomah County Health Department, North East Health Center and Dental Clinic. I\u2019ll repeat it once: Multnomah County Health Department, North East Health Center and Dental Clinic. It is in Portland, on N E Martin Luther King Junior Boulevard. Not Burnside. Not Beaverton.",
+      "evidenceDocIds": [
+        "service:391554d70c7586af",
+        "service:bfee28bc06885629",
+        "service:ad8146a84abd0b66",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "service:9fa9218ec67d4993"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The clinic name is: Multnomah County Health Department, North East Health Center and Dental Clinic. I\u2019ll repeat it once: Multnomah County Health Department, North East Health Center and Dental Clinic. It is in Portland, on N E Martin Luther King Junior Boulevard. Not Burnside. Not Beaverton.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Most important number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "Of course. The name is: **Beaverton Wellness Center Dental Clinic**. I\u2019ll say it slowly: **Beaverton**\u2026 **Wellness Center**\u2026 **Dental Clinic**.",
+        "Yes. Here it is, one part at a time: **2725** **Southwest Cedar Hills Boulevard** **Suite 200** **Beaverton, Oregon** **9-7-0-0-5**",
+        "Yes. The office name is the **Oregon benefits line**. Call **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **Oregon benefits line** \u2014 **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001817#turn-3",
+      "scenarioId": "phone_dialog_0001817",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m not catching everything, can you slow down and repeat that number one more time?",
+      "normalizedQuery": "hi um keep this quiet beaverton have show up anywhere partner see he been threatening waiting outside job tracks phone sometimes so safe ride plan before go back home sorry catching everything slow down repeat number one more time",
+      "voiceResponse": "Of course. I\u2019ll go slow. The number is: **5 0 3** \u2026 **3 5 2** \u2026 **3 2 6 0**. Again: **5 0 3** \u2026 **3 5 2** \u2026 **3 2 6 0**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:0371faf23a9ac44e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slow. The number is: **5 0 3** \u2026 **3 5 2** \u2026 **3 2 6 0**. Again: **5 0 3** \u2026 **3 5 2** \u2026 **3 2 6 0**.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Most important number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "Of course. The name is: **Beaverton Wellness Center Dental Clinic**. I\u2019ll say it slowly: **Beaverton**\u2026 **Wellness Center**\u2026 **Dental Clinic**.",
+        "Yes. Here it is, one part at a time: **2725** **Southwest Cedar Hills Boulevard** **Suite 200** **Beaverton, Oregon** **9-7-0-0-5**",
+        "Yes. The office name is the **Oregon benefits line**. Call **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **Oregon benefits line** \u2014 **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001817#turn-4",
+      "scenarioId": "phone_dialog_0001817",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m whispering because he might come back any minute, and if he sees me leaving there could be a fight.",
+      "normalizedQuery": "hi um keep this quiet beaverton have show up anywhere partner see he been threatening waiting outside job tracks phone sometimes so safe ride plan before go back home sorry catching everything slow down repeat number one more time whispering because might come any minute if sees leaving there could be fight",
+      "voiceResponse": "You\u2019re doing the right thing by whispering. If he may return any minute, please call **9 1 1** now. If you can move safely, go to a public place with people nearby and stay on the line. If calling feels risky, you can text **9 1 1** if available in your area. For support planning after immediate safety, KEEP is **5 0 3 \u2026 3 5 2 \u2026 3 2 6 0**. I can stay with you and keep this brief.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by whispering. If he may return any minute, please call **9 1 1** now. If you can move safely, go to a public place with people nearby and stay on the line. If calling feels risky, you can text **9 1 1** if available in your area. For support planning after immediate safety, KEEP is **5 0 3 \u2026 3 5 2 \u2026 3 2 6 0**. I can stay with you and keep this brief.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: **503, 641, 1475**. Again: **503, 641, 1475**. That is LifeWorks NW outpatient mental health in Beaverton. If they do not answer, call **503, 645, 9010**. Again: **503, 645, 9010**. If you want, I can stay and give you a one-line script to say when they pick up.",
+        "It is **503**. I\u2019ll repeat it: **5 0 3**. Full number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "I\u2019m so sorry you\u2019re carrying this. I can\u2019t send the request for you from this line. Fastest next step: call them now and say: \u201cHi, I need grief counseling as soon as possible. Please call me back today.\u201d Main number: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. Again: **5 0 3 \u2026 6 4 1 \u2026 1 4 7 5**. If you want, I can give you a 10-second voicemail script.",
+        "First step: call the Beaverton Wellness Center now and ask for the soonest appointment this week. The number is **5 0 3, 3 5 2, 6 0 0 0**. If they can\u2019t see her soon, call this second clinic: **8 8 8, 8 7 5, 7 8 2 0**. Addresses I have are: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton** and **12220 Southwest 1st Street, Suite 200, Beaverton**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001827#turn-1",
+      "scenarioId": "phone_dialog_0001827",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? The bus is loud. I'm in Beaverton, and I need mental health help, I think, but people keep signaling at me through the ads.",
+      "normalizedQuery": "hi sorry hear bus loud i'm beaverton mental health think people keep signaling at through ads",
+      "voiceResponse": "I can hear you. What you\u2019re describing sounds serious, and you deserve support now. If you might hurt yourself or anyone else, call 911 right now. For Beaverton mental health care, call LifeWorks NW Outpatient: **503 \u2026 641 \u2026 1475**. Backup number: **503 \u2026 645 \u2026 9010**. Address is **10700 Southwest Beaverton-Hillside Highway, Suite 110**. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:5738cc1cdf700a78",
+        "service:0eb8fe666cad31a1",
+        "service:0742635076980962",
+        "service:bcfe168519274472",
+        "service:843bb5003193d004"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you. What you\u2019re describing sounds serious, and you deserve support now. If you might hurt yourself or anyone else, call 911 right now. For Beaverton mental health care, call LifeWorks NW Outpatient: **503 \u2026 641 \u2026 1475**. Backup number: **503 \u2026 645 \u2026 9010**. Address is **10700 Southwest Beaverton-Hillside Highway, Suite 110**. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001827#turn-2",
+      "scenarioId": "phone_dialog_0001827",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, wait, don't put me on hold yet, I can explain this better than last time, it's pattern recognition, not paranoia, except the voices started again last night and they won't let me sleep.",
+      "normalizedQuery": "hi sorry hear bus loud i'm beaverton mental health think people keep signaling at through ads no wait don't put on hold yet explain this better than last time it's pattern recognition paranoia except voices started again night they won't let sleep",
+      "voiceResponse": "I\u2019m glad you told me. Hearing voices and not sleeping is a crisis signal, and you need live support now. If you might hurt yourself or anyone else, call 911 right now. Otherwise, call LifeWorks NW now: **503 \u2026 641 \u2026 1475**. Backup: **503 \u2026 645 \u2026 9010**. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:5738cc1cdf700a78",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0eb8fe666cad31a1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you told me. Hearing voices and not sleeping is a crisis signal, and you need live support now. If you might hurt yourself or anyone else, call 911 right now. Otherwise, call LifeWorks NW now: **503 \u2026 641 \u2026 1475**. Backup: **503 \u2026 645 \u2026 9010**. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001827#turn-4",
+      "scenarioId": "phone_dialog_0001827",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you're cutting out, can you repeat that number slower? My phone battery is at three percent and I wrote the first part on my hand.",
+      "normalizedQuery": "hi sorry hear bus loud i'm beaverton mental health think people keep signaling at through ads no wait don't put on hold yet explain this better than last time it's pattern recognition paranoia except voices started again night they won't let sleep did ask if safe right now mean trying hurt anybody including missing blocks ending up same place like someone's steering you're cutting repeat number slower phone battery three percent wrote first part hand",
+      "voiceResponse": "Yes. The number is **503 \u2026 641 \u2026 1475**. I\u2019ll say it again slowly: **5-0-3 \u2026 6-4-1 \u2026 1-4-7-5**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **503 \u2026 641 \u2026 1475**. I\u2019ll say it again slowly: **5-0-3 \u2026 6-4-1 \u2026 1-4-7-5**.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Most important number: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**. Again: **5 0 3** \u2026 **6 4 1** \u2026 **1 4 7 5**.",
+        "Of course. The name is: **Beaverton Wellness Center Dental Clinic**. I\u2019ll say it slowly: **Beaverton**\u2026 **Wellness Center**\u2026 **Dental Clinic**.",
+        "Yes. Here it is, one part at a time: **2725** **Southwest Cedar Hills Boulevard** **Suite 200** **Beaverton, Oregon** **9-7-0-0-5**",
+        "Yes. The office name is the **Oregon benefits line**. Call **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **Oregon benefits line** \u2014 **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-1",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know this is 211, right? I\u2019m in Beaverton, near Cedar Hills, and I need mental health help, but the people in the hallway keep signaling each other when I open my door.",
+      "normalizedQuery": "hi sorry know this 211 right beaverton cedar hills mental health people hallway keep signaling each other when open door",
+      "voiceResponse": "I\u2019m really glad you called, that sounds scary and exhausting. Let\u2019s take one concrete step now. Call 503, 352, 3260. The number is 503, 352, 3260. The provider is KEEP in Beaverton, at 8285 Southwest Nimbus Avenue, Suite 148. They offer counseling sessions in person or remote. Their listed eligibility is foster or kinship parents with kids ages 3 to 17. If you feel in immediate danger right now, call 911.",
+      "evidenceDocIds": [
+        "service:5738cc1cdf700a78",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:d77957f33b1e03c3",
+        "service:db673826d6e1bd8a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, that sounds scary and exhausting. Let\u2019s take one concrete step now. Call 503, 352, 3260. The number is 503, 352, 3260. The provider is KEEP in Beaverton, at 8285 Southwest Nimbus Avenue, Suite 148. They offer counseling sessions in person or remote. Their listed eligibility is foster or kinship parents with kids ages 3 to 17. If you feel in immediate danger right now, call 911.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-2",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, hold on, can you say your name again? The voices are louder when there\u2019s static, and I can\u2019t tell what\u2019s real versus, like, the building talking through the vents.",
+      "normalizedQuery": "hi sorry know this 211 right beaverton cedar hills mental health people hallway keep signaling each other when open door wait hold on say your name again voices louder there static tell real versus like building talking through vents",
+      "voiceResponse": "I\u2019m Abby. I hear how intense this feels right now, and you did the right thing by staying on the line. Let\u2019s keep this simple: can you move to the spot in your place that feels safest, and keep your phone with you? If you feel in immediate danger, call 911 now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m Abby. I hear how intense this feels right now, and you did the right thing by staying on the line. Let\u2019s keep this simple: can you move to the spot in your place that feels safest, and keep your phone with you? If you feel in immediate danger, call 911 now.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-3",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to be dramatic, I just haven\u2019t slept in three days and I keep writing timelines that don\u2019t add up, then I lose track and start over.",
+      "normalizedQuery": "hi sorry know this 211 right beaverton cedar hills mental health people hallway keep signaling each other when open door wait hold on say your name again voices louder there static tell real versus like building talking through vents trying be dramatic just haven slept three days writing timelines don add up then lose track start over",
+      "voiceResponse": "You\u2019re not being dramatic. Three days without sleep can make everything feel scrambled, and I\u2019m glad you told me. Let\u2019s do one step right now: stop the timelines, sit down, and take five slow breaths with me. Keep your phone with you and drink a little water if you can. If you feel like you might hurt yourself or are in immediate danger, call 911 now. Are you safe where you are right this minute?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being dramatic. Three days without sleep can make everything feel scrambled, and I\u2019m glad you told me. Let\u2019s do one step right now: stop the timelines, sit down, and take five slow breaths with me. Keep your phone with you and drink a little water if you can. If you feel like you might hurt yourself or are in immediate danger, call 911 now. Are you safe where you are right this minute?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-4",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, I\u2019m not hurt right this second, I just\u2014I keep thinking someone wants me gone, and then I hear a man saying not to trust phones, so if I stop talking that\u2019s why.",
+      "normalizedQuery": "hi sorry know this 211 right beaverton cedar hills mental health people hallway keep signaling each other when open door wait hold on say your name again voices louder there static tell real versus like building talking through vents trying be dramatic just haven slept three days writing timelines don add up then lose track start over no hurt second thinking someone wants gone hear man saying trust phones so if stop why",
+      "voiceResponse": "Thank you for telling me that. That sounds really scary, and you\u2019re doing the right thing by staying with me. Right now, let\u2019s keep this simple: stay where you feel safest, keep your door closed if that helps, and keep talking to me. If you start feeling like you might act on these fears or you\u2019re in immediate danger, call 911 right away. Are you able to stay on the line with me for the next minute?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. That sounds really scary, and you\u2019re doing the right thing by staying with me. Right now, let\u2019s keep this simple: stay where you feel safest, keep your door closed if that helps, and keep talking to me. If you start feeling like you might act on these fears or you\u2019re in immediate danger, call 911 right away. Are you able to stay on the line with me for the next minute?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. I\u2019m sorry you\u2019re in pain. A low-cost option in Beaverton is the Beaverton Wellness Center Dental Clinic. Address: **2725 SW Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They provide general and emergency dental care, and sliding-scale fees may be available with proof of income. If you have swelling in your face, fever, or trouble breathing, call **911** right now.",
+        "First step: please call the Oregon benefits line now and ask for disability benefits help in Beaverton. The number is **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I\u2019ll repeat: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. If your breathing gets worse right now, call **9 1 1** immediately.",
+        "Of course. The number is **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**. I\u2019ll repeat it once more: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 6 \u2026 5 \u2026 9 \u2026 2 \u2026 5 \u2026 6**.",
+        "Next step: go now to **Beaverton Wellness Center Dental Clinic** for emergency dental care. Address is: **2725 Southwest Cedar Hills Boulevard, Suite 200, Beaverton, Oregon, 97005**. They do emergency care like exams, fillings, and simple extractions. If you can, bring your insurance card, and proof of income if you want sliding-scale fees."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002287#turn-5",
+      "scenarioId": "phone_dialog_0002287",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "wallet_document_support",
+      "user": "Can you tell me one step at a time, like exactly where I go in Beaverton for urgent mental health, and if they can see me tonight without insurance proof in hand?",
+      "normalizedQuery": "tell one step at time like exactly go beaverton urgent mental health if they see tonight without insurance proof hand",
+      "voiceResponse": "You\u2019re doing the right thing asking for clear steps. Step one: go to LifeWorks NW, 10700 SW Beaverton-Hillside Highway, Suite 110, Beaverton. Step two: call first to ask about tonight walk-in availability. Main number: (503) 641-1475. Backup number: (503) 645-9010. Step three: if you don\u2019t have insurance proof, still go or call; they list insurance information as \u201cif applicable,\u201d so ask what they can accept tonight. If you feel in immediate danger, call 911 now.",
+      "evidenceDocIds": [
+        "service:ed88848aae7354c5",
+        "service:d0f6bca8c0a87513",
+        "service:0eb8fe666cad31a1",
+        "service:b4628a59858284c9",
+        "service:318a2bc97c0c8395"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing asking for clear steps. Step one: go to LifeWorks NW, 10700 SW Beaverton-Hillside Highway, Suite 110, Beaverton. Step two: call first to ask about tonight walk-in availability. Main number: (503) 641-1475. Backup number: (503) 645-9010. Step three: if you don\u2019t have insurance proof, still go or call; they list insurance information as \u201cif applicable,\u201d so ask what they can accept tonight. If you feel in immediate danger, call 911 now.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1643,6 +2424,144 @@
       "to": "phone_dialog_0001082#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "calendar_event_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001194#turn-1",
+      "to": "phone_dialog_0001194#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001194#turn-2",
+      "to": "phone_dialog_0001194#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001194#turn-3",
+      "to": "phone_dialog_0001194#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001291#turn-4",
+      "to": "phone_dialog_0001291#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001320#turn-1",
+      "to": "phone_dialog_0001320#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001320#turn-2",
+      "to": "phone_dialog_0001320#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001320#turn-3",
+      "to": "phone_dialog_0001320#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001412#turn-1",
+      "to": "phone_dialog_0001412#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001412#turn-2",
+      "to": "phone_dialog_0001412#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001412#turn-3",
+      "to": "phone_dialog_0001412#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001412#turn-4",
+      "to": "phone_dialog_0001412#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001708#turn-5",
+      "to": "phone_dialog_0001708#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001777#turn-4",
+      "to": "phone_dialog_0001777#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001817#turn-3",
+      "to": "phone_dialog_0001817#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001817#turn-4",
+      "to": "phone_dialog_0001817#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001827#turn-1",
+      "to": "phone_dialog_0001827#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001827#turn-2",
+      "to": "phone_dialog_0001827#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001827#turn-4",
+      "to": "phone_dialog_0001827#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-1",
+      "to": "phone_dialog_0002287#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-2",
+      "to": "phone_dialog_0002287#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-3",
+      "to": "phone_dialog_0002287#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-4",
+      "to": "phone_dialog_0002287#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0002287#turn-5",
+      "to": "phone_dialog_0002287#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
     }
   ]
 }

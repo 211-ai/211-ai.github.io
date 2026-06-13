@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__utilities__statewide",
   "kind": "service_location",
   "key": "utilities__statewide",
-  "nodeCount": 38,
+  "nodeCount": 59,
   "nodes": [
     {
       "id": "phone_dialog_0000142#turn-6",
@@ -178,7 +178,9 @@
       "assistantResponse": "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
       "voiceResponseAlternatives": [
         "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
-        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**."
+        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
+        "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again.",
+        "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now."
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
@@ -741,7 +743,9 @@
       "assistantResponse": "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
       "voiceResponseAlternatives": [
         "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
-        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**."
+        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
+        "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again.",
+        "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now."
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
@@ -878,7 +882,12 @@
       ],
       "similarCases": [],
       "assistantResponse": "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+        "9-1-1. 9-1-1.",
+        "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?",
+        "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?"
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -903,7 +912,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m with you, and you\u2019re doing okay. The audio was unclear, but I heard \u201ccool room.\u201d Quick choice so I can help fast: do you need a **cooling center right now**, or **help paying your utility bill**?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry about your mom. I\u2019m here with you. Your audio was unclear for a moment. Do you want me to repeat the electric bill help number now, or take one slow breath together first?"
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
@@ -930,7 +941,9 @@
       "assistantResponse": "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
       "voiceResponseAlternatives": [
         "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
-        "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**."
+        "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
+        "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again.",
+        "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -1111,6 +1124,633 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001171#turn-2",
+      "scenarioId": "phone_dialog_0001171",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not in immediate danger, I just feel weak and panicky, and the heat is making it worse.",
+      "normalizedQuery": "immediate danger just feel weak panicky heat utility utilities electric making it worse",
+      "voiceResponse": "You\u2019re doing the right thing telling me. Let\u2019s cool you down first: move to shade or indoors now, sit with your back supported, loosen clothing, sip water slowly, and take slow breaths with me. If you get more weak, confused, chest pain, trouble breathing, or feel close to passing out, call 9-1-1 right away. If you want help with safer cooling options, call Emergency Heat Assistance at **5 4 1, 4 8 8, 6 0 0 4**.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing telling me. Let\u2019s cool you down first: move to shade or indoors now, sit with your back supported, loosen clothing, sip water slowly, and take slow breaths with me. If you get more weak, confused, chest pain, trouble breathing, or feel close to passing out, call 9-1-1 right away. If you want help with safer cooling options, call Emergency Heat Assistance at **5 4 1, 4 8 8, 6 0 0 4**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-3",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not bleeding or anything, just shaky and confused from the heat, and I haven\u2019t had much water.",
+      "normalizedQuery": "bleeding anything just shaky confused from heat utility utilities electric haven had much water",
+      "voiceResponse": "Thank you for telling me. You are shaky and confused from heat. Shaky and confused. Please call 9-1-1 now. That is 9-1-1. If you cannot call, wave to someone nearby and ask them to call 9-1-1 for you. If you can, move to shade and take small sips of water while you wait. Can you call 9-1-1 right now?",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:7c2d095e978b531f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You are shaky and confused from heat. Shaky and confused. Please call 9-1-1 now. That is 9-1-1. If you cannot call, wave to someone nearby and ask them to call 9-1-1 for you. If you can, move to shade and take small sips of water while you wait. Can you call 9-1-1 right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001260#turn-2",
+      "scenarioId": "phone_dialog_0001260",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019ve been outside since yesterday and I\u2019m getting really dizzy and weak from the heat.",
+      "normalizedQuery": "ve been outside since yesterday getting really dizzy weak from heat utility utilities electric",
+      "voiceResponse": "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+        "9-1-1. 9-1-1.",
+        "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?",
+        "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001338#turn-4",
+      "scenarioId": "phone_dialog_0001338",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Yeah, I can move, I just need to know where to go right now so I\u2019m not stuck in this heat.",
+      "normalizedQuery": "yeah move just know go right now so stuck this heat utility utilities electric",
+      "voiceResponse": "You\u2019re doing the right thing moving now. Go to the nearest open, air-conditioned public place with people around you right now, like a gas station, grocery store, or hospital ER lobby, and stay where staff can see you. If those men come back or you feel unsafe, call **911** immediately. I\u2019m getting you to a live 211 specialist now for the closest safe place tonight.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing moving now. Go to the nearest open, air-conditioned public place with people around you right now, like a gas station, grocery store, or hospital ER lobby, and stay where staff can see you. If those men come back or you feel unsafe, call **911** immediately. I\u2019m getting you to a live 211 specialist now for the closest safe place tonight.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001362#turn-2",
+      "scenarioId": "phone_dialog_0001362",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019m sorry, say that slower please, I\u2019m feeling dizzy and kind of weak from the heat.",
+      "normalizedQuery": "sorry say slower please feeling dizzy kind weak from heat utility utilities electric",
+      "voiceResponse": "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
+        "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
+        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
+        "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001362#turn-5",
+      "scenarioId": "phone_dialog_0001362",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you repeat that number again, just the number, I don\u2019t want to lose it when this phone cuts off.",
+      "normalizedQuery": "sorry say slower please feeling dizzy kind weak from heat utility utilities electric keep blanking little think straight legs feel shaky like might fall if pass worse call 911 right away there something else first repeat number again just don want lose it when this phone cuts off",
+      "voiceResponse": "9-1-1. 9-1-1.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:07b702b8ba249a9b",
+        "service:449e24fd37254705"
+      ],
+      "similarCases": [],
+      "assistantResponse": "9-1-1. 9-1-1.",
+      "voiceResponseAlternatives": [
+        "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+        "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+        "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?",
+        "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001381#turn-3",
+      "scenarioId": "phone_dialog_0001381",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m getting really dizzy and weak, and I\u2019m kind of mixed up from the heat today, like I might pass out.",
+      "normalizedQuery": "getting really dizzy weak kind mixed up from heat utility utilities electric like might pass",
+      "voiceResponse": "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+        "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+        "9-1-1. 9-1-1.",
+        "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001396#turn-5",
+      "scenarioId": "phone_dialog_0001396",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If it\u2019s not 911 yet, can you help me get a ride there? I don\u2019t think I can walk in this heat.",
+      "normalizedQuery": "if it 911 yet ride there don think walk this heat utility utilities electric",
+      "voiceResponse": "Yes. Since it is not 9-1-1 yet, call **9-1-1** now for a medical ride. Call **9-1-1** now for a medical ride. You are sweaty, lightheaded, shaky, and mixed up. That can be an emergency in this heat. Please sit or lie down in shade while you call. If you want, I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:1341a8cba2a5d24e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Since it is not 9-1-1 yet, call **9-1-1** now for a medical ride. Call **9-1-1** now for a medical ride. You are sweaty, lightheaded, shaky, and mixed up. That can be an emergency in this heat. Please sit or lie down in shade while you call. If you want, I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001436#turn-2",
+      "scenarioId": "phone_dialog_0001436",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m real dizzy and weak from this heat, and I keep feeling like my legs might give out.",
+      "normalizedQuery": "real dizzy weak from this heat utility utilities electric keep feeling like legs might give",
+      "voiceResponse": "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is serious. Please sit down now, in shade, and sip water if you can. If you feel faint, chest pain, or trouble breathing, call `9 1 1` now. Again, call `9 1 1` now if you might pass out. I can stay with you and help next. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+        "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+        "9-1-1. 9-1-1.",
+        "I\u2019m worried about your safety right now. If you might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. Sit down in shade. Loosen tight clothes. Sip cool water, small sips. Are you alone right now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001480#turn-3",
+      "scenarioId": "phone_dialog_0001480",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Okay, yes, I need help with my electric bill, I got a shutoff notice.",
+      "normalizedQuery": "okay yes electric bill got shutoff notice",
+      "voiceResponse": "Thank you. I heard: electric bill and shutoff notice. Electric bill and shutoff notice. I can connect you to Portland General Electric\u2019s income-qualified bill discount program. Call **503, 228, 6322**. That is **503, 228, 6322**. Address is **121 Southwest Salmon Street, Portland**. I\u2019ll repeat: **121 Southwest Salmon Street, Portland**. One question: are you a PGE customer?",
+      "evidenceDocIds": [
+        "service:6c5e0b45a723461e",
+        "service:f780d533641f2336",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:d9c7707e45d265ad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I heard: electric bill and shutoff notice. Electric bill and shutoff notice. I can connect you to Portland General Electric\u2019s income-qualified bill discount program. Call **503, 228, 6322**. That is **503, 228, 6322**. Address is **121 Southwest Salmon Street, Portland**. I\u2019ll repeat: **121 Southwest Salmon Street, Portland**. One question: are you a PGE customer?",
+      "voiceResponseAlternatives": [
+        "I hear how urgent this is, and I\u2019m glad you called now. We can handle both before Friday, step by step. Please grab the notices and read me just two names, slowly: first, the electric company name; second, the gas company name. Once I have those two names, I\u2019ll give you the exact shutoff-support numbers.",
+        "I hear you. Molar pain plus cheek swelling can mean infection. Please get same-day urgent dental care, or urgent care, today. Today. If you have fever, trouble swallowing, trouble breathing, or swelling toward your eye or neck, call 9-1-1 now. Call 9-1-1 now. What city are you in?",
+        "First, call Portland General Electric now and ask for the Income-Qualified Bill Discount application. The number is **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. If that line is busy, call **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. They can help with bill payment assistance and possible discounts, and this discount can be 15% to 80% if your household income is at or below 200% of the federal poverty level.",
+        "First step: please call Portland General Electric now, and I can stay with you while you do it. Dial **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. Backup: **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. Tell them: \u201cI\u2019m on home oxygen, I have a shutoff notice, and I need emergency protection and bill help today.\u201d For PGE, the record says **no documents are required at intake**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001487#turn-2",
+      "scenarioId": "phone_dialog_0001487",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, say that slower... I\u2019ve been out in the heat and now I\u2019m dizzy and kind of weak.",
+      "normalizedQuery": "sorry say slower ve been heat utility utilities electric now dizzy kind weak",
+      "voiceResponse": "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019ll say it slowly. Main number: **5 0 3, 6 2 3, 0 1 7 5**. Again: **5 0 3, 6 2 3, 0 1 7 5**. Backup number: **5 0 3, 6 2 3, 0 7 1 5**. Again: **5 0 3, 6 2 3, 0 7 1 5**. If your dizziness gets worse, call **9 1 1** now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
+        "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
+        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
+        "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001628#turn-3",
+      "scenarioId": "phone_dialog_0001628",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m 22, I\u2019ve been out in the heat for hours, and my stuff got taken last night, so I\u2019m kind of freaking out.",
+      "normalizedQuery": "22 ve been heat utility utilities electric hours stuff got taken last night so kind freaking",
+      "voiceResponse": "I hear you, and that\u2019s a lot to carry in this heat. Let\u2019s do one step now: call **2-1-1** and say, \u201cI\u2019m 22, in Beaverton, overheated, my belongings were taken, and I need a safe indoor place today with transportation options.\u201d If they ask about utility help, they can also connect you to **Portland General Electric** at **503-228-6322**. If you feel in immediate danger, call **9-1-1** right now.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that\u2019s a lot to carry in this heat. Let\u2019s do one step now: call **2-1-1** and say, \u201cI\u2019m 22, in Beaverton, overheated, my belongings were taken, and I need a safe indoor place today with transportation options.\u201d If they ask about utility help, they can also connect you to **Portland General Electric** at **503-228-6322**. If you feel in immediate danger, call **9-1-1** right now.",
+      "voiceResponseAlternatives": [
+        "I hear how urgent this is, and I\u2019m glad you called now. We can handle both before Friday, step by step. Please grab the notices and read me just two names, slowly: first, the electric company name; second, the gas company name. Once I have those two names, I\u2019ll give you the exact shutoff-support numbers.",
+        "I hear you. Molar pain plus cheek swelling can mean infection. Please get same-day urgent dental care, or urgent care, today. Today. If you have fever, trouble swallowing, trouble breathing, or swelling toward your eye or neck, call 9-1-1 now. Call 9-1-1 now. What city are you in?",
+        "First, call Portland General Electric now and ask for the Income-Qualified Bill Discount application. The number is **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. If that line is busy, call **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. They can help with bill payment assistance and possible discounts, and this discount can be 15% to 80% if your household income is at or below 200% of the federal poverty level.",
+        "First step: please call Portland General Electric now, and I can stay with you while you do it. Dial **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. Backup: **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. Tell them: \u201cI\u2019m on home oxygen, I have a shutoff notice, and I need emergency protection and bill help today.\u201d For PGE, the record says **no documents are required at intake**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001874#turn-3",
+      "scenarioId": "phone_dialog_0001874",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need help with utilities, electric and maybe water, I got a shutoff paper for this week.",
+      "normalizedQuery": "utilities utility heat electric maybe water got shutoff paper this week",
+      "voiceResponse": "I hear you. A shutoff notice this week is urgent. For electric and water help, call Eugene Water and Electric Board at **541\u2026 685\u2026 7000**. Again, **541\u2026 685\u2026 7000**. They can talk about payment plans, shutoff help, and emergency utility calls. Office address is **4200 Roosevelt Boulevard, Eugene, Oregon, 97402**. Again: **4200 Roosevelt Boulevard, Eugene, 97402**. Are you in the Eugene service area?",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:7c2d095e978b531f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. A shutoff notice this week is urgent. For electric and water help, call Eugene Water and Electric Board at **541\u2026 685\u2026 7000**. Again, **541\u2026 685\u2026 7000**. They can talk about payment plans, shutoff help, and emergency utility calls. Office address is **4200 Roosevelt Boulevard, Eugene, Oregon, 97402**. Again: **4200 Roosevelt Boulevard, Eugene, 97402**. Are you in the Eugene service area?",
+      "voiceResponseAlternatives": [
+        "I hear how urgent this is, and I\u2019m glad you called now. We can handle both before Friday, step by step. Please grab the notices and read me just two names, slowly: first, the electric company name; second, the gas company name. Once I have those two names, I\u2019ll give you the exact shutoff-support numbers.",
+        "I hear you. Molar pain plus cheek swelling can mean infection. Please get same-day urgent dental care, or urgent care, today. Today. If you have fever, trouble swallowing, trouble breathing, or swelling toward your eye or neck, call 9-1-1 now. Call 9-1-1 now. What city are you in?",
+        "First, call Portland General Electric now and ask for the Income-Qualified Bill Discount application. The number is **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. If that line is busy, call **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. They can help with bill payment assistance and possible discounts, and this discount can be 15% to 80% if your household income is at or below 200% of the federal poverty level.",
+        "First step: please call Portland General Electric now, and I can stay with you while you do it. Dial **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. Backup: **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. Tell them: \u201cI\u2019m on home oxygen, I have a shutoff notice, and I need emergency protection and bill help today.\u201d For PGE, the record says **no documents are required at intake**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001874#turn-6",
+      "scenarioId": "phone_dialog_0001874",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Anyway yes, utility help, past-due bill, and I can write it down if you say it one digit at a time.",
+      "normalizedQuery": "anyway yes utility utilities heat electric past due bill write it down if say one digit at time",
+      "voiceResponse": "Yes. I can do that, one digit at a time. If you are with Lane Electric in Eugene, call: **5\u2026 4\u2026 1\u2026 4\u2026 8\u2026 4\u2026 1\u2026 1\u2026 5\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 4\u2026 8\u2026 4\u2026 1\u2026 1\u2026 5\u2026 1**. Are you in **Eugene**, **Portland**, or **Ashland**?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can do that, one digit at a time. If you are with Lane Electric in Eugene, call: **5\u2026 4\u2026 1\u2026 4\u2026 8\u2026 4\u2026 1\u2026 1\u2026 5\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 4\u2026 8\u2026 4\u2026 1\u2026 1\u2026 5\u2026 1**. Are you in **Eugene**, **Portland**, or **Ashland**?",
+      "voiceResponseAlternatives": [
+        "I hear how urgent this is, and I\u2019m glad you called now. We can handle both before Friday, step by step. Please grab the notices and read me just two names, slowly: first, the electric company name; second, the gas company name. Once I have those two names, I\u2019ll give you the exact shutoff-support numbers.",
+        "I hear you. Molar pain plus cheek swelling can mean infection. Please get same-day urgent dental care, or urgent care, today. Today. If you have fever, trouble swallowing, trouble breathing, or swelling toward your eye or neck, call 9-1-1 now. Call 9-1-1 now. What city are you in?",
+        "First, call Portland General Electric now and ask for the Income-Qualified Bill Discount application. The number is **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. If that line is busy, call **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. They can help with bill payment assistance and possible discounts, and this discount can be 15% to 80% if your household income is at or below 200% of the federal poverty level.",
+        "First step: please call Portland General Electric now, and I can stay with you while you do it. Dial **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. Backup: **8 0 0 \u2026 5 4 2 \u2026 8 8 1 8**. Tell them: \u201cI\u2019m on home oxygen, I have a shutoff notice, and I need emergency protection and bill help today.\u201d For PGE, the record says **no documents are required at intake**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001891#turn-5",
+      "scenarioId": "phone_dialog_0001891",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Right now I\u2019m inside the downtown library so I\u2019m safe this minute, but I can\u2019t sleep outside again in this heat.",
+      "normalizedQuery": "right now inside downtown library so safe this minute sleep outside again heat utility utilities electric",
+      "voiceResponse": "I\u2019m glad you\u2019re safe at the library right now, and it makes sense you don\u2019t want to be outside in this heat. Let\u2019s get you indoors tonight, privately. I can connect you to a live specialist now and repeat that you do not want your name or location shared. One option is Safe Sleep United, phone: 5 0 3, 8 1 6, 3 4 0 9. They list required documents as none. If your safety changes at any point, call 9 1 1.",
+      "evidenceDocIds": [
+        "service:a1e021534ee03771",
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you\u2019re safe at the library right now, and it makes sense you don\u2019t want to be outside in this heat. Let\u2019s get you indoors tonight, privately. I can connect you to a live specialist now and repeat that you do not want your name or location shared. One option is Safe Sleep United, phone: 5 0 3, 8 1 6, 3 4 0 9. They list required documents as none. If your safety changes at any point, call 9 1 1.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001930#turn-3",
+      "scenarioId": "phone_dialog_0001930",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Before anything else, am I supposed to move somewhere safer right now? I\u2019m outside and I\u2019m starting to feel dizzy from the heat.",
+      "normalizedQuery": "before anything else supposed move somewhere safer right now outside starting feel dizzy from heat utility utilities electric",
+      "voiceResponse": "Yes. Please move to shade or an air-conditioned public place right now, and sip water slowly if you have it. You\u2019re not overreacting. If you feel faint, confused, or like you might pass out, call 911 now. If you want, I can stay on the line while you move, and we\u2019ll share only the minimum needed.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Please move to shade or an air-conditioned public place right now, and sip water slowly if you have it. You\u2019re not overreacting. If you feel faint, confused, or like you might pass out, call 911 now. If you want, I can stay on the line while you move, and we\u2019ll share only the minimum needed.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002003#turn-3",
+      "scenarioId": "phone_dialog_0002003",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, your voice is cutting out, can you say that again? I can\u2019t sleep out here in this heat.",
+      "normalizedQuery": "sorry your voice cutting say again sleep here this heat utility utilities electric",
+      "voiceResponse": "I hear you, and I\u2019m glad you said that. Here it is again, clearly: if you feel in immediate danger, call **911** now. For Gresham police directly, call **503\u2026 618\u2026 2318**. If you can, move to a lit public spot with other people nearby while you call. I can stay with you on the line.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you said that. Here it is again, clearly: if you feel in immediate danger, call **911** now. For Gresham police directly, call **503\u2026 618\u2026 2318**. If you can, move to a lit public spot with other people nearby while you call. I can stay with you on the line.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. There isn\u2019t a form you need to upload for this one. For the **Low Income Utilities Discount**, it says: **none required at intake**. So in the wallet, you can skip the upload and still submit.",
+        "Yes. The number is: **8 0 0, 5 4 4, 1 7 9 5**. I\u2019ll say it once more: **800, 544, 1795**.",
+        "First place to call: Portland General Electric. Number: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**. I\u2019ll repeat it: **5 0 3 \u2026 2 2 8 \u2026 6 3 2 2**.",
+        "Yes. Slow and clear. Call **2-1-1**. That is **2-1-1**. Say: \u201cI\u2019m in Gresham. I need the nearest open cooling center right now.\u201d If the call drops, call **2-1-1** again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002024#turn-4",
+      "scenarioId": "phone_dialog_0002024",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Right now I\u2019m by people and lights, not alone, but I need somewhere safe and cool before I pass out in this heat.",
+      "normalizedQuery": "right now by people lights alone somewhere safe cool before pass this heat utility utilities electric",
+      "voiceResponse": "You did the right thing getting to lights and people. If you feel faint, confused, or like you might pass out, call 911 now. I\u2019m connecting you to a live 211 specialist right now for the nearest safe cooling place and shelter tonight in Salem. Stay where you are in public view, sip water if you have it, and stay on the line while I transfer you.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing getting to lights and people. If you feel faint, confused, or like you might pass out, call 911 now. I\u2019m connecting you to a live 211 specialist right now for the nearest safe cooling place and shelter tonight in Salem. Stay where you are in public view, sip water if you have it, and stay on the line while I transfer you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002181#turn-4",
+      "scenarioId": "phone_dialog_0002181",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I just lost my mom and everything\u2019s falling apart, I\u2019m sorry, I keep crying... I need help paying the electric bill.",
+      "normalizedQuery": "just lost mom everything falling apart sorry keep crying paying electric bill",
+      "voiceResponse": "I\u2019m so sorry about your mom. I\u2019m here with you. Your audio was unclear for a moment. Do you want me to repeat the electric bill help number now, or take one slow breath together first?",
+      "evidenceDocIds": [
+        "service:6c5e0b45a723461e",
+        "service:f780d533641f2336",
+        "service:1090306857226ac3",
+        "service:7c2d095e978b531f",
+        "service:d9c7707e45d265ad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry about your mom. I\u2019m here with you. Your audio was unclear for a moment. Do you want me to repeat the electric bill help number now, or take one slow breath together first?",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you, and you\u2019re doing okay. The audio was unclear, but I heard \u201ccool room.\u201d Quick choice so I can help fast: do you need a **cooling center right now**, or **help paying your utility bill**?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002193#turn-2",
+      "scenarioId": "phone_dialog_0002193",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not in like immediate danger, I just feel awful from the heat and I\u2019m kind of panicking.",
+      "normalizedQuery": "like immediate danger just feel awful from heat utility utilities electric kind panicking",
+      "voiceResponse": "You\u2019re doing the right thing by saying it out loud. Let\u2019s steady this first: get into shade or AC, sip cool water, and loosen tight layers. Breathe with me, slow and even. If you feel faint, confused, or have chest pain, call 911 now. For utility-related heat support in Ashland: Call (541) 488-6004. Backup number: (541) 488-5357. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by saying it out loud. Let\u2019s steady this first: get into shade or AC, sip cool water, and loosen tight layers. Breathe with me, slow and even. If you feel faint, confused, or have chest pain, call 911 now. For utility-related heat support in Ashland: Call (541) 488-6004. Backup number: (541) 488-5357. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0002300#turn-4",
+      "scenarioId": "phone_dialog_0002300",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m trying to stay calm but I can\u2019t keep track, I need emergency utility help right now, not a website.",
+      "normalizedQuery": "trying stay calm keep track emergency utility utilities heat electric right now website",
+      "voiceResponse": "Main number: (541) 322-8768. I\u2019ll repeat: (541) 322-8768. Say: \u201cI have a same-day shutoff and medicine that needs refrigeration. I need emergency utility help now.\u201d If anyone\u2019s health is in immediate danger, call 911 now.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:078087b57125137d",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:57fcd59e218a59f6",
+        "service:06316d26dda9c85b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number: (541) 322-8768. I\u2019ll repeat: (541) 322-8768. Say: \u201cI have a same-day shutoff and medicine that needs refrigeration. I need emergency utility help now.\u201d If anyone\u2019s health is in immediate danger, call 911 now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1275,6 +1915,126 @@
       "to": "phone_dialog_0001116#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001171#turn-2",
+      "to": "phone_dialog_0001171#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001241#turn-3",
+      "to": "phone_dialog_0001241#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001260#turn-2",
+      "to": "phone_dialog_0001260#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001338#turn-4",
+      "to": "phone_dialog_0001338#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001362#turn-2",
+      "to": "phone_dialog_0001362#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001362#turn-5",
+      "to": "phone_dialog_0001362#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001381#turn-3",
+      "to": "phone_dialog_0001381#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001396#turn-5",
+      "to": "phone_dialog_0001396#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001436#turn-2",
+      "to": "phone_dialog_0001436#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001480#turn-3",
+      "to": "phone_dialog_0001480#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001487#turn-2",
+      "to": "phone_dialog_0001487#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001628#turn-3",
+      "to": "phone_dialog_0001628#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001874#turn-3",
+      "to": "phone_dialog_0001874#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001891#turn-5",
+      "to": "phone_dialog_0001891#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001930#turn-3",
+      "to": "phone_dialog_0001930#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002003#turn-3",
+      "to": "phone_dialog_0002003#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002024#turn-4",
+      "to": "phone_dialog_0002024#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002181#turn-4",
+      "to": "phone_dialog_0002181#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002193#turn-2",
+      "to": "phone_dialog_0002193#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002300#turn-4",
+      "to": "phone_dialog_0002300#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

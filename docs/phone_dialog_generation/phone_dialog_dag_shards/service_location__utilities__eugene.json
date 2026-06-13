@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__utilities__eugene",
   "kind": "service_location",
   "key": "utilities__eugene",
-  "nodeCount": 6,
+  "nodeCount": 8,
   "nodes": [
     {
       "id": "phone_dialog_0000223#turn-1",
@@ -27,7 +27,8 @@
       "similarCases": [],
       "assistantResponse": "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?",
       "voiceResponseAlternatives": [
-        "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency."
+        "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency.",
+        "I hear you. You feel dizzy in the heat. That can be serious. Please get into shade or cool air now, and sip water slowly. If you might faint, have chest pain, or trouble breathing, call **9-1-1** now. Call **9-1-1** now. If you can, I can also give Eugene Water and Electric Board at **5-4-1, 6-8-5, 7-0-0-0** for utility-related help. Are you alone right now?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -54,7 +55,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency.",
       "voiceResponseAlternatives": [
-        "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?"
+        "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?",
+        "I hear you. You feel dizzy in the heat. That can be serious. Please get into shade or cool air now, and sip water slowly. If you might faint, have chest pain, or trouble breathing, call **9-1-1** now. Call **9-1-1** now. If you can, I can also give Eugene Water and Electric Board at **5-4-1, 6-8-5, 7-0-0-0** for utility-related help. Are you alone right now?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -168,6 +170,59 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001281#turn-2",
+      "scenarioId": "phone_dialog_0001281",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I'm in Eugene, outside in this heat, and I'm getting really dizzy and weak.",
+      "normalizedQuery": "i'm eugene outside this heat utility utilities electric getting really dizzy weak",
+      "voiceResponse": "Okay. You may be in danger from heat illness. Call **9-1-1** now. I\u2019ll repeat: **9-1-1**. Sit or lie down in shade right now. Loosen clothes. Sip cool water if you can swallow safely. If this drops, next local number is Eugene utility emergency: **5-4-1, 6-8-5, 7-0-0-0**. I\u2019ll repeat: **5-4-1, 6-8-5, 7-0-0-0**. Can you call 9-1-1 now?",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:b0fd90b106c6a4ef"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. You may be in danger from heat illness. Call **9-1-1** now. I\u2019ll repeat: **9-1-1**. Sit or lie down in shade right now. Loosen clothes. Sip cool water if you can swallow safely. If this drops, next local number is Eugene utility emergency: **5-4-1, 6-8-5, 7-0-0-0**. I\u2019ll repeat: **5-4-1, 6-8-5, 7-0-0-0**. Can you call 9-1-1 now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001396#turn-1",
+      "scenarioId": "phone_dialog_0001396",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Sorry, there\u2019s buses going by and I can\u2019t hear too good. I\u2019m in Eugene and I got real dizzy out here in the heat.",
+      "normalizedQuery": "hello sorry there buses going by hear too good eugene got real dizzy here heat utility utilities electric",
+      "voiceResponse": "I hear you. You feel dizzy in the heat. That can be serious. Please get into shade or cool air now, and sip water slowly. If you might faint, have chest pain, or trouble breathing, call **9-1-1** now. Call **9-1-1** now. If you can, I can also give Eugene Water and Electric Board at **5-4-1, 6-8-5, 7-0-0-0** for utility-related help. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:b0fd90b106c6a4ef"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You feel dizzy in the heat. That can be serious. Please get into shade or cool air now, and sip water slowly. If you might faint, have chest pain, or trouble breathing, call **9-1-1** now. Call **9-1-1** now. If you can, I can also give Eugene Water and Electric Board at **5-4-1, 6-8-5, 7-0-0-0** for utility-related help. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?",
+        "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -200,6 +255,18 @@
       "to": "phone_dialog_0000916#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001281#turn-2",
+      "to": "phone_dialog_0001281#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001396#turn-1",
+      "to": "phone_dialog_0001396#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
     }
   ]
 }

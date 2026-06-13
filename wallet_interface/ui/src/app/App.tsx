@@ -2151,6 +2151,9 @@ export function App() {
             preferGraphRagForGeneralQuestions: agentChatMode === "audio",
           });
         }}
+        onAudioReply={(messageId, record) => {
+          agentChat.patchMessageMetadata(messageId, { audioReply: record });
+        }}
         open={agentChatOpen}
         responding={agentChat.responding}
         respondingLabel={t(siteLocale, "chat.responding")}

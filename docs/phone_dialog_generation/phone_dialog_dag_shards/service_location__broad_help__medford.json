@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__medford",
   "kind": "service_location",
   "key": "broad_help__medford",
-  "nodeCount": 12,
+  "nodeCount": 19,
   "nodes": [
     {
       "id": "phone_dialog_0000042#turn-1",
@@ -141,7 +141,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "That\u2019s a crisis signal, and your friend needs immediate human help now. If he might hurt himself, call **911** right now. If he can stay safe for this moment, call or text **988** together for a crisis counselor. Keep him with you, move away from traffic, and speak calmly: \u201cI\u2019m here with you.\u201d I can stay with you while you make the call.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. You\u2019re not safe there right now. Move now to a bright, public place with people nearby, and if you can, go inside a store or gas station. Call 911 right now and say someone tried to grab your bag and you feel unsafe. If your battery is low, call first, then keep the phone on low power. If you want, I can help you with exactly what to say in one sentence."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
@@ -227,7 +229,10 @@
       "similarCases": [],
       "assistantResponse": "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away.",
       "voiceResponseAlternatives": [
-        "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**."
+        "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**.",
+        "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+        "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait.",
+        "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -314,7 +319,10 @@
       "similarCases": [],
       "assistantResponse": "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**.",
       "voiceResponseAlternatives": [
-        "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away."
+        "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away.",
+        "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+        "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait.",
+        "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
@@ -340,10 +348,211 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m so sorry for your loss, and I\u2019m really glad you reached out. Your audio cut out a little on my end. Please repeat just one thing: do you need rides for medical appointments, counseling, or both this week?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you, and we can keep this low-profile. The audio is a little unclear with the noise. Quick choice so I can help fast: do you want **shelter tonight** or **disaster help**?"
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001545#turn-1",
+      "scenarioId": "phone_dialog_0001545",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I can\u2019t talk long... there\u2019s a lot of noise out here. I\u2019m in Medford, and I need help that won\u2019t show up on my phone.",
+      "normalizedQuery": "hi um talk long there lot noise here medford won show up on phone",
+      "voiceResponse": "I hear you, and we can keep this low-profile. The audio is a little unclear with the noise. Quick choice so I can help fast: do you want **shelter tonight** or **disaster help**?",
+      "evidenceDocIds": [
+        "service:c066cdb35858bfa4",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:91726752b7b56c46",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:5a04af88f4853a11"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can keep this low-profile. The audio is a little unclear with the noise. Quick choice so I can help fast: do you want **shelter tonight** or **disaster help**?",
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry for your loss, and I\u2019m really glad you reached out. Your audio cut out a little on my end. Please repeat just one thing: do you need rides for medical appointments, counseling, or both this week?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001545#turn-2",
+      "scenarioId": "phone_dialog_0001545",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that again? A bus just went by. He checks my calls and messages, so please keep it simple.",
+      "normalizedQuery": "hi um talk long there lot noise here medford won show up on phone sorry say again bus just went by he checks calls messages so please keep it simple",
+      "voiceResponse": "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away.",
+        "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**.",
+        "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait.",
+        "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001803#turn-1",
+      "scenarioId": "phone_dialog_0001803",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hello? Can you hear me okay? I\u2019m in Medford, my phone\u2019s at like two percent, and I really need help.",
+      "normalizedQuery": "hello hear okay medford phone at like two percent really",
+      "voiceResponse": "Yes, I hear you. First, are you in immediate danger right now, like a medical emergency or feeling unsafe where you are?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:b3d7aa7d9150b9d1",
+        "service:98249e32a262b454",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. First, are you in immediate danger right now, like a medical emergency or feeling unsafe where you are?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001803#turn-2",
+      "scenarioId": "phone_dialog_0001803",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019ve been outside by the camp and guys were yelling at me and one tried to grab my bag, so I don\u2019t feel safe staying out here tonight.",
+      "normalizedQuery": "hello hear okay medford phone at like two percent really ve been outside by camp guys were yelling one tried grab bag so don feel safe staying here tonight",
+      "voiceResponse": "I\u2019m really glad you told me. You\u2019re not safe there right now. Move now to a bright, public place with people nearby, and if you can, go inside a store or gas station. Call 911 right now and say someone tried to grab your bag and you feel unsafe. If your battery is low, call first, then keep the phone on low power. If you want, I can help you with exactly what to say in one sentence.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. You\u2019re not safe there right now. Move now to a bright, public place with people nearby, and if you can, go inside a store or gas station. Call 911 right now and say someone tried to grab your bag and you feel unsafe. If your battery is low, call first, then keep the phone on low power. If you want, I can help you with exactly what to say in one sentence.",
+      "voiceResponseAlternatives": [
+        "That\u2019s a crisis signal, and your friend needs immediate human help now. If he might hurt himself, call **911** right now. If he can stay safe for this moment, call or text **988** together for a crisis counselor. Keep him with you, move away from traffic, and speak calmly: \u201cI\u2019m here with you.\u201d I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001803#turn-3",
+      "scenarioId": "phone_dialog_0001803",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out, can you say that again? I\u2019m by the bus station area and it\u2019s so hot I feel dizzy.",
+      "normalizedQuery": "hello hear okay medford phone at like two percent really ve been outside by camp guys were yelling one tried grab bag so don feel safe staying here tonight sorry cut say again bus station area it hot dizzy",
+      "voiceResponse": "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away.",
+        "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**.",
+        "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+        "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001924#turn-2",
+      "scenarioId": "phone_dialog_0001924",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I need help getting somewhere safe, but I can\u2019t have texts or anything sent to my phone because my partner checks everything.",
+      "normalizedQuery": "hi at bus stop medford it loud here hear okay getting somewhere safe have texts anything sent phone because partner checks everything",
+      "voiceResponse": "Absolutely. We can do this without texts or app messages. I can keep everything on this call and connect you to a live 211 specialist now to find a safe place nearby. You can share as little as you want. If you\u2019re in immediate danger, call 911 right now. If it feels safer, you can also use a different phone when possible. If you want, I\u2019ll transfer you now and stay as quiet and simple as possible.",
+      "evidenceDocIds": [
+        "service:32f1368d2a1bbe2b",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:e190a725e5e28ea8",
+        "service:56dbc12e23f945ad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. We can do this without texts or app messages. I can keep everything on this call and connect you to a live 211 specialist now to find a safe place nearby. You can share as little as you want. If you\u2019re in immediate danger, call 911 right now. If it feels safer, you can also use a different phone when possible. If you want, I\u2019ll transfer you now and stay as quiet and simple as possible.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re not alone. We can get you to a domestic violence advocate now, without police, if that\u2019s what you want. One option is **Temporary Assistance to Domestic Violence Survivors** at **5 4 1, 6 8 6, 7 8 7 8**. If you feel in immediate danger at any point, call **9 1 1** right away. If you want, I can stay with you while we do the next step.",
+        "Absolutely. We can keep this simple and private. You can call a domestic violence advocate at **5 4 1, 6 8 6, 7 8 7 8**. You can say: \u201cI need private help, and I do **not** want mail sent to my home.\u201d There are **no documents required at intake**. If you want, we can go one step at a time together.",
+        "You didn\u2019t hear it wrong. The advocate line is **5 4 1 \u2026 6 8 6 \u2026 7 8 7 8**. If you want, you can simply say: \u201cI need private help, and I do not want mail sent to my home.\u201d",
+        "Yes. If he won\u2019t call, take him to the nearest hospital emergency room now and walk in together. Tell the front desk: \u201cHe\u2019s 19, in a mental health crisis, and may be unsafe.\u201d They must do an emergency evaluation. If he talks about hurting himself right now, call **911** immediately. If he can\u2019t speak, you can call **988** yourself and talk for him while staying with him."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001924#turn-3",
+      "scenarioId": "phone_dialog_0001924",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, a truck just went by, can you repeat that number slower?",
+      "normalizedQuery": "hi at bus stop medford it loud here hear okay getting somewhere safe have texts anything sent phone because partner checks everything sorry truck just went by repeat number slower",
+      "voiceResponse": "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:56dbc12e23f945ad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The emergency number is **9-1-1**: that\u2019s **nine\u2026 one\u2026 one**. For help finding a safe place, I can connect you to **2-1-1**: **two\u2026 one\u2026 one**. No texts needed. We can keep it on this call.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: I can connect you to a live specialist now for same-day ride options in Medford. We can do this one step at a time, and you only share what feels okay. If you feel in immediate danger at any point, call 9-1-1 right away.",
+        "Of course\u2014you\u2019re doing great. The number is **(541) 342-7728**. I\u2019ll say it in chunks: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**.",
+        "Of course. Quick choice: **shelter tonight** or **disaster help**. You can just say: \u201cshelter\u201d or \u201cdisaster.\u201d",
+        "You\u2019re not safe there, so repeat this exactly: move now to a bright public spot with people, preferably inside a store or station. Then call **911** right now. Say: \u201cI\u2019m by the Medford bus station, someone tried to grab my bag, I feel unsafe, and I\u2019m dizzy from heat.\u201d If you can, sit in shade or AC and sip water while you wait."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -412,6 +621,48 @@
       "to": "phone_dialog_0001066#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001545#turn-1",
+      "to": "phone_dialog_0001545#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001545#turn-2",
+      "to": "phone_dialog_0001545#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001803#turn-1",
+      "to": "phone_dialog_0001803#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001803#turn-2",
+      "to": "phone_dialog_0001803#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001803#turn-3",
+      "to": "phone_dialog_0001803#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001924#turn-2",
+      "to": "phone_dialog_0001924#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001924#turn-3",
+      "to": "phone_dialog_0001924#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

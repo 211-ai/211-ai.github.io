@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__rent__portland",
   "kind": "service_location",
   "key": "rent__portland",
-  "nodeCount": 21,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000221#turn-1",
@@ -635,6 +635,181 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001728#turn-2",
+      "scenarioId": "phone_dialog_0001728",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I'm on the bus and it keeps cutting out, sorry, I-- uh-- Portland side, Mult-- Multnomah... something about my landlord notice.",
+      "normalizedQuery": "hello static rent eviction assistance said no wait hear inaudible i'm on bus it keeps cutting sorry uh portland side mult multnomah something landlord notice",
+      "voiceResponse": "Thanks. I can hear some of that. The audio is still unclear. I heard: Multnomah County, and a landlord notice. I heard: Multnomah County, and a landlord notice. One quick question, yes or no: Is the notice for unpaid rent?",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks. I can hear some of that. The audio is still unclear. I heard: Multnomah County, and a landlord notice. I heard: Multnomah County, and a landlord notice. One quick question, yes or no: Is the notice for unpaid rent?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001728#turn-4",
+      "scenarioId": "phone_dialog_0001728",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I don't hear well on this phone, and I miss numbers if they're fast.",
+      "normalizedQuery": "hello static rent eviction assistance said no wait hear inaudible i'm on bus it keeps cutting sorry uh portland side mult multnomah something landlord notice yeah talk circles when stressed county before locked say again slower don't well this phone miss numbers if they're fast",
+      "voiceResponse": "Yes. I will say it slower. Multnomah County Eviction Prevention Program. For unpaid rent eviction notices. First number: 5 0 3. 2 2 2. 5 5 5 5. Again: 5 0 3. 2 2 2. 5 5 5 5. Second number: 5 0 3. 2 2 6. 3 0 9 9. Again: 5 0 3. 2 2 6. 3 0 9 9.",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "service:1b6e1c18557fb6a5",
+        "page:bafkreidvlohevfa3hypn533wgtzd2mnxorfphy2cuidbfsgvoy3nrg4tyy",
+        "page:bafkreihxt2q5b3ugwbgw4fyp6xbas4xgp5x4cqf5zkcn37yj223fpifrnm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slower. Multnomah County Eviction Prevention Program. For unpaid rent eviction notices. First number: 5 0 3. 2 2 2. 5 5 5 5. Again: 5 0 3. 2 2 2. 5 5 5 5. Second number: 5 0 3. 2 2 6. 3 0 9 9. Again: 5 0 3. 2 2 6. 3 0 9 9.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you\u2019re doing the right thing. Here are the two IRCO numbers, slowly: first, **503 \u2026 234 \u2026 2048**. Second, **503 \u2026 235 \u2026 9396**. When they answer, ask for **emergency rental assistance** and mention eviction risk. If you can, have these ready: **photo ID**, **Social Security cards**, and **30 days of income proof** for all adults.",
+        "Of course. The agency is **IRCO** \u2014 the **Pacific Islander and Asian Family Center**. You can write it as: **I-R-C-O**.",
+        "Absolutely, and you\u2019re doing great. I don\u2019t have a phone number shown in front of me right now. The detail I do have is the service name: **211info** for **eviction prevention assistance**. If you want, I can connect you now so you don\u2019t have to remember any numbers.",
+        "Of course. The agency is **IRCO Emergency Rental Assistance**. Phone number: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. If that one doesn\u2019t go through, backup is: **5 0 3** \u2026 **2 3 5** \u2026 **9 3 9 6**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001728#turn-5",
+      "scenarioId": "phone_dialog_0001728",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, was that 503 or 530? I heard it wrong-- please do the full number one more time, slow.",
+      "normalizedQuery": "i'm on bus it keeps cutting sorry uh portland side mult multnomah something landlord notice yeah talk circles when stressed rent eviction assistance county before locked say again slower don't hear well this phone miss numbers if they're fast wait was 503 530 heard wrong please full number one more time slow",
+      "voiceResponse": "Yes. It is **5 0 3**, not 5 3 0. I will say the full first number slowly: **5 0 3**. **2 2 2**. **5 5 5 5**. Again: **5 0 3**. **2 2 2**. **5 5 5 5**.",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5baf40645f0369dd",
+        "service:1b6e1c18557fb6a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It is **5 0 3**, not 5 3 0. I will say the full first number slowly: **5 0 3**. **2 2 2**. **5 5 5 5**. Again: **5 0 3**. **2 2 2**. **5 5 5 5**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called, and we can move fast on this. In Portland, try IRCO rent help now: area code 503, 234, 2048. Second line: 503, 235, 9396. They\u2019re doing callbacks for about 40 callers, with up to 2 months of help. If you have an eviction notice or risk of homelessness, ask for emergency rental assistance. Have ready: photo ID, Social Security cards, and 30 days of income proof for all adults.",
+        "You\u2019re doing the right thing calling for her. In Portland, a strong option is IRCO Emergency Rental Assistance. Call **5 0 3, 2 3 4, 2 0 4 8**. Backup: **5 0 3, 2 3 5, 9 3 9 6**. Address is **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0, Portland**. They can help with up to two months of rent and call back about 40 callers. If possible, have ID, Social Security cards, and 30 days of income proof ready.",
+        "That\u2019s enough to start. Since she\u2019s on a small fixed income, IRCO\u2019s Emergency Rental Assistance is still a good east-side option. Call **5 0 3, 2 3 4, 2 0 4 8**. Backup is **5 0 3, 2 3 5, 9 3 9 6**. They\u2019re at **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0**. They can sometimes help with up to two months of rent, and they usually need ID and recent income proof.",
+        "Yes. I can help with that. In Portland, try Emergency Rental Assistance at IRCO. Call **5 0 3, 2 3 4, 2 0 4 8**. I\u2019ll repeat: **5 0 3, 2 3 4, 2 0 4 8**. Second line is **5 0 3, 2 3 5, 9 3 9 6**. I\u2019ll repeat: **5 0 3, 2 3 5, 9 3 9 6**. Address is **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0, Portland**. Do you already have a court-dated eviction notice?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002280#turn-3",
+      "scenarioId": "phone_dialog_0002280",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Okay, sorry, I can hear a little now. I'm in Portland and I got an eviction notice, I don't know what to do first.",
+      "normalizedQuery": "okay sorry hear little now i'm portland got an eviction notice don't know first",
+      "voiceResponse": "You did the right thing calling. First step: call Tenant Eviction Defense now. Call 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811. Have these ready: your eviction notice, court papers, your lease, and proof of income. They can give brief legal advice and help with landlord negotiations. One question: do you already have a court date on your notice?",
+      "evidenceDocIds": [
+        "service:e6afcae43fb9094a",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:77f8f0383c0cce2b",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. First step: call Tenant Eviction Defense now. Call 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811. Have these ready: your eviction notice, court papers, your lease, and proof of income. They can give brief legal advice and help with landlord negotiations. One question: do you already have a court date on your notice?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called, and we can move fast on this. In Portland, try IRCO rent help now: area code 503, 234, 2048. Second line: 503, 235, 9396. They\u2019re doing callbacks for about 40 callers, with up to 2 months of help. If you have an eviction notice or risk of homelessness, ask for emergency rental assistance. Have ready: photo ID, Social Security cards, and 30 days of income proof for all adults.",
+        "You\u2019re doing the right thing calling for her. In Portland, a strong option is IRCO Emergency Rental Assistance. Call **5 0 3, 2 3 4, 2 0 4 8**. Backup: **5 0 3, 2 3 5, 9 3 9 6**. Address is **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0, Portland**. They can help with up to two months of rent and call back about 40 callers. If possible, have ID, Social Security cards, and 30 days of income proof ready.",
+        "That\u2019s enough to start. Since she\u2019s on a small fixed income, IRCO\u2019s Emergency Rental Assistance is still a good east-side option. Call **5 0 3, 2 3 4, 2 0 4 8**. Backup is **5 0 3, 2 3 5, 9 3 9 6**. They\u2019re at **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0**. They can sometimes help with up to two months of rent, and they usually need ID and recent income proof.",
+        "Yes. I can help with that. In Portland, try Emergency Rental Assistance at IRCO. Call **5 0 3, 2 3 4, 2 0 4 8**. I\u2019ll repeat: **5 0 3, 2 3 4, 2 0 4 8**. Second line is **5 0 3, 2 3 5, 9 3 9 6**. I\u2019ll repeat: **5 0 3, 2 3 5, 9 3 9 6**. Address is **8 0 4 0 Northeast Sandy Boulevard, Suite 2 0 0, Portland**. Do you already have a court-dated eviction notice?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002280#turn-4",
+      "scenarioId": "phone_dialog_0002280",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I miss numbers on the phone, like really slow, one at a time.",
+      "normalizedQuery": "hello static no wait can't hear it's cutting said paper door uh inaudible landlord sorry okay little now i'm portland got an eviction notice don't know first say slower miss numbers on phone like really slow one at time",
+      "voiceResponse": "Yes. I will say it very slowly. The number is 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811. That is Tenant Eviction Defense.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it very slowly. The number is 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811. That is Tenant Eviction Defense.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you\u2019re doing the right thing. Here are the two IRCO numbers, slowly: first, **503 \u2026 234 \u2026 2048**. Second, **503 \u2026 235 \u2026 9396**. When they answer, ask for **emergency rental assistance** and mention eviction risk. If you can, have these ready: **photo ID**, **Social Security cards**, and **30 days of income proof** for all adults.",
+        "Of course. The agency is **IRCO** \u2014 the **Pacific Islander and Asian Family Center**. You can write it as: **I-R-C-O**.",
+        "Absolutely, and you\u2019re doing great. I don\u2019t have a phone number shown in front of me right now. The detail I do have is the service name: **211info** for **eviction prevention assistance**. If you want, I can connect you now so you don\u2019t have to remember any numbers.",
+        "Of course. The agency is **IRCO Emergency Rental Assistance**. Phone number: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. If that one doesn\u2019t go through, backup is: **5 0 3** \u2026 **2 3 5** \u2026 **9 3 9 6**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002280#turn-6",
+      "scenarioId": "phone_dialog_0002280",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My battery's low, so if there's one place to call today, please repeat it again clearly.",
+      "normalizedQuery": "okay sorry hear little now i'm portland got an eviction notice don't know first say slower miss numbers on phone like really slow one at time wait rent assistance legal aid attorney advocacy whatever stops mixing this up battery's low so if there's place call please repeat it again clearly",
+      "voiceResponse": "Yes. One place to call today is Tenant Eviction Defense. Call 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1b6e1c18557fb6a5",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One place to call today is Tenant Eviction Defense. Call 503, 850, 0811. I\u2019ll repeat: 503, 850, 0811.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you\u2019re doing the right thing. Here are the two IRCO numbers, slowly: first, **503 \u2026 234 \u2026 2048**. Second, **503 \u2026 235 \u2026 9396**. When they answer, ask for **emergency rental assistance** and mention eviction risk. If you can, have these ready: **photo ID**, **Social Security cards**, and **30 days of income proof** for all adults.",
+        "Of course. The agency is **IRCO** \u2014 the **Pacific Islander and Asian Family Center**. You can write it as: **I-R-C-O**.",
+        "Absolutely, and you\u2019re doing great. I don\u2019t have a phone number shown in front of me right now. The detail I do have is the service name: **211info** for **eviction prevention assistance**. If you want, I can connect you now so you don\u2019t have to remember any numbers.",
+        "Of course. The agency is **IRCO Emergency Rental Assistance**. Phone number: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. If that one doesn\u2019t go through, backup is: **5 0 3** \u2026 **2 3 5** \u2026 **9 3 9 6**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -757,6 +932,36 @@
       "to": "phone_dialog_0001130#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001728#turn-2",
+      "to": "phone_dialog_0001728#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001728#turn-4",
+      "to": "phone_dialog_0001728#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001728#turn-5",
+      "to": "phone_dialog_0001728#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0002280#turn-3",
+      "to": "phone_dialog_0002280#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002280#turn-4",
+      "to": "phone_dialog_0002280#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

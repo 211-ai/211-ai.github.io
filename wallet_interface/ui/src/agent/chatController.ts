@@ -82,6 +82,23 @@ export interface AgentChatSendOptions {
   preferGraphRagForGeneralQuestions?: boolean;
 }
 
+export interface AgentMessageAudioRecord {
+  /** Precomputed audio entry ID, if a precomputed reply was used */
+  precomputedId?: string;
+  /** Resolved URL of the audio file that was played */
+  audioUrl?: string;
+  /** The spoken text (may differ from displayed message content) */
+  spokenText?: string;
+  /** Provider that generated/served the audio */
+  provider?: "precomputed" | "remote-voice-proxy" | "local-liquidai" | "browser-speech";
+  /** Audio MIME type */
+  mimeType?: string;
+  /** TTS model name, if applicable */
+  modelName?: string;
+  /** ISO timestamp when audio was played */
+  playedAt?: string;
+}
+
 export interface AgentChatController {
   getSnapshot: () => AgentChatSnapshot;
   subscribe: (listener: () => void) => () => void;
@@ -92,6 +109,7 @@ export interface AgentChatController {
   retry: () => Promise<void>;
   resetError: () => void;
   setActiveRoute: (route: RouteId) => void;
+  patchMessageMetadata: (messageId: string, patch: Record<string, unknown>) => void;
 }
 
 interface RetryRequest {
@@ -206,6 +224,15 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
 
   function appendMessage(message: AgentMessage) {
     replaceSession({ messages: [...session.messages, message] });
+  }
+
+  function patchMessageMetadata(messageId: string, patch: Record<string, unknown>) {
+    const messages = session.messages.map((message) =>
+      message.id === messageId
+        ? { ...message, metadata: { ...message.metadata, ...patch } }
+        : message,
+    );
+    replaceSession({ messages });
   }
 
   async function sendMessage(content: string, sendOptions: AgentChatSendOptions = {}) {
@@ -413,7 +440,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       intentId: intent.id,
       planId: plan.id,
       toolResultIds: successfulResults.map((result) => result.id),
-      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? [])
+      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? []),
+      metadata: mergeToolResultMetadata(successfulResults),
     }));
     markPlanComplete(plan.id);
   }
@@ -449,7 +477,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
     } catch (error) {
@@ -516,7 +545,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
       pushProgress("complete", "Confirmed action complete.");
@@ -606,7 +636,11 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       if (session.activeRoute !== route) {
         replaceSession({ activeRoute: route });
       }
-    }
+    },
+    patchMessageMetadata: (messageId, patch) => {
+      patchMessageMetadata(messageId, patch);
+      emit();
+    },
   };
 
   function createIntent(turn: AgentPlannedTurn, context: SurfaceContext): AgentIntent {
@@ -765,6 +799,25 @@ function getEvidenceBundleFromResult(result: AgentToolResult): EvidenceBundle | 
   const output = result.output;
   if (isAppActionResult(output) && output.ok && isEvidenceBundle(output.evidenceBundle)) {
     return output.evidenceBundle;
+  }
+  return undefined;
+}
+
+function mergeToolResultMetadata(results: AgentToolResult[]): Record<string, unknown> | undefined {
+  const merged = results.reduce<Record<string, unknown>>((metadata, result) => {
+    const next = getMetadataFromResult(result);
+    if (next) {
+      Object.assign(metadata, next);
+    }
+    return metadata;
+  }, {});
+  return Object.keys(merged).length ? merged : undefined;
+}
+
+function getMetadataFromResult(result: AgentToolResult): Record<string, unknown> | undefined {
+  const output = result.output;
+  if (isAppActionResult(output) && output.ok && isRecord(output.metadata)) {
+    return output.metadata;
   }
   return undefined;
 }

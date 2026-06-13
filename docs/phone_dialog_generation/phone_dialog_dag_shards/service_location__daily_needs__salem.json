@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__salem",
   "kind": "service_location",
   "key": "daily_needs__salem",
-  "nodeCount": 32,
+  "nodeCount": 34,
   "nodes": [
     {
       "id": "phone_dialog_0000024#turn-1",
@@ -880,7 +880,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m sorry, the audio was unclear. Next step: please repeat just one thing, slowly, your ZIP code only. Once I have that, I can try to find the closest option. Right now I still don\u2019t have a confirmed Salem shower address in the records I can see.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?"
+      ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "grounded_operator"
@@ -944,6 +946,63 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001399#turn-1",
+      "scenarioId": "phone_dialog_0001399",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I\u2019m trying not to cry... I don\u2019t have an address right now and I need somewhere in Salem to get my mail.",
+      "normalizedQuery": "hi sorry trying cry don have an address right now somewhere salem mail",
+      "voiceResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. I don\u2019t have a solid Salem mail-receiving listing in front of me right now, so I want to connect you to a live specialist immediately for same-day options nearby. Please stay on the line while I connect you. If you feel unsafe where you are right now, call 911.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreigshe4u2qgpbz5yo6xodrigum5vzydtcrvans3mg4cbcuzshqs73y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:fef46dc01f825fb3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling, and I\u2019m with you. I don\u2019t have a solid Salem mail-receiving listing in front of me right now, so I want to connect you to a live specialist immediately for same-day options nearby. Please stay on the line while I connect you. If you feel unsafe where you are right now, call 911.",
+      "voiceResponseAlternatives": [
+        "I hear you, and this sounds urgent. If you are having trouble breathing, chest pain, or feel like you might pass out, call **9-1-1** right now: **9-1-1**. I\u2019m getting a live agent for you now to help with same-day support since you can\u2019t get out for mail. Stay on the line with me.",
+        "Yes. The place name is **Providence Place**. Slowly: **Pro-vi-dence Place**. Again: **Providence Place**.",
+        "First step: call Union Gospel Mission in Salem now and ask if showers are available today. The number is **503 \u2014 362 \u2014 3983**. Address is **777 Commercial Street Northeast, Salem**. If you want, I can stay with you while you make the call and help you script exactly what to say.",
+        "That makes a lot of sense, and you\u2019re doing the right thing by choosing the easiest first step. Start with **Right Track Resource Center** since they list **unrestricted eligibility** and **no required documents**. Call **541, 962, 7994**. If no answer, try **541, 910, 3056**. Say: \u201cI don\u2019t have a stable address and need a safe place to receive important mail.\u201d If you want, I can stay with you while you make that first call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001399#turn-2",
+      "scenarioId": "phone_dialog_0001399",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you hold on\u2014there\u2019s people yelling in here, I can\u2019t hear you... what did you say after Salem?",
+      "normalizedQuery": "hi sorry trying cry don have an address right now somewhere salem mail hold on there people yelling here hear did say after",
+      "voiceResponse": "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry, it sounds loud there, and you\u2019re doing great. The audio was unclear on my end too. I said I don\u2019t have a confirmed Salem mail-receiving listing in front of me, so I want to connect you to a live 211 specialist now for same-day options nearby. Can you please repeat just one thing: do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. Next step: please repeat just one thing, slowly, your ZIP code only. Once I have that, I can try to find the closest option. Right now I still don\u2019t have a confirmed Salem shower address in the records I can see."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1120,6 +1179,18 @@
       "to": "phone_dialog_0001131#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0001399#turn-1",
+      "to": "phone_dialog_0001399#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001399#turn-2",
+      "to": "phone_dialog_0001399#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

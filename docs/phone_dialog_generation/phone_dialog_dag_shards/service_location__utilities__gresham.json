@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__utilities__gresham",
   "kind": "service_location",
   "key": "utilities__gresham",
-  "nodeCount": 5,
+  "nodeCount": 6,
   "nodes": [
     {
       "id": "phone_dialog_0000412#turn-1",
@@ -143,6 +143,31 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001260#turn-3",
+      "scenarioId": "phone_dialog_0001260",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what was that address? I didn\u2019t catch it, there\u2019s traffic noise and I\u2019m kind of foggy.",
+      "normalizedQuery": "hi gresham on borrowed phone it die give most important number first ve been outside since yesterday getting really dizzy weak from heat utility utilities electric sorry was address didn catch there traffic noise kind foggy",
+      "voiceResponse": "I don\u2019t have an address for that line. I only have the phone number: **9 7 1, 6 7 3, 8 5 0 0**. I\u2019ll repeat: **9 7 1, 6 7 3, 8 5 0 0**. If you\u2019re still dizzy or weak, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:b3d7aa7d9150b9d1",
+        "service:9c4a0ab059aed565",
+        "service:6c757db4a03b77e1",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have an address for that line. I only have the phone number: **9 7 1, 6 7 3, 8 5 0 0**. I\u2019ll repeat: **9 7 1, 6 7 3, 8 5 0 0**. If you\u2019re still dizzy or weak, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -169,6 +194,12 @@
       "to": "phone_dialog_0000412#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001260#turn-3",
+      "to": "phone_dialog_0001260#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

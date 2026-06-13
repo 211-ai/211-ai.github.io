@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__documents__multnomah",
   "kind": "service_location",
   "key": "documents__multnomah",
-  "nodeCount": 18,
+  "nodeCount": 20,
   "nodes": [
     {
       "id": "phone_dialog_0000225#turn-2",
@@ -223,7 +223,8 @@
       "assistantResponse": "You\u2019re doing great, and I\u2019ll keep it simple. The place name is: **Multnomah County**. Slowly: **MulTNOmah** \u2026 **County**. And the line to ask for is the **same service line you called earlier** for ID replacement instructions.",
       "voiceResponseAlternatives": [
         "Yes. It\u2019s **8\u2026 8\u2026 8\u2026** then **5\u2026 3\u2026 2\u2026** then **0\u2026 5\u2026 5\u2026 0**. So, all together: **888-532-0550**.",
-        "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you."
+        "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you.",
+        "Yes. Safest quick repeat: call **211** for help finding a safe place tonight. If you feel in immediate danger, call **911**. That\u2019s it: **211 for shelter help, 911 for immediate danger.**"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "rambling_and_interrupting",
@@ -336,7 +337,8 @@
       "assistantResponse": "Yes. It\u2019s **8\u2026 8\u2026 8\u2026** then **5\u2026 3\u2026 2\u2026** then **0\u2026 5\u2026 5\u2026 0**. So, all together: **888-532-0550**.",
       "voiceResponseAlternatives": [
         "You\u2019re doing great, and I\u2019ll keep it simple. The place name is: **Multnomah County**. Slowly: **MulTNOmah** \u2026 **County**. And the line to ask for is the **same service line you called earlier** for ID replacement instructions.",
-        "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you."
+        "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you.",
+        "Yes. Safest quick repeat: call **211** for help finding a safe place tonight. If you feel in immediate danger, call **911**. That\u2019s it: **211 for shelter help, 911 for immediate danger.**"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -422,7 +424,8 @@
       "assistantResponse": "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you.",
       "voiceResponseAlternatives": [
         "You\u2019re doing great, and I\u2019ll keep it simple. The place name is: **Multnomah County**. Slowly: **MulTNOmah** \u2026 **County**. And the line to ask for is the **same service line you called earlier** for ID replacement instructions.",
-        "Yes. It\u2019s **8\u2026 8\u2026 8\u2026** then **5\u2026 3\u2026 2\u2026** then **0\u2026 5\u2026 5\u2026 0**. So, all together: **888-532-0550**."
+        "Yes. It\u2019s **8\u2026 8\u2026 8\u2026** then **5\u2026 3\u2026 2\u2026** then **0\u2026 5\u2026 5\u2026 0**. So, all together: **888-532-0550**.",
+        "Yes. Safest quick repeat: call **211** for help finding a safe place tonight. If you feel in immediate danger, call **911**. That\u2019s it: **211 for shelter help, 911 for immediate danger.**"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -512,6 +515,60 @@
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001426#turn-6",
+      "scenarioId": "phone_dialog_0001426",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "documents",
+      "locationTag": "multnomah",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Please repeat the number slowly, my hands are shaking and my phone battery is at like three percent.",
+      "normalizedQuery": "multnomah county downtown portland just got hospital mom keep missing shifts sorry crying know somewhere helps jobs resumes anything if possible wait did say bring id couldn hear over this bus pulling up please repeat number slowly hands shaking phone battery at like three percent",
+      "voiceResponse": "I hear you, and you\u2019re not alone. Before we continue, are you physically safe right now and able to keep breathing steady with me? The number is: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**. Call **2-1-1** now, and tell them you\u2019re in Multnomah County, near downtown Portland, and need same-day job and resume help.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not alone. Before we continue, are you physically safe right now and able to keep breathing steady with me? The number is: **2-1-1**. Again, slowly: **two \u2026 one \u2026 one**. Call **2-1-1** now, and tell them you\u2019re in Multnomah County, near downtown Portland, and need same-day job and resume help.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001740#turn-3",
+      "scenarioId": "phone_dialog_0001740",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, a bus just came by, I missed part of that. Can you repeat only the safest number to call?",
+      "normalizedQuery": "hi uh talk long multnomah county at bus stop think phone watched so please keep it simple boyfriend keeps id social security card he makes go men money don know call just safe sorry came by missed part repeat only safest number",
+      "voiceResponse": "Yes. Safest quick repeat: call **211** for help finding a safe place tonight. If you feel in immediate danger, call **911**. That\u2019s it: **211 for shelter help, 911 for immediate danger.**",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Safest quick repeat: call **211** for help finding a safe place tonight. If you feel in immediate danger, call **911**. That\u2019s it: **211 for shelter help, 911 for immediate danger.**",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I\u2019ll keep it simple. The place name is: **Multnomah County**. Slowly: **MulTNOmah** \u2026 **County**. And the line to ask for is the **same service line you called earlier** for ID replacement instructions.",
+        "Yes. It\u2019s **8\u2026 8\u2026 8\u2026** then **5\u2026 3\u2026 2\u2026** then **0\u2026 5\u2026 5\u2026 0**. So, all together: **888-532-0550**.",
+        "Of course. I\u2019ll go slow. First: if your breathing gets worse, or you feel unsafe, call **9-1-1** right now. Second: I\u2019m connecting you to a **live 211 agent** in Multnomah County to help replace your ID and find no-car options so you\u2019re less likely to be turned away. I\u2019m staying with you."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
     }
   ],
@@ -617,6 +674,12 @@
       "to": "phone_dialog_0001030#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001740#turn-3",
+      "to": "phone_dialog_0001740#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

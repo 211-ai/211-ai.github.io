@@ -3,12 +3,16 @@ import {
   build211GraphRagEvidence,
   build211GraphRagPrompt,
   buildEvidenceSummary,
+  get211RelatedGraph,
   clean211GraphRagModelAnswer,
   DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
   format211GraphRagDisplayedAnswer,
   get211CorpusBaseUrl,
+  buildSlottedResponseRagContext,
+  findSlottedResponseMatch,
   isGrounded211GraphRagAnswer,
   load211ArtifactManifest,
+  load211DocumentsSlice,
   load211GeneratedManifest,
   ragSearchWorkerService,
   search211GraphCommunities,
@@ -26,6 +30,7 @@ import type {
   GraphRagEvidence,
   SearchFilters,
   SearchResult,
+  SlottedResponseMatch,
 } from "../lib/graphrag";
 import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
 import { generateWalletRouterEmbeddings, generateWalletRouterText, type WalletApiConfig } from "./walletApi";
@@ -524,6 +529,7 @@ export async function answer211InfoQuestion(
   if (!trimmedQuestion) {
     throw new Error("Question is required");
   }
+  const slottedResponseMatchPromise = findSlottedResponseMatch(trimmedQuestion);
   const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding, options.walletApiConfig);
 
   const initialFilters = preferredServiceFilters(6, options);
@@ -544,7 +550,7 @@ export async function answer211InfoQuestion(
         preferredClusterIds,
       }),
   );
-  const evidence =
+  const initialOrFallbackEvidence =
     initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)
       ? initialEvidence
       : await withMainThreadSearchFallback(
@@ -561,16 +567,26 @@ export async function answer211InfoQuestion(
               limit: 6,
             }),
         );
+  const slottedResponseMatch = await slottedResponseMatchPromise;
+  const evidence = await mergeSlottedEvidenceResults(
+    initialOrFallbackEvidence,
+    trimmedQuestion,
+    collectSlottedEvidenceDocIds(slottedResponseMatch),
+    6,
+  );
+  const metadata = buildGraphRagAnswerMetadata(slottedResponseMatch);
   if (evidence.results.length === 0) {
     return {
       question: trimmedQuestion,
       answer: build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: false,
+      metadata,
     };
   }
 
-  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence);
+  const slottedResponseContext = buildSlottedResponseRagContext(slottedResponseMatch);
+  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence, { slottedResponseContext });
   const maxTokens = options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS;
   if (options.walletApiConfig?.actorDid) {
     try {
@@ -585,6 +601,7 @@ export async function answer211InfoQuestion(
         answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211InfoFallbackSummary(evidence),
         evidence,
         usedLocalModel: false,
+        metadata,
       };
     } catch (error) {
       console.warn("211 GraphRAG Hugging Face wallet router unavailable; falling back to LFM/OpenRouter path", error);
@@ -601,6 +618,7 @@ export async function answer211InfoQuestion(
       answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: grounded && options.useLocalModel !== false,
+      metadata,
     };
   } catch (error) {
     console.warn("211 GraphRAG local model unavailable; falling back to evidence summary", error);
@@ -609,8 +627,142 @@ export async function answer211InfoQuestion(
       answer: build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: false,
+      metadata,
     };
   }
+}
+
+function buildGraphRagAnswerMetadata(slottedResponseMatch: SlottedResponseMatch | undefined): GraphRagAnswer["metadata"] {
+  if (!slottedResponseMatch) {
+    return undefined;
+  }
+  return {
+    slottedResponse: {
+      intentId: slottedResponseMatch.intent.id,
+      canonicalQueryTemplate: slottedResponseMatch.canonicalQueryTemplate,
+      edgeId: slottedResponseMatch.edge.id,
+      route: slottedResponseMatch.route,
+      exact: slottedResponseMatch.exact,
+      score: slottedResponseMatch.score,
+      responseFrameId: slottedResponseMatch.responseFrame.id,
+      responseSignature: slottedResponseMatch.responseFrame.responseSignature,
+      evidenceDocIds: collectSlottedEvidenceDocIds(slottedResponseMatch),
+    },
+  };
+}
+
+function collectSlottedEvidenceDocIds(slottedResponseMatch: SlottedResponseMatch | undefined): string[] {
+  if (!slottedResponseMatch) {
+    return [];
+  }
+  return dedupeStrings([
+    ...(slottedResponseMatch.edge.evidenceDocIds || []),
+    ...(slottedResponseMatch.intent.evidenceDocIds || []),
+    ...(slottedResponseMatch.responseFrame.evidenceDocIds || []),
+  ]).slice(0, 6);
+}
+
+async function mergeSlottedEvidenceResults(
+  evidence: GraphRagEvidence,
+  query: string,
+  preferredDocIds: string[],
+  limit: number,
+): Promise<GraphRagEvidence> {
+  const missingDocIds = preferredDocIds.filter((docId) => !evidence.results.some((result) => result.docId === docId));
+  if (missingDocIds.length === 0) {
+    return evidence;
+  }
+  const preferredDocuments = await load211DocumentsSlice({
+    docIds: missingDocIds,
+    limit: missingDocIds.length,
+  });
+  if (preferredDocuments.documents.length === 0) {
+    return evidence;
+  }
+
+  const weakestScore =
+    evidence.results.slice(0, limit).at(-1)?.score ?? evidence.results.at(-1)?.score ?? 0.2;
+  const documentsById = new Map(preferredDocuments.documents.map((document) => [document.doc_id, document]));
+  const injectedResults = missingDocIds
+    .map((docId, index) => {
+      const document = documentsById.get(docId);
+      if (!document) {
+        return undefined;
+      }
+      return buildInjectedSearchResult(document, query, weakestScore + 0.05 - index * 0.001);
+    })
+    .filter((result): result is SearchResult => Boolean(result));
+  if (injectedResults.length === 0) {
+    return evidence;
+  }
+
+  const mergedResults = [...evidence.results, ...injectedResults]
+    .sort(compareMergedSearchResults)
+    .slice(0, limit);
+  const related = await get211RelatedGraph(mergedResults.map((result) => result.docId), {
+    maxDocIds: 3,
+    maxShards: 2,
+    maxNodes: 80,
+    maxEdges: 120,
+  });
+  return {
+    ...evidence,
+    results: mergedResults,
+    nodes: related.nodes,
+    edges: related.edges,
+  };
+}
+
+function buildInjectedSearchResult(document: CorpusDocument, query: string, score: number): SearchResult {
+  return {
+    docId: document.doc_id,
+    contentCid: document.source_content_cid,
+    pageCid: document.source_page_cid,
+    document,
+    score,
+    duplicateCount: 1,
+    mergedDocIds: [document.doc_id],
+    scoreParts: {
+      keyword: 0,
+      vector: 0,
+      metadata: 0,
+      proximity: 0,
+    },
+    snippet: buildInjectedSnippet(document, query),
+  };
+}
+
+function buildInjectedSnippet(document: CorpusDocument, query: string): string {
+  const normalizedText = document.text.replace(/\s+/g, " ").trim();
+  if (!normalizedText) {
+    return document.title || document.provider_name || document.program_name || document.doc_id;
+  }
+  const lowerQuery = query.trim().toLowerCase();
+  const lowerText = normalizedText.toLowerCase();
+  const hitIndex = lowerQuery ? lowerText.indexOf(lowerQuery) : -1;
+  if (hitIndex < 0) {
+    return normalizedText.slice(0, 360);
+  }
+  const start = Math.max(0, hitIndex - 120);
+  const end = Math.min(normalizedText.length, hitIndex + Math.max(lowerQuery.length, 1) + 220);
+  return normalizedText.slice(start, end);
+}
+
+function compareMergedSearchResults(left: SearchResult, right: SearchResult): number {
+  const scoreDelta = right.score - left.score;
+  if (Math.abs(scoreDelta) > 1e-6) {
+    return scoreDelta;
+  }
+  const leftDistance = left.distanceMiles ?? Number.POSITIVE_INFINITY;
+  const rightDistance = right.distanceMiles ?? Number.POSITIVE_INFINITY;
+  if (leftDistance !== rightDistance) {
+    return leftDistance - rightDistance;
+  }
+  return left.docId.localeCompare(right.docId);
+}
+
+function dedupeStrings(values: string[]): string[] {
+  return [...new Set(values.filter(Boolean))];
 }
 
 function preferredServiceFilters(limit: number, options: GraphRagRetrievalOptions): SearchFilters {

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__broad_help__bend",
   "kind": "service_location",
   "key": "broad_help__bend",
-  "nodeCount": 26,
+  "nodeCount": 28,
   "nodes": [
     {
       "id": "phone_dialog_0000228#turn-2",
@@ -382,7 +382,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m so sorry you\u2019re going through this. The audio is a little unclear in the lobby. If you\u2019re in immediate danger, call 9-1-1 right now. Can you repeat just this part: are you in immediate danger right now, yes or no?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. Your audio was a little unclear. If you feel unsafe or might hurt yourself right now, call 911 now. If not, please repeat in one short sentence: do you need mental health crisis support right now?"
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
@@ -774,6 +776,63 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002148#turn-1",
+      "scenarioId": "phone_dialog_0002148",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um, I don't really know where to start... I'm in Bend, and I can't get my head to quiet down.",
+      "normalizedQuery": "hi um don't really know start i'm bend can't head quiet down",
+      "voiceResponse": "I\u2019m here with you. Your audio was a little unclear. If you feel unsafe or might hurt yourself right now, call 911 now. If not, please repeat in one short sentence: do you need mental health crisis support right now?",
+      "evidenceDocIds": [
+        "service:8cff3ea3d8ce0793",
+        "service:34e611624161254e",
+        "service:57921a4985a8c32e",
+        "service:6a42c81259b68154",
+        "service:a50e5398b8f6428a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Your audio was a little unclear. If you feel unsafe or might hurt yourself right now, call 911 now. If not, please repeat in one short sentence: do you need mental health crisis support right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry you\u2019re going through this. The audio is a little unclear in the lobby. If you\u2019re in immediate danger, call 9-1-1 right now. Can you repeat just this part: are you in immediate danger right now, yes or no?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002148#turn-2",
+      "scenarioId": "phone_dialog_0002148",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down? I keep missing parts of what you're saying.",
+      "normalizedQuery": "hi um don't really know start i'm bend can't head quiet down sorry slow keep missing parts you're saying",
+      "voiceResponse": "Yes, I\u2019ll slow down. If you might hurt yourself right now, call **911** now. If you are not in immediate danger, just say **yes or no**: do you need mental health crisis support right now?",
+      "evidenceDocIds": [
+        "service:8cff3ea3d8ce0793",
+        "service:34e611624161254e",
+        "service:57921a4985a8c32e",
+        "service:6a42c81259b68154",
+        "service:a50e5398b8f6428a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019ll slow down. If you might hurt yourself right now, call **911** now. If you are not in immediate danger, just say **yes or no**: do you need mental health crisis support right now?",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll repeat slowly. Your safety comes first. If you\u2019re in immediate danger, or might hurt yourself, call **9-1-1** now. Then tell me your first need tonight: **1)** a safe place to sleep, or **2)** urgent medical or mental health help.",
+        "Of course, and you\u2019re doing great. The name is: **Survivor Advocacy and Support Services**. I\u2019ll say it again slowly: **Survivor\u2026 Advocacy\u2026 and Support Services**.",
+        "Of course. You\u2019re doing fine. Slowly, one part at a time: I said I have clothing resources in **Portland** and **Salem**. That\u2019s **Port-land** \u2026 and **Say-lem**.",
+        "Next step: when you call, ask for **Community Works**\u2026 **Domestic Violence**\u2026 **Survivor Advocacy**. I\u2019ll say it again slowly: **Community Works**\u2026 **Domestic Violence**\u2026 **Survivor Advocacy**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -926,6 +985,18 @@
       "to": "phone_dialog_0001135#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002148#turn-1",
+      "to": "phone_dialog_0002148#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0002148#turn-2",
+      "to": "phone_dialog_0002148#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__hillsboro",
   "kind": "service_location",
   "key": "daily_needs__hillsboro",
-  "nodeCount": 45,
+  "nodeCount": 48,
   "nodes": [
     {
       "id": "phone_dialog_0000053#turn-1",
@@ -1343,6 +1343,96 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001653#turn-6",
+      "scenarioId": "phone_dialog_0001653",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "\"So just to make sure, this is for mail pickup or mailbox help, right? I need that, in Hillsboro.\"",
+      "normalizedQuery": "so just make sure this mail pickup mailbox right hillsboro",
+      "voiceResponse": "Yes. You are asking for mail pickup or mailbox help in Hillsboro. Mail pickup or mailbox help in Hillsboro. I can help with that. Do you want me to check **mail pickup addresses** first, or **ID rules** first?",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaquuaidqhbyxjnjf2llirjmii6nmzwlr5itflnyydztb4qhyhraq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You are asking for mail pickup or mailbox help in Hillsboro. Mail pickup or mailbox help in Hillsboro. I can help with that. Do you want me to check **mail pickup addresses** first, or **ID rules** first?",
+      "voiceResponseAlternatives": [
+        "Thanks for calling for your brother. I want to be clear: I don\u2019t have a verified Hillsboro mail-site listing in front of me right now. The fastest safe next step is to call **2-1-1** and ask for \u201cmailing address services in Hillsboro.\u201d I\u2019ll say it slowly: **two \u2026 one \u2026 one**. If you want, I can help you with exactly what to say when they answer.",
+        "Yes, I hear you. You\u2019re doing the right thing calling. In Hillsboro, 211info shows a **Laundry Products** resource list with **11 providers** in the area, and we can narrow by distance (5, 10, or 25 miles) to find the cheapest or free options first. If you want, I can start with the closest options to where you are right now and keep it minimal on personal details.",
+        "You heard almost right. I said 211info has **11 laundry-help providers** around Hillsboro, and we can filter by **5, 10, or 25 miles** to find the closest low-cost or free option. I don\u2019t have a confirmed downtown location yet. If you want, I can start with the **5-mile** list first, and we can keep this private with minimal details.",
+        "That makes total sense, and I\u2019m glad you asked. We can keep this very private: you can stay anonymous with me, share only what you want, and I can still give you nearby laundry-help options. We can start with just a rough area in Hillsboro, not your exact address. If you want, I\u2019ll keep it to the 5-mile list first and no extra personal details."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001847#turn-1",
+      "scenarioId": "phone_dialog_0001847",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Hello? I can\u2019t really hear you, there\u2019s buses and people yelling out here. I\u2019m in Hillsboro and I need somewhere to get my mail today, like right now.",
+      "normalizedQuery": "hello really hear there buses people yelling here hillsboro somewhere mail like right now",
+      "voiceResponse": "I hear you, that sounds really stressful. Let\u2019s do this fast: I\u2019m connecting you to a live 211info specialist right now to find a same-day mail option in Hillsboro. Stay on the line if you can, and if the noise gets bad, move a few steps from traffic so you can hear the address details clearly.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, that sounds really stressful. Let\u2019s do this fast: I\u2019m connecting you to a live 211info specialist right now to find a same-day mail option in Hillsboro. Stay on the line if you can, and if the noise gets bad, move a few steps from traffic so you can hear the address details clearly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I can help fast. I only see one clothing resource in my list right now: Little Sprouts Clothing Swap in Medford. Phone: 5 4 1, 7 7 9, 5 2 4 2. Again: 5 4 1, 7 7 9, 5 2 4 2. Address: 8 2 5 East Main Street, Suite A, Medford. Do you want me to connect you to a live agent now to find same-week options in Hillsboro?",
+        "First step: call Sunnyside Shower Project now at **nine seven one, two zero two, one seven two one**. They offer showers and hygiene supplies, and eligibility is unrestricted. Address is **3520 Southeast Yamhill Street, Portland**. If you want, I can stay with you while you make that call and help with what to say.",
+        "Okay, one step right now: call Right Track Resource Center at **five four one, nine one zero, three zero five six**. That\u2019s **541, 910, 3056**. They have showers and laundry, and you don\u2019t need documents. If that line doesn\u2019t answer, try **five four one, nine six two, seven nine nine four**. I can stay with you while you call.",
+        "Yes. One place only: Right Track Resource Center. Call **five four one** \u2026 **nine one zero** \u2026 **three zero five six**. That is **541 \u2026 910 \u2026 3056**. I can wait while you write it."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001847#turn-5",
+      "scenarioId": "phone_dialog_0001847",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Please just connect me to whoever can do emergency help in Hillsboro and tell me exactly where to go for mail pickup.",
+      "normalizedQuery": "please just connect whoever emergency hillsboro tell exactly go mail pickup",
+      "voiceResponse": "I hear you, and I\u2019m staying with you. I\u2019m connecting you to a live 211info specialist now for emergency help and same-day mail options in Hillsboro. Go now to **Hillsboro Family Shelter**, **210 Southeast 12th Avenue, Hillsboro, 97123**. Phone: **503-640-3263**. If you don\u2019t feel safe where you are right now, call **911**. If the call drops, tell them: \u201curgent mail today, food benefits at risk, Hillsboro.\u201d",
+      "evidenceDocIds": [
+        "service:a927abbe60497dda",
+        "service:a558e2f5ba96f584",
+        "service:c308bf7a696f0dc4",
+        "service:3ad36b571383e0bf",
+        "service:83dfe4ee16df73e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m staying with you. I\u2019m connecting you to a live 211info specialist now for emergency help and same-day mail options in Hillsboro. Go now to **Hillsboro Family Shelter**, **210 Southeast 12th Avenue, Hillsboro, 97123**. Phone: **503-640-3263**. If you don\u2019t feel safe where you are right now, call **911**. If the call drops, tell them: \u201curgent mail today, food benefits at risk, Hillsboro.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. I can help fast. I only see one clothing resource in my list right now: Little Sprouts Clothing Swap in Medford. Phone: 5 4 1, 7 7 9, 5 2 4 2. Again: 5 4 1, 7 7 9, 5 2 4 2. Address: 8 2 5 East Main Street, Suite A, Medford. Do you want me to connect you to a live agent now to find same-week options in Hillsboro?",
+        "First step: call Sunnyside Shower Project now at **nine seven one, two zero two, one seven two one**. They offer showers and hygiene supplies, and eligibility is unrestricted. Address is **3520 Southeast Yamhill Street, Portland**. If you want, I can stay with you while you make that call and help with what to say.",
+        "Okay, one step right now: call Right Track Resource Center at **five four one, nine one zero, three zero five six**. That\u2019s **541, 910, 3056**. They have showers and laundry, and you don\u2019t need documents. If that line doesn\u2019t answer, try **five four one, nine six two, seven nine nine four**. I can stay with you while you call.",
+        "Yes. One place only: Right Track Resource Center. Call **five four one** \u2026 **nine one zero** \u2026 **three zero five six**. That is **541 \u2026 910 \u2026 3056**. I can wait while you write it."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1585,6 +1675,12 @@
       "to": "phone_dialog_0001143#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001847#turn-1",
+      "to": "phone_dialog_0001847#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

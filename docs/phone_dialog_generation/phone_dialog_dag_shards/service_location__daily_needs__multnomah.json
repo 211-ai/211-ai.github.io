@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__multnomah",
   "kind": "service_location",
   "key": "daily_needs__multnomah",
-  "nodeCount": 25,
+  "nodeCount": 26,
   "nodes": [
     {
       "id": "phone_dialog_0000069#turn-4",
@@ -740,6 +740,36 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001196#turn-3",
+      "scenarioId": "phone_dialog_0001196",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My head's all over, I been outside two nights, I'm in Multnomah County, near Portland side, I just need somewhere to shower today.",
+      "normalizedQuery": "head's all over been outside two nights i'm multnomah county portland side just somewhere shower",
+      "voiceResponse": "I hear you. You need a shower today, in Multnomah County. You need a shower today, in Multnomah County. Call 211info now. Try **9 7 1, 3 1 9, 9 7 9 3**. I\u2019ll repeat: **9 7 1, 3 1 9, 9 7 9 3**. If that does not work, try **3 6 0, 5 2 1, 6 5 2 7**. I\u2019ll repeat: **3 6 0, 5 2 1, 6 5 2 7**. Can you make that call now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreia6ueivkjerbf6qkfpph4umgigr742z77nwzqgg3klzv25iwegpdy",
+        "service:98249e32a262b454",
+        "service:b6c938975ce4fb66",
+        "page:bafkreibrfnugwr2drajj5tzukt6mg3x7qgsld5dstwvz3izn5r2f6vvpxy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need a shower today, in Multnomah County. You need a shower today, in Multnomah County. Call 211info now. Try **9 7 1, 3 1 9, 9 7 9 3**. I\u2019ll repeat: **9 7 1, 3 1 9, 9 7 9 3**. If that does not work, try **3 6 0, 5 2 1, 6 5 2 7**. I\u2019ll repeat: **3 6 0, 5 2 1, 6 5 2 7**. Can you make that call now?",
+      "voiceResponseAlternatives": [
+        "Yes. The main number is **8-0-0, 9-6-5, 6-5-1-9**. I\u2019ll repeat: **8-0-0, 9-6-5, 6-5-1-9**. That\u2019s for clothing donation and pickup support.",
+        "You\u2019re doing the right thing. Call this number now for clothing help: **8-0-0 \u2026 9-6-5 \u2026 6-5-1-9**. Again: **8-0-0, 9-6-5, 6-5-1-9**.",
+        "You\u2019re okay, and I\u2019m glad you called. Let\u2019s take this one step at a time. I do have a Multnomah County resource list, updated January 22, 2026, that shows what shelters and daytime drop-in centers are open today and tonight. Those drop-in centers are usually the best place to ask for shower access. If you want, I can help you contact 211 now so they can give you the nearest open location.",
+        "I hear you, and I\u2019m glad you called. I don\u2019t have a confirmed mail-receiving site listed in the local results right here, but a good next step is **Multnomah County Library Mobile and Partner Libraries**. They support people experiencing homelessness and other barriers, and may know nearby mail options. Their number is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. If you want, I can stay with you while you call."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -874,6 +904,12 @@
       "to": "phone_dialog_0001068#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001196#turn-3",
+      "to": "phone_dialog_0001196#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

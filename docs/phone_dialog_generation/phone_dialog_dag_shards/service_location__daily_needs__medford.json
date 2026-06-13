@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__medford",
   "kind": "service_location",
   "key": "daily_needs__medford",
-  "nodeCount": 25,
+  "nodeCount": 27,
   "nodes": [
     {
       "id": "phone_dialog_0000133#turn-1",
@@ -749,6 +749,66 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-3",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep missing what you said, can you say it slow? I\u2019m in Medford, and I need somewhere I can get my mail.",
+      "normalizedQuery": "keep missing said say it slow medford somewhere mail",
+      "voiceResponse": "Yes. I can say it slow. You are in Medford. You need a place to get mail. You need a place to get mail. I do not have a clear local mailing service listing in front of me yet. One question: do you need a temporary mailing address for yourself right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8633bf7679779ba4",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can say it slow. You are in Medford. You need a place to get mail. You need a place to get mail. I do not have a clear local mailing service listing in front of me yet. One question: do you need a temporary mailing address for yourself right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m here with you. For Medford, I have this local number: **5 4 1, 7 7 4, 2 4 0 0**. Again: **5 4 1, 7 7 4, 2 4 0 0**. Address: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Again: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Do you want me to help with a short script for what to say when they answer?",
+        "Next step: call **Low-Cost Housing Properties / Northwest Housing Alternatives** and ask for any Medford low-cost resource listings, including laundromat options. I only have housing-listing information here, not a confirmed laundry service today. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**.",
+        "Yes \u2014 the place name is **Low-Cost Housing Properties**, through **Northwest Housing Alternatives**.",
+        "Next step: call **Low-Cost Housing Properties** now and ask for the closest Medford laundry options that are open this evening and near a bus line. I don\u2019t have confirmed laundry locations or hours in my notes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**. If you want, I can repeat that number once more."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001976#turn-6",
+      "scenarioId": "phone_dialog_0001976",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number too, please, real slow, one digit at a time.",
+      "normalizedQuery": "keep missing said say it slow medford somewhere mail po box buy mean like service place agency address stuff keeps getting sent back sorry talking over repeat street name again heard 'main' maybe 'mason' phone number too please real one digit at time",
+      "voiceResponse": "I hear you. You want the phone number, slow, one digit at a time. You want the phone number, slow, one digit at a time. I do not have a verified local number on my screen right now. I can connect you to a 211 specialist now, and they can give it slowly. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You want the phone number, slow, one digit at a time. You want the phone number, slow, one digit at a time. I do not have a verified local number on my screen right now. I can connect you to a 211 specialist now, and they can give it slowly. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m here with you. For Medford, I have this local number: **5 4 1, 7 7 4, 2 4 0 0**. Again: **5 4 1, 7 7 4, 2 4 0 0**. Address: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Again: **7 0 1 North Columbus Avenue, Medford, Oregon, 9 7 5 0 1**. Do you want me to help with a short script for what to say when they answer?",
+        "Next step: call **Low-Cost Housing Properties / Northwest Housing Alternatives** and ask for any Medford low-cost resource listings, including laundromat options. I only have housing-listing information here, not a confirmed laundry service today. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**.",
+        "Yes \u2014 the place name is **Low-Cost Housing Properties**, through **Northwest Housing Alternatives**.",
+        "Next step: call **Low-Cost Housing Properties** now and ask for the closest Medford laundry options that are open this evening and near a bus line. I don\u2019t have confirmed laundry locations or hours in my notes. The number is: **5 0 3** \u2026 **6 5 5** \u2026 **8 5 7 5**. If you want, I can repeat that number once more."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -901,6 +961,12 @@
       "to": "phone_dialog_0000919#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001976#turn-3",
+      "to": "phone_dialog_0001976#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

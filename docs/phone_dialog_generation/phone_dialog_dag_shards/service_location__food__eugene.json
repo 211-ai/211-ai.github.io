@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__eugene",
   "kind": "service_location",
   "key": "food__eugene",
-  "nodeCount": 46,
+  "nodeCount": 59,
   "nodes": [
     {
       "id": "phone_dialog_0000028#turn-2",
@@ -1363,6 +1363,391 @@
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001584#turn-3",
+      "scenarioId": "phone_dialog_0001584",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, okay, I need a food pantry, like groceries for this week, in Eugene.",
+      "normalizedQuery": "yeah okay food pantry meal meals groceries like this week eugene",
+      "voiceResponse": "Yes. Food help in Eugene. Best match I have is Oregon Food Bank\u2019s Food Pantry and Meal Locator. It can find groceries and meal sites near you this week. Eligibility says unrestricted. Unrestricted. Do you want me to help you find the closest pantry in Eugene now?",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Food help in Eugene. Best match I have is Oregon Food Bank\u2019s Food Pantry and Meal Locator. It can find groceries and meal sites near you this week. Eligibility says unrestricted. Unrestricted. Do you want me to help you find the closest pantry in Eugene now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m so sorry you\u2019re carrying this. I do have a 211 list for community meal sites, including congregate meals, with multiple matches in your area. I can help you find hot dinners you can actually reach. One quick question: what part of Eugene are you in, or what ZIP code should I use?",
+        "You do not need to do all the calls today. You do not need to do all the calls today. We can keep it to one step. There is an Oregon Food Bank meal locator online. It can show nearby community meal sites and hot meals. No restrictions for many sites. If you want, I can help you choose just one place to try first. What Eugene ZIP code should I use?",
+        "I hear you. For Eugene, the best step is Oregon Food Bank\u2019s Food Pantry and Meal Locator. It\u2019s for anyone, and it finds nearby pantry and meal sites. If you want, I can also connect you to a 211 specialist right now to find the closest open pantry by phone.",
+        "Neither one. I didn\u2019t give a River Road or Roosevelt address. What I said is: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**. It\u2019s a tool to find nearby Eugene pantry sites. If the line keeps cutting out, I can connect you to a **211 specialist now** to get the closest open pantry by phone."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001584#turn-4",
+      "scenarioId": "phone_dialog_0001584",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat slow? I miss numbers on the phone, one chunk at a time.",
+      "normalizedQuery": "hello static hear good it cutting foo inaudible gene no wait eu eugene sorry say again yeah okay food pantry meal meals groceries like this week repeat slow miss numbers on phone one chunk at time",
+      "voiceResponse": "Yes. I will go slow. Phone number: **503**. **771**. **7914**. Again: **503**. **771**. **7914**. Address: **8800** **Southeast 80th Avenue** **Portland, Oregon** **97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:44bdd22d74dc9985",
+        "service:7984cf9165277f8c",
+        "service:97fd6b13a5399d5a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will go slow. Phone number: **503**. **771**. **7914**. Again: **503**. **771**. **7914**. Address: **8800** **Southeast 80th Avenue** **Portland, Oregon** **97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+      "voiceResponseAlternatives": [
+        "I haven\u2019t given a pantry address yet. What I gave is the name: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**. If you want, I can connect you to **211 now** so they can give you the closest open Eugene pantry address by phone.",
+        "You\u2019re doing a lot, and I\u2019ve got you. There wasn\u2019t a street name in that part, just the callback number. It\u2019s **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1**. I\u2019ll say it once more: **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1**.",
+        "I don\u2019t have a confirmed street address to repeat. The source name to text him is: Oregon Food Bank pantry and meal locator. If you want, I can hand you to a live agent now to get the nearest exact address fast.",
+        "Yes. The number is: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. I\u2019ll repeat once: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001584#turn-5",
+      "scenarioId": "phone_dialog_0001584",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Did you say River Road or Roosevelt? I heard that wrong, I think.",
+      "normalizedQuery": "inaudible gene no wait eu eugene sorry say again yeah okay food pantry meal meals groceries like this week repeat slow miss numbers on phone one chunk at time did river road roosevelt heard wrong think",
+      "voiceResponse": "Neither one. It is not River Road. It is not Roosevelt. The address is: **8800** \u2026 **Southeast 80th Avenue** \u2026 **Portland, Oregon** \u2026 **97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:05a4cb2bbd6278f6",
+        "service:44bdd22d74dc9985",
+        "service:b26681286f52f9ba"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Neither one. It is not River Road. It is not Roosevelt. The address is: **8800** \u2026 **Southeast 80th Avenue** \u2026 **Portland, Oregon** \u2026 **97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m so sorry you\u2019re carrying this. I do have a 211 list for community meal sites, including congregate meals, with multiple matches in your area. I can help you find hot dinners you can actually reach. One quick question: what part of Eugene are you in, or what ZIP code should I use?",
+        "You do not need to do all the calls today. You do not need to do all the calls today. We can keep it to one step. There is an Oregon Food Bank meal locator online. It can show nearby community meal sites and hot meals. No restrictions for many sites. If you want, I can help you choose just one place to try first. What Eugene ZIP code should I use?",
+        "I hear you. For Eugene, the best step is Oregon Food Bank\u2019s Food Pantry and Meal Locator. It\u2019s for anyone, and it finds nearby pantry and meal sites. If you want, I can also connect you to a 211 specialist right now to find the closest open pantry by phone.",
+        "Neither one. I didn\u2019t give a River Road or Roosevelt address. What I said is: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**. It\u2019s a tool to find nearby Eugene pantry sites. If the line keeps cutting out, I can connect you to a **211 specialist now** to get the closest open pantry by phone."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001629#turn-4",
+      "scenarioId": "phone_dialog_0001629",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Her son is supposed to check on her but hasn\u2019t come, and she can\u2019t get down the stairs with her walker, so she\u2019s basically trapped and alone.",
+      "normalizedQuery": "hi calling neighbor she 78 disabled really worried being neglected here eugene before we go on say things slowly hard hearing this phone may numbers repeated small chunks breathing awake right now so 911 second told hasn had real meal since yesterday missed her heart pills again son supposed check come down stairs walker basically trapped alone",
+      "voiceResponse": "I hear you. She is trapped upstairs, and alone. I\u2019ll repeat that: trapped upstairs, and alone. This is a safety risk. If she has chest pain, trouble breathing, or gets confused, call 9-1-1 now. I\u2019ll repeat: if those happen, call 9-1-1 now. I can connect you to a live specialist right now for urgent neglect and welfare support. One question: Can you stay on the phone with her while I connect you?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. She is trapped upstairs, and alone. I\u2019ll repeat that: trapped upstairs, and alone. This is a safety risk. If she has chest pain, trouble breathing, or gets confused, call 9-1-1 now. I\u2019ll repeat: if those happen, call 9-1-1 now. I can connect you to a live specialist right now for urgent neglect and welfare support. One question: Can you stay on the phone with her while I connect you?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001644#turn-4",
+      "scenarioId": "phone_dialog_0001644",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "His elevator is broken again, so he can\u2019t get down the stairs safely, and he hasn\u2019t been outside in almost a week.",
+      "normalizedQuery": "hi calling neighbor eugene he 78 uses walker don think been getting cared sorry hard hearing say slower if re asking immediate danger yes maybe sounds weak confused told missed two days his heart pills there basically no food pantry meal meals groceries left just crackers elevator broken again so down stairs safely hasn outside almost week",
+      "voiceResponse": "Thank you for telling me. This is urgent. Broken elevator, unsafe stairs, and almost a week inside can be dangerous. Please call 9-1-1 now. Call 9-1-1 now. Say: \u201cMy 78-year-old neighbor is weak, confused, missed heart pills, has little food, and cannot get out because the elevator is broken.\u201d Are you with him right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent. Broken elevator, unsafe stairs, and almost a week inside can be dangerous. Please call 9-1-1 now. Call 9-1-1 now. Say: \u201cMy 78-year-old neighbor is weak, confused, missed heart pills, has little food, and cannot get out because the elevator is broken.\u201d Are you with him right now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001711#turn-1",
+      "scenarioId": "phone_dialog_0001711",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling from Eugene for my neighbor, she\u2019s 78, and I think she\u2019s being neglected. She told me she hasn\u2019t had a real meal since yesterday morning.",
+      "normalizedQuery": "hi calling from eugene neighbor she 78 think being neglected told hasn had real meal since yesterday morning",
+      "voiceResponse": "I hear you. Thank you for calling for her. She is 78, and she has not had a real meal since yesterday morning. I\u2019ll repeat that: no real meal since yesterday morning. First, I need one quick check. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreiacnkk6y5xktut4slueqa2koudbk44wznzryxk5ofu6pkjpcbzkju",
+        "service:8c233174a5794cff"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Thank you for calling for her. She is 78, and she has not had a real meal since yesterday morning. I\u2019ll repeat that: no real meal since yesterday morning. First, I need one quick check. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m so sorry you\u2019re carrying this. I do have a 211 list for community meal sites, including congregate meals, with multiple matches in your area. I can help you find hot dinners you can actually reach. One quick question: what part of Eugene are you in, or what ZIP code should I use?",
+        "You do not need to do all the calls today. You do not need to do all the calls today. We can keep it to one step. There is an Oregon Food Bank meal locator online. It can show nearby community meal sites and hot meals. No restrictions for many sites. If you want, I can help you choose just one place to try first. What Eugene ZIP code should I use?",
+        "I hear you. For Eugene, the best step is Oregon Food Bank\u2019s Food Pantry and Meal Locator. It\u2019s for anyone, and it finds nearby pantry and meal sites. If you want, I can also connect you to a 211 specialist right now to find the closest open pantry by phone.",
+        "Neither one. I didn\u2019t give a River Road or Roosevelt address. What I said is: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**. It\u2019s a tool to find nearby Eugene pantry sites. If the line keeps cutting out, I can connect you to a **211 specialist now** to get the closest open pantry by phone."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001711#turn-2",
+      "scenarioId": "phone_dialog_0001711",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that again slower? I\u2019m hard of hearing, and there\u2019s a TV blasting in her apartment.",
+      "normalizedQuery": "hi calling from eugene neighbor she 78 think being neglected told hasn had real meal since yesterday morning sorry say again slower hard hearing there tv blasting her apartment",
+      "voiceResponse": "Of course. I will say it slowly. You said your neighbor is seventy-eight. And no real meal since yesterday morning. I will repeat that: no real meal since yesterday morning. One quick check now. Is she in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:f343701d786b3ebc",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I will say it slowly. You said your neighbor is seventy-eight. And no real meal since yesterday morning. I will repeat that: no real meal since yesterday morning. One quick check now. Is she in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "I haven\u2019t given a pantry address yet. What I gave is the name: **Oregon Food Bank** \u2026 **Food Pantry and Meal Locator**. If you want, I can connect you to **211 now** so they can give you the closest open Eugene pantry address by phone.",
+        "You\u2019re doing a lot, and I\u2019ve got you. There wasn\u2019t a street name in that part, just the callback number. It\u2019s **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1**. I\u2019ll say it once more: **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1**.",
+        "I don\u2019t have a confirmed street address to repeat. The source name to text him is: Oregon Food Bank pantry and meal locator. If you want, I can hand you to a live agent now to get the nearest exact address fast.",
+        "Yes. The number is: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. I\u2019ll repeat once: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001711#turn-4",
+      "scenarioId": "phone_dialog_0001711",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "She missed at least two blood pressure doses, and her son who\u2019s supposed to check on her hasn\u2019t come by in days.",
+      "normalizedQuery": "hi calling from eugene neighbor she 78 think being neglected told hasn had real meal since yesterday morning sorry say again slower hard hearing there tv blasting her apartment right now breathing awake yes shaky don immediate danger this second just scared it getting missed at least two blood pressure doses son who supposed check on come by days",
+      "voiceResponse": "Thank you for telling me. She missed at least two blood pressure doses. I\u2019ll repeat that: at least two missed doses. And her son has not checked on her for days. I\u2019ll repeat that: no check-in for days. This can turn urgent fast. If she has chest pain, trouble breathing, confusion, or faints, call 911 right now. If she has chest pain, trouble breathing, confusion, or faints, call 911 right now. One question: is she having any of those symptoms right now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. She missed at least two blood pressure doses. I\u2019ll repeat that: at least two missed doses. And her son has not checked on her for days. I\u2019ll repeat that: no check-in for days. This can turn urgent fast. If she has chest pain, trouble breathing, confusion, or faints, call 911 right now. If she has chest pain, trouble breathing, confusion, or faints, call 911 right now. One question: is she having any of those symptoms right now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001990#turn-3",
+      "scenarioId": "phone_dialog_0001990",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I haven\u2019t slept in two days and the voices are telling me don\u2019t trust anyone, but I\u2019m trying, I just need a bed where the doors lock.",
+      "normalizedQuery": "hi sorry keep losing thread eugene bus station think somewhere inside tonight because they tracking through lights no wait food pantry meal meals groceries shelter shelters homeless overnight warming said hear there guy coughing right by voices cutting over haven slept two days telling don trust anyone trying just bed doors lock",
+      "voiceResponse": "I\u2019m glad you told me. This sounds urgent, and your safety comes first. If you might act on what the voices are saying, call **911** right now. I\u2019m connecting you to a live person now to find the fastest locked-door shelter option tonight and stay with you on the line. If you can, step into a nearby staffed indoor place while we connect.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:bd5c5bd198f76c8b",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "page:bafkreidwnti4lcaifewaecedk7fvr3ry3yce5yjsx4rwzl7jtrwwpmnvmi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you told me. This sounds urgent, and your safety comes first. If you might act on what the voices are saying, call **911** right now. I\u2019m connecting you to a live person now to find the fastest locked-door shelter option tonight and stay with you on the line. If you can, step into a nearby staffed indoor place while we connect.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002089#turn-4",
+      "scenarioId": "phone_dialog_0002089",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Also, can you repeat that number one more time? I\u2019m in a loud parking lot and I missed the middle part.",
+      "normalizedQuery": "hi sorry kind panicking slow down calling niece she 16 eugene ran off two nights ago been couch surfing older people don know one guy keeps telling her owes him rides food pantry meal meals groceries which sounds really bad texted from gas station doesn feel safe then phone died this 911 right now keep trying youth services first also repeat number more time loud parking lot missed middle part",
+      "voiceResponse": "Of course. The number is **9-1-1**. I\u2019ll say it once more, slowly: **nine\u2026 one\u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is **9-1-1**. I\u2019ll say it once more, slowly: **nine\u2026 one\u2026 one**.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002149#turn-5",
+      "scenarioId": "phone_dialog_0002149",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I missed that name with the noise here, can you repeat the place and the number slower?",
+      "normalizedQuery": "she been couch surfing different people one older guy keeps telling her owes him should stay there don know exactly means it sounds bad texted from eugene this morning said hurt right now sounded scared wouldn tell address youth day center go like somewhere safe sit charge phone maybe food pantry meal meals groceries talk someone sorry missed name noise here repeat place number slower",
+      "voiceResponse": "Of course. The place is **Lane County Coordinated Entry**. The number is **541, 342, 7728**. I\u2019ll repeat: **541, 342, 7728**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The place is **Lane County Coordinated Entry**. The number is **541, 342, 7728**. I\u2019ll repeat: **541, 342, 7728**.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002167#turn-4",
+      "scenarioId": "phone_dialog_0002167",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m his caregiver but I can\u2019t safely get him down the stairs from his apartment, and he won\u2019t drive anymore, so he can\u2019t reach care or groceries.",
+      "normalizedQuery": "hi calling older brother eugene say this slowly because hear well on phone before we into programs tell right now if he weak confused alone know safe minute sorry was please repeat short parts missed meals last two days his meds were taken morning night caregiver safely him down stairs from apartment won drive anymore so reach care groceries",
+      "voiceResponse": "I hear you. This is urgent. If he is weak or confused now, call 9-1-1 now. Call 9-1-1 now. Tell them: he is medically fragile, alone, and cannot get down stairs. Say he has missed meals and missed meds. Stay on the phone with him if you can. Have him unlock the door and sit or lie down safely. One question: Is he awake and breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is urgent. If he is weak or confused now, call 9-1-1 now. Call 9-1-1 now. Tell them: he is medically fragile, alone, and cannot get down stairs. Say he has missed meals and missed meds. Stay on the phone with him if you can. Have him unlock the door and sit or lie down safely. One question: Is he awake and breathing right now?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002167#turn-6",
+      "scenarioId": "phone_dialog_0002167",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me with senior meal delivery in Eugene and say any phone number slowly, like three digits at a time? My battery is low.",
+      "normalizedQuery": "senior meal delivery eugene say any phone number slowly like three digits at time battery low",
+      "voiceResponse": "Yes. I can help. First, if he is weak, confused, or unsafe tonight, call 9-1-1 now. Call 9-1-1 now. For Eugene senior meal delivery, I need one detail to find the right program fast. Is he age 60 or older?",
+      "evidenceDocIds": [
+        "service:39b1f1996548aca9",
+        "page:bafkreianmqrdc6etanxfbn4yw7tz72czpifr2qr5q6rw5xffa6a3aoiebq",
+        "page:bafkreica62fzdzcoypdyul2hz3brwxsgcywesnx4uct4ecgiqiop2ax5cm",
+        "service:04e97d3d1ae56a96",
+        "page:bafkreibn4wkeqmzupq2lzd24vxvtx63koadyscswz3e3uxfo2is3g4tlsm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help. First, if he is weak, confused, or unsafe tonight, call 9-1-1 now. Call 9-1-1 now. For Eugene senior meal delivery, I need one detail to find the right program fast. Is he age 60 or older?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you\u2019re doing the right thing in a hard moment. Since your signal is dropping, do this now: call **5 4 1 \u2026 4 8 5 \u2026 2 7 1 1** and ask for a live 211 specialist. Say, \u201cMy mom is 78 in Eugene, not eating enough, and I need senior meal delivery or hot meal sites starting this week.\u201d If she seems weak, confused, or getting worse right now, call **9 1 1**.",
+        "Okay, you\u2019re in Eugene, and he can only walk a short distance. I\u2019ll hand this to a live agent now to find the nearest open food spot he can reach on foot. Use the **Oregon Food Bank pantry and meal locator** as the source. If he gets weak, confused, or unsafe where he is, call **911** right away.",
+        "Most important number: **5-0-3, 2-8-3, 6-8-8-1**. Call now and say: \u201cI\u2019m in Eugene and need a hot meal today, and tonight if possible.\u201d If you are in immediate danger, call **9-1-1** now.",
+        "Yes. The place name is **Eugene**. Slowly: **You** \u2026 **jean**. I\u2019ll say it again: **Eugene**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1617,6 +2002,78 @@
       "to": "phone_dialog_0001132#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001584#turn-3",
+      "to": "phone_dialog_0001584#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001584#turn-4",
+      "to": "phone_dialog_0001584#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001584#turn-5",
+      "to": "phone_dialog_0001584#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001629#turn-4",
+      "to": "phone_dialog_0001629#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001644#turn-4",
+      "to": "phone_dialog_0001644#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001711#turn-1",
+      "to": "phone_dialog_0001711#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001711#turn-2",
+      "to": "phone_dialog_0001711#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001711#turn-4",
+      "to": "phone_dialog_0001711#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001990#turn-3",
+      "to": "phone_dialog_0001990#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002089#turn-4",
+      "to": "phone_dialog_0002089#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002149#turn-5",
+      "to": "phone_dialog_0002149#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002167#turn-4",
+      "to": "phone_dialog_0002167#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
     }
   ]
 }

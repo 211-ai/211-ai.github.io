@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__work__gresham",
   "kind": "service_location",
   "key": "work__gresham",
-  "nodeCount": 15,
+  "nodeCount": 22,
   "nodes": [
     {
       "id": "phone_dialog_0000009#turn-4",
@@ -285,7 +285,12 @@
       ],
       "similarCases": [],
       "assistantResponse": "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can.",
+        "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d"
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
@@ -439,6 +444,216 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001588#turn-3",
+      "scenarioId": "phone_dialog_0001588",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Gresham and the person I\u2019m with keeps my ID and makes me work for cash I don\u2019t get.",
+      "normalizedQuery": "gresham person keeps id makes work cash don",
+      "voiceResponse": "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+      "evidenceDocIds": [
+        "service:c22b1459e28e0d78",
+        "service:77f44c304ce54caa",
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036",
+        "service:89750e50d07d2617"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can.",
+        "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001588#turn-4",
+      "scenarioId": "phone_dialog_0001588",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Sometimes they make me go with men, and if I leave they say they\u2019ll find me.",
+      "normalizedQuery": "hi on borrowed phone battery almost dead so give most important number first please don say name loud text anything think gets checked gresham person keeps id makes work cash sometimes they make go men if leave ll",
+      "voiceResponse": "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can.",
+        "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001588#turn-5",
+      "scenarioId": "phone_dialog_0001588",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not safe where I sleep tonight, but I can\u2019t talk long and there\u2019s people nearby.",
+      "normalizedQuery": "please don say name loud text anything think phone gets checked gresham person keeps id makes work cash sometimes they make go men if leave ll safe sleep tonight talk long there people nearby",
+      "voiceResponse": "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:a1e021534ee03771",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:2e6331f97ca5eacd",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001679#turn-3",
+      "scenarioId": "phone_dialog_0001679",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Gresham, and my ex keeps showing up where I am, texting threats, and waiting outside my work.",
+      "normalizedQuery": "hi on borrowed phone it might die so give most important number first sorry there traffic noise say again slower gresham ex keeps showing up texting threats waiting outside work",
+      "voiceResponse": "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. If you\u2019re in immediate danger right now, call **9-1-1** first. If you want a private support line next: **5-0-3, 2-8-3, 6-8-8-1**. You can share only what feels safe. A simple first line is: \u201cMy ex is threatening me and showing up at my work in Gresham. I need safety planning.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001679#turn-4",
+      "scenarioId": "phone_dialog_0001679",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not with him this second, but if I go back to my apartment tonight I don\u2019t feel safe at all.",
+      "normalizedQuery": "hi on borrowed phone it might die so give most important number first sorry there traffic noise say again slower gresham ex keeps showing up texting threats waiting outside work him this second if go back apartment tonight don feel safe at all",
+      "voiceResponse": "You did the right thing telling me. Since tonight feels unsafe, your first option is to call **9-1-1** if he shows up or you feel at risk. Next, call this private support line now to plan tonight safely: **5-0-3, 2-8-3, 6-8-8-1**. You can share as little as you want. If it helps, say: \u201cI don\u2019t feel safe going back to my apartment tonight. I need a safe plan.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing telling me. Since tonight feels unsafe, your first option is to call **9-1-1** if he shows up or you feel at risk. Next, call this private support line now to plan tonight safely: **5-0-3, 2-8-3, 6-8-8-1**. You can share as little as you want. If it helps, say: \u201cI don\u2019t feel safe going back to my apartment tonight. I need a safe plan.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001949#turn-3",
+      "scenarioId": "phone_dialog_0001949",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "They\u2019re making me work and\u2026 do stuff I don\u2019t want to do for money, and I\u2019m scared they track where I go.",
+      "normalizedQuery": "hi keep this short phone might be checked talk long gresham person staying won let leave alone id they re making work stuff don want money scared track go",
+      "voiceResponse": "I\u2019m really glad you said that. What you described can be trafficking, and it\u2019s serious. If you\u2019re in immediate danger, call 9-1-1 now. If it feels safer, I can get you to a live advocate and you can say only: \u201cI\u2019m being forced to do work/sex for money and I\u2019m being tracked. I need a safe exit plan.\u201d You don\u2019t need ID to ask for help. We can keep this short and on your terms.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:a8985ec91c7fc1f1",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. What you described can be trafficking, and it\u2019s serious. If you\u2019re in immediate danger, call 9-1-1 now. If it feels safer, I can get you to a live advocate and you can say only: \u201cI\u2019m being forced to do work/sex for money and I\u2019m being tracked. I need a safe exit plan.\u201d You don\u2019t need ID to ask for help. We can keep this short and on your terms.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001949#turn-4",
+      "scenarioId": "phone_dialog_0001949",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Not this second, they stepped outside, but if they come back I have to hang up fast.",
+      "normalizedQuery": "hi keep this short phone might be checked talk long gresham person staying won let leave alone id they re making work stuff don want money scared track go second stepped outside if come back have hang up fast",
+      "voiceResponse": "You\u2019re doing the right thing. Since time is tight, here\u2019s the shortest plan: I can connect you to a live advocate now. If they come back, hang up immediately, no explanation needed. If you get one sentence in, say: \u201cI\u2019m being forced to work and do sexual things for money, being tracked, and need a safe exit plan.\u201d If danger spikes in the moment, call 9-1-1.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Since time is tight, here\u2019s the shortest plan: I can connect you to a live advocate now. If they come back, hang up immediately, no explanation needed. If you get one sentence in, say: \u201cI\u2019m being forced to work and do sexual things for money, being tracked, and need a safe exit plan.\u201d If danger spikes in the moment, call 9-1-1.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you now to a live 211 specialist for Gresham job support. They can look up local **Job Finding Assistance** options and help with application support. I only have listing evidence here, not direct provider phone numbers or hours, so the live specialist is the fastest way to get exact contacts. If the call drops, call back and say: \u201cGresham, job leads and application help for my nephew.\u201d",
+        "I\u2019m sorry this is happening. If you\u2019re in immediate danger, call **9-1-1** now. Nearby number in Gresham: **9-7-1, 4-1-4, 7-2-7-0**. Backup: **5-0-3, 3-2-5, 4-5-4-7**. You can say: \u201cI need help getting my ID back and leaving safely. Please don\u2019t text, and don\u2019t use my name.\u201d If you want, I can connect you to a live person now.",
+        "I hear you. What you described is serious, and it\u2019s not your fault. If you think you could be hurt right now, call **9-1-1**. If you want a quieter step, call **9-7-1, 4-1-4, 7-2-7-0** and say: \u201cI need to leave safely. No texts, no name, no messages.\u201d Backup is **5-0-3, 3-2-5, 4-5-4-7**. I can stay with you while you place the call.",
+        "Keep this very short: if you might be hurt right now, call **9-1-1**. If you can make one quick call for a safe place tonight, call **5-0-3, 8-1-6, 3-4-0-9**. You can say: \u201cI need a safe place tonight. No texts, no name, no voicemail.\u201d You\u2019re in control of what you share. If people are nearby, it\u2019s okay to hang up and call when you can."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -525,6 +740,48 @@
       "to": "phone_dialog_0000923#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0001588#turn-3",
+      "to": "phone_dialog_0001588#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001588#turn-4",
+      "to": "phone_dialog_0001588#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001588#turn-5",
+      "to": "phone_dialog_0001588#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001679#turn-3",
+      "to": "phone_dialog_0001679#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001679#turn-4",
+      "to": "phone_dialog_0001679#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001949#turn-3",
+      "to": "phone_dialog_0001949#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001949#turn-4",
+      "to": "phone_dialog_0001949#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
     }
   ]
 }

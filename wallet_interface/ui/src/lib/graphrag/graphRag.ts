@@ -13,11 +13,28 @@ import {
 } from "./serviceDocument";
 import { generateWalletRouterText, type WalletApiConfig } from "../../services/walletApi";
 
+export interface GraphRagSlottedResponseMetadata extends Record<string, unknown> {
+  intentId: string;
+  canonicalQueryTemplate: string;
+  edgeId: string;
+  route: string;
+  exact: boolean;
+  score: number;
+  responseFrameId: string;
+  responseSignature: string;
+  evidenceDocIds: string[];
+}
+
+export interface GraphRagAnswerMetadata extends Record<string, unknown> {
+  slottedResponse?: GraphRagSlottedResponseMetadata;
+}
+
 export interface GraphRagAnswer {
   question: string;
   answer: string;
   evidence: GraphRagEvidence;
   usedLocalModel: boolean;
+  metadata?: GraphRagAnswerMetadata;
 }
 
 export const DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS = 512;
@@ -27,6 +44,7 @@ interface GraphRagPromptOptions {
   excerptCharacters?: number;
   graphNodeLimit?: number;
   graphEdgeLimit?: number;
+  slottedResponseContext?: string;
 }
 
 export async function build211GraphRagEvidence(
@@ -170,6 +188,9 @@ ${formatGraphContext(evidence.nodes, evidence.edges, {
   nodeLimit: options.graphNodeLimit ?? 8,
   edgeLimit: options.graphEdgeLimit ?? 8,
 })}
+
+Prerendered response-frame retrieval:
+${options.slottedResponseContext || "No prerendered slotted response frame was retrieved."}
 
 Write the answer in this format:
 - Direct answer: 1-2 short sentences. Cite each factual sentence with [1], [2], etc.

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__portland",
   "kind": "service_location",
   "key": "food__portland",
-  "nodeCount": 39,
+  "nodeCount": 47,
   "nodes": [
     {
       "id": "phone_dialog_0000156#turn-5",
@@ -1161,6 +1161,246 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001603#turn-6",
+      "scenarioId": "phone_dialog_0001603",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Also, if there\u2019s a ride service and meal delivery in Portland, I need that too because I can\u2019t safely travel to appointments.",
+      "normalizedQuery": "also if there ride service meal delivery portland too because safely travel appointments",
+      "voiceResponse": "Yes, Frank. For rides in Portland, call Ride Connection. Number: **5 0 3, 2 2 6, 0 7 0 0**. I\u2019ll repeat: **5 0 3, 2 2 6, 0 7 0 0**. Address: **9 9 5 5 N E Glisan Street, Portland, Oregon, 9 7 2 2 0**. I can get a live agent to find meal delivery and check-in services. Do you want that now?",
+      "evidenceDocIds": [
+        "service:21c309be2f940e04",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:98ac0349caf0cda6",
+        "service:6ee668e6330d23d8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, Frank. For rides in Portland, call Ride Connection. Number: **5 0 3, 2 2 6, 0 7 0 0**. I\u2019ll repeat: **5 0 3, 2 2 6, 0 7 0 0**. Address: **9 9 5 5 N E Glisan Street, Portland, Oregon, 9 7 2 2 0**. I can get a live agent to find meal delivery and check-in services. Do you want that now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Closest option to downtown is **Community Meals and Pantry** at **909 Southwest 11th Avenue**. Call first: **503\u2026 228\u2026 7465**. Say: \u201cI\u2019m near the bus mall, no food, and need help right now.\u201d They have meals, pantry food, clothing, and hygiene supplies. When you get there, ask staff for a safe place to sit and a phone outlet to charge. If you feel in immediate danger, call **911** now.",
+        "I hear you, and you shouldn\u2019t have to keep repeating yourself. I\u2019m escalating you now to a live person and I\u2019ll keep this to one handoff. While I connect them, if you can move, go to Community Meals and Pantry, 909 Southwest 11th Avenue, near downtown. Their number is 503\u2026 228\u2026 7465. If you feel unsafe right this second, call 911.",
+        "Yes. Next step: when the live 211 person answers, say, \u201cPlease share only the minimum needed for referrals.\u201d I\u2019ll keep this limited to what\u2019s necessary. If your dizziness or breathing gets worse right now, call 911 immediately.",
+        "Main step first: call **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**. Say: \u201cMy mom is 74, in Portland, and needs senior meal help, including home-delivered meals if possible.\u201d I can stay brief. Do you want a 15-second script you can read word-for-word?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001724#turn-3",
+      "scenarioId": "phone_dialog_0001724",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I didn\u2019t catch that, I\u2019m hard of hearing on this phone, can you say it slower and one step at a time?",
+      "normalizedQuery": "hi calling mom portland before anything else yes she breathing immediate danger right this second 78 mostly home alone think neglect now keeps missing meals yesterday missed her heart pills again sorry didn catch hard hearing on phone say it slower one step at time",
+      "voiceResponse": "Of course. I will go slowly. One step at a time. First step: Is your mom awake, and able to talk right now? I\u2019ll repeat that. Is she awake, and able to talk right now? If she gets chest pain, trouble breathing, or is hard to wake, call 9-1-1 right away. Call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I will go slowly. One step at a time. First step: Is your mom awake, and able to talk right now? I\u2019ll repeat that. Is she awake, and able to talk right now? If she gets chest pain, trouble breathing, or is hard to wake, call 9-1-1 right away. Call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Closest option to downtown is **Community Meals and Pantry** at **909 Southwest 11th Avenue**. Call first: **503\u2026 228\u2026 7465**. Say: \u201cI\u2019m near the bus mall, no food, and need help right now.\u201d They have meals, pantry food, clothing, and hygiene supplies. When you get there, ask staff for a safe place to sit and a phone outlet to charge. If you feel in immediate danger, call **911** now.",
+        "I hear you, and you shouldn\u2019t have to keep repeating yourself. I\u2019m escalating you now to a live person and I\u2019ll keep this to one handoff. While I connect them, if you can move, go to Community Meals and Pantry, 909 Southwest 11th Avenue, near downtown. Their number is 503\u2026 228\u2026 7465. If you feel unsafe right this second, call 911.",
+        "Yes. Next step: when the live 211 person answers, say, \u201cPlease share only the minimum needed for referrals.\u201d I\u2019ll keep this limited to what\u2019s necessary. If your dizziness or breathing gets worse right now, call 911 immediately.",
+        "Main step first: call **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**. Say: \u201cMy mom is 74, in Portland, and needs senior meal help, including home-delivered meals if possible.\u201d I can stay brief. Do you want a 15-second script you can read word-for-word?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001724#turn-4",
+      "scenarioId": "phone_dialog_0001724",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Her apartment has stairs and no working elevator, so she can\u2019t safely get out for appointments or groceries, and I live across town.",
+      "normalizedQuery": "hi calling mom portland before anything else yes she breathing immediate danger right this second 78 mostly home alone think neglect now keeps missing meals yesterday missed her heart pills again sorry didn catch hard hearing on phone say it slower one step at time apartment has stairs no working elevator so safely appointments groceries live across town",
+      "voiceResponse": "Thank you. I hear you. Stairs, no elevator, and she cannot get out safely. I\u2019ll repeat: she cannot get out safely. Quick safety check first. Is she safe right now, in this moment? If breathing trouble, chest pain, or she cannot wake, call 9-1-1. Call 9-1-1.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. Stairs, no elevator, and she cannot get out safely. I\u2019ll repeat: she cannot get out safely. Quick safety check first. Is she safe right now, in this moment? If breathing trouble, chest pain, or she cannot wake, call 9-1-1. Call 9-1-1.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Closest option to downtown is **Community Meals and Pantry** at **909 Southwest 11th Avenue**. Call first: **503\u2026 228\u2026 7465**. Say: \u201cI\u2019m near the bus mall, no food, and need help right now.\u201d They have meals, pantry food, clothing, and hygiene supplies. When you get there, ask staff for a safe place to sit and a phone outlet to charge. If you feel in immediate danger, call **911** now.",
+        "I hear you, and you shouldn\u2019t have to keep repeating yourself. I\u2019m escalating you now to a live person and I\u2019ll keep this to one handoff. While I connect them, if you can move, go to Community Meals and Pantry, 909 Southwest 11th Avenue, near downtown. Their number is 503\u2026 228\u2026 7465. If you feel unsafe right this second, call 911.",
+        "Yes. Next step: when the live 211 person answers, say, \u201cPlease share only the minimum needed for referrals.\u201d I\u2019ll keep this limited to what\u2019s necessary. If your dizziness or breathing gets worse right now, call 911 immediately.",
+        "Main step first: call **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**. Say: \u201cMy mom is 74, in Portland, and needs senior meal help, including home-delivered meals if possible.\u201d I can stay brief. Do you want a 15-second script you can read word-for-word?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001741#turn-4",
+      "scenarioId": "phone_dialog_0001741",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I don\u2019t hear well on this phone, and I missed the office name.",
+      "normalizedQuery": "hello static can't re cutting uh card inaudible no food pantry meal meals groceries said id think sorry hear now okay lost state portland oregon don know start say slower well on this phone missed office name",
+      "voiceResponse": "Of course. I\u2019ll say it slowly. The office name is **Oregon DMV**. **Oregon DMV**. That is for replacing a state ID card.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say it slowly. The office name is **Oregon DMV**. **Oregon DMV**. That is for replacing a state ID card.",
+      "voiceResponseAlternatives": [
+        "Next step: ask for **Community Meal**. The name is **Community Meal**. I\u2019ll say it again: **Community Meal**.",
+        "Of course. The number is: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**. I\u2019ll say it once more: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**.",
+        "Of course. The center is **PDX Saints Love Day Center**. Street address: **247 Southeast 82nd Avenue**, Portland. I\u2019ll say it once more in chunks: **247** \u2026 **Southeast** \u2026 **82nd Avenue**.",
+        "Yes. Slowly: **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001741#turn-5",
+      "scenarioId": "phone_dialog_0001741",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Is that downtown Portland or the one on Powell\u2014sorry, did you say power or Powell?",
+      "normalizedQuery": "inaudible no food pantry meal meals groceries said id think sorry hear now okay lost state portland oregon don know start say slower well on this phone missed office name downtown one powell did power",
+      "voiceResponse": "I said **Oregon DMV**, not one office yet. I said **Oregon DMV**, not one office yet. And yes, you heard **Powell** like the street name, not \u201cpower.\u201d Do you want me to find the nearest Portland DMV office to you?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:44e6076b8adfbe02"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I said **Oregon DMV**, not one office yet. I said **Oregon DMV**, not one office yet. And yes, you heard **Powell** like the street name, not \u201cpower.\u201d Do you want me to find the nearest Portland DMV office to you?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not doing anything wrong, this can be confusing. I do have a 211info category for **Food \u2192 Grocery Ordering/Delivery** in Portland, and it shows **9 matching providers**. We can use that list to find senior-friendly delivery options for your mom. If you want, we can keep it simple and go one provider at a time so you don\u2019t have to sort everything at once.",
+        "Absolutely. Let\u2019s keep it simple and steady. We can use that Portland 211 food delivery list and do it one provider at a time. As you call, jot just three things: name, date called, and result (yes/no/waitlist/callback). That way nothing gets lost. If you want, I can help you script a short call message so every call is quick and consistent.",
+        "Call this meal line now: **503-383-1834**. That\u2019s **5-0-3, 3-8-3, 1-8-3-4**. The listing is **Community Meal** at **529 Molalla Avenue, Oregon City**. It says meals are for adults 18 and older, and no documents are required. If you want, I can repeat the number once more.",
+        "You\u2019re doing the right thing calling. Most important number first: **5-0-3, 7-7-1, 7-9-1-4**. That\u2019s a Portland food pantry at **8800 Southeast 80th Avenue**. Eligibility is unrestricted, and no documents are required. If that doesn\u2019t answer, backup number is **5-0-3, 2-2-8, 7-4-6-5**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001748#turn-5",
+      "scenarioId": "phone_dialog_0001748",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone\u2019s at like two percent, can you repeat the address one more time, really slowly?",
+      "normalizedQuery": "slow down please crying missed part did say go no portland salem like downtown sorry people talking over here keep losing track they clothes it only food pantry meal meals groceries there phone at two percent repeat address one more time really slowly",
+      "voiceResponse": "Of course. You\u2019re doing great, and I\u2019ll say just the address slowly. It is: **eight eight zero zero**\u2026 **Southeast Eightieth Avenue**\u2026 **Portland, Oregon**\u2026 **nine seven two zero six**. I can repeat it one more time if you want.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b8c762144d937988",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:97fd6b13a5399d5a",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. You\u2019re doing great, and I\u2019ll say just the address slowly. It is: **eight eight zero zero**\u2026 **Southeast Eightieth Avenue**\u2026 **Portland, Oregon**\u2026 **nine seven two zero six**. I can repeat it one more time if you want.",
+      "voiceResponseAlternatives": [
+        "Next step: ask for **Community Meal**. The name is **Community Meal**. I\u2019ll say it again: **Community Meal**.",
+        "Of course. The number is: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**. I\u2019ll say it once more: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**.",
+        "Of course. The center is **PDX Saints Love Day Center**. Street address: **247 Southeast 82nd Avenue**, Portland. I\u2019ll say it once more in chunks: **247** \u2026 **Southeast** \u2026 **82nd Avenue**.",
+        "Yes. Slowly: **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001970#turn-3",
+      "scenarioId": "phone_dialog_0001970",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? I missed that part, could you repeat the number in chunks? My hearing is bad on this phone.",
+      "normalizedQuery": "hi calling mom portland lents area sorry speak little slower she 78 think being neglected at home no there fire nobody attacking her right now alone most days missed meals again found yesterday pills still box part could repeat number chunks hearing bad on this phone",
+      "voiceResponse": "Yes. I will repeat the number slowly. It is **9-1-1**. Again: **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will repeat the number slowly. It is **9-1-1**. Again: **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Next step: ask for **Community Meal**. The name is **Community Meal**. I\u2019ll say it again: **Community Meal**.",
+        "Of course. The number is: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**. I\u2019ll say it once more: **5-0-3** \u2026 **7-7-1** \u2026 **7-9-1-4**.",
+        "Of course. The center is **PDX Saints Love Day Center**. Street address: **247 Southeast 82nd Avenue**, Portland. I\u2019ll say it once more in chunks: **247** \u2026 **Southeast** \u2026 **82nd Avenue**.",
+        "Yes. Slowly: **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002048#turn-4",
+      "scenarioId": "phone_dialog_0002048",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what was that number? Can you repeat it in small chunks, like three digits at a time?",
+      "normalizedQuery": "hi calling mom portland hear great on this line so please go slow before anything else tell right now if she might be safe her caregiver hasn shown up two days second floor apartment no working elevator uses wheelchair told missed meals heart meds yesterday sorry was number repeat it small chunks like three digits at time",
+      "voiceResponse": "Yes. The number is **9-1-1**. I\u2019ll repeat it: **9-1-1**. In three-digit chunks, that is: **9 \u2026 1 \u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. I\u2019ll repeat it: **9-1-1**. In three-digit chunks, that is: **9 \u2026 1 \u2026 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Closest option to downtown is **Community Meals and Pantry** at **909 Southwest 11th Avenue**. Call first: **503\u2026 228\u2026 7465**. Say: \u201cI\u2019m near the bus mall, no food, and need help right now.\u201d They have meals, pantry food, clothing, and hygiene supplies. When you get there, ask staff for a safe place to sit and a phone outlet to charge. If you feel in immediate danger, call **911** now.",
+        "I hear you, and you shouldn\u2019t have to keep repeating yourself. I\u2019m escalating you now to a live person and I\u2019ll keep this to one handoff. While I connect them, if you can move, go to Community Meals and Pantry, 909 Southwest 11th Avenue, near downtown. Their number is 503\u2026 228\u2026 7465. If you feel unsafe right this second, call 911.",
+        "Yes. Next step: when the live 211 person answers, say, \u201cPlease share only the minimum needed for referrals.\u201d I\u2019ll keep this limited to what\u2019s necessary. If your dizziness or breathing gets worse right now, call 911 immediately.",
+        "Main step first: call **5 0 3, 2 8 3, 6 8 8 1**. Again: **5 0 3, 2 8 3, 6 8 8 1**. Say: \u201cMy mom is 74, in Portland, and needs senior meal help, including home-delivered meals if possible.\u201d I can stay brief. Do you want a 15-second script you can read word-for-word?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1373,6 +1613,48 @@
       "to": "phone_dialog_0001155#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001724#turn-3",
+      "to": "phone_dialog_0001724#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001724#turn-4",
+      "to": "phone_dialog_0001724#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001741#turn-4",
+      "to": "phone_dialog_0001741#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001741#turn-5",
+      "to": "phone_dialog_0001741#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001748#turn-5",
+      "to": "phone_dialog_0001748#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001970#turn-3",
+      "to": "phone_dialog_0001970#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002048#turn-4",
+      "to": "phone_dialog_0002048#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

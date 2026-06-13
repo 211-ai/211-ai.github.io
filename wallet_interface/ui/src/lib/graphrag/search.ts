@@ -63,6 +63,72 @@ interface RankedScore {
   score: number;
 }
 
+// Cache for precomputed service IDs loaded from manifest
+let precomputedServiceIdsCache: Set<string> | null = null;
+let precomputedServiceIdsCacheLoadedAt = 0;
+const PRECOMPUTED_SERVICE_CACHE_TTL_MS = 3600000; // 1 hour
+
+async function getPrecomputedServiceIds(): Promise<Set<string>> {
+  const now = Date.now();
+  if (precomputedServiceIdsCache && now - precomputedServiceIdsCacheLoadedAt < PRECOMPUTED_SERVICE_CACHE_TTL_MS) {
+    return precomputedServiceIdsCache;
+  }
+
+  const ids = new Set<string>();
+  try {
+    // Try to load the precompute manifest with completed responses
+    const response = await fetch("docs/211_indextts_sample_manifest.json", { cache: "no-store" }).catch(() =>
+      // Fallback to planned manifest if sample is not available
+      fetch("docs/211_indextts_precompute_manifest.json", { cache: "no-store" }),
+    );
+
+    if (!response.ok) {
+      return ids;
+    }
+
+    const manifest = await response.json();
+    const responses = manifest.responses || [];
+
+    // Extract service doc IDs from response sourceIds
+    for (const responseEntry of responses) {
+      const sourceIds = responseEntry.sourceIds || [];
+      for (const sourceId of sourceIds) {
+        // Convert sourceId format (e.g., "birth_certificate_help#turn-1") to doc ID if needed
+        // Many service responses will have sourceIds that reference specific service nodes
+        if (sourceId && typeof sourceId === "string") {
+          // Extract the base service ID (before the # delimiter)
+          const baseId = sourceId.split("#")[0];
+          if (baseId && baseId.match(/^[a-z0-9_-]+$/i)) {
+            ids.add(baseId);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to load precomputed service IDs for search boost:", error);
+  }
+
+  precomputedServiceIdsCache = ids;
+  precomputedServiceIdsCacheLoadedAt = now;
+  return ids;
+}
+
+function getPrecomputedBoost(docId: string, precomputedIds: Set<string>): number {
+  // Return boost factor if docId is in precomputed set
+  // Boost is applied additively to final score
+  if (precomputedIds.has(docId)) {
+    return 0.4; // Moderate boost that doesn't dominate other ranking signals
+  }
+
+  // Check if docId matches pattern service:* and has precomputed audio
+  if (docId.startsWith("service:")) {
+    // Could add more sophisticated matching here if needed
+    return 0;
+  }
+
+  return 0;
+}
+
 interface WeightedSearchField {
   text: string;
   weight: number;
@@ -91,6 +157,9 @@ export async function search211Corpus(
   const candidateLimit = options.candidateLimit || Math.max(limit * 10, 200);
   const preferredClusterIds = dedupeIntegerList(options.preferredClusterIds || []);
 
+  // Load precomputed service IDs in background for search ranking boost
+  const precomputedIdsPromise = getPrecomputedServiceIds().catch(() => new Set<string>());
+
   const serviceClusterResults = await searchPreferredServiceClusters(trimmedQuery, {
     filters: options.filters,
     limit,
@@ -99,6 +168,7 @@ export async function search211Corpus(
     queryEmbedding: options.queryEmbedding,
     preferredClusterIds,
     currentCoordinates: options.currentCoordinates,
+    precomputedIds: await precomputedIdsPromise,
   });
   if (serviceClusterResults.length >= limit) {
     return serviceClusterResults.slice(0, limit);
@@ -112,6 +182,7 @@ export async function search211Corpus(
     queryEmbedding: options.queryEmbedding,
     currentCoordinates: options.currentCoordinates,
     preferredClusterIds,
+    precomputedIds: await precomputedIdsPromise,
   });
   if (sparseServiceResults.length >= limit) {
     return mergeSearchResults(serviceClusterResults, sparseServiceResults, limit);
@@ -124,6 +195,7 @@ export async function search211Corpus(
     mode,
     queryEmbedding: options.queryEmbedding,
     currentCoordinates: options.currentCoordinates,
+    precomputedIds: await precomputedIdsPromise,
   });
   if (allServiceShardResults.length >= limit) {
     return mergeSearchResults([...serviceClusterResults, ...sparseServiceResults], allServiceShardResults, limit);
@@ -349,6 +421,7 @@ async function searchAllServiceGeoShards(
     mode: SearchMode;
     queryEmbedding?: Float32Array | number[];
     currentCoordinates?: SearchCoordinates;
+    precomputedIds?: Set<string>;
   },
 ): Promise<SearchResult[]> {
   if (!isServiceOnlySearch(options.filters)) {
@@ -389,6 +462,7 @@ async function searchAllServiceGeoShards(
     geoScores,
     options.currentCoordinates,
     options.limit,
+    options.precomputedIds,
   );
 }
 
@@ -484,6 +558,7 @@ async function searchPreferredServiceClusters(
     queryEmbedding?: Float32Array | number[];
     preferredClusterIds: number[];
     currentCoordinates?: SearchCoordinates;
+    precomputedIds?: Set<string>;
   },
 ): Promise<SearchResult[]> {
   if (!options.preferredClusterIds.length || !isServiceOnlySearch(options.filters)) {
@@ -527,6 +602,7 @@ async function searchPreferredServiceClusters(
       new Map(),
       options.currentCoordinates,
       options.limit,
+      options.precomputedIds,
     );
     if (results.length > bestResults.length) {
       bestResults = results;
@@ -548,6 +624,7 @@ async function searchSparseServiceClusters(
     queryEmbedding?: Float32Array | number[];
     preferredClusterIds: number[];
     currentCoordinates?: SearchCoordinates;
+    precomputedIds?: Set<string>;
   },
 ): Promise<SearchResult[]> {
   if (options.preferredClusterIds.length || !isServiceOnlySearch(options.filters)) {
@@ -566,6 +643,7 @@ async function searchSparseServiceClusters(
     queryEmbedding: options.queryEmbedding,
     preferredClusterIds: clusterIds,
     currentCoordinates: options.currentCoordinates,
+    precomputedIds: options.precomputedIds,
   });
 }
 
@@ -683,6 +761,7 @@ function rankSearchResults(
   geoScores: Map<string, number>,
   currentCoordinates: SearchCoordinates | undefined,
   limit: number,
+  precomputedIds: Set<string> | undefined = undefined,
 ): SearchResult[] {
   const effectiveCandidates = new Set(candidates);
   if (effectiveCandidates.size === 0) {
@@ -712,6 +791,7 @@ function rankSearchResults(
       normalizedVector,
       geoScores,
       currentCoordinates,
+      precomputedIds,
     );
     results.push(result);
   }
@@ -726,19 +806,21 @@ function scoreSearchResult(
   normalizedKeyword: Map<string, number>,
   normalizedVector: Map<string, number>,
   geoScores: Map<string, number>,
-  currentCoordinates?: SearchCoordinates,
+  currentCoordinates: SearchCoordinates | undefined,
+  precomputedIds: Set<string> | undefined = undefined,
 ): SearchResult {
   const keyword = normalizedKeyword.get(docId) || 0;
   const vector = normalizedVector.get(docId) || 0;
   const metadata = metadataScore(document, query, geoScores.get(docId) || 0);
   const distanceMiles = computeDocumentDistanceMiles(document, currentCoordinates);
   const proximity = proximityScore(distanceMiles, document);
+  const precomputedBoost = precomputedIds ? getPrecomputedBoost(docId, precomputedIds) : 0;
   const score =
-    mode === "keyword"
+    (mode === "keyword"
       ? keyword * 2 + metadata + proximity * 1.2
       : mode === "vector"
         ? vector * 2 + metadata * 0.5 + proximity
-        : keyword * 1.4 + vector * 2 + metadata + proximity * 1.2;
+        : keyword * 1.4 + vector * 2 + metadata + proximity * 1.2) + precomputedBoost;
 
   return {
     docId,

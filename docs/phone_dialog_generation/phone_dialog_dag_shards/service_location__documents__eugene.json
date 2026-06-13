@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__documents__eugene",
   "kind": "service_location",
   "key": "documents__eugene",
-  "nodeCount": 15,
+  "nodeCount": 23,
   "nodes": [
     {
       "id": "phone_dialog_0000129#turn-6",
@@ -113,7 +113,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "The place is in **La Grande**. Name/location: **501 3rd Street, La Grande, Oregon, 97850**. Slowly: **5-0-1** \u2026 **3rd Street** \u2026 **La Grande** \u2026 **9-7-8-5-0**. I don\u2019t have confirmed hours in front of me. If you want, call **5-4-1, 9-6-2, 7-9-9-4** and ask today\u2019s hours.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Thank you. I hear you now. You are in Eugene, and you need to replace your state ID. You are in Eugene, and you need to replace your state ID. I do not have a clear local ID-replacement listing on my screen right now. Do you want me to connect you to a live 211 specialist who can give the exact Oregon DMV steps?",
+        "Yes. The number is **2 \u2026 1 \u2026 1**. I\u2019ll repeat it: **2 \u2026 1 \u2026 1**. Dial those three digits for a live 211 specialist."
+      ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
@@ -444,6 +447,232 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001414#turn-3",
+      "scenarioId": "phone_dialog_0001414",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Okay, better now. I'm in Eugene, and I need help replacing my state ID, I don't know where to start.",
+      "normalizedQuery": "okay better now i'm eugene replacing state id don't know start",
+      "voiceResponse": "Thank you. I hear you now. You are in Eugene, and you need to replace your state ID. You are in Eugene, and you need to replace your state ID. I do not have a clear local ID-replacement listing on my screen right now. Do you want me to connect you to a live 211 specialist who can give the exact Oregon DMV steps?",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:16c906930c61dd47",
+        "service:c998893811d5bb0f",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:28acd183a54cc8a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you now. You are in Eugene, and you need to replace your state ID. You are in Eugene, and you need to replace your state ID. I do not have a clear local ID-replacement listing on my screen right now. Do you want me to connect you to a live 211 specialist who can give the exact Oregon DMV steps?",
+      "voiceResponseAlternatives": [
+        "The place is in **La Grande**. Name/location: **501 3rd Street, La Grande, Oregon, 97850**. Slowly: **5-0-1** \u2026 **3rd Street** \u2026 **La Grande** \u2026 **9-7-8-5-0**. I don\u2019t have confirmed hours in front of me. If you want, call **5-4-1, 9-6-2, 7-9-9-4** and ask today\u2019s hours.",
+        "Yes. The number is **2 \u2026 1 \u2026 1**. I\u2019ll repeat it: **2 \u2026 1 \u2026 1**. Dial those three digits for a live 211 specialist."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001414#turn-4",
+      "scenarioId": "phone_dialog_0001414",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that office name slower? I misheard it, sounded like 'Springfield' or something.",
+      "normalizedQuery": "hello static can't hear hang on inaudible lost card no sorry say again you're cutting got uh papers stolen think okay better now i'm eugene replacing state id don't know start repeat office name slower misheard it sounded like 'springfield' something",
+      "voiceResponse": "I did not say Springfield. I said: a live two-one-one specialist. A live two-one-one specialist. They can give the exact Oregon DMV steps to replace your state ID. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I did not say Springfield. I said: a live two-one-one specialist. A live two-one-one specialist. They can give the exact Oregon DMV steps to replace your state ID. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Absolutely. The number is **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**. Again: **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**. I don\u2019t have a confirmed intake checklist. Fastest option is to call and ask, \u201cWhat should I bring for intake?\u201d",
+        "Absolutely. Slow and simple: First: if bank cards were in your wallet, call the bank and freeze them. Second: report your ID as lost and request a replacement through Oregon DMV right away. Third: if you think it was stolen, a police report is optional. You can do just the first two now. We can pause after each step.",
+        "Yes. The office is the **Oregon DMV**. I\u2019ll say it slowly: **Ore-gon D-M-V**. That\u2019s where you request the replacement ID.",
+        "Of course. The only number I gave was for emergencies: **9-1-1**. Slowly: **nine \u2026 one \u2026 one**. For the pharmacy, use the number on your prescription bottle or pharmacy card."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001414#turn-5",
+      "scenarioId": "phone_dialog_0001414",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number, please do it one digit at a time, I don't hear fast very well.",
+      "normalizedQuery": "no sorry say again you're cutting got uh papers stolen think okay better now i'm eugene replacing state id don't know start repeat office name slower misheard it sounded like 'springfield' something phone number please one digit at time hear fast very well",
+      "voiceResponse": "Yes. The number is **2 \u2026 1 \u2026 1**. I\u2019ll repeat it: **2 \u2026 1 \u2026 1**. Dial those three digits for a live 211 specialist.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **2 \u2026 1 \u2026 1**. I\u2019ll repeat it: **2 \u2026 1 \u2026 1**. Dial those three digits for a live 211 specialist.",
+      "voiceResponseAlternatives": [
+        "The place is in **La Grande**. Name/location: **501 3rd Street, La Grande, Oregon, 97850**. Slowly: **5-0-1** \u2026 **3rd Street** \u2026 **La Grande** \u2026 **9-7-8-5-0**. I don\u2019t have confirmed hours in front of me. If you want, call **5-4-1, 9-6-2, 7-9-9-4** and ask today\u2019s hours.",
+        "Thank you. I hear you now. You are in Eugene, and you need to replace your state ID. You are in Eugene, and you need to replace your state ID. I do not have a clear local ID-replacement listing on my screen right now. Do you want me to connect you to a live 211 specialist who can give the exact Oregon DMV steps?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001414#turn-6",
+      "scenarioId": "phone_dialog_0001414",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "wallet_document_support",
+      "user": "I don't have a printer, so if they need proof of address, what can I bring instead?",
+      "normalizedQuery": "okay better now i'm eugene replacing state id don't know start repeat office name slower misheard it sounded like 'springfield' something phone number please one digit at time hear fast very well have printer so if they proof address bring instead",
+      "voiceResponse": "Yes. You can still do this without a printer. You can still do this without a printer. Bring proof you already have, like mail with your name and address, or a bill shown on your phone. If they need a printed copy, ask the office what they accept before you go. If you want, I can connect you to 2 \u2026 1 \u2026 1 now. I\u2019ll repeat: 2 \u2026 1 \u2026 1.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You can still do this without a printer. You can still do this without a printer. Bring proof you already have, like mail with your name and address, or a bill shown on your phone. If they need a printed copy, ask the office what they accept before you go. If you want, I can connect you to 2 \u2026 1 \u2026 1 now. I\u2019ll repeat: 2 \u2026 1 \u2026 1.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001857#turn-4",
+      "scenarioId": "phone_dialog_0001857",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "If he sees this call log I\u2019m in trouble, so please don\u2019t say too much out loud.",
+      "normalizedQuery": "hi keep this short at bus stop eugene think he checks phone sorry just went by missed part say it again slower go back there tonight took id says owe him makes men money if sees call log trouble so please don too much loud",
+      "voiceResponse": "Okay. I\u2019ll keep this very short. We can switch to a live person now and I won\u2019t say details out loud. If you\u2019re in immediate danger, call **9 1 1** now. If not, you can hang up first, clear this call from your log when safe, and call back when you\u2019re alone. You\u2019re not at fault, and you have options.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. I\u2019ll keep this very short. We can switch to a live person now and I won\u2019t say details out loud. If you\u2019re in immediate danger, call **9 1 1** now. If not, you can hang up first, clear this call from your log when safe, and call back when you\u2019re alone. You\u2019re not at fault, and you have options.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by reaching out. Let\u2019s keep this simple: I don\u2019t have a solid ID-replacement listing in front of me, but I can help you connect to a person in Eugene right now. Try calling **Five four one, three four three, four seven four seven**. That\u2019s at **1203 Willamette Street, Suite 100, Eugene**. If you want, I can stay with you while you place the call and help you script what to ask.",
+        "Okay, fast version. Bring these first: photo ID, proof of address, proof of income, and any disability or diagnosis letter. Also bring your benefit case number and message screenshots. I don\u2019t have a verified Eugene walk-in address in front of me right now. First step: call the SNAP/EBT line now: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**.",
+        "Yes. Good question. I don\u2019t have a confirmed no-ID list in front of me right now. The fastest step is a live 211 specialist, since rules change by site and day. If ShelterCare is full, they can find the next shower option in Eugene and confirm ID rules before you go. Do you want me to connect you now?",
+        "Next step: call **St. Vincent de Paul Eugene Service Station** now at **5 4 1** \u2026 **6 8 9** \u2026 **6 7 4 7** and ask them directly about documents. I can\u2019t send your info from here, but I can stay with you while you connect to a live 211 specialist for help with that call. If needed, their second number is **5 4 1** \u2026 **9 4 2** \u2026 **2 1 7 6**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002019#turn-2",
+      "scenarioId": "phone_dialog_0002019",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Eugene, and the person I stay with controls where I go and keeps my ID, so I can\u2019t just leave like people say.",
+      "normalizedQuery": "eugene person stay controls go keeps id so just leave like people say",
+      "voiceResponse": "I hear you, and you\u2019re not overreacting. What you described is control, and it can make leaving unsafe. We can do this your way, with very little detail. I can connect you to a live person now to plan a safe next step, even without ID. If there\u2019s immediate danger right now, call 911. If you want, just say: \u201cagent now,\u201d and I\u2019ll transfer you.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not overreacting. What you described is control, and it can make leaving unsafe. We can do this your way, with very little detail. I can connect you to a live person now to plan a safe next step, even without ID. If there\u2019s immediate danger right now, call 911. If you want, just say: \u201cagent now,\u201d and I\u2019ll transfer you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by reaching out. Let\u2019s keep this simple: I don\u2019t have a solid ID-replacement listing in front of me, but I can help you connect to a person in Eugene right now. Try calling **Five four one, three four three, four seven four seven**. That\u2019s at **1203 Willamette Street, Suite 100, Eugene**. If you want, I can stay with you while you place the call and help you script what to ask.",
+        "Okay, fast version. Bring these first: photo ID, proof of address, proof of income, and any disability or diagnosis letter. Also bring your benefit case number and message screenshots. I don\u2019t have a verified Eugene walk-in address in front of me right now. First step: call the SNAP/EBT line now: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**.",
+        "Yes. Good question. I don\u2019t have a confirmed no-ID list in front of me right now. The fastest step is a live 211 specialist, since rules change by site and day. If ShelterCare is full, they can find the next shower option in Eugene and confirm ID rules before you go. Do you want me to connect you now?",
+        "Next step: call **St. Vincent de Paul Eugene Service Station** now at **5 4 1** \u2026 **6 8 9** \u2026 **6 7 4 7** and ask them directly about documents. I can\u2019t send your info from here, but I can stay with you while you connect to a live 211 specialist for help with that call. If needed, their second number is **5 4 1** \u2026 **9 4 2** \u2026 **2 1 7 6**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002019#turn-3",
+      "scenarioId": "phone_dialog_0002019",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, can you slow down and repeat that last part? I\u2019m trying to listen but I\u2019m kind of panicking.",
+      "normalizedQuery": "hi um say name loud think this phone checked only have minute eugene person stay controls go keeps id so just leave like people sorry slow down repeat last part trying listen kind panicking",
+      "voiceResponse": "You\u2019re okay, I\u2019ll go slow. Quick safety check: are you in immediate danger right now? If yes, call 911. If not, we can keep this private and simple. I can connect you to a live person who can help plan a safe next step, even without ID. You only need to say: \u201cagent now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll go slow. Quick safety check: are you in immediate danger right now? If yes, call 911. If not, we can keep this private and simple. I can connect you to a live person who can help plan a safe next step, even without ID. You only need to say: \u201cagent now.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002019#turn-4",
+      "scenarioId": "phone_dialog_0002019",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "If they come back while I\u2019m on this call, I have to hang up right away, so I need the safest next step first.",
+      "normalizedQuery": "hi um say name loud think this phone checked only have minute eugene person stay controls go keeps id so just leave like people sorry slow down repeat last part trying listen kind panicking if they come back while on call hang up right away safest next step first",
+      "voiceResponse": "Okay. Safest next step first: if they come back, hang up immediately and protect yourself first. If you\u2019re in immediate danger at any point, call 9-1-1. If there\u2019s a safe moment right now, say \u201cagent now\u201d and I\u2019ll connect you to a live person who can help you make a quick exit plan with minimal details, even without ID. You\u2019re not required to explain everything.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Safest next step first: if they come back, hang up immediately and protect yourself first. If you\u2019re in immediate danger at any point, call 9-1-1. If there\u2019s a safe moment right now, say \u201cagent now\u201d and I\u2019ll connect you to a live person who can help you make a quick exit plan with minimal details, even without ID. You\u2019re not required to explain everything.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by reaching out. Let\u2019s keep this simple: I don\u2019t have a solid ID-replacement listing in front of me, but I can help you connect to a person in Eugene right now. Try calling **Five four one, three four three, four seven four seven**. That\u2019s at **1203 Willamette Street, Suite 100, Eugene**. If you want, I can stay with you while you place the call and help you script what to ask.",
+        "Okay, fast version. Bring these first: photo ID, proof of address, proof of income, and any disability or diagnosis letter. Also bring your benefit case number and message screenshots. I don\u2019t have a verified Eugene walk-in address in front of me right now. First step: call the SNAP/EBT line now: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**.",
+        "Yes. Good question. I don\u2019t have a confirmed no-ID list in front of me right now. The fastest step is a live 211 specialist, since rules change by site and day. If ShelterCare is full, they can find the next shower option in Eugene and confirm ID rules before you go. Do you want me to connect you now?",
+        "Next step: call **St. Vincent de Paul Eugene Service Station** now at **5 4 1** \u2026 **6 8 9** \u2026 **6 7 4 7** and ask them directly about documents. I can\u2019t send your info from here, but I can stay with you while you connect to a live 211 specialist for help with that call. If needed, their second number is **5 4 1** \u2026 **9 4 2** \u2026 **2 1 7 6**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -476,6 +705,48 @@
       "to": "phone_dialog_0001100#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001414#turn-3",
+      "to": "phone_dialog_0001414#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001414#turn-4",
+      "to": "phone_dialog_0001414#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001414#turn-5",
+      "to": "phone_dialog_0001414#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001857#turn-4",
+      "to": "phone_dialog_0001857#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002019#turn-2",
+      "to": "phone_dialog_0002019#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002019#turn-3",
+      "to": "phone_dialog_0002019#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002019#turn-4",
+      "to": "phone_dialog_0002019#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

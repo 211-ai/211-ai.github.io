@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__legal__salem",
   "kind": "service_location",
   "key": "legal__salem",
-  "nodeCount": 7,
+  "nodeCount": 8,
   "nodes": [
     {
       "id": "phone_dialog_0000089#turn-1",
@@ -133,7 +133,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. Most important number first: Call **503 485 0696**. Again: **503 485 0696**. That is General Legal Aid in Salem. Address is **280 Liberty Street, Suite 200, Salem**. Again: **280 Liberty Street, Suite 200, Salem**. If you are a farmworker, I can give that number next.",
       "voiceResponseAlternatives": [
-        "First step: call **General Legal Aid in Salem** now at **503\u2026 485\u2026 0696**. I\u2019ll repeat it: **5-0-3\u2026 4-8-5\u2026 0-6-9-6**. If you\u2019re a farmworker, there\u2019s also **503\u2026 981\u2026 5291**."
+        "First step: call **General Legal Aid in Salem** now at **503\u2026 485\u2026 0696**. I\u2019ll repeat it: **5-0-3\u2026 4-8-5\u2026 0-6-9-6**. If you\u2019re a farmworker, there\u2019s also **503\u2026 981\u2026 5291**.",
+        "Yes. I can help with legal aid in Salem. General Legal Aid. Oregon Law Center, Salem Regional Office. 280 Liberty Street, Suite 200, Salem, Oregon, 97301. I\u2019ll repeat: 280 Liberty Street, Suite 200, Salem, Oregon, 97301. Call 503, 485, 0696. I\u2019ll repeat: 503, 485, 0696. They help with civil landlord papers. For low-income households. Are you a farmworker?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -160,7 +161,8 @@
       "similarCases": [],
       "assistantResponse": "First step: call **General Legal Aid in Salem** now at **503\u2026 485\u2026 0696**. I\u2019ll repeat it: **5-0-3\u2026 4-8-5\u2026 0-6-9-6**. If you\u2019re a farmworker, there\u2019s also **503\u2026 981\u2026 5291**.",
       "voiceResponseAlternatives": [
-        "Yes. Most important number first: Call **503 485 0696**. Again: **503 485 0696**. That is General Legal Aid in Salem. Address is **280 Liberty Street, Suite 200, Salem**. Again: **280 Liberty Street, Suite 200, Salem**. If you are a farmworker, I can give that number next."
+        "Yes. Most important number first: Call **503 485 0696**. Again: **503 485 0696**. That is General Legal Aid in Salem. Address is **280 Liberty Street, Suite 200, Salem**. Again: **280 Liberty Street, Suite 200, Salem**. If you are a farmworker, I can give that number next.",
+        "Yes. I can help with legal aid in Salem. General Legal Aid. Oregon Law Center, Salem Regional Office. 280 Liberty Street, Suite 200, Salem, Oregon, 97301. I\u2019ll repeat: 280 Liberty Street, Suite 200, Salem, Oregon, 97301. Call 503, 485, 0696. I\u2019ll repeat: 503, 485, 0696. They help with civil landlord papers. For low-income households. Are you a farmworker?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -192,6 +194,34 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0002323#turn-3",
+      "scenarioId": "phone_dialog_0002323",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need legal help, legal aid, in Salem, I\u2019m getting papers from my landlord and I don\u2019t understand them.",
+      "normalizedQuery": "legal aid attorney advocacy salem getting papers from landlord don understand them",
+      "voiceResponse": "Yes. I can help with legal aid in Salem. General Legal Aid. Oregon Law Center, Salem Regional Office. 280 Liberty Street, Suite 200, Salem, Oregon, 97301. I\u2019ll repeat: 280 Liberty Street, Suite 200, Salem, Oregon, 97301. Call 503, 485, 0696. I\u2019ll repeat: 503, 485, 0696. They help with civil landlord papers. For low-income households. Are you a farmworker?",
+      "evidenceDocIds": [
+        "service:799e6ab996caa563",
+        "service:1c2165c5293480a3",
+        "service:252041b98d8d25e0",
+        "service:331d3bf1bed204ec",
+        "service:4c69fc06bd8aef68"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with legal aid in Salem. General Legal Aid. Oregon Law Center, Salem Regional Office. 280 Liberty Street, Suite 200, Salem, Oregon, 97301. I\u2019ll repeat: 280 Liberty Street, Suite 200, Salem, Oregon, 97301. Call 503, 485, 0696. I\u2019ll repeat: 503, 485, 0696. They help with civil landlord papers. For low-income households. Are you a farmworker?",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number first: Call **503 485 0696**. Again: **503 485 0696**. That is General Legal Aid in Salem. Address is **280 Liberty Street, Suite 200, Salem**. Again: **280 Liberty Street, Suite 200, Salem**. If you are a farmworker, I can give that number next.",
+        "First step: call **General Legal Aid in Salem** now at **503\u2026 485\u2026 0696**. I\u2019ll repeat it: **5-0-3\u2026 4-8-5\u2026 0-6-9-6**. If you\u2019re a farmworker, there\u2019s also **503\u2026 981\u2026 5291**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -230,6 +260,12 @@
       "to": "phone_dialog_0001152#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002323#turn-3",
+      "to": "phone_dialog_0002323#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

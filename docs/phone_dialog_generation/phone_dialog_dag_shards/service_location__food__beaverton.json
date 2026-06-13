@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__beaverton",
   "kind": "service_location",
   "key": "food__beaverton",
-  "nodeCount": 24,
+  "nodeCount": 35,
   "nodes": [
     {
       "id": "phone_dialog_0000109#turn-1",
@@ -27,7 +27,10 @@
       "similarCases": [],
       "assistantResponse": "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
       "voiceResponseAlternatives": [
-        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect."
+        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
+        "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+        "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?",
+        "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?"
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
@@ -551,7 +554,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+        "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
@@ -577,7 +583,10 @@
       "similarCases": [],
       "assistantResponse": "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
       "voiceResponseAlternatives": [
-        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call."
+        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+        "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+        "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?",
+        "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -702,6 +711,326 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001687#turn-3",
+      "scenarioId": "phone_dialog_0001687",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Dad, can you tell her? ... Sorry, he\u2019s hard of hearing. He keeps saying he can\u2019t get down the stairs with his walker, the elevator\u2019s been out again.",
+      "normalizedQuery": "hi calling from beaverton dad he 78 mostly alone really worried being neglected this building yeah breathing awake right now no fire anything second missed meals yesterday found two days pills still his box tell her sorry hard hearing keeps saying down stairs walker elevator been again",
+      "voiceResponse": "Thank you. I hear you. He cannot get down the stairs with his walker, and the elevator is out. He cannot get down the stairs with his walker, and the elevator is out. Quick safety check: is he safe right now upstairs, with water, food, and his medicines within reach? If he has chest pain, trouble breathing, or gets suddenly worse, call 9-1-1. Call 9-1-1.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. He cannot get down the stairs with his walker, and the elevator is out. He cannot get down the stairs with his walker, and the elevator is out. Quick safety check: is he safe right now upstairs, with water, food, and his medicines within reach? If he has chest pain, trouble breathing, or gets suddenly worse, call 9-1-1. Call 9-1-1.",
+      "voiceResponseAlternatives": [
+        "I hear you. You cannot lift her or drive every day. The stairs are not safe with her walker. The stairs are not safe. Quick safety check: is she alone right now, with no one there to help her today? If she gets chest pain, trouble breathing, confusion, or cannot wake, call 9-1-1. Call 9-1-1."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001687#turn-4",
+      "scenarioId": "phone_dialog_0001687",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hello? I can\u2019t hear good, please talk slow... I ain\u2019t eaten since yesterday morning, and I missed my heart medicine, I got mixed up.",
+      "normalizedQuery": "hi calling from beaverton dad he 78 mostly alone really worried being neglected this building yeah breathing awake right now no fire anything second missed meals yesterday found two days pills still his box tell her sorry hard hearing keeps saying down stairs walker elevator been again hello hear good please talk slow ain eaten since morning heart medicine got mixed up",
+      "voiceResponse": "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
+        "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?",
+        "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001910#turn-4",
+      "scenarioId": "phone_dialog_0001910",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Dad, can you tell her? ... I\u2019m here, I\u2019m sorry, I can\u2019t hear well, can you say that slower?",
+      "normalizedQuery": "hi calling dad beaverton he 78 very weak his caregiver hasn shown up two days yes breathing right now awake shaky confused missed heart pills last night this morning had real meal since yesterday just crackers hear him crying because down stairs safely tell her here sorry well say slower",
+      "voiceResponse": "Yes. I will say it slowly. This is an emergency. Please call **9-1-1** now. Call **9-1-1** now. Your dad is confused, weak, and cannot get downstairs safely. I can stay with you while you call. Can you dial **9-1-1** now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slowly. This is an emergency. Please call **9-1-1** now. Call **9-1-1** now. Your dad is confused, weak, and cannot get downstairs safely. I can stay with you while you call. Can you dial **9-1-1** now?",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001988#turn-4",
+      "scenarioId": "phone_dialog_0001988",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I work nights, and she\u2019s alone most of the day, no one checked on her this weekend, and she keeps saying she\u2019s too weak to go downstairs.",
+      "normalizedQuery": "hi calling from beaverton mom she 79 think being neglected at her apartment sorry say again little slower hard hearing on this phone right now breathing awake so immediate danger no missed meals found yesterday pills still box work nights alone most day one checked weekend keeps saying too weak go downstairs",
+      "voiceResponse": "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
+        "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+        "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002055#turn-4",
+      "scenarioId": "phone_dialog_0002055",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I live across town and can\u2019t safely lift her or drive her every day, and her apartment stairs are too much for her walker.",
+      "normalizedQuery": "hi calling mom beaverton she 82 mostly alone now think being neglected sorry didn catch hard hearing say safety question again slower right breathing awake bleeding missed meals two days skipped her heart pills yesterday live across town safely lift drive every day apartment stairs too much walker",
+      "voiceResponse": "I hear you. You cannot lift her or drive every day. The stairs are not safe with her walker. The stairs are not safe. Quick safety check: is she alone right now, with no one there to help her today? If she gets chest pain, trouble breathing, confusion, or cannot wake, call 9-1-1. Call 9-1-1.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You cannot lift her or drive every day. The stairs are not safe with her walker. The stairs are not safe. Quick safety check: is she alone right now, with no one there to help her today? If she gets chest pain, trouble breathing, confusion, or cannot wake, call 9-1-1. Call 9-1-1.",
+      "voiceResponseAlternatives": [
+        "Thank you. I hear you. He cannot get down the stairs with his walker, and the elevator is out. He cannot get down the stairs with his walker, and the elevator is out. Quick safety check: is he safe right now upstairs, with water, food, and his medicines within reach? If he has chest pain, trouble breathing, or gets suddenly worse, call 9-1-1. Call 9-1-1."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002093#turn-3",
+      "scenarioId": "phone_dialog_0002093",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing, can you say that slower and repeat the number in small chunks?",
+      "normalizedQuery": "hi calling aunt beaverton don live her only know some this worried she being neglected before we meals check on immediate safety first alone right now no food pantry meal groceries apartment sounded weak morning sorry hard hearing say slower repeat number small chunks",
+      "voiceResponse": "Of course. I will say it slowly. If she cannot stay awake, seems confused, has chest pain, or has trouble breathing, call emergency now. Call **9\u2026 1\u2026 1**. I\u2019ll repeat it: **9\u2026 1\u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:b8c762144d937988",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I will say it slowly. If she cannot stay awake, seems confused, has chest pain, or has trouble breathing, call emergency now. Call **9\u2026 1\u2026 1**. I\u2019ll repeat it: **9\u2026 1\u2026 1**.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002093#turn-4",
+      "scenarioId": "phone_dialog_0002093",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "She missed at least two doses of her heart medicine because nobody picked it up, and her caregiver hasn\u2019t shown up for three days.",
+      "normalizedQuery": "hi calling aunt beaverton don live her only know some this worried she being neglected before we meals check on immediate safety first alone right now no food pantry meal groceries apartment sounded weak morning sorry hard hearing say slower repeat number small chunks missed at least two doses heart medicine because nobody picked it up caregiver hasn shown three days",
+      "voiceResponse": "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for saying that. She missed at least two heart doses, and no caregiver for three days. I heard that: two missed heart doses, and three days without care. This can be urgent. If she is hard to wake, confused, has chest pain, or trouble breathing, call **9\u2026 1\u2026 1** now. I\u2019ll repeat: call **9\u2026 1\u2026 1** now. I\u2019m bringing in a live specialist now. Is she answering her phone right this minute?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
+        "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+        "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002093#turn-6",
+      "scenarioId": "phone_dialog_0002093",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me set up senior meal delivery and whatever urgent welfare check is right for Beaverton, and please repeat any address details twice?",
+      "normalizedQuery": "set up senior meal delivery whatever urgent welfare check right beaverton please repeat any address details twice",
+      "voiceResponse": "Yes. I can help with both. You need senior meal delivery and an urgent welfare check in Beaverton. I heard that: meal delivery and a welfare check in Beaverton. Quick safety check: if she has chest pain, trouble breathing, confusion, or is hard to wake, call **9\u20261\u20261** now. Again: **9\u20261\u20261**. One question: what is her full Beaverton address, in small chunks, so I can repeat it twice correctly?",
+      "evidenceDocIds": [
+        "page:bafkreianmqrdc6etanxfbn4yw7tz72czpifr2qr5q6rw5xffa6a3aoiebq",
+        "page:bafkreica62fzdzcoypdyul2hz3brwxsgcywesnx4uct4ecgiqiop2ax5cm",
+        "page:bafkreibn4wkeqmzupq2lzd24vxvtx63koadyscswz3e3uxfo2is3g4tlsm",
+        "page:bafkreicpdkocangeit3w2w2z5tnx7pmr6qhyvocmbizb6tih44k7jgcksy",
+        "service:47542cbe7e757ba4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with both. You need senior meal delivery and an urgent welfare check in Beaverton. I heard that: meal delivery and a welfare check in Beaverton. Quick safety check: if she has chest pain, trouble breathing, confusion, or is hard to wake, call **9\u20261\u20261** now. Again: **9\u20261\u20261**. One question: what is her full Beaverton address, in small chunks, so I can repeat it twice correctly?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+        "Thank you for telling me that, and you\u2019re doing the right thing by asking for close options. The only verified food site I have here is in Portland at **8800 Southeast 80th Avenue**, phone **503, 771, 7914**. Since you\u2019re in downtown Beaverton with low gas, let\u2019s get you to a live 211 specialist now for the nearest same-day spots. I can stay with you while we connect.",
+        "I hear you. I will speak slow. You have not eaten since yesterday morning, and you missed your heart medicine. You have not eaten since yesterday morning, and you missed your heart medicine. This can be urgent. If you feel chest pain, trouble breathing, faint, or worse now, call 9-1-1. Call 9-1-1. Are you alone with your dad right now?",
+        "I hear you. You work nights. She is alone most of the day. No one checked on her this weekend, and she says she is too weak to go downstairs. I hear you. That is very serious. I will connect you to a live adult safety specialist now in Beaverton. If she gets suddenly worse, call 9-1-1. Call 9-1-1. Are you ready for me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-3",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Beaverton, yeah, Beaverton... sorry I keep talking over you, this phone is crackly.",
+      "normalizedQuery": "static hel can't it's cutting uh place food pantry meal meals groceries inaudible no sorry say again slower hearing's great got 'what city' then it dropped beaverton yeah keep talking over this phone crackly",
+      "voiceResponse": "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:1a1916cf1f6f8f5c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?",
+      "voiceResponseAlternatives": [
+        "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
+        "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-5",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, repeat that church name? I heard 'Saint' something but missed the street.",
+      "normalizedQuery": "no sorry say again slower hearing's great got 'what city' then it dropped beaverton yeah keep talking over this phone crackly hot meals like community dinner groceries if possible skipped lunch wait hold on repeat church name heard 'saint' something missed street",
+      "voiceResponse": "I\u2019m sorry, I can\u2019t confirm the church name or street from what I have right now. Please say the church name again, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, I can\u2019t confirm the church name or street from what I have right now. Please say the church name again, slowly.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002302#turn-6",
+      "scenarioId": "phone_dialog_0002302",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you read the phone number real slow, one digit at a time... I keep mixing up the 6 and 8.",
+      "normalizedQuery": "beaverton yeah sorry keep talking over this phone crackly hot meals like community dinner groceries if possible skipped lunch wait hold on repeat church name heard 'saint' something missed street read number real slow one digit at time mixing up",
+      "voiceResponse": "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifoku5qrv6dgv6bqkrqt5bam35cvg3sfhh6uh7m25whtt2usha4wi",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sorry, the audio was unclear on my end. I can read it slowly, one digit at a time. Which number do you want: the main number, or the 800 backup number?",
+      "voiceResponseAlternatives": [
+        "Yes, that went through. I heard: Beaverton, near Aloha. Your mom cannot cook much now. I\u2019ll repeat that: Beaverton near Aloha, and she cannot cook much. The bus noise made part of your audio unclear. One quick question: do you want home-delivered meals?",
+        "Thanks, I heard Beaverton. The line is still unclear. Do you want me to find a Beaverton food pantry, or a community meal site?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -836,6 +1165,60 @@
       "to": "phone_dialog_0001142#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001687#turn-3",
+      "to": "phone_dialog_0001687#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001687#turn-4",
+      "to": "phone_dialog_0001687#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001910#turn-4",
+      "to": "phone_dialog_0001910#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001988#turn-4",
+      "to": "phone_dialog_0001988#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002055#turn-4",
+      "to": "phone_dialog_0002055#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002093#turn-3",
+      "to": "phone_dialog_0002093#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002093#turn-4",
+      "to": "phone_dialog_0002093#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002302#turn-3",
+      "to": "phone_dialog_0002302#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0002302#turn-5",
+      "to": "phone_dialog_0002302#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
     }
   ]
 }

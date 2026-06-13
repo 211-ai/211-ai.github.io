@@ -203,6 +203,24 @@ def test_ambiguous_self_harm_language_gets_safety_check() -> None:
     assert "safety check" in reasons[0] or "at risk" in reasons[0]
 
 
+def test_lost_insulin_gets_safety_check_before_navigation() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("My insulin was stolen and I am outside in Gresham with no ride.", [])
+
+    assert route == "safety_guardrail_support"
+    assert "safety check" in reasons[0] or "at risk" in reasons[0]
+
+
+def test_forced_sex_signal_routes_to_live_agent() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("Someone is forcing me into sex and I am locked in right now.", [])
+
+    assert route == "live_agent"
+    assert "urgent" in reasons[0]
+
+
 def test_mangled_speech_routes_to_speech_unclear_clarification() -> None:
     sim = _load_simulation_module()
 

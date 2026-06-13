@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__food__gresham",
   "kind": "service_location",
   "key": "food__gresham",
-  "nodeCount": 36,
+  "nodeCount": 39,
   "nodes": [
     {
       "id": "phone_dialog_0000074#turn-1",
@@ -1070,6 +1070,96 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001836#turn-3",
+      "scenarioId": "phone_dialog_0001836",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m hard of hearing, can you say that slower and repeat the number in small chunks?",
+      "normalizedQuery": "hi calling from gresham neighbor ms elaine she 78 uses walker think being neglected yes breathing awake right now bleeding told missed two meals her heart pills yesterday because no one came sorry hard hearing say slower repeat number small chunks",
+      "voiceResponse": "Of course. I will go slow. If she has chest pain, trouble breathing, confusion, or faints, call **9-1-1** now. That number is: **9... 1... 1**. Again: **9... 1... 1**. If she is not in immediate danger, I can bring a live agent on now for an adult neglect report. Is Ms. Elaine with you right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I will go slow. If she has chest pain, trouble breathing, confusion, or faints, call **9-1-1** now. That number is: **9... 1... 1**. Again: **9... 1... 1**. If she is not in immediate danger, I can bring a live agent on now for an adult neglect report. Is Ms. Elaine with you right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling. I can get you to a live 211 specialist now for senior meal help in Gresham. If anyone is in immediate danger or needs urgent medical help, call 9-1-1 right now. One possible service I have is Hearts for Seniors at **5 4 1, 6 4 6, 7 3 8 5**. Would you like me to connect you to a live agent now?",
+        "Absolutely. The number is **5 4 1** \u2026 **6 4 6** \u2026 **7 3 8 5**. I\u2019ll repeat it once more: **5 4 1** \u2026 **6 4 6** \u2026 **7 3 8 5**.",
+        "You don\u2019t need to apologize. I\u2019m here with you. I can connect you to a live 211 specialist right now to find the nearest place serving food today and confirm it before you go. If your shortness of breath is getting worse or you feel unsafe, please call 911 now. If you want, I\u2019ll stay on the line while we connect.",
+        "Thanks for hanging in there. I hear you. You\u2019re in Gresham, and you need groceries this week with fewer bus transfers. I can connect you to a live specialist now for local options and route-friendly food help. I can connect you now. Do you want me to connect you to a live agent?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002169#turn-5",
+      "scenarioId": "phone_dialog_0002169",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me find senior meal delivery in Gresham today, and maybe urgent backup if no one can check on her tonight?",
+      "normalizedQuery": "senior meal delivery gresham maybe urgent backup if no one check on her tonight",
+      "voiceResponse": "Yes. I can help with that now. I can help with that now. For meal delivery and a welfare check tonight, I will connect you to a live specialist in Gresham. If she gets worse, call 9 1 1. Call 9 1 1. Urgent backup option: Legacy GoHealth Urgent Care. Call 5 0 3, 6 6 6, 5 0 5 0. I\u2019ll repeat: 5 0 3, 6 6 6, 5 0 5 0. 2850 Southeast Powell Valley Road, Suite 100, Gresham, Oregon 97080.",
+      "evidenceDocIds": [
+        "service:d2b6b55e0a9c7cfb",
+        "page:bafkreianmqrdc6etanxfbn4yw7tz72czpifr2qr5q6rw5xffa6a3aoiebq",
+        "page:bafkreica62fzdzcoypdyul2hz3brwxsgcywesnx4uct4ecgiqiop2ax5cm",
+        "service:bb282e5eaf2a18e5",
+        "page:bafkreibn4wkeqmzupq2lzd24vxvtx63koadyscswz3e3uxfo2is3g4tlsm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that now. I can help with that now. For meal delivery and a welfare check tonight, I will connect you to a live specialist in Gresham. If she gets worse, call 9 1 1. Call 9 1 1. Urgent backup option: Legacy GoHealth Urgent Care. Call 5 0 3, 6 6 6, 5 0 5 0. I\u2019ll repeat: 5 0 3, 6 6 6, 5 0 5 0. 2850 Southeast Powell Valley Road, Suite 100, Gresham, Oregon 97080.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling. I can get you to a live 211 specialist now for senior meal help in Gresham. If anyone is in immediate danger or needs urgent medical help, call 9-1-1 right now. One possible service I have is Hearts for Seniors at **5 4 1, 6 4 6, 7 3 8 5**. Would you like me to connect you to a live agent now?",
+        "Absolutely. The number is **5 4 1** \u2026 **6 4 6** \u2026 **7 3 8 5**. I\u2019ll repeat it once more: **5 4 1** \u2026 **6 4 6** \u2026 **7 3 8 5**.",
+        "You don\u2019t need to apologize. I\u2019m here with you. I can connect you to a live 211 specialist right now to find the nearest place serving food today and confirm it before you go. If your shortness of breath is getting worse or you feel unsafe, please call 911 now. If you want, I\u2019ll stay on the line while we connect.",
+        "Thanks for hanging in there. I hear you. You\u2019re in Gresham, and you need groceries this week with fewer bus transfers. I can connect you to a live specialist now for local options and route-friendly food help. I can connect you now. Do you want me to connect you to a live agent?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002169#turn-6",
+      "scenarioId": "phone_dialog_0002169",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you give me a number, please do it in chunks and repeat it, I need to write it down.",
+      "normalizedQuery": "she 79 mostly homebound her caregiver hasn shown up two days so missed meals found yesterday pills still box safely stairs from apartment been able store clinic medical health on own senior meal delivery gresham maybe urgent backup if no one check tonight give number please it chunks repeat write down",
+      "voiceResponse": "Yes. Call 5 0 3, 6 6 6, 5 0 5 0. I\u2019ll repeat: 5 0 3, 6 6 6, 5 0 5 0.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call 5 0 3, 6 6 6, 5 0 5 0. I\u2019ll repeat: 5 0 3, 6 6 6, 5 0 5 0.",
+      "voiceResponseAlternatives": [
+        "Of course. The number is **5 4 1** \u2026 **6 4 6** \u2026 **7 3 8 5**. That\u2019s Hearts for Seniors.",
+        "Yes. I\u2019ll say it slowly. One option is Clackamas Service Center. Address: 8800 S-E 80th Avenue, Portland, Oregon, 97206. Again: 8800 S-E 80th Avenue, Portland, 97206. Phone: 503, 771, 7914. Again: 503, 771, 7914. Do you want me to connect you now?",
+        "Next step: ask for a live **211 specialist** right now. There wasn\u2019t a specific program name I could verify for senior meal delivery in Gresham, so the fastest route is a **live 211 specialist** who can check current options by your mom\u2019s ZIP code.",
+        "Yes. The number is **9-1-1**. One digit at a time: **9 \u2026 1 \u2026 1**. Again: **9 \u2026 1 \u2026 1**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1264,6 +1354,18 @@
       "to": "phone_dialog_0001007#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001836#turn-3",
+      "to": "phone_dialog_0001836#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002169#turn-5",
+      "to": "phone_dialog_0002169#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "route__clarifying_prompt",
   "kind": "route",
   "key": "clarifying_prompt",
-  "nodeCount": 49,
+  "nodeCount": 65,
   "nodes": [
     {
       "id": "phone_dialog_0000018#turn-1",
@@ -54,7 +54,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you, and I\u2019m really glad you called. We can sort this out step by step and find warm clothing options near you. What part of Portland are you in right now, or what ZIP code are you closest to?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?",
+        "You\u2019re not alone, and we can keep this simple. Since you\u2019re 17 in Portland and need somewhere safe tonight, I can help with options that don\u2019t require a lot of info from you. One quick question so I guide you right: do you want a **safe place to sleep tonight**, or **transportation to get there**?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
@@ -219,7 +222,9 @@
       "similarCases": [],
       "assistantResponse": "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
       "voiceResponseAlternatives": [
-        "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?"
+        "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
+        "I hear a possible safety crisis, and your safety comes first. If you feel in immediate danger, call 911 now. Are you in immediate danger right this minute?",
+        "I hear you. Your mom is 78, and you need help now. I can check this with you. Right now, is she in immediate danger, like chest pain, trouble breathing, heavy bleeding, or not waking up?"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "rambling_and_interrupting",
@@ -297,7 +302,12 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, I can help with that. In Washington County, one option is **Medical Rides** for medical appointments, including ADA vehicles. Their number is **503, 538, 3104**. I can also repeat that slowly anytime. One quick question so I guide you right: **are you 55 or older?**",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+        "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+        "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?",
+        "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "privacy_trust_builder"
@@ -350,7 +360,8 @@
       "voiceResponseAlternatives": [
         "I hear you, and I\u2019m glad you called. I can help fast, and I\u2019ll keep this short to save battery. What kind of work help do you need right now in Oregon City: a day-labor job lead, a place to apply today, or help with resume/ID for hiring?",
         "Yes, I can hear you. I\u2019m here with you. What kind of help do you need right now: housing, food, medical, or something else?",
-        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?"
+        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?",
+        "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
@@ -570,7 +581,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
@@ -653,7 +666,8 @@
       "voiceResponseAlternatives": [
         "I\u2019m really glad you called, and we can do this step by step. I can get you the right shutoff support line quickly. Which power company is on your bill: Pacific Power or Portland General Electric?",
         "Yes, I can hear you. I\u2019m here with you. What kind of help do you need right now: housing, food, medical, or something else?",
-        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?"
+        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?",
+        "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "emotionally_overloaded",
@@ -767,7 +781,8 @@
       "voiceResponseAlternatives": [
         "I\u2019m really glad you called, and we can do this step by step. I can get you the right shutoff support line quickly. Which power company is on your bill: Pacific Power or Portland General Electric?",
         "I hear you, and I\u2019m glad you called. I can help fast, and I\u2019ll keep this short to save battery. What kind of work help do you need right now in Oregon City: a day-labor job lead, a place to apply today, or help with resume/ID for hiring?",
-        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?"
+        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?",
+        "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "bad_reception",
@@ -794,7 +809,8 @@
       "similarCases": [],
       "assistantResponse": "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
       "voiceResponseAlternatives": [
-        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?"
+        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?",
+        "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "rambling_and_interrupting",
@@ -996,7 +1012,8 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?",
       "voiceResponseAlternatives": [
-        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?"
+        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
+        "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "clear_line",
@@ -1190,7 +1207,8 @@
       "voiceResponseAlternatives": [
         "I\u2019m really glad you called, and we can do this step by step. I can get you the right shutoff support line quickly. Which power company is on your bill: Pacific Power or Portland General Electric?",
         "I hear you, and I\u2019m glad you called. I can help fast, and I\u2019ll keep this short to save battery. What kind of work help do you need right now in Oregon City: a day-labor job lead, a place to apply today, or help with resume/ID for hiring?",
-        "Yes, I can hear you. I\u2019m here with you. What kind of help do you need right now: housing, food, medical, or something else?"
+        "Yes, I can hear you. I\u2019m here with you. What kind of help do you need right now: housing, food, medical, or something else?",
+        "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?"
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "rambling_and_interrupting",
@@ -1242,7 +1260,9 @@
       "similarCases": [],
       "assistantResponse": "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
       "voiceResponseAlternatives": [
-        "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?"
+        "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
+        "I hear a possible safety crisis, and your safety comes first. If you feel in immediate danger, call 911 now. Are you in immediate danger right this minute?",
+        "I hear you. Your mom is 78, and you need help now. I can check this with you. Right now, is she in immediate danger, like chest pain, trouble breathing, heavy bleeding, or not waking up?"
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
@@ -1357,6 +1377,465 @@
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001202#turn-1",
+      "scenarioId": "phone_dialog_0001202",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "portland",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, can you hear me? I\u2019m in Portland, my phone\u2019s at like three percent, and I really need help.",
+      "normalizedQuery": "hi hear portland phone at like three percent really",
+      "voiceResponse": "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:739b19b7f45258ce",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:fef46dc01f825fb3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m really glad you called. We can sort this out step by step and find warm clothing options near you. What part of Portland are you in right now, or what ZIP code are you closest to?",
+        "You\u2019re not alone, and we can keep this simple. Since you\u2019re 17 in Portland and need somewhere safe tonight, I can help with options that don\u2019t require a lot of info from you. One quick question so I guide you right: do you want a **safe place to sleep tonight**, or **transportation to get there**?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001209#turn-1",
+      "scenarioId": "phone_dialog_0001209",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "gresham",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Gresham, my phone\u2019s dying, can you help me fast?",
+      "normalizedQuery": "hi gresham phone dying fast",
+      "voiceResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:bb282e5eaf2a18e5",
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-5",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 4,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Please don\u2019t send cops first, we\u2019re both 22, I just need help now.",
+      "normalizedQuery": "sorry your voice cut say again it just friend took pills lot drink now he on floor really waking up breathing weird like slow kinda gurgly freaking please don send cops first we re both 22",
+      "voiceResponse": "I hear you, and I\u2019m with you. Right now his slow, gurgly breathing means he needs emergency medical help immediately. Call **911** and say, \u201cMedical emergency, possible overdose, not waking up, please send EMS now.\u201d Keep him on his side, head slightly back, and stay with him. If naloxone is there, give it now. Are you able to call 911 now while I stay with you?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m with you. Right now his slow, gurgly breathing means he needs emergency medical help immediately. Call **911** and say, \u201cMedical emergency, possible overdose, not waking up, please send EMS now.\u201d Keep him on his side, head slightly back, and stay with him. If naloxone is there, give it now. Are you able to call 911 now while I stay with you?",
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. First, is your friend in immediate danger right now?",
+        "Yeah, I hear you. We can keep this minimal and only share what you choose. I can help with urgent power-bill options and contacts that usually don\u2019t need much info up front. What city are you in right now?",
+        "I\u2019m so sorry you\u2019re going through this. I\u2019m here with you. Are you having any thoughts of hurting yourself right now?",
+        "I hear you. I can help fast. What do you need most today: food, a place to stay, or school supplies?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001349#turn-1",
+      "scenarioId": "phone_dialog_0001349",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, can you help me quick? I feel really shaky and dizzy, and this isn\u2019t my phone, the battery\u2019s almost dead.",
+      "normalizedQuery": "hi sorry quick feel really shaky dizzy this isn phone battery almost dead",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. First, please sit or lie down right now so you don\u2019t fall, and take slow breaths. If you feel like you might pass out, have chest pain, or trouble breathing, call 911 immediately before this phone dies. Are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:fef46dc01f825fb3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. First, please sit or lie down right now so you don\u2019t fall, and take slow breaths. If you feel like you might pass out, have chest pain, or trouble breathing, call 911 immediately before this phone dies. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. First, is your friend in immediate danger right now?",
+        "Yeah, I hear you. We can keep this minimal and only share what you choose. I can help with urgent power-bill options and contacts that usually don\u2019t need much info up front. What city are you in right now?",
+        "I\u2019m so sorry you\u2019re going through this. I\u2019m here with you. Are you having any thoughts of hurting yourself right now?",
+        "I hear you. I can help fast. What do you need most today: food, a place to stay, or school supplies?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001357#turn-1",
+      "scenarioId": "phone_dialog_0001357",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, I keep losing the thread, there are people talking through the vents again and I know that sounds wild, but can you still help me find somewhere safe tonight in Beaverton?",
+      "normalizedQuery": "hi sorry keep losing thread there people talking through vents again know sounds wild still somewhere safe tonight beaverton",
+      "voiceResponse": "I hear a possible safety crisis, and your safety comes first. If you feel in immediate danger, call 911 now. Are you in immediate danger right this minute?",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear a possible safety crisis, and your safety comes first. If you feel in immediate danger, call 911 now. Are you in immediate danger right this minute?",
+      "voiceResponseAlternatives": [
+        "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
+        "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
+        "I hear you. Your mom is 78, and you need help now. I can check this with you. Right now, is she in immediate danger, like chest pain, trouble breathing, heavy bleeding, or not waking up?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001375#turn-1",
+      "scenarioId": "phone_dialog_0001375",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, my signal keeps cutting out. I\u2019m in Washington County and I need help for my friend, he\u2019s been using and he\u2019s not acting right.",
+      "normalizedQuery": "hi sorry signal keeps cutting washington county friend he been using acting right",
+      "voiceResponse": "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help with that. In Washington County, one option is **Medical Rides** for medical appointments, including ADA vehicles. Their number is **503, 538, 3104**. I can also repeat that slowly anytime. One quick question so I guide you right: **are you 55 or older?**",
+        "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+        "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?",
+        "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001568#turn-1",
+      "scenarioId": "phone_dialog_0001568",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m calling about my neighbor, Mr. Lewis, in Washington County, and I need help right away.",
+      "normalizedQuery": "hi calling neighbor mr lewis washington county right away",
+      "voiceResponse": "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:caedca415357bcb6",
+        "service:451ce5caf0eab303",
+        "service:99ffb41822d164c8",
+        "service:d1f1a6cf0be36a29",
+        "service:8c233174a5794cff"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help with that. In Washington County, one option is **Medical Rides** for medical appointments, including ADA vehicles. Their number is **503, 538, 3104**. I can also repeat that slowly anytime. One quick question so I guide you right: **are you 55 or older?**",
+        "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+        "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?",
+        "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001767#turn-1",
+      "scenarioId": "phone_dialog_0001767",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, can you keep this quiet? I\u2019m in Oregon City, and I need help leaving without my partner finding out.",
+      "normalizedQuery": "hi keep this quiet oregon city leaving without partner finding",
+      "voiceResponse": "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "service:0963e94e6b3dc85a",
+        "service:0964a8d5435f63c7",
+        "page:bafkreiezmey74zvzy64vlvnpkbriepz4gul6mygdiixldxcgdvkgt7sanu",
+        "page:bafkreid5qhbvt3owhebuf3vmtkngop6lzsbg6z3tceo6lrgo5bojr5yedu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this as private as possible, and we can go step by step without sharing extra details. If you want, I can give you a discreet number to call from Oregon City and what to say so it stays low-profile. Would you like legal help first, or immediate safety-planning support?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called, and we can do this step by step. I can get you the right shutoff support line quickly. Which power company is on your bill: Pacific Power or Portland General Electric?",
+        "I hear you, and I\u2019m glad you called. I can help fast, and I\u2019ll keep this short to save battery. What kind of work help do you need right now in Oregon City: a day-labor job lead, a place to apply today, or help with resume/ID for hiring?",
+        "Yes, I can hear you. I\u2019m here with you. What kind of help do you need right now: housing, food, medical, or something else?",
+        "No worries, I hear you, and we can keep this simple. I can help you find work support in Oregon City quickly. What kind of help do you want first: job search, resume help, training, or disability-related job services?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001803#turn-1",
+      "scenarioId": "phone_dialog_0001803",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hello? Can you hear me okay? I\u2019m in Medford, my phone\u2019s at like two percent, and I really need help.",
+      "normalizedQuery": "hello hear okay medford phone at like two percent really",
+      "voiceResponse": "Yes, I hear you. First, are you in immediate danger right now, like a medical emergency or feeling unsafe where you are?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:b3d7aa7d9150b9d1",
+        "service:98249e32a262b454",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. First, are you in immediate danger right now, like a medical emergency or feeling unsafe where you are?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001957#turn-1",
+      "scenarioId": "phone_dialog_0001957",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, um, can you keep this quiet? I think my partner checks my phone, and I need help in Clackamas without anything getting mailed or texted where he can see it.",
+      "normalizedQuery": "hi um keep this quiet think partner checks phone clackamas without anything getting mailed texted he see it",
+      "voiceResponse": "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:0963e94e6b3dc85a",
+        "service:bcfe168519274472"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, we can keep this as discreet as possible. We can look for options that don\u2019t send mail, texts, or visible alerts, and focus on phone-safe or in-person support in Clackamas. You\u2019re in control of what we do next. What kind of help do you want first: safe shelter, legal help, counseling, or something else?",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002000#turn-1",
+      "scenarioId": "phone_dialog_0002000",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m calling about my dad in Washington County, can you help me check if he\u2019s safe first? He sounds really weak and I can barely hear him on the phone.",
+      "normalizedQuery": "hi calling dad washington county check if he safe first sounds really weak barely hear him on phone",
+      "voiceResponse": "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:ac3a1d3c1ff7ffd6",
+        "service:ac5079153805801e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help with that. In Washington County, one option is **Medical Rides** for medical appointments, including ADA vehicles. Their number is **503, 538, 3104**. I can also repeat that slowly anytime. One quick question so I guide you right: **are you 55 or older?**",
+        "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+        "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+        "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002037#turn-1",
+      "scenarioId": "phone_dialog_0002037",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "portland",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, there\u2019s a bus pulling in and I can barely hear you. I\u2019m 17, in Portland, and I need help getting somewhere safe tonight.",
+      "normalizedQuery": "hi sorry there bus pulling barely hear 17 portland getting somewhere safe tonight",
+      "voiceResponse": "You\u2019re not alone, and we can keep this simple. Since you\u2019re 17 in Portland and need somewhere safe tonight, I can help with options that don\u2019t require a lot of info from you. One quick question so I guide you right: do you want a **safe place to sleep tonight**, or **transportation to get there**?",
+      "evidenceDocIds": [
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9",
+        "service:e25fd4aa967fb6a0",
+        "service:755193c3d210f2d9",
+        "service:e1778b5194827c80"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone, and we can keep this simple. Since you\u2019re 17 in Portland and need somewhere safe tonight, I can help with options that don\u2019t require a lot of info from you. One quick question so I guide you right: do you want a **safe place to sleep tonight**, or **transportation to get there**?",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m really glad you called. We can sort this out step by step and find warm clothing options near you. What part of Portland are you in right now, or what ZIP code are you closest to?",
+        "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002120#turn-1",
+      "scenarioId": "phone_dialog_0002120",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m calling about my mom in Beaverton, she\u2019s 78 and I need help now, but first can you check if this is an emergency situation?",
+      "normalizedQuery": "hi calling mom beaverton she 78 now first check if this an emergency situation",
+      "voiceResponse": "I hear you. Your mom is 78, and you need help now. I can check this with you. Right now, is she in immediate danger, like chest pain, trouble breathing, heavy bleeding, or not waking up?",
+      "evidenceDocIds": [
+        "service:1090306857226ac3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:bf0682fd9fa9809c",
+        "service:2ef319d5e12550a7",
+        "page:bafkreid4xc2imgus3vvfdmovaeyerxy6v7nu4itjlhefzlfaaq65pczw7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your mom is 78, and you need help now. I can check this with you. Right now, is she in immediate danger, like chest pain, trouble breathing, heavy bleeding, or not waking up?",
+      "voiceResponseAlternatives": [
+        "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
+        "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
+        "I hear a possible safety crisis, and your safety comes first. If you feel in immediate danger, call 911 now. Are you in immediate danger right this minute?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0002212#turn-1",
+      "scenarioId": "phone_dialog_0002212",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, um, can you talk kinda slow? I\u2019m 17 and I\u2019m in Washington County, and I need help getting somewhere safe tonight.",
+      "normalizedQuery": "hi um talk kinda slow 17 washington county getting somewhere safe tonight",
+      "voiceResponse": "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?",
+      "evidenceDocIds": [
+        "service:1d9a9c389aefc142",
+        "service:704d39fc7d8880a5",
+        "service:911a9abcc4b9e6ef",
+        "service:b6b4827ce680ccab",
+        "service:ac5079153805801e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I can go slow. You\u2019re not doing anything wrong by asking for help, and we can keep this simple. I can help with a safe place tonight, a ride, or someone to call with you. What do you want first: a safe place, transportation, or someone to contact for you?",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help with that. In Washington County, one option is **Medical Rides** for medical appointments, including ADA vehicles. Their number is **503, 538, 3104**. I can also repeat that slowly anytime. One quick question so I guide you right: **are you 55 or older?**",
+        "I\u2019m really glad you called for your friend, and I know this is stressful. I can help you get the right support quickly. Is he in immediate danger right now, or are you looking for treatment and detox options in Washington County?",
+        "I can help. I\u2019m here with you. First, tell me this: Is Mr. Lewis in immediate danger right now?",
+        "I can help. If he is not breathing normally, or cannot stay awake, call 9-1-1 now. Call 9-1-1 now. I can stay with you. One question: is your dad awake and breathing right now?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0002276#turn-1",
+      "scenarioId": "phone_dialog_0002276",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hello? I can\u2019t really hear, there\u2019s a lot going on here, but I need help now, my tooth is killing me.",
+      "normalizedQuery": "hello really hear there lot going on here now tooth killing",
+      "voiceResponse": "I hear you. Quick safety check: are you having any face or neck swelling, fever, or trouble breathing right now?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "service:bf0682fd9fa9809c",
+        "service:3bf79b1da127b257",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Quick safety check: are you having any face or neck swelling, fever, or trouble breathing right now?",
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. First, is your friend in immediate danger right now?",
+        "Yeah, I hear you. We can keep this minimal and only share what you choose. I can help with urgent power-bill options and contacts that usually don\u2019t need much info up front. What city are you in right now?",
+        "I\u2019m so sorry you\u2019re going through this. I\u2019m here with you. Are you having any thoughts of hurting yourself right now?",
+        "I hear you. I can help fast. What do you need most today: food, a place to stay, or school supplies?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0002310#turn-1",
+      "scenarioId": "phone_dialog_0002310",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "salem",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, if I jump around it's because they keep talking over me, like through the vents, and I know that sounds wrong but I need help in Salem.",
+      "normalizedQuery": "hi sorry if jump around it's because they keep talking over like through vents know sounds wrong salem",
+      "voiceResponse": "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not wrong for calling, and I\u2019m glad you reached out. Let\u2019s keep this simple and get you help in Salem. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, we can do this fast. You have options, and we can keep it simple. If you can, keep that notice with you and don\u2019t throw it out. I can help with eviction-prevention and next steps right now in Salem. One quick question so I point you right: does the notice say you owe rent, or does it give a move-out date?",
+        "You\u2019re doing the right thing calling, and this is a safety situation. If you\u2019re in immediate danger, call 911 now. I can help you get connected with a domestic violence advocate today. Are you safe to make a private call right now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
     }
   ],
@@ -1646,6 +2125,102 @@
     {
       "from": "phone_dialog_0001023#turn-1",
       "to": "phone_dialog_0001023#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001202#turn-1",
+      "to": "phone_dialog_0001202#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001209#turn-1",
+      "to": "phone_dialog_0001209#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-5",
+      "to": "phone_dialog_0001222#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001349#turn-1",
+      "to": "phone_dialog_0001349#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001357#turn-1",
+      "to": "phone_dialog_0001357#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001375#turn-1",
+      "to": "phone_dialog_0001375#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001568#turn-1",
+      "to": "phone_dialog_0001568#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001767#turn-1",
+      "to": "phone_dialog_0001767#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001803#turn-1",
+      "to": "phone_dialog_0001803#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001957#turn-1",
+      "to": "phone_dialog_0001957#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
+    },
+    {
+      "from": "phone_dialog_0002000#turn-1",
+      "to": "phone_dialog_0002000#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002037#turn-1",
+      "to": "phone_dialog_0002037#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002120#turn-1",
+      "to": "phone_dialog_0002120#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002212#turn-1",
+      "to": "phone_dialog_0002212#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0002276#turn-1",
+      "to": "phone_dialog_0002276#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0002310#turn-1",
+      "to": "phone_dialog_0002310#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "clarifying_prompt->grounded_211_answer"
     }

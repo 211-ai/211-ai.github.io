@@ -436,7 +436,8 @@ async function answer211QuestionAction(
   });
   return success("answer_211_question", response.answer, {
     evidenceBundle: response.evidenceBundle,
-    recordIds: response.recordIds
+    recordIds: response.recordIds,
+    metadata: response.metadata,
   });
 }
 

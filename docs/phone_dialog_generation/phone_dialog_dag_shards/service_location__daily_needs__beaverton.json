@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__daily_needs__beaverton",
   "kind": "service_location",
   "key": "daily_needs__beaverton",
-  "nodeCount": 27,
+  "nodeCount": 36,
   "nodes": [
     {
       "id": "phone_dialog_0000161#turn-1",
@@ -805,6 +805,271 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001258#turn-1",
+      "scenarioId": "phone_dialog_0001258",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I can't really breathe right now, I'm in Beaverton and I just need somewhere to shower today, like now.",
+      "normalizedQuery": "hi sorry can't really breathe right now i'm beaverton just somewhere shower like",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. If you\u2019re struggling to breathe right now, please call **911** immediately or tell someone nearby, \u201cI can\u2019t breathe, call 911.\u201d For a shower today in Beaverton, I don\u2019t have a solid local match in front of me yet. Stay with me and I\u2019ll get you to a live 211 specialist right now to find the nearest same-day option.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:078087b57125137d",
+        "service:4995f7ec89526256",
+        "service:5382d9761def72c9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. If you\u2019re struggling to breathe right now, please call **911** immediately or tell someone nearby, \u201cI can\u2019t breathe, call 911.\u201d For a shower today in Beaverton, I don\u2019t have a solid local match in front of me yet. Stay with me and I\u2019ll get you to a live 211 specialist right now to find the nearest same-day option.",
+      "voiceResponseAlternatives": [
+        "I hear you. We can do this step by step. For a shower today, try Rose Haven Day Center in Portland. Address: 1740 Northwest Glisan Street, Portland, 97209. That is 1-7-4-0 Northwest Glisan Street. Phone: 5-0-3, 2-4-8, 6-3-6-4. Again: 5-0-3, 2-4-8, 6-3-6-4. If you are in immediate danger, call 9-1-1 now. Do you want me to help with words to say when you call?",
+        "Yeah, I can help. The closest match I have with **mail services** is **Simonka Place** for women and children. Call **503\u2026 362\u2026 7487**. I\u2019ll repeat: **503\u2026 362\u2026 7487**. Backup line is **503\u2026 856\u2026 8058**. I\u2019ll repeat: **503\u2026 856\u2026 8058**. They can often help with shelter and mail setup. Are you a woman age 18 or older, with or without kids?",
+        "Thank you for telling me. You are 22. You are 22. I hear you. I can bring in a live specialist now. They can stay with you and help call places, so you are less likely to be turned away. If you are in immediate danger, call **9 1 1**. Again, if you are in immediate danger, call **9 1 1**. Are you safe where you are right now?",
+        "I hear you, and you did the right thing calling. If you\u2019re in immediate danger or might hurt yourself, call 9-1-1 right now. I\u2019m connecting you to a live 211 specialist now to find the closest shower option in Beaverton today. Please stay on the line with me."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001258#turn-2",
+      "scenarioId": "phone_dialog_0001258",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? I missed that part, there's people yelling in here... can you say it again slower?",
+      "normalizedQuery": "hi sorry can't really breathe right now i'm beaverton just somewhere shower like missed part there's people yelling here say it again slower",
+      "voiceResponse": "Yeah, I\u2019ve got you. Slow version: if you can\u2019t breathe right now, call **911** now, or tell someone near you, \u201cI can\u2019t breathe, call 911.\u201d Second part: for a shower in Beaverton today, I don\u2019t have a confirmed spot yet, so I\u2019m going to connect you to a live **211** specialist right now to find the nearest same-day option.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I\u2019ve got you. Slow version: if you can\u2019t breathe right now, call **911** now, or tell someone near you, \u201cI can\u2019t breathe, call 911.\u201d Second part: for a shower in Beaverton today, I don\u2019t have a confirmed spot yet, so I\u2019m going to connect you to a live **211** specialist right now to find the nearest same-day option.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Your Life, Your Voice**. I\u2019ll say it slowly: **Your** \u2026 **Life** \u2026 **Your** \u2026 **Voice**.",
+        "Yes. The number is: **two, one, one**. I\u2019ll say it again: **2\u2026 1\u2026 1**.",
+        "Yes. I\u2019ll say it slower. Closest place I found is **Simonka Place**. For shelter and mail help. Main number: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup number: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**.",
+        "I did not give an address on Fifth. I did not give an address on Fifth. I only have phone numbers for Simonka Place: Main: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001258#turn-3",
+      "scenarioId": "phone_dialog_0001258",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I've been outside and I smell bad and they keep looking at me, I can't do this, I just need a place that won't turn me away.",
+      "normalizedQuery": "hi sorry can't really breathe right now i'm beaverton just somewhere shower like missed part there's people yelling here say it again slower i've been outside smell bad they keep looking at this place won't turn away",
+      "voiceResponse": "I hear how hard this is, and you\u2019re not alone right now. We\u2019ll keep this simple: if your breathing gets tight again, call **911** right away. For a shower place that can screen options today and reduce turn-away risk, I\u2019m connecting you to a live **211** specialist now. Stay on the line with me while I hand you off.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how hard this is, and you\u2019re not alone right now. We\u2019ll keep this simple: if your breathing gets tight again, call **911** right away. For a shower place that can screen options today and reduce turn-away risk, I\u2019m connecting you to a live **211** specialist now. Stay on the line with me while I hand you off.",
+      "voiceResponseAlternatives": [
+        "I hear you. We can do this step by step. For a shower today, try Rose Haven Day Center in Portland. Address: 1740 Northwest Glisan Street, Portland, 97209. That is 1-7-4-0 Northwest Glisan Street. Phone: 5-0-3, 2-4-8, 6-3-6-4. Again: 5-0-3, 2-4-8, 6-3-6-4. If you are in immediate danger, call 9-1-1 now. Do you want me to help with words to say when you call?",
+        "Yeah, I can help. The closest match I have with **mail services** is **Simonka Place** for women and children. Call **503\u2026 362\u2026 7487**. I\u2019ll repeat: **503\u2026 362\u2026 7487**. Backup line is **503\u2026 856\u2026 8058**. I\u2019ll repeat: **503\u2026 856\u2026 8058**. They can often help with shelter and mail setup. Are you a woman age 18 or older, with or without kids?",
+        "Thank you for telling me. You are 22. You are 22. I hear you. I can bring in a live specialist now. They can stay with you and help call places, so you are less likely to be turned away. If you are in immediate danger, call **9 1 1**. Again, if you are in immediate danger, call **9 1 1**. Are you safe where you are right now?",
+        "I hear you, and you did the right thing calling. If you\u2019re in immediate danger or might hurt yourself, call 9-1-1 right now. I\u2019m connecting you to a live 211 specialist now to find the closest shower option in Beaverton today. Please stay on the line with me."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001258#turn-4",
+      "scenarioId": "phone_dialog_0001258",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "I'm 19 and I don't have a car, is there anywhere near a bus line, please?",
+      "normalizedQuery": "hi sorry can't really breathe right now i'm beaverton just somewhere shower like missed part there's people yelling here say it again slower i've been outside smell bad they keep looking at this place won't turn away 19 don't have car there anywhere bus line please",
+      "voiceResponse": "You\u2019re doing the right thing asking, and I hear how urgent this feels. I don\u2019t have a confirmed bus-line shower location I can safely give you from here, but I can get you to a live 211 specialist right now who can check nearby transit options and places less likely to turn you away today. Stay with me while I connect you. If your breathing gets bad again, call 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing asking, and I hear how urgent this feels. I don\u2019t have a confirmed bus-line shower location I can safely give you from here, but I can get you to a live 211 specialist right now who can check nearby transit options and places less likely to turn you away today. Stay with me while I connect you. If your breathing gets bad again, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "I hear you. We can do this step by step. For a shower today, try Rose Haven Day Center in Portland. Address: 1740 Northwest Glisan Street, Portland, 97209. That is 1-7-4-0 Northwest Glisan Street. Phone: 5-0-3, 2-4-8, 6-3-6-4. Again: 5-0-3, 2-4-8, 6-3-6-4. If you are in immediate danger, call 9-1-1 now. Do you want me to help with words to say when you call?",
+        "Yeah, I can help. The closest match I have with **mail services** is **Simonka Place** for women and children. Call **503\u2026 362\u2026 7487**. I\u2019ll repeat: **503\u2026 362\u2026 7487**. Backup line is **503\u2026 856\u2026 8058**. I\u2019ll repeat: **503\u2026 856\u2026 8058**. They can often help with shelter and mail setup. Are you a woman age 18 or older, with or without kids?",
+        "Thank you for telling me. You are 22. You are 22. I hear you. I can bring in a live specialist now. They can stay with you and help call places, so you are less likely to be turned away. If you are in immediate danger, call **9 1 1**. Again, if you are in immediate danger, call **9 1 1**. Are you safe where you are right now?",
+        "I hear you, and you did the right thing calling. If you\u2019re in immediate danger or might hurt yourself, call 9-1-1 right now. I\u2019m connecting you to a live 211 specialist now to find the closest shower option in Beaverton today. Please stay on the line with me."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-3",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Yeah okay, I need help finding laundry, like wash place help, cheaper one... I\u2019m in Beaverton.",
+      "normalizedQuery": "yeah okay finding laundry like wash place cheaper one beaverton",
+      "voiceResponse": "Thanks. I heard Beaverton and laundry help. Your audio is still a little unclear. Your audio is still a little unclear. Please say one short choice: free laundry, low-cost laundry, or drop-off wash service.",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreig4ephu5gz5x57etein53bmnoswyqmsfqaodzpjcg5df4irdx4kxq",
+        "page:bafkreid5ck7bobsf6rfhzmuevcnifacfu3nmdlsdniusxnatyx2j4ez6ay",
+        "page:bafkreievammwq63bs37l7vv4jeshhuhcs2fmmej7rr3da3spzok2w4pndu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks. I heard Beaverton and laundry help. Your audio is still a little unclear. Your audio is still a little unclear. Please say one short choice: free laundry, low-cost laundry, or drop-off wash service.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-4",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not dry cleaning, no, I mean regular clothes wash, coin or voucher, I keep mixing it up, sorry.",
+      "normalizedQuery": "hello static can't re cutting laundr no wait inaudible sorry missed signal's bad don't hear great say it again yeah okay finding laundry like wash place cheaper one beaverton dry cleaning mean regular clothes coin voucher keep mixing up",
+      "voiceResponse": "Thank you. I heard regular clothes wash, coin or voucher. Regular clothes wash, coin or voucher. I can help with that in Beaverton. Please tell me your ZIP code, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I heard regular clothes wash, coin or voucher. Regular clothes wash, coin or voucher. I can help with that in Beaverton. Please tell me your ZIP code, slowly.",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001702#turn-5",
+      "scenarioId": "phone_dialog_0001702",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat any address slow? Like really slow, and the number one digit at a time.",
+      "normalizedQuery": "sorry missed signal's bad don't hear great say it again yeah okay finding laundry like wash place cheaper one beaverton dry cleaning no mean regular clothes coin voucher keep mixing up repeat any address slow really number digit at time",
+      "voiceResponse": "Yes. I can repeat slowly. I do not have an address yet. I do not have an address yet. Please say your ZIP code, one digit at a time. For example: \u201cnine, seven, zero, zero, five.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can repeat slowly. I do not have an address yet. I do not have an address yet. Please say your ZIP code, one digit at a time. For example: \u201cnine, seven, zero, zero, five.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Your Life, Your Voice**. I\u2019ll say it slowly: **Your** \u2026 **Life** \u2026 **Your** \u2026 **Voice**.",
+        "Yes. The number is: **two, one, one**. I\u2019ll say it again: **2\u2026 1\u2026 1**.",
+        "Yes. I\u2019ll say it slower. Closest place I found is **Simonka Place**. For shelter and mail help. Main number: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup number: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**.",
+        "I did not give an address on Fifth. I did not give an address on Fifth. I only have phone numbers for Simonka Place: Main: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Again: **5 0 3 \u2026 3 6 2 \u2026 7 4 8 7**. Backup: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**. Again: **5 0 3 \u2026 8 5 6 \u2026 8 0 5 8**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-4",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not dry cleaning, no, regular wash, I got two kids and everything piled up.",
+      "normalizedQuery": "hello static can't uh laundr laund sorry you're cutting inaudible by library no wait beav beaver beaverton yes hear now talk over people when bad place wash clothes cheap like community laundry dry cleaning regular got two kids everything piled up",
+      "voiceResponse": "Thank you. Regular wash, not dry cleaning. Regular wash, not dry cleaning. I can help with low-cost community laundry in Beaverton, including family options. One question: what ZIP code are you in right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. Regular wash, not dry cleaning. Regular wash, not dry cleaning. I can help with low-cost community laundry in Beaverton, including family options. One question: what ZIP code are you in right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001841#turn-5",
+      "scenarioId": "phone_dialog_0001841",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say the name again slowly? I misheard it as 'Beaver Town' or something.",
+      "normalizedQuery": "inaudible by library no wait beav beaver beaverton yes hear now sorry talk over people when can't bad place wash clothes cheap like community laundry dry cleaning regular got two kids everything piled up say name again slowly misheard it as 'beaver town' something",
+      "voiceResponse": "Yes. The city name is **Beaverton**. I\u2019ll say it slowly: **Bee-ver-ton**. **Beaverton. Bee-ver-ton.** You are in Beaverton, Oregon, right?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The city name is **Beaverton**. I\u2019ll say it slowly: **Bee-ver-ton**. **Beaverton. Bee-ver-ton.** You are in Beaverton, Oregon, right?",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. In Beaverton, I can give you one local contact now: Good Samaritan Ministries at **7929 Southwest Cirrus Drive**. Phone is **503, 644, 2339**. They\u2019re listed for support services, so call and ask directly about clothing basics this week or nearest clothing referrals. If baby or kids\u2019 items are what you need, I also have clothing-and-toys closets, but those are outside Beaverton.",
+        "That\u2019s a smart plan. The quickest next step is to call Good Samaritan Ministries and ask, \u201cWhat\u2019s your closest clothing option I can reach by bus this week?\u201d If they\u2019re not the best fit, ask for the nearest bus-accessible clothing referral in Beaverton. I can also stay with you while you make the call and help you script what to say.",
+        "I hear you. I don\u2019t have a clear Beaverton mail-site listing on my screen right now. One live referral line I can give you is **Your Life Your Voice**, 24 hours: **8 0 0** \u2026 **4 4 8** \u2026 **3 0 0 0**. Backup number: **8 0 0** \u2026 **4 4 8** \u2026 **1 8 3 3**. They list no required documents, so you can call and just ask for local mail options.",
+        "I don\u2019t have a street name listed here to spell, and I don\u2019t want to guess. What I do have is the service name: **Your Life, Your Voice**. Spelled slowly: **Y-O-U-R** \u2026 **L-I-F-E** \u2026 **Y-O-U-R** \u2026 **V-O-I-C-E**. If you want, I can repeat the phone number the same way, digit by digit."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -963,6 +1228,60 @@
       "to": "phone_dialog_0001046#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001258#turn-1",
+      "to": "phone_dialog_0001258#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001258#turn-2",
+      "to": "phone_dialog_0001258#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001258#turn-3",
+      "to": "phone_dialog_0001258#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001258#turn-4",
+      "to": "phone_dialog_0001258#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-3",
+      "to": "phone_dialog_0001702#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-4",
+      "to": "phone_dialog_0001702#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001702#turn-5",
+      "to": "phone_dialog_0001702#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-4",
+      "to": "phone_dialog_0001841#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001841#turn-5",
+      "to": "phone_dialog_0001841#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

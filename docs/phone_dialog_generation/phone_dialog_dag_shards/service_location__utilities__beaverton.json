@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__utilities__beaverton",
   "kind": "service_location",
   "key": "utilities__beaverton",
-  "nodeCount": 5,
+  "nodeCount": 7,
   "nodes": [
     {
       "id": "phone_dialog_0000603#turn-6",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Next step first: call **2\u20261\u20261** now. Again, call **2\u20261\u20261**. Say this: \u201cI\u2019m in Beaverton. I have a photo of my old ID and a utility bill, no birth certificate. Is that enough to start, and where do I go first?\u201d If they give an office address, ask them to repeat it slowly. If this line drops, just dial **2\u20261\u20261**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Call **9-1-1** now. Again, **9-1-1** now. You said you feel dizzy and weak in the heat, so this is an emergency. While you wait, sit in shade and take small sips of water. After that, call **2-1-1** for shelter and local help. Again, **2-1-1**."
+      ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "slow_clear_repetition"
@@ -134,6 +136,58 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001238#turn-2",
+      "scenarioId": "phone_dialog_0001238",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Beaverton, outside by the bus stop, and I\u2019m really dizzy and weak from the heat.",
+      "normalizedQuery": "beaverton outside by bus stop really dizzy weak from heat utility utilities electric",
+      "voiceResponse": "You sound in danger from heat right now. Please call **9-1-1** now. Again, **9-1-1** now. If you can, move to shade and sip small sips of water while you wait. If you feel faint, sit down right away. Can you call **9-1-1** right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You sound in danger from heat right now. Please call **9-1-1** now. Again, **9-1-1** now. If you can, move to shade and sip small sips of water while you wait. If you feel faint, sit down right away. Can you call **9-1-1** right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001238#turn-3",
+      "scenarioId": "phone_dialog_0001238",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what? I didn\u2019t catch that, can you say it slow again?",
+      "normalizedQuery": "hi on borrowed phone it might die give most important number first beaverton outside by bus stop really dizzy weak from heat utility utilities electric sorry didn catch say slow again",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Call **9-1-1** now. Again, **9-1-1** now. You said you feel dizzy and weak in the heat, so this is an emergency. While you wait, sit in shade and take small sips of water. After that, call **2-1-1** for shelter and local help. Again, **2-1-1**.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:6c757db4a03b77e1",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:90950f313ab38b75"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Call **9-1-1** now. Again, **9-1-1** now. You said you feel dizzy and weak in the heat, so this is an emergency. While you wait, sit in shade and take small sips of water. After that, call **2-1-1** for shelter and local help. Again, **2-1-1**.",
+      "voiceResponseAlternatives": [
+        "Next step first: call **2\u20261\u20261** now. Again, call **2\u20261\u20261**. Say this: \u201cI\u2019m in Beaverton. I have a photo of my old ID and a utility bill, no birth certificate. Is that enough to start, and where do I go first?\u201d If they give an office address, ask them to repeat it slowly. If this line drops, just dial **2\u20261\u20261**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -154,6 +208,18 @@
       "to": "phone_dialog_0001076#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001238#turn-2",
+      "to": "phone_dialog_0001238#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001238#turn-3",
+      "to": "phone_dialog_0001238#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

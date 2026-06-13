@@ -62,6 +62,7 @@ DEFAULT_DRYRUN_MANIFEST = DEFAULT_OUTPUT_DIR / "phone_dialog_indextts_manifest.j
 DEFAULT_DRYRUN_PUBLIC_MANIFEST = DEFAULT_OUTPUT_DIR / "phone_dialog_indextts_public_manifest.json"
 DEFAULT_STATE_JSON = DEFAULT_STATE_DIR / "phone_dialog_generation_state.json"
 DEFAULT_EVENTS_JSONL = DEFAULT_STATE_DIR / "phone_dialog_generation_events.jsonl"
+DEFAULT_REWRITE_OPPORTUNITIES = DEFAULT_OUTPUT_DIR / "voice_response_rewrite_opportunities.json"
 
 DEFAULT_PROVIDER = os.getenv("WALLET_VOICE_LLM_PROVIDER", "").strip()
 DEFAULT_MODEL = (
@@ -474,6 +475,51 @@ TARGET_MODE_PROFILES: list[dict[str, Any]] = [
         "instruction": "Make the caller confused, paranoid, hearing voices, unable to sequence facts, or partly incoherent. Abby should clarify gently, check safety, and escalate when risk is high.",
     },
     {
+        "id": "minor_runaway_or_exploitation_risk",
+        "desired_routes": ("safety_guardrail_support", "live_agent", "grounded_211_answer"),
+        "preferred_callers": ("youth_in_crisis", "helper_for_other_person", "privacy_wary"),
+        "preferred_channels": ("borrowed_phone_low_battery", "background_noise", "emotionally_overloaded"),
+        "preferred_styles": ("crisis_triage", "privacy_trust_builder", "compassionate_caseworker"),
+        "service_needs": ("youth day center", "shelter", "transportation help"),
+        "instruction": "Make the call involve a minor, runaway youth, couch-surfing, coercion, unsafe adults, or exploitation risk. Vary safety checks, mandated emergency escalation, and youth-service navigation.",
+    },
+    {
+        "id": "elder_or_disabled_neglect",
+        "desired_routes": ("safety_guardrail_support", "live_agent", "provider_contact_support"),
+        "preferred_callers": ("elder_memory_gaps", "helper_for_other_person", "sick_or_dying"),
+        "preferred_channels": ("hard_of_hearing", "background_noise", "borrowed_phone_low_battery"),
+        "preferred_styles": ("crisis_triage", "slow_clear_repetition", "compassionate_caseworker"),
+        "service_needs": ("senior meals", "medical clinic", "disability benefits help", "transportation help"),
+        "instruction": "Make the caller an older adult, disabled person, or caregiver describing neglect, no food, missed medication, unsafe housing, or inability to reach care. Include safety checks and escalation when needed.",
+    },
+    {
+        "id": "pregnancy_or_postpartum_risk",
+        "desired_routes": ("safety_guardrail_support", "live_agent", "grounded_211_answer"),
+        "preferred_callers": ("grieving_emotional", "sick_or_dying", "helper_for_other_person"),
+        "preferred_channels": ("emotionally_overloaded", "borrowed_phone_low_battery", "background_noise"),
+        "preferred_styles": ("crisis_triage", "compassionate_caseworker"),
+        "service_needs": ("medical clinic", "diapers", "shelter", "transportation help"),
+        "instruction": "Make the call involve pregnancy, postpartum depression, bleeding, no diapers, unsafe sleep, or a parent worried about harming themselves. Vary immediate medical escalation and safety checks.",
+    },
+    {
+        "id": "lost_medication_or_medical_device",
+        "desired_routes": ("safety_guardrail_support", "live_agent", "grounded_211_answer"),
+        "preferred_callers": ("sick_or_dying", "elder_memory_gaps", "homeless_exhausted"),
+        "preferred_channels": ("borrowed_phone_low_battery", "bad_reception", "hard_of_hearing"),
+        "preferred_styles": ("crisis_triage", "slow_clear_repetition", "grounded_operator"),
+        "service_needs": ("medical clinic", "transportation help", "shelter"),
+        "instruction": "Make the caller lose medication, insulin, inhaler, oxygen, walker, wheelchair, or charger while homeless or displaced. Include urgency differences and concrete navigation needs.",
+    },
+    {
+        "id": "trafficking_or_coercive_control",
+        "desired_routes": ("safety_guardrail_support", "live_agent", "provider_contact_support"),
+        "preferred_callers": ("privacy_wary", "youth_in_crisis", "grieving_emotional"),
+        "preferred_channels": ("background_noise", "borrowed_phone_low_battery", "emotionally_overloaded"),
+        "preferred_styles": ("crisis_triage", "privacy_trust_builder"),
+        "service_needs": ("domestic violence survivor advocacy", "shelter", "transportation help"),
+        "instruction": "Make the caller controlled by someone else, afraid their phone is monitored, unable to keep documents, or being forced to work, trade sex, or stay somewhere unsafe. Prioritize privacy and safety.",
+    },
+    {
         "id": "spotty_voice_clarification",
         "desired_routes": ("speech_unclear_clarification", "clarifying_prompt"),
         "preferred_callers": ("intoxicated_or_sleep_deprived", "disorganized_distressed", "hearing_impaired", "elder_memory_gaps"),
@@ -494,6 +540,11 @@ FOCUS_PROFILE_IDS = {
         "domestic_violence_or_threat",
         "unsafe_shelter_or_street_risk",
         "psychosis_or_extreme_confusion",
+        "minor_runaway_or_exploitation_risk",
+        "elder_or_disabled_neglect",
+        "pregnancy_or_postpartum_risk",
+        "lost_medication_or_medical_device",
+        "trafficking_or_coercive_control",
         "urgent_escalation",
         "emotionally_overloaded_request",
         "spotty_voice_clarification",
@@ -567,6 +618,31 @@ TARGET_MODE_REQUIRED_BEATS = {
         "Include at least one turn where Abby should either clarify the main need or check safety.",
         "Vary whether the call resolves into mental health, shelter, medical care, or live-agent escalation.",
     ],
+    "minor_runaway_or_exploitation_risk": [
+        "Include youth-specific safety concerns such as being under 18, couch-surfing, unsafe adults, running away, or being pressured into something unsafe.",
+        "Vary immediate danger, ambiguous exploitation risk, and youth-service navigation.",
+        "Keep the caller's language realistic and protect privacy.",
+    ],
+    "elder_or_disabled_neglect": [
+        "Include neglect, isolation, missed meals, missed medication, inaccessible housing, caregiver concerns, or inability to safely travel.",
+        "Vary first-person callers and helpers calling on behalf of someone else.",
+        "Let Abby check immediate safety before moving to senior, disability, medical, food, or transport support.",
+    ],
+    "pregnancy_or_postpartum_risk": [
+        "Include pregnancy, postpartum emotional risk, bleeding, unsafe sleep, no diapers, or fear of harming self or baby.",
+        "Vary medical emergencies and non-emergency safety checks.",
+        "Include a concrete service need after the safety question when appropriate.",
+    ],
+    "lost_medication_or_medical_device": [
+        "Include lost, stolen, or unavailable medication or medical equipment like insulin, inhaler, oxygen, wheelchair, walker, or a device charger.",
+        "Vary whether the situation is immediately dangerous or a same-day navigation need.",
+        "Include location and a realistic barrier like low battery, transport, shelter, or bad reception.",
+    ],
+    "trafficking_or_coercive_control": [
+        "Include coercive control, monitored phone, withheld documents, forced labor, forced sex, or fear of being followed.",
+        "Use privacy-preserving language and avoid unnecessary details.",
+        "Vary between immediate danger and quiet safety-planning before service navigation.",
+    ],
 }
 
 
@@ -609,6 +685,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--report-json", type=Path, default=DEFAULT_REPORT_JSON)
     parser.add_argument("--dryrun-manifest", type=Path, default=DEFAULT_DRYRUN_MANIFEST)
     parser.add_argument("--dryrun-public-manifest", type=Path, default=DEFAULT_DRYRUN_PUBLIC_MANIFEST)
+    parser.add_argument("--rewrite-opportunities", type=Path, default=DEFAULT_REWRITE_OPPORTUNITIES)
+    parser.add_argument("--slot-friendly-voice", action="store_true", help="Bias assistant replies toward reusable TTS sentence frames.")
+    parser.add_argument("--slot-friendly-frame-limit", type=int, default=16)
     parser.add_argument("--state-json", type=Path, default=DEFAULT_STATE_JSON)
     parser.add_argument("--events-jsonl", type=Path, default=DEFAULT_EVENTS_JSONL)
     parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR"])
@@ -660,6 +739,43 @@ def iter_jsonl(path: Path) -> list[dict[str, Any]]:
             except Exception:
                 continue
     return rows
+
+
+def load_slot_friendly_voice_frames(path: Path, *, limit: int = 16) -> list[dict[str, Any]]:
+    if not path.exists() or limit <= 0:
+        return []
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        logger.warning("Could not load slot-friendly rewrite opportunities from %s: %s", path, exc)
+        return []
+    frames: list[dict[str, Any]] = []
+    for item in report.get("opportunities", []):
+        template = str(item.get("canonicalTemplate") or "").strip()
+        if not template:
+            continue
+        frames.append(
+            {
+                "template": template,
+                "familyKind": str(item.get("familyKind") or ""),
+                "estimatedSavedChunkCalls": int(item.get("estimatedSavedChunkCalls") or 0),
+            }
+        )
+        if len(frames) >= limit:
+            break
+    return frames
+
+
+def slot_friendly_voice_prompt_lines(frames: list[dict[str, Any]]) -> list[str]:
+    if not frames:
+        return []
+    templates = [str(item.get("template") or "").strip() for item in frames if str(item.get("template") or "").strip()]
+    return [
+        "- Prefer reusable TTS-friendly sentence frames when they fit the evidence and route.",
+        "- Replace placeholders like {phone_1}, {location_1}, and {entity_1} with the actual spoken value; never say the placeholder name.",
+        "- Keep variable values in their own short sentence when possible, with natural pauses before and after.",
+        "- Use these reusable frames verbatim when applicable: " + "; ".join(templates[:12]),
+    ]
 
 
 def extract_first_json_object(text: str) -> dict[str, Any] | None:
@@ -883,6 +999,7 @@ def assistant_prompt(
     evidence: list[dict[str, Any]],
     seed: ScenarioSeed,
     reasons: list[str],
+    slot_friendly_frames: list[dict[str, Any]] | None = None,
 ) -> str:
     evidence_payload = [
         {
@@ -922,6 +1039,7 @@ def assistant_prompt(
             "- If the route is template_guided_fallback, say you do not have a strong local match and ask for one missing detail or offer a human.",
             "- If the route is live_agent and there is urgent safety risk, clearly mention 911.",
             "- If you have a grounded phone number or address, chunk it for speech.",
+            *slot_friendly_voice_prompt_lines(slot_friendly_frames or []),
             "- Use only the evidence given below for grounded details.",
             "",
             "Recent history:",
@@ -1008,6 +1126,7 @@ def simulate_phone_scenario(
     templates: dict[str, dict[str, Any]],
     provider: str,
     model_name: str,
+    slot_friendly_frames: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     del templates  # The route prompt ids still come from the deterministic router bundle.
     state = ConversationState()
@@ -1026,6 +1145,7 @@ def simulate_phone_scenario(
                 evidence=evidence,
                 seed=seed,
                 reasons=reasons,
+                slot_friendly_frames=slot_friendly_frames,
             ),
             provider=provider,
             model_name=model_name,
@@ -1156,6 +1276,8 @@ def write_artifacts(
         "provider": args.provider,
         "modelName": args.model_name,
         "focus": args.focus,
+        "slotFriendlyVoice": bool(args.slot_friendly_voice),
+        "rewriteOpportunities": str(args.rewrite_opportunities),
         "scenarioCount": len(results),
         "turnCount": sum(len(result.get("turns", [])) for result in results),
         "results": results,
@@ -1204,6 +1326,7 @@ def write_artifacts(
             "scenarioCount": len(results),
             "turnCount": sum(len(result.get("turns", [])) for result in results),
             "focus": args.focus,
+            "slotFriendlyVoice": bool(args.slot_friendly_voice),
             "coverage": {key: dict(sorted(counter.items())) for key, counter in coverage.items()},
         },
     )
@@ -1253,6 +1376,8 @@ def update_state(
         "provider": args.provider,
         "modelName": args.model_name,
         "focus": args.focus,
+        "slotFriendlyVoice": bool(args.slot_friendly_voice),
+        "rewriteOpportunities": str(args.rewrite_opportunities),
         "batchCount": batch_count,
         "scenarioCounter": scenario_counter,
         "lastError": last_error,
@@ -1274,12 +1399,18 @@ def main(argv: list[str] | None = None) -> None:
     templates = load_prompt_templates(args.prompt_templates)
     documents = load_documents(args.corpus)
     retriever = Local211Retriever(documents)
+    slot_friendly_frames = (
+        load_slot_friendly_voice_frames(args.rewrite_opportunities, limit=args.slot_friendly_frame_limit)
+        if args.slot_friendly_voice
+        else []
+    )
     logger.info(
-        "Loaded %s documents and %s prompt templates; llm_router provider=%s model=%s",
+        "Loaded %s documents and %s prompt templates; llm_router provider=%s model=%s slot_friendly_frames=%s",
         len(documents),
         len(templates),
         effective_provider or "auto",
         args.model_name,
+        len(slot_friendly_frames),
     )
 
     state = load_json(args.state_json, {"scenarioCounter": 0, "batchCount": 0})
@@ -1331,6 +1462,7 @@ def main(argv: list[str] | None = None) -> None:
                     templates=templates,
                     provider=effective_provider,
                     model_name=args.model_name,
+                    slot_friendly_frames=slot_friendly_frames,
                 )
                 append_jsonl(args.results_jsonl, result)
                 append_jsonl(

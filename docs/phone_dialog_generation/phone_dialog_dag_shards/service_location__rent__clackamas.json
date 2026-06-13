@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-26T16:51:58.801413+00:00",
   "id": "service_location__rent__clackamas",
   "kind": "service_location",
   "key": "rent__clackamas",
-  "nodeCount": 22,
+  "nodeCount": 28,
   "nodes": [
     {
       "id": "phone_dialog_0000062#turn-4",
@@ -174,7 +174,8 @@
       "similarCases": [],
       "assistantResponse": "I heard you now. Clackamas, Oregon. Clackamas, Oregon. The audio is still breaking up. One quick question: do you already have an eviction court case number and a court date?",
       "voiceResponseAlternatives": [
-        "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. Your audio clipped for a second. Could you repeat just one thing: do you already have an eviction notice for non-payment of rent, yes or no?"
+        "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. Your audio clipped for a second. Could you repeat just one thing: do you already have an eviction notice for non-payment of rent, yes or no?",
+        "Sorry, the line was unclear for a second. The program name is: **Multnomah County Eviction Prevention Program**. I\u2019ll say it again, slowly: **Mult-nom-ah County Eviction Prevention Program**. Did you want me to repeat the name one more time?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -261,7 +262,8 @@
       "similarCases": [],
       "assistantResponse": "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. Your audio clipped for a second. Could you repeat just one thing: do you already have an eviction notice for non-payment of rent, yes or no?",
       "voiceResponseAlternatives": [
-        "I heard you now. Clackamas, Oregon. Clackamas, Oregon. The audio is still breaking up. One quick question: do you already have an eviction court case number and a court date?"
+        "I heard you now. Clackamas, Oregon. Clackamas, Oregon. The audio is still breaking up. One quick question: do you already have an eviction court case number and a court date?",
+        "Sorry, the line was unclear for a second. The program name is: **Multnomah County Eviction Prevention Program**. I\u2019ll say it again, slowly: **Mult-nom-ah County Eviction Prevention Program**. Did you want me to repeat the name one more time?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -653,6 +655,184 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001408#turn-3",
+      "scenarioId": "phone_dialog_0001408",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, rent help, that's what I need, I'm in Clackamas County, I got a pay-or-quit notice.",
+      "normalizedQuery": "yeah rent eviction assistance that's i'm clackamas county got pay quit notice",
+      "voiceResponse": "I hear you. You need rent help, and you have a pay-or-quit notice. I have an eviction prevention program for non-payment notices. Call **503-222-5555**. That is **503, 222, 5555**. Second number: **503-226-3099**. That is **503, 226, 3099**. They may help with financial or legal support for eviction notices. Do you want me to repeat the first number again, slowly?",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6",
+        "service:4bfb7e6eaea01bbd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need rent help, and you have a pay-or-quit notice. I have an eviction prevention program for non-payment notices. Call **503-222-5555**. That is **503, 222, 5555**. Second number: **503-226-3099**. That is **503, 226, 3099**. They may help with financial or legal support for eviction notices. Do you want me to repeat the first number again, slowly?",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents.",
+        "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**.",
+        "I hear how urgent this feels, and I\u2019m with you. If you have an eviction notice for non-payment, call the **Multnomah County Eviction Prevention Program** first: **503 \u2014 222 \u2014 5555**. If that line is busy, call **503 \u2014 226 \u2014 3099**. When they answer, say you need help with rent this month and ask about eviction-prevention support.",
+        "Yes, I hear you. You need rent help this month. Rent help this month. I found a rent assistance program for eviction prevention, rent, and deposits. I have these offices: La Pine, Prineville, and Madras. First number is **5 4 1, 5 4 8, 2 3 8 0**. Again: **5 4 1, 5 4 8, 2 3 8 0**. Do you want the other numbers too?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001408#turn-4",
+      "scenarioId": "phone_dialog_0001408",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you say the program name again, slow? I missed it, sounded like 'Cath... something'?",
+      "normalizedQuery": "hello static no wait inaudible sorry can't hear good keep cutting said rent eviction assistance re uh yeah that's i'm clackamas county got pay quit notice say program name again slow missed it sounded like 'cath something'",
+      "voiceResponse": "Sorry, the line was unclear for a second. The program name is: **Multnomah County Eviction Prevention Program**. I\u2019ll say it again, slowly: **Mult-nom-ah County Eviction Prevention Program**. Did you want me to repeat the name one more time?",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sorry, the line was unclear for a second. The program name is: **Multnomah County Eviction Prevention Program**. I\u2019ll say it again, slowly: **Mult-nom-ah County Eviction Prevention Program**. Did you want me to repeat the name one more time?",
+      "voiceResponseAlternatives": [
+        "I heard you now. Clackamas, Oregon. Clackamas, Oregon. The audio is still breaking up. One quick question: do you already have an eviction court case number and a court date?",
+        "I\u2019m really glad you told me that, and I\u2019m so sorry you\u2019re carrying this. Your audio clipped for a second. Could you repeat just one thing: do you already have an eviction notice for non-payment of rent, yes or no?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001408#turn-5",
+      "scenarioId": "phone_dialog_0001408",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number, please do it one digit at a time, I write slow.",
+      "normalizedQuery": "sorry can't hear good keep cutting said rent eviction assistance re uh yeah that's i'm clackamas county got pay quit notice say program name again slow missed it sounded like 'cath something' phone number please one digit at time write",
+      "voiceResponse": "Yes. I\u2019ll go slow. First phone number: 5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 2 \u2026 5 \u2026 5 \u2026 5 \u2026 5. Again: 5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 2 \u2026 5 \u2026 5 \u2026 5 \u2026 5. Do you want the second number now?",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:22f25b2759f09c8b",
+        "service:2281747e76c4abb0",
+        "service:6a52f2ff838c25ce",
+        "service:cdf21cb4663fa97f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll go slow. First phone number: 5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 2 \u2026 5 \u2026 5 \u2026 5 \u2026 5. Again: 5 \u2026 0 \u2026 3 \u2026 2 \u2026 2 \u2026 2 \u2026 5 \u2026 5 \u2026 5 \u2026 5. Do you want the second number now?",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents.",
+        "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**.",
+        "I hear how urgent this feels, and I\u2019m with you. If you have an eviction notice for non-payment, call the **Multnomah County Eviction Prevention Program** first: **503 \u2014 222 \u2014 5555**. If that line is busy, call **503 \u2014 226 \u2014 3099**. When they answer, say you need help with rent this month and ask about eviction-prevention support.",
+        "Yes, I hear you. You need rent help this month. Rent help this month. I found a rent assistance program for eviction prevention, rent, and deposits. I have these offices: La Pine, Prineville, and Madras. First number is **5 4 1, 5 4 8, 2 3 8 0**. Again: **5 4 1, 5 4 8, 2 3 8 0**. Do you want the other numbers too?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001408#turn-6",
+      "scenarioId": "phone_dialog_0001408",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, bus noise here... okay, can you repeat the first three numbers again?",
+      "normalizedQuery": "yeah rent eviction assistance that's i'm clackamas county got pay quit notice say program name again slow missed it sounded like 'cath something' phone number please one digit at time write wait hold on bus noise here okay repeat first three numbers",
+      "voiceResponse": "Yes. First three digits are: 5 \u2026 0 \u2026 3. Again, first three digits: 5 \u2026 0 \u2026 3.",
+      "evidenceDocIds": [
+        "service:2281747e76c4abb0",
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "service:22f25b2759f09c8b",
+        "service:6a52f2ff838c25ce"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First three digits are: 5 \u2026 0 \u2026 3. Again, first three digits: 5 \u2026 0 \u2026 3.",
+      "voiceResponseAlternatives": [
+        "Absolutely, I hear you. Main number, slowly: **5-0-3** \u2026 **2-3-4** \u2026 **2-0-4-8**. I\u2019ll say it once more: **503** \u2026 **234** \u2026 **2048**.",
+        "Yes. Slower. One question only: Do you already have an eviction court case number, and a court date? I\u2019ll repeat it. Do you have an eviction court case number, and a court date?",
+        "You\u2019re okay, we can go slowly. The first number is **503 \u2014 222 \u2014 5555**. Backup number: **503 \u2014 226 \u2014 3099**.",
+        "Absolutely, I know the signal is rough. The program is **eviction-prevention help in Clackamas**. I don\u2019t have a confirmed phone number on my end yet, so the safest repeat is this exact line when you reconnect: **\u201cI need eviction prevention in Clackamas for my uncle.\u201d** Say it slowly like that, and they can route you fast."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001811#turn-3",
+      "scenarioId": "phone_dialog_0001811",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, okay, I\u2019m in Clackamas, and my landlord taped a notice, I think eviction notice, I need help before they lock me out.",
+      "normalizedQuery": "yeah okay clackamas landlord taped notice think eviction before they lock",
+      "voiceResponse": "You did the right thing calling. If this is an eviction notice, get legal help now, before lockout. Call the Eviction Defense Project: **8-8-8, 5-8-5, 9-6-3-8.** I\u2019ll repeat it: **8-8-8, 5-8-5, 9-6-3-8.** There is also **800, 672, 4919.** I\u2019ll repeat: **800, 672, 4919.** One question: does your notice show a court date yet?",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:2eacc37c3d2fbf9f",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. If this is an eviction notice, get legal help now, before lockout. Call the Eviction Defense Project: **8-8-8, 5-8-5, 9-6-3-8.** I\u2019ll repeat it: **8-8-8, 5-8-5, 9-6-3-8.** There is also **800, 672, 4919.** I\u2019ll repeat: **800, 672, 4919.** One question: does your notice show a court date yet?",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents.",
+        "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**.",
+        "I hear how urgent this feels, and I\u2019m with you. If you have an eviction notice for non-payment, call the **Multnomah County Eviction Prevention Program** first: **503 \u2014 222 \u2014 5555**. If that line is busy, call **503 \u2014 226 \u2014 3099**. When they answer, say you need help with rent this month and ask about eviction-prevention support.",
+        "Yes, I hear you. You need rent help this month. Rent help this month. I found a rent assistance program for eviction prevention, rent, and deposits. I have these offices: La Pine, Prineville, and Madras. First number is **5 4 1, 5 4 8, 2 3 8 0**. Again: **5 4 1, 5 4 8, 2 3 8 0**. Do you want the other numbers too?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001811#turn-5",
+      "scenarioId": "phone_dialog_0001811",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat any phone number real slow, one digit at a time? I misheard the city name before, did you say Clackamas County services?",
+      "normalizedQuery": "wait sorry say again slower hearing's bad this other line yeah okay clackamas landlord taped notice think eviction before they lock no moving keep mixing it up prevention like rent assistance legal aid attorney advocacy whichever keeps place repeat any phone number real slow one digit at time misheard city name did county services",
+      "voiceResponse": "Yes. Clackamas County services. Clackamas County services. Here is one number, very slow: 8. 8. 8. 5. 8. 5. 9. 6. 3. 8. I\u2019ll repeat it: 8. 8. 8. 5. 8. 5. 9. 6. 3. 8.",
+      "evidenceDocIds": [
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "service:6f7a5b8f93e42931"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Clackamas County services. Clackamas County services. Here is one number, very slow: 8. 8. 8. 5. 8. 5. 9. 6. 3. 8. I\u2019ll repeat it: 8. 8. 8. 5. 8. 5. 9. 6. 3. 8.",
+      "voiceResponseAlternatives": [
+        "Absolutely, I hear you. Main number, slowly: **5-0-3** \u2026 **2-3-4** \u2026 **2-0-4-8**. I\u2019ll say it once more: **503** \u2026 **234** \u2026 **2048**.",
+        "Yes. Slower. One question only: Do you already have an eviction court case number, and a court date? I\u2019ll repeat it. Do you have an eviction court case number, and a court date?",
+        "You\u2019re okay, we can go slowly. The first number is **503 \u2014 222 \u2014 5555**. Backup number: **503 \u2014 226 \u2014 3099**.",
+        "Absolutely, I know the signal is rough. The program is **eviction-prevention help in Clackamas**. I don\u2019t have a confirmed phone number on my end yet, so the safest repeat is this exact line when you reconnect: **\u201cI need eviction prevention in Clackamas for my uncle.\u201d** Say it slowly like that, and they can route you fast."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -763,6 +943,36 @@
       "to": "phone_dialog_0000979#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001408#turn-3",
+      "to": "phone_dialog_0001408#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001408#turn-4",
+      "to": "phone_dialog_0001408#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001408#turn-5",
+      "to": "phone_dialog_0001408#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001811#turn-3",
+      "to": "phone_dialog_0001811#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001811#turn-5",
+      "to": "phone_dialog_0001811#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->template_guided_fallback"
     }
   ]
 }
