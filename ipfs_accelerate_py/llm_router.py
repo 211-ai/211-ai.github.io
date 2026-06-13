@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from dataclasses import dataclass
 from typing import Any
 
 from ipfs_datasets_py import llm_router as _datasets_llm_router
@@ -140,4 +142,89 @@ def __getattr__(name: str) -> Any:
     return getattr(_datasets_llm_router, name)
 
 
-__all__ = ["generate_text", "generate_text_consensus", "get_llm_provider", "clear_llm_router_caches"]
+@dataclass
+class ChatMessage:
+    """Minimal OpenAI-compatible chat message."""
+
+    role: str
+    content: str
+
+
+@dataclass
+class ChatChoice:
+    """Minimal OpenAI-compatible chat choice."""
+
+    message: ChatMessage
+    index: int = 0
+    finish_reason: str = "stop"
+
+
+@dataclass
+class ChatCompletionResponse:
+    """Minimal OpenAI-compatible chat completion response."""
+
+    choices: list[ChatChoice]
+    receipt: ConsensusReceipt | None = None
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self, key)
+
+
+def _canonicalize_messages(messages: list[dict[str, Any]]) -> str:
+    """Convert OpenAI-style messages to a canonical prompt string for consensus."""
+    parts: list[str] = []
+    for msg in messages:
+        role = str(msg.get("role") or "user").strip()
+        content = str(msg.get("content") or "").strip()
+        parts.append(f"{role}: {content}")
+    return "\n".join(parts)
+
+
+def chat_completions_create_consensus(
+    messages: list[dict[str, Any]],
+    *,
+    model_name: str | None = None,
+    provider: str | None = None,
+    consensus: dict[str, Any] | None = None,
+    proof_policy: dict[str, Any] | None = None,
+    operators: list[Any] | tuple[Any, ...] | None = None,
+    return_receipt: bool = True,
+    **kwargs: Any,
+) -> ChatCompletionResponse:
+    """Accept OpenAI-style messages and return a chat-completion-compatible response via consensus.
+
+    The messages list is deterministically canonicalized into a prompt string
+    and delegated to :func:`generate_text_consensus`.  The returned object
+    exposes ``choices[0].message.content`` compatible access.
+    """
+    prompt = _canonicalize_messages(messages)
+    result = generate_text_consensus(
+        prompt,
+        model_name=model_name,
+        provider=provider,
+        consensus=consensus,
+        proof_policy=proof_policy,
+        operators=operators,
+        return_receipt=return_receipt,
+        **kwargs,
+    )
+    if isinstance(result, ConsensusReceipt):
+        content = result.text
+        receipt = result
+    else:
+        content = str(result)
+        receipt = None
+    choice = ChatChoice(message=ChatMessage(role="assistant", content=content))
+    return ChatCompletionResponse(choices=[choice], receipt=receipt)
+
+
+__all__ = [
+    "generate_text",
+    "generate_text_consensus",
+    "chat_completions_create_consensus",
+    "get_llm_provider",
+    "clear_llm_router_caches",
+    "ChatCompletionResponse",
+    "ChatChoice",
+    "ChatMessage",
+]
