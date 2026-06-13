@@ -302,7 +302,7 @@ Track guide:
 - Acceptance: A CRE workflow template or detailed pseudocode defines canonical request input, HTTP or confidential HTTP inference calls, DON consensus aggregation, error handling, proof metadata, and returned receipt fields without relying on Chainlink Functions.
 
 ## CLZKML-220 Chainlink CRE Simulation Integration
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: chainlink
