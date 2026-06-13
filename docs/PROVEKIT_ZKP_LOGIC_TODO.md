@@ -267,7 +267,7 @@ Track guide:
 - Acceptance: The security notes distinguish simulated, Groth16, ProveKit WHIR, and future recursive wrapper claims; document no-leak boundaries, artifact trust, cache/IPFS risks, verifier-key rotation, failure modes, and production cutover requirements.
 
 ## PROVEKIT-220 End-To-End ProveKit ZKP Signoff
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P0
 - Track: ops
