@@ -4521,3 +4521,219 @@ def test_wallet_api_export_grant_respects_threshold_approval() -> None:
 
     assert response.status_code == 200
     assert response.json()["abilities"] == ["export/create"]
+
+
+# ---------------------------------------------------------------------------
+# CLZKML-280: Wallet/API Optional Consensus Integration tests
+# ---------------------------------------------------------------------------
+
+
+def test_wallet_ai_router_llm_returns_text_without_consensus_field(monkeypatch) -> None:
+    """Non-consensus path is preserved when no consensus options are provided."""
+    from ipfs_datasets_py import llm_router
+
+    monkeypatch.setattr(llm_router, "generate_text", lambda prompt, **kw: "Housing help available.")
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "What housing help is available in Portland?",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == "Housing help available."
+    assert body["router"] == "llm_router"
+    assert "consensus" not in body
+
+
+def test_wallet_ai_router_llm_consensus_mode_via_request_field(monkeypatch) -> None:
+    """Consensus mode is enabled by the request consensus field and receipt metadata is returned."""
+    import ipfs_accelerate_py.llm_router as accel_llm_router
+    from ipfs_accelerate_py.llm_consensus import ConsensusReceipt
+
+    captured: list[dict] = []
+
+    class _FakeReceipt:
+        text = "Consensus answer."
+
+        def to_dict(self):
+            return {
+                "schema_version": "llm-router-consensus-receipt-v1",
+                "request": {"metadata": {"mode": "receipt_only"}},
+                "responses": [{"operator_id": "local-router"}],
+                "consensus": {"quorum_reached": True},
+                "proof": {"mode": "receipt_only"},
+                "text": self.text,
+                "created_at": "2026-06-13T00:00:00Z",
+            }
+
+    def fake_consensus(prompt, *, consensus=None, proof_policy=None, **kw):
+        captured.append({"prompt": prompt, "consensus": consensus, "proof_policy": proof_policy})
+        return _FakeReceipt()
+
+    monkeypatch.setattr(accel_llm_router, "generate_text_consensus", fake_consensus)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "Find shelter for a family of four.",
+            "consensus": {"mode": "receipt_only", "fail_closed": False},
+            "proof_policy": {"mode": "receipt_only"},
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == "Consensus answer."
+    assert body["router"] == "llm_router"
+    assert "consensus" in body
+    consensus_meta = body["consensus"]
+    assert consensus_meta["quorum_reached"] is True
+    assert consensus_meta["operator_count"] == 1
+    assert consensus_meta["proof_mode"] == "receipt_only"
+    assert captured and captured[0]["consensus"]["mode"] == "receipt_only"
+
+
+def test_wallet_ai_router_llm_consensus_mode_via_env_policy(monkeypatch) -> None:
+    """Consensus mode can be activated via environment policy without a request field."""
+    import ipfs_accelerate_py.llm_router as accel_llm_router
+
+    class _FakeReceipt:
+        text = "Env-policy consensus answer."
+
+        def to_dict(self):
+            return {
+                "schema_version": "llm-router-consensus-receipt-v1",
+                "request": {"metadata": {"mode": "receipt_only"}},
+                "responses": [],
+                "consensus": {"quorum_reached": True},
+                "proof": {"mode": "receipt_only"},
+                "text": self.text,
+                "created_at": "2026-06-13T00:00:00Z",
+            }
+
+    monkeypatch.setattr(accel_llm_router, "generate_text_consensus", lambda *a, **kw: _FakeReceipt())
+    monkeypatch.setenv("WALLET_AI_ROUTER_CONSENSUS_MODE", "receipt_only")
+    monkeypatch.setenv("WALLET_AI_ROUTER_CONSENSUS_FAIL_CLOSED", "false")
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "Help with food access near downtown.",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == "Env-policy consensus answer."
+    assert "consensus" in body
+    assert body["consensus"]["quorum_reached"] is True
+
+
+def test_wallet_ai_router_llm_no_consensus_when_env_not_set(monkeypatch) -> None:
+    """When no env policy and no request consensus field, the standard path is used."""
+    from ipfs_datasets_py import llm_router
+
+    monkeypatch.delenv("WALLET_AI_ROUTER_CONSENSUS_MODE", raising=False)
+    monkeypatch.setattr(llm_router, "generate_text", lambda prompt, **kw: "Standard path answer.")
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "What food pantries are open?",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == "Standard path answer."
+    assert "consensus" not in body
+
+
+def test_wallet_ai_router_llm_consensus_fail_closed_propagated(monkeypatch) -> None:
+    """When consensus fails and fail_closed is True, an error is raised."""
+    import ipfs_accelerate_py.llm_router as accel_llm_router
+    from ipfs_accelerate_py.llm_consensus import LLMConsensusError
+
+    def fail_consensus(prompt, *, consensus=None, **kw):
+        raise LLMConsensusError("No quorum reached")
+
+    monkeypatch.setattr(accel_llm_router, "generate_text_consensus", fail_consensus)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "Is the shelter open tonight?",
+            "consensus": {"mode": "receipt_only", "fail_closed": True},
+        },
+    )
+
+    assert response.status_code == 502
+    assert "quorum" in response.json()["detail"].lower() or "consensus" in response.json()["detail"].lower()
+
+
+def test_wallet_ai_router_llm_consensus_request_fields_are_validated(monkeypatch) -> None:
+    """Consensus dict with recognized fields passes validation; unknown keys are forwarded."""
+    import ipfs_accelerate_py.llm_router as accel_llm_router
+
+    captured: list[dict] = []
+
+    class _FakeReceipt:
+        text = "Validated consensus."
+
+        def to_dict(self):
+            return {
+                "schema_version": "llm-router-consensus-receipt-v1",
+                "request": {"metadata": {"mode": "receipt_only"}},
+                "responses": [],
+                "consensus": {"quorum_reached": True},
+                "proof": {"mode": "receipt_only"},
+                "text": self.text,
+                "created_at": "2026-06-13T00:00:00Z",
+            }
+
+    def capture_consensus(prompt, *, consensus=None, **kw):
+        captured.append({"consensus": consensus})
+        return _FakeReceipt()
+
+    monkeypatch.setattr(accel_llm_router, "generate_text_consensus", capture_consensus)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/ai-router/llm",
+        json={
+            "actor_did": "did:key:owner",
+            "prompt": "Check eligibility for housing subsidy.",
+            "consensus": {
+                "mode": "receipt_only",
+                "comparison": "canonical_json",
+                "quorum": 1,
+                "min_operators": 1,
+                "fail_closed": False,
+            },
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert captured
+    opts = captured[0]["consensus"]
+    assert opts["mode"] == "receipt_only"
+    assert opts["comparison"] == "canonical_json"
