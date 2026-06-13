@@ -292,7 +292,7 @@ Track guide:
 - Acceptance: A bridge client models submit, wait, and verify operations for CRE inference workflows, supports simulated responses, validates workflow ID/request hash/output hash bindings, and fails closed for missing or mismatched CRE metadata.
 
 ## CLZKML-210 Chainlink CRE Workflow Template
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: chainlink
