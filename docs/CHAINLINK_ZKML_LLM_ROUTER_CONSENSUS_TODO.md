@@ -322,7 +322,7 @@ Track guide:
 - Acceptance: ZKML proof metadata binds model commitment, tokenizer or circuit commitment, input commitment, output commitment, public input hash, verifier key hash, circuit version, and proof CID or bytes, and rejects replay across requests.
 
 ## CLZKML-240 TEE Attestation Binding
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: proofs
