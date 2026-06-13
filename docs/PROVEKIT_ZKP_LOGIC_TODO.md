@@ -167,7 +167,7 @@ Track guide:
 - Acceptance: The Noir trace circuit proves bounded fact and implication/modus-ponens derivation traces against public theorem and axiom commitments, and invalid traces fail before proof generation or fail verification.
 
 ## PROVEKIT-120 ZKP Attestation Bridge ProveKit Wiring
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: platform
