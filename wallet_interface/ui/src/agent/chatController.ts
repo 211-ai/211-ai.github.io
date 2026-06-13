@@ -82,6 +82,23 @@ export interface AgentChatSendOptions {
   preferGraphRagForGeneralQuestions?: boolean;
 }
 
+export interface AgentMessageAudioRecord {
+  /** Precomputed audio entry ID, if a precomputed reply was used */
+  precomputedId?: string;
+  /** Resolved URL of the audio file that was played */
+  audioUrl?: string;
+  /** The spoken text (may differ from displayed message content) */
+  spokenText?: string;
+  /** Provider that generated/served the audio */
+  provider?: "precomputed" | "remote-voice-proxy" | "local-liquidai" | "browser-speech";
+  /** Audio MIME type */
+  mimeType?: string;
+  /** TTS model name, if applicable */
+  modelName?: string;
+  /** ISO timestamp when audio was played */
+  playedAt?: string;
+}
+
 export interface AgentChatController {
   getSnapshot: () => AgentChatSnapshot;
   subscribe: (listener: () => void) => () => void;
@@ -92,6 +109,7 @@ export interface AgentChatController {
   retry: () => Promise<void>;
   resetError: () => void;
   setActiveRoute: (route: RouteId) => void;
+  patchMessageMetadata: (messageId: string, patch: Record<string, unknown>) => void;
 }
 
 interface RetryRequest {
@@ -206,6 +224,15 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
 
   function appendMessage(message: AgentMessage) {
     replaceSession({ messages: [...session.messages, message] });
+  }
+
+  function patchMessageMetadata(messageId: string, patch: Record<string, unknown>) {
+    const messages = session.messages.map((message) =>
+      message.id === messageId
+        ? { ...message, metadata: { ...message.metadata, ...patch } }
+        : message,
+    );
+    replaceSession({ messages });
   }
 
   async function sendMessage(content: string, sendOptions: AgentChatSendOptions = {}) {
@@ -609,7 +636,11 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       if (session.activeRoute !== route) {
         replaceSession({ activeRoute: route });
       }
-    }
+    },
+    patchMessageMetadata: (messageId, patch) => {
+      patchMessageMetadata(messageId, patch);
+      emit();
+    },
   };
 
   function createIntent(turn: AgentPlannedTurn, context: SurfaceContext): AgentIntent {

@@ -6,6 +6,7 @@ import type {
   AgentToolResult,
   EvidenceBundle
 } from "../../agent/types";
+import type { AgentMessageAudioRecord } from "../../agent/chatController";
 import type { SupportedLocale } from "../../lib/localization";
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
@@ -70,6 +71,7 @@ export function AgentChatDrawer({
   onOpenText: () => void;
   onOpenServiceDetail?: (docId: string) => void;
   onSend: (message: string) => void;
+  onAudioReply?: (messageId: string, record: AgentMessageAudioRecord) => void;
 }) {
   return (
     <>
@@ -94,6 +96,7 @@ export function AgentChatDrawer({
         onOpenText={onOpenText}
         onOpenServiceDetail={onOpenServiceDetail}
         onSend={onSend}
+        onAudioReply={onAudioReply}
         open={open}
         responding={responding}
         siteLocale={siteLocale}
@@ -198,6 +201,7 @@ export function AgentChatDrawer({
               messages={messages}
               onClose={onClose}
               onSend={onSend}
+              onAudioReply={onAudioReply}
               open={open && mode === "audio"}
               responding={responding}
               surface="drawer"

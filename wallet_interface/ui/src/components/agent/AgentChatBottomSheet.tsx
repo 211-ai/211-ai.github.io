@@ -7,6 +7,7 @@ import type {
   AgentToolResult,
   EvidenceBundle
 } from "../../agent/types";
+import type { AgentMessageAudioRecord } from "../../agent/chatController";
 import type { SupportedLocale } from "../../lib/localization";
 import { Button } from "../ui";
 import type { AgentChatMode } from "./AgentChatDrawer";
@@ -69,6 +70,7 @@ export function AgentChatBottomSheet({
   onOpenText: () => void;
   onOpenServiceDetail?: (docId: string) => void;
   onSend: (message: string) => void;
+  onAudioReply?: (messageId: string, record: AgentMessageAudioRecord) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const sheetTitle = expanded ? "Collapse assistant sheet" : "Expand assistant sheet";
@@ -150,6 +152,7 @@ export function AgentChatBottomSheet({
                 messages={messages}
                 onClose={onClose}
                 onSend={onSend}
+                onAudioReply={onAudioReply}
                 open={open && mode === "audio"}
                 responding={responding}
                 surface="sheet"

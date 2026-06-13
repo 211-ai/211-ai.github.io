@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../../agent/types";
+import type { AgentMessageAudioRecord } from "../../agent/chatController";
 import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import { clientLLMWorkerService } from "../../lib/clientLLMWorkerService";
@@ -140,7 +141,8 @@ export function AgentAudioChatSurface({
   responding,
   surface = "drawer",
   onClose,
-  onSend
+  onSend,
+  onAudioReply,
 }: {
   activeRouteLabel: string;
   evidenceBundles?: EvidenceBundle[];
@@ -150,6 +152,7 @@ export function AgentAudioChatSurface({
   surface?: AgentAudioSurface;
   onClose: () => void;
   onSend: (message: string) => void;
+  onAudioReply?: (messageId: string, record: AgentMessageAudioRecord) => void;
 }) {
   const [sessionState, setSessionState] = useState<AudioSessionState>("ready");
   const [interimTranscript, setInterimTranscript] = useState("");
@@ -715,6 +718,13 @@ export function AgentAudioChatSurface({
       if (precomputedAudioReply) {
         lastCapturedVoiceBlobRef.current = null;
         setModelProgress(null);
+        onAudioReply?.(message.id, {
+          precomputedId: precomputedAudioReply.id,
+          audioUrl: precomputedAudioReply.audioUrl,
+          spokenText: precomputedAudioReply.text || fallbackText,
+          provider: "precomputed",
+          playedAt: new Date().toISOString(),
+        });
         await playAudioUrlSource(precomputedAudioReply.audioUrl, precomputedAudioReply.text || fallbackText, requestId, {
           revokeObjectUrl: false,
           statusDetail: "Playing prerendered voice reply.",
@@ -754,6 +764,15 @@ export function AgentAudioChatSurface({
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       lastCapturedVoiceBlobRef.current = null;
+      if (ttsResult.kind === "audio") {
+        onAudioReply?.(message.id, {
+          spokenText: preferredSpeechText,
+          provider: ttsResult.provider,
+          mimeType: ttsResult.mimeType,
+          modelName: ttsResult.modelName,
+          playedAt: new Date().toISOString(),
+        });
+      }
       await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
@@ -763,6 +782,15 @@ export function AgentAudioChatSurface({
           onProgress: (progress) => updateModelProgress(requestId, progress),
         });
         lastCapturedVoiceBlobRef.current = null;
+        if (result.kind === "audio") {
+          onAudioReply?.(message.id, {
+            spokenText: voiceInferenceRequest.fallbackText || fallbackText,
+            provider: result.provider,
+            mimeType: result.mimeType,
+            modelName: result.modelName,
+            playedAt: new Date().toISOString(),
+          });
+        }
         await playAudioReplyResult(result, voiceInferenceRequest.fallbackText || fallbackText, requestId);
         return;
       } catch (voiceInferenceError) {

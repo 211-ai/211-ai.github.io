@@ -5577,10 +5577,6 @@ _INDEXTTS_SPACE_CLIENT: HFSpaceClient | None = None
 _INDEXTTS_SPACE_CLIENT_KEY = ""
 
 
-def _indextts_use_generic_provider() -> bool:
-    return str(os.getenv("WALLET_INDEXTTS_GENERIC_PROVIDER", "1") or "1").strip().lower() not in {"0", "false", "no"}
-
-
 def _indextts_space_client() -> HFSpaceClient:
     global _INDEXTTS_SPACE_CLIENT
     global _INDEXTTS_SPACE_CLIENT_KEY
@@ -5615,10 +5611,7 @@ def _indextts_config() -> Dict[str, Any]:
         cached = _INDEXTTS_CONFIG_CACHE.get(cache_key)
         if cached and now - float(cached.get("created_at", 0)) < _indextts_cache_ttl_seconds():
             return dict(cached["config"])
-    if _indextts_use_generic_provider():
-        config = _indextts_space_client().get_config()
-    else:
-        config = _http_json("GET", f"{_indextts_space_base_url()}/config")
+    config = _indextts_space_client().get_config()
     with _INDEXTTS_CACHE_LOCK:
         _INDEXTTS_CONFIG_CACHE[cache_key] = {"created_at": now, "config": dict(config)}
     return config
@@ -5633,47 +5626,19 @@ def _indextts_fn_index(config: Mapping[str, Any]) -> int:
         if cache_key in _INDEXTTS_FN_INDEX_CACHE:
             return _INDEXTTS_FN_INDEX_CACHE[cache_key]
     api_name = _indextts_api_name()
-    if _indextts_use_generic_provider():
-        try:
-            fn_index = int(
-                _indextts_space_client().resolve_fn_index(
-                    api_name,
-                    config,
-                    fallback_markers=("tts", "synth", "generate", "infer", "predict"),
-                )
+    try:
+        fn_index = int(
+            _indextts_space_client().resolve_fn_index(
+                api_name,
+                config,
+                fallback_markers=("tts", "synth", "generate", "infer", "predict"),
             )
-        except Exception as exc:
-            raise ValueError(f"IndexTTS api_name {api_name!r} was not found in Gradio config") from exc
-        with _INDEXTTS_CACHE_LOCK:
-            _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-        return fn_index
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise ValueError("IndexTTS Gradio config does not include dependencies")
-    candidates: List[Mapping[str, Any]] = [dep for dep in dependencies if isinstance(dep, Mapping)]
-    if api_name:
-        normalized = api_name if api_name.startswith("/") else f"/{api_name}"
-        for dep in candidates:
-            if str(dep.get("api_name") or "") in {api_name, normalized, normalized.lstrip("/")}:
-                fn_index = int(dep.get("id"))
-                with _INDEXTTS_CACHE_LOCK:
-                    _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-                return fn_index
-        raise ValueError(f"IndexTTS api_name {api_name!r} was not found in Gradio config")
-    for dep in candidates:
-        name = str(dep.get("api_name") or "").lower()
-        if any(marker in name for marker in ("tts", "synth", "generate", "infer", "predict")):
-            fn_index = int(dep.get("id"))
-            with _INDEXTTS_CACHE_LOCK:
-                _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-            return fn_index
-    for dep in candidates:
-        if dep.get("api_name"):
-            fn_index = int(dep.get("id"))
-            with _INDEXTTS_CACHE_LOCK:
-                _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-            return fn_index
-    raise ValueError("could not discover an IndexTTS Gradio fn_index")
+        )
+    except Exception as exc:
+        raise ValueError(f"IndexTTS api_name {api_name!r} was not found in Gradio config") from exc
+    with _INDEXTTS_CACHE_LOCK:
+        _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
+    return fn_index
 
 
 def _indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
@@ -5687,40 +5652,17 @@ def _indextts_batch_fn_index(config: Mapping[str, Any]) -> int:
     with _INDEXTTS_CACHE_LOCK:
         if cache_key in _INDEXTTS_FN_INDEX_CACHE:
             return _INDEXTTS_FN_INDEX_CACHE[cache_key]
-    if _indextts_use_generic_provider():
-        try:
-            fn_index = int(_indextts_space_client().resolve_fn_index(api_name, config))
-        except Exception as exc:
-            raise ValueError(f"IndexTTS batch api_name {api_name!r} was not found in Gradio config") from exc
-        with _INDEXTTS_CACHE_LOCK:
-            _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-        return fn_index
-    dependencies = config.get("dependencies")
-    if not isinstance(dependencies, list):
-        raise ValueError("IndexTTS Gradio config does not include dependencies")
-    normalized = api_name if api_name.startswith("/") else f"/{api_name}"
-    aliases = {api_name, normalized, normalized.lstrip("/")}
-    for dep in dependencies:
-        if not isinstance(dep, Mapping):
-            continue
-        if str(dep.get("api_name") or "") in aliases:
-            fn_index = int(dep.get("id"))
-            with _INDEXTTS_CACHE_LOCK:
-                _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
-            return fn_index
-    raise ValueError(f"IndexTTS batch api_name {api_name!r} was not found in Gradio config")
+    try:
+        fn_index = int(_indextts_space_client().resolve_fn_index(api_name, config))
+    except Exception as exc:
+        raise ValueError(f"IndexTTS batch api_name {api_name!r} was not found in Gradio config") from exc
+    with _INDEXTTS_CACHE_LOCK:
+        _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
+    return fn_index
 
 
 def _indextts_queue_join(fn_index: int, data: Sequence[Any]) -> str:
-    if _indextts_use_generic_provider():
-        return _indextts_space_client().queue_join(int(fn_index), list(data))
-    session_hash = uuid.uuid4().hex
-    _http_json(
-        "POST",
-        f"{_indextts_space_base_url()}/gradio_api/queue/join",
-        {"data": list(data), "fn_index": int(fn_index), "session_hash": session_hash},
-    )
-    return session_hash
+    return _indextts_space_client().queue_join(int(fn_index), list(data))
 
 
 def _run_indextts_gradio_tts(
@@ -5867,13 +5809,11 @@ def _indextts_upload_reference_audio(
 ) -> Dict[str, Any] | None:
     if audio:
         guessed_type = mime_type or mimetypes.guess_type(file_name or "")[0] or "audio/wav"
-        if _indextts_use_generic_provider():
-            parsed = _indextts_space_client().upload_file(file_name or "reference.wav", audio, guessed_type)
-            upload_path = _first_upload_path(parsed)
-            if not upload_path:
-                raise RuntimeError("IndexTTS upload did not return a reference path")
-            return {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(file_name or "reference.wav")}
-        return _gradio_upload_file(audio, file_name or "reference.wav", guessed_type)
+        parsed = _indextts_space_client().upload_file(file_name or "reference.wav", audio, guessed_type)
+        upload_path = _first_upload_path(parsed)
+        if not upload_path:
+            raise RuntimeError("IndexTTS upload did not return a reference path")
+        return {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(file_name or "reference.wav")}
     path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_PATH", "").strip()
     if path and os.path.exists(path):
         stat = os.stat(path)
@@ -5885,12 +5825,11 @@ def _indextts_upload_reference_audio(
         with open(path, "rb") as handle:
             data = handle.read()
         mime_type = mimetypes.guess_type(path)[0] or "audio/wav"
-        uploaded = _gradio_upload_file(data, os.path.basename(path), mime_type) if not _indextts_use_generic_provider() else _indextts_space_client().upload_file(os.path.basename(path), data, mime_type)
-        if _indextts_use_generic_provider():
-            upload_path = _first_upload_path(uploaded)
-            if not upload_path:
-                raise RuntimeError("IndexTTS upload did not return a reference path")
-            uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(path)}
+        parsed = _indextts_space_client().upload_file(os.path.basename(path), data, mime_type)
+        upload_path = _first_upload_path(parsed)
+        if not upload_path:
+            raise RuntimeError("IndexTTS upload did not return a reference path")
+        uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(path)}
         with _INDEXTTS_CACHE_LOCK:
             _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
         return uploaded
@@ -5902,14 +5841,11 @@ def _indextts_upload_reference_audio(
         cached = _INDEXTTS_REFERENCE_CACHE.get(cache_key)
         if cached:
             return dict(cached)
-    if _indextts_use_generic_provider():
-        parsed = _indextts_space_client().upload_file("abby-reference.wav", _default_indextts_reference_wav(), "audio/wav")
-        upload_path = _first_upload_path(parsed)
-        if not upload_path:
-            raise RuntimeError("IndexTTS upload did not return a reference path")
-        uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": "abby-reference.wav"}
-    else:
-        uploaded = _gradio_upload_file(_default_indextts_reference_wav(), "abby-reference.wav", "audio/wav")
+    parsed = _indextts_space_client().upload_file("abby-reference.wav", _default_indextts_reference_wav(), "audio/wav")
+    upload_path = _first_upload_path(parsed)
+    if not upload_path:
+        raise RuntimeError("IndexTTS upload did not return a reference path")
+    uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": "abby-reference.wav"}
     with _INDEXTTS_CACHE_LOCK:
         _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
     return uploaded
@@ -6076,49 +6012,14 @@ def _indextts_batch_request_data(
 
 
 def _indextts_wait_for_result(session_hash: str) -> Dict[str, Any]:
-    if _indextts_use_generic_provider():
-        try:
-            return _indextts_space_client().wait_for_queue_result(
-                session_hash,
-                timeout_seconds=_indextts_timeout_seconds(),
-                poll_interval_seconds=0.5,
-            )
-        except Exception as exc:
-            raise ValueError(f"IndexTTS Gradio queue failed: {exc}") from exc
-    deadline = time.time() + _indextts_timeout_seconds()
-    url = f"{_indextts_space_base_url()}/gradio_api/queue/data?session_hash={urllib_parse.quote(session_hash)}"
-    while time.time() < deadline:
-        request = urllib_request.Request(url, headers=_indextts_headers())
-        with urllib_request.urlopen(request, timeout=min(30.0, _indextts_timeout_seconds())) as response:
-            for raw_line in response:
-                line = raw_line.decode("utf-8", errors="replace").strip()
-                if not line.startswith("data:"):
-                    continue
-                payload_text = line.removeprefix("data:").strip()
-                if not payload_text:
-                    continue
-                event = json.loads(payload_text)
-                if not isinstance(event, dict):
-                    continue
-                message = str(event.get("msg") or "")
-                if message == "process_completed":
-                    if event.get("success") is False:
-                        output = event.get("output")
-                        if isinstance(output, Mapping):
-                            detail = output.get("error") or output.get("title") or output
-                        else:
-                            detail = output or event
-                        raise ValueError(f"IndexTTS Gradio queue failed: {detail}")
-                    output = event.get("output")
-                    if isinstance(output, Mapping):
-                        return dict(output)
-                    return event
-                if message in {"process_starts", "estimation", "heartbeat", "send_data"}:
-                    continue
-                if message in {"process_failed", "queue_full"}:
-                    raise ValueError(f"IndexTTS Gradio queue failed: {event}")
-        time.sleep(0.5)
-    raise TimeoutError("IndexTTS Gradio queue timed out")
+    try:
+        return _indextts_space_client().wait_for_queue_result(
+            session_hash,
+            timeout_seconds=_indextts_timeout_seconds(),
+            poll_interval_seconds=0.5,
+        )
+    except Exception as exc:
+        raise ValueError(f"IndexTTS Gradio queue failed: {exc}") from exc
 
 
 def _find_gradio_audio_reference(value: Any) -> Any:
@@ -6259,26 +6160,9 @@ def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
     if isinstance(reference, Mapping) and isinstance(reference.get("_inline_bytes"), (bytes, bytearray)):
         name = str(reference.get("name") or reference.get("path") or "")
         return bytes(reference["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
-    if _indextts_use_generic_provider():
-        data, detected_type = _indextts_space_client().fetch_file(reference)
-        path = str(reference.get("path") or reference.get("name") or "") if isinstance(reference, Mapping) else str(reference or "")
-        mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "") if isinstance(reference, Mapping) else ""
-        return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
-    if isinstance(reference, Mapping):
-        url = str(reference.get("url") or "").strip()
-        path = str(reference.get("path") or reference.get("name") or "").strip()
-        mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "").strip()
-    else:
-        url = ""
-        path = str(reference or "").strip()
-        mime_type = ""
-    if not url:
-        if path.startswith("http://") or path.startswith("https://"):
-            url = path
-        else:
-            encoded_path = urllib_parse.quote(path, safe="/:=._-")
-            url = f"{_indextts_space_base_url()}/gradio_api/file={encoded_path}"
-    data, detected_type = _http_bytes(url)
+    data, detected_type = _indextts_space_client().fetch_file(reference)
+    path = str(reference.get("path") or reference.get("name") or "") if isinstance(reference, Mapping) else str(reference or "")
+    mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "") if isinstance(reference, Mapping) else ""
     return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
 
 
