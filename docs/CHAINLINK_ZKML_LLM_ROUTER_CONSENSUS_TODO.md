@@ -272,7 +272,7 @@ Track guide:
 - Acceptance: A multi-peer runner submits consensus payloads to configured peers, waits concurrently, converts completed remote tasks into `OperatorResponse` records, tolerates missing peers according to quorum policy, and does not alter process-level remote peer env vars.
 
 ## CLZKML-190 libp2p Local Worker Integration Gate
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: p2p
