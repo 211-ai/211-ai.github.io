@@ -247,7 +247,7 @@ Track guide:
 - Acceptance: A ctypes wrapper prototypes `pk_init`, memory configuration, prover/verifier loading, proving, verification, error retrieval, and buffer cleanup behind a process-local lock, while CLI remains the default production path.
 
 ## PROVEKIT-200 Recursive Gnark And On-Chain Evaluation
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P2
 - Track: wallet
