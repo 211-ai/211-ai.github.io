@@ -6,6 +6,7 @@ export interface AgentCitationLinkProps {
   citation: EvidenceCitation;
   title?: string;
   source?: string;
+  summary?: string;
   score?: number;
   compact?: boolean;
   onOpenServiceDetail?: (docId: string) => void;
@@ -15,6 +16,7 @@ export function AgentCitationLink({
   citation,
   title,
   source,
+  summary,
   score,
   compact = false,
   onOpenServiceDetail
@@ -61,6 +63,8 @@ export function AgentCitationLink({
           </span>
         )}
       </div>
+
+      {summary ? <p className="agent-citation-summary">{summary}</p> : null}
 
       <dl className="agent-citation-provenance">
         {citation.docId ? (

@@ -312,6 +312,88 @@ function normalizePrecomputedAudioConfig(
   return { manifestUrl };
 }
 
+function readEnvWorldIdConfig(): RuntimeWorldIdConfig | undefined {
+  const env = import.meta.env;
+  const enabled = normalizeOptionalBoolean(env?.VITE_WORLD_ID_ENABLED);
+  const appId = normalizeOptionalString(env?.VITE_WORLD_ID_APP_ID ?? env?.VITE_WLD_APP_ID);
+  const action = normalizeOptionalString(env?.VITE_WORLD_ID_ACTION ?? env?.VITE_WLD_ACTION);
+  const environment = normalizeOptionalString(env?.VITE_WORLD_ID_ENVIRONMENT ?? env?.VITE_WLD_ENVIRONMENT);
+  if (enabled === undefined && !appId && !action && !environment) {
+    return undefined;
+  }
+  return {
+    ...(enabled !== undefined ? { enabled } : {}),
+    ...(appId ? { appId } : {}),
+    ...(action ? { action } : {}),
+    ...(environment ? { environment } : {}),
+  };
+}
+
+function normalizeRuntimeWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined,
+): RuntimeWorldIdConfig | undefined {
+  if (!config) return undefined;
+  const enabled = normalizeOptionalBoolean(config.enabled);
+  const appId = normalizeOptionalString(config.appId);
+  const action = normalizeOptionalString(config.action);
+  const environment = normalizeOptionalString(config.environment);
+  if (enabled === undefined && !appId && !action && !environment) {
+    return undefined;
+  }
+  return {
+    ...(enabled !== undefined ? { enabled } : {}),
+    ...(appId ? { appId } : {}),
+    ...(action ? { action } : {}),
+    ...(environment ? { environment } : {}),
+  };
+}
+
+function resolveWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined,
+): ResolvedRuntimeWorldIdConfig | undefined {
+  const normalized = normalizeRuntimeWorldIdConfig(config);
+  if (!normalized) return undefined;
+
+  const backendEnabled = normalizeOptionalBoolean(normalized.enabled) !== false;
+  const appId = normalizeOptionalString(normalized.appId);
+  const action = normalizeOptionalString(normalized.action) || DEFAULT_WORLD_ID_ACTION;
+  const environment = normalizeWorldIdEnvironment(normalized.environment);
+  if (!backendEnabled) {
+    return createDisabledWorldIdConfig("backend_disabled", { appId, action, environment });
+  }
+  if (!appId) {
+    return createDisabledWorldIdConfig("missing_app_id", { action, environment });
+  }
+  if (!action) {
+    return createDisabledWorldIdConfig("missing_action", { appId, environment });
+  }
+  return {
+    enabled: true,
+    backendEnabled: true,
+    environment,
+    action,
+    appId,
+  };
+}
+
+function createDisabledWorldIdConfig(
+  disabledReason: RuntimeWorldIdDisabledReason,
+  overrides: Partial<ResolvedRuntimeWorldIdConfig> = {},
+): ResolvedRuntimeWorldIdConfig {
+  return {
+    enabled: false,
+    backendEnabled: false,
+    environment: overrides.environment ?? DEFAULT_WORLD_ID_ENVIRONMENT,
+    action: overrides.action ?? DEFAULT_WORLD_ID_ACTION,
+    appId: overrides.appId,
+    disabledReason,
+  };
+}
+
+function normalizeWorldIdEnvironment(value: string | null | undefined): RuntimeWorldIdEnvironment {
+  return value === "production" || value === "staging" ? value : DEFAULT_WORLD_ID_ENVIRONMENT;
+}
+
 function normalizeOptionalString(value: number | string | null | undefined): string | undefined {
   const trimmed = typeof value === "number" ? String(value) : value?.trim();
   return trimmed ? trimmed : undefined;

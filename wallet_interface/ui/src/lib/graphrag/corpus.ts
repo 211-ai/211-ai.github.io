@@ -1,6 +1,7 @@
 import type {
   Bm25Payload,
   CorpusArtifactManifest,
+  DocumentGeoClusterManifest,
   CorpusDocument,
   CorpusDocumentIndex,
   DocumentCommunity,
@@ -17,7 +18,7 @@ const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
 const CORPUS_BASE_URL = stripTrailingSlash(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
-interface CorpusState {
+export interface CorpusState {
   documents: CorpusDocument[];
   documentById: Map<string, CorpusDocument>;
   documentByContentCid: Map<string, CorpusDocument>;
@@ -27,6 +28,7 @@ let artifactManifestPromise: Promise<CorpusArtifactManifest> | null = null;
 let generatedManifestPromise: Promise<GeneratedCorpusManifest> | null = null;
 let documentsPromise: Promise<CorpusState> | null = null;
 let documentIndexPromise: Promise<CorpusDocumentIndex> | null = null;
+let documentGeoClustersPromise: Promise<DocumentGeoClusterManifest> | null = null;
 let bm25Promise: Promise<Bm25Payload> | null = null;
 let embeddingsPromise: Promise<{ index: EmbeddingIndex; vectors: Float32Array }> | null = null;
 let graphIndexPromise: Promise<GraphNeighborhoodIndex> | null = null;
@@ -79,6 +81,46 @@ export async function load211DocumentIndex(): Promise<CorpusDocumentIndex> {
     documentIndexPromise = fetch211CorpusJson<CorpusDocumentIndex>("generated/document-index.json");
   }
   return documentIndexPromise;
+}
+
+export async function load211DocumentsByReference(
+  references: string | string[],
+  options: { docTypes?: string[]; limit?: number } = {},
+): Promise<CorpusState> {
+  const requestedReferences = new Set((Array.isArray(references) ? references : [references]).filter(Boolean));
+  if (!requestedReferences.size) {
+    return createCorpusState([]);
+  }
+  const docTypes = new Set(options.docTypes || []);
+  const limit = Math.max(1, options.limit ?? requestedReferences.size);
+  const { documents } = await load211Documents();
+  const matches: CorpusDocument[] = [];
+  for (const document of documents) {
+    if (docTypes.size && !docTypes.has(document.doc_type)) {
+      continue;
+    }
+    if (
+      requestedReferences.has(document.doc_id) ||
+      requestedReferences.has(document.source_content_cid) ||
+      requestedReferences.has(document.source_page_cid) ||
+      requestedReferences.has(document.source_url)
+    ) {
+      matches.push(document);
+      if (matches.length >= limit) {
+        break;
+      }
+    }
+  }
+  return createCorpusState(matches);
+}
+
+export async function load211DocumentGeoClusters(): Promise<DocumentGeoClusterManifest> {
+  if (!documentGeoClustersPromise) {
+    documentGeoClustersPromise = fetch211CorpusJson<DocumentGeoClusterManifest>(
+      "generated/document-geo-clusters.json",
+    ).catch(() => ({ clusters: [] }));
+  }
+  return documentGeoClustersPromise;
 }
 
 export async function load211Bm25(): Promise<Bm25Payload> {
@@ -214,4 +256,16 @@ function resolveDefaultCorpusBaseUrl(): string {
     return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
   }
   return `/${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
+}
+
+function createCorpusState(documents: CorpusDocument[]): CorpusState {
+  return {
+    documents,
+    documentById: new Map(documents.map((document) => [document.doc_id, document])),
+    documentByContentCid: new Map(
+      documents
+        .filter((document) => document.source_content_cid)
+        .map((document) => [document.source_content_cid, document]),
+    ),
+  };
 }

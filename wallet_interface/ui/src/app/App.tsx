@@ -316,10 +316,6 @@ export function App() {
     ]);
   }
 
-  async function refreshWalletAccessState() {
-    // TODO: fetch access requests and grant receipts from wallet API when available
-  }
-
   const agentRuntime = useMemo<AppActionRuntime>(
     () => ({
       getState: () => ({

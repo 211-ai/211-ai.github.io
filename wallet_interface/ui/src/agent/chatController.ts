@@ -76,6 +76,16 @@ export interface AgentChatSendOptions {
   retryOfMessageId?: string;
 }
 
+export interface AgentMessageAudioRecord {
+  audioUrl?: string;
+  mimeType?: string;
+  modelName?: string;
+  playedAt: string;
+  precomputedId?: string;
+  provider: string;
+  spokenText: string;
+}
+
 export interface AgentChatController {
   getSnapshot: () => AgentChatSnapshot;
   subscribe: (listener: () => void) => () => void;

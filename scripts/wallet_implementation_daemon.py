@@ -58,6 +58,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="State file prefix inside --state-dir",
     )
     parser.add_argument(
+        "--allowed-tracks",
+        action="append",
+        default=[],
+        help="Comma-separated task tracks this daemon may select; repeatable. Defaults to all tracks.",
+    )
+    parser.add_argument(
+        "--allowed-task-ids",
+        action="append",
+        default=[],
+        help="Comma-separated task IDs this daemon may select; repeatable. Defaults to all task IDs.",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -109,6 +121,8 @@ def main(argv: list[str] | None = None) -> None:
         implementation_timeout=args.implementation_timeout,
         use_ephemeral_worktree=implement and not args.no_ephemeral_worktree,
         worktree_root=args.worktree_root,
+        allowed_tracks=args.allowed_tracks,
+        allowed_task_ids=args.allowed_task_ids,
     )
     while True:
         result = daemon.run_once()

@@ -427,6 +427,18 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface ServicePlanShareGrantResponse {
+  grantId: string;
+  receiptId?: string;
+  audienceDid: string;
+  resources: string[];
+  abilities: string[];
+  scopes: string[];
+  expiresAt?: string;
+  plan?: ServicePlan;
+  receipt?: WalletGrantReceipt;
+}
+
 export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<{
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
@@ -715,6 +727,32 @@ export async function updateWalletServicePlan(
     related_interaction_ids: input.relatedInteractionIds,
     private_notes_record_id: input.privateNotesRecordId
   });
+}
+
+export async function createWalletServicePlanShareGrant(
+  config: WalletApiConfig,
+  planId: string,
+  input: {
+    audienceDid: string;
+    expiresAt?: string;
+    scopes?: string[];
+    workerName?: string;
+    workerRecipientId?: string;
+  }
+): Promise<ServicePlanShareGrantResponse> {
+  const url = new URL(
+    `/wallets/${config.walletId}/portal/plans/${planId}/share-grants`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const payload = await postJson<Record<string, unknown>>(url, "Service plan share grant", {
+    actor_did: requiredActorDid(config),
+    audience_did: input.audienceDid,
+    expires_at: input.expiresAt,
+    scopes: input.scopes || [],
+    worker_name: input.workerName || "",
+    worker_recipient_id: input.workerRecipientId || ""
+  });
+  return toServicePlanShareGrantResponse(payload, input);
 }
 
 export async function listWalletServiceInteractions(
@@ -1904,6 +1942,26 @@ async function postAccessRequestDecision(
   return postJson<AccessRequestApiRecord>(url, `Access request ${action}`, body);
 }
 
+function toServicePlanShareGrantResponse(
+  payload: Record<string, unknown>,
+  input: { audienceDid: string; expiresAt?: string; scopes?: string[] }
+): ServicePlanShareGrantResponse {
+  const receipt = isRecord(payload.receipt) ? payload.receipt as unknown as WalletGrantReceipt : undefined;
+  const resources = stringArray(payload.resources);
+  const abilities = stringArray(payload.abilities);
+  return {
+    grantId: stringValue(payload.grantId ?? payload.grant_id ?? receipt?.grantId ?? ""),
+    receiptId: stringValue(payload.receiptId ?? payload.receipt_id ?? receipt?.id ?? ""),
+    audienceDid: stringValue(payload.audienceDid ?? payload.audience_did ?? input.audienceDid),
+    resources,
+    abilities,
+    scopes: stringArray(payload.scopes).length ? stringArray(payload.scopes) : input.scopes || [],
+    expiresAt: stringValue(payload.expiresAt ?? payload.expires_at ?? input.expiresAt),
+    plan: isRecord(payload.plan) ? payload.plan as unknown as ServicePlan : undefined,
+    receipt
+  };
+}
+
 function requiredActorDid(config: WalletApiConfig): string {
   if (!config.actorDid) {
     throw new Error("VITE_DEMO_ACTOR_DID is required for access-request mutations");
@@ -1928,6 +1986,13 @@ function stringValue(value: unknown): string {
   return JSON.stringify(value);
 }
 
+function stringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map((item) => stringValue(item)).filter(Boolean);
+}
+
 function numberFromPolicy(value: unknown, fallback: number): number {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -1939,6 +2004,10 @@ function numberFromPolicy(value: unknown, fallback: number): number {
     }
   }
   return fallback;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function labelFromResource(resource: string): string {

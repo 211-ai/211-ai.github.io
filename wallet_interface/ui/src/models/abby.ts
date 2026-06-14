@@ -104,6 +104,32 @@ export interface UploadItem {
   status: "stored" | "encrypting" | "failed";
   storageOk?: boolean;
   shared: boolean;
+  sharingMode?: "private" | "grant" | "public";
+  allowedRecipientIds?: string[];
+  decentralizedStorageProvider?: "filecoin" | "walrus" | "ipfs" | "wallet-api" | "local" | "ipfs-filecoin";
+  decentralizedStorageStatus?: "stored" | "queued" | "pinning" | "pinned" | "failed";
+  decentralizedStorageMessage?: string;
+  encryptedMetadataCid?: string;
+  encryptedPayloadCid?: string;
+  filecoinDealId?: string;
+  filecoinPieceCid?: string;
+  filecoinPinRequestId?: string;
+  filecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
+  filecoinPinStatusUrl?: string;
+  ipfsCid?: string;
+  ipfsGatewayUrl?: string;
+  ipfsRootCid?: string;
+  ipldLinks?: Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }>;
+  metadataCid?: string;
+  metadataGatewayUrl?: string;
+  metadataIpldCid?: string;
+  metadataIpldLink?: { "/"?: string; cid?: string; mediaType?: string; name: string };
+  walrusBlobId?: string;
+  walrusEndEpoch?: number;
+  walrusGatewayUrl?: string;
+  walrusObjectId?: string;
+  walrusStorageCost?: number;
+  walrusTxDigest?: string;
 }
 
 export interface ServiceMatch {

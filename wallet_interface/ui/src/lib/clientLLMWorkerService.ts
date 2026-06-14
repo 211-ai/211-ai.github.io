@@ -1,19 +1,43 @@
-import { LLM_CONFIG } from "./llmConfig";
+import { LLM_CONFIG, getClientLlmModelInfo } from "./llmConfig";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
 }
 
-interface LlmWorkerResponse {
+export type ClientLlmDevice = "wasm" | "webgpu" | "auto";
+
+export interface ClientLlmRuntimeCapabilities {
+  webGPU: boolean;
+  webGPUError?: string;
+  webGPUShaderF16?: boolean;
+  webGPUAdapter?: {
+    vendor?: string;
+    architecture?: string;
+    device?: string;
+    description?: string;
+  };
+  simd: boolean;
+  wasmThreads: boolean;
+  crossOriginIsolated: boolean;
+  sharedArrayBuffer: boolean;
+}
+
+export interface LlmWorkerResponse {
   text?: string;
   modelName?: string;
-  capabilities?: {
-    webGPU: boolean;
-    simd: boolean;
-  };
+  device?: ClientLlmDevice;
+  capabilities?: ClientLlmRuntimeCapabilities;
   isInitialized?: boolean;
 }
+
+export interface ClientLlmPromptObject {
+  prompt: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+}
+
+export type ClientLlmPromptInput = string | ClientLlmPromptObject;
 
 export interface ClientLlmTextGenerationResult {
   ok: boolean;
@@ -27,14 +51,27 @@ export interface ClientLlmStructuredTextResult extends ClientLlmTextGenerationRe
   parseError?: string;
 }
 
-class ClientLLMWorkerService {
+export interface ClientLlmRuntimeService {
+  generateText(prompt: ClientLlmPromptInput, maxTokens?: number): Promise<string>;
+  tryGenerateText(prompt: ClientLlmPromptInput, maxTokens?: number): Promise<ClientLlmTextGenerationResult>;
+  generateStructuredText(prompt: ClientLlmPromptInput, maxTokens?: number): Promise<ClientLlmStructuredTextResult>;
+}
+
+export class ClientLLMWorkerService implements ClientLlmRuntimeService {
   private worker: Worker | null = null;
   private isInitialized = false;
   private isInitializing = false;
   private requestCounter = 0;
   private pendingRequests = new Map<string, PendingRequest<LlmWorkerResponse>>();
   private currentModel = LLM_CONFIG.defaultModel;
-  private capabilities = { webGPU: false, simd: false };
+  private currentDevice: ClientLlmDevice = resolveModelDevice(LLM_CONFIG.defaultModel);
+  private capabilities: ClientLlmRuntimeCapabilities = {
+    webGPU: false,
+    simd: false,
+    wasmThreads: false,
+    crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
+    sharedArrayBuffer: typeof SharedArrayBuffer !== "undefined",
+  };
 
   constructor() {
     this.initializeWorker();
@@ -56,7 +93,8 @@ class ClientLLMWorkerService {
       const result = await this.sendWorkerRequest("initialize", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
       this.isInitialized = Boolean(result.isInitialized ?? true);
       this.currentModel = result.modelName || modelName;
-      this.capabilities = result.capabilities || this.capabilities;
+      this.currentDevice = result.device || resolveModelDevice(this.currentModel);
+      this.capabilities = mergeCapabilities(this.capabilities, result.capabilities);
     } finally {
       this.isInitializing = false;
     }
@@ -65,22 +103,27 @@ class ClientLLMWorkerService {
   async switchModel(modelName: string): Promise<void> {
     const result = await this.sendWorkerRequest("switchModel", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
     this.currentModel = result.modelName || modelName;
-    this.capabilities = result.capabilities || this.capabilities;
+    this.currentDevice = result.device || resolveModelDevice(this.currentModel);
+    this.capabilities = mergeCapabilities(this.capabilities, result.capabilities);
     this.isInitialized = true;
   }
 
-  async generateText(prompt: string, maxTokens = 180): Promise<string> {
+  async generateText(prompt: ClientLlmPromptInput, maxTokens = 180): Promise<string> {
     if (!this.isInitialized) {
       await this.initialize();
     }
-    const result = await this.sendWorkerRequest("generate", { prompt, maxTokens }, LLM_CONFIG.requestTimeoutMs);
+    const result = await this.sendWorkerRequest(
+      "generate",
+      { prompt: normalizePromptInput(prompt), maxTokens },
+      LLM_CONFIG.requestTimeoutMs,
+    );
     if (!result.text) {
       throw new Error("LLM worker returned an empty response");
     }
     return result.text;
   }
 
-  async tryGenerateText(prompt: string, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
+  async tryGenerateText(prompt: ClientLlmPromptInput, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
     try {
       const text = await this.generateText(prompt, maxTokens);
       return {
@@ -98,7 +141,7 @@ class ClientLLMWorkerService {
     }
   }
 
-  async generateStructuredText(prompt: string, maxTokens = 180): Promise<ClientLlmStructuredTextResult> {
+  async generateStructuredText(prompt: ClientLlmPromptInput, maxTokens = 180): Promise<ClientLlmStructuredTextResult> {
     const result = await this.tryGenerateText(prompt, maxTokens);
     if (!result.ok) return result;
 
@@ -122,6 +165,7 @@ class ClientLLMWorkerService {
     } catch {
       return {
         modelName: this.currentModel,
+        device: this.currentDevice,
         capabilities: this.capabilities,
         isInitialized: this.isInitialized,
       };
@@ -134,8 +178,24 @@ class ClientLLMWorkerService {
       isInitializing: this.isInitializing,
       hasWorker: this.worker !== null,
       currentModel: this.currentModel,
+      currentDevice: this.currentDevice,
       capabilities: this.capabilities,
+      openRouter: this.getOpenRouterStatus(),
     };
+  }
+
+  saveOpenRouterApiKey(apiKey: string) {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("abby.openrouter.apiKey", apiKey);
+    }
+    return this.getOpenRouterStatus();
+  }
+
+  clearOpenRouterApiKey() {
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem("abby.openrouter.apiKey");
+    }
+    return this.getOpenRouterStatus();
   }
 
   destroy(): void {
@@ -173,13 +233,14 @@ class ClientLLMWorkerService {
     }
 
     this.pendingRequests.delete(id);
-    if (success) {
-      if (data?.modelName) {
-        this.currentModel = data.modelName;
-      }
-      if (data?.capabilities) {
-        this.capabilities = data.capabilities;
-      }
+      if (success) {
+        if (data?.modelName) {
+          this.currentModel = data.modelName;
+          this.currentDevice = data.device || resolveModelDevice(data.modelName);
+        }
+        if (data?.capabilities) {
+          this.capabilities = mergeCapabilities(this.capabilities, data.capabilities);
+        }
       pending.resolve(data || {});
     } else {
       pending.reject(new Error(error || "LLM worker request failed"));
@@ -223,6 +284,41 @@ class ClientLLMWorkerService {
       worker.postMessage({ id, type, data });
     });
   }
+
+  private getOpenRouterStatus() {
+    const browserKeyConfigured =
+      typeof localStorage !== "undefined" && Boolean(localStorage.getItem("abby.openrouter.apiKey"));
+    const proxyConfigured = Boolean(LLM_CONFIG.openRouterProxyUrl);
+    return {
+      enabled: LLM_CONFIG.openRouterEnabled || browserKeyConfigured || proxyConfigured,
+      configured: browserKeyConfigured || proxyConfigured,
+      credentialSource: browserKeyConfigured ? "browser" as const : proxyConfigured ? "proxy" as const : "none" as const,
+      endpoint: LLM_CONFIG.openRouterProxyUrl || "https://openrouter.ai/api/v1/chat/completions",
+      model: LLM_CONFIG.openRouterInstructModel,
+      fallbackDelayMs: LLM_CONFIG.openRouterFallbackDelayMs,
+    };
+  }
+}
+
+function normalizePromptInput(input: ClientLlmPromptInput): string {
+  if (typeof input === "string") {
+    return input;
+  }
+  return [input.systemPrompt, input.userPrompt, input.prompt].filter(Boolean).join("\n\n");
+}
+
+function resolveModelDevice(modelName: string): ClientLlmDevice {
+  return getClientLlmModelInfo(modelName)?.requiresWebGPU ? "webgpu" : "wasm";
+}
+
+function mergeCapabilities(
+  current: ClientLlmRuntimeCapabilities,
+  next: Partial<ClientLlmRuntimeCapabilities> | undefined,
+): ClientLlmRuntimeCapabilities {
+  return {
+    ...current,
+    ...(next || {}),
+  };
 }
 
 function extractFirstJsonValue(text: string): { ok: true; value: unknown } | { ok: false; error: string } {

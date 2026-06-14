@@ -280,7 +280,11 @@ npm --prefix wallet_interface/ui run build
 npm --prefix wallet_interface/ui ci
 npm --prefix wallet_interface/ui run build
 
-# WORLDID-130, WORLDID-140, WORLDID-150
+# WORLDID-130
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/agent-unit.spec.ts
+
+# WORLDID-140, WORLDID-150
 npm --prefix wallet_interface/ui run build
 npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
 

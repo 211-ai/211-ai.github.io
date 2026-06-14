@@ -57,6 +57,76 @@ export interface CorpusDocument {
   host: string;
   city: string;
   state: string;
+  geo_lat?: number | null;
+  geo_lon?: number | null;
+  geo_precision?: string;
+  geo_cluster_id?: number | null;
+  phones?: ServiceContactPoint[];
+  emails?: ServiceContactPoint[];
+  websites?: ServiceContactPoint[];
+  addresses?: ServiceAddress[];
+  hours?: ServiceExtractValue[];
+  eligibility?: ServiceExtractValue[];
+  intake_steps?: ServiceExtractValue[];
+  required_documents?: ServiceExtractValue[];
+  fees?: ServiceExtractValue[];
+  languages?: ServiceExtractValue[];
+  accessibility?: ServiceExtractValue[];
+  travel_info?: ServiceExtractValue[];
+  area_served?: ServiceExtractValue[];
+  geo?: Record<string, unknown> | null;
+}
+
+export interface ServiceContactPoint {
+  value?: string;
+  label?: string;
+  url?: string;
+  tel_url?: string;
+  sms_url?: string;
+  type?: string;
+}
+
+export interface ServiceAddress {
+  address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  maps_query?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  label?: string;
+}
+
+export interface ServiceExtractValue {
+  value: string;
+  label?: string;
+  confidence?: number;
+  source_span?: {
+    start?: number;
+    end?: number;
+    text?: string;
+  };
+}
+
+export interface SearchCoordinates {
+  lat: number;
+  lon: number;
+}
+
+export interface DocumentGeoCluster {
+  clusterId: number;
+  kind: string;
+  centroid: {
+    lat?: number | null;
+    lon?: number | null;
+  };
+  docIds?: string[];
+  serviceDocIds?: string[];
+}
+
+export interface DocumentGeoClusterManifest {
+  schemaVersion?: number;
+  clusters: DocumentGeoCluster[];
 }
 
 export interface CorpusDocumentIndex {

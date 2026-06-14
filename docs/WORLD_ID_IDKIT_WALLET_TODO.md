@@ -181,7 +181,7 @@ Track guide:
 - Track: ui
 - Depends on: WORLDID-110, WORLDID-120
 - Outputs: wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx, wallet_interface/ui/src/app/App.tsx, wallet_interface/ui/src/styles/global.css
-- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/agent-unit.spec.ts
 - Acceptance: A reusable React panel requests a fresh RP signature immediately before opening IDKit, starts the configured proof-of-human flow, sends the IDKit result to backend verification, refreshes proof/audit/status state on success, and handles cancellation, credential unavailable, RP expiry, replay, and backend failure states.
 
 ## WORLDID-140 Proof Center Integration

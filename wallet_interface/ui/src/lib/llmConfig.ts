@@ -7,6 +7,15 @@ export const LLM_CONFIG = {
   modelDownloadTimeoutMs: Number.parseInt(import.meta.env?.VITE_MODEL_DOWNLOAD_TIMEOUT || "120000", 10),
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
   enableSIMD: import.meta.env?.VITE_ENABLE_SIMD !== "false",
+  openRouterEnabled: import.meta.env?.VITE_OPENROUTER_ENABLED === "true",
+  openRouterProxyUrl: (import.meta.env?.VITE_OPENROUTER_PROXY_URL as string | undefined) || "",
+  openRouterThinkingModel:
+    (import.meta.env?.VITE_OPENROUTER_THINKING_MODEL as string | undefined) || "openai/gpt-4o-mini",
+  openRouterInstructModel:
+    (import.meta.env?.VITE_OPENROUTER_INSTRUCT_MODEL as string | undefined) || "openai/gpt-4o-mini",
+  openRouterRequestTimeoutMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_REQUEST_TIMEOUT || "45000", 10),
+  openRouterFallbackDelayMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_FALLBACK_DELAY || "1200", 10),
+  openRouterAllowPrivateContext: import.meta.env?.VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT === "true",
 } as const;
 
 export const SUPPORTED_CLIENT_LLM_MODELS = {
@@ -17,6 +26,7 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
     contextLength: 1024,
     description: "Small WASM-compatible fallback model.",
     quantized: true,
+    device: "wasm",
   },
   "Xenova/LaMini-GPT-774M": {
     name: "LaMini-GPT 774M",
@@ -25,6 +35,7 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
     contextLength: 1024,
     description: "Larger WASM-capable model for better short summaries.",
     quantized: true,
+    device: "wasm",
   },
   "onnx-community/Llama-3.2-1B-Instruct": {
     name: "Llama 3.2 1B Instruct",
@@ -33,6 +44,7 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
     contextLength: 2048,
     description: "Instruction model for WebGPU-capable browsers.",
     quantized: false,
+    device: "webgpu",
   },
   "onnx-community/Llama-3.2-3B-Instruct": {
     name: "Llama 3.2 3B Instruct",
@@ -41,6 +53,7 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
     contextLength: 2048,
     description: "Higher-quality instruction model for machines with enough GPU memory.",
     quantized: false,
+    device: "webgpu",
   },
 } as const;
 

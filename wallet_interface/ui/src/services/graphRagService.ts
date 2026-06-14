@@ -30,6 +30,32 @@ export interface GraphRagCitation {
   pageCid?: string;
 }
 
+export interface ServiceFieldProvenance {
+  key: string;
+  label: string;
+  value: string;
+  confidence: number;
+  extractionMethod: string;
+  sourceSpans: Array<{
+    start: number;
+    end: number;
+    text: string;
+  }>;
+}
+
+export interface ServiceProvenanceReport {
+  serviceDocId: string;
+  sourceContentCid: string;
+  sourcePageCid: string;
+  sourceUrl: string;
+  buildManifestCid: string;
+  documentsArtifactCid: string;
+  generatedAt: string;
+  documentCount: number;
+  fields: ServiceFieldProvenance[];
+  warnings: string[];
+}
+
 export interface GraphRagRuntimeStatus {
   corpusBaseUrl: string;
   corpus: {

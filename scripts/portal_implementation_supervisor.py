@@ -180,6 +180,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="portal",
         help="State file prefix inside --state-dir",
     )
+    parser.add_argument(
+        "--allowed-tracks",
+        action="append",
+        default=[],
+        help="Comma-separated task tracks this supervisor may select; repeatable. Defaults to all tracks.",
+    )
+    parser.add_argument(
+        "--allowed-task-ids",
+        action="append",
+        default=[],
+        help="Comma-separated task IDs this supervisor may select; repeatable. Defaults to all task IDs.",
+    )
     implement_group = parser.add_mutually_exclusive_group()
     implement_group.add_argument(
         "--implement",
@@ -241,6 +253,18 @@ def build_supervisor(args: argparse.Namespace) -> PortalImplementationSupervisor
             implementation_timeout=args.implementation_timeout,
             use_ephemeral_worktree=args.implement and not args.no_ephemeral_worktree,
             worktree_root=args.worktree_root,
+            allowed_tracks=tuple(
+                item.strip().lower()
+                for value in args.allowed_tracks
+                for item in value.split(",")
+                if item.strip()
+            ),
+            allowed_task_ids=tuple(
+                item.strip().lower()
+                for value in args.allowed_task_ids
+                for item in value.split(",")
+                if item.strip()
+            ),
         )
     )
 
