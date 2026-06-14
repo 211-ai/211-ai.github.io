@@ -24,24 +24,6 @@ export type ResolvedRuntimeFilecoinStorageConfig = {
   clientToken?: string;
 };
 
-export type RuntimeWalrusStorageConfig = {
-  publisherUrl?: string;
-  aggregatorUrl?: string;
-  deleteUrl?: string;
-  clientToken?: string;
-  epochs?: number | string;
-  deletable?: boolean | string;
-};
-
-export type ResolvedRuntimeWalrusStorageConfig = {
-  publisherUrl: string;
-  aggregatorUrl?: string;
-  deleteUrl?: string;
-  clientToken?: string;
-  epochs?: number;
-  deletable?: boolean;
-};
-
 export type RuntimeVoiceProxyConfig = {
   enabled?: boolean | string;
   model?: string;
@@ -61,20 +43,6 @@ export type RuntimePrecomputedAudioConfig = {
 
 export type RuntimeAgentConfig = {
   graphRagPrerenderMatchThreshold?: number | string;
-};
-
-export type RuntimeWorldIdEnvironment = "production" | "staging";
-
-export type RuntimeWorldIdConfig = {
-  action?: string;
-  appId?: string;
-  app_id?: string;
-  defaultAction?: string;
-  default_action?: string;
-  disabledReason?: string;
-  disabled_reason?: string;
-  enabled?: boolean | string;
-  environment?: RuntimeWorldIdEnvironment | string;
 };
 
 export type ResolvedRuntimeVoiceProxyConfig = {
@@ -98,30 +66,17 @@ export type ResolvedRuntimeAgentConfig = {
   graphRagPrerenderMatchThreshold?: number;
 };
 
-export type ResolvedRuntimeWorldIdConfig = {
-  action: string;
-  appId?: string;
-  disabledReason?: string;
-  enabled: boolean;
-  environment: RuntimeWorldIdEnvironment;
-};
-
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
-  walrusStorage?: RuntimeWalrusStorageConfig;
   voiceProxy?: RuntimeVoiceProxyConfig;
   precomputedAudio?: RuntimePrecomputedAudioConfig;
   agent?: RuntimeAgentConfig;
-  worldId?: RuntimeWorldIdConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
   __ABBY_RUNTIME_CONFIG__?: AbbyRuntimeConfig;
 };
-
-const DEFAULT_WORLD_ID_ACTION = "wallet-attach-world-id-v1";
-const DEFAULT_WORLD_ID_ENVIRONMENT: RuntimeWorldIdEnvironment = "staging";
 
 export async function loadRuntimeConfig(): Promise<void> {
   if (typeof window === "undefined") return;
@@ -167,10 +122,6 @@ export function readRuntimeFilecoinStorageConfig(): ResolvedRuntimeFilecoinStora
   };
 }
 
-export function readRuntimeWalrusStorageConfig(): ResolvedRuntimeWalrusStorageConfig | undefined {
-  return normalizeWalrusStorageConfig(readRuntimeConfig().walrusStorage);
-}
-
 export function readRuntimeVoiceProxyConfig(): ResolvedRuntimeVoiceProxyConfig | undefined {
   return normalizeVoiceProxyConfig(readRuntimeConfig().voiceProxy);
 }
@@ -187,10 +138,6 @@ export function readRuntimeAgentConfig(): ResolvedRuntimeAgentConfig | undefined
   return normalizeAgentConfig(readRuntimeConfig().agent);
 }
 
-export function readRuntimeWorldIdConfig(): ResolvedRuntimeWorldIdConfig {
-  return normalizeWorldIdConfig(readRuntimeConfig().worldId);
-}
-
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -199,19 +146,15 @@ function readRuntimeConfig(): AbbyRuntimeConfig {
 function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): AbbyRuntimeConfig {
   const walletApi = normalizeWalletApiConfig(payload?.walletApi) ?? normalizeWalletApiBaseConfig(payload?.walletApi);
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
-  const walrusStorage = normalizeWalrusStorageConfig(payload?.walrusStorage);
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   const precomputedAudio = normalizePrecomputedAudioConfig(payload?.precomputedAudio);
   const agent = normalizeAgentConfig(payload?.agent);
-  const worldId = normalizeWorldIdConfig(payload?.worldId);
   return {
     ...(walletApi ? { walletApi } : {}),
     ...(filecoinStorage ? { filecoinStorage } : {}),
-    ...(walrusStorage ? { walrusStorage } : {}),
     ...(voiceProxy ? { voiceProxy } : {}),
     ...(precomputedAudio ? { precomputedAudio } : {}),
     ...(agent ? { agent } : {}),
-    worldId,
   };
 }
 
@@ -249,22 +192,6 @@ function normalizeFilecoinStorageConfig(
   return {
     uploadUrl,
     clientToken: normalizeOptionalString(config.clientToken)
-  };
-}
-
-function normalizeWalrusStorageConfig(
-  config: RuntimeWalrusStorageConfig | null | undefined
-): ResolvedRuntimeWalrusStorageConfig | undefined {
-  if (!config) return undefined;
-  const publisherUrl = normalizeOptionalString(config.publisherUrl);
-  if (!publisherUrl) return undefined;
-  return {
-    publisherUrl,
-    aggregatorUrl: normalizeOptionalString(config.aggregatorUrl),
-    deleteUrl: normalizeOptionalString(config.deleteUrl),
-    clientToken: normalizeOptionalString(config.clientToken),
-    epochs: normalizeOptionalNumber(config.epochs),
-    deletable: normalizeOptionalBoolean(config.deletable)
   };
 }
 
@@ -328,23 +255,6 @@ function normalizeAgentConfig(
   return { graphRagPrerenderMatchThreshold };
 }
 
-function normalizeWorldIdConfig(config: RuntimeWorldIdConfig | null | undefined): ResolvedRuntimeWorldIdConfig {
-  const appId = normalizeOptionalString(config?.appId ?? config?.app_id);
-  const enabled = normalizeOptionalBoolean(config?.enabled) ?? Boolean(appId);
-  const action =
-    normalizeOptionalString(config?.action ?? config?.defaultAction ?? config?.default_action) ??
-    DEFAULT_WORLD_ID_ACTION;
-  const environment = normalizeWorldIdEnvironment(config?.environment);
-  const disabledReason = normalizeOptionalString(config?.disabledReason ?? config?.disabled_reason);
-  return {
-    action,
-    ...(appId ? { appId } : {}),
-    ...(disabledReason ? { disabledReason } : {}),
-    enabled,
-    environment
-  };
-}
-
 function normalizeOptionalString(value: string | null | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
@@ -367,10 +277,6 @@ function normalizeOptionalNumber(value: number | string | null | undefined): num
   if (!normalized) return undefined;
   const parsed = Number.parseFloat(normalized);
   return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-function normalizeWorldIdEnvironment(value: string | null | undefined): RuntimeWorldIdEnvironment {
-  return normalizeOptionalString(value)?.toLowerCase() === "production" ? "production" : DEFAULT_WORLD_ID_ENVIRONMENT;
 }
 
 function resolveWalletApiBaseUrl(value: string | null | undefined): string | undefined {

@@ -13,20 +13,25 @@ import math
 import mimetypes
 import os
 import re
+import smtplib
 import struct
 import threading
 import time
 import uuid
 import wave
 import zipfile
+import secrets
+from email.message import EmailMessage
+from email.utils import make_msgid
 from typing import Any, Dict, List, Mapping, Sequence
-from urllib import error as urllib_error, parse as urllib_parse, request as urllib_request
+from urllib import error as urllib_error
+from urllib import parse as urllib_parse
+from urllib import request as urllib_request
 
 from .app_service import WalletInterfaceService
-from .world_id import WorldIdVerificationError
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import Body, FastAPI, File, Form, Header, HTTPException, UploadFile
+    from fastapi import Body, FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
@@ -37,6 +42,8 @@ except ImportError:  # pragma: no cover
     Form = None  # type: ignore[assignment]
     Header = None  # type: ignore[assignment]
     HTTPException = None  # type: ignore[assignment]
+    Request = object  # type: ignore[assignment,misc]
+    Response = object  # type: ignore[assignment,misc]
     UploadFile = object  # type: ignore[assignment,misc]
     BaseModel = object  # type: ignore[assignment,misc]
 
@@ -47,8 +54,20 @@ from ._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
+from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
 from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
+from ipfs_accelerate_py import HFSpaceClient  # noqa: E402
+
+
+PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
+OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
+_IPFS_CID_PATTERN = re.compile(r"^(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})$")
+_AI_ROUTER_RATE_LIMITS: Dict[str, Dict[str, Any]] = {}
+
+
+class FilecoinPinHandoffError(RuntimeError):
+    """Raised when the optional Filecoin Pin sidecar handoff fails."""
 
 
 def _cors_origins_from_env() -> list[str]:
@@ -60,29 +79,111 @@ def _cors_origins_from_env() -> list[str]:
     return origins
 
 
-def _send_sms_notification(**kwargs: Any) -> Dict[str, Any]:
-    webhook_url = os.getenv("WALLET_SMS_WEBHOOK_URL", "").strip()
-    if not webhook_url:
-        return {
-            "provider": "disabled",
-            "provider_status": "not_configured",
-            "provider_message_id": "",
-        }
+def _prepare_hf_router_environment(kwargs: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    """Make encrypted HF credentials visible to ipfs_datasets_py router helpers."""
+    token = (
+        resolve_secret(
+            "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+            "HF_API_TOKEN",
+        )
+        or ""
+    ).strip()
+    if token:
+        for key in ("IPFS_DATASETS_PY_HF_API_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN"):
+            if not os.getenv(key, "").strip():
+                os.environ[key] = token
+    bill_to = (
+        os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+        or os.getenv("HUGGINGFACE_BILL_TO")
+        or os.getenv("HF_BILL_TO")
+        or "publicus"
+    ).strip()
+    if bill_to:
+        os.environ.setdefault("IPFS_DATASETS_PY_HF_BILL_TO", bill_to)
+        os.environ.setdefault("HUGGINGFACE_BILL_TO", bill_to)
+    router_kwargs = dict(kwargs or {})
+    if bill_to:
+        router_kwargs.setdefault("bill_to", bill_to)
+        router_kwargs.setdefault("organization", bill_to)
+    router_kwargs.setdefault("hf_provider", os.getenv("IPFS_DATASETS_PY_HF_PROVIDER", "auto"))
+    return router_kwargs
 
-    payload = json.dumps(kwargs).encode("utf-8")
-    timeout_seconds = float(os.getenv("WALLET_SMS_WEBHOOK_TIMEOUT_SECONDS", "10"))
-    request = urllib_request.Request(
-        webhook_url,
-        data=payload,
-        headers={"Content-Type": "application/json", "Accept": "application/json"},
-        method="POST",
-    )
-    with urllib_request.urlopen(request, timeout=timeout_seconds) as response:
-        raw = response.read()
-    if not raw:
-        return {"provider": "webhook", "provider_status": "queued", "provider_message_id": ""}
-    parsed = json.loads(raw.decode("utf-8"))
-    return dict(parsed) if isinstance(parsed, Mapping) else {"provider": "webhook", "provider_status": "queued"}
+
+def _normalize_ipfs_cid(value: str) -> str:
+    normalized = str(value or "").strip()
+    normalized = normalized.replace("ipfs://", "")
+    normalized = re.sub(r"^/?ipfs/", "", normalized)
+    normalized = normalized.split("/", 1)[0].strip()
+    return normalized
+
+
+def _valid_ipfs_cid(value: str) -> bool:
+    return bool(_IPFS_CID_PATTERN.match(_normalize_ipfs_cid(value)))
+
+
+def _ipfs_proxy_allowed_cids_from_env() -> set[str]:
+    raw = str(os.getenv("WALLET_IPFS_PROXY_ALLOWED_CIDS") or "")
+    return {
+        normalized
+        for part in re.split(r"[\s,]+", raw)
+        if (normalized := _normalize_ipfs_cid(part))
+    }
+
+
+def _ipfs_proxy_allows_cid(cid: str) -> bool:
+    normalized = _normalize_ipfs_cid(cid)
+    allowed = _ipfs_proxy_allowed_cids_from_env()
+    if not allowed:
+        return True
+    return normalized in allowed
+
+
+def _ipfs_proxy_media_type(data: bytes) -> str:
+    try:
+        decoded = data.decode("utf-8")
+        json.loads(decoded)
+        return "application/json"
+    except Exception:
+        return "application/octet-stream"
+
+
+def _ipfs_proxy_fallback_gateways() -> list[str]:
+    configured = [
+        gateway.strip().rstrip("/")
+        for gateway in os.getenv("WALLET_IPFS_PROXY_FALLBACK_GATEWAYS", "").split(",")
+        if gateway.strip()
+    ]
+    if configured:
+        return configured
+    return [
+        "https://w3s.link/ipfs",
+        "https://ipfs.io/ipfs",
+        "https://dweb.link/ipfs",
+    ]
+
+
+def _fetch_ipfs_cid_via_gateway(cid: str) -> bytes:
+    last_error: Exception | None = None
+    for gateway in _ipfs_proxy_fallback_gateways():
+        url = f"{gateway.rstrip('/')}/{urllib_parse.quote(cid, safe='')}"
+        try:
+            req = urllib_request.Request(url, headers={"Accept": "application/octet-stream,*/*"})
+            with urllib_request.urlopen(req, timeout=30) as response:
+                return response.read()
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError(f"Unable to fetch CID from fallback gateways: {last_error}") from last_error
+
+
+def _wallet_interface_service_from_env() -> WalletInterfaceService:
+    services_jsonl = str(os.environ.get("WALLET_SERVICES_JSONL") or "").strip()
+    if services_jsonl:
+        return WalletInterfaceService.from_services_jsonl(services_jsonl)
+    return WalletInterfaceService()
 
 
 class CreateWalletRequest(BaseModel):
@@ -174,62 +275,6 @@ class LocationDistanceProofRequest(BaseModel):
 class DocumentPrivacyProfileProofRequest(BaseModel):
     actor_did: str
     public_inputs: Dict[str, Any] = Field(default_factory=dict)
-
-
-class WalletEmbeddingsRouterRequest(BaseModel):
-    actor_did: str
-    wallet_cid: str | None = None
-    text: str | None = None
-    texts: List[str] = Field(default_factory=list)
-    provider: str | None = None
-    model_name: str | None = None
-    kwargs: Dict[str, Any] = Field(default_factory=dict)
-
-
-class WalletLlmRouterRequest(BaseModel):
-    actor_did: str
-    wallet_cid: str | None = None
-    prompt: str
-    system_prompt: str | None = None
-    provider: str | None = None
-    model_name: str | None = None
-    max_new_tokens: int | None = None
-    kwargs: Dict[str, Any] = Field(default_factory=dict)
-
-
-class WalletMultimodalRouterRequest(BaseModel):
-    actor_did: str
-    wallet_cid: str | None = None
-    prompt: str
-    provider: str | None = None
-    model_name: str | None = None
-    image_urls: List[str] = Field(default_factory=list)
-    additional_text_blocks: List[str] = Field(default_factory=list)
-    messages: List[Dict[str, Any]] = Field(default_factory=list)
-    image_detail: str | None = None
-    max_new_tokens: int | None = None
-    kwargs: Dict[str, Any] = Field(default_factory=dict)
-
-
-class WorldIdRpSignatureRequest(BaseModel):
-    actor_did: str
-    action: str | None = None
-
-
-class WorldIdProviderStaffRpSignatureRequest(BaseModel):
-    actor_did: str
-    provider_id: str
-    provider_staff_id: str
-
-
-class WorldIdVerificationRequest(BaseModel):
-    actor_did: str
-    idkit_payload: Dict[str, Any]
-
-
-class WorldIdRevokeRequest(BaseModel):
-    actor_did: str
-    reason: str | None = None
 
 
 class AddTextDocumentRequest(BaseModel):
@@ -380,6 +425,16 @@ class AnalyzeRecordRequest(BaseModel):
     max_chars: int = 200
 
 
+class WalletRecordMetadataRequest(BaseModel):
+    actor_did: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DeleteWalletRecordRequest(BaseModel):
+    actor_did: str
+    unpin_ipfs: bool = True
+
+
 class SavedServiceRequest(BaseModel):
     actor_did: str
     service_doc_id: str
@@ -452,6 +507,22 @@ class ServicePlanUpdateRequest(BaseModel):
     private_notes_record_id: str | None = None
 
 
+class ServicePlanShareGrantRequest(BaseModel):
+    actor_did: str = ""
+    issuer_did: str = ""
+    audience_did: str = ""
+    worker_did: str = ""
+    scopes: List[str] = Field(default_factory=lambda: ["service_summary"])
+    purpose: str = "service_plan_collaboration"
+    worker_recipient_id: str = ""
+    worker_name: str = ""
+    expires_at: str | None = None
+    approval_id: str | None = None
+    issuer_key_hex: str | None = None
+    audience_key_hex: str | None = None
+    caveats: Dict[str, Any] = Field(default_factory=dict)
+
+
 class ServiceInteractionRequest(BaseModel):
     actor_did: str
     service_doc_id: str
@@ -496,6 +567,64 @@ class ServiceInteractionUpdateRequest(BaseModel):
     related_record_ids: List[str] | None = None
     privacy_level: str | None = None
     metadata: Dict[str, Any] | None = None
+
+
+class HmisClientLookupRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    date_of_birth: str = ""
+    program_ref: str = ""
+
+
+class HmisHouseholdLookupRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    program_ref: str = ""
+
+
+class HmisProgramLinkListRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    program_ref: str = ""
+    
+class HmisReferralDraftRequest(BaseModel):
+    actor_did: str
+    local_subject_ref: str
+    destination_program_ref: str
+    service_plan_id: str = ""
+    service_doc_id: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    summary: str = ""
+    eligibility_notes: str = ""
+    contact_notes: str = ""
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class HmisReferralDraftUpdateRequest(BaseModel):
+    actor_did: str
+    local_subject_ref: str | None = None
+    destination_program_ref: str | None = None
+    service_plan_id: str | None = None
+    service_doc_id: str | None = None
+    provider_name: str | None = None
+    program_name: str | None = None
+    summary: str | None = None
+    eligibility_notes: str | None = None
+    contact_notes: str | None = None
+    source_content_cid: str | None = None
+    source_page_cid: str | None = None
+    metadata: Dict[str, Any] | None = None
+
+
+class HmisReferralDraftValidationRequest(BaseModel):
+    actor_did: str
+
+
+class HmisReferralDraftSubmitRequest(BaseModel):
+    actor_did: str
 
 
 class RedactedAnalyzeRecordRequest(BaseModel):
@@ -551,6 +680,45 @@ class RedactedGraphRAGRequest(BaseModel):
     use_ocr: bool = True
 
 
+class WalletRouterBaseRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    wallet_cid: str | None = None
+    provider: str | None = "hf_inference_api"
+    model_name: str | None = None
+    kwargs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WalletEmbeddingsRouterRequest(WalletRouterBaseRequest):
+    text: str | None = None
+    texts: List[str] = Field(default_factory=list)
+
+
+class WalletLlmRouterRequest(WalletRouterBaseRequest):
+    prompt: str
+    system_prompt: str | None = None
+    max_new_tokens: int | None = 350
+
+
+class WalletMultimodalRouterRequest(WalletRouterBaseRequest):
+    prompt: str
+    image_urls: List[str] = Field(default_factory=list)
+    additional_text_blocks: List[str] = Field(default_factory=list)
+    messages: List[Dict[str, Any]] = Field(default_factory=list)
+    image_detail: str | None = "auto"
+    max_new_tokens: int | None = 350
+
+
+class WalletRecordMetadataGenerationRequest(WalletRouterBaseRequest):
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    file_name: str | None = None
+    mime_type: str | None = None
+    max_chars_per_record: int = 20_000
+    max_bytes_per_record: int = 200_000
+    use_ocr: bool = True
+
+
 class DecryptRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -561,6 +729,15 @@ class DecryptRecordRequest(BaseModel):
 class RotateRecordKeyRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
+
+
+class FilecoinRecordUploadRequest(BaseModel):
+    actorDid: str
+    actorKeyHex: str | None = None
+    fileName: str | None = None
+    grantId: str | None = None
+    recordId: str
+    walletId: str
 
 
 class RepairStorageRequest(BaseModel):
@@ -630,6 +807,93 @@ class DerivedServiceMatchRequest(BaseModel):
     limit: int = 10
 
 
+class MissingPersonDeadDropEmailRequest(BaseModel):
+    actor_did: str
+    to_email: str = PORTLAND_POLICE_MISSING_EMAIL
+    subject: str = "Missing person report dead drop bundle"
+    body: str
+    bundle: Dict[str, Any]
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+
+
+class MissingPersonDeadDropConfigRequest(BaseModel):
+    actor_did: str
+    enabled: bool = False
+    to_email: str = PORTLAND_POLICE_MISSING_EMAIL
+    subject: str = "Missing person report dead drop bundle"
+    body: str = ""
+    bundle: Dict[str, Any] = Field(default_factory=dict)
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+    due_at: str = ""
+    last_check_in_at: str = ""
+
+
+class MissingPersonDeadDropDispatchRequest(BaseModel):
+    actor_did: str
+
+
+class SmsNotificationQueueRequest(BaseModel):
+    actor_did: str
+    to_phone: str
+    message: str
+    due_at: str = ""
+    reason: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SmsNotificationDispatchRequest(BaseModel):
+    actor_did: str
+
+
+class InboundSmsForwardRequest(BaseModel):
+    wallet_id: str
+    from_phone: str
+    message: str
+    to_phone: str = ""
+    provider: str = "unknown"
+    status: str = "received"
+    message_id: str = ""
+    provider_message_id: str = ""
+    external_reference: str = ""
+    created_at: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PhoneCallNotificationQueueRequest(BaseModel):
+    actor_did: str
+    to_phone: str
+    script: str
+    due_at: str = ""
+    reason: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PhoneCallNotificationDispatchRequest(BaseModel):
+    actor_did: str
+
+
+class MagicLoginRequest(BaseModel):
+    contact: str
+    portal: str = "client"
+    wallet_id: str = ""
+    wallet_api_base_url: str = ""
+    actor_did: str = ""
+    base_url: str = ""
+
+
+class MagicLoginVerifyRequest(BaseModel):
+    token: str
+
+
+class WalletRecoveryBundleRequest(BaseModel):
+    actor_did: str
+    encrypted_bundle: Dict[str, Any]
+    wrapping_method: str = "passphrase"
+    kdf: Dict[str, Any] = Field(default_factory=dict)
+    recovery_hint: str = ""
+    public_metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
 
@@ -644,6 +908,457 @@ def _extract_bearer_token(authorization: str | None) -> str:
     return token.strip()
 
 
+def _require_portland_police_missing_email(to_email: str) -> str:
+    normalized = str(to_email or "").strip().lower()
+    if normalized != PORTLAND_POLICE_MISSING_EMAIL:
+        raise ValueError(
+            f"missing-person dead drop recipient must be {PORTLAND_POLICE_MISSING_EMAIL}"
+        )
+    return PORTLAND_POLICE_MISSING_EMAIL
+
+
+def _normalize_phone_number(phone: str) -> str:
+    raw = str(phone or "").strip()
+    if not raw:
+        raise ValueError("to_phone is required")
+    digits = re.sub(r"\D", "", raw)
+    if len(digits) < 10:
+        raise ValueError("to_phone must include at least 10 digits")
+    return f"+{digits}" if raw.startswith("+") else digits
+
+
+def _normalize_login_contact(value: str) -> str:
+    normalized = str(value or "").strip()
+    if "@" in normalized:
+        normalized = normalized.lower()
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized):
+            raise ValueError("contact must be a valid email address or telephone number")
+        return normalized
+    return _normalize_phone_number(normalized)
+
+
+def _is_email_contact(value: str) -> bool:
+    return "@" in str(value or "")
+
+
+def _sms_inbound_actor_did() -> str:
+    return str(os.getenv("WALLET_SMS_INBOUND_ACTOR_DID") or "did:wallet:sms-bridge").strip()
+
+
+def _require_internal_webhook_auth(
+    *,
+    env_prefix: str,
+    authorization: str | None,
+    headers: Mapping[str, str],
+    error_detail: str,
+) -> None:
+    expected_bearer = str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip()
+    header_name = str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip()
+    header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
+    if header_name and not header_value:
+        raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
+
+    supplied_bearer = _extract_bearer_token(authorization)
+    if expected_bearer and supplied_bearer == expected_bearer:
+        return
+    if header_name and str(headers.get(header_name) or "").strip() == header_value:
+        return
+    if not expected_bearer and not header_name:
+        raise RuntimeError(
+            f"{env_prefix}_BEARER_TOKEN or {env_prefix}_HTTP_HEADER_NAME must be configured for inbound webhook delivery"
+        )
+    raise HTTPException(status_code=401, detail=error_detail)
+
+
+def _send_webhook_notification(
+    *,
+    env_prefix: str,
+    required_key: str,
+    required_value: str,
+    extra_payload: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
+    webhook_url = str(os.getenv(f"{env_prefix}_WEBHOOK_URL") or "").strip()
+    backend = str(os.getenv(f"{env_prefix}_BACKEND") or ("http" if webhook_url else "")).strip().lower()
+    if not backend or not webhook_url:
+        raise RuntimeError(
+            f"{env_prefix}_WEBHOOK_URL environment variable is required for delivery but is not configured"
+        )
+    if backend != "http":
+        raise RuntimeError(f"{env_prefix}_BACKEND must be http when delivery is enabled")
+
+    extra_headers: Dict[str, str] = {}
+    if bearer_token := str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip():
+        extra_headers["authorization"] = f"Bearer {bearer_token}"
+    if header_name := str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip():
+        header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
+        if not header_value:
+            raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
+        extra_headers[header_name] = header_value
+
+    timeout_seconds = float(str(os.getenv(f"{env_prefix}_TIMEOUT_SECONDS") or "15").strip())
+    if timeout_seconds <= 0:
+        raise RuntimeError(f"{env_prefix}_TIMEOUT_SECONDS must be positive")
+
+    payload = {
+        required_key: required_value,
+        **dict(extra_payload or {}),
+    }
+
+    request_headers = {"content-type": "application/json", **extra_headers}
+    body = json.dumps(payload, sort_keys=True).encode("utf-8")
+    req = urllib_request.Request(
+        webhook_url,
+        data=body,
+        headers=request_headers,
+        method="POST",
+    )
+    with urllib_request.urlopen(req, timeout=timeout_seconds) as response:
+        raw = response.read().decode("utf-8")
+        content_type = str(getattr(response, "headers", {}).get("content-type", ""))
+        status = str(getattr(response, "status", getattr(response, "code", 200)))
+
+    response_payload: Dict[str, Any] = {}
+    if raw:
+        if "json" in content_type.lower() or raw.lstrip().startswith("{"):
+            parsed = json.loads(raw)
+            if not isinstance(parsed, dict):
+                raise ValueError("SMS delivery response must be a JSON object")
+            response_payload = parsed
+
+    provider_message_id = str(
+        response_payload.get("provider_message_id")
+        or response_payload.get("provider_call_id")
+        or response_payload.get("message_id")
+        or response_payload.get("call_id")
+        or response_payload.get("email_id")
+        or response_payload.get("id")
+        or ""
+    )
+    result = {
+        "provider": str(response_payload.get("provider") or "http"),
+        "provider_status": str(response_payload.get("status") or status),
+    }
+    if provider_message_id:
+        result["provider_message_id"] = provider_message_id
+    return result
+
+
+def _send_sms_notification(
+    *,
+    to_phone: str,
+    message: str,
+    wallet_id: str = "",
+    external_reference: str = "",
+    metadata: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
+    normalized_phone = _normalize_phone_number(to_phone)
+    normalized_message = str(message or "").strip()
+    if not normalized_message:
+        raise ValueError("message is required")
+    return _send_webhook_notification(
+        env_prefix="WALLET_SMS",
+        required_key="to_phone",
+        required_value=normalized_phone,
+        extra_payload={
+            "message": normalized_message,
+            "wallet_id": str(wallet_id or "").strip(),
+            "external_reference": str(external_reference or "").strip(),
+            "metadata": dict(metadata or {}),
+        },
+    )
+
+
+def _send_auth_email_notification(
+    *,
+    to_email: str,
+    subject: str,
+    body: str,
+    metadata: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
+    normalized_to_email = str(to_email or "").strip().lower()
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized_to_email):
+        raise ValueError("to_email must be a valid email address")
+    return _send_webhook_notification(
+        env_prefix="WALLET_AUTH_EMAIL",
+        required_key="to_email",
+        required_value=normalized_to_email,
+        extra_payload={
+            "subject": str(subject or "").strip(),
+            "body": str(body or ""),
+            "from_email": str(os.getenv("WALLET_AUTH_EMAIL_FROM_EMAIL") or "no-reply@211-ai.com").strip(),
+            "metadata": dict(metadata or {}),
+        },
+    )
+
+
+_MAGIC_LOGIN_CONTEXT = "abby-login-token-v1"
+_MAGIC_LOGIN_PARAM = "abbyLogin"
+_MAGIC_UCAN_CONTEXT = "abby-magic-ucan-v1"
+_MAGIC_UCAN_ISSUER = "did:web:211-ai.com"
+
+
+def _magic_login_secret() -> str:
+    return resolve_secret("WALLET_MAGIC_LOGIN_SECRET", "MAGIC_LOGIN_SECRET").strip()
+
+
+def _base64url_encode_bytes(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+
+def _base64url_decode_to_bytes(value: str) -> bytes:
+    padded = str(value or "").strip()
+    padded += "=" * (-len(padded) % 4)
+    return base64.urlsafe_b64decode(padded.encode("ascii"))
+
+
+def _hmac_base64url(secret: str, value: str) -> str:
+    return _base64url_encode_bytes(hmac.new(secret.encode("utf-8"), value.encode("utf-8"), hashlib.sha256).digest())
+
+
+def _sign_magic_login_token(payload: Dict[str, Any]) -> str:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    payload_encoded = _base64url_encode_bytes(payload_json)
+    signature = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
+    return f"{payload_encoded}.{signature}"
+
+
+def _verify_magic_login_token(token: str) -> Dict[str, Any]:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    parts = str(token or "").strip().split(".")
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        raise ValueError("magic link token is malformed")
+    payload_encoded, signature = parts
+    expected = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
+    if not hmac.compare_digest(signature, expected):
+        raise ValueError("magic link signature is invalid")
+    try:
+        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
+    except Exception as exc:
+        raise ValueError("magic link payload is malformed") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("magic link payload is malformed")
+    if payload.get("v") != 1 or payload.get("portal") not in {"client", "provider"}:
+        raise ValueError("magic link payload is malformed")
+    contact = str(payload.get("contact") or "").strip()
+    nonce = str(payload.get("nonce") or "").strip()
+    issued_at = int(payload.get("issuedAt") or 0)
+    expires_at = int(payload.get("expiresAt") or 0)
+    now_ms = int(time.time() * 1000)
+    if not contact or not nonce or not issued_at or not expires_at:
+        raise ValueError("magic link payload is malformed")
+    if issued_at > now_ms + 5 * 60 * 1000:
+        raise ValueError("magic link was issued in the future")
+    if expires_at <= now_ms:
+        raise ValueError("magic link is expired")
+    return payload
+
+
+def _allowed_magic_login_hosts() -> set[str]:
+    raw = str(os.getenv("WALLET_MAGIC_LOGIN_ALLOWED_HOSTS") or "").strip()
+    values = raw.split(",") if raw else ["211-ai.com", "www.211-ai.com", "211-ai.github.io", "localhost", "127.0.0.1"]
+    return {value.strip().lower() for value in values if value.strip()}
+
+
+def _magic_login_base_url(requested: str) -> str:
+    fallback = str(os.getenv("WALLET_MAGIC_LOGIN_BASE_URL") or "https://211-ai.com/").strip()
+    value = str(requested or fallback).strip()
+    parsed = urllib_parse.urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("base_url must be an absolute http(s) URL")
+    if str(parsed.hostname or "").lower() not in _allowed_magic_login_hosts():
+        raise ValueError("base_url host is not allowed")
+    return value
+
+
+def _build_magic_login_link(*, token: str, base_url: str) -> str:
+    parsed = urllib_parse.urlparse(base_url)
+    query = dict(urllib_parse.parse_qsl(parsed.query, keep_blank_values=True))
+    query[_MAGIC_LOGIN_PARAM] = token
+    return urllib_parse.urlunparse(
+        parsed._replace(
+            query=urllib_parse.urlencode(query),
+            fragment=parsed.fragment or "/",
+        )
+    )
+
+
+def _magic_login_payload_from_request(request: MagicLoginRequest) -> Dict[str, Any]:
+    portal = str(request.portal or "client").strip().lower()
+    if portal not in {"client", "provider"}:
+        raise ValueError("portal must be client or provider")
+    issued_at = int(time.time() * 1000)
+    ttl_seconds = int(str(os.getenv("WALLET_MAGIC_LOGIN_TTL_SECONDS") or "600").strip() or "600")
+    ttl_seconds = max(60, min(ttl_seconds, 3600))
+    return {
+        "v": 1,
+        "portal": portal,
+        "contact": _normalize_login_contact(request.contact),
+        "issuedAt": issued_at,
+        "expiresAt": issued_at + ttl_seconds * 1000,
+        "nonce": secrets.token_urlsafe(18),
+        "walletId": str(request.wallet_id or "").strip(),
+        "walletApiBaseUrl": str(request.wallet_api_base_url or "").strip(),
+        "actorDid": str(request.actor_did or "").strip(),
+    }
+
+
+def _wallet_config_from_magic_payload(payload: Mapping[str, Any]) -> Dict[str, str]:
+    wallet_id = str(payload.get("walletId") or "").strip()
+    api_base_url = str(payload.get("walletApiBaseUrl") or "").strip()
+    actor_did = str(payload.get("actorDid") or "").strip()
+    wallet_config: Dict[str, str] = {}
+    if wallet_id:
+        wallet_config["walletId"] = wallet_id
+    if api_base_url:
+        wallet_config["apiBaseUrl"] = api_base_url
+    if actor_did:
+        wallet_config["actorDid"] = actor_did
+    return wallet_config
+
+
+def _magic_contact_subject_did(contact: str) -> str:
+    digest = hashlib.sha256(str(contact or "").strip().lower().encode("utf-8")).hexdigest()[:32]
+    return f"did:abby:contact:{digest}"
+
+
+def _magic_ucan_capabilities(wallet_id: str) -> List[Dict[str, str]]:
+    wallet = str(wallet_id or "").strip()
+    capabilities = [{"with": "wallet://*", "can": "wallet/login"}]
+    if wallet:
+        resource = f"wallet://{wallet}"
+        capabilities.extend(
+            [
+                {"with": resource, "can": "wallet/recovery/start"},
+                {"with": f"{resource}/recovery-bundles/*", "can": "wallet/recovery/read_encrypted"},
+                {"with": f"{resource}/records/*", "can": "wallet/encrypted/read"},
+            ]
+        )
+    return capabilities
+
+
+def _sign_magic_ucan(payload: Dict[str, Any]) -> str:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    payload_encoded = _base64url_encode_bytes(payload_json)
+    signature = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
+    return f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}.{signature}"
+
+
+def _verify_magic_ucan(token: str) -> Dict[str, Any]:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    parts = str(token or "").strip().split(".")
+    if len(parts) != 3 or parts[0] != _MAGIC_UCAN_CONTEXT:
+        raise ValueError("UCAN token is malformed")
+    _, payload_encoded, signature = parts
+    expected = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
+    if not hmac.compare_digest(signature, expected):
+        raise ValueError("UCAN signature is invalid")
+    try:
+        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
+    except Exception as exc:
+        raise ValueError("UCAN payload is malformed") from exc
+    if not isinstance(payload, dict) or payload.get("profile") != _MAGIC_UCAN_CONTEXT:
+        raise ValueError("UCAN payload is malformed")
+    expires_at = int(payload.get("expiresAt") or 0)
+    if not expires_at or expires_at <= int(time.time() * 1000):
+        raise ValueError("UCAN token is expired")
+    return payload
+
+
+def _issue_magic_ucan(payload: Mapping[str, Any]) -> Dict[str, Any]:
+    contact = str(payload.get("contact") or "").strip()
+    wallet_id = str(payload.get("walletId") or "").strip()
+    issued_at = int(time.time() * 1000)
+    expires_at = min(int(payload.get("expiresAt") or issued_at), issued_at + 15 * 60 * 1000)
+    ucan_payload = {
+        "profile": _MAGIC_UCAN_CONTEXT,
+        "iss": _MAGIC_UCAN_ISSUER,
+        "aud": _magic_contact_subject_did(contact),
+        "walletId": wallet_id,
+        "contactHash": hashlib.sha256(contact.lower().encode("utf-8")).hexdigest(),
+        "capabilities": _magic_ucan_capabilities(wallet_id),
+        "issuedAt": issued_at,
+        "expiresAt": expires_at,
+        "nonce": secrets.token_urlsafe(18),
+        "caveats": {
+            "no_plaintext_key_access": True,
+            "server_can_decrypt": False,
+            "purpose": "passwordless_wallet_login_and_recovery",
+        },
+    }
+    token = _sign_magic_ucan(ucan_payload)
+    return {
+        "profile": _MAGIC_UCAN_CONTEXT,
+        "issuer": ucan_payload["iss"],
+        "audience": ucan_payload["aud"],
+        "token": token,
+        "capabilities": ucan_payload["capabilities"],
+        "expires_at": expires_at,
+        "caveats": ucan_payload["caveats"],
+    }
+
+
+def _capability_resource_matches(pattern: str, resource: str) -> bool:
+    if pattern == "*" or pattern == resource:
+        return True
+    if pattern.endswith("/*") and resource.startswith(pattern[:-1]):
+        return True
+    return False
+
+
+def _require_magic_ucan(
+    *,
+    authorization: str | None,
+    wallet_id: str,
+    ability: str,
+    resource: str,
+) -> Dict[str, Any]:
+    token = _extract_bearer_token(authorization)
+    if not token:
+        raise HTTPException(status_code=401, detail="recovery UCAN authorization required")
+    try:
+        payload = _verify_magic_ucan(token)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+    if str(payload.get("walletId") or "") != str(wallet_id):
+        raise HTTPException(status_code=403, detail="UCAN wallet scope does not match")
+    capabilities = payload.get("capabilities")
+    if not isinstance(capabilities, list):
+        raise HTTPException(status_code=403, detail="UCAN has no capabilities")
+    for capability in capabilities:
+        if not isinstance(capability, Mapping):
+            continue
+        if str(capability.get("can") or "") != ability:
+            continue
+        if _capability_resource_matches(str(capability.get("with") or ""), resource):
+            return payload
+    raise HTTPException(status_code=403, detail="UCAN does not allow this recovery action")
+
+
+def _send_phone_call_notification(*, to_phone: str, script: str) -> Dict[str, str]:
+    normalized_phone = _normalize_phone_number(to_phone)
+    normalized_script = str(script or "").strip()
+    if not normalized_script:
+        raise ValueError("script is required")
+    return _send_webhook_notification(
+        env_prefix="WALLET_CALL",
+        required_key="to_phone",
+        required_value=normalized_phone,
+        extra_payload={"script": normalized_script},
+    )
+
+
 def create_app(*, service: WalletInterfaceService | None = None):
     """Create the wallet API app.
 
@@ -654,7 +1369,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
     if FastAPI is None:  # pragma: no cover
         raise RuntimeError("FastAPI is required to create the wallet interface API")
 
-    app_service = service or WalletInterfaceService()
+    app_service = service or _wallet_interface_service_from_env()
     app = FastAPI(title="211-AI Wallet Interface", version="0.1.0")
     cors_origins = _cors_origins_from_env()
     if cors_origins:
@@ -672,6 +1387,74 @@ def create_app(*, service: WalletInterfaceService | None = None):
         if warnings:
             response["warnings"] = warnings
         return response
+
+    @app.post("/auth/magic-link/request")
+    def request_magic_login_link(request: MagicLoginRequest) -> Dict[str, Any]:
+        try:
+            payload = _magic_login_payload_from_request(request)
+            token = _sign_magic_login_token(payload)
+            magic_link = _build_magic_login_link(token=token, base_url=_magic_login_base_url(request.base_url))
+            expires_in_minutes = max(1, math.ceil((int(payload["expiresAt"]) - int(time.time() * 1000)) / 60000))
+            metadata = {
+                "message_type": "magic_login",
+                "portal": payload["portal"],
+                "wallet_id": str(payload.get("walletId") or ""),
+                "nonce": str(payload.get("nonce") or ""),
+            }
+            if _is_email_contact(payload["contact"]):
+                delivery = _send_auth_email_notification(
+                    to_email=payload["contact"],
+                    subject="Your 211 AI / Abby sign-in link",
+                    body=(
+                        "Use this link to sign in to 211 AI / Abby:\n\n"
+                        f"{magic_link}\n\n"
+                        f"This link expires in {expires_in_minutes} minutes. "
+                        "If you did not request it, you can ignore this email."
+                    ),
+                    metadata=metadata,
+                )
+                channel = "email"
+            else:
+                delivery = _send_sms_notification(
+                    to_phone=payload["contact"],
+                    message=(
+                        f"211 AI / Abby login: open {magic_link} "
+                        f"This link expires in {expires_in_minutes} minutes. "
+                        "Reply HELP for help or STOP to opt out."
+                    ),
+                    wallet_id=str(payload.get("walletId") or ""),
+                    external_reference=str(payload.get("nonce") or ""),
+                    metadata=metadata,
+                )
+                channel = "sms"
+            return {
+                "status": "sent",
+                "channel": channel,
+                "expires_at": int(payload["expiresAt"]),
+                "wallet_config": _wallet_config_from_magic_payload(payload),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/auth/magic-link/verify")
+    def verify_magic_login_link(request: MagicLoginVerifyRequest) -> Dict[str, Any]:
+        try:
+            payload = _verify_magic_login_token(request.token)
+            return {
+                "valid": True,
+                "portal": str(payload["portal"]),
+                "contact": str(payload["contact"]),
+                "expires_at": int(payload["expiresAt"]),
+                "wallet_config": _wallet_config_from_magic_payload(payload),
+                "ucan": _issue_magic_ucan(payload),
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get("/ops/health")
     def ops_health(
@@ -769,79 +1552,6 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-    @app.get("/wallets/{wallet_id}/world-id/config")
-    def get_world_id_config(wallet_id: str) -> Dict[str, Any]:
-        try:
-            app_service.get_wallet(wallet_id)
-            return app_service.get_world_id_config()
-        except Exception as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
-
-    @app.get("/wallets/{wallet_id}/world-id/status")
-    def get_world_id_status(wallet_id: str, actor_did: str) -> Dict[str, Any]:
-        try:
-            return app_service.get_world_id_status(wallet_id, actor_did=actor_did)
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    @app.post("/wallets/{wallet_id}/world-id/rp-signature")
-    def create_world_id_rp_signature(wallet_id: str, request: WorldIdRpSignatureRequest) -> Dict[str, Any]:
-        try:
-            return app_service.create_world_id_rp_signature(
-                wallet_id,
-                actor_did=request.actor_did,
-                action=request.action,
-            )
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    @app.post("/wallets/{wallet_id}/world-id/provider-staff/rp-signature")
-    def create_provider_staff_world_id_rp_signature(
-        wallet_id: str,
-        request: WorldIdProviderStaffRpSignatureRequest,
-    ) -> Dict[str, Any]:
-        try:
-            return app_service.create_provider_staff_world_id_rp_signature(
-                wallet_id,
-                actor_did=request.actor_did,
-                provider_id=request.provider_id,
-                provider_staff_id=request.provider_staff_id,
-            )
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    @app.post("/wallets/{wallet_id}/world-id/verifications")
-    def register_world_id_verification(wallet_id: str, request: WorldIdVerificationRequest) -> Dict[str, Any]:
-        try:
-            return app_service.register_world_id_verification(
-                wallet_id,
-                actor_did=request.actor_did,
-                idkit_payload=request.idkit_payload,
-            )
-        except WorldIdVerificationError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-        except ValueError as exc:
-            status = 409 if "already bound" in str(exc) else 400
-            raise HTTPException(status_code=status, detail=str(exc)) from exc
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    @app.post("/wallets/{wallet_id}/world-id/bindings/{binding_id}/revoke")
-    def revoke_world_id_binding(
-        wallet_id: str,
-        binding_id: str,
-        request: WorldIdRevokeRequest,
-    ) -> Dict[str, Any]:
-        try:
-            return app_service.revoke_world_id_binding(
-                wallet_id,
-                binding_id,
-                actor_did=request.actor_did,
-                reason=request.reason,
-            ).to_dict()
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
     @app.post("/wallets/{wallet_id}/controllers")
     def add_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:
         try:
@@ -910,6 +1620,90 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/recovery-bundles")
+    def store_wallet_recovery_bundle(wallet_id: str, request: WalletRecoveryBundleRequest) -> Dict[str, Any]:
+        try:
+            bundle = app_service.store_recovery_bundle(
+                wallet_id,
+                actor_did=request.actor_did,
+                encrypted_bundle=request.encrypted_bundle,
+                wrapping_method=request.wrapping_method,
+                kdf=request.kdf,
+                recovery_hint=request.recovery_hint,
+                public_metadata=request.public_metadata,
+            )
+            return {
+                "bundle": bundle.to_dict(),
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_received": False,
+                    "authorization_model": "wallet actor creates encrypted recovery material; magic-login UCAN can only read encrypted bundles",
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/recovery-bundles/latest")
+    def get_latest_wallet_recovery_bundle(
+        wallet_id: str,
+        authorization: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        resource = f"wallet://{wallet_id}/recovery-bundles/latest"
+        ucan = _require_magic_ucan(
+            authorization=authorization,
+            wallet_id=wallet_id,
+            ability="wallet/recovery/read_encrypted",
+            resource=resource,
+        )
+        try:
+            bundle = app_service.latest_recovery_bundle(wallet_id)
+            return {
+                "bundle": bundle.to_dict(),
+                "ucan": {
+                    "profile": str(ucan.get("profile") or ""),
+                    "audience": str(ucan.get("aud") or ""),
+                    "capabilities": ucan.get("capabilities") or [],
+                    "expires_at": int(ucan.get("expiresAt") or 0),
+                },
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_returned": False,
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/recovery-bundles/{bundle_id}")
+    def get_wallet_recovery_bundle(
+        wallet_id: str,
+        bundle_id: str,
+        authorization: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        resource = f"wallet://{wallet_id}/recovery-bundles/{bundle_id}"
+        ucan = _require_magic_ucan(
+            authorization=authorization,
+            wallet_id=wallet_id,
+            ability="wallet/recovery/read_encrypted",
+            resource=resource,
+        )
+        try:
+            bundle = app_service.get_recovery_bundle(wallet_id, bundle_id)
+            return {
+                "bundle": bundle.to_dict(),
+                "ucan": {
+                    "profile": str(ucan.get("profile") or ""),
+                    "audience": str(ucan.get("aud") or ""),
+                    "capabilities": ucan.get("capabilities") or [],
+                    "expires_at": int(ucan.get("expiresAt") or 0),
+                },
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_returned": False,
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/controllers/recover")
     def recover_wallet_controller(wallet_id: str, request: WalletControllerRecoveryRequest) -> Dict[str, Any]:
         try:
@@ -959,6 +1753,542 @@ def create_app(*, service: WalletInterfaceService | None = None):
             return record.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/dead-drops/missing-person")
+    def send_missing_person_dead_drop_email(
+        wallet_id: str, request: MissingPersonDeadDropEmailRequest
+    ) -> Dict[str, Any]:
+        try:
+            app_service.get_wallet(wallet_id)
+            app_service._require_portal_actor(wallet_id, request.actor_did)
+        except Exception as exc:
+            status_code = 404 if "not found" in str(exc).lower() else 400
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+        try:
+            to_email = _require_portland_police_missing_email(request.to_email)
+            envelope = _send_dead_drop_email(
+                to_email=to_email,
+                subject=request.subject,
+                body=request.body,
+                bundle=request.bundle,
+                bundle_filename=request.bundle_filename,
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "to_email": to_email,
+                "subject": request.subject,
+                "bundle_filename": request.bundle_filename,
+                **envelope,
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except urllib_error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace").strip() or str(exc)
+            raise HTTPException(status_code=502, detail=detail) from exc
+        except urllib_error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace").strip() or str(exc)
+            raise HTTPException(status_code=502, detail=detail) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/dead-drops/missing-person")
+    def get_missing_person_dead_drop(wallet_id: str) -> Dict[str, Any]:
+        try:
+            return app_service.get_missing_person_dead_drop(wallet_id).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.put("/wallets/{wallet_id}/dead-drops/missing-person")
+    def save_missing_person_dead_drop(wallet_id: str, request: MissingPersonDeadDropConfigRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.save_missing_person_dead_drop(
+                wallet_id,
+                actor_did=request.actor_did,
+                enabled=request.enabled,
+                to_email=_require_portland_police_missing_email(request.to_email),
+                subject=request.subject,
+                body=request.body,
+                bundle=request.bundle,
+                bundle_filename=request.bundle_filename,
+                due_at=request.due_at,
+                last_check_in_at=request.last_check_in_at,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/dead-drops/missing-person/dispatch")
+    def dispatch_missing_person_dead_drop(
+        wallet_id: str, request: MissingPersonDeadDropDispatchRequest
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_missing_person_dead_drop_for_dispatch(
+                wallet_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            envelope = _send_dead_drop_email(
+                to_email=_require_portland_police_missing_email(record.to_email),
+                subject=record.subject,
+                body=record.body,
+                bundle=record.bundle,
+                bundle_filename=record.bundle_filename,
+            )
+            updated = app_service.mark_missing_person_dead_drop_sent(
+                wallet_id,
+                actor_did=request.actor_did,
+                message_id=str(envelope.get("message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "to_email": updated.to_email,
+                "subject": updated.subject,
+                "bundle_filename": updated.bundle_filename,
+                **envelope,
+            }
+        except RuntimeError as exc:
+            app_service.mark_missing_person_dead_drop_failed(
+                wallet_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_missing_person_dead_drop_failed(
+                wallet_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/dead-drops/missing-person/process-due")
+    def process_due_missing_person_dead_drops(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due dead-drop processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="dead-drop processing authorization required")
+        try:
+            due_records = app_service.list_due_missing_person_dead_drops()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                envelope = _send_dead_drop_email(
+                    to_email=_require_portland_police_missing_email(record.to_email),
+                    subject=record.subject,
+                    body=record.body,
+                    bundle=record.bundle,
+                    bundle_filename=record.bundle_filename,
+                )
+                app_service.mark_missing_person_dead_drop_sent(
+                    record.wallet_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    message_id=str(envelope.get("message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "status": "sent",
+                        "message_id": str(envelope.get("message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_missing_person_dead_drop_failed(
+                    record.wallet_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "status": "failed",
+                        "detail": "dead-drop dispatch failed",
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
+
+    @app.post("/wallets/{wallet_id}/notifications/sms/queue")
+    def queue_sms_notification(wallet_id: str, request: SmsNotificationQueueRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.queue_sms_notification(
+                wallet_id,
+                actor_did=request.actor_did,
+                to_phone=_normalize_phone_number(request.to_phone),
+                message=request.message,
+                due_at=request.due_at,
+                reason=request.reason,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/notifications/sms")
+    def list_sms_notifications(wallet_id: str) -> Dict[str, Any]:
+        try:
+            notifications = app_service.list_sms_notifications(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(notifications),
+                "notifications": [record.to_dict() for record in notifications],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/messages/sms/inbound")
+    def list_inbound_sms_messages(wallet_id: str) -> Dict[str, Any]:
+        try:
+            messages = app_service.list_inbound_sms_messages(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(messages),
+                "messages": [record.to_dict() for record in messages],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/messages/sms/inbound")
+    def receive_inbound_sms_message(http_request: Request, payload: InboundSmsForwardRequest) -> Dict[str, Any]:
+        try:
+            _require_internal_webhook_auth(
+                env_prefix="WALLET_SMS_INBOUND",
+                authorization=http_request.headers.get("authorization"),
+                headers=http_request.headers,
+                error_detail="sms inbound authorization required",
+            )
+            record = app_service.record_inbound_sms_message(
+                str(payload.wallet_id or "").strip(),
+                actor_did=_sms_inbound_actor_did(),
+                from_phone=_normalize_phone_number(payload.from_phone),
+                to_phone=_normalize_phone_number(payload.to_phone) if payload.to_phone else "",
+                message=payload.message,
+                provider=payload.provider,
+                status=payload.status,
+                provider_message_id=payload.provider_message_id,
+                bridge_message_id=payload.message_id,
+                external_reference=payload.external_reference,
+                received_at=payload.created_at,
+                metadata=payload.metadata,
+            )
+            return {"status": "ok", "message": record.to_dict()}
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch")
+    def dispatch_sms_notification(
+        wallet_id: str,
+        notification_id: str,
+        request: SmsNotificationDispatchRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_sms_notification_for_dispatch(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            delivery = _send_sms_notification(
+                to_phone=record.to_phone,
+                message=record.message,
+                wallet_id=record.wallet_id,
+                external_reference=record.notification_id,
+                metadata={**dict(record.metadata), "notification_id": record.notification_id, "reason": record.reason},
+            )
+            updated = app_service.mark_sms_notification_sent(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                provider_message_id=str(delivery.get("provider_message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "notification": updated.to_dict(),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/notifications/sms/process-due")
+    def process_due_sms_notifications(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due SMS processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="sms processing authorization required")
+        try:
+            due_records = app_service.list_due_sms_notifications()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                delivery = _send_sms_notification(
+                    to_phone=record.to_phone,
+                    message=record.message,
+                    wallet_id=record.wallet_id,
+                    external_reference=record.notification_id,
+                    metadata={**dict(record.metadata), "notification_id": record.notification_id, "reason": record.reason},
+                )
+                app_service.mark_sms_notification_sent(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    provider_message_id=str(delivery.get("provider_message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "sent",
+                        "provider_message_id": str(delivery.get("provider_message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_sms_notification_failed(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "failed",
+                        "detail": "sms dispatch failed",
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
+
+    @app.post("/wallets/{wallet_id}/notifications/calls/queue")
+    def queue_phone_call_notification(wallet_id: str, request: PhoneCallNotificationQueueRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.queue_phone_call_notification(
+                wallet_id,
+                actor_did=request.actor_did,
+                to_phone=_normalize_phone_number(request.to_phone),
+                script=request.script,
+                due_at=request.due_at,
+                reason=request.reason,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/notifications/calls")
+    def list_phone_call_notifications(wallet_id: str) -> Dict[str, Any]:
+        try:
+            notifications = app_service.list_phone_call_notifications(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(notifications),
+                "notifications": [record.to_dict() for record in notifications],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch")
+    def dispatch_phone_call_notification(
+        wallet_id: str,
+        notification_id: str,
+        request: PhoneCallNotificationDispatchRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_phone_call_notification_for_dispatch(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            delivery = _send_phone_call_notification(to_phone=record.to_phone, script=record.script)
+            updated = app_service.mark_phone_call_notification_sent(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                provider_call_id=str(delivery.get("provider_message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "notification": updated.to_dict(),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/notifications/calls/process-due")
+    def process_due_phone_call_notifications(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due call processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="call processing authorization required")
+        try:
+            due_records = app_service.list_due_phone_call_notifications()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                delivery = _send_phone_call_notification(to_phone=record.to_phone, script=record.script)
+                app_service.mark_phone_call_notification_sent(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    provider_call_id=str(delivery.get("provider_message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "sent",
+                        "provider_call_id": str(delivery.get("provider_message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_phone_call_notification_failed(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "failed",
+                        "detail": "phone call dispatch failed",
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
 
     @app.post("/wallets/{wallet_id}/locations/{location_record_id}/coarse-grants")
     def create_coarse_location_grant(
@@ -1361,11 +2691,138 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/filecoin-upload")
+    async def upload_to_ipfs_bridge(
+        request: Request,
+        file: UploadFile | None = File(default=None),
+        metadata: str | None = Form(default=None),
+    ) -> Dict[str, Any]:
+        try:
+            content_type = request.headers.get("content-type", "")
+            if "application/json" in content_type:
+                payload = FilecoinRecordUploadRequest(**(await request.json()))
+                encrypted_record = app_service.export_record_encrypted_blobs(
+                    payload.walletId,
+                    payload.recordId,
+                    actor_did=payload.actorDid,
+                )
+                return _publish_encrypted_record_graph_to_ipfs(
+                    encrypted_record,
+                    file_name=payload.fileName,
+                )
+
+            if file is None:
+                raise ValueError("multipart uploads require a file field")
+            upload_metadata = _parse_upload_metadata(metadata)
+            data = await file.read()
+            expected_sha256 = str(upload_metadata.get("sha256") or "").strip()
+            if expected_sha256:
+                actual_sha256 = hashlib.sha256(data).hexdigest()
+                if actual_sha256 != expected_sha256:
+                    raise ValueError("uploaded file SHA-256 does not match metadata")
+            return _publish_bytes_to_ipfs(
+                data,
+                file_name=str(upload_metadata.get("fileName") or file.filename or "").strip() or None,
+                mime_type=str(upload_metadata.get("mimeType") or file.content_type or "").strip() or None,
+                source_record_id=str(upload_metadata.get("recordId") or "").strip() or None,
+                wallet_id=str(upload_metadata.get("walletId") or "").strip() or None,
+            )
+        except FilecoinPinHandoffError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/ipfs-proxy/{cid}")
+    def proxy_ipfs_cid(cid: str) -> Response:
+        normalized_cid = _normalize_ipfs_cid(cid)
+        if not _valid_ipfs_cid(normalized_cid):
+            raise HTTPException(status_code=400, detail="invalid IPFS CID")
+        if not _ipfs_proxy_allows_cid(normalized_cid):
+            raise HTTPException(status_code=403, detail="CID is not allowed by WALLET_IPFS_PROXY_ALLOWED_CIDS")
+        try:
+            payload = get_ipfs_backend().cat(normalized_cid)
+        except Exception as local_exc:
+            try:
+                payload = _fetch_ipfs_cid_via_gateway(normalized_cid)
+            except Exception as fallback_exc:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Unable to fetch CID from local IPFS or fallback gateways: {local_exc}; {fallback_exc}",
+                ) from fallback_exc
+        return Response(
+            content=payload,
+            media_type=_ipfs_proxy_media_type(payload),
+            headers={"Cache-Control": "public, max-age=300"},
+        )
+
+    @app.get("/filecoin-upload/status/{request_id}")
+    def get_filecoin_upload_status(request_id: str) -> Dict[str, Any]:
+        try:
+            payload = _fetch_filecoin_pin_status(request_id)
+            normalized_request_id = str(
+                payload.get("requestId") or payload.get("requestid") or request_id
+            ).strip()
+            if normalized_request_id:
+                payload["requestId"] = normalized_request_id
+            if isinstance(payload.get("info"), dict) and not isinstance(payload.get("filecoinPinInfo"), dict):
+                payload["filecoinPinInfo"] = payload["info"]
+            status_url = _filecoin_upload_status_url(request_id)
+            if status_url:
+                payload["statusUrl"] = status_url
+            return payload
+        except FilecoinPinHandoffError as exc:
+            status_code = 503 if "not configured" in str(exc).lower() else 502
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/wallets/{wallet_id}/records")
     def list_records(wallet_id: str, data_type: str | None = None) -> Dict[str, Any]:
         try:
             records = app_service.list_records(wallet_id, data_type=data_type)
-            return {"records": [record.to_dict() for record in records]}
+            return {"records": [app_service.record_to_dict(record) for record in records]}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/records/{record_id}/metadata")
+    def update_record_metadata(
+        wallet_id: str,
+        record_id: str,
+        request: WalletRecordMetadataRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.update_record_metadata(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                metadata=request.metadata,
+            )
+            if _should_publish_record_metadata_ipld(request.metadata):
+                metadata_patch = _publish_record_metadata_ipld(record)
+                if metadata_patch:
+                    record = app_service.update_record_metadata(
+                        wallet_id,
+                        record_id,
+                        actor_did=request.actor_did,
+                        metadata=metadata_patch,
+                    )
+            return record
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.delete("/wallets/{wallet_id}/records/{record_id}")
+    def delete_record(
+        wallet_id: str,
+        record_id: str,
+        request: DeleteWalletRecordRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.delete_record(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                unpin_ipfs=request.unpin_ipfs,
+            )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -1502,6 +2959,58 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/portal/plans/{plan_id}/share-grants")
+    def create_service_plan_share_grant(
+        wallet_id: str,
+        plan_id: str,
+        request: ServicePlanShareGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            result = app_service.create_service_plan_share_grant(
+                wallet_id,
+                plan_id,
+                issuer_did=request.actor_did or request.issuer_did,
+                audience_did=request.audience_did or request.worker_did,
+                scopes=request.scopes,
+                purpose=request.purpose,
+                worker_recipient_id=request.worker_recipient_id,
+                worker_name=request.worker_name,
+                expires_at=request.expires_at,
+                approval_id=request.approval_id,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                extra_caveats=request.caveats,
+            )
+            return result.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/services/{service_doc_id}/share-grants")
+    def create_service_share_grant(
+        wallet_id: str,
+        service_doc_id: str,
+        request: ServicePlanShareGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            result = app_service.create_service_share_grant(
+                wallet_id,
+                service_doc_id,
+                issuer_did=request.actor_did or request.issuer_did,
+                audience_did=request.audience_did or request.worker_did,
+                scopes=request.scopes,
+                purpose=request.purpose,
+                worker_recipient_id=request.worker_recipient_id,
+                worker_name=request.worker_name,
+                expires_at=request.expires_at,
+                approval_id=request.approval_id,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                extra_caveats=request.caveats,
+            )
+            return result.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/wallets/{wallet_id}/portal/interactions")
     def list_service_interactions(
         wallet_id: str,
@@ -1552,6 +3061,133 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 metadata=request.metadata,
             )
             return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/lookup-clients")
+    def lookup_hmis_clients(wallet_id: str, request: HmisClientLookupRequest) -> Dict[str, Any]:
+        try:
+            return app_service.lookup_hmis_clients(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                date_of_birth=request.date_of_birth,
+                program_ref=request.program_ref,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/lookup-households")
+    def lookup_hmis_households(wallet_id: str, request: HmisHouseholdLookupRequest) -> Dict[str, Any]:
+        try:
+            return app_service.lookup_hmis_households(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                program_ref=request.program_ref,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/program-links")
+    def list_hmis_program_links(wallet_id: str, request: HmisProgramLinkListRequest) -> Dict[str, Any]:
+        try:
+            return app_service.list_hmis_program_links(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                program_ref=request.program_ref,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/hmis/referral-drafts")
+    def list_hmis_referral_drafts(wallet_id: str, status: str | None = None) -> Dict[str, Any]:
+        try:
+            return {
+                "referral_drafts": [
+                    draft.to_dict() for draft in app_service.list_hmis_referral_drafts(wallet_id, status=status)
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts")
+    def create_hmis_referral_draft(wallet_id: str, request: HmisReferralDraftRequest) -> Dict[str, Any]:
+        try:
+            return app_service.create_hmis_referral_draft(
+                wallet_id,
+                actor_did=request.actor_did,
+                local_subject_ref=request.local_subject_ref,
+                destination_program_ref=request.destination_program_ref,
+                service_plan_id=request.service_plan_id,
+                service_doc_id=request.service_doc_id,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                summary=request.summary,
+                eligibility_notes=request.eligibility_notes,
+                contact_notes=request.contact_notes,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                metadata=request.metadata,
+            ).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}")
+    def update_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftUpdateRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.update_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+                local_subject_ref=request.local_subject_ref,
+                destination_program_ref=request.destination_program_ref,
+                service_plan_id=request.service_plan_id,
+                service_doc_id=request.service_doc_id,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                summary=request.summary,
+                eligibility_notes=request.eligibility_notes,
+                contact_notes=request.contact_notes,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                metadata=request.metadata,
+            ).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}/validate")
+    def validate_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftValidationRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.validate_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}/submit")
+    def submit_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftSubmitRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.submit_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+            )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -2208,6 +3844,219 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/records/{record_id}/metadata/generate")
+    def generate_wallet_record_metadata(
+        wallet_id: str,
+        record_id: str,
+        request: WalletRecordMetadataGenerationRequest,
+    ) -> Dict[str, Any]:
+        try:
+            wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
+            limit = _check_wallet_router_rate_limit(wallet_cid, cost=4)
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            invocation = invocation_from_token(request.invocation_token) if request.invocation_token else None
+            metadata_status = app_service.update_record_metadata(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                metadata={
+                    "privacyProfileMessage": "Creating redacted GraphRAG, vector metadata, and wallet router labels.",
+                    "privacyProfileStatus": "profiling",
+                    **({"privacyProfileMimeType": request.mime_type} if request.mime_type else {}),
+                },
+            )
+
+            derived_results: List[Dict[str, Any]] = []
+            result_errors: List[str] = []
+            for create_result in (
+                lambda: app_service.analyze_record_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars=500,
+                )
+                if invocation
+                else app_service.analyze_record_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=500,
+                ),
+                lambda: app_service.create_document_vector_profile_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    chunk_size_words=80,
+                )
+                if invocation
+                else app_service.create_document_vector_profile(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    chunk_size_words=80,
+                ),
+                lambda: app_service.create_redacted_graphrag_with_invocation(
+                    wallet_id,
+                    [record_id],
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars_per_record=request.max_chars_per_record,
+                    max_bytes_per_record=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.create_redacted_graphrag(
+                    wallet_id,
+                    [record_id],
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars_per_record=request.max_chars_per_record,
+                    max_bytes_per_record=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                ),
+                lambda: app_service.extract_record_text_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars=12_000,
+                    max_bytes=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.extract_record_text_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=12_000,
+                    max_bytes=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                ),
+                lambda: app_service.analyze_record_form_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_fields=100,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.analyze_record_form_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_fields=100,
+                    use_ocr=request.use_ocr,
+                ),
+            ):
+                try:
+                    derived_results.append(create_result())
+                except Exception as exc:
+                    result_errors.append(str(exc))
+
+            outputs = [_derived_output(result) for result in derived_results if _derived_output(result)]
+            if not outputs:
+                outputs.append(
+                    _fallback_document_profile_output(
+                        file_name=request.file_name or record_id,
+                        mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                    )
+                )
+            organizer_profile = _generate_wallet_organizer_profile(
+                wallet_id=wallet_id,
+                wallet_cid=wallet_cid,
+                file_name=request.file_name or _record_metadata_value(metadata_status, "fileName") or record_id,
+                mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                outputs=outputs,
+                provider=request.provider,
+                model_name=request.model_name,
+                kwargs=request.kwargs,
+            )
+            if organizer_profile:
+                outputs.append(
+                    {
+                        "openrouter_organizer_profile": organizer_profile,
+                        "output_policy": "redacted_wallet_router_organizer",
+                    }
+                )
+            artifact_ids = [_derived_artifact_id(result) for result in derived_results]
+            artifact_ids = [artifact_id for artifact_id in artifact_ids if artifact_id]
+            public_inputs = _build_document_profile_public_inputs(
+                artifact_ids=artifact_ids,
+                file_name=request.file_name or _record_metadata_value(metadata_status, "fileName") or record_id,
+                mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                outputs=outputs,
+            )
+            proof = app_service.create_document_profile_proof(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                public_inputs=public_inputs,
+            )
+            metadata_patch = {
+                "privacyProfileArtifactIds": artifact_ids,
+                "privacyProfileClassification": _classify_document_profile(public_inputs),
+                "privacyProfileLabels": _read_string_list(public_inputs.get("organizer_labels")) or _default_labels_for_mime_type(str(public_inputs.get("mime_type") or "")),
+                "privacyProfileMessage": "Safe document profile and proof are attached to this wallet record.",
+                "privacyProfileMimeType": public_inputs.get("mime_type"),
+                "privacyProfileNeedsRefresh": False,
+                "privacyProfileProofId": proof.proof_id,
+                "privacyProfilePublicInputs": public_inputs,
+                "privacyProfileSearchText": _build_privacy_search_text(outputs, public_inputs),
+                "privacyProfileStatus": "profiled",
+                "privacyProfileSummary": _summarize_document_profile(public_inputs),
+                "privacyProfileVectorTerms": _build_privacy_vector_terms(outputs, public_inputs),
+                "walletRouterRateLimit": limit,
+            }
+            if result_errors:
+                metadata_patch["privacyProfileWarnings"] = result_errors[:5]
+            record = app_service.update_record_metadata(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                metadata=metadata_patch,
+            )
+            metadata_ipld_patch = _publish_record_metadata_ipld(record)
+            if metadata_ipld_patch:
+                record = app_service.update_record_metadata(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    metadata=metadata_ipld_patch,
+                )
+            return {
+                "record": record,
+                "metadata": record.get("metadata", {}),
+                "proof": proof.to_dict(),
+                "router": {
+                    "wallet_id": wallet_id,
+                    "wallet_cid": wallet_cid,
+                    "provider": request.provider,
+                    "model_name": request.model_name,
+                    "rate_limit": limit,
+                },
+            }
+        except ValueError as exc:
+            raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/records/{record_id}/rotate-key")
     def rotate_record_key(
         wallet_id: str,
@@ -2510,27 +4359,6 @@ def _wallet_router_rate_limit_per_day() -> int:
         return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_DAY", "500")))
     except Exception:
         return 500
-
-
-def _prepare_hf_router_environment(kwargs: Mapping[str, Any] | None = None) -> Dict[str, Any]:
-    prepared = dict(kwargs or {})
-    token = (
-        resolve_secret(
-            "WALLET_AI_ROUTER_HF_TOKEN",
-            "WALLET_INDEXTTS_HF_TOKEN",
-            "HF_TOKEN",
-            "HUGGINGFACEHUB_API_TOKEN",
-            "HUGGINGFACE_API_TOKEN",
-            "HUGGINGFACE_HUB_TOKEN",
-        )
-        or ""
-    ).strip()
-    if token:
-        os.environ.setdefault("HF_TOKEN", token)
-        os.environ.setdefault("HUGGINGFACEHUB_API_TOKEN", token)
-        prepared.setdefault("token", token)
-        prepared.setdefault("api_key", token)
-    return prepared
 
 
 def _check_wallet_router_rate_limit(wallet_subject: str, *, cost: int = 1) -> Dict[str, Any]:
@@ -2866,27 +4694,20 @@ def _build_privacy_vector_terms(outputs: Sequence[Mapping[str, Any]], public_inp
     return normalized[:24]
 
 
-_DEFAULT_INDEXTTS_SPACE_URL = "https://publicus-indextts-2-demo.hf.space"
-_DEFAULT_INDEXTTS_FALLBACK_SPACE_URL = "https://indexteam-indextts-2-demo.hf.space"
-
-
 def _indextts_space_base_url() -> str:
     override = str(getattr(_INDEXTTS_ACTIVE_SPACE_URL, "value", "") or "").strip().rstrip("/")
     if override:
         return override
-    return os.getenv("WALLET_INDEXTTS_SPACE_URL", _DEFAULT_INDEXTTS_SPACE_URL).strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space").strip().rstrip("/")
 
 
 def _indextts_fallback_space_base_url() -> str:
-    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", _DEFAULT_INDEXTTS_FALLBACK_SPACE_URL).strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
 
 
 def _indextts_space_base_urls() -> List[str]:
     urls: List[str] = []
-    primary = _indextts_space_base_url()
-    explicit_fallback = os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "").strip().rstrip("/")
-    fallback = explicit_fallback or (_DEFAULT_INDEXTTS_FALLBACK_SPACE_URL if primary == _DEFAULT_INDEXTTS_SPACE_URL else "")
-    for candidate in (primary, fallback):
+    for candidate in (_indextts_space_base_url(), _indextts_fallback_space_base_url()):
         normalized = str(candidate or "").strip().rstrip("/")
         if normalized and normalized not in urls:
             urls.append(normalized)
@@ -3942,7 +5763,7 @@ def _indextts_attempt_timeout_seconds(space_index: int, total_spaces: int) -> fl
 
 
 def _indextts_degraded_fast_fail_enabled() -> bool:
-    value = str(os.getenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "false")).strip().lower()
+    value = str(os.getenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "true")).strip().lower()
     return value in {"1", "true", "yes", "on"}
 
 
@@ -5477,3 +7298,86 @@ def _key_from_optional_hex(value: str | None) -> bytes | None:
     if len(key) != 32:
         raise ValueError("wallet key must decode to 32 bytes")
     return key
+
+
+def _send_dead_drop_email(
+    *,
+    to_email: str,
+    subject: str,
+    body: str,
+    bundle: Dict[str, Any],
+    bundle_filename: str,
+) -> Dict[str, Any]:
+    normalized_to_email = str(to_email or "").strip()
+    normalized_subject = str(subject or "").strip()
+    normalized_body = str(body or "")
+    bundle_json = json.dumps(bundle, indent=2, sort_keys=True)
+    sender = str(os.getenv("WALLET_DEAD_DROP_FROM_EMAIL") or "no-reply@211-ai.org").strip()
+
+    webhook_url = str(os.getenv("WALLET_DEAD_DROP_WEBHOOK_URL") or "").strip()
+    backend = str(os.getenv("WALLET_DEAD_DROP_BACKEND") or ("http" if webhook_url else "")).strip().lower()
+    if backend or webhook_url:
+        if backend != "http" or not webhook_url:
+            raise RuntimeError(
+                "WALLET_DEAD_DROP_WEBHOOK_URL environment variable is required for dead-drop delivery when WALLET_DEAD_DROP_BACKEND is enabled"
+            )
+        delivery = _send_webhook_notification(
+            env_prefix="WALLET_DEAD_DROP",
+            required_key="to_email",
+            required_value=normalized_to_email,
+            extra_payload={
+                "subject": normalized_subject,
+                "body": normalized_body,
+                "from_email": sender,
+                "attachment_base64": base64.b64encode(bundle_json.encode("utf-8")).decode("ascii"),
+                "attachment_filename": str(bundle_filename or "abby-missing-person-wallet-dead-drop.json"),
+                "attachment_mime_type": "application/json",
+            },
+        )
+        return {"message_id": str(delivery.get("provider_message_id") or "")}
+
+    smtp_host = str(os.getenv("WALLET_DEAD_DROP_SMTP_HOST") or "").strip()
+    if not smtp_host:
+        raise RuntimeError(
+            "WALLET_DEAD_DROP_SMTP_HOST environment variable is required for dead-drop email delivery but is not configured"
+        )
+    smtp_port = int(str(os.getenv("WALLET_DEAD_DROP_SMTP_PORT") or "587").strip())
+    smtp_use_ssl = str(os.getenv("WALLET_DEAD_DROP_SMTP_USE_SSL") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    smtp_starttls = str(os.getenv("WALLET_DEAD_DROP_SMTP_STARTTLS") or "true").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    smtp_username = str(os.getenv("WALLET_DEAD_DROP_SMTP_USERNAME") or "").strip()
+    smtp_password = str(os.getenv("WALLET_DEAD_DROP_SMTP_PASSWORD") or "")
+
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = normalized_to_email
+    message["Subject"] = normalized_subject
+    sender_domain = sender.rsplit("@", 1)[-1].strip() if "@" in sender else ""
+    message["Message-Id"] = make_msgid(domain=sender_domain or None)
+    message.set_content(normalized_body)
+    message.add_attachment(
+        bundle_json.encode("utf-8"),
+        maintype="application",
+        subtype="json",
+        filename=bundle_filename,
+    )
+
+    smtp_factory = smtplib.SMTP_SSL if smtp_use_ssl else smtplib.SMTP
+    with smtp_factory(smtp_host, smtp_port, timeout=20) as smtp:
+        if not smtp_use_ssl and smtp_starttls:
+            smtp.starttls()
+        if smtp_username:
+            smtp.login(smtp_username, smtp_password)
+        rejected = smtp.send_message(message)
+    if rejected:
+        raise RuntimeError(f"Dead-drop email delivery rejected recipients: {sorted(rejected)}")
+    return {"message_id": str(message.get("Message-Id") or "")}
