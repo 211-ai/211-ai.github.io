@@ -150,13 +150,90 @@ SERVICES = {
             "wallet",
         ),
     ),
+    "clzkml": ServiceSpec(
+        name="clzkml",
+        supervisor_script=REPO_ROOT / "scripts" / "portal_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "portal_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "chainlink_zkml_implementation" / "state",
+        state_prefix="clzkml",
+        supervisor_args=(
+            "--todo-path",
+            "docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md",
+            "--task-prefix",
+            "## CLZKML-",
+            "--state-prefix",
+            "clzkml",
+            "--state-dir",
+            "data/chainlink_zkml_implementation/state",
+        ),
+    ),
+    "worldid_backend": ServiceSpec(
+        name="worldid_backend",
+        supervisor_script=REPO_ROOT / "scripts" / "wallet_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "wallet_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "world_id_backend_implementation" / "state",
+        state_prefix="worldid_backend",
+        supervisor_args=(
+            "--todo-path",
+            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "--task-prefix",
+            "## WORLDID-",
+            "--state-prefix",
+            "worldid_backend",
+            "--state-dir",
+            "data/world_id_backend_implementation/state",
+            "--allowed-tracks",
+            "proofs,core,wallet,privacy,ops",
+            "--allowed-task-ids",
+            "WORLDID-170",
+        ),
+    ),
+    "worldid_ui": ServiceSpec(
+        name="worldid_ui",
+        supervisor_script=REPO_ROOT / "scripts" / "wallet_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "wallet_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "world_id_ui_implementation" / "state",
+        state_prefix="worldid_ui",
+        supervisor_args=(
+            "--todo-path",
+            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "--task-prefix",
+            "## WORLDID-",
+            "--state-prefix",
+            "worldid_ui",
+            "--state-dir",
+            "data/world_id_ui_implementation/state",
+            "--allowed-tracks",
+            "ui",
+            "--allowed-task-ids",
+            "WORLDID-180",
+        ),
+    ),
+    "provekit": ServiceSpec(
+        name="provekit",
+        supervisor_script=REPO_ROOT / "scripts" / "provekit_implementation_supervisor.py",
+        daemon_script=REPO_ROOT / "scripts" / "provekit_implementation_daemon.py",
+        state_dir=REPO_ROOT / "data" / "provekit_implementation" / "state",
+        state_prefix="provekit",
+        supervisor_args=(
+            "--state-dir",
+            "data/provekit_implementation/state",
+            "--state-prefix",
+            "provekit",
+        ),
+    ),
+}
+
+SERVICE_GROUPS = {
+    "all": tuple(SERVICES),
+    "worldid": ("worldid_backend", "worldid_ui"),
 }
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manage long-running implementation supervisor services")
     parser.add_argument("action", choices=("status", "start", "stop", "restart"))
-    parser.add_argument("service", choices=("portal", "agent", "graphrag", "wallet", "all"), default="all", nargs="?")
+    parser.add_argument("service", choices=tuple(SERVICES) + tuple(SERVICE_GROUPS), default="all", nargs="?")
     parser.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     parser.add_argument("--check-interval", type=float, default=60.0)
     parser.add_argument("--daemon-interval", type=float, default=300.0)
@@ -191,8 +268,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def _selected_services(name: str) -> list[ServiceSpec]:
-    if name == "all":
-        return [SERVICES["portal"], SERVICES["agent"], SERVICES["graphrag"], SERVICES["wallet"]]
+    if name in SERVICE_GROUPS:
+        return [SERVICES[service_name] for service_name in SERVICE_GROUPS[name]]
     return [SERVICES[name]]
 
 
