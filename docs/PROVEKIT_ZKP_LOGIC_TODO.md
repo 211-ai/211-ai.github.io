@@ -278,7 +278,7 @@ Track guide:
 - Acceptance: A target environment demonstrates real ProveKit proof generation and verification for supported circuits, bridge integration, hybrid prover selection, deontic guidance commitments, cache/IPFS public payload safety, and documented rollback/readiness evidence.
 
 ## PROVEKIT-230 Wallet UI Proof Workflow Matrix And Fixtures
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
