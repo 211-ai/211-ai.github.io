@@ -546,9 +546,7 @@ export function ServicePlanScreen({
         apiConfig={apiConfig}
         grantReceipts={grantReceipts}
         onShared={(result) => {
-          if (result.plan) {
-            setServicePlans(upsertServicePlan(servicePlans, result.plan));
-          }
+          setServicePlans(upsertServicePlan(servicePlans, result.plan));
           if (result.receipt && setGrantReceipts) {
             setGrantReceipts([result.receipt, ...(grantReceipts || []).filter((item) => item.id !== result.receipt?.id)]);
           }

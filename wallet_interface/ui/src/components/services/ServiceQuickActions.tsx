@@ -26,7 +26,7 @@ export function ServiceQuickActions({
   const primaryWebsite = getPrimaryWebsite(document);
   const intakeText = getPrimaryIntakeText(document);
   const callAction = buildCallAction({
-    phone: primaryPhone?.value || "",
+    phone: primaryPhone?.value,
     context: {
       serviceDocId: document.doc_id,
       providerName: document.provider_name,

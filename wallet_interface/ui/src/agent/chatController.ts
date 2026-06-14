@@ -1,9 +1,11 @@
 import type { AppActionResult } from "../app/appActions";
+import type { ClientLlmRuntimeService } from "../lib/clientLLMWorkerService";
 import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";
 import { planAgentTurn, type AgentPlannedTool, type AgentPlannedTurn } from "./agentPlanner";
 import { selectLocalLlmTool } from "./localLlmToolSelector";
+import { generateLocalLlmAssistantResponse } from "./localLlmResponder";
 import type { AgentSurfaceApi } from "./surfaceApi";
 import { getToolDefinition } from "./surfaceRegistry";
 import { confirmationRiskForGate, getAgentToolPermissionPolicy } from "./permissionPolicy";
@@ -68,22 +70,33 @@ export interface AgentChatControllerOptions {
   privateContextAllowed?: boolean;
   initialMessages?: AgentMessage[];
   enableLocalLlmToolSelection?: boolean;
+  enableLocalLlmResponses?: boolean;
+  localLlmService?: ClientLlmRuntimeService;
   now?: () => string;
   createId?: (prefix: string) => string;
 }
 
 export interface AgentChatSendOptions {
   retryOfMessageId?: string;
+  disableLocalLlmReasoning?: boolean;
+  preferGraphRagForGeneralQuestions?: boolean;
 }
 
 export interface AgentMessageAudioRecord {
-  audioUrl?: string;
-  mimeType?: string;
-  modelName?: string;
-  playedAt: string;
+  /** Precomputed audio entry ID, if a precomputed reply was used */
   precomputedId?: string;
-  provider: string;
-  spokenText: string;
+  /** Resolved URL of the audio file that was played */
+  audioUrl?: string;
+  /** The spoken text (may differ from displayed message content) */
+  spokenText?: string;
+  /** Provider that generated/served the audio */
+  provider?: "precomputed" | "remote-voice-proxy" | "local-liquidai" | "browser-speech";
+  /** Audio MIME type */
+  mimeType?: string;
+  /** TTS model name, if applicable */
+  modelName?: string;
+  /** ISO timestamp when audio was played */
+  playedAt?: string;
 }
 
 export interface AgentChatController {
@@ -96,10 +109,13 @@ export interface AgentChatController {
   retry: () => Promise<void>;
   resetError: () => void;
   setActiveRoute: (route: RouteId) => void;
+  patchMessageMetadata: (messageId: string, patch: Record<string, unknown>) => void;
 }
 
 interface RetryRequest {
   content?: string;
+  disableLocalLlmReasoning?: boolean;
+  preferGraphRagForGeneralQuestions?: boolean;
   tool?: AgentPlannedTool;
 }
 
@@ -109,6 +125,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     options.createId ??
     ((prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
   const listeners = new Set<() => void>();
+  const enableLocalLlmToolSelection = options.enableLocalLlmToolSelection ?? true;
+  const enableLocalLlmResponses = options.enableLocalLlmResponses ?? true;
   const initialContext = options.surfaceApi.getContext(false);
   const sessionId = options.sessionId ?? createId("agent-session");
   let responding = false;
@@ -208,6 +226,15 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     replaceSession({ messages: [...session.messages, message] });
   }
 
+  function patchMessageMetadata(messageId: string, patch: Record<string, unknown>) {
+    const messages = session.messages.map((message) =>
+      message.id === messageId
+        ? { ...message, metadata: { ...message.metadata, ...patch } }
+        : message,
+    );
+    replaceSession({ messages });
+  }
+
   async function sendMessage(content: string, sendOptions: AgentChatSendOptions = {}) {
     const trimmed = content.trim();
     if (!trimmed || responding) return;
@@ -223,12 +250,16 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
 
     try {
-      await runTurn(trimmed);
+      await runTurn(trimmed, sendOptions);
       pushProgress("complete", "Response complete.");
     } catch (error) {
       const chatError = toChatError(error);
       appendMessage(createMessage(sessionId, "assistant", chatError.message, "failed"));
-      setError(chatError, { content: trimmed });
+      setError(chatError, {
+        content: trimmed,
+        disableLocalLlmReasoning: sendOptions.disableLocalLlmReasoning,
+        preferGraphRagForGeneralQuestions: sendOptions.preferGraphRagForGeneralQuestions,
+      });
     } finally {
       responding = false;
       emit();
@@ -264,7 +295,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
   }
 
-  async function runTurn(content: string) {
+  async function runTurn(content: string, sendOptions: AgentChatSendOptions = {}) {
     pushProgress("reading_context", "Reading current app context.");
     const context = options.surfaceApi.getContext(false);
     replaceSession({
@@ -279,23 +310,55 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       context,
       pendingConfirmations: session.confirmations.filter((confirmation) => confirmation.status === "pending")
     });
+    const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (turn.confirmationDecision) {
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
     }
-    if (options.enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
+    if (sendOptions.preferGraphRagForGeneralQuestions && shouldRouteGeneralQuestionToGraphRag(turn)) {
+      turn = createGraphRagAnswerTurn(content, localLlmReasoningEnabled);
+    }
+    if (!localLlmReasoningEnabled) {
+      if (shouldTryLocalLlmResponse(turn)) {
+        turn = {
+          ...turn,
+          response: deterministicResponseWithoutLocalReasoning(content, context)
+        };
+      }
+    }
+    let localLlmUnavailable = false;
+    if (localLlmReasoningEnabled && enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
       const pendingConfirmations = session.confirmations.filter((confirmation) => confirmation.status === "pending");
       const selection = await selectLocalLlmTool({
         content,
         context,
         session,
         deterministicTurn: turn,
-        pendingConfirmations
+        pendingConfirmations,
+        llmService: options.localLlmService
       });
       if (selection.source === "local_llm") {
         pushProgress("planning", `Selected ${selection.turn.tools[0]?.title ?? "a tool"} with the local model.`);
+      } else {
+        localLlmUnavailable = isLocalLlmUnavailableReason(selection.reason);
       }
       turn = selection.turn;
+    }
+    if (localLlmReasoningEnabled && enableLocalLlmResponses && !localLlmUnavailable && shouldTryLocalLlmResponse(turn)) {
+      pushProgress("responding", "Drafting response with the local model.");
+      const response = await generateLocalLlmAssistantResponse({
+        content,
+        context,
+        session,
+        llmService: options.localLlmService
+      });
+      if (response.ok) {
+        turn = {
+          ...turn,
+          summary: "Respond from local model.",
+          response: response.text
+        };
+      }
     }
     await executeToolPlan(turn, context);
   }
@@ -377,7 +440,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       intentId: intent.id,
       planId: plan.id,
       toolResultIds: successfulResults.map((result) => result.id),
-      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? [])
+      evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? []),
+      metadata: mergeToolResultMetadata(successfulResults),
     }));
     markPlanComplete(plan.id);
   }
@@ -413,7 +477,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
     } catch (error) {
@@ -480,7 +545,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
         toolCallIds: [toolCall.id],
         toolResultIds: [result.id],
-        evidenceBundleIds: result.evidenceBundleIds
+        evidenceBundleIds: result.evidenceBundleIds,
+        metadata: mergeToolResultMetadata([result]),
       }));
       markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
       pushProgress("complete", "Confirmed action complete.");
@@ -529,7 +595,11 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
     if (retryRequest.content) {
       const userMessage = [...session.messages].reverse().find((message) => message.role === "user");
-      await sendMessage(retryRequest.content, { retryOfMessageId: userMessage?.id });
+      await sendMessage(retryRequest.content, {
+        retryOfMessageId: userMessage?.id,
+        disableLocalLlmReasoning: retryRequest.disableLocalLlmReasoning,
+        preferGraphRagForGeneralQuestions: retryRequest.preferGraphRagForGeneralQuestions,
+      });
     }
   }
 
@@ -566,7 +636,11 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       if (session.activeRoute !== route) {
         replaceSession({ activeRoute: route });
       }
-    }
+    },
+    patchMessageMetadata: (messageId, patch) => {
+      patchMessageMetadata(messageId, patch);
+      emit();
+    },
   };
 
   function createIntent(turn: AgentPlannedTurn, context: SurfaceContext): AgentIntent {
@@ -729,6 +803,25 @@ function getEvidenceBundleFromResult(result: AgentToolResult): EvidenceBundle | 
   return undefined;
 }
 
+function mergeToolResultMetadata(results: AgentToolResult[]): Record<string, unknown> | undefined {
+  const merged = results.reduce<Record<string, unknown>>((metadata, result) => {
+    const next = getMetadataFromResult(result);
+    if (next) {
+      Object.assign(metadata, next);
+    }
+    return metadata;
+  }, {});
+  return Object.keys(merged).length ? merged : undefined;
+}
+
+function getMetadataFromResult(result: AgentToolResult): Record<string, unknown> | undefined {
+  const output = result.output;
+  if (isAppActionResult(output) && output.ok && isRecord(output.metadata)) {
+    return output.metadata;
+  }
+  return undefined;
+}
+
 function isAppActionResult(value: unknown): value is AppActionResult {
   return isRecord(value) && typeof value.ok === "boolean" && isAgentCommandName(value.action);
 }
@@ -861,11 +954,48 @@ function readableToolName(name: string): string {
 }
 
 function fallbackResponse(context: SurfaceContext): string {
-  return `You are on ${context.routeLabel}. I can explain this screen, navigate the app, answer public 211 service questions, and ask for confirmation before changing wallet data.`;
+  return `I can help on the ${context.routeLabel} screen: explain what is visible, navigate the app, answer public 211 service questions, and ask before changing wallet data.`;
+}
+
+function shouldRouteGeneralQuestionToGraphRag(turn: AgentPlannedTurn): boolean {
+  return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function createGraphRagAnswerTurn(content: string, useLocalModel = true): AgentPlannedTurn {
+  return {
+    intentKind: "service_navigation",
+    summary: "Answer with GraphRAG evidence and LLM synthesis.",
+    tools: [
+      {
+        name: "answer_211_question",
+        input: { question: content, useLocalModel },
+        title: getToolDefinition("answer_211_question").title,
+      },
+    ],
+  };
+}
+
+function deterministicResponseWithoutLocalReasoning(content: string, context: SurfaceContext): string {
+  const lower = content.trim().toLowerCase();
+  if (/\b(hi|hello|hey|how are you|how's it going|how are things)\b/.test(lower)) {
+    return "I am here and ready to help. You can ask me to navigate the app, explain the current screen, or look up public 211 service information.";
+  }
+  if (/\b(what can you do|how can you help|what do you do|help me)\b/.test(lower)) {
+    return "I can help with app navigation, current-screen questions, public 211 service lookups, and actions that ask for confirmation before changing wallet data.";
+  }
+  return `I can help with ${context.routeLabel} using app actions and public 211 information. Ask a specific question or tell me what you want to open.`;
 }
 
 function shouldTryLocalLlmToolSelection(turn: AgentPlannedTurn): boolean {
   return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function shouldTryLocalLlmResponse(turn: AgentPlannedTurn): boolean {
+  return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function isLocalLlmUnavailableReason(reason: string | undefined): boolean {
+  return Boolean(reason && /\b(unavailable|worker|timeout|timed out|initialize|model|download|network)\b/i.test(reason));
 }
 
 function toChatError(error: unknown): AgentChatError {
