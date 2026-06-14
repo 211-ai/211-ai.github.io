@@ -333,7 +333,7 @@ Track guide:
 - Acceptance: TEE attestation metadata validates enclave measurement allowlists, signer identity, nonce freshness, request hash, output hash, expiry, and policy mode while clearly labeling TEE evidence separately from ZKML proof.
 
 ## CLZKML-250 Chainlink Verifier Contract Event Parser
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: chainlink

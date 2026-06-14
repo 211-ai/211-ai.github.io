@@ -30,7 +30,9 @@ from .proof_verifiers import ChainlinkCREVerifier, ProofContext, VerificationRes
 
 CRE_SUBMISSION_SCHEMA_VERSION = "chainlink-cre-submission-v1"
 CRE_RESULT_SCHEMA_VERSION = "chainlink-cre-inference-result-v1"
+CRE_VERIFIER_EVENT_SCHEMA_VERSION = "chainlink-cre-verifier-event-v1"
 CRE_BRIDGE_VERIFIER_ID = "chainlink-cre-bridge-v1"
+CRE_VERIFIER_EVENT_VERIFIER_ID = "chainlink-cre-verifier-contract-event-v1"
 CRE_COMPLETED_STATUSES = {"complete", "completed", "done", "success", "succeeded", "verified"}
 CRE_FAILED_STATUSES = {"canceled", "cancelled", "error", "failed", "reverted", "timeout"}
 
@@ -76,6 +78,39 @@ def _get_any(data: dict[str, Any], *keys: str, default: Any = None) -> Any:
     return default
 
 
+def _get_nested_any(data: dict[str, Any], *keys: str, default: Any = None) -> Any:
+    value = _get_any(data, *keys, default=None)
+    if value is not None:
+        return value
+    for nested_key in ("args", "returnValues", "return_values", "event", "metadata"):
+        nested = data.get(nested_key)
+        if isinstance(nested, dict):
+            value = _get_any(nested, *keys, default=None)
+            if value is not None:
+                return value
+    return default
+
+
+def _optional_str(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _optional_int(value: Any) -> int | None:
+    if value is None or value == "":
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _normalize_address(value: str | None) -> str:
+    return str(value or "").strip().lower()
+
+
 def _call_handler(handler: Callable[..., Any], /, **kwargs: Any) -> Any:
     """Call a test/transport handler with the kwargs it declares.
 
@@ -105,6 +140,15 @@ def _failure(reason: str, metadata: dict[str, Any] | None = None) -> Verificatio
     return VerificationResult(
         verified=False,
         verifier=CRE_BRIDGE_VERIFIER_ID,
+        reason=reason,
+        metadata=metadata or {},
+    )
+
+
+def _event_failure(reason: str, metadata: dict[str, Any] | None = None) -> VerificationResult:
+    return VerificationResult(
+        verified=False,
+        verifier=CRE_VERIFIER_EVENT_VERIFIER_ID,
         reason=reason,
         metadata=metadata or {},
     )
@@ -344,7 +388,26 @@ class CREInferenceResult:
             meta["chain_id"] = self.chain_id
         if self.tx_hash:
             meta["tx_hash"] = self.tx_hash
+        verifier_event = self.verifier_contract_event()
+        if verifier_event is not None:
+            meta["verifier_contract_event"] = verifier_event.to_dict()
         return meta
+
+    def verifier_contract_event(self) -> "CREVerifierContractEvent | None":
+        raw_event = _get_any(
+            self.metadata,
+            "verifier_contract_event",
+            "verifier_event",
+            "contract_event",
+            default=None,
+        )
+        if raw_event is None:
+            return None
+        if isinstance(raw_event, CREVerifierContractEvent):
+            return raw_event
+        if isinstance(raw_event, dict):
+            return CREVerifierContractEvent.from_dict(raw_event)
+        raise ValueError("verifier_contract_event must be an object")
 
     def to_operator_response(
         self,
@@ -412,6 +475,9 @@ class CREInferenceResult:
             "submission_id": self.submission_id,
         }
         metadata.update(_jsonable(verification.metadata))
+        verifier_event = self.verifier_contract_event()
+        if verifier_event is not None:
+            metadata["verifier_contract_event"] = verifier_event.to_dict()
         return ProofReceipt(
             policy="chainlink_cre",
             verified=bool(verification.verified),
@@ -421,6 +487,125 @@ class CREInferenceResult:
             chain_id=self.chain_id,
             tx_hash=self.tx_hash,
             metadata=metadata,
+        )
+
+
+@dataclass(frozen=True)
+class CREVerifierContractEvent:
+    """Parsed verifier-contract event metadata for a CRE result.
+
+    The parser accepts plain dicts and common Web3-style event payloads with
+    fields under ``args`` or ``returnValues``.  It performs no RPC calls; callers
+    provide expected bindings explicitly and receive a fail-closed
+    ``VerificationResult``.
+    """
+
+    workflow_id: str
+    request_hash: str
+    output_hash: str
+    proof_hash: str
+    chain_id: str
+    contract_address: str
+    block_number: int
+    tx_hash: str
+    log_index: int | None = None
+    event_name: str = "CREVerifierReceipt"
+    schema_version: str = CRE_VERIFIER_EVENT_SCHEMA_VERSION
+
+    EXPECTED_SCHEMA_VERSION: ClassVar[str] = CRE_VERIFIER_EVENT_SCHEMA_VERSION
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "CREVerifierContractEvent":
+        schema_version = str(data.get("schema_version") or CRE_VERIFIER_EVENT_SCHEMA_VERSION)
+        if schema_version != cls.EXPECTED_SCHEMA_VERSION:
+            raise ValueError(f"Unsupported CRE verifier event schema_version: {schema_version}")
+
+        return cls(
+            schema_version=schema_version,
+            workflow_id=str(_get_nested_any(data, "workflow_id", "workflowId", "cre_workflow_id", default="") or ""),
+            request_hash=str(_get_nested_any(data, "request_hash", "requestHash", default="") or ""),
+            output_hash=str(_get_nested_any(data, "output_hash", "outputHash", default="") or ""),
+            proof_hash=str(_get_nested_any(data, "proof_hash", "proofHash", "cre_report_hash", "report_hash", default="") or ""),
+            chain_id=str(_get_nested_any(data, "chain_id", "chainId", default="") or ""),
+            contract_address=str(
+                _get_nested_any(data, "contract_address", "contractAddress", "address", default="") or ""
+            ),
+            block_number=int(_optional_int(_get_nested_any(data, "block_number", "blockNumber", default=0)) or 0),
+            tx_hash=str(_get_nested_any(data, "tx_hash", "transaction_hash", "transactionHash", default="") or ""),
+            log_index=_optional_int(_get_nested_any(data, "log_index", "logIndex", default=None)),
+            event_name=str(_get_nested_any(data, "event_name", "event", "eventName", default="CREVerifierReceipt") or "CREVerifierReceipt"),
+        )
+
+    @classmethod
+    def from_json(cls, text: str) -> "CREVerifierContractEvent":
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("CREVerifierContractEvent JSON must decode to an object")
+        return cls.from_dict(data)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": self.schema_version,
+            "event_name": self.event_name,
+            "workflow_id": self.workflow_id,
+            "request_hash": self.request_hash,
+            "output_hash": self.output_hash,
+            "proof_hash": self.proof_hash,
+            "chain_id": self.chain_id,
+            "contract_address": self.contract_address,
+            "block_number": int(self.block_number),
+            "tx_hash": self.tx_hash,
+            "log_index": self.log_index,
+        }
+
+    def to_json(self) -> str:
+        return _stable_json(self.to_dict())
+
+    def verify_expected(
+        self,
+        *,
+        chain_id: str | None = None,
+        contract_address: str | None = None,
+        workflow_id: str | None = None,
+        request_hash: str | None = None,
+        output_hash: str | None = None,
+        proof_hash: str | None = None,
+        block_number: int | None = None,
+        tx_hash: str | None = None,
+    ) -> VerificationResult:
+        checks = (
+            ("chain_id", self.chain_id, chain_id),
+            ("workflow_id", self.workflow_id, workflow_id),
+            ("request_hash", self.request_hash, request_hash),
+            ("output_hash", self.output_hash, output_hash),
+            ("proof_hash", self.proof_hash, proof_hash),
+            ("tx_hash", self.tx_hash, tx_hash),
+        )
+        for field_name, actual, expected in checks:
+            if expected is None:
+                continue
+            if not actual:
+                return _event_failure(f"verifier_contract_{field_name}_missing", self.to_dict())
+            if str(actual) != str(expected):
+                return _event_failure(f"verifier_contract_{field_name}_mismatch", self.to_dict())
+
+        if contract_address is not None:
+            if not self.contract_address:
+                return _event_failure("verifier_contract_address_missing", self.to_dict())
+            if _normalize_address(self.contract_address) != _normalize_address(contract_address):
+                return _event_failure("verifier_contract_address_mismatch", self.to_dict())
+
+        if block_number is not None:
+            if not self.block_number:
+                return _event_failure("verifier_contract_block_number_missing", self.to_dict())
+            if int(self.block_number) != int(block_number):
+                return _event_failure("verifier_contract_block_number_mismatch", self.to_dict())
+
+        return VerificationResult(
+            verified=True,
+            verifier=CRE_VERIFIER_EVENT_VERIFIER_ID,
+            reason="verifier_contract_event_verified",
+            metadata=self.to_dict(),
         )
 
 
@@ -615,7 +800,34 @@ class ChainlinkCREBridgeClient:
             model_commitment=request.model_commitment or "",
             nonce=str(resolved_nonce or ""),
         )
-        return self._verifier.verify(cre_result.proof_meta(nonce=resolved_nonce), context)
+        verification = self._verifier.verify(cre_result.proof_meta(nonce=resolved_nonce), context)
+        if not verification.verified:
+            return verification
+
+        verifier_event = cre_result.verifier_contract_event()
+        if verifier_event is None:
+            return verification
+
+        event_verification = verifier_event.verify_expected(
+            chain_id=cre_result.chain_id or self.config.chain_id,
+            contract_address=_optional_str(self.config.metadata.get("verifier_contract_address")),
+            workflow_id=cre_result.workflow_id,
+            request_hash=cre_result.request_hash,
+            output_hash=cre_result.output_hash,
+            proof_hash=cre_result.cre_report_hash,
+            tx_hash=cre_result.tx_hash or None,
+        )
+        if not event_verification.verified:
+            return event_verification
+        return VerificationResult(
+            verified=True,
+            verifier=verification.verifier,
+            reason=verification.reason,
+            metadata={
+                **verification.metadata,
+                "verifier_contract_event": event_verification.metadata,
+            },
+        )
 
     def build_receipt(
         self,
@@ -888,11 +1100,14 @@ __all__ = [
     "CRE_FAILED_STATUSES",
     "CRE_RESULT_SCHEMA_VERSION",
     "CRE_SUBMISSION_SCHEMA_VERSION",
+    "CRE_VERIFIER_EVENT_SCHEMA_VERSION",
+    "CRE_VERIFIER_EVENT_VERIFIER_ID",
     "CREBridgeClient",
     "CREBridgeConfig",
     "CREInferenceResult",
     "CREInferenceSubmission",
     "CRESubmission",
+    "CREVerifierContractEvent",
     "CREWorkflowResult",
     "ChainlinkCREClient",
     "ChainlinkCREBridgeClient",

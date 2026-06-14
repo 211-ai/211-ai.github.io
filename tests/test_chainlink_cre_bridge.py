@@ -5,8 +5,11 @@ from __future__ import annotations
 import pytest
 
 from ipfs_accelerate_py.chainlink_cre import (
+    CREBridgeConfig,
     CREInferenceResult,
     CRESubmission,
+    CREVerifierContractEvent,
+    CRE_VERIFIER_EVENT_VERIFIER_ID,
     ChainlinkCREBridgeClient,
     ChainlinkCREBridgeError,
 )
@@ -196,3 +199,157 @@ def test_wait_requires_handler_or_simulation() -> None:
 
     with pytest.raises(ChainlinkCREBridgeError, match="cre_wait_handler_required"):
         client.wait(submission)
+
+
+def test_verifier_contract_event_parses_web3_shape_and_matches_expected_fields() -> None:
+    request = _request()
+    output_hash = sha256_digest("{\"answer\":\"yes\"}")
+    proof_hash = sha256_digest("cre-report")
+    raw_event = {
+        "address": "0xABCDEF0000000000000000000000000000000000",
+        "blockNumber": "12345",
+        "transactionHash": "0xtransaction",
+        "logIndex": 7,
+        "event": "CREVerifierReceipt",
+        "args": {
+            "workflowId": "wf-llm-router-v1",
+            "requestHash": request.request_hash,
+            "outputHash": output_hash,
+            "proofHash": proof_hash,
+            "chainId": "11155111",
+        },
+    }
+
+    event = CREVerifierContractEvent.from_dict(raw_event)
+    verification = event.verify_expected(
+        chain_id="11155111",
+        contract_address="0xabcdef0000000000000000000000000000000000",
+        workflow_id="wf-llm-router-v1",
+        request_hash=request.request_hash,
+        output_hash=output_hash,
+        proof_hash=proof_hash,
+        block_number=12345,
+        tx_hash="0xtransaction",
+    )
+    restored = CREVerifierContractEvent.from_json(event.to_json())
+
+    assert event.block_number == 12345
+    assert event.log_index == 7
+    assert verification.verified is True
+    assert verification.verifier == CRE_VERIFIER_EVENT_VERIFIER_ID
+    assert restored == event
+
+
+def test_verifier_contract_event_fails_closed_on_binding_mismatch() -> None:
+    event = CREVerifierContractEvent.from_dict(
+        {
+            "contract_address": "0xabc",
+            "block_number": 10,
+            "tx_hash": "0xtransaction",
+            "workflow_id": "wf-llm-router-v1",
+            "request_hash": "sha256:request",
+            "output_hash": "sha256:output",
+            "proof_hash": "sha256:proof",
+            "chain_id": "11155111",
+        }
+    )
+
+    verification = event.verify_expected(
+        chain_id="11155111",
+        contract_address="0xabc",
+        workflow_id="wf-llm-router-v1",
+        request_hash="sha256:request",
+        output_hash="sha256:wrong-output",
+        proof_hash="sha256:proof",
+        block_number=10,
+        tx_hash="0xtransaction",
+    )
+
+    assert verification.verified is False
+    assert verification.verifier == CRE_VERIFIER_EVENT_VERIFIER_ID
+    assert verification.reason == "verifier_contract_output_hash_mismatch"
+
+
+def test_cre_bridge_verifies_optional_contract_event_without_live_rpc() -> None:
+    request = _request()
+    output_text = "{\"answer\":\"yes\"}"
+    output_hash = sha256_digest(output_text)
+    proof_hash = sha256_digest("cre-contract-proof")
+    raw_event = {
+        "address": "0xABCDEF0000000000000000000000000000000000",
+        "blockNumber": 12345,
+        "transactionHash": "0xtransaction",
+        "args": {
+            "workflowId": "wf-llm-router-v1",
+            "requestHash": request.request_hash,
+            "outputHash": output_hash,
+            "proofHash": proof_hash,
+            "chainId": "11155111",
+        },
+    }
+    client = ChainlinkCREBridgeClient(
+        config=CREBridgeConfig(
+            workflow_id="wf-llm-router-v1",
+            don_id="don-42",
+            chain_id="11155111",
+            metadata={"verifier_contract_address": "0xabcdef0000000000000000000000000000000000"},
+        ),
+        simulated_response={
+            "output_text": output_text,
+            "output_hash": output_hash,
+            "cre_report_hash": proof_hash,
+            "chain_id": "11155111",
+            "tx_hash": "0xtransaction",
+            "metadata": {"verifier_contract_event": raw_event},
+        },
+    )
+
+    submission = client.submit(request)
+    result = client.wait(submission)
+    verification = client.verify(result, request)
+    receipt = client.build_receipt(request, result, verification=verification)
+
+    assert verification.verified is True
+    assert verification.metadata["verifier_contract_event"]["proof_hash"] == proof_hash
+    assert receipt.proof.metadata["verifier_contract_event"]["tx_hash"] == "0xtransaction"
+
+
+def test_cre_bridge_fails_closed_for_mismatched_contract_event() -> None:
+    request = _request()
+    output_text = "{\"answer\":\"yes\"}"
+    output_hash = sha256_digest(output_text)
+    proof_hash = sha256_digest("cre-contract-proof")
+    client = ChainlinkCREBridgeClient(
+        config=CREBridgeConfig(
+            workflow_id="wf-llm-router-v1",
+            don_id="don-42",
+            chain_id="11155111",
+            metadata={"verifier_contract_address": "0xabcdef0000000000000000000000000000000000"},
+        ),
+        simulated_response={
+            "output_text": output_text,
+            "output_hash": output_hash,
+            "cre_report_hash": proof_hash,
+            "chain_id": "11155111",
+            "tx_hash": "0xtransaction",
+            "metadata": {
+                "verifier_contract_event": {
+                    "address": "0xABCDEF0000000000000000000000000000000000",
+                    "blockNumber": 12345,
+                    "transactionHash": "0xtransaction",
+                    "args": {
+                        "workflowId": "wf-llm-router-v1",
+                        "requestHash": request.request_hash,
+                        "outputHash": "sha256:wrong-output",
+                        "proofHash": proof_hash,
+                        "chainId": "11155111",
+                    },
+                }
+            },
+        },
+    )
+
+    verification = client.verify(client.wait(client.submit(request)), request)
+
+    assert verification.verified is False
+    assert verification.reason == "verifier_contract_output_hash_mismatch"
