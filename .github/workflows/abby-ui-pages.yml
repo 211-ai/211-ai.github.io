@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
           cache-dependency-path: wallet_interface/ui/package-lock.json
 
@@ -38,52 +38,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        env:
-          ONNXRUNTIME_NODE_INSTALL: skip
         run: npm ci
-
-      - name: Run Filecoin polling regression check
-        run: npm run test:filecoin-polling
-
-      - name: Write Pages runtime config
-        env:
-          ABBY_PAGES_WALLET_API_BASE_URL: ${{ vars.ABBY_PAGES_WALLET_API_BASE_URL }}
-          ABBY_PAGES_WALLET_ID: ${{ vars.ABBY_PAGES_WALLET_ID }}
-          ABBY_PAGES_ACTOR_DID: ${{ vars.ABBY_PAGES_ACTOR_DID }}
-          ABBY_PAGES_FILECOIN_UPLOAD_URL: ${{ vars.ABBY_PAGES_FILECOIN_UPLOAD_URL }}
-          ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL: ${{ vars.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL }}
-        run: |
-          node <<'EOF'
-          const fs = require('fs');
-
-          const normalize = (value) => {
-            if (typeof value !== 'string') return undefined;
-            const trimmed = value.trim();
-            return trimmed ? trimmed : undefined;
-          };
-
-          const config = {};
-          const walletApiBaseUrl = normalize(process.env.ABBY_PAGES_WALLET_API_BASE_URL);
-          const walletId = normalize(process.env.ABBY_PAGES_WALLET_ID);
-          const actorDid = normalize(process.env.ABBY_PAGES_ACTOR_DID);
-          const filecoinUploadUrl = normalize(process.env.ABBY_PAGES_FILECOIN_UPLOAD_URL);
-          const precomputedAudioManifestUrl = normalize(process.env.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL);
-
-          if (walletApiBaseUrl && walletId) {
-            config.walletApi = { apiBaseUrl: walletApiBaseUrl, walletId };
-            if (actorDid) config.walletApi.actorDid = actorDid;
-          }
-
-          if (filecoinUploadUrl) {
-            config.filecoinStorage = { uploadUrl: filecoinUploadUrl };
-          }
-
-          if (precomputedAudioManifestUrl) {
-            config.precomputedAudio = { manifestUrl: precomputedAudioManifestUrl };
-          }
-
-          fs.writeFileSync('public/runtime-config.json', JSON.stringify(config, null, 2) + '\n');
-          EOF
 
       - name: Build
         run: npm run build

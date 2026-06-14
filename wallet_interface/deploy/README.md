@@ -309,7 +309,6 @@ export WALLET_OPS_ALERT_HEADER_NAME=x-wallet-alert-key
 export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
 export WALLET_OPS_HEALTH_SECRET_REF=secret-manager://replace-me
 export WALLET_OPS_ALERT_SECRET_REF=secret-manager://replace-me
-export WALLET_STORAGE_CONFIG='{"primary":{"type":"local","root":"/var/lib/211-ai/wallet-blobs"},"mirrors":[{"type":"ipfs","pin":true}]}'
 export WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 export WALLET_STORAGE_RETENTION_POLICY_REF=docs/WALLET_RETENTION_POLICY.md@2026-05-05
 export WALLET_STORAGE_IPFS_PINNING_POLICY_REF=replace-with-private-ipfs-pinset-policy-id
@@ -317,57 +316,6 @@ export WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF=replace-with-filecoin-deal-policy
 export WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF=replace-with-s3-lifecycle-policy-id
 export WALLET_BACKUP_PURGE_POLICY_REF=replace-with-backup-purge-policy-id
 export WALLET_ALERT_RETENTION_POLICY_REF=replace-with-alert-retention-policy-id
-export IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1
-export IPFS_HOST=/dns/ipfs/tcp/5001/http
-export WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL=https://w3s.link/ipfs
-export WALLET_DEAD_DROP_BACKEND=http
-export WALLET_DEAD_DROP_WEBHOOK_URL=http://sms-bridge:8061/messages/email/outbound
-export WALLET_DEAD_DROP_BEARER_TOKEN=
-export WALLET_DEAD_DROP_HTTP_HEADER_NAME=
-export WALLET_DEAD_DROP_HTTP_HEADER_VALUE=
-export WALLET_DEAD_DROP_TIMEOUT_SECONDS=20
-export WALLET_DEAD_DROP_SMTP_HOST=smtp.example.com
-export WALLET_DEAD_DROP_SMTP_PORT=587
-export WALLET_DEAD_DROP_SMTP_USE_SSL=false
-export WALLET_DEAD_DROP_SMTP_STARTTLS=true
-export WALLET_DEAD_DROP_SMTP_USERNAME=replace-me
-export WALLET_DEAD_DROP_SMTP_PASSWORD=replace-me
-export WALLET_DEAD_DROP_FROM_EMAIL=no-reply@211-ai.org
-export IPFS_DATASETS_EMAIL_PROVIDER_KIND=smtp
-export IPFS_DATASETS_EMAIL_PROVIDER_WEBHOOK_URL=
-export IPFS_DATASETS_EMAIL_PROVIDER_BEARER_TOKEN=
-export IPFS_DATASETS_EMAIL_PROVIDER_HTTP_HEADER_NAME=
-export IPFS_DATASETS_EMAIL_PROVIDER_HTTP_HEADER_VALUE=
-export IPFS_DATASETS_EMAIL_PROVIDER_TIMEOUT_SECONDS=20
-export WALLET_SMS_BACKEND=http
-export WALLET_SMS_WEBHOOK_URL=http://sms-bridge:8061/messages/sms/outbound
-export WALLET_SMS_BEARER_TOKEN=
-export WALLET_SMS_HTTP_HEADER_NAME=
-export WALLET_SMS_HTTP_HEADER_VALUE=
-export WALLET_SMS_TIMEOUT_SECONDS=15
-export WALLET_SMS_INBOUND_BEARER_TOKEN=replace-me
-export WALLET_SMS_INBOUND_HTTP_HEADER_NAME=
-export WALLET_SMS_INBOUND_HTTP_HEADER_VALUE=
-export WALLET_SMS_INBOUND_ACTOR_DID=did:wallet:sms-bridge
-export IPFS_DATASETS_SMS_PROVIDER_KIND=twilio
-export IPFS_DATASETS_SMS_TWILIO_ACCOUNT_SID=replace-me
-export IPFS_DATASETS_SMS_TWILIO_AUTH_TOKEN=replace-me
-export IPFS_DATASETS_SMS_TWILIO_FROM_PHONE=+15035550100
-export IPFS_DATASETS_SMS_TWILIO_STATUS_CALLBACK_URL=https://211-ai.com/messaging/providers/twilio/status
-export IPFS_DATASETS_SMS_INBOUND_FORWARD_URL=http://wallet-api:8000/messages/sms/inbound
-export WALLET_CALL_BACKEND=http
-export WALLET_CALL_WEBHOOK_URL=http://sms-bridge:8061/messages/calls/outbound
-export WALLET_CALL_BEARER_TOKEN=
-export WALLET_CALL_HTTP_HEADER_NAME=
-export WALLET_CALL_HTTP_HEADER_VALUE=
-export WALLET_CALL_TIMEOUT_SECONDS=20
-export IPFS_DATASETS_CALL_PROVIDER_KIND=twilio
-export IPFS_DATASETS_CALL_TWILIO_ACCOUNT_SID=replace-me
-export IPFS_DATASETS_CALL_TWILIO_AUTH_TOKEN=replace-me
-export IPFS_DATASETS_CALL_TWILIO_FROM_PHONE=+15035550100
-export IPFS_DATASETS_CALL_TWILIO_STATUS_CALLBACK_URL=https://211-ai.com/messaging/providers/twilio/voice/status
-export IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND=
-export IPFS_DATASETS_VOICE_MOCK_REPLY_TEXT=
 export WALLET_PROOF_BACKEND=http-location-region
 export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
@@ -378,69 +326,12 @@ export WALLET_PROOF_BEARER_TOKEN=replace-me
 export WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 ```
 
-For credential-free local development, start from the production env example
-and layer `wallet_interface/deploy/env.local.mock.example` on top so the
-bridge uses built-in mock SMS, email, call, and phone-voice providers. That
-mock env also points the browser voice UI at the same-origin
-`/messaging/voice/infer` and `/messaging/voice/tts` routes, where the bridge
-returns deterministic mock text and the UI speaks it with browser speech
-output. It also enables the built-in mock Filecoin pin bridge and keeps proofs
-on the deterministic local verifier. The same env also forces
-`WALLET_STORAGE_CONFIG` back to local-only storage and sets
-`WALLET_IPFS_UPLOAD_BACKEND=mock`, so `/filecoin-upload` no longer depends on
-Kubo or any other live IPFS backend during local development.
-
-To start that stack without manually exporting the env files, use the helper:
-
-```bash
-cd wallet_interface/deploy
-sh run_local_mock_stack.sh config
-sh run_local_mock_stack.sh up -d
-sh run_local_mock_stack.sh smoke
-```
-
-The helper loads both `env.production.example` and
-`env.local.mock.example`, then runs `docker-compose` against the reference
-compose file. The `smoke` subcommand hits the bundled same-origin routes on
-`http://127.0.0.1:8080` by default and verifies health, wallet proof creation,
-mock Filecoin upload/status, outbound SMS/email/call routes, and the mock
-browser voice proxy.
-
 Services:
 
-- `wallet-api`: runs `uvicorn wallet_interface.asgi:app` on port `8000`
-  inside the compose network.
-- `sms-bridge`: runs `python -m ipfs_datasets_py.messaging.sms_bridge` on
-  port `8061`, persists outbound email, call, and inbound/outbound SMS events
-  in DuckDB, accepts the internal `/messages/email/outbound`,
-  `/messages/sms/outbound`, and `/messages/calls/outbound` webhooks from
-  `wallet-api`, forwards normalized inbound SMS replies back into
-  `wallet-api` for wallet-state persistence, and exposes Twilio-compatible SMS
-  inbound/status plus inbound voice/SIP assistant routes and voice status
-  callbacks behind the same public nginx.
-- `filecoin-pin`: optional `filecoin-pin` profile service built from
-  `wallet_interface/deploy/Dockerfile.filecoin-pin`; runs the upstream daemon
-  on the private compose network for CID handoff and status checks.
+- `wallet-api`: runs `uvicorn wallet_interface.asgi:app` on port `8000`.
 - `wallet-ops`: runs `python -m wallet_interface.ops --watch` every 300 seconds
   and appends JSONL reports under `/var/log/211-ai`.
-- `wallet-ui`: serves the built React UI with nginx and proxies the API on the
-  local `127.0.0.1:8080` upstream consumed by the host nginx site for
-  `211-ai.com`, `abby.network`, and `abetterbridgetoyou.com`.
-- The bundled UI nginx also proxies `/filecoin-upload` to `wallet-api`, so the
-  deployed runtime can default `ABBY_RUNTIME_FILECOIN_UPLOAD_URL` to a
-  same-origin bridge.
-- The bundled UI nginx also proxies `/filecoin-upload/status/<request-id>` to
-  `wallet-api`, so a browser client can poll sidecar-backed upload status
-  without reaching the daemon directly.
-- The bundled UI nginx also proxies `/messaging/*` to `sms-bridge`, so public
-  providers can call `https://211-ai.com/messaging/providers/twilio/inbound`
-  plus `https://211-ai.com/messaging/providers/twilio/status` and
-  `https://211-ai.com/messaging/providers/twilio/voice/status`. Inbound voice
-  numbers or Twilio SIP Domains should point at
-  `https://211-ai.com/messaging/providers/twilio/voice/inbound` or
-  `https://211-ai.com/messaging/providers/twilio/sip/inbound`, and the bridge
-  serves generated call audio back from `/messaging/voice/media/*` while it
-  stays private on the compose network.
+- `wallet-ui`: serves the built React UI on port `8080`.
 
 Kubernetes reference manifests live in `wallet_interface/deploy/kubernetes/`.
 They cover namespace, config, persistent state, API, UI, ops worker, services,
@@ -456,48 +347,8 @@ Required production environment:
 - `WALLET_REPOSITORY_ROOT`: durable wallet metadata, audit, grant, revocation,
   and analytics ledger snapshots.
 - `WALLET_STORAGE_CONFIG`: encrypted blob storage config. Use replicated
-  storage for production. The immediately deployable shape in this repo is a
-  local primary plus an `ipfs` mirror with `pin: true`; keep raw `filecoin`
-  mirrors out of the live config until your deployment injects a
-  Filecoin-capable runtime backend.
-- `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1` and `IPFS_HOST`: enable the
-  containerized API and ops worker to reach a trusted Kubo HTTP API for
-  `{"type":"ipfs"}` storage mirrors without bundling the `ipfs` CLI into the
-  application images.
-- `ABBY_RUNTIME_FILECOIN_UPLOAD_URL`: set to `/filecoin-upload` for the
-  bundled deployment so the UI can publish files and proof bundles through the
-  wallet API on the same origin.
-- `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`: optional public gateway base used in
-  `/filecoin-upload` responses. Defaults to `https://w3s.link/ipfs`.
-- `WALLET_IPFS_UPLOAD_BACKEND`: optional upload-bridge backend override. Set
-  `mock` to make `/filecoin-upload` return deterministic IPFS-style CIDs
-  without resolving a real IPFS backend.
-- `WALLET_FILECOIN_PIN_SERVICE_URL`: optional private Filecoin Pin daemon base
-  URL. When set, `/filecoin-upload` first publishes bytes to IPFS and then
-  hands the resulting CID to `POST /pins` on that sidecar. Set this to `mock`
-  for credential-free local development without running the sidecar.
-- `WALLET_FILECOIN_PIN_ORIGINS`: optional comma-separated libp2p multiaddrs
-  passed to the Filecoin Pin sidecar so it can fetch newly published content
-  from your trusted Kubo/libp2p origin.
-- `WALLET_FILECOIN_PIN_BEARER_TOKEN`: optional bearer token for the Filecoin
-  Pin sidecar.
-- `WALLET_FILECOIN_PIN_HTTP_HEADER_NAME` /
-  `WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE`: optional custom header pair for the
-  Filecoin Pin sidecar.
-- `WALLET_FILECOIN_PIN_TIMEOUT_SECONDS`: optional Filecoin Pin sidecar timeout.
-- `WALLET_FILECOIN_PIN_MOCK_STATUS`: status returned by the built-in mock
-  Filecoin Pin mode. Defaults to `pinned`; keep it at `pinned` unless you are
-  deliberately exercising UI failure states.
-- `FILECOIN_PIN_VERSION`: npm package version pinned into the optional sidecar
-  image build. Defaults to `0.20.1` in the checked-in compose file.
-- `FILECOIN_PIN_ACCESS_TOKEN`: access token enforced by the optional
-  Filecoin Pin sidecar. Set `WALLET_FILECOIN_PIN_BEARER_TOKEN` to the same
-  value when the wallet API should call that sidecar.
-- `FILECOIN_PIN_PRIVATE_KEY` or `FILECOIN_PIN_WALLET_ADDRESS` +
-  `FILECOIN_PIN_SESSION_KEY`: required Filecoin auth for the sidecar itself.
-- `FILECOIN_PIN_NETWORK` or `FILECOIN_PIN_RPC_URL`: choose one for the sidecar
-  runtime. Leave `FILECOIN_PIN_NETWORK` unset when using a custom RPC URL.
-- `FILECOIN_PIN_LOG_LEVEL`: optional sidecar log level.
+  storage for production, for example local primary plus S3/IPFS/Filecoin
+  mirrors.
 - `WALLET_STORAGE_RETENTION_POLICY_REF`,
   `WALLET_STORAGE_IPFS_PINNING_POLICY_REF`,
   `WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF`,
@@ -510,8 +361,6 @@ Required production environment:
 - `WALLET_PROOF_MODE=production`: disables simulated proof acceptance.
 - `WALLET_PROOF_BACKEND`: production verifier backend selection. Supported
   values now include `http-location-region` for an external verifier service.
-  The local mock stack keeps this on `deterministic-location-region` so proof
-  flows stay executable without external verifier credentials.
 - `WALLET_PROOF_SERVICE_URL`: required when
   `WALLET_PROOF_BACKEND=http-location-region`.
 - `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`,
@@ -529,252 +378,23 @@ Required production environment:
 - `WALLET_OPS_HEALTH_SHARED_SECRET`: when set, `/ops/health` requires either
   `Authorization: Bearer ...` or `X-Wallet-Ops-Shared-Secret`.
 - `WALLET_API_CORS_ORIGINS`: comma-separated browser origin allow-list for
-  split API/UI deployments. Leave unset when the bundled nginx gateway fronts
-  both UI and API on the same host. For multi-domain deployments, allow-list
-  `https://211-ai.com`, `https://abby.network`, and
-  `https://abetterbridgetoyou.com` if you expose the API cross-origin.
+  split API/UI deployments. Leave unset when a same-origin gateway fronts both.
 - `WALLET_OPS_ALERT_WEBHOOK_URL`: optional webhook target for warning/error
   ops-health alerts emitted by `python -m wallet_interface.ops`.
 - `WALLET_OPS_ALERT_ON`: optional minimum alert severity, `warning` or `error`.
 - `WALLET_OPS_ALERT_BEARER_TOKEN`: optional bearer token for the alert webhook.
 - `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE`: optional
   custom header pair for receivers that do not use bearer auth.
-- `WALLET_DEAD_DROP_WEBHOOK_URL`: optional dead-drop email bridge URL for
-  `POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch` and
-  `POST /ops/dead-drops/missing-person/process-due`. In the compose reference
-  it defaults to `http://sms-bridge:8061/messages/email/outbound`.
-- `WALLET_DEAD_DROP_BACKEND=http`: enables the built-in HTTP dead-drop email
-  bridge. The compose reference enables this by default so missing-person
-  bundles flow through the internal `sms-bridge` service.
-- `WALLET_DEAD_DROP_BEARER_TOKEN`: optional bearer token for the dead-drop
-  email bridge.
-- `WALLET_DEAD_DROP_HTTP_HEADER_NAME` /
-  `WALLET_DEAD_DROP_HTTP_HEADER_VALUE`: optional custom header pair for
-  dead-drop bridge auth.
-- `WALLET_DEAD_DROP_TIMEOUT_SECONDS`: optional dead-drop email bridge request
-  timeout.
-- `WALLET_DEAD_DROP_SMTP_*` / `WALLET_DEAD_DROP_FROM_EMAIL`: legacy direct
-  SMTP fallback settings for the wallet API, also reused by the internal
-  bridge when `IPFS_DATASETS_EMAIL_PROVIDER_KIND=smtp`.
-- `IPFS_DATASETS_EMAIL_PROVIDER_KIND`: email bridge outbound backend.
-  Supported values today are `smtp`, `webhook`, and `mock`.
-- `IPFS_DATASETS_EMAIL_PROVIDER_WEBHOOK_URL`: optional webhook target for a
-  provider adapter when `IPFS_DATASETS_EMAIL_PROVIDER_KIND=webhook`.
-- `IPFS_DATASETS_EMAIL_PROVIDER_BEARER_TOKEN`: optional bearer token for that
-  outbound email adapter.
-- `IPFS_DATASETS_EMAIL_PROVIDER_HTTP_HEADER_NAME` /
-  `IPFS_DATASETS_EMAIL_PROVIDER_HTTP_HEADER_VALUE`: optional custom header
-  pair for the outbound email adapter.
-- `IPFS_DATASETS_EMAIL_PROVIDER_TIMEOUT_SECONDS`: optional outbound email
-  provider timeout inside the bridge.
-- `WALLET_SMS_WEBHOOK_URL`: optional SMS delivery bridge URL for
-  `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`
-  and `POST /ops/notifications/sms/process-due`. In the compose reference it
-  defaults to `http://sms-bridge:8061/messages/sms/outbound`.
-- `WALLET_SMS_BACKEND=http`: enables the built-in HTTP SMS bridge. The compose
-  reference enables this by default so queued notifications can reach the
-  internal `sms-bridge` service.
-- `WALLET_SMS_BEARER_TOKEN`: optional bearer token for the SMS bridge.
-- `WALLET_SMS_HTTP_HEADER_NAME` / `WALLET_SMS_HTTP_HEADER_VALUE`: optional
-  custom header pair for SMS bridge auth.
-- `WALLET_SMS_TIMEOUT_SECONDS`: optional SMS bridge request timeout.
-- `WALLET_SMS_INBOUND_BEARER_TOKEN`: bearer token required by the internal
-  `POST /messages/sms/inbound` webhook when the bridge forwards normalized
-  inbound replies back into wallet state.
-- `WALLET_SMS_INBOUND_HTTP_HEADER_NAME` /
-  `WALLET_SMS_INBOUND_HTTP_HEADER_VALUE`: optional custom header pair for that
-  inbound reply webhook instead of bearer auth.
-- `WALLET_SMS_INBOUND_ACTOR_DID`: optional audit actor label recorded on
-  bridge-forwarded inbound SMS messages. Defaults to `did:wallet:sms-bridge`.
-- `IPFS_DATASETS_SMS_PROVIDER_KIND`: SMS bridge outbound backend. Supported
-  values today are `twilio`, `webhook`, and `mock`.
-- `IPFS_DATASETS_SMS_PROVIDER_WEBHOOK_URL`: optional webhook target for a
-  provider adapter when `IPFS_DATASETS_SMS_PROVIDER_KIND=webhook`.
-- `IPFS_DATASETS_SMS_PROVIDER_BEARER_TOKEN`: optional bearer token for that
-  outbound webhook adapter.
-- `IPFS_DATASETS_SMS_PROVIDER_HTTP_HEADER_NAME` /
-  `IPFS_DATASETS_SMS_PROVIDER_HTTP_HEADER_VALUE`: optional custom header pair
-  for the outbound webhook adapter.
-- `IPFS_DATASETS_SMS_PROVIDER_TIMEOUT_SECONDS`: optional outbound provider
-  timeout inside the SMS bridge.
-- `IPFS_DATASETS_SMS_TWILIO_ACCOUNT_SID` /
-  `IPFS_DATASETS_SMS_TWILIO_AUTH_TOKEN`: Twilio credentials for the SMS bridge
-  when `IPFS_DATASETS_SMS_PROVIDER_KIND=twilio`.
-- `IPFS_DATASETS_SMS_TWILIO_FROM_PHONE`: outbound Twilio sender phone number.
-- `IPFS_DATASETS_SMS_TWILIO_MESSAGING_SERVICE_SID`: optional Twilio messaging
-  service identifier used instead of a direct sender number.
-- `IPFS_DATASETS_SMS_TWILIO_STATUS_CALLBACK_URL`: public Twilio delivery
-  callback URL. For the bundled gateway use
-  `https://211-ai.com/messaging/providers/twilio/status`.
-- `IPFS_DATASETS_SMS_INBOUND_FORWARD_URL`: optional secondary webhook that
-  receives normalized inbound SMS events after the bridge stores them in
-  DuckDB. In the compose reference it defaults to
-  `http://wallet-api:8000/messages/sms/inbound` so replies land in wallet
-  state and can later be listed via `GET /wallets/{wallet_id}/messages/sms/inbound`.
-- `IPFS_DATASETS_SMS_INBOUND_FORWARD_BEARER_TOKEN`: optional bearer token for
-  that normalized inbound forwarder. The compose reference reuses
-  `WALLET_SMS_INBOUND_BEARER_TOKEN` so the bridge and wallet API share one
-  internal secret.
-- `IPFS_DATASETS_SMS_INBOUND_FORWARD_HTTP_HEADER_NAME` /
-  `IPFS_DATASETS_SMS_INBOUND_FORWARD_HTTP_HEADER_VALUE`: optional custom
-  header pair for the normalized inbound forwarder. The compose reference
-  reuses `WALLET_SMS_INBOUND_HTTP_HEADER_NAME` and
-  `WALLET_SMS_INBOUND_HTTP_HEADER_VALUE` when you prefer header auth.
-- `IPFS_DATASETS_SMS_INBOUND_FORWARD_TIMEOUT_SECONDS`: optional timeout for the
-  normalized inbound forwarder.
-- `WALLET_CALL_WEBHOOK_URL`: optional phone-agent bridge URL for
-  `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`
-  and `POST /ops/notifications/calls/process-due`. In the compose reference it
-  defaults to `http://sms-bridge:8061/messages/calls/outbound`.
-- `WALLET_CALL_BACKEND=http`: enables the built-in HTTP call bridge. The
-  compose reference enables this by default so queued call notifications can
-  reach the internal `sms-bridge` service.
-- `WALLET_CALL_BEARER_TOKEN`: optional bearer token for the call bridge.
-- `WALLET_CALL_HTTP_HEADER_NAME` / `WALLET_CALL_HTTP_HEADER_VALUE`: optional
-  custom header pair for call-bridge auth.
-- `WALLET_CALL_TIMEOUT_SECONDS`: optional call-bridge request timeout.
-- `IPFS_DATASETS_CALL_PROVIDER_KIND`: call bridge outbound backend. Supported
-  values today are `twilio`, `webhook`, and `mock`.
-- `IPFS_DATASETS_CALL_PROVIDER_WEBHOOK_URL`: optional webhook target for a
-  provider adapter when `IPFS_DATASETS_CALL_PROVIDER_KIND=webhook`.
-- `IPFS_DATASETS_CALL_PROVIDER_BEARER_TOKEN`: optional bearer token for that
-  outbound call adapter.
-- `IPFS_DATASETS_CALL_PROVIDER_HTTP_HEADER_NAME` /
-  `IPFS_DATASETS_CALL_PROVIDER_HTTP_HEADER_VALUE`: optional custom header pair
-  for the outbound call adapter.
-- `IPFS_DATASETS_CALL_PROVIDER_TIMEOUT_SECONDS`: optional outbound call
-  provider timeout inside the bridge.
-- `IPFS_DATASETS_CALL_TWILIO_ACCOUNT_SID` /
-  `IPFS_DATASETS_CALL_TWILIO_AUTH_TOKEN`: Twilio Voice credentials for the
-  bridge when `IPFS_DATASETS_CALL_PROVIDER_KIND=twilio`.
-- `IPFS_DATASETS_CALL_TWILIO_FROM_PHONE`: outbound Twilio Voice caller ID.
-- `IPFS_DATASETS_CALL_TWILIO_STATUS_CALLBACK_URL`: public Twilio Voice status
-  callback URL. For the bundled gateway use
-  `https://211-ai.com/messaging/providers/twilio/voice/status`.
-- `IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND`: inbound phone-agent reply backend.
-  Set `remote-proxy` to use the existing HTTP infer/TTS contract or `mock` to
-  generate deterministic local replies without external model credentials.
-- `IPFS_DATASETS_VOICE_MOCK_REPLY_TEXT`: optional fixed text returned by the
-  mock voice reply provider when `IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND=mock`.
-- `IPFS_DATASETS_VOICE_PUBLIC_BASE_URL`: public base URL for the inbound voice
-  gateway. For the bundled gateway use `https://211-ai.com/messaging` so the
-  bridge can generate absolute Twilio action and media URLs behind nginx.
-- `IPFS_DATASETS_VOICE_PROXY_BASE_URL`: optional shared remote voice-proxy
-  base URL. When set, the phone gateway derives `/infer` and `/tts` from it if
-  explicit per-endpoint overrides are not provided, and the wallet-ui runtime
-  config can also reuse it for browser voice features.
-- `IPFS_DATASETS_VOICE_PROXY_INFER_URL`: remote voice-proxy infer endpoint used
-  to generate spoken AI call turns. Point this at the same backend contract the
-  website uses for remote voice replies.
-- `IPFS_DATASETS_VOICE_PROXY_TTS_URL`: optional remote voice-proxy TTS
-  endpoint used when the infer endpoint returns text but not audio.
-- `IPFS_DATASETS_VOICE_PROXY_STT_URL`: optional shared speech-to-text endpoint
-  for the browser voice UI. The inbound phone gateway does not currently call
-  it directly, but the bundled wallet-ui runtime config can inherit it.
-- `IPFS_DATASETS_VOICE_PROXY_TIMEOUT_SECONDS`: optional timeout for remote
-  voice-proxy requests.
-- `IPFS_DATASETS_VOICE_AGENT_NAME` / `IPFS_DATASETS_VOICE_SERVICE_NAME`:
-  optional assistant identity fields injected into the phone-agent prompt.
-- `IPFS_DATASETS_VOICE_WEBSITE_URL`: optional public website URL included in
-  the phone-agent prompt context.
-- `IPFS_DATASETS_VOICE_SYSTEM_PROMPT_APPEND`: optional extra phone-agent
-  instruction block appended to the default Abby prompt.
-- `IPFS_DATASETS_VOICE_MAX_TURNS`: optional per-call turn cap before the bridge
-  ends the call.
 - `WALLET_OPS_HEALTH_SECRET_REF`, `WALLET_OPS_ALERT_SECRET_REF`,
   `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
   `WALLET_STORAGE_CREDENTIAL_SECRET_REF`: non-secret secret-manager reference
   paths required by the production readiness report and target signoff packet.
-
-Provider implementation boundaries today:
-
-- Email delivery for the missing-person dead-drop route now flows through the
-  internal `ipfs_datasets_py` DuckDB-backed bridge by default; `wallet-api`
-  still uses the same provider-agnostic HTTP webhook contract as SMS and
-  calls, while the bridge handles SMTP or generic webhook providers and stores
-  outbound email history. Legacy direct SMTP fallback remains available when
-  the bridge is not enabled.
-- SMS delivery now flows through the internal `ipfs_datasets_py` DuckDB-backed
-  `sms-bridge` service; `wallet-api` still speaks a provider-agnostic HTTP
-  webhook contract, while the bridge handles Twilio or generic webhook
-  providers, stores inbound/outbound message history, and can forward inbound
-  replies into wallet state for two-way texting flows.
-- Phone-call delivery now also flows through that internal `sms-bridge`
-  service; `wallet-api` still uses the same provider-agnostic HTTP contract,
-  while the bridge handles Twilio Voice or a generic webhook provider and
-  stores outbound call history plus provider status callbacks in DuckDB.
-- Inbound phone calls now flow through that same internal `sms-bridge`
-  service as a Twilio-compatible voice/SIP gather loop. The bridge stores each
-  call session and turn in DuckDB, reuses the website's remote voice-proxy
-  HTTP contract for AI replies when configured, supports a built-in mock reply
-  backend for credential-free development, exposes same-origin mock browser
-  voice-proxy routes at `/messaging/voice/infer` and `/messaging/voice/tts`,
-  and serves generated audio back through the same-origin
-  `/messaging/voice/media/*` gateway.
-- The bundled wallet-ui runtime config now falls back to the shared
-  `IPFS_DATASETS_VOICE_PROXY_*` env vars when `ABBY_RUNTIME_VOICE_PROXY_*`
-  overrides are unset, so the browser voice UI and inbound phone gateway can
-  share one remote voice backend without duplicating deploy-time config.
-- Proof backends come from `ipfs_datasets_py.wallet.proofs` for simulated and
-  deterministic integration modes, plus `wallet_interface.proof_backends` for
-  the external HTTP verifier adapter.
-- The compose deployment now forwards `WALLET_STORAGE_*`,
-  `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI`, `IPFS_HOST`,
-  `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`,
-  `WALLET_DEAD_DROP_*`, `WALLET_SMS_*`, and `WALLET_CALL_*` into `wallet-api`,
-  while `WALLET_DEAD_DROP_SMTP_*`, `IPFS_DATASETS_EMAIL_*`,
-  `IPFS_DATASETS_SMS_*`, `IPFS_DATASETS_CALL_*`, and
-  `IPFS_DATASETS_VOICE_*` flow into `sms-bridge`, so storage and delivery
-  backends can activate from the env file without rebuilding application code.
-- The wallet API now exposes `POST /filecoin-upload` as a thin IPFS publishing
-  bridge. Multipart requests publish raw file bytes for proof bundles or fresh
-  uploads; JSON requests can publish an existing wallet record by `walletId`
-  and `recordId` when the API has the actor's decryption rights.
-- When `WALLET_FILECOIN_PIN_SERVICE_URL` is configured, the same bridge also
-  submits the resulting CID to a private Filecoin Pin sidecar and returns the
-  sidecar request ID alongside the stable IPFS gateway URL.
-- When `WALLET_FILECOIN_PIN_SERVICE_URL=mock`, that same bridge returns a
-  deterministic mock request ID and serves status polling locally from the
-  wallet API without calling any external Filecoin service.
-- The wallet API also exposes `GET /filecoin-upload/status/{request_id}` to
-  proxy `GET /pins/{request_id}` from that sidecar. This keeps browser access
-  on the main origin and avoids exposing the daemon directly.
-- Storage backends come from `ipfs_datasets_py.wallet.storage`; `ipfs` and `s3`
-  can be configured directly from `WALLET_STORAGE_CONFIG`, while `filecoin`
-  also needs a runtime backend object supplied by the deployment.
-- Treat Filecoin Pin daemon mode as a private worker behind the wallet API,
-  not as the system of record for upload status. The daemon keeps pin state in
-  process memory, so the wallet API should remain the durable auth boundary.
-
-To enable the sidecar in compose:
-
-```bash
-docker compose \
-  --profile filecoin-pin \
-  --env-file wallet_interface/deploy/env.production.local \
-  -f wallet_interface/deploy/docker-compose.wallet.yml up -d
-```
-
-Recommended sidecar baseline:
-
-- Set `WALLET_FILECOIN_PIN_SERVICE_URL=http://filecoin-pin:3456`.
-- Set `FILECOIN_PIN_ACCESS_TOKEN` and reuse that value as
-  `WALLET_FILECOIN_PIN_BEARER_TOKEN`.
-- Set `FILECOIN_PIN_PRIVATE_KEY` or `FILECOIN_PIN_WALLET_ADDRESS` plus
-  `FILECOIN_PIN_SESSION_KEY`.
-- Set either `FILECOIN_PIN_NETWORK=mainnet|calibration` or
-  `FILECOIN_PIN_RPC_URL=<custom endpoint>`.
-- Keep `WALLET_FILECOIN_PIN_ORIGINS` pointed at trusted libp2p multiaddrs for
-  the Kubo/libp2p origin that can serve freshly published content.
 
 Target IPFS/Filecoin/S3 storage operations:
 
 - Use `wallet_interface/deploy/storage-retention.example.json` as the provider
   mapping template. Store the completed copy in the target evidence system, not
   in git.
-- The checked-in production env example now uses a local primary replica plus a
-  pinned IPFS mirror. That is the deployable baseline for decentralized
-  storage in this repository.
 - Keep live `WALLET_STORAGE_CONFIG` pointed at providers that the API runtime
   can instantiate. Filecoin mirrors require the deployment to inject a
   Filecoin-capable backend into `WalletInterfaceService`; leave Filecoin marked
@@ -813,9 +433,8 @@ organization-review packet.
 For repository CI without target `WALLET_*` readiness variables,
 `--validate-production-readiness` runs a local synthetic verifier self-check.
 In staging and production, set the target env vars above so the same command
-validates the real repository, storage, storage retention policy references,
-secret-manager references, alert route, storage repair report safety, and
-verifier service.
+validates the real repository, storage, secret-manager references, alert route,
+and verifier service.
 
 The Cloudflare Worker assets are reference glue only. They do not replace the
 Python API or local `wallet_interface.ops` worker; they front or trigger those

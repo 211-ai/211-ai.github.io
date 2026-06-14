@@ -10,6 +10,14 @@
     "uploadUrl": "${ABBY_RUNTIME_FILECOIN_UPLOAD_URL}",
     "clientToken": "${ABBY_RUNTIME_FILECOIN_CLIENT_TOKEN}"
   },
+  "walrusStorage": {
+    "publisherUrl": "${ABBY_RUNTIME_WALRUS_PUBLISHER_URL}",
+    "aggregatorUrl": "${ABBY_RUNTIME_WALRUS_AGGREGATOR_URL}",
+    "deleteUrl": "${ABBY_RUNTIME_WALRUS_DELETE_URL}",
+    "clientToken": "${ABBY_RUNTIME_WALRUS_CLIENT_TOKEN}",
+    "epochs": "${ABBY_RUNTIME_WALRUS_EPOCHS}",
+    "deletable": "${ABBY_RUNTIME_WALRUS_DELETABLE}"
+  },
   "voiceProxy": {
     "enabled": "${ABBY_RUNTIME_VOICE_PROXY_ENABLED}",
     "model": "${ABBY_RUNTIME_VOICE_PROXY_MODEL}",
@@ -24,5 +32,10 @@
   },
   "agent": {
     "graphRagPrerenderMatchThreshold": "${ABBY_RUNTIME_GRAPH_RAG_PRERENDER_MATCH_THRESHOLD}"
+  "worldId": {
+    "enabled": "${ABBY_RUNTIME_WORLD_ID_ENABLED}",
+    "appId": "${ABBY_RUNTIME_WORLD_ID_APP_ID}",
+    "action": "${ABBY_RUNTIME_WORLD_ID_ACTION}",
+    "environment": "${ABBY_RUNTIME_WORLD_ID_ENVIRONMENT}"
   }
 }

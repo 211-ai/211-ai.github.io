@@ -54,10 +54,6 @@ Optional production settings:
 - `WALLET_STORAGE_ROOT`, `WALLET_STORAGE_BUCKET`, `WALLET_STORAGE_PREFIX`,
   `WALLET_STORAGE_PIN`, and `WALLET_STORAGE_MIRRORS` can build
   `WALLET_STORAGE_CONFIG` from individual environment variables.
-- `WALLET_SERVICES_JSONL` points the ASGI API at a JSONL service directory.
-  Each row should match the public service record fields used by
-  `/wallets/{wallet_id}/services/match`: `id`, `name`, `description`,
-  `categories`, `city`, `state`, `zip`, `phone`, `website`, and `source_url`.
 - `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`, and
   `WALLET_PROOF_VERIFY_PATH` override the HTTP proof backend endpoints.
 - `WALLET_PROOF_BEARER_TOKEN` or
@@ -99,186 +95,6 @@ validate retention, organization review, and staging evidence before launch.
 
 The wallet UCAN invocation profile and UCAN-compatible inspection envelope are
 documented in `docs/WALLET_UCAN_PROFILE.md`.
-
-## Verifier Cutover Packet
-
-Operators must complete a WALLET-180 non-simulated verifier cutover packet
-before exposing any user-facing proof creation path backed by the selected HTTP
-verifier. The packet is the launch evidence for replacing simulated development
-proofs with a target verifier. It belongs in the approved evidence system next
-to the target signoff packet and should contain references only, never secret
-or witness values.
-
-Cutover sequence:
-
-1. Confirm the target deployment is using `WALLET_PROOF_MODE=production`,
-   `WALLET_ALLOW_SIMULATED_PROOFS=false`, and
-   `WALLET_PROOF_BACKEND=http-location-region`.
-2. Confirm the verifier credential is injected at runtime from
-   `WALLET_PROOF_CREDENTIAL_SECRET_REF` or the provider equivalent. Do not
-   archive process env dumps, bearer tokens, custom header values, Kubernetes
-   Secret payloads, or ExternalSecret resolved values.
-3. Run and archive the target-staging outputs for
-   `python -m wallet_interface.ops --validate-proof-contract --fail-on-error`,
-   `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error`,
-   and `python -m wallet_interface.ops --validate-production-readiness`.
-4. For both `location_region` and `location_distance`, verify the archived JSON
-   shows `health`, `prove`, `public_input_safety`, and `verify` checks with
-   `status=ok`, an expected `verifier_id` and `proof_system`,
-   `is_simulated=false`, and no witness or credential values.
-5. Run a failure-mode drill in target staging. Use an invalid credential,
-   unhealthy verifier, rejected prove response, out-of-policy distance response,
-   or `verify=false` response and archive that validation fails closed with no
-   stored proof receipt and no witness or secret values in output or logs.
-6. Run a rollback drill. Archive the previous deployment reference, credential
-   rollback or revocation step, API/UI/ops worker rollback command, named
-   operator, expected rollback time, and post-rollback proof behavior. Keep
-   production proof mode enabled so simulated receipts remain rejected.
-7. Record the cutover packet artifact ID in
-   `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` and in the completed target
-   signoff JSON packet evidence repository record.
-
-The archived packet must contain one index row for each required artifact:
-
-| Artifact | Proof Family | Operator Check |
-| --- | --- | --- |
-| Contract health/prove/verify report | `location_region` | `status=ok`, `checks.health.status=ok`, `checks.prove.status=ok`, `checks.public_input_safety.status=ok`, `checks.verify.status=ok`, `receipt.is_simulated=false`, and selected verifier metadata matches the deployment. |
-| Contract health/prove/verify report | `location_distance` | Same checks as region, from `--validate-distance-proof-contract`, with `receipt.proof_type=location_distance` and distance circuit metadata. |
-| Credential-reference review | both | Evidence records only `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent, owner, rotation path, and access-policy reference. |
-| No-leak review | both | Contract output, readiness output, API logs, verifier logs, tickets, and screenshots contain no bearer token, custom header value, key material, witness value, precise coordinate, address, nonce, rendered env dump, or resolved secret payload. |
-| Failure-mode drill | both | Target staging fails closed for invalid credential, unhealthy verifier, rejected prove, out-of-policy distance, or `verify=false`; no proof receipt is stored and archived output stays redacted. |
-| Rollback drill | both | Previous deployment reference, rollback command, named operator, expected rollback time, and post-rollback proof behavior are archived; simulated receipts remain rejected. |
-
-`location_distance` remains hidden from live Proof Center creation and display
-until its distance contract report, failure-mode evidence, rollback evidence,
-and security/privacy/ops/product approvals are archived. A `mode=local_self_check`
-report is acceptable for repository automation only and must not be used as
-target launch evidence.
-
-## Analytics Governance Release Workflow
-
-Production analytics is template-bound. Operators and integrators must not run
-ad hoc SQL, notebook filters, GraphRAG prompts, export jobs, or other arbitrary
-raw queries over wallet records, contribution payloads, precise locations,
-plaintext documents, or direct identifiers. The production API surface releases
-aggregates only through approved template IDs via `/analytics/{template_id}/count`
-and `/analytics/{template_id}/count-by-fields`.
-
-The target signoff packet must record the release-workflow evidence that proves
-that boundary: `analytics_privacy_review.production_query_policy`,
-`analytics_privacy_review.approved_aggregate_routes`,
-`analytics_privacy_review.approved_template_registry_evidence`, and
-`analytics_privacy_review.raw_query_block_evidence`. Use those fields to link
-the deployed template registry review, API route allow-list, and raw-query
-surface review before production analytics is enabled.
-
-Before setting an analytics template to `approved` or allowing it to remain live
-in a target environment:
-
-1. Register or reconcile the template definition with the wallet service. The
-   template must name its purpose, allowed record types, allowed derived fields,
-   allowed aggregation dimensions, minimum cohort size, and epsilon budget.
-2. Archive user-facing consent copy that describes the template purpose, data
-   categories, derived fields, aggregation behavior, retention summary,
-   withdrawal behavior, and support path.
-3. Record public proof statements for `analytics_contribution`, including the
-   approved public inputs and verifier or proof mode. Public inputs must not
-   contain raw payloads, precise coordinates, plaintext document fields, or
-   direct identifiers.
-4. Record the nullifier policy: scope, duplicate-rejection rule, retention
-   period, withdrawal handling, and assurance that nullifiers are not exported
-   as wallet identifiers.
-5. Record the k-threshold and privacy budget: `min_cohort_size`, `k_threshold`,
-   epsilon budget, per-query epsilon, sensitivity, budget key, budget limit,
-   budget-exhaustion behavior, and reviewer rationale.
-6. Map template definition, consent copy, consents and withdrawals,
-   contributions, nullifiers, query-budget ledger, released aggregates, and
-   audit events to `docs/WALLET_RETENTION_POLICY.md` in the target signoff
-   packet.
-7. Record reviewer names or accountable reviewer roles, decision date, evidence
-   ID, withdrawal behavior, and any tracked exceptions in
-   `analytics_privacy_review.approved_templates[]`.
-
-Run the release gate after any template addition, field expansion, proof
-statement change, consent copy change, lower k-threshold, higher epsilon,
-retention change, reviewer exception, or transition from `paused`/`retired` back
-to `approved`:
-
-```bash
-python -m wallet_interface.ops \
-  --validate-target-signoff-packet /path/to/target-signoff.json \
-  --fail-on-error
-python scripts/run_wallet_release_checks.py --dry-run
-```
-
-If no production analytics templates are live, set
-`analytics_privacy_review.no_live_analytics_templates=true` in the completed
-packet and keep `/analytics/templates` free of approved production templates for
-that environment.
-
-## 211 Service Partner Pilot Readiness
-
-WALLET-210 pilot readiness is a staging demonstration, not a production launch
-approval. Use synthetic users, synthetic partner accounts, and the same
-production-mode storage/proof/analytics controls that passed WALLET-170 through
-WALLET-200 evidence gates.
-
-Minimum pilot roles:
-
-- Wallet owner: adds documents and precise location from the 211-AI UI or API.
-- Service partner: receives purpose-bound record and location capabilities.
-- Eligibility verifier: receives proof-only location eligibility access.
-- Analytics reviewer: owns the approved aggregate template and review packet.
-- Operator: captures audit, revocation, storage, proof, and analytics evidence.
-
-Required pilot flow:
-
-1. Create or load a staging wallet through `POST /wallets`, then add an
-   encrypted document with `POST /wallets/{wallet_id}/documents` or
-   `/documents/text` and add precise location with
-   `POST /wallets/{wallet_id}/locations`. UI upload flows must call these API
-   routes; do not seed plaintext directly into repository files.
-2. Share only the partner's needed purpose-bound capability. For document
-   screening use `POST /wallets/{wallet_id}/records/{record_id}/grants` with a
-   concrete `purpose`, explicit `abilities`, explicit `output_types`, and
-   `user_presence_required=true` when partner action happens in the browser.
-   For service matching use a coarse-location grant plus
-   `/coarse-invocations`; partner calls to `/services/match` must not receive
-   the precise latitude/longitude.
-3. Prove location eligibility with
-   `/locations/{location_record_id}/region-proof-grants` and
-   `/region-proofs`. Archive public inputs, proof hash, verifier metadata, and
-   audit IDs only. Public inputs must not include `lat`, `lon`, target
-   coordinates, witness values, secrets, or plaintext document fields.
-4. Contribute to aggregate analytics only through an approved template created
-   at `/analytics/templates`, consented through
-   `/wallets/{wallet_id}/analytics/consents/from-template`, and submitted to
-   `/wallets/{wallet_id}/analytics/contributions` with derived/coarse fields.
-   Run `/analytics/{template_id}/count` or `/count-by-fields` only when the
-   approved k-threshold and privacy budget allow release.
-5. Revoke partner access with
-   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove stale
-   invocation tokens, coarse-location calls, proof creation, decrypt, analyze,
-   export, and service matching are rejected.
-6. Review `GET /wallets/{wallet_id}/audit` from the 211-AI UI/API and confirm
-   the timeline includes `record/add`, `grant/create`, `invocation/issue`,
-   `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`,
-   `proof/create`, `analytics/consent_create`, `analytics/contribute`,
-   `analytics/query`, and `grant/revoke` as applicable.
-
-Pilot evidence can contain wallet IDs, record IDs, grant IDs, invocation IDs,
-proof IDs, proof hashes, public proof inputs, template IDs, consent IDs,
-nullifier IDs, aggregate result IDs, bundle hashes, storage ciphertext hashes,
-and audit event IDs. It must not contain document plaintext, precise
-coordinates, proof witnesses, user contact details, private keys, bearer
-tokens, storage credentials, or secret-manager resolved values.
-
-The browser readiness harness is
-`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
-API backed by local durable repository/blob storage, drives the upload,
-recipient-access, proof-center, analytics API, revocation, service matching,
-and audit surfaces, and asserts that precise coordinates and document contact
-details are not disclosed in partner/proof/aggregate outputs.
 
 ## API Reference
 
@@ -393,12 +209,6 @@ safe output.
 | `GET` | `/wallets/{wallet_id}/proofs` | List proof receipts for proof-center views. |
 | `POST` | `/wallets/{wallet_id}/services/match` | Match services using wallet coarse/proven data. |
 | `POST` | `/services/match-derived` | Match services from caller-provided derived/coarse facts. |
-
-For deployed ASGI instances, set `WALLET_SERVICES_JSONL` to load the service
-directory used by the matching endpoints. The matching API accepts wallet
-location records only through owner access, scoped coarse-location grants, or
-signed coarse-location invocation tokens; it rejects precise caller-provided
-coordinates on `/services/match-derived`.
 
 ### Exports
 
@@ -586,11 +396,6 @@ checks, UCAN delegate decrypt/export grants, signed invocations, encrypted
 export hash/schema verification/import/storage checks, grant revocation,
 analytics, ops health, repository reload after restart, and matching wallet CLI
 subprocess flows for sharing, export, analytics, import merge, and revocation.
-`tests/test_wallet_third_party_blackbox.py` is the focused third-party sharing
-harness. It runs only through public API endpoints, seeds service matching via
-`WALLET_SERVICES_JSONL`, and exercises scoped UCAN grants for document-derived
-analysis, coarse-location matching, proof-only location claims, encrypted
-export bundles, and revocation blocking.
 `ipfs_datasets_py/tests/mcp/test_wallet_tools.py` covers the same
 share/export/import/revoke path and redacted analysis/form/extraction/vector/
 GraphRAG path plus analytics template/consent/contribution/private-count
@@ -622,8 +427,6 @@ If no target `WALLET_*` readiness variables are configured,
 `python -m wallet_interface.ops --validate-production-readiness` runs a local
 synthetic verifier self-check so CI can exercise the release-gate code path.
 Any configured target readiness variables switch the command back to strict
-target validation. The strict target report must include
-`storage_retention_controls=ok` and `storage_repair_safety=ok` before storage
-signoff. Running `--validate-target-signoff-packet` without a path validates the
-committed packet template shape; a human launch decision requires the completed
-packet path form shown above.
+target validation. Running `--validate-target-signoff-packet` without a path
+validates the committed packet template shape; a human launch decision requires
+the completed packet path form shown above.

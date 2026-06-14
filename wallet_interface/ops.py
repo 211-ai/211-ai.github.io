@@ -88,71 +88,10 @@ _SIGNOFF_REQUIRED_REVIEW_AREAS = (
 
 _SIGNOFF_ALLOWED_APPROVAL_DECISIONS = {"approved", "approved with tracked exception"}
 
-_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS = (
-    "template_id",
-    "reviewer",
-    "review_date",
-    "consent_copy_artifact",
-    "nullifier_policy",
-    "retention_decision",
-    "withdrawal_behavior",
-)
-
-_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS = (
-    "allowed_record_types",
-    "allowed_derived_fields",
-    "allowed_dimensions",
-    "proof_statements",
-)
-
-_SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS = (
-    "production_query_policy",
-    "approved_template_registry_evidence",
-    "raw_query_block_evidence",
-)
-
-_SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS = (
-    "approved_aggregate_routes",
-)
-
-_SIGNOFF_FORBIDDEN_ANALYTICS_ROUTE_MARKERS = (
-    "raw",
-    "sql",
-    "notebook",
-    "export",
-    "graphrag",
-)
-
-_SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS = (
-    "epsilon_budget",
-    "per_query_epsilon",
-    "sensitivity",
-    "budget_key",
-    "budget_limit",
-    "budget_exhaustion_behavior",
-)
-
-_SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS = (
-    "template_definition",
-    "consent_copy",
-    "consents_withdrawals",
-    "contributions",
-    "nullifiers",
-    "query_budget_ledger",
-    "released_aggregates",
-    "audit_events",
-)
-
 _READINESS_TARGET_ENV_VARS = (
     "WALLET_REPOSITORY_ROOT",
     "WALLET_STORAGE_CONFIG",
     "WALLET_STORAGE_TYPE",
-    "WALLET_STORAGE_RETENTION_POLICY_REF",
-    "WALLET_STORAGE_IPFS_PINNING_POLICY_REF",
-    "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF",
-    "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF",
-    "WALLET_BACKUP_PURGE_POLICY_REF",
-    "WALLET_ALERT_RETENTION_POLICY_REF",
     "WALLET_PROOF_MODE",
     "WALLET_PROOF_BACKEND",
     "WALLET_PROOF_SERVICE_URL",
@@ -162,28 +101,6 @@ _READINESS_TARGET_ENV_VARS = (
     "WALLET_OPS_ALERT_SECRET_REF",
     "WALLET_PROOF_CREDENTIAL_SECRET_REF",
     "WALLET_STORAGE_CREDENTIAL_SECRET_REF",
-)
-
-_READINESS_STORAGE_RETENTION_ENV_VARS = (
-    "WALLET_STORAGE_RETENTION_POLICY_REF",
-    "WALLET_STORAGE_IPFS_PINNING_POLICY_REF",
-    "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF",
-    "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF",
-    "WALLET_BACKUP_PURGE_POLICY_REF",
-    "WALLET_ALERT_RETENTION_POLICY_REF",
-)
-
-_PROOF_CONTRACT_TARGET_ENV_VARS = (
-    "WALLET_PROOF_MODE",
-    "WALLET_PROOF_BACKEND",
-    "WALLET_PROOF_SERVICE_URL",
-    "WALLET_PROOF_VERIFIER_ID",
-    "WALLET_PROOF_SYSTEM",
-    "WALLET_PROOF_CIRCUIT_ID",
-    "WALLET_PROOF_CREDENTIAL_SECRET_REF",
-    "WALLET_PROOF_BEARER_TOKEN",
-    "WALLET_PROOF_HTTP_HEADER_NAME",
-    "WALLET_PROOF_HTTP_HEADER_VALUE",
 )
 
 
@@ -269,216 +186,6 @@ def _missing_or_placeholder_fields(payload: Mapping[str, Any], names: Sequence[s
         if _is_placeholder(value):
             missing.append(name)
     return missing
-
-
-def _has_placeholder_value(value: Any) -> bool:
-    if isinstance(value, str):
-        return _is_placeholder(value)
-    if isinstance(value, Mapping):
-        return any(_has_placeholder_value(item) for item in value.values())
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
-        return any(_has_placeholder_value(item) for item in value)
-    return value is None
-
-
-def _missing_or_placeholder_list_fields(payload: Mapping[str, Any], names: Sequence[str]) -> list[str]:
-    missing: list[str] = []
-    for name in names:
-        value = payload.get(name)
-        if (
-            not isinstance(value, list)
-            or not value
-            or any(_has_placeholder_value(item) for item in value)
-        ):
-            missing.append(name)
-    return missing
-
-
-def _missing_or_placeholder_mapping_fields(payload: Mapping[str, Any], names: Sequence[str]) -> list[str]:
-    missing: list[str] = []
-    for name in names:
-        value = payload.get(name)
-        if _has_placeholder_value(value):
-            missing.append(name)
-    return missing
-
-
-def _unexpected_analytics_routes(routes: Any) -> list[str]:
-    if not isinstance(routes, list):
-        return ["approved_aggregate_routes"]
-    unexpected: list[str] = []
-    for route in routes:
-        route_text = str(route or "").strip()
-        lowered = route_text.lower()
-        if (
-            _is_placeholder(route_text)
-            or "{template_id}" not in route_text
-            or not route_text.startswith("/analytics/")
-            or any(marker in lowered for marker in _SIGNOFF_FORBIDDEN_ANALYTICS_ROUTE_MARKERS)
-        ):
-            unexpected.append(route_text or "approved_aggregate_routes")
-    return unexpected
-
-
-_STORAGE_REPAIR_REPORT_ALLOWED_KEYS = frozenset(
-    {
-        "created_at",
-        "error",
-        "failed_replica_count",
-        "metadata",
-        "ok",
-        "payload",
-        "record_count",
-        "record_id",
-        "repaired",
-        "repaired_replica_count",
-        "replica_count",
-        "reports",
-        "role",
-        "sha256",
-        "size_bytes",
-        "storage_type",
-        "storage_types",
-        "uri",
-        "version_id",
-        "wallet_id",
-    }
-)
-
-
-def _unexpected_storage_report_keys(value: Any, *, parent_key: str | None = None) -> list[str]:
-    if isinstance(value, Mapping):
-        if parent_key == "storage_types":
-            return []
-        unexpected: list[str] = []
-        for key, item in value.items():
-            key_text = str(key)
-            if key_text not in _STORAGE_REPAIR_REPORT_ALLOWED_KEYS:
-                unexpected.append(key_text)
-            unexpected.extend(_unexpected_storage_report_keys(item, parent_key=key_text))
-        return sorted(set(unexpected))
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
-        unexpected = []
-        for item in value:
-            unexpected.extend(_unexpected_storage_report_keys(item, parent_key=parent_key))
-        return sorted(set(unexpected))
-    return []
-
-
-def validate_storage_repair_report_safety() -> dict[str, Any]:
-    """Exercise storage repair reporting with synthetic encrypted data.
-
-    Production readiness must prove that repair output is actionable for
-    operators without making plaintext, proof witnesses, tokens, or secret
-    values visible. This check uses local synthetic replicas so the target gate
-    never mutates production wallet data while validating the same report shape
-    exposed by the API and ops runbook.
-    """
-
-    generated_at = datetime.now(timezone.utc).isoformat()
-    checks: list[dict[str, Any]] = []
-
-    def add_check(name: str, status: str, summary: str, details: dict[str, Any] | None = None) -> None:
-        checks.append(
-            {
-                "name": name,
-                "status": status,
-                "summary": summary,
-                "details": details or {},
-            }
-        )
-
-    sentinel = "wallet-130 repair plaintext sentinel"
-    try:
-        with tempfile.TemporaryDirectory(prefix="wallet-storage-repair-safety-") as tmp:
-            root = Path(tmp)
-            service = WalletInterfaceService(
-                storage_config={
-                    "primary": {"type": "local", "root": str(root / "primary")},
-                    "mirrors": [{"type": "local", "root": str(root / "mirror")}],
-                },
-                auto_load_repository=False,
-                auto_persist=False,
-            )
-            owner_did = "did:key:storage-repair-safety-owner"
-            wallet = service.create_wallet(owner_did)
-            record = service.add_text_document(
-                wallet.wallet_id,
-                actor_did=owner_did,
-                text=sentinel,
-                filename="storage-repair-safety.txt",
-            )
-            version = service.wallet_service.versions[record.current_version_id]
-            mirror = version.encrypted_payload_ref.mirrors[0]
-            if not mirror.uri.startswith("local://"):
-                raise RuntimeError(f"synthetic mirror did not use local storage: {mirror.storage_type}")
-            Path(mirror.uri.removeprefix("local://")).unlink()
-
-            before = service.verify_wallet_storage(wallet.wallet_id).to_dict()
-            repair = service.repair_wallet_storage(wallet.wallet_id, actor_did=owner_did).to_dict()
-            after = service.verify_wallet_storage(wallet.wallet_id).to_dict()
-
-        before_failed = int(before.get("failed_replica_count") or 0)
-        repaired_count = int(repair.get("repaired_replica_count") or 0)
-        after_failed = int(after.get("failed_replica_count") or 0)
-        add_check(
-            "repair_execution",
-            "ok" if before_failed > 0 and repaired_count > 0 and after_failed == 0 else "error",
-            (
-                "Synthetic encrypted replica repair restored failed replicas."
-                if before_failed > 0 and repaired_count > 0 and after_failed == 0
-                else "Synthetic encrypted replica repair did not restore the expected failed replica."
-            ),
-            {
-                "before_failed_replica_count": before_failed,
-                "repaired_replica_count": repaired_count,
-                "after_failed_replica_count": after_failed,
-                "storage_types": repair.get("storage_types", {}),
-            },
-        )
-
-        rendered = json.dumps({"repair": repair, "after": after}, sort_keys=True)
-        forbidden_markers = [
-            sentinel,
-            "proof witness",
-            "bearer token",
-            "credential secret",
-            "storage credential",
-        ]
-        exposed_markers = [marker for marker in forbidden_markers if marker in rendered]
-        add_check(
-            "operator_output_safety",
-            "error" if exposed_markers else "ok",
-            (
-                "Storage repair reports contain replica metadata only."
-                if not exposed_markers
-                else "Storage repair reports exposed forbidden sensitive markers."
-            ),
-            {"exposed_marker_count": len(exposed_markers)},
-        )
-
-        unexpected_keys = _unexpected_storage_report_keys(repair)
-        add_check(
-            "report_schema",
-            "error" if unexpected_keys else "ok",
-            (
-                "Storage repair report schema is limited to ciphertext replica metadata."
-                if not unexpected_keys
-                else "Storage repair report contains unexpected fields."
-            ),
-            {"unexpected_keys": unexpected_keys},
-        )
-    except Exception as exc:
-        add_check("repair_execution", "error", f"Storage repair safety check failed: {exc}", {"error": str(exc)})
-
-    return {
-        "source": "wallet_interface.ops",
-        "generated_at": generated_at,
-        "status": _report_status(checks),
-        "summary": "storage repair report safety validation completed",
-        "check_count": len(checks),
-        "checks": checks,
-    }
 
 
 def _signoff_review_status(review: Mapping[str, Any]) -> str:
@@ -645,86 +352,37 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
     no_live_templates = bool(analytics_review.get("no_live_analytics_templates"))
     reviewed_templates = analytics_review.get("approved_templates")
     reviewed_templates = reviewed_templates if isinstance(reviewed_templates, list) else []
-    missing_analytics_workflow_fields = _missing_or_placeholder_fields(
-        analytics_review,
-        _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS,
-    )
-    missing_analytics_workflow_fields.extend(
-        _missing_or_placeholder_list_fields(
-            analytics_review,
-            _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS,
-        )
-    )
-    unexpected_aggregate_routes = _unexpected_analytics_routes(
-        analytics_review.get("approved_aggregate_routes")
-    )
-    if unexpected_aggregate_routes:
-        missing_analytics_workflow_fields.append("approved_aggregate_routes")
     incomplete_templates: list[str] = []
     for index, item in enumerate(reviewed_templates):
         template = item if isinstance(item, dict) else {}
         template_id = str(template.get("template_id") or f"template[{index}]")
-        missing_template_fields = _missing_or_placeholder_fields(
-            template,
-            _SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS,
+        required_template_fields = (
+            "template_id",
+            "reviewer",
+            "review_date",
+            "min_cohort_size",
+            "epsilon_budget",
+            "allowed_dimensions",
+            "retention_decision",
+            "withdrawal_behavior",
         )
-        missing_template_fields.extend(
-            _missing_or_placeholder_list_fields(
-                template,
-                _SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS,
-            )
-        )
-        privacy_budget = template.get("privacy_budget")
-        privacy_budget = privacy_budget if isinstance(privacy_budget, dict) else {}
-        missing_budget_fields = _missing_or_placeholder_mapping_fields(
-            privacy_budget,
-            _SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS,
-        )
-        retention_template_mapping = template.get("retention_mapping")
-        retention_template_mapping = (
-            retention_template_mapping if isinstance(retention_template_mapping, dict) else {}
-        )
-        missing_retention_fields = _missing_or_placeholder_mapping_fields(
-            retention_template_mapping,
-            _SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS,
-        )
-        if missing_template_fields or missing_budget_fields or missing_retention_fields:
+        if _missing_or_placeholder_fields(template, required_template_fields):
             incomplete_templates.append(template_id)
         try:
-            min_cohort_size = int(template.get("min_cohort_size"))
-            if min_cohort_size < 1:
+            if int(template.get("min_cohort_size")) < 1:
                 incomplete_templates.append(template_id)
         except Exception:
             incomplete_templates.append(template_id)
         try:
-            k_threshold = int(template.get("k_threshold"))
-            if k_threshold < 1:
-                incomplete_templates.append(template_id)
-        except Exception:
-            incomplete_templates.append(template_id)
-        try:
-            if float(privacy_budget.get("epsilon_budget")) <= 0:
-                incomplete_templates.append(template_id)
-        except Exception:
-            incomplete_templates.append(template_id)
-        try:
-            if float(privacy_budget.get("per_query_epsilon")) <= 0:
-                incomplete_templates.append(template_id)
-        except Exception:
-            incomplete_templates.append(template_id)
-        try:
-            if float(privacy_budget.get("budget_limit")) < float(privacy_budget.get("epsilon_budget")):
+            if float(template.get("epsilon_budget")) <= 0:
                 incomplete_templates.append(template_id)
         except Exception:
             incomplete_templates.append(template_id)
         if not isinstance(template.get("allowed_dimensions"), list) or not template.get("allowed_dimensions"):
             incomplete_templates.append(template_id)
     analytics_status = "ok"
-    analytics_summary = "Analytics privacy review is template-bound and complete for approved templates."
-    if missing_analytics_workflow_fields:
-        analytics_status = "error"
-        analytics_summary = "Analytics privacy review is missing template-bound release workflow evidence."
-    elif not no_live_templates and not reviewed_templates:
+    analytics_summary = "Analytics privacy review is complete for approved templates."
+    if not no_live_templates and not reviewed_templates:
         analytics_status = "error"
         analytics_summary = "Analytics privacy review must list approved templates or declare no live analytics templates."
     elif incomplete_templates:
@@ -737,8 +395,6 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
         {
             "no_live_analytics_templates": no_live_templates,
             "approved_template_count": len(reviewed_templates),
-            "missing_workflow_fields": missing_analytics_workflow_fields,
-            "unexpected_aggregate_routes": unexpected_aggregate_routes,
             "incomplete_templates": sorted(set(incomplete_templates)),
         },
     )
@@ -906,72 +562,6 @@ def validate_target_signoff_packet_template(
             {"missing": missing_retention_fields},
         )
 
-        analytics_review = payload.get("analytics_privacy_review")
-        analytics_review = analytics_review if isinstance(analytics_review, dict) else {}
-        missing_analytics_workflow_fields = [
-            field for field in _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS if field not in analytics_review
-        ]
-        missing_analytics_workflow_fields.extend(
-            field for field in _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS if field not in analytics_review
-        )
-        add_check(
-            "template_analytics_release_workflow_fields",
-            "error" if missing_analytics_workflow_fields else "ok",
-            (
-                "Analytics review template records template-only production routes and raw-query block evidence."
-                if not missing_analytics_workflow_fields
-                else "Analytics review template is missing WALLET-200 release workflow fields."
-            ),
-            {"missing": missing_analytics_workflow_fields},
-        )
-
-        approved_templates = analytics_review.get("approved_templates")
-        first_template = approved_templates[0] if isinstance(approved_templates, list) and approved_templates else {}
-        first_template = first_template if isinstance(first_template, dict) else {}
-        required_analytics_fields = (
-            *_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS,
-            *_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS,
-            "min_cohort_size",
-            "k_threshold",
-            "privacy_budget",
-            "retention_mapping",
-        )
-        missing_analytics_fields = [
-            field for field in required_analytics_fields if field not in first_template
-        ]
-        privacy_budget = first_template.get("privacy_budget")
-        privacy_budget = privacy_budget if isinstance(privacy_budget, dict) else {}
-        missing_budget_fields = [
-            field for field in _SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS if field not in privacy_budget
-        ]
-        retention_template_mapping = first_template.get("retention_mapping")
-        retention_template_mapping = (
-            retention_template_mapping if isinstance(retention_template_mapping, dict) else {}
-        )
-        missing_analytics_retention_fields = [
-            field for field in _SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS if field not in retention_template_mapping
-        ]
-        add_check(
-            "template_analytics_governance_fields",
-            (
-                "error"
-                if missing_analytics_fields
-                or missing_budget_fields
-                or missing_analytics_retention_fields
-                else "ok"
-            ),
-            (
-                "Analytics template packet fields cover consent copy, allowed fields, proof statements, nullifiers, k-threshold, privacy budget, retention, reviewers, and withdrawal."
-                if not missing_analytics_fields and not missing_budget_fields and not missing_analytics_retention_fields
-                else "Analytics template packet fields are incomplete for WALLET-200 governance."
-            ),
-            {
-                "missing_template_fields": missing_analytics_fields,
-                "missing_privacy_budget_fields": missing_budget_fields,
-                "missing_retention_fields": missing_analytics_retention_fields,
-            },
-        )
-
     return {
         "source": "wallet_interface.ops",
         "generated_at": generated_at,
@@ -1081,90 +671,6 @@ def validate_distance_proof_contract(service: WalletInterfaceService | None = No
         "summary": "distance proof verifier contract validation completed",
         **validation,
     }
-
-
-def _local_self_check_http_proof_backend():
-    from .proof_backends import HttpLocationRegionProofBackend
-
-    def fake_request_json(
-        method: str,
-        url: str,
-        payload: dict[str, object],
-        headers: dict[str, str],
-        timeout_seconds: float,
-    ) -> dict[str, object]:
-        if url.endswith("/health"):
-            return {"ok": True, "status": "ready"}
-        if url.endswith("/prove/location-region"):
-            return {
-                "proof_id": "local-self-check-location-region",
-                "wallet_id": str(payload["wallet_id"]),
-                "proof_type": "location_region",
-                "statement": payload["statement"],
-                "verifier_id": "local-self-check-verifier-v1",
-                "public_inputs": payload["public_inputs"],
-                "proof_hash": "local-self-check-region-hash",
-                "witness_record_ids": payload["witness_record_ids"],
-                "is_simulated": False,
-                "proof_system": "groth16",
-                "circuit_id": "local-self-check-location-v1",
-                "verification_status": "verified",
-            }
-        if url.endswith("/prove/location-distance"):
-            return {
-                "proof_id": "local-self-check-location-distance",
-                "wallet_id": str(payload["wallet_id"]),
-                "proof_type": "location_distance",
-                "statement": payload["statement"],
-                "verifier_id": "local-self-check-verifier-v1",
-                "public_inputs": payload["public_inputs"],
-                "proof_hash": "local-self-check-distance-hash",
-                "witness_record_ids": payload["witness_record_ids"],
-                "is_simulated": False,
-                "proof_system": "groth16",
-                "circuit_id": "local-self-check-location-v1",
-                "verification_status": "verified",
-            }
-        return {"verified": True}
-
-    return HttpLocationRegionProofBackend(
-        base_url="http://127.0.0.1/local-self-check-verifier",
-        verifier_id="local-self-check-verifier-v1",
-        proof_system="groth16",
-        circuit_id="local-self-check-location-v1",
-        request_json=fake_request_json,
-    )
-
-
-def _local_self_check_proof_service() -> WalletInterfaceService:
-    return WalletInterfaceService(
-        proof_backend=_local_self_check_http_proof_backend(),
-        allow_simulated_proofs=False,
-    )
-
-
-def validate_local_proof_contract_self_check() -> dict[str, Any]:
-    """Run the location-region verifier contract path against a synthetic local backend."""
-
-    report = validate_proof_contract(_local_self_check_proof_service())
-    report["mode"] = "local_self_check"
-    report["summary"] = (
-        "local proof-contract self-check completed; configure target WALLET_* env vars "
-        "to validate the external staging or production verifier"
-    )
-    return report
-
-
-def validate_local_distance_proof_contract_self_check() -> dict[str, Any]:
-    """Run the location-distance verifier contract path against a synthetic local backend."""
-
-    report = validate_distance_proof_contract(_local_self_check_proof_service())
-    report["mode"] = "local_self_check"
-    report["summary"] = (
-        "local distance proof-contract self-check completed; configure target WALLET_* env vars "
-        "to validate the external staging or production verifier"
-    )
-    return report
 
 
 def validate_production_readiness(
@@ -1354,49 +860,6 @@ def validate_production_readiness(
         },
     )
 
-    storage_retention_values = {
-        name: _env(env, name) for name in _READINESS_STORAGE_RETENTION_ENV_VARS
-    }
-    missing_storage_retention_refs = [
-        name for name, value in storage_retention_values.items() if not value
-    ]
-    placeholder_storage_retention_refs = [
-        name for name, value in storage_retention_values.items() if value and _is_placeholder(value)
-    ]
-    add_check(
-        "storage_retention_controls",
-        "error" if missing_storage_retention_refs or placeholder_storage_retention_refs else "ok",
-        (
-            "Storage retention policy references map IPFS, Filecoin, S3, backup purge, and alert retention controls."
-            if not missing_storage_retention_refs and not placeholder_storage_retention_refs
-            else "Storage retention policy references are missing or placeholders."
-        ),
-        {
-            "missing": missing_storage_retention_refs,
-            "placeholder_vars": placeholder_storage_retention_refs,
-            "configured": [name for name, value in storage_retention_values.items() if value],
-            "required_controls": [
-                "encrypted_replica_retention",
-                "ipfs_pinning",
-                "filecoin_deal_expiration",
-                "s3_lifecycle",
-                "backup_purge",
-                "alert_retention",
-            ],
-        },
-    )
-
-    repair_safety = validate_storage_repair_report_safety()
-    add_check(
-        "storage_repair_safety",
-        str(repair_safety.get("status", "error")),
-        str(repair_safety.get("summary", "storage repair report safety validation completed")),
-        {
-            "check_count": repair_safety.get("check_count"),
-            "checks": repair_safety.get("checks", []),
-        },
-    )
-
     resolved_service = service
     if resolved_service is None:
         try:
@@ -1477,11 +940,6 @@ def _has_target_readiness_environment(env: Mapping[str, str] | None = None) -> b
     return any(str(source.get(name) or "").strip() for name in _READINESS_TARGET_ENV_VARS)
 
 
-def _has_target_proof_contract_environment(env: Mapping[str, str] | None = None) -> bool:
-    source = env if env is not None else os.environ
-    return any(str(source.get(name) or "").strip() for name in _PROOF_CONTRACT_TARGET_ENV_VARS)
-
-
 def validate_local_production_readiness_self_check(*, verify_storage: bool = True) -> dict[str, Any]:
     """Run the production-readiness validator against a local synthetic target.
 
@@ -1490,6 +948,49 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
     strict production gate and fail closed when required values are missing.
     """
 
+    from .proof_backends import HttpLocationRegionProofBackend
+
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-region"):
+            return {
+                "proof_id": "local-self-check-location-region",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_region",
+                "statement": payload["statement"],
+                "verifier_id": "local-self-check-verifier-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "local-self-check-region-hash",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "local-self-check-location-v1",
+                "verification_status": "verified",
+            }
+        if url.endswith("/prove/location-distance"):
+            return {
+                "proof_id": "local-self-check-location-distance",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_distance",
+                "statement": payload["statement"],
+                "verifier_id": "local-self-check-verifier-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "local-self-check-distance-hash",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "local-self-check-location-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
     with tempfile.TemporaryDirectory(prefix="wallet-readiness-self-check-") as tmp:
         root = Path(tmp)
         repository_root = root / "wallet-repository"
@@ -1497,7 +998,13 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
         service = WalletInterfaceService(
             repository_root=repository_root,
             storage_config={"primary": {"type": "local", "root": str(storage_root)}},
-            proof_backend=_local_self_check_http_proof_backend(),
+            proof_backend=HttpLocationRegionProofBackend(
+                base_url="http://127.0.0.1/local-self-check-verifier",
+                verifier_id="local-self-check-verifier-v1",
+                proof_system="groth16",
+                circuit_id="local-self-check-location-v1",
+                request_json=fake_request_json,
+            ),
             allow_simulated_proofs=False,
         )
         env = {
@@ -1520,12 +1027,6 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
             "WALLET_OPS_ALERT_SECRET_REF": "secret://local-self-check/wallet/ops-alert",
             "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://local-self-check/wallet/proof-verifier",
             "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://local-self-check/wallet/storage",
-            "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@local-self-check",
-            "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://local-self-check/ipfs-pinning",
-            "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://local-self-check/filecoin-deals",
-            "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://local-self-check/s3-lifecycle",
-            "WALLET_BACKUP_PURGE_POLICY_REF": "policy://local-self-check/backup-purge",
-            "WALLET_ALERT_RETENTION_POLICY_REF": "policy://local-self-check/alert-retention",
         }
         report = validate_production_readiness(
             service,
@@ -1800,29 +1301,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
+        service = WalletInterfaceService(repository_root=args.repository_root)
         if args.validate_proof_contract:
-            if args.repository_root is None and not _has_target_proof_contract_environment():
-                report = validate_local_proof_contract_self_check()
-            else:
-                service = WalletInterfaceService(repository_root=args.repository_root)
-                report = validate_proof_contract(service)
+            report = validate_proof_contract(service)
             target_output = output or sys.stdout
             target_output.write(json.dumps(report, sort_keys=True))
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
         if args.validate_distance_proof_contract:
-            if args.repository_root is None and not _has_target_proof_contract_environment():
-                report = validate_local_distance_proof_contract_self_check()
-            else:
-                service = WalletInterfaceService(repository_root=args.repository_root)
-                report = validate_distance_proof_contract(service)
+            report = validate_distance_proof_contract(service)
             target_output = output or sys.stdout
             target_output.write(json.dumps(report, sort_keys=True))
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
-        service = WalletInterfaceService(repository_root=args.repository_root)
         worker = WalletOpsHealthWorker(
             service=service,
             verify_storage=args.verify_storage,

@@ -145,6 +145,153 @@ See:
 - `MIGRATION_GUIDE.md` - How to refactor IndexTTS scripts
 - `space_inference_example.py` - Working code examples
 - `tests/test_hf_space_inference.py` - Test suite showing usage patterns
+- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_PLAN.md` - Plan for
+  Chainlink CRE/ZKML-backed LLM router consensus
+- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md` - Daemon-consumable
+  implementation backlog for the consensus feature
+
+## LLM Router Consensus Mode
+
+`ipfs_accelerate_py.llm_router` supports a verified inference mode that requires
+independent operators to agree on the same answer before returning a result.
+This is built on `ipfs_accelerate_py.llm_consensus`.
+
+See the full runbook: `docs/CHAINLINK_ZKML_LLM_ROUTER_RUNBOOK.md`
+
+### Receipt-Only Local Consensus
+
+Suitable for development, smoke tests, and low-risk generation.
+
+```python
+from ipfs_accelerate_py.llm_router import generate_text_consensus
+
+receipt = generate_text_consensus(
+    "Summarize the food assistance options available.",
+    provider="hf_inference_api",
+    model_name="mistralai/Mistral-7B-Instruct-v0.2",
+    consensus={
+        "enabled": True,
+        "quorum": 1,
+        "comparison": "normalized_text",
+        "fail_closed": False,
+    },
+    proof_policy={"mode": "receipt_only"},
+    return_receipt=True,
+)
+print(receipt.text)
+print(receipt.quorum_result)  # "quorum_met"
+print(receipt.receipt_hash)   # sha256 content binding
+```
+
+> **Warning**: Non-deterministic generation parameters (`temperature`, `top_p`,
+> `top_k`) will cause systematic quorum failures under `exact` or
+> `canonical_json` comparison. Use `temperature=0` and `do_sample=False` for
+> deterministic multi-operator consensus, or use `normalized_text` comparison
+> for softer agreement.
+
+### libp2p Quorum (Multi-Operator)
+
+Suitable for production deployments with independent peer operators.
+
+```python
+from ipfs_accelerate_py.llm_router import generate_text_consensus
+from ipfs_accelerate_py.llm_consensus import LocalConsensusOperator
+
+operators = [
+    LocalConsensusOperator("peer-a", handler_a, provider="hf_inference_api"),
+    LocalConsensusOperator("peer-b", handler_b, provider="hf_inference_api"),
+    LocalConsensusOperator("peer-c", handler_c, provider="hf_inference_api"),
+]
+
+receipt = generate_text_consensus(
+    'Extract service category as JSON: {"category": "..."}',
+    consensus={
+        "enabled": True,
+        "quorum": 2,
+        "min_operators": 3,
+        "comparison": "canonical_json",
+        "fail_closed": True,  # required for production
+    },
+    proof_policy={"mode": "receipt_only"},
+    operators=operators,
+    return_receipt=True,
+)
+```
+
+> **Warning**: Always set `fail_closed: True` for production multi-operator
+> quorum. With `fail_closed=False` the router may return a result that did not
+> meet the quorum threshold, providing no consensus guarantee.
+
+### CRE-Verified Consensus
+
+Suitable when Chainlink Runtime Environment workflow verification is required.
+CRE confirms that the inference capability was executed across DON nodes.
+
+```python
+receipt = generate_text_consensus(
+    "Is the caller eligible? Output JSON: ...",
+    consensus={
+        "enabled": True,
+        "quorum": 3,
+        "min_operators": 5,
+        "comparison": "canonical_json",
+        "fail_closed": True,
+    },
+    proof_policy={
+        "mode": "receipt_only",
+        "cre_verified": True,
+        "cre_workflow_id": "wf-eligibility-v1",
+        "cre_registry": "mainnet-cre-registry.example.com",
+    },
+    return_receipt=True,
+)
+```
+
+> **Warning**: CRE consensus is not a ZKML proof. CRE verifies that the HTTP
+> inference capability ran on DON nodes per the workflow — it does not provide
+> a zero-knowledge proof of model execution. Do not label a CRE-only receipt as
+> ZKML-verified. Use `tee_or_zkml` or `zkml_required` proof policy when a
+> cryptographic execution proof is required.
+
+### Proof-Policy Configuration
+
+```python
+# Low-risk generation (receipt only)
+proof_policy = {"mode": "receipt_only"}
+
+# High-impact structured routing (receipt + signatures)
+proof_policy = {
+    "mode": "receipt_only",
+    "require_signatures": True,
+    "signing_key_id": "prod-key-v1",
+}
+
+# High-assurance attestation (TEE or ZKML)
+proof_policy = {
+    "mode": "tee_or_zkml",
+    "tee_measurement_allowlist": ["enclave-measurement-sha256:abcdef..."],
+}
+
+# Bounded classifier or checker circuit (ZKML required)
+proof_policy = {
+    "mode": "zkml_required",
+    "verifier_key_hash": "sha256:verifier-key-hash-here",
+    "circuit_id": "service-category-classifier-v1",
+    "circuit_version": "1.0.0",
+}
+```
+
+> **Warning — fail-closed for high-impact decisions**: Any workflow that affects
+> service eligibility, emergency routing, or institutional audit must use
+> `fail_closed: True`. A `LLMConsensusError` raised on quorum failure must be
+> caught and treated as a routing failure — not as a non-verified fallback.
+> Never silently degrade to unverified output on high-impact routes.
+
+> **Warning — zkml_required applies only to bounded models**: Do not apply
+> `zkml_required` to full large language model generation. A ZKML proof proves
+> only the circuit it covers. Use `zkml_required` only for pinned bounded
+> classifiers or checker circuits where a real verifier key and circuit
+> commitment exist.
 
 ## Next Steps
 

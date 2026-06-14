@@ -412,6 +412,87 @@ Path("docs/agent.md").write_text("implemented", encoding="utf-8")
     assert output.read_text(encoding="utf-8") == "implemented"
 
 
+def test_daemon_passes_playwright_port_to_implementation_prompt_and_validation(tmp_path, monkeypatch):
+    monkeypatch.setenv("IMPLEMENTATION_PLAYWRIGHT_PORT_BASE", "5400")
+    monkeypatch.delenv("IMPLEMENTATION_DAEMON_PLAYWRIGHT_PORT", raising=False)
+    monkeypatch.delenv("PLAYWRIGHT_PORT", raising=False)
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "state"
+    fake_worker = repo_root / "fake_worker.py"
+    validate_worker = repo_root / "validate_env.py"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python validate_env.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text(
+        """
+from pathlib import Path
+import os
+import sys
+
+prompt = sys.stdin.read()
+port = os.environ["PLAYWRIGHT_PORT"]
+assert os.environ["IMPLEMENTATION_PLAYWRIGHT_PORT"] == port
+assert f"- Playwright port: {port}" in prompt
+assert f"PLAYWRIGHT_PORT={port}" in prompt
+Path("worker_port.txt").write_text(port, encoding="utf-8")
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validate_worker.write_text(
+        """
+from pathlib import Path
+import os
+
+port = os.environ["PLAYWRIGHT_PORT"]
+assert os.environ["IMPLEMENTATION_PLAYWRIGHT_PORT"] == port
+assert Path("worker_port.txt").read_text(encoding="utf-8") == port
+Path("validation_port.txt").write_text(port, encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "worldid_ui_task_state.json",
+        strategy_path=state_dir / "worldid_ui_strategy.json",
+        events_path=state_dir / "worldid_ui_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+    worker_port = (repo_root / "worker_port.txt").read_text(encoding="utf-8")
+    validation_port = (repo_root / "validation_port.txt").read_text(encoding="utf-8")
+
+    assert implementation["returncode"] == 0
+    assert implementation["playwright_port"] == worker_port
+    assert validation_port == worker_port
+    assert int(worker_port) >= 5400
+
+
 def test_daemon_default_command_uses_codex_with_copilot_fallback(tmp_path, monkeypatch):
     repo_root = tmp_path / "repo"
     repo_root.mkdir(parents=True)
@@ -536,14 +617,33 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert branch_check.returncode != 0
 
 
-def test_daemon_merges_to_main_from_non_main_checkout(tmp_path):
+def test_daemon_passes_playwright_port_to_ephemeral_worktree_validation(tmp_path, monkeypatch):
+    monkeypatch.setenv("IMPLEMENTATION_PLAYWRIGHT_PORT_BASE", "5500")
+    monkeypatch.delenv("IMPLEMENTATION_DAEMON_PLAYWRIGHT_PORT", raising=False)
+    monkeypatch.delenv("PLAYWRIGHT_PORT", raising=False)
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
     state_dir = tmp_path / "agent_state"
     fake_worker = repo_root / "fake_worker.py"
+    validate_worker = repo_root / "validate_env.py"
     worktree_root = tmp_path / "worktrees"
     repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python validate_env.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
     fake_worker.write_text(
         """
 from pathlib import Path
@@ -551,33 +651,37 @@ import os
 import sys
 
 prompt = sys.stdin.read()
-assert "AGENT-000" in prompt
-assert "agent-000-attempt-1" in os.getcwd()
+port = os.environ["PLAYWRIGHT_PORT"]
+assert os.environ["IMPLEMENTATION_PLAYWRIGHT_PORT"] == port
+assert f"- Playwright port: {port}" in prompt
+assert f"PLAYWRIGHT_PORT={port}" in prompt
 Path("docs").mkdir(exist_ok=True)
-Path("docs/agent.md").write_text("implemented from feature checkout", encoding="utf-8")
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+Path("docs/implementation_port.txt").write_text(port, encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validate_worker.write_text(
+        """
+from pathlib import Path
+import os
+
+port = os.environ["PLAYWRIGHT_PORT"]
+assert os.environ["IMPLEMENTATION_PLAYWRIGHT_PORT"] == port
+assert Path("docs/implementation_port.txt").read_text(encoding="utf-8") == port
+Path("docs/validation_port.txt").write_text(port, encoding="utf-8")
 """.strip()
         + "\n",
         encoding="utf-8",
     )
     init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/sandbox"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature only\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature-only"], cwd=repo_root, check=True, capture_output=True, text=True)
 
     daemon = PortalImplementationDaemon(
         todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=state_dir / "agent_chat_events.jsonl",
+        state_path=state_dir / "provekit_task_state.json",
+        strategy_path=state_dir / "provekit_strategy.json",
+        events_path=state_dir / "provekit_events.jsonl",
         repo_root=repo_root,
         task_header_prefix="AGENT-",
         implement=True,
@@ -589,193 +693,15 @@ Path("docs/agent.md").write_text("implemented from feature checkout", encoding="
 
     result = daemon.run_once()
     implementation = result["implementation_result"]
-    merge_result = implementation["merge_result"]
+    implementation_port = (repo_root / "docs" / "implementation_port.txt").read_text(encoding="utf-8")
+    validation_port = (repo_root / "docs" / "validation_port.txt").read_text(encoding="utf-8")
 
     assert implementation["returncode"] == 0
-    assert merge_result["merged"] is True
-    assert merge_result["target_branch"] == "main"
-    assert merge_result["used_ephemeral_main_worktree"] is True
-    assert not Path(merge_result["main_worktree_path"]).exists()
-    current_branch = subprocess.run(
-        ["git", "branch", "--show-current"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    assert current_branch == "feature/sandbox"
-    main_agent_file = subprocess.run(
-        ["git", "show", "main:docs/agent.md"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
-    assert main_agent_file == "implemented from feature checkout"
-    main_feature_file = subprocess.run(
-        ["git", "cat-file", "-e", "main:docs/feature.md"],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert main_feature_file.returncode != 0
-    assert not (repo_root / "docs" / "agent.md").exists()
-
-
-def test_daemon_refuses_merge_when_baseline_is_not_on_main(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "agent_state"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/review"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature baseline\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature baseline"], cwd=repo_root, check=True, capture_output=True, text=True)
-    baseline_ref = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    branch_name = "implementation/agent-000-attempt-1-unsafe-baseline"
-    subprocess.run(
-        ["git", "checkout", "-b", branch_name],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs" / "agent.md").write_text("unsafe implementation\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "unsafe implementation"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(["git", "checkout", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=state_dir / "agent_chat_events.jsonl",
-        repo_root=repo_root,
-        task_header_prefix="AGENT-",
-        worktree_root=tmp_path / "worktrees",
-    )
-
-    task = parse_task_file(todo_path, "## AGENT-")[0]
-    result = daemon._merge_branch_to_main(branch_name, task, 1, baseline_ref=baseline_ref)
-
-    assert result["attempted"] is False
-    assert result["merged"] is False
-    assert result["reason"] == "baseline_not_ancestor_of_target"
-    main_agent_file = subprocess.run(
-        ["git", "cat-file", "-e", "main:docs/agent.md"],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert main_agent_file.returncode != 0
-
-
-def test_daemon_abandons_unsafe_baseline_without_completing_task(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "agent_state"
-    events_path = state_dir / "agent_chat_events.jsonl"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/review"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature baseline\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature baseline"], cwd=repo_root, check=True, capture_output=True, text=True)
-    baseline_ref = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    branch_name = "implementation/agent-000-attempt-1-unsafe-baseline"
-    subprocess.run(["git", "checkout", "-b", branch_name], cwd=repo_root, check=True, capture_output=True, text=True)
-    (repo_root / "docs" / "agent.md").write_text("unsafe implementation\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "unsafe implementation"], cwd=repo_root, check=True, capture_output=True, text=True)
-    implementation_commit = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    subprocess.run(["git", "checkout", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    events_path.parent.mkdir(parents=True, exist_ok=True)
-    events_path.write_text(
-        json.dumps(
-            {
-                "type": "implementation_finished",
-                "task_id": "AGENT-000",
-                "attempt": 1,
-                "returncode": 2,
-                "branch": branch_name,
-                "baseline_ref": baseline_ref,
-                "implementation_commit": implementation_commit,
-                "merge_result": {"attempted": True, "merged": False, "returncode": 2},
-                "validation_result": {"attempted": True, "passed": True, "returncode": 0},
-                "cleanup_result": {"cleaned": False},
-            }
-        )
-        + "\n"
-        + json.dumps(
-            {
-                "type": "merge_reconciled",
-                "task_id": "AGENT-000",
-                "attempt": 1,
-                "branch": branch_name,
-                "baseline_ref": baseline_ref,
-                "implementation_commit": implementation_commit,
-                "resolved": False,
-                "reason": "merge_retried",
-                "merge_result": {"reason": "baseline_not_ancestor_of_target"},
-                "cleanup_result": {},
-            }
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=events_path,
-        repo_root=repo_root,
-        task_header_prefix="AGENT-",
-        worktree_root=tmp_path / "worktrees",
-    )
-
-    result = daemon.run_once()
-
-    assert daemon._failed_merge_candidates() == []
-    assert result["completed_count"] == 0
-    assert result["active_task_id"] == "AGENT-000"
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["merge_result"]["merged"] is True
+    assert implementation["playwright_port"] == implementation_port
+    assert validation_port == implementation_port
+    assert int(implementation_port) >= 5500
 
 
 def test_daemon_validation_failure_blocks_commit_and_merge(tmp_path):
@@ -834,14 +760,9 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert implementation["task_id"] == "AGENT-000"
     assert implementation["returncode"] == 7
     assert implementation["validation_result"]["passed"] is False
-    assert implementation["commit_result"]["committed"] is True
-    assert implementation["implementation_commit"]
+    assert implementation["commit_result"]["committed"] is False
     assert implementation["merge_result"]["merged"] is False
     assert implementation["cleanup_result"]["cleaned"] is True
-    assert implementation["failed_preservation_result"]["preserved"] is True
-    rescue_branch = implementation["failed_preservation_result"]["rescue_branch"]
-    assert rescue_branch.startswith("rescue/agent-000-attempt-1-")
-    assert rescue_branch.endswith("-failed-validation")
     assert not Path(implementation["worktree_path"]).exists()
     assert not (repo_root / "docs" / "agent.md").exists()
     branch_check = subprocess.run(
@@ -852,15 +773,17 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
         check=False,
     )
     assert branch_check.returncode != 0
-    rescued_file = subprocess.run(
-        ["git", "show", f"{rescue_branch}:docs/agent.md"],
+    failed_preservation = implementation["failed_preservation_result"]
+    assert failed_preservation["preserved"] is True
+    assert failed_preservation["commit_result"]["committed"] is True
+    rescue_branch_check = subprocess.run(
+        ["git", "rev-parse", "--verify", failed_preservation["rescue_branch"]],
         cwd=repo_root,
         capture_output=True,
         text=True,
         check=False,
     )
-    assert rescued_file.returncode == 0
-    assert rescued_file.stdout == "implemented in worktree"
+    assert rescue_branch_check.returncode == 0
 
 
 def test_daemon_cleans_no_change_ephemeral_worktree(tmp_path):

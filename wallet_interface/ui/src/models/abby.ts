@@ -118,10 +118,10 @@ export interface UploadItem {
   status: "stored" | "encrypting" | "failed";
   storageOk?: boolean;
   shared: boolean;
-  sharingMode?: "private" | "selected_contacts";
+  sharingMode?: "private" | "public" | "selected_contacts";
   allowedRecipientIds?: string[];
   decentralizedStorageStatus?: "not_configured" | "ready" | "uploading" | "stored" | "failed";
-  decentralizedStorageProvider?: "ipfs" | "filecoin" | "ipfs-filecoin" | "wallet-api" | "local";
+  decentralizedStorageProvider?: "ipfs" | "filecoin" | "ipfs-filecoin" | "walrus" | "wallet-api" | "local";
   decryptedClassification?: string;
   decryptedLabels?: string[];
   decryptedMimeType?: string;
@@ -144,6 +144,12 @@ export interface UploadItem {
   filecoinPinRequestId?: string;
   filecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
   filecoinPinStatusUrl?: string;
+  walrusBlobId?: string;
+  walrusEndEpoch?: number;
+  walrusGatewayUrl?: string;
+  walrusObjectId?: string;
+  walrusStorageCost?: number;
+  walrusTxDigest?: string;
   decentralizedStorageMessage?: string;
   privacyProfileStatus?: "not_started" | "profiling" | "profiled" | "failed";
   privacyProfileClassification?: string;

@@ -3,8 +3,6 @@
 This package is the 211-AI application layer for the wallet work. It should stay
 thin: encryption, UCAN-style grant evaluation, key wrapping, proof receipts,
 analytics consent, and audit logging live in `ipfs_datasets_py.wallet`.
-The browser-facing TypeScript code should consume that Python implementation
-through HTTP rather than reimplementing wallet rules in the frontend.
 
 ## Current Scope
 
@@ -135,75 +133,6 @@ the expected `wallet_export_v1` type and required bundle sections.
 `POST /exports/storage` reports encrypted blob availability for records
 referenced by a verified export bundle.
 
-For the wallet UI integration, the first extracted HTTP slice now also exists in
-`ipfs_datasets_py.wallet.api` and is mounted into the shared FastAPI service.
-That adapter now owns the core `/wallets` create/read routes, document upload,
-record metadata update/delete,
-location region/distance proof creation,
-document privacy profile proof creation,
-record metadata generation,
-analytics template/consent list-create-revoke,
-record-grant creation, threshold approval reads/writes, and access-request
-create/review/decision flows, plus snapshot list/save/verify/load, record-key
-rotation, encrypted storage verify/repair, and record, proof, audit,
-access-request, and grant-receipt listing. It also now owns record-scoped
-analysis/decrypt invocation issuance plus decrypt, summary analysis, redacted
-analysis, vector-profile, redacted text extraction, redacted form analysis,
-and redacted GraphRAG routes. The extracted adapter also now serves export
-grant creation, export invocation issuance, encrypted export bundle creation,
-bundle verification, bundle import, and export storage verification. It also
-owns delegated grant creation, direct grant revocation, and wallet-level
-emergency revoke routes, plus controller add/remove, device add/revoke,
-recovery-policy updates, controller recovery, and encrypted recovery-bundle
-store/read routes guarded by the magic recovery UCAN. The TypeScript
-`wallet_interface/ui/src/services/walletApi.ts` module should remain a transport
-client over that surface.
-
-For missing-person dead-drop escalation, the API can arm and persist a true
-server-side dead drop with `PUT /wallets/{wallet_id}/dead-drops/missing-person`,
-inspect it with `GET /wallets/{wallet_id}/dead-drops/missing-person`, manually
-route the saved bundle with
-`POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`, and process all
-due dead drops from server automation with
-`POST /ops/dead-drops/missing-person/process-due`. The direct
-`POST /wallets/{wallet_id}/dead-drops/missing-person` route remains available
-for immediate authenticated sends. All dead-drop email routes are restricted to
-`missing@police.portlandoregon.gov`.
-
-Configure `WALLET_DEAD_DROP_SMTP_HOST` (required), optional
-`WALLET_DEAD_DROP_SMTP_PORT`, `WALLET_DEAD_DROP_SMTP_USE_SSL`,
-`WALLET_DEAD_DROP_SMTP_STARTTLS`, `WALLET_DEAD_DROP_SMTP_USERNAME`,
-`WALLET_DEAD_DROP_SMTP_PASSWORD`, and `WALLET_DEAD_DROP_FROM_EMAIL`.
-Configure `WALLET_OPS_HEALTH_SHARED_SECRET` for authenticated due-processing,
-and set `WALLET_REPOSITORY_ROOT` when you need armed dead drops to survive API
-restarts.
-
-For generic server-side text delivery, the API now supports queueable SMS
-notifications with `POST /wallets/{wallet_id}/notifications/sms/queue`,
-inspection via `GET /wallets/{wallet_id}/notifications/sms`, manual dispatch
-via `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`,
-and due-message processing from server automation with
-`POST /ops/notifications/sms/process-due`. These routes persist state in the
-wallet repository so queued or failed SMS records survive API restarts.
-
-Configure `WALLET_SMS_WEBHOOK_URL` to point at an HTTP SMS gateway or internal
-adapter. Optional auth and timeout settings are `WALLET_SMS_BACKEND=http`,
-`WALLET_SMS_BEARER_TOKEN`, `WALLET_SMS_HTTP_HEADER_NAME`,
-`WALLET_SMS_HTTP_HEADER_VALUE`, and `WALLET_SMS_TIMEOUT_SECONDS`.
-
-For generic server-side phone-agent delivery, the API now also supports queued
-call notifications with `POST /wallets/{wallet_id}/notifications/calls/queue`,
-inspection via `GET /wallets/{wallet_id}/notifications/calls`, manual dispatch
-via `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`,
-and due-call processing through `POST /ops/notifications/calls/process-due`.
-These routes persist call records in the wallet repository, matching the SMS
-queue semantics.
-
-Configure `WALLET_CALL_WEBHOOK_URL` to point at a trusted phone-agent or voice
-gateway. Optional auth and timeout settings are `WALLET_CALL_BACKEND=http`,
-`WALLET_CALL_BEARER_TOKEN`, `WALLET_CALL_HTTP_HEADER_NAME`,
-`WALLET_CALL_HTTP_HEADER_VALUE`, and `WALLET_CALL_TIMEOUT_SECONDS`.
-
 ## Wallet Storage Configuration
 
 `WalletInterfaceService` builds the core `ipfs_datasets_py.wallet` storage
@@ -221,33 +150,6 @@ app = WalletInterfaceService(
 )
 ```
 
-The storage adapters themselves come from `ipfs_datasets_py.wallet.storage`.
-`local`, `ipfs`, and `s3` can be created directly from `WALLET_STORAGE_CONFIG`.
-`filecoin` is also implemented there, but the wallet interface still needs a
-Filecoin-capable backend object injected at runtime before the `filecoin`
-storage type can be used in production. For containerized deployments, point
-the `ipfs` storage backend at a Kubo HTTP API by setting
-`IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1` and
-`IPFS_HOST=/dns/your-kubo-host/tcp/5001/http`.
-
-Example mirrored production config:
-
-```json
-{
-  "primary": {"type": "local", "root": "/var/lib/211-ai/wallet-blobs"},
-  "mirrors": [
-    {"type": "ipfs", "pin": true},
-    {"type": "s3", "bucket": "211-ai-wallet-backups", "prefix": "wallet/blobs"}
-  ]
-}
-```
-
-Proof backends come from `ipfs_datasets_py.wallet.proofs` for simulated and
-deterministic integration modes, plus `wallet_interface.proof_backends` for the
-HTTP production verifier adapter. If you do not yet have a remote verifier,
-`deterministic-location-region` and `deterministic-location-distance` are the
-implemented non-simulated integration backends available now.
-
 Environment options:
 
 - `WALLET_STORAGE_CONFIG`: JSON string or object config for the core wallet
@@ -256,9 +158,6 @@ Environment options:
 - `WALLET_STORAGE_ROOT`: local filesystem root for `local`.
 - `WALLET_STORAGE_BUCKET` and `WALLET_STORAGE_PREFIX`: S3 target settings.
 - `WALLET_STORAGE_MIRRORS`: JSON list of mirror backend configs.
-- `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI`: opt in to the IPFS HTTP API backend
-  instead of a local `ipfs` CLI.
-- `IPFS_HOST`: multiaddr or URL for the Kubo HTTP API used by `ipfs` mirrors.
 - `WALLET_REPOSITORY_ROOT`: local JSON snapshot directory for wallet metadata.
 - `WALLET_AUTO_LOAD_REPOSITORY`: load all snapshots at service startup
   (default `true` when a repository root is configured).
@@ -305,47 +204,11 @@ Repository API endpoints:
 - `GET /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot/load`
-- `GET /wallets/{wallet_id}/dead-drops/missing-person`
-- `PUT /wallets/{wallet_id}/dead-drops/missing-person`
-- `POST /wallets/{wallet_id}/dead-drops/missing-person`
-- `POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`
-- `POST /ops/dead-drops/missing-person/process-due`
-- `GET /wallets/{wallet_id}/notifications/sms`
-- `POST /wallets/{wallet_id}/notifications/sms/queue`
-- `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`
-- `POST /ops/notifications/sms/process-due`
-- `GET /wallets/{wallet_id}/notifications/calls`
-- `POST /wallets/{wallet_id}/notifications/calls/queue`
-- `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`
-- `POST /ops/notifications/calls/process-due`
 
 ## UI Export Wiring
 
 The React UI keeps static demo export cards when no backend is configured. To
-hydrate the Exports screen from a real wallet export bundle, set either
-build-time env vars or the static runtime file
-`wallet_interface/ui/public/runtime-config.json`.
-
-`runtime-config.json` is the safer option for split deployments because the
-same built bundle can run on GitHub Pages, a local static server, or a
-containerized UI without rebuilding.
-
-Example runtime config:
-
-```json
-{
-  "walletApi": {
-    "apiBaseUrl": "https://wallet-api.example.com",
-    "walletId": "wallet-demo",
-    "actorDid": "did:key:demo"
-  },
-  "filecoinStorage": {
-    "uploadUrl": "https://storage.example.com/upload"
-  }
-}
-```
-
-For the wallet API connection, set:
+hydrate the Exports screen from a real wallet export bundle, set:
 
 - `VITE_WALLET_API_BASE_URL` to the FastAPI base URL
 - `VITE_DEMO_WALLET_ID` to the active wallet ID
@@ -367,14 +230,3 @@ bundle from recipient DID and record IDs. That flow calls:
 Set `VITE_DEMO_ACTOR_DID` for the issuer/controller DID. Set
 `VITE_DEMO_ISSUER_KEY_HEX` and `VITE_DEMO_AUDIENCE_KEY_HEX` when the backend
 requires signed UCAN grants or invocations.
-
-Runtime resolution order for the live wallet connection is:
-
-1. URL query params such as `walletApiBaseUrl` and `walletId`
-2. `runtime-config.json`
-3. browser local storage
-4. Vite `VITE_*` env vars
-
-For IPFS/Filecoin upload integration, the UI now also reads
-`filecoinStorage.uploadUrl` and `filecoinStorage.clientToken` from
-`runtime-config.json`. Do not put private secrets into a static Pages build.

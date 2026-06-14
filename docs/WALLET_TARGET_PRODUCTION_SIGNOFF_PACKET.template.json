@@ -78,50 +78,14 @@
   },
   "analytics_privacy_review": {
     "no_live_analytics_templates": false,
-    "production_query_policy": "replace-with-template-id-only-policy-disallowing-ad-hoc-sql-notebook-graphrag-export-or-raw-record-queries",
-    "approved_aggregate_routes": [
-      "/analytics/{template_id}/count",
-      "/analytics/{template_id}/count-by-fields"
-    ],
-    "approved_template_registry_evidence": "replace-with-deployed-approved-template-registry-evidence-id",
-    "raw_query_block_evidence": "replace-with-evidence-that-production-analytics-has-no-arbitrary-raw-query-surface",
     "approved_templates": [
       {
         "template_id": "replace-with-template-id",
         "reviewer": "replace-with-reviewer",
         "review_date": "YYYY-MM-DD",
-        "consent_copy_artifact": "replace-with-approved-consent-copy-artifact-id",
-        "allowed_record_types": ["replace-with-record-type"],
-        "allowed_derived_fields": ["replace-with-derived-field"],
         "min_cohort_size": 10,
-        "k_threshold": 10,
+        "epsilon_budget": 1.0,
         "allowed_dimensions": ["replace-with-dimension"],
-        "proof_statements": [
-          {
-            "proof_type": "analytics_contribution",
-            "statement": "replace-with-public-proof-statement",
-            "verifier_or_mode": "replace-with-verifier-or-mode"
-          }
-        ],
-        "nullifier_policy": "replace-with-nullifier-scope-duplicate-rejection-and-retention-policy",
-        "privacy_budget": {
-          "epsilon_budget": 1.0,
-          "per_query_epsilon": 0.25,
-          "sensitivity": 1.0,
-          "budget_key": "replace-with-budget-ledger-key",
-          "budget_limit": 1.0,
-          "budget_exhaustion_behavior": "replace-with-budget-exhaustion-behavior"
-        },
-        "retention_mapping": {
-          "template_definition": "replace-with-template-definition-retention-control",
-          "consent_copy": "replace-with-consent-copy-retention-control",
-          "consents_withdrawals": "replace-with-consent-withdrawal-retention-control",
-          "contributions": "replace-with-contribution-retention-control",
-          "nullifiers": "replace-with-nullifier-retention-control",
-          "query_budget_ledger": "replace-with-budget-ledger-retention-control",
-          "released_aggregates": "replace-with-released-aggregate-retention-control",
-          "audit_events": "replace-with-audit-event-retention-control"
-        },
         "retention_decision": "replace-with-retention-decision",
         "withdrawal_behavior": "replace-with-withdrawal-behavior"
       }

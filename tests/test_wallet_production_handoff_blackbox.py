@@ -234,12 +234,6 @@ def _target_env(tmp_path: Path, verifier_url: str) -> dict[str, str]:
         "WALLET_OPS_ALERT_SECRET_REF": "secret://ci/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://ci/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://ci/wallet/storage",
-        "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
-        "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://ci/wallet/ipfs-pinning",
-        "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://ci/wallet/filecoin-deals",
-        "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://ci/wallet/s3-lifecycle",
-        "WALLET_BACKUP_PURGE_POLICY_REF": "policy://ci/wallet/backup-purge",
-        "WALLET_ALERT_RETENTION_POLICY_REF": "policy://ci/wallet/alert-retention",
     }
 
 
@@ -299,50 +293,14 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "product_owner": dict(review),
         },
         "analytics_privacy_review": {
-            "production_query_policy": "CI analytics releases only approved template IDs through aggregate routes",
-            "approved_aggregate_routes": [
-                "/analytics/{template_id}/count",
-                "/analytics/{template_id}/count-by-fields",
-            ],
-            "approved_template_registry_evidence": "evidence://ci/wallet/analytics/registry/2026-05-05",
-            "raw_query_block_evidence": "evidence://ci/wallet/analytics/no-raw-query-surface/2026-05-05",
             "approved_templates": [
                 {
                     "template_id": "ci_needs_by_region_v1",
                     "reviewer": "CI Privacy Reviewer",
                     "review_date": "2026-05-05",
-                    "consent_copy_artifact": "evidence://ci/wallet/analytics/needs-by-region-consent-v1",
-                    "allowed_record_types": ["derived_need"],
-                    "allowed_derived_fields": ["region", "need_category"],
                     "min_cohort_size": 10,
-                    "k_threshold": 10,
+                    "epsilon_budget": 1.0,
                     "allowed_dimensions": ["region", "need_category"],
-                    "proof_statements": [
-                        {
-                            "proof_type": "analytics_contribution",
-                            "statement": "contribution fields match consented CI template schema",
-                            "verifier_or_mode": "wallet analytics contribution proof",
-                        }
-                    ],
-                    "nullifier_policy": "per-template consent nullifier rejects duplicate CI contributions",
-                    "privacy_budget": {
-                        "epsilon_budget": 1.0,
-                        "per_query_epsilon": 0.25,
-                        "sensitivity": 1.0,
-                        "budget_key": "template:ci_needs_by_region_v1",
-                        "budget_limit": 1.0,
-                        "budget_exhaustion_behavior": "block further aggregate release",
-                    },
-                    "retention_mapping": {
-                        "template_definition": "retain CI template approval with audit bundle",
-                        "consent_copy": "retain CI consent copy with analytics packet",
-                        "consents_withdrawals": "retain withdrawal evidence without raw contribution values",
-                        "contributions": "retain aggregate CI metadata only",
-                        "nullifiers": "retain through CI study window to prevent duplicate counting",
-                        "query_budget_ledger": "retain with CI aggregate audit trail",
-                        "released_aggregates": "retain aggregate CI artifact only",
-                        "audit_events": "retain wallet audit events with CI evidence",
-                    },
                     "retention_decision": "retain aggregate CI artifact only",
                     "withdrawal_behavior": "future contributions blocked; prior aggregate audit retained",
                 }
@@ -384,8 +342,6 @@ def test_production_handoff_blackbox_accepts_mocked_staging_environment(tmp_path
             "proof_credentials": "ok",
             "ops_credentials": "ok",
             "secret_manager_references": "ok",
-            "storage_retention_controls": "ok",
-            "storage_repair_safety": "ok",
             "ops_health": "ok",
             "proof_contract": "ok",
             "distance_proof_contract": "ok",

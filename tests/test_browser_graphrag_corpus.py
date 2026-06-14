@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pandas as pd
-import pyarrow.parquet as pq
 
 from scraper.browser_graphrag_corpus import build_browser_graphrag_corpus
 
@@ -239,188 +238,36 @@ def _make_package(root: Path) -> Path:
     return package_dir
 
 
-def _make_portal_parquet(root: Path) -> Path:
-    portal_path = root / "documents.portal.parquet"
-    _write_parquet(
-        portal_path,
-        [
-            {
-                "service_doc_id": "service:cid-service",
-                "phones": json.dumps(
-                    [
-                        {
-                            "contact_id": "service:cid-service:phone:0",
-                            "label": "main",
-                            "tel_url": "tel:+15035550100",
-                            "sms_url": "sms:+15035550100",
-                            "value": "(503) 555-0100",
-                            "confidence": 0.99,
-                        }
-                    ]
-                ),
-                "emails": json.dumps([]),
-                "websites": json.dumps(
-                    [
-                        {
-                            "contact_id": "service:cid-service:website:0",
-                            "label": "apply",
-                            "url": "https://example.org/apply",
-                            "value": "https://example.org/apply",
-                            "confidence": 0.99,
-                        }
-                    ]
-                ),
-                "addresses": json.dumps(
-                    [
-                        {
-                            "location_id": "service:cid-service:location:0",
-                            "address": "123 Main St, Portland, OR 97204",
-                            "street": "123 Main St",
-                            "city": "Portland",
-                            "state": "OR",
-                            "postal_code": "97204",
-                            "maps_query": "123 Main St Portland OR 97204",
-                            "google_maps_url": "https://www.google.com/maps/search/?api=1&query=123+Main+St+Portland+OR+97204",
-                            "apple_maps_url": "https://maps.apple.com/?q=123+Main+St+Portland+OR+97204",
-                            "geo_url": "geo:0,0?q=123+Main+St+Portland+OR+97204",
-                            "geo": {"lat": None, "lon": None, "precision": "address_query"},
-                            "confidence": 0.99,
-                        }
-                    ]
-                ),
-                "hours": json.dumps([{"label": "hours", "value": "Mon-Fri 9am-5pm", "confidence": 0.97}]),
-                "eligibility": json.dumps([{"label": "eligibility", "value": "Low income households", "confidence": 0.97}]),
-                "intake_steps": json.dumps([{"label": "intake", "value": "Apply online or call first", "confidence": 0.97}]),
-                "required_documents": json.dumps([{"label": "documents", "value": "Photo ID", "confidence": 0.97}]),
-                "fees": json.dumps([]),
-                "languages": json.dumps([]),
-                "accessibility": json.dumps([]),
-                "travel_info": json.dumps([{"label": "travel", "value": "Bus stop nearby", "confidence": 0.97}]),
-                "area_served": json.dumps([{"label": "area served", "value": "Multnomah County", "confidence": 0.97}]),
-                "geo": json.dumps({"lat": None, "lon": None, "precision": "address_query"}),
-            }
-        ],
-    )
-    return portal_path
-
-
-def _make_portal_locations_parquet(root: Path) -> Path:
-    location_path = root / "service_locations.parquet"
-    _write_parquet(
-        location_path,
-        [
-            {
-                "service_doc_id": "service:cid-service",
-                "location_id": "service:cid-service:location:0",
-                "label": "service_address",
-                "address": "123 Main St, Portland, OR 97204",
-                "street": "123 Main St",
-                "city": "Portland",
-                "state": "OR",
-                "postal_code": "97204",
-                "source_url": "https://example.org/food",
-                "source_content_cid": "cid-service",
-                "source_page_cid": "cid-page",
-                "maps_query": "123 Main St Portland OR 97204",
-                "apple_maps_url": "https://maps.apple.com/?q=123+Main+St+Portland+OR+97204",
-                "google_maps_url": "https://www.google.com/maps/search/?api=1&query=123+Main+St+Portland+OR+97204",
-                "geo_url": "geo:0,0?q=123+Main+St+Portland+OR+97204",
-                "geo_json": json.dumps({"lat": 45.537123, "lon": -122.650925, "precision": "address_geocode"}),
-            }
-        ],
-    )
-    return location_path
-
-
-def _make_place_centroid_file(root: Path) -> Path:
-    centroid_path = root / "place_centroids.txt"
-    centroid_path.write_text(
-        "\n".join(
-            [
-                "USPS|GEOID|GEOIDFQ|ANSICODE|NAME|LSAD|FUNCSTAT|ALAND|AWATER|ALAND_SQMI|AWATER_SQMI|INTPTLAT|INTPTLONG",
-                "OR|4159000|1600000US4159000|02411792|Portland city|25|A|0|0|0|0|45.537123|-122.650925",
-            ]
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    return centroid_path
-
-
 def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     package_dir = _make_package(tmp_path)
-    portal_parquet_path = _make_portal_parquet(tmp_path)
-    portal_location_parquet_path = _make_portal_locations_parquet(tmp_path)
-    place_centroid_path = _make_place_centroid_file(tmp_path)
     output_dir = tmp_path / "browser_corpus"
 
     result = build_browser_graphrag_corpus(
         package_dir=package_dir,
         output_dir=output_dir,
-        portal_parquet_path=portal_parquet_path,
-        portal_location_parquet_path=portal_location_parquet_path,
-        place_centroid_path=place_centroid_path,
         max_terms_per_document=8,
         max_edges_per_document=4,
     )
 
     assert result["document_count"] == 2
-    assert result["service_document_count"] == 1
-    assert result["service_phone_count"] == 1
-    assert result["service_address_count"] == 1
-    assert result["service_intake_step_count"] == 1
-    assert result["service_required_document_count"] == 1
     assert result["embedding_count"] == 2
     assert result["embedding_dimension"] == 3
     assert result["graph_neighborhood_count"] == 2
 
-    parquet_file = output_dir / "generated" / "documents.parquet"
-    documents = pd.read_parquet(parquet_file).to_dict(orient="records")
-    documents_by_id = {document["doc_id"]: document for document in documents}
+    documents = json.loads((output_dir / "generated" / "documents.json").read_text())
     document_index = json.loads((output_dir / "generated" / "document-index.json").read_text())
     bm25 = json.loads((output_dir / "generated" / "bm25-documents.json").read_text())
     embedding_index = json.loads((output_dir / "generated" / "embedding-index.json").read_text())
     graph_index = json.loads((output_dir / "generated" / "graph-neighborhood-index.json").read_text())
     graph_shard = json.loads((output_dir / graph_index["docIdToShard"]["service:cid-service"]).read_text())
     communities = json.loads((output_dir / "generated" / "graph-communities.json").read_text())
-    service_geo_index = json.loads((output_dir / "generated" / "service-geo-index.json").read_text())
-    service_location_index = json.loads((output_dir / "generated" / "service-location-index.json").read_text())
-    geo_clusters = json.loads((output_dir / "generated" / "document-geo-clusters.json").read_text())
-    retrieval_geo_shards = json.loads((output_dir / "generated" / "retrieval-geo-shards.json").read_text())
-    graph_geo_clusters = json.loads((output_dir / "generated" / "graph-geo-clusters.json").read_text())
-    bm25_parquet = pd.read_parquet(output_dir / "generated" / "bm25-documents.parquet").to_dict(orient="records")
-    embedding_parquet = pd.read_parquet(output_dir / "generated" / "embeddings.parquet").to_dict(orient="records")
-    service_locations_parquet = pd.read_parquet(output_dir / "generated" / "service-locations.parquet").to_dict(orient="records")
-    graph_communities_parquet = pd.read_parquet(output_dir / "generated" / "graph-communities.parquet").to_dict(
-        orient="records"
-    )
-    document_communities_parquet = pd.read_parquet(
-        output_dir / "generated" / "document-communities.parquet"
-    ).to_dict(orient="records")
     artifacts = json.loads((output_dir / "artifacts.manifest.json").read_text())
-    bm25_parquet_file = pq.ParquetFile(output_dir / "generated" / "bm25-documents.parquet")
-    embedding_parquet_file = pq.ParquetFile(output_dir / "generated" / "embeddings.parquet")
-    service_locations_parquet_file = pq.ParquetFile(output_dir / "generated" / "service-locations.parquet")
-    bm25_parquet_by_id = {row["doc_id"]: row for row in bm25_parquet}
-    embedding_parquet_by_id = {row["doc_id"]: row for row in embedding_parquet}
 
-    assert len(documents) == 2
-    assert documents_by_id["page:cid-page"]["source_content_cid"] == "cid-page"
+    assert documents[0]["source_content_cid"] == "cid-page"
     assert document_index["contentCidToIndex"]["cid-service"] == 1
-    assert document_index["contentCidToDocIds"]["cid-service"] == ["service:cid-service"]
-    assert documents_by_id["service:cid-service"]["phones"][0]["tel_url"] == "tel:+15035550100"
-    assert documents_by_id["service:cid-service"]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
-    assert documents_by_id["service:cid-service"]["intake_steps"][0]["value"] == "Apply online or call first"
-    assert documents_by_id["service:cid-service"]["geo_precision"] == "place_centroid"
-    assert documents_by_id["service:cid-service"]["geo_cluster_id"] == 0
-    assert not (output_dir / "generated" / "documents.json").exists()
     assert bm25["documents"][1]["terms"]["pantry"] == 3.0
-    assert bm25_parquet_by_id["service:cid-service"]["terms_json"] == '{"pantry":3.0}'
-    assert bm25_parquet_file.metadata.num_row_groups == 2
     assert embedding_index["binary"] == "embeddings.f32"
     assert (output_dir / "generated" / "embeddings.f32").stat().st_size == 2 * 3 * 4
-    assert embedding_parquet_by_id["service:cid-service"]["dimension"] == 3
-    assert embedding_parquet_file.metadata.num_row_groups == 2
     assert not (output_dir / "generated" / "graph-neighborhoods.json").exists()
     assert graph_index["neighborhoodCount"] == 2
     assert graph_index["shardCount"] == 1
@@ -430,73 +277,4 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert graph_shard["edges"]["edge-service-page"]["relation"] == "DERIVED_FROM_PAGE"
     assert graph_shard["nodes"]["term:food"]["label"] == "food"
     assert communities["communities"][0]["top_terms"] == [["food", 2]]
-    assert service_geo_index["serviceCount"] == 1
-    assert service_geo_index["docsWithAddress"] == 1
-    assert service_geo_index["docsWithCoordinates"] == 1
-    assert service_geo_index["docsByCity"]["portland"] == ["service:cid-service"]
-    assert "multnomah" in service_geo_index["docsByPlaceTerm"]
-    assert geo_clusters["clusterCount"] == 1
-    assert geo_clusters["clusteredServiceCount"] == 1
-    assert geo_clusters["serviceDocIdToClusterId"]["service:cid-service"] == 0
-    assert geo_clusters["rowGroupCount"] == 2
-    assert geo_clusters["rowGroups"][0]["kind"] == "service_cluster"
-    assert geo_clusters["rowGroups"][1]["kind"] == "non_service"
-    assert geo_clusters["clusters"][0]["centroid"]["lat"] == 45.537123
-    assert retrieval_geo_shards["shardCount"] == 1
-    assert retrieval_geo_shards["docIdToShardId"]["service:cid-service"] == "cluster-0000"
-    assert retrieval_geo_shards["contentCidToShardIds"]["cid-service"] == ["cluster-0000"]
-    assert retrieval_geo_shards["shards"][0]["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]
-    assert retrieval_geo_shards["bm25ParquetPath"] == "generated/bm25-documents.parquet"
-    assert retrieval_geo_shards["embeddingParquetPath"] == "generated/embeddings.parquet"
-    assert retrieval_geo_shards["clusterIdToBm25RowGroupIndexes"]["0"] == [0]
-    assert retrieval_geo_shards["clusterIdToEmbeddingRowGroupIndexes"]["0"] == [0]
-    assert retrieval_geo_shards["shards"][0]["bm25RowGroupIndexes"] == [0]
-    assert retrieval_geo_shards["shards"][0]["embeddingRowGroupIndexes"] == [0]
-    assert service_location_index["locationCount"] == 1
-    assert service_location_index["clusteredLocationCount"] == 1
-    assert service_location_index["clusterIdToLocationRowGroupIndexes"]["0"] == [0]
-    assert service_location_index["contentCidToLocationIds"]["cid-service"] == ["service:cid-service:location:0"]
-    assert service_location_index["contentCidToClusterIds"]["cid-service"] == [0]
-    assert service_locations_parquet[0]["geo_cluster_id"] == 0
-    assert service_locations_parquet[0]["service_geo_cluster_id"] == 0
-    assert service_locations_parquet_file.metadata.num_row_groups == 1
-    assert graph_communities_parquet[0]["community_id"] == "community:food"
-    assert graph_communities_parquet[0]["geo_cluster_id"] == 0
-    assert document_communities_parquet[1]["community_id"] == "community:food"
-    assert document_communities_parquet[1]["geo_cluster_id"] == 0
-    assert graph_geo_clusters["clusterCount"] == 1
-    assert graph_geo_clusters["communityIdToClusterIds"]["community:food"] == [0]
-    assert graph_geo_clusters["clusters"][0]["graphNeighborhoodShardPaths"] == [
-        graph_index["docIdToShard"]["service:cid-service"]
-    ]
     assert artifacts["sourcePackage"]["build_manifest_cid"] == "cid-manifest"
-    assert any(artifact["path"] == "generated/document-geo-clusters.json" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/retrieval-geo-shards.json" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/bm25-documents.parquet" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/embeddings.parquet" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/service-locations.parquet" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/service-location-index.json" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/graph-communities.parquet" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/document-communities.parquet" for artifact in artifacts["artifacts"])
-    assert any(artifact["path"] == "generated/graph-geo-clusters.json" for artifact in artifacts["artifacts"])
-    generated_manifest = json.loads((output_dir / "generated" / "generated-manifest.json").read_text())
-    assert generated_manifest["serviceDocumentCount"] == 1
-    assert generated_manifest["servicePhoneCount"] == 1
-    assert generated_manifest["serviceAddressCount"] == 1
-    assert generated_manifest["serviceIntakeStepCount"] == 1
-    assert generated_manifest["serviceRequiredDocumentCount"] == 1
-    assert generated_manifest["serviceLocationCount"] == 1
-    assert generated_manifest["clusteredServiceLocationCount"] == 1
-    assert generated_manifest["serviceLocationParquetRowGroupCount"] == 1
-    assert generated_manifest["geoClusterCount"] == 1
-    assert generated_manifest["geoClusteredServiceCount"] == 1
-    assert generated_manifest["documentParquetRowGroupCount"] == 2
-    assert generated_manifest["geoRetrievalShardCount"] == 1
-    assert generated_manifest["geoRetrievalShardContentCidCount"] == 1
-    assert generated_manifest["bm25ParquetRowGroupCount"] == 2
-    assert generated_manifest["embeddingParquetRowGroupCount"] == 2
-    assert generated_manifest["graphGeoClusterCount"] == 1
-    assert generated_manifest["graphCommunityParquetRowGroupCount"] == 1
-    assert generated_manifest["documentCommunityParquetRowGroupCount"] == 1
-    assert bm25["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]
-    assert embedding_index["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]

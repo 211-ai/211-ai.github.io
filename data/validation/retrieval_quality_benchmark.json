@@ -1,0 +1,2066 @@
+{
+  "schema_version": 1,
+  "browser_corpus_dir": "wallet_interface/ui/public/corpus/211-info/current",
+  "document_count": 22638,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "browser_embedding_model": "Xenova/bge-small-en-v1.5",
+  "vector_enabled": true,
+  "required_modes": [
+    "keyword",
+    "hybrid"
+  ],
+  "top_k": 5,
+  "passed": true,
+  "queries": [
+    {
+      "query": "food pantry",
+      "expected_terms": [
+        "food",
+        "pantry"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "food pantry",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:dee16df29abd6a42",
+              "doc_type": "service",
+              "title": "FOOD PANTRY PROGRAM",
+              "provider_name": "FEED'EM FREEDOM FOUNDATION THE CENTER IN PARKROSE",
+              "program_name": "FOOD PANTRY PROGRAM",
+              "categories": "eligibility, food, hours",
+              "source_url": "https://www.211info.org/get-help/food/food-pantries-african-american-community/",
+              "score": 4.0,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:66e198915827bbf8",
+              "doc_type": "service",
+              "title": "FOOD PANTRY",
+              "provider_name": "FOOD PANTRY",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/22500/18771/",
+              "score": 3.882807,
+              "score_parts": {
+                "keyword": 0.941404,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:b26681286f52f9ba",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND CLOTHING CLOSET",
+              "provider_name": "FOOD PANTRY AND CLOTHING CLOSET",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/6652/9347/",
+              "score": 3.699352,
+              "score_parts": {
+                "keyword": 0.849676,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:43e8199dbde05740",
+              "doc_type": "service",
+              "title": "TURNING POINT COMMUNITY SERVICE CENTER/FOOD PANTRY",
+              "provider_name": "TURNING POINT COMMUNITY SERVICE CENTER/FOOD PANTRY",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, housing, intake, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/5290/3863/",
+              "score": 3.665969,
+              "score_parts": {
+                "keyword": 0.832985,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:64ff64472722fd8b",
+              "doc_type": "service",
+              "title": "TBCC FOOD PANTRY",
+              "provider_name": "TBCC FOOD PANTRY",
+              "program_name": "",
+              "categories": "eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/21511/22313/",
+              "score": 3.632395,
+              "score_parts": {
+                "keyword": 0.816197,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:44bdd22d74dc9985",
+              "doc_type": "service",
+              "title": "BOARDMAN FOOD PANTRY",
+              "provider_name": "BOARDMAN FOOD PANTRY",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/26428/22308/",
+              "score": 3.619779,
+              "score_parts": {
+                "keyword": 0.809889,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "food pantry",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:dee16df29abd6a42",
+              "doc_type": "service",
+              "title": "FOOD PANTRY PROGRAM",
+              "provider_name": "FEED'EM FREEDOM FOUNDATION THE CENTER IN PARKROSE",
+              "program_name": "FOOD PANTRY PROGRAM",
+              "categories": "eligibility, food, hours",
+              "source_url": "https://www.211info.org/get-help/food/food-pantries-african-american-community/",
+              "score": 3.0,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:66e198915827bbf8",
+              "doc_type": "service",
+              "title": "FOOD PANTRY",
+              "provider_name": "FOOD PANTRY",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/22500/18771/",
+              "score": 2.940521,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.97026,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:b8c762144d937988",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND MEALS",
+              "provider_name": "FOOD PANTRY AND MEALS",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, service",
+              "source_url": "https://www.211info.org/agency/1439/14182/",
+              "score": 2.725677,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.862839,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:88ffc41f96d99040",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND SOCIAL SERVICES",
+              "provider_name": "FOOD PANTRY AND SOCIAL SERVICES",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, resources, service",
+              "source_url": "https://gethelp.211info.org/agency/1730/1302/",
+              "score": 2.700557,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.850278,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "page:bafkreigbedizxk2q4sttf3nbmjsr4uendeftulym5xm4aaxvcvkowqqw7a",
+              "doc_type": "page",
+              "title": "GOD'S FOOD PANTRY - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/24016/20243/",
+              "score": 2.683813,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.966906,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:814332268a1258d1",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND SOCIAL SERVICES",
+              "provider_name": "FOOD PANTRY AND SOCIAL SERVICES",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, resources, service",
+              "source_url": "https://www.211info.org/agency/1730/1302/",
+              "score": 2.614892,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.807446,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "food pantry",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:dee16df29abd6a42",
+              "doc_type": "service",
+              "title": "FOOD PANTRY PROGRAM",
+              "provider_name": "FEED'EM FREEDOM FOUNDATION THE CENTER IN PARKROSE",
+              "program_name": "FOOD PANTRY PROGRAM",
+              "categories": "eligibility, food, hours",
+              "source_url": "https://www.211info.org/get-help/food/food-pantries-african-american-community/",
+              "score": 5.4,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:66e198915827bbf8",
+              "doc_type": "service",
+              "title": "FOOD PANTRY",
+              "provider_name": "FOOD PANTRY",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/22500/18771/",
+              "score": 4.90901,
+              "score_parts": {
+                "keyword": 0.691778,
+                "vector": 0.97026,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:b8c762144d937988",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND MEALS",
+              "provider_name": "FOOD PANTRY AND MEALS",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, service",
+              "source_url": "https://www.211info.org/agency/1439/14182/",
+              "score": 3.725677,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.862839,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:88ffc41f96d99040",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND SOCIAL SERVICES",
+              "provider_name": "FOOD PANTRY AND SOCIAL SERVICES",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, resources, service",
+              "source_url": "https://gethelp.211info.org/agency/1730/1302/",
+              "score": 3.700557,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.850278,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:814332268a1258d1",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND SOCIAL SERVICES",
+              "provider_name": "FOOD PANTRY AND SOCIAL SERVICES",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, resources, service",
+              "source_url": "https://www.211info.org/agency/1730/1302/",
+              "score": 3.614892,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.807446,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreigbedizxk2q4sttf3nbmjsr4uendeftulym5xm4aaxvcvkowqqw7a",
+              "doc_type": "page",
+              "title": "GOD'S FOOD PANTRY - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/24016/20243/",
+              "score": 3.433813,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.966906,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query": "emergency shelter",
+      "expected_terms": [
+        "shelter",
+        "housing",
+        "homeless"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "emergency shelter",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:636b7c5fcf967b84",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/2578/1993/",
+              "score": 4.0,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:6872f635aec2c58f",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/1530/22832/",
+              "score": 3.733661,
+              "score_parts": {
+                "keyword": 0.86683,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:a49f4cdc7459e75c",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "eligibility, hours, housing, intake, phone, program, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/25508/21415/",
+              "score": 3.707707,
+              "score_parts": {
+                "keyword": 0.853853,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:16f6fa16c84a7bb2",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER AND TRANSITIONAL HOUSING",
+              "provider_name": "EMERGENCY SHELTER AND TRANSITIONAL HOUSING",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/11597/13227/",
+              "score": 3.707707,
+              "score_parts": {
+                "keyword": 0.853853,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:83e0d28deb6aa83a",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/3529/25680/",
+              "score": 3.688627,
+              "score_parts": {
+                "keyword": 0.844314,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:5b74560b73fa233a",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://www.211info.org/agency/2578/1993/",
+              "score": 3.193752,
+              "score_parts": {
+                "keyword": 0.846876,
+                "vector": 0.0,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "emergency shelter",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:a49f4cdc7459e75c",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "eligibility, hours, housing, intake, phone, program, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/25508/21415/",
+              "score": 3.0,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "page:bafkreif6da42j5jcy6cfewdovmf4pbjt2s7xnderaxec76zyq7wnuhzwkm",
+              "doc_type": "page",
+              "title": "EMERGENCY SHELTER - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/agency/25508/21415/",
+              "score": 2.660534,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.955267,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "page:bafkreibljki6rityuvr6q6gfkbijswzeqnqkyvbxf6ny2wgneafz4kcvya",
+              "doc_type": "page",
+              "title": "EMERGENCY SHELTER - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/25508/21415/",
+              "score": 2.541549,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.895774,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:636b7c5fcf967b84",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/2578/1993/",
+              "score": 2.448595,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.724298,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "page:bafkreibrumrztzybkhxgcmstyxbnrrsa5wra42pmrv3z5qchyyniobus5m",
+              "doc_type": "page",
+              "title": "EMERGENCY SHELTER - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/agency/2578/1993/",
+              "score": 2.363136,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.806568,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreibzdvegumul4qao337y4yir2rzwtbyr4zieldsvkl6oa2ou53wpva",
+              "doc_type": "page",
+              "title": "EMERGENCY SHELTER - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/2578/1993/",
+              "score": 2.361023,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.805511,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "emergency shelter",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:a49f4cdc7459e75c",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "eligibility, hours, housing, intake, phone, program, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/25508/21415/",
+              "score": 4.892451,
+              "score_parts": {
+                "keyword": 0.637465,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:636b7c5fcf967b84",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/2578/1993/",
+              "score": 4.848595,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.724298,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:6872f635aec2c58f",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/1530/22832/",
+              "score": 4.247385,
+              "score_parts": {
+                "keyword": 0.669656,
+                "vector": 0.654933,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:83e0d28deb6aa83a",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER",
+              "provider_name": "EMERGENCY SHELTER",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/3529/25680/",
+              "score": 4.076115,
+              "score_parts": {
+                "keyword": 0.6138,
+                "vector": 0.608397,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:16f6fa16c84a7bb2",
+              "doc_type": "service",
+              "title": "EMERGENCY SHELTER AND TRANSITIONAL HOUSING",
+              "provider_name": "EMERGENCY SHELTER AND TRANSITIONAL HOUSING",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/11597/13227/",
+              "score": 3.532011,
+              "score_parts": {
+                "keyword": 0.637465,
+                "vector": 0.31978,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreif6da42j5jcy6cfewdovmf4pbjt2s7xnderaxec76zyq7wnuhzwkm",
+              "doc_type": "page",
+              "title": "EMERGENCY SHELTER - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/agency/25508/21415/",
+              "score": 3.410534,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.955267,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query": "utility assistance",
+      "expected_terms": [
+        "utility",
+        "utilities",
+        "electric",
+        "gas",
+        "energy",
+        "liheap"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "utility assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:76584583e9f1dfe5",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/14105/2033/",
+              "score": 4.0,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:c6d1df4b87a7031f",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, food, hours, housing, intake, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/22773/10593/",
+              "score": 3.925888,
+              "score_parts": {
+                "keyword": 0.962944,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:c5009d0ca08feda9",
+              "doc_type": "service",
+              "title": "FOOD PANTRY AND UTILITY ASSISTANCE",
+              "provider_name": "FOOD PANTRY AND UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, resources, service",
+              "source_url": "https://gethelp.211info.org/agency/1147/842/",
+              "score": 3.909773,
+              "score_parts": {
+                "keyword": 0.954887,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:a1e0f166eaf5fda4",
+              "doc_type": "service",
+              "title": "Utility Assistance",
+              "provider_name": "Utility Assistance",
+              "program_name": "",
+              "categories": "eligibility, housing, phone, program, resources, service, utility",
+              "source_url": "https://gethelp.211info.org/get-help/utility-assistance/",
+              "score": 3.905922,
+              "score_parts": {
+                "keyword": 0.952961,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:6b91a50fb77dad3a",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/22772/10593/",
+              "score": 3.905575,
+              "score_parts": {
+                "keyword": 0.952788,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:8a865bbec595a291",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/590/517/",
+              "score": 3.866269,
+              "score_parts": {
+                "keyword": 0.933134,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "utility assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:a1e0f166eaf5fda4",
+              "doc_type": "service",
+              "title": "Utility Assistance",
+              "provider_name": "Utility Assistance",
+              "program_name": "",
+              "categories": "eligibility, housing, phone, program, resources, service, utility",
+              "source_url": "https://gethelp.211info.org/get-help/utility-assistance/",
+              "score": 3.0,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:8a865bbec595a291",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/590/517/",
+              "score": 2.775136,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.887568,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:8e97a5ad2d3e1530",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9641/9405/",
+              "score": 2.76254,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.88127,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:c6d1df4b87a7031f",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, food, hours, housing, intake, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/22773/10593/",
+              "score": 2.711919,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.85596,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:76584583e9f1dfe5",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/14105/2033/",
+              "score": 2.678621,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.83931,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:fcd256e858907ae3",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/13332/10132/",
+              "score": 2.672058,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.836029,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "utility assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:76584583e9f1dfe5",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/14105/2033/",
+              "score": 5.078621,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.83931,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:a1e0f166eaf5fda4",
+              "doc_type": "service",
+              "title": "Utility Assistance",
+              "provider_name": "Utility Assistance",
+              "program_name": "",
+              "categories": "eligibility, housing, phone, program, resources, service, utility",
+              "source_url": "https://gethelp.211info.org/get-help/utility-assistance/",
+              "score": 4.415118,
+              "score_parts": {
+                "keyword": 0.296513,
+                "vector": 1.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:c6d1df4b87a7031f",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, food, hours, housing, intake, phone, service, shelter",
+              "source_url": "https://gethelp.211info.org/agency/22773/10593/",
+              "score": 4.336056,
+              "score_parts": {
+                "keyword": 0.445812,
+                "vector": 0.85596,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:6b91a50fb77dad3a",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, intake, phone, service, utility",
+              "source_url": "https://gethelp.211info.org/agency/22772/10593/",
+              "score": 3.884202,
+              "score_parts": {
+                "keyword": 0.293923,
+                "vector": 0.736355,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:8a865bbec595a291",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/590/517/",
+              "score": 3.775136,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.887568,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:8e97a5ad2d3e1530",
+              "doc_type": "service",
+              "title": "UTILITY ASSISTANCE",
+              "provider_name": "UTILITY ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9641/9405/",
+              "score": 3.76254,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.88127,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query": "rental assistance",
+      "expected_terms": [
+        "rent",
+        "rental",
+        "housing"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "rental assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:77e1d59aa7d8ed5a",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, housing, intake, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/2574/13904/",
+              "score": 4.0,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:5196c2c4d679ace2",
+              "doc_type": "service",
+              "title": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "provider_name": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, hours, housing",
+              "source_url": "https://www.211info.org/get-help/diverse-populations/rental-deposit-assistance-older-adults/",
+              "score": 3.596321,
+              "score_parts": {
+                "keyword": 0.798161,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:b3cf27e4cd57d5a7",
+              "doc_type": "service",
+              "title": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "provider_name": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, hours, housing",
+              "source_url": "https://gethelp.211info.org/get-help/housing-shelter/rental-deposit-assistance-older-adults/",
+              "score": 3.596321,
+              "score_parts": {
+                "keyword": 0.798161,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:1694a859184fbd19",
+              "doc_type": "service",
+              "title": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "provider_name": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, hours, housing",
+              "source_url": "https://gethelp.211info.org/get-help/diverse-populations/rental-deposit-assistance-older-adults/",
+              "score": 3.596321,
+              "score_parts": {
+                "keyword": 0.798161,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:1fa376c024361086",
+              "doc_type": "service",
+              "title": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "provider_name": "NORTHWEST PILOT PROJECT RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "eligibility, hours, housing",
+              "source_url": "https://www.211info.org/get-help/housing-shelter/rental-deposit-assistance-older-adults/",
+              "score": 3.596321,
+              "score_parts": {
+                "keyword": 0.798161,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:7eda6b423f65d456",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "IMPACT NW DANCING TREE RESOURCE CENTER HOUSING AND",
+              "program_name": "RENTAL ASSISTANCE",
+              "categories": "eligibility, hours, housing",
+              "source_url": "https://www.211info.org/get-help/housing-shelter/rental-deposit-assistance-slavic-community/",
+              "score": 3.398927,
+              "score_parts": {
+                "keyword": 0.699464,
+                "vector": 0.0,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "rental assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:03791908793021c4",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, resources, service",
+              "source_url": "https://gethelp.211info.org/agency/3781/22645/",
+              "score": 2.662124,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.831062,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:d8ab317a2e98013b",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9932/7383/",
+              "score": 2.620556,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.810278,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:fec0b2612f0fc55e",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/6113/13059/",
+              "score": 2.619356,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.809678,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:702bce634e101bc1",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9943/7383/",
+              "score": 2.544671,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.772336,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:77e1d59aa7d8ed5a",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, housing, intake, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/2574/13904/",
+              "score": 2.487348,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.743674,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:1b6e1c18557fb6a5",
+              "doc_type": "service",
+              "title": "EMERGENCY RENTAL ASSISTANCE",
+              "provider_name": "EMERGENCY RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, mental health, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/21710/18009/",
+              "score": 2.458606,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.729303,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "rental assistance",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:77e1d59aa7d8ed5a",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, food, hours, housing, intake, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/2574/13904/",
+              "score": 4.887348,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.743674,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:03791908793021c4",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, resources, service",
+              "source_url": "https://gethelp.211info.org/agency/3781/22645/",
+              "score": 3.662124,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.831062,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:d8ab317a2e98013b",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9932/7383/",
+              "score": 3.620556,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.810278,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:fec0b2612f0fc55e",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/6113/13059/",
+              "score": 3.619356,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.809678,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:702bce634e101bc1",
+              "doc_type": "service",
+              "title": "RENTAL ASSISTANCE",
+              "provider_name": "RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, phone, program, service",
+              "source_url": "https://gethelp.211info.org/agency/9943/7383/",
+              "score": 3.544671,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.772336,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:1b6e1c18557fb6a5",
+              "doc_type": "service",
+              "title": "EMERGENCY RENTAL ASSISTANCE",
+              "provider_name": "EMERGENCY RENTAL ASSISTANCE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, housing, intake, mental health, phone, program",
+              "source_url": "https://gethelp.211info.org/agency/21710/18009/",
+              "score": 3.458606,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.729303,
+                "metadata": 2.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query": "mental health crisis support",
+      "expected_terms": [
+        "mental",
+        "crisis",
+        "behavioral",
+        "counseling"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "mental health crisis support",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 2.0,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 1.989224,
+              "score_parts": {
+                "keyword": 0.994612,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "page:bafkreia6h5tlcj6y5shdaelpub7aqnel6zre4vrh76gky6wo7ym5jrpwji",
+              "doc_type": "page",
+              "title": "Suicide Prevention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/crisis-hotlines/suicide-prevention-hotlines/",
+              "score": 1.986271,
+              "score_parts": {
+                "keyword": 0.993135,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "page:bafkreidvpgtjmdf57q6fl5qeuw7rxhd2uq2au5crs3igzofg3lbdjtxwzm",
+              "doc_type": "page",
+              "title": "Suicide Prevention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/crisis-hotlines/suicide-prevention-hotlines/",
+              "score": 1.974579,
+              "score_parts": {
+                "keyword": 0.98729,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "page:bafkreia77zfd45b5necf6cvklqkajhoyeat4b65svmh3oyudvzc246lht4",
+              "doc_type": "page",
+              "title": "General Crisis Intervention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/crisis-hotlines/general-crisis-intervention-hotlines/",
+              "score": 1.940211,
+              "score_parts": {
+                "keyword": 0.970106,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreidrpog5gdxdwj5jyf6voejgtuh672fj6gotuqu7tvbbsxv5jfz34e",
+              "doc_type": "page",
+              "title": "General Crisis Intervention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/crisis-hotlines/general-crisis-intervention-hotlines/",
+              "score": 1.931255,
+              "score_parts": {
+                "keyword": 0.965627,
+                "vector": 0.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "mental health crisis support",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "page:bafkreia77zfd45b5necf6cvklqkajhoyeat4b65svmh3oyudvzc246lht4",
+              "doc_type": "page",
+              "title": "General Crisis Intervention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/crisis-hotlines/general-crisis-intervention-hotlines/",
+              "score": 2.0,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 1.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:a5098bd5c7a0012d",
+              "doc_type": "service",
+              "title": "MOBILE RESPONSE AND STABILIZATION SERVICES",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, program, service",
+              "source_url": "https://www.211info.org/agency/8745/6393/",
+              "score": 1.780076,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.890038,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 1.770775,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.885388,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "page:bafkreifm2ufueps7d3gqwqh3z5qktadxdxd3uuzlge77ynu42o52ylwyka",
+              "doc_type": "page",
+              "title": "CCMH CRISIS LINE - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/5933/6939/",
+              "score": 1.694358,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.847179,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "page:bafkreib2mlhzydblqlypuedxqyffx5yxlmiaqiryqgo2ta5ip4lpbhz34u",
+              "doc_type": "page",
+              "title": "CLACKAMAS COUNTY CRISIS AND SUPPORT LINE - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/13263/10080/",
+              "score": 1.628077,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.814039,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 1.580528,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.790264,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "mental health crisis support",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 3.170775,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.885388,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta",
+              "doc_type": "page",
+              "title": "Mental Health Crisis Lines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/mental-behavioral-health/mental-health-crisis-lines/",
+              "score": 2.761065,
+              "score_parts": {
+                "keyword": 0.843241,
+                "vector": 0.790264,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "page:bafkreia77zfd45b5necf6cvklqkajhoyeat4b65svmh3oyudvzc246lht4",
+              "doc_type": "page",
+              "title": "General Crisis Intervention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/crisis-hotlines/general-crisis-intervention-hotlines/",
+              "score": 2.1824,
+              "score_parts": {
+                "keyword": 0.130286,
+                "vector": 1.0,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "page:bafkreia6h5tlcj6y5shdaelpub7aqnel6zre4vrh76gky6wo7ym5jrpwji",
+              "doc_type": "page",
+              "title": "Suicide Prevention Hotlines - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/crisis-hotlines/suicide-prevention-hotlines/",
+              "score": 2.14573,
+              "score_parts": {
+                "keyword": 0.800287,
+                "vector": 0.512664,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:a5098bd5c7a0012d",
+              "doc_type": "service",
+              "title": "MOBILE RESPONSE AND STABILIZATION SERVICES",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, mental health, phone, program, service",
+              "source_url": "https://www.211info.org/agency/8745/6393/",
+              "score": 1.780076,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.890038,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "page:bafkreifm2ufueps7d3gqwqh3z5qktadxdxd3uuzlge77ynu42o52ylwyka",
+              "doc_type": "page",
+              "title": "CCMH CRISIS LINE - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/agency/5933/6939/",
+              "score": 1.694358,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.847179,
+                "metadata": 0.0
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query": "transportation",
+      "expected_terms": [
+        "transportation",
+        "ride",
+        "transit",
+        "bus"
+      ],
+      "passed": true,
+      "modes": [
+        {
+          "mode": "keyword",
+          "query": "transportation",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:0ef9018f304f1bf4",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://gethelp.211info.org/get-help/transportation/",
+              "score": 4.339929,
+              "score_parts": {
+                "keyword": 0.919965,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:cc5fddb475349550",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/",
+              "score": 4.339929,
+              "score_parts": {
+                "keyword": 0.919965,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:7ff9da2d4af888f8",
+              "doc_type": "service",
+              "title": "TRANSPORTATION SERVICES",
+              "provider_name": "IMPACT NW SOUTHEAST MULTICULTURAL SENIOR CENTER",
+              "program_name": "TRANSPORTATION SERVICES",
+              "categories": "eligibility, food, hours, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/transportation-passes-older-adults/",
+              "score": 3.922857,
+              "score_parts": {
+                "keyword": 0.711429,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:b4ba64771acf96e5",
+              "doc_type": "service",
+              "title": "TRANSPORTATION SERVICES",
+              "provider_name": "IMPACT NW SOUTHEAST MULTICULTURAL SENIOR CENTER",
+              "program_name": "TRANSPORTATION SERVICES",
+              "categories": "eligibility, food, hours, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/transportation-passes-adults-with-disabilities-health-conditions/",
+              "score": 3.906891,
+              "score_parts": {
+                "keyword": 0.703446,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:1de714d22a47cfda",
+              "doc_type": "service",
+              "title": "ASSISTED TRANSPORTATION",
+              "provider_name": "ASSISTED TRANSPORTATION",
+              "program_name": "",
+              "categories": "eligibility, hours, intake, phone, program, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/28904/25731/",
+              "score": 3.839692,
+              "score_parts": {
+                "keyword": 0.669846,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:d5d4ac236c6cd15c",
+              "doc_type": "service",
+              "title": "NON-EMERGENCY MEDICAL TRANSPORTATION",
+              "provider_name": "NON-EMERGENCY MEDICAL TRANSPORTATION",
+              "program_name": "",
+              "categories": "eligibility, hours, intake, phone, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/29906/25876/",
+              "score": 3.651279,
+              "score_parts": {
+                "keyword": 0.575639,
+                "vector": 0.0,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "vector",
+          "query": "transportation",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:a43c9f3f26565801",
+              "doc_type": "service",
+              "title": "TRANSPORTATION",
+              "provider_name": "TRANSPORTATION",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, program, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/13277/14826/",
+              "score": 3.120517,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.935259,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:0ef9018f304f1bf4",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://gethelp.211info.org/get-help/transportation/",
+              "score": 2.934584,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.842292,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:cc5fddb475349550",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/",
+              "score": 2.909191,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.829595,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+              "doc_type": "page",
+              "title": "Transportation - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://gethelp.211info.org/get-help/transportation/",
+              "score": 2.75,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 1.0,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+              "doc_type": "page",
+              "title": "Transportation - 211info",
+              "provider_name": "",
+              "program_name": "",
+              "categories": "",
+              "source_url": "https://www.211info.org/get-help/transportation/",
+              "score": 2.69242,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.97121,
+                "metadata": 1.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:98ac0349caf0cda6",
+              "doc_type": "service",
+              "title": "SISTERS TRANSPORTATION AND RIDE SHARE",
+              "provider_name": "SISTERS TRANSPORTATION AND RIDE SHARE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/29880/25864/",
+              "score": 2.567004,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.658502,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        },
+        {
+          "mode": "hybrid",
+          "query": "transportation",
+          "passed": true,
+          "top_k": 5,
+          "top_results": [
+            {
+              "rank": 1,
+              "doc_id": "service:0ef9018f304f1bf4",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://gethelp.211info.org/get-help/transportation/",
+              "score": 5.584584,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.842292,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 2,
+              "doc_id": "service:cc5fddb475349550",
+              "doc_type": "service",
+              "title": "Transportation",
+              "provider_name": "Transportation",
+              "program_name": "",
+              "categories": "program, resources, service, shelter, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/",
+              "score": 5.559191,
+              "score_parts": {
+                "keyword": 1.0,
+                "vector": 0.829595,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 3,
+              "doc_id": "service:a43c9f3f26565801",
+              "doc_type": "service",
+              "title": "TRANSPORTATION",
+              "provider_name": "TRANSPORTATION",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, program, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/13277/14826/",
+              "score": 4.370517,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.935259,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 4,
+              "doc_id": "service:7ff9da2d4af888f8",
+              "doc_type": "service",
+              "title": "TRANSPORTATION SERVICES",
+              "provider_name": "IMPACT NW SOUTHEAST MULTICULTURAL SENIOR CENTER",
+              "program_name": "TRANSPORTATION SERVICES",
+              "categories": "eligibility, food, hours, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/transportation-passes-older-adults/",
+              "score": 4.153543,
+              "score_parts": {
+                "keyword": 0.394363,
+                "vector": 0.550717,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 5,
+              "doc_id": "service:b4ba64771acf96e5",
+              "doc_type": "service",
+              "title": "TRANSPORTATION SERVICES",
+              "provider_name": "IMPACT NW SOUTHEAST MULTICULTURAL SENIOR CENTER",
+              "program_name": "TRANSPORTATION SERVICES",
+              "categories": "eligibility, food, hours, transportation",
+              "source_url": "https://www.211info.org/get-help/transportation/transportation-passes-adults-with-disabilities-health-conditions/",
+              "score": 4.088015,
+              "score_parts": {
+                "keyword": 0.371178,
+                "vector": 0.534182,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            },
+            {
+              "rank": 6,
+              "doc_id": "service:98ac0349caf0cda6",
+              "doc_type": "service",
+              "title": "SISTERS TRANSPORTATION AND RIDE SHARE",
+              "provider_name": "SISTERS TRANSPORTATION AND RIDE SHARE",
+              "program_name": "",
+              "categories": "address, eligibility, hours, intake, phone, service, transportation",
+              "source_url": "https://gethelp.211info.org/agency/29880/25864/",
+              "score": 3.817004,
+              "score_parts": {
+                "keyword": 0.0,
+                "vector": 0.658502,
+                "metadata": 2.5
+              },
+              "matched_expected_terms": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

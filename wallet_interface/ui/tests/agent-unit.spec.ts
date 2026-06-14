@@ -83,6 +83,14 @@ import type { ClientLlmPromptInput } from "../src/lib/clientLlmPrompting";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { answer211InfoQuestion, build211InfoFallbackSummary } from "../src/services/graphRagService";
+import {
+  createWalletWorldIdRpSignature,
+  isWorldIdWalletApiError,
+  loadWalletWorldIdConfig,
+  loadWalletWorldIdStatus,
+  registerWalletWorldIdVerification,
+  revokeWalletWorldIdBinding,
+} from "../src/services/walletApi";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 import { resolvePublicHttpsUrl } from "../src/lib/publicEndpointPolicy";
@@ -254,6 +262,41 @@ function installMemoryLocalStorage() {
     } else {
       delete (globalThis as { localStorage?: Storage }).localStorage;
     }
+  };
+}
+
+interface FetchMockCall {
+  url: string;
+  method: string;
+  body?: unknown;
+}
+
+function installJsonFetchMock(
+  handler: (call: FetchMockCall) => { status?: number; json?: unknown; text?: string },
+) {
+  const originalFetch = globalThis.fetch;
+  const calls: FetchMockCall[] = [];
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+    const body = typeof init?.body === "string" ? JSON.parse(init.body) as unknown : undefined;
+    const call = {
+      url,
+      method: init?.method ?? "GET",
+      body,
+    };
+    calls.push(call);
+    const result = handler(call);
+    const status = result.status ?? 200;
+    return new Response(result.text ?? JSON.stringify(result.json ?? {}), {
+      headers: { "Content-Type": "application/json" },
+      status,
+    });
+  }) as typeof fetch;
+  return {
+    calls,
+    restore: () => {
+      globalThis.fetch = originalFetch;
+    },
   };
 }
 
