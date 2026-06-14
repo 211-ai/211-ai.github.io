@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import io
 import json
+import zipfile
 from pathlib import Path
+from typing import Mapping, Sequence
 
 from fastapi.testclient import TestClient
 
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
+import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 
@@ -1831,13 +1835,31 @@ def test_wallet_api_storage_health_and_repair() -> None:
     assert response.status_code == 200
     record = response.json()
 
-    assert inbound_response.status_code == 200
-    inbound_message = inbound_response.json()["message"]
-    assert inbound_message["wallet_id"] == wallet["wallet_id"]
-    assert inbound_message["metadata"]["phoneIdentityCids"]["from_phone"] == phone_cid
+    response = client.get(f"/wallets/{wallet['wallet_id']}/storage")
+    assert response.status_code == 200
+    wallet_report = response.json()
+    assert wallet_report["ok"] is True
+    assert wallet_report["record_count"] == 1
+    assert wallet_report["replica_count"] == 2
+    assert wallet_report["storage_types"] == {"memory": 2}
+    assert wallet_report["reports"][0]["record_id"] == record["record_id"]
 
-    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
-    assert restored_service.phone_identity_links[phone_cid] == [wallet["wallet_id"]]
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/storage/repair",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    wallet_repair = response.json()
+    assert wallet_repair["ok"] is True
+    assert wallet_repair["repaired_replica_count"] == 0
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/storage/repair",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    repair = response.json()
+    assert repair["ok"] is True
 
 
 def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch) -> None:
@@ -2226,36 +2248,35 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
     from ipfs_datasets_py import llm_router
 
     prompts: list[dict[str, object]] = []
+    expected_text = "Food pantries near Portland may be open today. What ZIP code should I search around?"
 
-    response = client.get(f"/wallets/{wallet['wallet_id']}/storage")
-    assert response.status_code == 200
-    wallet_report = response.json()
-    assert wallet_report["ok"] is True
-    assert wallet_report["record_count"] == 1
-    assert wallet_report["replica_count"] == 2
-    assert wallet_report["storage_types"] == {"memory": 2}
-    assert wallet_report["reports"][0]["record_id"] == record["record_id"]
+    def fake_generate_text(prompt: str, *, model_name: str, provider: str, **kwargs: object) -> str:
+        prompts.append({"prompt": prompt, "model_name": model_name, "provider": provider, "kwargs": kwargs})
+        return expected_text
 
+    def fake_tts(**kwargs: object) -> dict[str, object]:
+        assert kwargs["text"] == expected_text
+        return {"audioBase64": "UklGRnN0dWJXQVZF", "mimeType": "audio/wav", "latency": {"tts_request_ms": 1}}
+
+    monkeypatch.setattr(llm_router, "generate_text", fake_generate_text)
+    monkeypatch.setattr(wallet_api_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
+    monkeypatch.setenv("WALLET_VOICE_LLM_MODEL", "Qwen/Qwen3.5-2B")
+
+    client = _client()
     response = client.post(
-        f"/wallets/{wallet['wallet_id']}/storage/repair",
-        json={"actor_did": "did:key:owner"},
+        "/voice/indextts/infer",
+        data={
+            "mode": "voice-reply",
+            "userPrompt": "I need food help",
+            "fallbackText": "I can help search for food resources.",
+        },
     )
-    assert response.status_code == 200
-    wallet_repair = response.json()
-    assert wallet_repair["ok"] is True
-    assert wallet_repair["repaired_replica_count"] == 0
-
-    response = client.post(
-        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/storage/repair",
-        json={"actor_did": "did:key:owner"},
-    )
-    assert response.status_code == 200
-    repair = response.json()
-    assert repair["ok"] is True
 
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["text"] == "Food pantries near Portland may be open today. What ZIP code should I search around?"
+    assert body["audioBase64"] == "UklGRnN0dWJXQVZF"
+    assert body["mimeType"] == "audio/wav"
+    assert body["text"] == expected_text
     assert body["latency"]["llm_request_ms"] >= 0
     assert body["latency"]["llm_model"] == "Qwen/Qwen3.5-2B"
     assert prompts and "I need food help" in str(prompts[0]["prompt"])

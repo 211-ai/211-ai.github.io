@@ -215,7 +215,7 @@ Track guide:
 - Acceptance: Wallet QR proof bundles and encrypted export bundles include sanitized World ID proof metadata while excluding raw nullifiers, IDKit proofs, Developer Portal responses, RP signatures, and user PII; imported QR review displays the sanitized World ID proof correctly.
 
 ## WORLDID-170 Backend API Regression Tests
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: quality

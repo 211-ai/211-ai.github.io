@@ -12,8 +12,15 @@ import json
 import math
 import mimetypes
 import os
+import re
+import struct
 import threading
-from typing import Any, Dict, List, Sequence
+import time
+import uuid
+import wave
+import zipfile
+from typing import Any, Dict, List, Mapping, Sequence
+from urllib import error as urllib_error, parse as urllib_parse, request as urllib_request
 
 from .app_service import WalletInterfaceService
 from .world_id import WorldIdVerificationError
@@ -51,6 +58,31 @@ def _cors_origins_from_env() -> list[str]:
         if origin.strip()
     ]
     return origins
+
+
+def _send_sms_notification(**kwargs: Any) -> Dict[str, Any]:
+    webhook_url = os.getenv("WALLET_SMS_WEBHOOK_URL", "").strip()
+    if not webhook_url:
+        return {
+            "provider": "disabled",
+            "provider_status": "not_configured",
+            "provider_message_id": "",
+        }
+
+    payload = json.dumps(kwargs).encode("utf-8")
+    timeout_seconds = float(os.getenv("WALLET_SMS_WEBHOOK_TIMEOUT_SECONDS", "10"))
+    request = urllib_request.Request(
+        webhook_url,
+        data=payload,
+        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        method="POST",
+    )
+    with urllib_request.urlopen(request, timeout=timeout_seconds) as response:
+        raw = response.read()
+    if not raw:
+        return {"provider": "webhook", "provider_status": "queued", "provider_message_id": ""}
+    parsed = json.loads(raw.decode("utf-8"))
+    return dict(parsed) if isinstance(parsed, Mapping) else {"provider": "webhook", "provider_status": "queued"}
 
 
 class CreateWalletRequest(BaseModel):
@@ -2440,6 +2472,27 @@ def _wallet_router_rate_limit_per_day() -> int:
         return 500
 
 
+def _prepare_hf_router_environment(kwargs: Mapping[str, Any] | None = None) -> Dict[str, Any]:
+    prepared = dict(kwargs or {})
+    token = (
+        resolve_secret(
+            "WALLET_AI_ROUTER_HF_TOKEN",
+            "WALLET_INDEXTTS_HF_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+        )
+        or ""
+    ).strip()
+    if token:
+        os.environ.setdefault("HF_TOKEN", token)
+        os.environ.setdefault("HUGGINGFACEHUB_API_TOKEN", token)
+        prepared.setdefault("token", token)
+        prepared.setdefault("api_key", token)
+    return prepared
+
+
 def _check_wallet_router_rate_limit(wallet_subject: str, *, cost: int = 1) -> Dict[str, Any]:
     subject = wallet_subject or "unknown-wallet"
     now = time.time()
@@ -2773,20 +2826,27 @@ def _build_privacy_vector_terms(outputs: Sequence[Mapping[str, Any]], public_inp
     return normalized[:24]
 
 
+_DEFAULT_INDEXTTS_SPACE_URL = "https://publicus-indextts-2-demo.hf.space"
+_DEFAULT_INDEXTTS_FALLBACK_SPACE_URL = "https://indexteam-indextts-2-demo.hf.space"
+
+
 def _indextts_space_base_url() -> str:
     override = str(getattr(_INDEXTTS_ACTIVE_SPACE_URL, "value", "") or "").strip().rstrip("/")
     if override:
         return override
-    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space").strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", _DEFAULT_INDEXTTS_SPACE_URL).strip().rstrip("/")
 
 
 def _indextts_fallback_space_base_url() -> str:
-    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", _DEFAULT_INDEXTTS_FALLBACK_SPACE_URL).strip().rstrip("/")
 
 
 def _indextts_space_base_urls() -> List[str]:
     urls: List[str] = []
-    for candidate in (_indextts_space_base_url(), _indextts_fallback_space_base_url()):
+    primary = _indextts_space_base_url()
+    explicit_fallback = os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "").strip().rstrip("/")
+    fallback = explicit_fallback or (_DEFAULT_INDEXTTS_FALLBACK_SPACE_URL if primary == _DEFAULT_INDEXTTS_SPACE_URL else "")
+    for candidate in (primary, fallback):
         normalized = str(candidate or "").strip().rstrip("/")
         if normalized and normalized not in urls:
             urls.append(normalized)
@@ -3842,7 +3902,7 @@ def _indextts_attempt_timeout_seconds(space_index: int, total_spaces: int) -> fl
 
 
 def _indextts_degraded_fast_fail_enabled() -> bool:
-    value = str(os.getenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "true")).strip().lower()
+    value = str(os.getenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "false")).strip().lower()
     return value in {"1", "true", "yes", "on"}
 
 
