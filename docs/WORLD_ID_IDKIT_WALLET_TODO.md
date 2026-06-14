@@ -245,7 +245,7 @@ Track guide:
 - Acceptance: A workflow matrix maps Proof Center, Wallet/uploads, Register/intake, Security, QR proof review, and export/import journeys to backend routes, TypeScript API calls, user-visible states, error/fallback copy, privacy no-leak assertions, and desktop/mobile Playwright coverage; shared fixtures provide deterministic IDKit, RP signature, status, proof receipt, conflict, revoke, and sanitizer sentinel payloads.
 
 ## WORLDID-182 Full-Stack World ID Playwright Harness
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
