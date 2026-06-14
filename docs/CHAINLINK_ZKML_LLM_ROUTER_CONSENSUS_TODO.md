@@ -393,7 +393,7 @@ Track guide:
 - Acceptance: The TypeScript wallet API client exposes sanitized consensus metadata and typed fail-closed errors, and the UI shows precise direct/consensus/CRE/ZKML/TEE/manual-review state on recipient access derived artifacts, wallet/uploads profiling, Proof Center proof cards, Security/audit events, provider eligibility claims, and public analytics/proof dashboards without labeling receipt-only or TEE evidence as mathematical ZK proof.
 
 ## CLZKML-283 Backend/UI Consensus Contract Regression Tests
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: quality
