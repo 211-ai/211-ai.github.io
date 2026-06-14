@@ -9,6 +9,8 @@ Covers all four verifier classes with scenarios for:
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from ipfs_accelerate_py.proof_verifiers import (
@@ -30,12 +32,30 @@ def _ctx(
     output_hash: str = "sha256:out-xyz",
     model_commitment: str = "sha256:model-v1",
     nonce: str = "nonce-unique-1",
+    tokenizer_commitment: str = "sha256:tokenizer-v1",
+    circuit_commitment: str = "sha256:circuit-v1",
+    input_commitment: str = "sha256:input-abc",
+    output_commitment: str = "sha256:output-xyz",
+    public_inputs_hash: str = "sha256:pub-inputs",
+    verifier_key_hash: str = "vk:sha256:pinned-key",
+    circuit_version: str = "1.0.0",
+    proof_cid: str = "",
+    proof_bytes_hash: str = "",
 ) -> ProofContext:
     return ProofContext(
         request_hash=request_hash,
         output_hash=output_hash,
         model_commitment=model_commitment,
         nonce=nonce,
+        tokenizer_commitment=tokenizer_commitment,
+        circuit_commitment=circuit_commitment,
+        input_commitment=input_commitment,
+        output_commitment=output_commitment,
+        public_inputs_hash=public_inputs_hash,
+        verifier_key_hash=verifier_key_hash,
+        circuit_version=circuit_version,
+        proof_cid=proof_cid,
+        proof_bytes_hash=proof_bytes_hash,
     )
 
 
@@ -101,10 +121,18 @@ def _zkml_verifier() -> ZKMLVerifier:
     )
 
 
+def _proof_bytes_hash(proof_bytes: str = "0xdeadbeef") -> str:
+    return "sha256:" + hashlib.sha256(proof_bytes.encode("utf-8")).hexdigest()
+
+
 def _zkml_meta(
     request_hash: str = "sha256:req-abc",
     output_hash: str = "sha256:out-xyz",
     model_commitment: str = "sha256:model-v1",
+    tokenizer_commitment: str = "sha256:tokenizer-v1",
+    circuit_commitment: str = "sha256:circuit-v1",
+    input_commitment: str = "sha256:input-abc",
+    output_commitment: str = "sha256:output-xyz",
     verifier_key_hash: str = "vk:sha256:pinned-key",
     circuit_id: str = "circuit-llm-checker-v1",
     circuit_version: str = "1.0.0",
@@ -116,6 +144,10 @@ def _zkml_meta(
         "request_hash": request_hash,
         "output_hash": output_hash,
         "model_commitment": model_commitment,
+        "tokenizer_commitment": tokenizer_commitment,
+        "circuit_commitment": circuit_commitment,
+        "input_commitment": input_commitment,
+        "output_commitment": output_commitment,
         "verifier_key_hash": verifier_key_hash,
         "circuit_id": circuit_id,
         "circuit_version": circuit_version,
@@ -477,6 +509,67 @@ class TestZKMLVerifier:
         assert result.verified is False
         assert result.reason == "model_commitment_mismatch"
 
+    def test_missing_tokenizer_commitment_fails_when_context_requires_it(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta()
+        del meta["tokenizer_commitment"]
+        result = verifier.verify(meta, _ctx(circuit_commitment=""))
+        assert result.verified is False
+        assert result.reason == "tokenizer_commitment_missing"
+
+    def test_circuit_commitment_can_bind_without_tokenizer_commitment(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(tokenizer_commitment="")
+        del meta["tokenizer_commitment"]
+        result = verifier.verify(meta, _ctx(tokenizer_commitment=""))
+        assert result.verified is True
+
+    def test_missing_tokenizer_or_circuit_context_fails_closed(self) -> None:
+        verifier = _zkml_verifier()
+        result = verifier.verify(
+            _zkml_meta(),
+            _ctx(tokenizer_commitment="", circuit_commitment=""),
+        )
+        assert result.verified is False
+        assert result.reason == "context_tokenizer_or_circuit_commitment_missing"
+
+    def test_mismatched_circuit_commitment_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(circuit_commitment="sha256:wrong-circuit")
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "circuit_commitment_mismatch"
+
+    def test_missing_input_commitment_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta()
+        del meta["input_commitment"]
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "input_commitment_missing"
+
+    def test_mismatched_input_commitment_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(input_commitment="sha256:wrong-input")
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "input_commitment_mismatch"
+
+    def test_missing_output_commitment_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta()
+        del meta["output_commitment"]
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "output_commitment_missing"
+
+    def test_mismatched_output_commitment_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(output_commitment="sha256:wrong-output")
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "output_commitment_mismatch"
+
     def test_missing_verifier_key_hash_fails(self) -> None:
         verifier = _zkml_verifier()
         meta = _zkml_meta()
@@ -522,6 +615,12 @@ class TestZKMLVerifier:
         assert result.verified is False
         assert result.reason == "circuit_version_mismatch"
 
+    def test_context_circuit_version_mismatch_fails(self) -> None:
+        verifier = _zkml_verifier()
+        result = verifier.verify(_zkml_meta(), _ctx(circuit_version="1.0.1"))
+        assert result.verified is False
+        assert result.reason == "circuit_version_mismatch"
+
     def test_missing_public_inputs_hash_fails(self) -> None:
         verifier = _zkml_verifier()
         meta = _zkml_meta()
@@ -529,6 +628,19 @@ class TestZKMLVerifier:
         result = verifier.verify(meta, _ctx())
         assert result.verified is False
         assert result.reason == "public_inputs_hash_missing"
+
+    def test_context_public_inputs_hash_missing_fails(self) -> None:
+        verifier = _zkml_verifier()
+        result = verifier.verify(_zkml_meta(), _ctx(public_inputs_hash=""))
+        assert result.verified is False
+        assert result.reason == "context_public_inputs_hash_missing"
+
+    def test_mismatched_public_inputs_hash_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(public_inputs_hash="sha256:wrong-public-inputs")
+        result = verifier.verify(meta, _ctx())
+        assert result.verified is False
+        assert result.reason == "public_inputs_hash_mismatch"
 
     def test_missing_proof_data_fails(self) -> None:
         verifier = _zkml_verifier()
@@ -544,8 +656,44 @@ class TestZKMLVerifier:
         meta = _zkml_meta()
         del meta["proof_bytes"]
         meta["proof_cid"] = "bafy-proof-cid"
-        result = verifier.verify(meta, _ctx())
+        result = verifier.verify(meta, _ctx(proof_cid="bafy-proof-cid"))
         assert result.verified is True
+
+    def test_bound_proof_bytes_hash_mismatch_fails(self) -> None:
+        verifier = _zkml_verifier()
+        result = verifier.verify(
+            _zkml_meta(proof_bytes="0xdeadbeef"),
+            _ctx(proof_bytes_hash=_proof_bytes_hash("0xother-proof")),
+        )
+        assert result.verified is False
+        assert result.reason == "proof_bytes_hash_mismatch"
+
+    def test_bound_proof_bytes_hash_is_accepted(self) -> None:
+        verifier = _zkml_verifier()
+        result = verifier.verify(
+            _zkml_meta(proof_bytes="0xdeadbeef"),
+            _ctx(proof_bytes_hash=_proof_bytes_hash("0xdeadbeef")),
+        )
+        assert result.verified is True
+
+    def test_bound_proof_bytes_hash_accepts_metadata_that_also_has_cid(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta(proof_bytes="0xdeadbeef")
+        meta["proof_cid"] = "bafy-proof-cid"
+        result = verifier.verify(
+            meta,
+            _ctx(proof_bytes_hash=_proof_bytes_hash("0xdeadbeef")),
+        )
+        assert result.verified is True
+
+    def test_bound_proof_cid_mismatch_fails(self) -> None:
+        verifier = _zkml_verifier()
+        meta = _zkml_meta()
+        del meta["proof_bytes"]
+        meta["proof_cid"] = "bafy-proof-cid"
+        result = verifier.verify(meta, _ctx(proof_cid="bafy-other-proof"))
+        assert result.verified is False
+        assert result.reason == "proof_cid_mismatch"
 
     def test_replayed_nonce_fails(self) -> None:
         verifier = _zkml_verifier()
@@ -559,6 +707,21 @@ class TestZKMLVerifier:
         assert second.verified is False
         assert second.reason == "replayed_nonce"
 
+    def test_same_proof_replayed_across_requests_fails(self) -> None:
+        verifier = _zkml_verifier()
+        first = verifier.verify(
+            _zkml_meta(request_hash="sha256:req-a", nonce="nonce-zkml-a"),
+            _ctx(request_hash="sha256:req-a", nonce="nonce-zkml-a"),
+        )
+        assert first.verified is True
+
+        replay = verifier.verify(
+            _zkml_meta(request_hash="sha256:req-b", nonce="nonce-zkml-b"),
+            _ctx(request_hash="sha256:req-b", nonce="nonce-zkml-b"),
+        )
+        assert replay.verified is False
+        assert replay.reason == "proof_replayed_for_different_request"
+
     def test_empty_proof_meta_fails(self) -> None:
         verifier = _zkml_verifier()
         result = verifier.verify({}, _ctx())
@@ -570,6 +733,9 @@ class TestZKMLVerifier:
         assert result.metadata["circuit_id"] == "circuit-llm-checker-v1"
         assert result.metadata["circuit_version"] == "1.0.0"
         assert result.metadata["public_inputs_hash"] == "sha256:pub-inputs"
+        assert result.metadata["proof_reference_type"] == "proof_bytes_hash"
+        assert result.metadata["proof_reference"] == _proof_bytes_hash()
+        assert result.metadata["proof_envelope_hash"].startswith("sha256:")
 
 
 # ===========================================================================

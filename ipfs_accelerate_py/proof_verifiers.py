@@ -29,6 +29,8 @@ All verifiers perform:
 from __future__ import annotations
 
 import abc
+import hashlib
+import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
@@ -44,12 +46,32 @@ class ProofContext:
         model_commitment: Commitment to the model artefact (may be empty string
             when the verifier policy does not require model binding).
         nonce: Per-request nonce used for replay prevention.
+        tokenizer_commitment: Commitment to the tokenizer artefact for ZKML
+            proof public inputs.
+        circuit_commitment: Commitment to the proving circuit. ZKML proofs must
+            bind either tokenizer or circuit commitment.
+        input_commitment: Commitment to the proven input payload.
+        output_commitment: Commitment to the proven output payload.
+        public_inputs_hash: Hash of the complete public input vector.
+        verifier_key_hash: Hash of the pinned verifier key.
+        circuit_version: Version of the proving circuit expected by the request.
+        proof_cid: Expected proof CID when proof data is content-addressed.
+        proof_bytes_hash: Expected SHA-256 commitment to inline proof bytes.
     """
 
     request_hash: str
     output_hash: str
     model_commitment: str = ""
     nonce: str = ""
+    tokenizer_commitment: str = ""
+    circuit_commitment: str = ""
+    input_commitment: str = ""
+    output_commitment: str = ""
+    public_inputs_hash: str = ""
+    verifier_key_hash: str = ""
+    circuit_version: str = ""
+    proof_cid: str = ""
+    proof_bytes_hash: str = ""
 
 
 @dataclass
@@ -547,6 +569,10 @@ class ZKMLVerifier(ProofVerifier):
     - ``request_hash``: bound to the consensus request.
     - ``output_hash``: bound to the quorum-selected output.
     - ``model_commitment``: bound to the model artefact.
+    - ``tokenizer_commitment`` or ``circuit_commitment``: bound to tokenizer or
+      circuit artefacts used by the public inputs.
+    - ``input_commitment``: commitment to the proven input payload.
+    - ``output_commitment``: commitment to the proven output payload.
     - ``verifier_key_hash``: hash of the pinned verifier key.
     - ``circuit_id``: identifier of the proving circuit.
     - ``circuit_version``: version of the proving circuit.
@@ -571,6 +597,186 @@ class ZKMLVerifier(ProofVerifier):
         self._expected_circuit_id = expected_circuit_id
         self._expected_circuit_version = expected_circuit_version
         self._seen_nonces: set[str] = set()
+        self._seen_proof_material: dict[str, str] = {}
+
+    @staticmethod
+    def _stable_hash(payload: dict[str, Any]) -> str:
+        encoded = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        ).encode("utf-8")
+        return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+    @staticmethod
+    def _proof_bytes_hash(proof_bytes: Any) -> str:
+        if isinstance(proof_bytes, bytes):
+            raw = proof_bytes
+        elif isinstance(proof_bytes, bytearray):
+            raw = bytes(proof_bytes)
+        elif isinstance(proof_bytes, str):
+            raw = proof_bytes.encode("utf-8")
+        else:
+            raw = json.dumps(
+                proof_bytes,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+        return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+    @staticmethod
+    def _first_meta_value(proof_meta: dict[str, Any], *field_names: str) -> str:
+        for field_name in field_names:
+            value = proof_meta.get(field_name)
+            if value:
+                return str(value)
+        return ""
+
+    def _check_required_binding(
+        self,
+        proof_meta: dict[str, Any],
+        *,
+        context_value: str,
+        field_name: str,
+        context_reason: str,
+        missing_reason: str,
+        mismatch_reason: str,
+        aliases: tuple[str, ...] = (),
+    ) -> str | None:
+        if not context_value:
+            return context_reason
+        meta_value = self._first_meta_value(proof_meta, field_name, *aliases)
+        if not meta_value:
+            return missing_reason
+        if meta_value != context_value:
+            return mismatch_reason
+        return None
+
+    def _check_tokenizer_or_circuit_binding(
+        self,
+        proof_meta: dict[str, Any],
+        context: ProofContext,
+    ) -> str | None:
+        if not context.tokenizer_commitment and not context.circuit_commitment:
+            return "context_tokenizer_or_circuit_commitment_missing"
+
+        matched = False
+        if context.tokenizer_commitment:
+            tokenizer_commitment = self._first_meta_value(
+                proof_meta,
+                "tokenizer_commitment",
+            )
+            if tokenizer_commitment:
+                if tokenizer_commitment != context.tokenizer_commitment:
+                    return "tokenizer_commitment_mismatch"
+                matched = True
+
+        if context.circuit_commitment:
+            circuit_commitment = self._first_meta_value(
+                proof_meta,
+                "circuit_commitment",
+            )
+            if circuit_commitment:
+                if circuit_commitment != context.circuit_commitment:
+                    return "circuit_commitment_mismatch"
+                matched = True
+
+        if matched:
+            return None
+        if context.tokenizer_commitment and context.circuit_commitment:
+            return "tokenizer_or_circuit_commitment_missing"
+        if context.tokenizer_commitment:
+            return "tokenizer_commitment_missing"
+        return "circuit_commitment_missing"
+
+    def _proof_material_id(
+        self,
+        proof_meta: dict[str, Any],
+    ) -> tuple[str, str] | None:
+        proof_cid = self._first_meta_value(proof_meta, "proof_cid")
+        if proof_cid:
+            return ("proof_cid", proof_cid)
+
+        if proof_meta.get("proof_bytes"):
+            return ("proof_bytes_hash", self._proof_bytes_hash(proof_meta["proof_bytes"]))
+        return None
+
+    def _check_proof_material_binding(
+        self,
+        proof_meta: dict[str, Any],
+        context: ProofContext,
+    ) -> tuple[str | None, str, str]:
+        proof_material = self._proof_material_id(proof_meta)
+        if proof_material is None:
+            return ("proof_data_missing", "", "")
+
+        proof_kind, proof_value = proof_material
+        if context.proof_cid:
+            proof_cid = self._first_meta_value(proof_meta, "proof_cid")
+            if not proof_cid:
+                return ("proof_cid_missing", proof_kind, proof_value)
+            if proof_cid != context.proof_cid:
+                return ("proof_cid_mismatch", proof_kind, proof_value)
+
+        if context.proof_bytes_hash:
+            if not proof_meta.get("proof_bytes"):
+                return ("proof_bytes_missing", proof_kind, proof_value)
+            proof_bytes_hash = self._proof_bytes_hash(proof_meta["proof_bytes"])
+            if proof_bytes_hash != context.proof_bytes_hash:
+                return ("proof_bytes_hash_mismatch", proof_kind, proof_value)
+
+        return (None, proof_kind, proof_value)
+
+    def _proof_envelope_hash(
+        self,
+        proof_meta: dict[str, Any],
+        context: ProofContext,
+        *,
+        proof_kind: str,
+        proof_value: str,
+    ) -> str:
+        return self._stable_hash(
+            {
+                "request_hash": context.request_hash,
+                "output_hash": context.output_hash,
+                "model_commitment": context.model_commitment,
+                "tokenizer_commitment": context.tokenizer_commitment,
+                "circuit_commitment": context.circuit_commitment,
+                "input_commitment": context.input_commitment,
+                "output_commitment": context.output_commitment or context.output_hash,
+                "public_inputs_hash": context.public_inputs_hash,
+                "verifier_key_hash": context.verifier_key_hash
+                or self._expected_verifier_key_hash,
+                "circuit_id": str(proof_meta.get("circuit_id") or ""),
+                "circuit_version": context.circuit_version
+                or self._expected_circuit_version,
+                "proof_kind": proof_kind,
+                "proof_value": proof_value,
+            }
+        )
+
+    def _check_proof_replay(
+        self,
+        *,
+        proof_kind: str,
+        proof_value: str,
+        envelope_hash: str,
+    ) -> str | None:
+        proof_material_key = self._stable_hash(
+            {
+                "proof_kind": proof_kind,
+                "proof_value": proof_value,
+            }
+        )
+        seen_envelope = self._seen_proof_material.get(proof_material_key)
+        if seen_envelope is None:
+            self._seen_proof_material[proof_material_key] = envelope_hash
+            return None
+        if seen_envelope != envelope_hash:
+            return "proof_replayed_for_different_request"
+        return "replayed_proof"
 
     def verify(
         self,
@@ -608,6 +814,12 @@ class ZKMLVerifier(ProofVerifier):
                 verifier=self.verifier_id,
                 reason="verifier_key_hash_mismatch",
             )
+        if context.verifier_key_hash and vkh != context.verifier_key_hash:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="verifier_key_hash_mismatch",
+            )
 
         cid = proof_meta.get("circuit_id", "")
         if not cid:
@@ -634,23 +846,97 @@ class ZKMLVerifier(ProofVerifier):
                 verifier=self.verifier_id,
                 reason="circuit_version_mismatch",
             )
+        if context.circuit_version and cv != context.circuit_version:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="circuit_version_mismatch",
+            )
 
-        if not proof_meta.get("public_inputs_hash"):
+        err = self._check_tokenizer_or_circuit_binding(proof_meta, context)
+        if err:
+            return VerificationResult(
+                verified=False, verifier=self.verifier_id, reason=err
+            )
+
+        err = self._check_required_binding(
+            proof_meta,
+            context_value=context.input_commitment,
+            field_name="input_commitment",
+            context_reason="context_input_commitment_missing",
+            missing_reason="input_commitment_missing",
+            mismatch_reason="input_commitment_mismatch",
+        )
+        if err:
+            return VerificationResult(
+                verified=False, verifier=self.verifier_id, reason=err
+            )
+
+        err = self._check_required_binding(
+            proof_meta,
+            context_value=context.output_commitment or context.output_hash,
+            field_name="output_commitment",
+            context_reason="context_output_commitment_missing",
+            missing_reason="output_commitment_missing",
+            mismatch_reason="output_commitment_mismatch",
+        )
+        if err:
+            return VerificationResult(
+                verified=False, verifier=self.verifier_id, reason=err
+            )
+
+        public_inputs_hash = self._first_meta_value(
+            proof_meta,
+            "public_inputs_hash",
+            "public_input_hash",
+        )
+        if not public_inputs_hash:
             return VerificationResult(
                 verified=False,
                 verifier=self.verifier_id,
                 reason="public_inputs_hash_missing",
             )
-
-        has_proof = bool(proof_meta.get("proof_bytes") or proof_meta.get("proof_cid"))
-        if not has_proof:
+        if not context.public_inputs_hash:
             return VerificationResult(
                 verified=False,
                 verifier=self.verifier_id,
-                reason="proof_data_missing",
+                reason="context_public_inputs_hash_missing",
+            )
+        if public_inputs_hash != context.public_inputs_hash:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason="public_inputs_hash_mismatch",
+            )
+
+        proof_err, proof_kind, proof_value = self._check_proof_material_binding(
+            proof_meta,
+            context,
+        )
+        if proof_err:
+            return VerificationResult(
+                verified=False,
+                verifier=self.verifier_id,
+                reason=proof_err,
             )
 
         err = self._check_replay(proof_meta, context, self._seen_nonces)
+        if err:
+            return VerificationResult(
+                verified=False, verifier=self.verifier_id, reason=err
+            )
+
+        envelope_hash = self._proof_envelope_hash(
+            proof_meta,
+            context,
+            proof_kind=proof_kind,
+            proof_value=proof_value,
+        )
+        err = self._check_proof_replay(
+            proof_kind=proof_kind,
+            proof_value=proof_value,
+            envelope_hash=envelope_hash,
+        )
         if err:
             return VerificationResult(
                 verified=False, verifier=self.verifier_id, reason=err
@@ -663,7 +949,10 @@ class ZKMLVerifier(ProofVerifier):
             metadata={
                 "circuit_id": cid,
                 "circuit_version": cv,
-                "public_inputs_hash": proof_meta["public_inputs_hash"],
+                "public_inputs_hash": public_inputs_hash,
+                "proof_reference_type": proof_kind,
+                "proof_reference": proof_value,
+                "proof_envelope_hash": envelope_hash,
             },
         )
 
