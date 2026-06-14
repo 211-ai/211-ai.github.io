@@ -1,28 +1,37 @@
-# ProveKit ZKP Target Signoff — PROVEKIT-220
+# ProveKit ZKP Target Signoff — PROVEKIT-220 + PROVEKIT-280
 
 > **Task:** PROVEKIT-220 End-To-End ProveKit ZKP Signoff
+> **Addendum:** PROVEKIT-280 Wallet UI Signoff Addendum
 > **Priority:** P0 · Track: ops
-> **Date:** 2026-06-13
-> **Status:** ✅ SIGNED OFF
+> **Date:** 2026-06-14
+> **Status:** ✅ BACKEND SIGNED OFF · ⚠️ PRODUCTION UI ATTACH GATED
 
 ---
 
 ## Summary
 
 This document records the end-to-end readiness evidence for the ProveKit ZKP
-integration in `ipfs_datasets_py`. All validation commands listed in
-PROVEKIT-220 pass. The evidence covers real ProveKit proof generation and
+integration in `ipfs_datasets_py` and the wallet UI/API addendum required
+before ProveKit-backed proof identity can be attached to client wallet files.
+All validation commands listed in PROVEKIT-220 and the PROVEKIT-280 artifact
+existence checks pass. The evidence covers real ProveKit proof generation and
 verification for supported circuits, bridge integration, hybrid prover
-selection, deontic guidance commitments, cache/IPFS public payload safety,
-and documented rollback/readiness.
+selection, deontic guidance commitments, wallet API receipt contracts,
+full-stack Playwright coverage, UX/accessibility review, cache/IPFS public
+payload safety, QR/export no-leak checks, and documented rollback/readiness.
 
 ## Scope Note
 
-This is a backend and logic-layer signoff. It does not certify production
-wallet UI workflows, wallet API receipt contracts, QR/export user journeys, or
-Playwright coverage. Those frontend-facing requirements are tracked separately
-by PROVEKIT-230 through PROVEKIT-280 and must pass before ProveKit-backed proof
-identity is presented as production-visible in client wallet files.
+The original PROVEKIT-220 signoff is a backend and logic-layer signoff. This
+PROVEKIT-280 addendum certifies the wallet API/UI evidence collected through
+PROVEKIT-230 through PROVEKIT-270, then records the release decision for
+production-visible client wallet attachment.
+
+Decision: ProveKit-backed proof identity is approved for integrated
+non-production wallet workflows and internal release-candidate validation. It
+must not be enabled as a default production-visible client attachment path
+until the remaining production cutover requirements in this document are
+closed by the release owner.
 
 ---
 
@@ -32,9 +41,16 @@ identity is presented as production-visible in client wallet files.
 |---------|--------|---------|
 | `pytest ipfs_datasets_py/tests/unit_tests/logic/zkp -q` | ✅ PASS | 700 passed, 29 skipped, 0 failed |
 | `pytest ipfs_datasets_py/tests/unit_tests/logic/deontic/test_deontic_provekit_bridge.py -q` | ✅ PASS | 33 passed, 1 skipped, 0 failed |
+| `pytest tests/test_wallet_interface_api.py tests/test_wallet_interface_proof_backends.py tests/test_world_id_wallet_api.py -q` | ✅ PASS | 56 passed, 2 warnings, 0 failed |
+| `npm --prefix wallet_interface/ui run build` | ✅ PASS | TypeScript/Vite build passed |
+| `npm --prefix wallet_interface/ui test -- tests/provekit-proof-fullstack.spec.ts` | ✅ PASS | 2 passed across configured desktop/mobile projects |
+| `npm --prefix wallet_interface/ui test -- tests/provekit-proof-ux.spec.ts` | ✅ PASS | 5 passed, 1 expected Mobile Safari skip |
+| `npm --prefix wallet_interface/ui test -- tests/wallet-ux-review.spec.ts` | ✅ PASS | 4 passed |
 | `test -f docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md` | ✅ PASS | This file exists |
+| `test -d artifacts/provekit-ui-signoff` | ✅ PASS | PROVEKIT-280 signoff artifacts exist |
 
 Full machine-readable results: `artifacts/provekit-release-checks/results.json`
+Wallet UI signoff addendum: `artifacts/provekit-ui-signoff/signoff-matrix.json`
 
 ---
 
@@ -95,6 +111,45 @@ appear in logs, cache entries, public inputs, or attestation envelopes.
 that canonicalization, axiom commitment hashing, theorem hashing, and
 Prover.toml rendering are fully deterministic across calls and environments.
 
+### 8. Wallet API Contract Results
+
+`tests/test_wallet_interface_api.py` and
+`tests/test_wallet_interface_proof_backends.py` verify that wallet proof
+routes preserve ProveKit backend metadata, verifier IDs, public-input hashes,
+artifact references, verification state, and fail-closed error status while
+excluding private axioms, witness text, local artifact paths, and raw proof
+payloads from response surfaces consumed by the UI.
+
+### 9. Full-Stack Playwright Results
+
+`wallet_interface/ui/tests/provekit-proof-fullstack.spec.ts` launches the
+wallet UI/API workflow with deterministic ProveKit proof fixtures and verifies
+proof creation/listing, QR review, export/import, audit refresh,
+provider/public surfaces, disabled/unavailable/artifact-mismatch/error states,
+and no witness/private-axiom leakage across the configured Playwright projects.
+
+### 10. UX, Accessibility, And Mobile Review
+
+`wallet_interface/ui/tests/provekit-proof-ux.spec.ts` and
+`wallet_interface/ui/tests/wallet-ux-review.spec.ts` verify proof-system label
+clarity, keyboard focus visibility, touch target sizing, no horizontal
+overflow, desktop/mobile layout coverage, and review artifacts archived under
+`artifacts/provekit-ui-review`.
+
+### 11. QR/Export No-Leak Evidence
+
+The full-stack and UX review checks confirm that QR review, encrypted export,
+saved wallet files, public dashboards, provider surfaces, and downloadable link
+metadata do not expose private witness material, private axioms, raw proof
+payloads, local artifact paths, operator secrets, or non-public prover inputs.
+
+### 12. Proof-System Label Review
+
+The UI review distinguishes simulated proofs, Groth16 proofs, ProveKit WHIR
+proofs, and recursive-wrapper evidence. ProveKit WHIR is not labeled as
+Groth16, EVM-verifiable, or on-chain-ready unless an independently reviewed
+recursive-wrapper path supplies that evidence.
+
 ---
 
 ## Fixes Applied in This Signoff Cycle
@@ -133,6 +188,12 @@ Per `PROVEKIT_ZKP_SECURITY_NOTES.md` §7:
 - [ ] All 700 ZKP unit tests passing in CI on the target deployment branch
 - [ ] Attestation envelope format signed by a key held in HSM
 - [ ] Cache IPFS payload audit confirms no witness leakage in stored CIDs
+- [x] Wallet API contract evidence recorded for ProveKit proof receipts
+- [x] Full-stack Playwright evidence recorded for ProveKit wallet workflows
+- [x] UX/accessibility and mobile review evidence recorded
+- [x] QR/export no-leak and proof-system label review recorded
+- [ ] Release owner explicitly enables production-visible client wallet attach
+      after the unresolved production controls above are complete
 
 ---
 
@@ -146,7 +207,10 @@ Per `PROVEKIT_ZKP_SECURITY_NOTES.md` §7:
 | PROVEKIT-170 (Cache/IPFS Payload Safety) | ✅ completed | `test_provekit_cache_ipfs_payloads.py` |
 | PROVEKIT-180 (Golden Vector & Property Tests) | ✅ completed | `provekit_golden_vectors.json`, property test suite |
 | PROVEKIT-210 (Security Review & Threat Model) | ✅ completed | `docs/PROVEKIT_ZKP_SECURITY_NOTES.md` |
+| PROVEKIT-260 (Full-Stack Playwright Harness) | ✅ completed | `wallet_interface/ui/tests/provekit-proof-fullstack.spec.ts` |
+| PROVEKIT-270 (UX/Accessibility Review) | ✅ completed | `artifacts/provekit-ui-review` |
+| PROVEKIT-280 (Wallet UI Signoff Addendum) | ✅ completed | `artifacts/provekit-ui-signoff` |
 
 ---
 
-*Generated by the PROVEKIT-220 signoff task. See `artifacts/provekit-release-checks/results.json` for machine-readable evidence.*
+*Generated by the PROVEKIT-220 and PROVEKIT-280 signoff tasks. See `artifacts/provekit-release-checks/results.json` and `artifacts/provekit-ui-signoff/signoff-matrix.json` for machine-readable evidence.*

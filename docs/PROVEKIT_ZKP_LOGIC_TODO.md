@@ -328,7 +328,7 @@ Track guide:
 - Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari coverage verifies proof label clarity, keyboard focus, touch ergonomics, no overflow or overlap, no legal/cryptographic overclaim, no witness/private-axiom leakage in screenshots/traces/downloads, and archived review artifacts under `artifacts/provekit-ui-review`.
 
 ## PROVEKIT-280 Wallet UI Signoff Addendum
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P0
 - Track: ops
