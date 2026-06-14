@@ -305,7 +305,7 @@ Track guide:
 - Acceptance: Provider staff verification uses a separate action such as `provider-staff-world-id-v1`, does not mix staff and client nullifiers, and updates staff verification state only after provider organization policy checks pass.
 
 ## WORLDID-230 World ID Assisted Login And Recovery Design
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: privacy
@@ -315,7 +315,7 @@ Track guide:
 - Acceptance: A post-MVP design explains how World ID can assist login or account recovery without becoming a wallet encryption key, sole recovery factor, controller-add bypass, or replacement for threshold governance/user presence.
 
 ## WORLDID-240 Credential Policy Expansion Review
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: privacy

@@ -107,6 +107,82 @@ Important existing surfaces:
 - Do not expose raw nullifiers in public proof QR bundles unless a future export
   mode explicitly asks the client for that disclosure.
 
+## Post-MVP Login And Recovery Design
+
+World ID may assist login or recovery only as a fresh proof-of-human signal
+bound to an existing wallet recovery ceremony. It must not become a wallet key,
+sole recovery factor, or bypass around wallet controller governance.
+
+Allowed post-MVP uses:
+
+- Step-up signal during account recovery when the wallet already has an active
+  World ID binding for the same action family.
+- Anti-duplication check before issuing a recovery request to human reviewers.
+- Optional login hint that lets the UI find candidate wallets after the user
+  separately proves control of an existing wallet controller, device key, or
+  recovery contact.
+- Risk signal for support staff that a recovery requester controls a valid
+  proof-of-human credential.
+
+Prohibited uses:
+
+- Deriving wallet encryption keys, storage keys, UCAN signing keys, or recovery
+  shares from a World ID nullifier, proof, or RP signature.
+- Adding a controller, rotating a device, exporting a wallet, or decrypting a
+  record solely because World ID verification succeeded.
+- Treating World ID as a replacement for approval thresholds, user-presence
+  checks, recovery-contact approval, emergency revoke rules, or audit logging.
+- Logging into a wallet by nullifier lookup without a second factor that proves
+  wallet authority.
+
+Recovery ceremony requirements:
+
+1. World ID must use a separate action, for example
+   `wallet-recovery-assist-world-id-v1`, so login/recovery nullifiers do not mix
+   with wallet attachment nullifiers.
+2. The backend must store only a commitment to the recovery nullifier and must
+   keep recovery attempts in wallet-private audit state.
+3. The UI must say "World ID recovery assist" or "verified human recovery
+   signal" and must not say "account owner verified" until controller or
+   recovery-contact policy also passes.
+4. Recovery still requires the configured wallet threshold, existing recovery
+   contacts, active device/controller proof, or an approved human support
+   workflow with auditable reviewer identity.
+5. Any successful assisted recovery must create audit events for World ID
+   request creation, verification, policy decision, controller/device changes,
+   and support reviewer approval.
+
+Production signoff for this post-MVP feature requires a new threat-model review,
+Playwright coverage for login/recovery copy and fallback states, and updated
+`wallet_interface.ops` readiness checks for the separate recovery action.
+
+## Credential Policy Expansion Review
+
+The MVP credential policy is proof-of-human only. Passport/NFC, selfie, and
+identity-check credentials must be treated as separate product and policy
+surfaces because they can imply legal identity, age, nationality, liveness, or
+document attributes.
+
+| Credential policy | Allowed claims before review | Prohibited claims before review | Required UI wording | Privacy review gate | Provider eligibility gate |
+| --- | --- | --- | --- | --- | --- |
+| `proof_of_human` | A valid World ID human credential is bound to this wallet for the configured action | Legal name, age, date of birth, citizenship, address, immigration status, document ownership, benefit eligibility | "World ID proof-of-human" or "verified human signal"; include "not legal identity" copy | Current nullifier/no-leak review and staging simulator evidence | May reduce bot/duplicate risk only; must not determine service eligibility alone |
+| Passport or NFC document credential | Specific document-backed attribute explicitly selected in the reviewed credential, such as over-age threshold or document country, if supported by World ID policy | Full passport number, raw document image, legal identity blanket claims, immigration status, broad citizenship claims, unreviewed nationality use | Name the exact reviewed attribute, for example "age threshold credential"; do not say "identity verified" unless legal review approves it | Data minimization review, retention review, legal basis, export wording, support escalation path | Provider must document why the attribute is required and what fallback is available |
+| Selfie or liveness check | Liveness/presence signal for a current session when documented by the credential policy | Legal identity, age, citizenship, address, document ownership, or eligibility | "Liveness check completed" or "session presence signal"; never "identity verified" | Biometric/liveness policy review, accessibility fallback review, deletion/retention review | Provider may use only as fraud-risk signal with non-biometric fallback |
+| Identity Check preview or equivalent | Only the exact claims approved by privacy/legal/security review for the pilot | Any claim not listed in the approved policy, especially broad identity, citizenship, address, or eligibility claims | Claim-specific wording approved in the signoff packet | Full DPIA-style privacy review, legal/policy approval, support playbook, incident response | Provider eligibility use requires written policy, appeal path, and manual alternative |
+
+Expansion checklist:
+
+1. Create a separate World ID action per credential policy and workflow.
+2. Confirm allowed claims and prohibited claims in the target signoff packet.
+3. Update UI copy, API models, proof receipt labels, QR/export review, and
+   Playwright no-overclaim tests before enabling the policy.
+4. Add backend tests proving raw credential payloads, document identifiers,
+   biometric material, Developer Portal responses, and PII are not exported.
+5. Require provider policy approval and a manual fallback for any service
+   eligibility use.
+6. Keep proof-of-human as the default until the expanded policy has completed
+   security, privacy, legal, accessibility, operations, and product signoff.
+
 ## Target User Flow
 
 1. Client signs in through the current Abby flow and has a wallet API config.

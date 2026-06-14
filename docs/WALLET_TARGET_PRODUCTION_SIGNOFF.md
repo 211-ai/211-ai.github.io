@@ -90,6 +90,8 @@ launch decision still requires validating the completed target packet path.
 | World ID endpoint reachability | Target evidence proves the World Developer Portal verify endpoint was reachable from the deployment network before launch |  |
 | World ID staging simulator | `docs/WORLD_ID_IDKIT_STAGING_RUNBOOK.md` was executed with successful verification, same-wallet retry, different-wallet conflict, snapshot save/load, QR proof review, and archived redacted evidence |  |
 | World ID no-leak evidence | Backend sanitization and full-stack Playwright evidence prove raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, and PII are not rendered, exported, or logged |  |
+| World ID login/recovery guardrails | Any login or recovery assist remains post-MVP, uses a separate action, is not a wallet encryption key or sole recovery factor, and cannot bypass controller, threshold, user-presence, recovery-contact, or support-review policy |  |
+| World ID credential expansion | Passport/NFC, selfie, and identity-check policies are disabled unless claim-specific allowed/prohibited claims, UI wording, privacy/legal review, provider eligibility policy, and manual fallback are approved |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
 | Alert routing | Warning/error reports reach the approved incident router with authenticated delivery |  |
 | Security architecture | `docs/WALLET_SECURITY_ARCHITECTURE_ADR.md` reviewed for the target deployment boundary |  |
