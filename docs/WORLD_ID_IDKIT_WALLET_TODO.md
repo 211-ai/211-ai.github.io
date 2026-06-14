@@ -275,7 +275,7 @@ Track guide:
 - Acceptance: Ops readiness fails when World ID is enabled without app/RP IDs, signing secret refs, nullifier commitment secret refs, vector-tested RP signing, production verify endpoint reachability, production environment selection, or proof sanitization evidence.
 
 ## WORLDID-200 Staging Simulator Runbook
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ops

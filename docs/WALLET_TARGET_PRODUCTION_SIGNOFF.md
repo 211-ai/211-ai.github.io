@@ -88,6 +88,7 @@ launch decision still requires validating the completed target packet path.
 | World ID secret references | RP signing and nullifier commitment secrets have approved secret-manager references and are not stored in browser-exposed env vars |  |
 | World ID RP signing vector | `python -m wallet_interface.ops --validate-production-readiness` reports `world_id_rp_signature_vector=status=ok` using the target signing secret |  |
 | World ID endpoint reachability | Target evidence proves the World Developer Portal verify endpoint was reachable from the deployment network before launch |  |
+| World ID staging simulator | `docs/WORLD_ID_IDKIT_STAGING_RUNBOOK.md` was executed with successful verification, same-wallet retry, different-wallet conflict, snapshot save/load, QR proof review, and archived redacted evidence |  |
 | World ID no-leak evidence | Backend sanitization and full-stack Playwright evidence prove raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, and PII are not rendered, exported, or logged |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
 | Alert routing | Warning/error reports reach the approved incident router with authenticated delivery |  |
