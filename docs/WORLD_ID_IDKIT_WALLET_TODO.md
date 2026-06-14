@@ -235,7 +235,7 @@ Track guide:
 - Acceptance: Playwright tests mock IDKit and wallet API responses to verify disabled state, successful verification, proof refresh, backend failure, nullifier conflict messaging, mobile layout, and no raw nullifier exposure in visible UI.
 
 ## WORLDID-181 UI Workflow Contract Matrix And Fixtures
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
