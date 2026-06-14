@@ -2154,6 +2154,64 @@ body.playful-pulse .decor-shape {
   gap: 14px;
 }
 
+.world-id-surface-summary {
+  background: #f8fbfd;
+  border: 1px solid #c8d8dd;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.world-id-surface-summary .scope-header {
+  margin-bottom: 0;
+}
+
+.world-id-surface-summary h2,
+.world-id-surface-summary p {
+  margin: 0;
+}
+
+.world-id-surface-summary h2 {
+  color: var(--abby-navy);
+  font-family: var(--abby-display-family);
+  font-size: 23px;
+  line-height: 1.14;
+}
+
+.world-id-surface-copy {
+  color: #334155;
+  line-height: 1.48;
+}
+
+.world-id-surface-facts {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.world-id-surface-facts .status-panel {
+  background: #ffffff;
+  min-width: 0;
+  padding: 12px;
+}
+
+.world-id-surface-facts .status-panel strong {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.world-id-surface-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.world-id-surface-actions:empty {
+  display: none;
+}
+
 .world-id-proof-center-summary {
   background: #f8fbfd;
   border: 1px solid #c8d8dd;

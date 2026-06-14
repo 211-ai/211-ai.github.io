@@ -52,6 +52,102 @@ async function openAppRoute(page: Page, route: string) {
   }
 }
 
+function buildWorldIdHumanProofsResponse() {
+  return {
+    proofs: [
+      {
+        proof_id: "proof-world-id-human",
+        wallet_id: "wallet-demo",
+        proof_type: "world_id_proof_of_human",
+        statement: {
+          claim: "wallet_actor_has_world_id_proof_of_human",
+          wallet_id: "wallet-demo",
+          action: "wallet-attach-world-id-v1",
+          credential_policy: "proof_of_human"
+        },
+        verifier_id: "world-developer-portal-v4:rp_demo",
+        public_inputs: {
+          claim: "World ID proof of human is bound to this wallet",
+          rp_id: "rp_demo",
+          app_id: "app_staging_demo",
+          action: "wallet-attach-world-id-v1",
+          signal_hash: "sha256:signal",
+          credential_policy: "proof_of_human"
+        },
+        proof_hash: "sha256:proof",
+        witness_record_ids: ["wallet://wallet-demo/world-id-binding/world-id-binding-demo"],
+        is_simulated: false,
+        proof_system: "world_id_idkit_v4",
+        circuit_id: "world-id-proof-of-human-v4",
+        verifier_digest: "digest1234567890abcdef",
+        proof_artifact_ref: "world-id-proof://proof-world-id-human",
+        verification_status: "verified",
+        created_at: "2026-06-14T16:00:00Z"
+      }
+    ]
+  };
+}
+
+async function fulfillWorldIdSurfaceWalletRoute(route: Route, options: { verified: boolean }) {
+  const url = new URL(route.request().url());
+  const path = url.pathname;
+
+  if (path.endsWith("/world-id/config")) {
+    await route.fulfill({
+      json: {
+        enabled: true,
+        app_id: "app_staging_demo",
+        rp_id: "rp_demo",
+        default_action: "wallet-attach-world-id-v1",
+        environment: "staging",
+        credential_policy: "proof_of_human",
+        allow_legacy_proofs: false,
+        require_user_presence: true
+      }
+    });
+    return;
+  }
+  if (path.endsWith("/world-id/status")) {
+    await route.fulfill({
+      json: {
+        verified: options.verified,
+        binding_id: options.verified ? "world-id-binding-demo" : null,
+        proof_id: options.verified ? "proof-world-id-human" : null,
+        verified_at: options.verified ? "2026-06-14T16:00:00Z" : null,
+        action: "wallet-attach-world-id-v1",
+        credential_policy: "proof_of_human",
+        active_binding_count: options.verified ? 1 : 0
+      }
+    });
+    return;
+  }
+  if (path.endsWith("/proofs")) {
+    await route.fulfill({ json: options.verified ? buildWorldIdHumanProofsResponse() : { proofs: [] } });
+    return;
+  }
+  if (path.endsWith("/access-requests")) {
+    await route.fulfill({ json: { requests: [] } });
+    return;
+  }
+  if (path.endsWith("/grant-receipts")) {
+    await route.fulfill({ json: { receipts: [] } });
+    return;
+  }
+  if (path.endsWith("/records")) {
+    await route.fulfill({ json: { records: [] } });
+    return;
+  }
+  if (path.endsWith("/audit")) {
+    await route.fulfill({ json: { events: [] } });
+    return;
+  }
+  if (path === "/wallets/snapshots") {
+    await route.fulfill({ json: { wallet_ids: [] } });
+    return;
+  }
+  await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+}
+
 async function expectFirstAboveSecond(first: Locator, second: Locator) {
   const firstBox = await first.boundingBox();
   const secondBox = await second.boundingBox();
@@ -570,6 +666,46 @@ test("proof center integrates World ID status, launch, and proof-of-human receip
   expect(signatureRequests).toBe(1);
 });
 
+test("World ID status is consistent on register, uploads, and security surfaces", async ({ page }) => {
+  await page.route("**/wallets/**", (route) => fulfillWorldIdSurfaceWalletRoute(route, { verified: true }));
+
+  await openAppRoute(page, walletRoute("register", "did:key:owner"));
+  const registerStatus = page.getByLabel(/Register World ID status/i);
+  await expect(registerStatus.getByText(/World ID verified/i)).toBeVisible();
+  await expect(registerStatus.getByText(/Verified proof-of-human/i)).toBeVisible();
+  await expect(registerStatus.getByText(/Emergency and essential-service flows remain available/i)).toBeVisible();
+  await expect(registerStatus.getByRole("button", { name: /Verify with World ID/i })).toBeVisible();
+  await expect(page.getByLabel(/Legal or full name/i)).toBeEnabled();
+
+  await openAppRoute(page, walletRoute("uploads", "did:key:owner"));
+  const uploadsStatus = page.getByLabel(/Uploads World ID status/i);
+  await expect(uploadsStatus.getByText(/World ID verified/i)).toBeVisible();
+  await expect(uploadsStatus.getByText(/Verified proof-of-human/i)).toBeVisible();
+  await expect(uploadsStatus.getByText(/Emergency and essential-service flows remain available/i)).toBeVisible();
+  await expect(uploadsStatus.getByRole("button", { name: /Verify with World ID/i })).toBeVisible();
+  await expect(page.getByLabel(/Choose file to upload/i)).toBeEnabled();
+
+  await openAppRoute(page, walletRoute("security", "did:key:owner"));
+  const securityStatus = page.getByLabel(/Security World ID status/i);
+  await expect(securityStatus.getByText(/World ID verified/i)).toBeVisible();
+  await expect(securityStatus.getByText(/Verified proof-of-human/i)).toBeVisible();
+  await expect(securityStatus.getByText(/Emergency and essential-service flows remain available/i)).toBeVisible();
+  await expect(securityStatus.getByRole("button", { name: /Verify with World ID/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Save backup/i })).toBeEnabled();
+});
+
+test("World ID verification is not offered without an actor DID", async ({ page }) => {
+  await page.route("**/wallets/**", (route) => fulfillWorldIdSurfaceWalletRoute(route, { verified: false }));
+
+  await openAppRoute(page, walletRoute("register", ""));
+  const registerStatus = page.getByLabel(/Register World ID status/i);
+  await expect(registerStatus.getByText(/World ID unverified/i)).toBeVisible();
+  await expect(registerStatus.getByText(/Actor DID required/i)).toBeVisible();
+  await expect(registerStatus.getByText(/Emergency and essential-service flows remain available/i)).toBeVisible();
+  await expect(registerStatus.getByRole("button", { name: /Verify with World ID/i })).toHaveCount(0);
+  await expect(page.getByLabel(/Legal or full name/i)).toBeEnabled();
+});
+
 test("proof center can create an API-backed location region proof", async ({ page }) => {
   let createRequests = 0;
   await page.route("**/wallets/**", async (route) => {
@@ -1037,12 +1173,13 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
   await openAppRoute(page, walletRoute("security", "did:key:owner"));
 
   await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
+  const walletBackups = page.getByRole("region", { name: /Wallet backups/i });
   await expect(page.getByText(/no backup/i)).toBeVisible();
   await page.getByRole("button", { name: /Save backup/i }).click();
   await expect(page.getByText(/Wallet backup saved/i)).toBeVisible();
   await expect(page.getByText(/backup ready/i)).toBeVisible();
-  await expect(page.getByText(/verified/i)).toBeVisible();
-  await expect(page.getByText(/abc123def456/i)).toBeVisible();
+  await expect(walletBackups.getByText("verified", { exact: true })).toBeVisible();
+  await expect(walletBackups.getByText(/abc123def456/i)).toBeVisible();
   await page.getByRole("button", { name: /Load backup/i }).click();
   await expect(page.getByText(/Wallet backup loaded/i)).toBeVisible();
   expect(saveRequests).toBe(1);
