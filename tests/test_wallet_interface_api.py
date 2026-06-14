@@ -7,14 +7,16 @@ import json
 import zipfile
 from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 from fastapi.testclient import TestClient
 
-from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
+from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend, ProofReceipt
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 from wallet_interface.app_service import phone_identity_cid
 import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
+from ipfs_datasets_py.wallet.proofs import verifier_digest
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 
 
@@ -36,6 +38,151 @@ def _client() -> TestClient:
 
 def _client_with_service(service: WalletInterfaceService) -> TestClient:
     return TestClient(create_app(service=service))
+
+
+PROVEKIT_PRIVATE_WITNESS_SENTINEL = "PRIVATE_WITNESS_SENTINEL_TDFOL_AXIOM_DO_NOT_RENDER"
+PROVEKIT_FORBIDDEN_PUBLIC_TOKENS = (
+    PROVEKIT_PRIVATE_WITNESS_SENTINEL,
+    "private_axiom_text",
+    "Prover.toml",
+    "witness_theorem_hash_field",
+    "prover_key_path",
+    "pkp_path",
+    "45.515232",
+    "-122.678385",
+)
+
+
+def _provekit_public_inputs() -> dict[str, Any]:
+    return {
+        "theorem": "eligible_for_housing_support(abby)",
+        "theorem_hash": "1" * 64,
+        "axioms_commitment": "2" * 64,
+        "circuit_ref": "provekit_knowledge_of_axioms@v1",
+        "circuit_version": 1,
+        "ruleset_id": "TDFOL_v1",
+        "compiler_guidance_ref": "a" * 64,
+        "compiler_guidance_version": 1,
+        "attestation_ref": "3" * 64,
+        "attestation_view_version": 1,
+    }
+
+
+def _provekit_metadata(cache_status: str = "miss", **overrides: Any) -> dict[str, Any]:
+    metadata: dict[str, Any] = {
+        "backend": "provekit",
+        "proof_system": "ProveKit-WHIR",
+        "provekit_branch": "v1",
+        "provekit_commit": "provekit-v1-fixture-commit",
+        "hash_backend": "sha256",
+        "pkp_sha256": "5" * 64,
+        "pkv_sha256": "4" * 64,
+        "noir_package_hash": "6" * 64,
+        "artifact_manifest_sha256": "6" * 64,
+        "cache_status": cache_status,
+        "public_artifact_refs": {
+            "proof": "ipfs://bafyprovekitwhirfixture/proof.np",
+            "verifier_key": "ipfs://bafyprovekitwhirfixture/verification-key.pkv",
+            "manifest": "ipfs://bafyprovekitwhirfixture/provekit-artifacts.json",
+        },
+    }
+    metadata.update(overrides)
+    return metadata
+
+
+class _ProveKitWalletProofBackend:
+    mode = "production"
+    verifier_id = "provekit-whir-eligibility-v1"
+    proof_system = "ProveKit-WHIR"
+    circuit_id = "provekit_knowledge_of_axioms@v1"
+
+    def __init__(
+        self,
+        *,
+        cache_status: str = "miss",
+        error: str | None = None,
+        is_simulated: bool = False,
+        metadata_overrides: dict[str, Any] | None = None,
+        proof_system: str | None = None,
+        verification_status: str = "verified",
+        verify_result: bool = True,
+    ) -> None:
+        self.cache_status = cache_status
+        self.error = error
+        self.is_simulated = is_simulated
+        self.metadata_overrides = dict(metadata_overrides or {})
+        self.proof_system = proof_system or self.proof_system
+        self.verification_status = verification_status
+        self.verify_result = verify_result
+        self.private_axiom = PROVEKIT_PRIVATE_WITNESS_SENTINEL
+
+    def prove_location_region(
+        self,
+        *,
+        wallet_id: str,
+        statement: dict[str, Any],
+        public_inputs: dict[str, Any],
+        witness: dict[str, Any],
+        witness_record_ids: list[str],
+    ) -> ProofReceipt:
+        if self.error:
+            raise RuntimeError(self.error)
+        assert witness["lat"] == 45.515232
+        assert witness["lon"] == -122.678385
+        digest = verifier_digest(self.verifier_id, self.proof_system)
+        provekit_inputs = _provekit_public_inputs()
+        proof_hash = hashlib.sha256(
+            json.dumps(
+                {
+                    "proof_system": self.proof_system,
+                    "public_inputs": provekit_inputs,
+                    "statement": statement,
+                    "verifier_digest": digest,
+                },
+                sort_keys=True,
+            ).encode("utf-8")
+        ).hexdigest()
+        return ProofReceipt(
+            proof_id=f"proof-provekit-{self.cache_status}-{self.verification_status}",
+            wallet_id=wallet_id,
+            proof_type="provider_eligibility",
+            statement={
+                "claim": "eligible_for_housing_support",
+                "circuit_ref": "provekit_knowledge_of_axioms@v1",
+            },
+            verifier_id=self.verifier_id,
+            public_inputs=provekit_inputs,
+            proof_hash=proof_hash,
+            witness_record_ids=list(witness_record_ids),
+            is_simulated=self.is_simulated,
+            proof_system=self.proof_system,
+            circuit_id=self.circuit_id,
+            verifier_digest=digest,
+            proof_artifact_ref="ipfs://bafyprovekitwhirfixture/proof.np",
+            verification_status=self.verification_status,
+            metadata=_provekit_metadata(self.cache_status, **self.metadata_overrides),
+        )
+
+    def prove_location_distance(self, **_: Any) -> ProofReceipt:
+        raise NotImplementedError("ProveKit wallet fixture only supports location_region")
+
+    def verify(self, receipt: ProofReceipt) -> bool:
+        return self.verify_result and receipt.verification_status == "verified"
+
+
+def _assert_no_provekit_private_leak(payload: Any) -> None:
+    serialized = json.dumps(payload, sort_keys=True)
+    for token in PROVEKIT_FORBIDDEN_PUBLIC_TOKENS:
+        assert token not in serialized
+
+
+def _create_wallet_location(client: TestClient) -> tuple[dict[str, Any], dict[str, Any]]:
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+    return wallet, location
 
 
 def test_wallet_api_cors_allows_configured_browser_origin(monkeypatch) -> None:
@@ -1529,6 +1676,166 @@ def test_wallet_api_production_proof_mode_accepts_configured_backend() -> None:
     serialized = json.dumps(proof)
     assert "45.515232" not in serialized
     assert "-122.678385" not in serialized
+
+
+def test_wallet_api_provekit_receipt_metadata_export_qr_and_audit_are_sanitized() -> None:
+    client = _client_with_service(
+        WalletInterfaceService(
+            proof_backend=_ProveKitWalletProofBackend(cache_status="miss"),
+            allow_simulated_proofs=False,
+        )
+    )
+    wallet, location = _create_wallet_location(client)
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 200, response.text
+    proof = response.json()
+    assert proof["proof_type"] == "provider_eligibility"
+    assert proof["is_simulated"] is False
+    assert proof["proof_system"] == "ProveKit-WHIR"
+    assert proof["verification_status"] == "verified"
+    assert proof["circuit_id"] == "provekit_knowledge_of_axioms@v1"
+    assert proof["public_inputs"] == _provekit_public_inputs()
+    assert proof["metadata"]["backend"] == "provekit"
+    assert proof["metadata"]["proof_system"] == "ProveKit-WHIR"
+    assert proof["metadata"]["provekit_branch"] == "v1"
+    assert proof["metadata"]["cache_status"] == "miss"
+    assert proof["metadata"]["public_artifact_refs"]["proof"].endswith("/proof.np")
+    _assert_no_provekit_private_leak(proof)
+
+    list_response = client.get(f"/wallets/{wallet['wallet_id']}/proofs")
+    assert list_response.status_code == 200
+    listed_proof = list_response.json()["proofs"][0]
+    assert listed_proof["proof_id"] == proof["proof_id"]
+    assert listed_proof["metadata"] == proof["metadata"]
+    _assert_no_provekit_private_leak(listed_proof)
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    proof_event = next(event for event in audit_response.json()["audit_events"] if event["action"] == "proof/create")
+    assert proof_event["details"]["proof_id"] == proof["proof_id"]
+    assert proof_event["details"]["proof_system"] == "ProveKit-WHIR"
+    assert proof_event["details"]["verifier_id"] == "provekit-whir-eligibility-v1"
+    assert proof_event["details"]["circuit_id"] == "provekit_knowledge_of_axioms@v1"
+    assert proof_event["details"]["verification_status"] == "verified"
+    assert proof_event["details"]["cache_status"] == "miss"
+    _assert_no_provekit_private_leak(proof_event)
+
+    export_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports",
+        json={"actor_did": "did:key:owner", "record_ids": [location["record_id"]]},
+    )
+    assert export_response.status_code == 200, export_response.text
+    bundle = export_response.json()
+    assert bundle["proofs"][0]["metadata"] == proof["metadata"]
+    _assert_no_provekit_private_leak(bundle)
+
+    qr_payload = {
+        "schemaVersion": "211-ai-wallet-root-ipld-v1",
+        "title": "ProveKit wallet proof bundle",
+        "proofs": bundle["proofs"],
+    }
+    _assert_no_provekit_private_leak(qr_payload)
+
+
+def test_wallet_api_provekit_cache_hit_and_miss_metadata_round_trip() -> None:
+    for cache_status in ("miss", "hit"):
+        client = _client_with_service(
+            WalletInterfaceService(
+                proof_backend=_ProveKitWalletProofBackend(cache_status=cache_status),
+                allow_simulated_proofs=False,
+            )
+        )
+        wallet, location = _create_wallet_location(client)
+
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+            json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+        )
+
+        assert response.status_code == 200, response.text
+        proof = response.json()
+        assert proof["metadata"]["cache_status"] == cache_status
+        assert client.get(f"/wallets/{wallet['wallet_id']}/proofs").json()["proofs"][0]["metadata"][
+            "cache_status"
+        ] == cache_status
+        audit_event = next(
+            event
+            for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]
+            if event["action"] == "proof/create"
+        )
+        assert audit_event["details"]["cache_status"] == cache_status
+
+
+def test_wallet_api_provekit_disabled_unavailable_and_integrity_errors_fail_closed() -> None:
+    for message in (
+        "ProveKit backend disabled; no simulated fallback was created.",
+        "ProveKit backend unavailable.",
+        "artifact_hash_mismatch: Prepared ProveKit artifact digest does not match the pinned manifest.",
+        "stale_verifier_key: Verifier key digest is stale and must be rotated.",
+    ):
+        client = _client_with_service(
+            WalletInterfaceService(
+                proof_backend=_ProveKitWalletProofBackend(error=message),
+                allow_simulated_proofs=False,
+            )
+        )
+        wallet, location = _create_wallet_location(client)
+
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+            json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+        )
+
+        assert response.status_code == 400
+        assert message in response.json()["detail"]
+        assert client.get(f"/wallets/{wallet['wallet_id']}/proofs").json()["proofs"] == []
+
+
+def test_wallet_api_provekit_verification_failure_fails_closed_without_receipt() -> None:
+    client = _client_with_service(
+        WalletInterfaceService(
+            proof_backend=_ProveKitWalletProofBackend(verify_result=False),
+            allow_simulated_proofs=False,
+        )
+    )
+    wallet, location = _create_wallet_location(client)
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Proof verification failed"
+    assert client.get(f"/wallets/{wallet['wallet_id']}/proofs").json()["proofs"] == []
+
+
+def test_wallet_api_rejects_simulated_provekit_overclaim() -> None:
+    client = _client_with_service(
+        WalletInterfaceService(
+            proof_backend=_ProveKitWalletProofBackend(
+                is_simulated=True,
+                proof_system="ProveKit-WHIR",
+                metadata_overrides={"production_evidence": True},
+            ),
+            allow_simulated_proofs=True,
+        )
+    )
+    wallet, location = _create_wallet_location(client)
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 400
+    assert "Simulated proofs cannot claim" in response.json()["detail"]
+    assert client.get(f"/wallets/{wallet['wallet_id']}/proofs").json()["proofs"] == []
 
 
 def test_wallet_api_env_selects_deterministic_proof_backend(monkeypatch) -> None:

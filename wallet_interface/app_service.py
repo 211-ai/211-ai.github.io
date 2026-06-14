@@ -4972,12 +4972,16 @@ class WalletInterfaceService:
     def audit_timeline(self, wallet_id: str) -> List[Dict[str, Any]]:
         return [
             {
+                "event_id": event.event_id,
                 "created_at": event.created_at,
                 "actor_did": event.actor_did,
                 "action": event.action,
                 "resource": event.resource,
                 "decision": event.decision,
                 "grant_id": event.grant_id,
+                "details": dict(event.details),
+                "hash_prev": event.hash_prev,
+                "hash_self": event.hash_self,
             }
             for event in self.wallet_service.get_audit_log(wallet_id)
         ]
