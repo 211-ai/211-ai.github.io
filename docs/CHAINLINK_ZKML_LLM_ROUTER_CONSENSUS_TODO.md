@@ -373,7 +373,7 @@ Track guide:
 - Acceptance: Selected wallet AI router endpoints can request consensus mode through validated request fields or environment policy, record receipt metadata in responses or audit fields, and preserve existing non-consensus behavior unless policy requires fail-closed consensus.
 
 ## CLZKML-281 UI/API Consensus Workflow Matrix And Fixtures
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ui
