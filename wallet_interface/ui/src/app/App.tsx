@@ -79,6 +79,7 @@ import {
   addTextDocument,
   createLocationRegionProof,
   createVerifiedExportBundleView,
+  getProofReceiptUiState,
   importExportBundleView,
   listWalletSnapshots,
   loadWalletAccessState,
@@ -90,6 +91,8 @@ import {
   repairRecordStorage,
   saveWalletSnapshot,
   verifyWalletSnapshot,
+  mapProofReceiptRecordForUi,
+  WalletApiRequestError,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -631,6 +634,7 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             uploads={uploads}
             setUploads={setUploads}
@@ -639,7 +643,9 @@ export function App() {
         {serviceDetailDocId ? (
           <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
         ) : null}
-        {activeRoute === "social-services" && !serviceDetailDocId ? <SocialServicesScreen /> : null}
+        {activeRoute === "social-services" && !serviceDetailDocId ? (
+          <SocialServicesScreen proofs={walletProofReceipts} />
+        ) : null}
         {activeRoute === "shelter" ? (
           <ShelterScreen
             checklist={shelterChecklist}
@@ -655,7 +661,7 @@ export function App() {
           />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen optedIn={analyticsOptIn} proofs={walletProofReceipts} setOptedIn={setAnalyticsOptIn} />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -670,13 +676,18 @@ export function App() {
           <ExportCenterScreen
             apiConfig={walletApiConfig}
             bundles={exportBundleViews}
+            proofs={walletProofReceipts}
             setBundles={setExportBundleViews}
           />
         ) : null}
         {activeRoute === "security" ? (
-          <SecurityScreen apiConfig={walletApiConfig} onSnapshotLoaded={refreshWalletAfterSnapshotLoad} />
+          <SecurityScreen
+            apiConfig={walletApiConfig}
+            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
+            proofs={walletProofReceipts}
+          />
         ) : null}
-        {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
+        {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} proofs={walletProofReceipts} /> : null}
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
@@ -900,6 +911,81 @@ function StatusPanel({ label, value, tone, onClick }: { label: string; value: st
       <small>{label}</small>
       <strong>{value}</strong>
     </div>
+  );
+}
+
+function proofApiErrorMessage(error: unknown): string {
+  if (error instanceof WalletApiRequestError) {
+    return error.detail || error.message;
+  }
+  return error instanceof Error ? error.message : "Proof request failed.";
+}
+
+function proofSurfaceMessage(proof: ProofReceiptView, surface: "uploads" | "provider" | "dashboard" | "export" | "security" | "audit" | "qr"): string {
+  const state = getProofReceiptUiState(proof);
+  if (surface === "provider") return state.providerLabel;
+  if (surface === "dashboard") return state.dashboardLabel;
+  if (surface === "export") return state.exportLabel;
+  if (surface === "qr") return state.qrReviewLabel;
+  if (surface === "security") return state.failClosed ? "Verifier state fails closed" : state.inputBoundaryLabel;
+  if (surface === "audit") return `${state.statusLabel} · ${state.proofSystemLabel}`;
+  return state.inputBoundaryLabel;
+}
+
+function ProofSurfaceSummary({
+  emptyMessage = "No proof receipts are available yet.",
+  limit = 4,
+  proofs,
+  surface,
+  title
+}: {
+  emptyMessage?: string;
+  limit?: number;
+  proofs: ProofReceiptView[];
+  surface: "uploads" | "provider" | "dashboard" | "export" | "security" | "audit" | "qr";
+  title: string;
+}) {
+  const visibleProofs = proofs.slice(0, limit);
+
+  return (
+    <Section title={title}>
+      {visibleProofs.length ? (
+        <div className="proof-surface-grid">
+          {visibleProofs.map((proof) => {
+            const state = getProofReceiptUiState(proof);
+            return (
+              <article
+                aria-label={`${proof.claim} ${state.proofSystemLabel} ${state.statusLabel}`}
+                className={`proof-surface-card proof-system-${state.proofSystemFamily}`}
+                key={`${surface}-${proof.id}`}
+              >
+                <div className="scope-header">
+                  <div>
+                    <h3>{proof.claim}</h3>
+                    <p>{proof.verifier}</p>
+                  </div>
+                  <Badge tone={state.statusTone}>{state.statusLabel}</Badge>
+                </div>
+                <div className="badge-row">
+                  <Badge>{state.proofSystemLabel}</Badge>
+                  <Badge tone={state.productionEvidence ? "success" : "warning"}>{state.dashboardLabel}</Badge>
+                </div>
+                <div className="proof-state-row">
+                  <strong>Surface</strong>
+                  <span>{proofSurfaceMessage(proof, surface)}</span>
+                </div>
+                <div className="proof-state-row">
+                  <strong>On-chain</strong>
+                  <span>{state.onChainLabel}</span>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <StatusBanner tone="info">{emptyMessage}</StatusBanner>
+      )}
+    </Section>
   );
 }
 
@@ -1721,11 +1807,13 @@ function ContactsScreen({
 
 function UploadsScreen({
   apiConfig,
+  proofs,
   refreshWalletAuditEvents,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
+  proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
@@ -1923,11 +2011,17 @@ function UploadsScreen({
           </article>
         ))}
       </div>
+      <ProofSurfaceSummary
+        emptyMessage="No wallet proof receipts are linked to uploaded records yet."
+        proofs={proofs}
+        surface="uploads"
+        title="Wallet proof receipts"
+      />
     </div>
   );
 }
 
-function SocialServicesScreen() {
+function SocialServicesScreen({ proofs }: { proofs: ProofReceiptView[] }) {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
   const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
   const [query, setQuery] = useState("");
@@ -2044,6 +2138,12 @@ function SocialServicesScreen() {
           <Button>Start request</Button>
         </div>
       </Section>
+      <ProofSurfaceSummary
+        emptyMessage="No provider-reviewable proof receipts are ready yet."
+        proofs={proofs}
+        surface="provider"
+        title="Provider proof review"
+      />
       <Section title="Matched services">
         <div className="list-stack">
           {serviceMatches.map((service) => (
@@ -2725,9 +2825,11 @@ function ShelterScreen({
 
 function AnalyticsScreen({
   optedIn,
+  proofs,
   setOptedIn
 }: {
   optedIn: Record<string, boolean>;
+  proofs: ProofReceiptView[];
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
   function toggleStudy(studyId: string) {
@@ -2737,6 +2839,13 @@ function AnalyticsScreen({
   function isStudySelected(studyId: string) {
     return optedIn[studyId] ?? true;
   }
+
+  const productionProofCount = proofs.filter((proof) => getProofReceiptUiState(proof).productionEvidence).length;
+  const onChainWrapperCount = proofs.filter((proof) => {
+    const state = getProofReceiptUiState(proof);
+    return state.accepted && state.proofSystemFamily === "provekit_recursive_groth16";
+  }).length;
+  const failClosedCount = proofs.filter((proof) => getProofReceiptUiState(proof).failClosed).length;
 
   return (
     <div className="screen">
@@ -2750,6 +2859,20 @@ function AnalyticsScreen({
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
+      <Section title="Public proof dashboard">
+        <div className="privacy-metrics">
+          <StatusPanel label="Production proof evidence" value={String(productionProofCount)} tone="teal" />
+          <StatusPanel label="Recursive wrappers" value={String(onChainWrapperCount)} tone="gold" />
+          <StatusPanel label="Fail-closed receipts" value={String(failClosedCount)} tone="red" />
+        </div>
+        <ProofSurfaceSummary
+          emptyMessage="No public proof receipts are available for the dashboard yet."
+          limit={6}
+          proofs={proofs}
+          surface="dashboard"
+          title="Dashboard proof systems"
+        />
+      </Section>
       <div className="analytics-grid">
         {analyticsStudies.map((study) => {
           const selected = isStudySelected(study.id);
@@ -2842,13 +2965,16 @@ function ProofCenterScreen({
   const [regionId, setRegionId] = useState("multnomah_county");
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+  const [proofError, setProofError] = useState("");
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!apiConfig?.actorDid || !locationRecordId.trim() || !regionId.trim()) {
+      setProofError("A connected wallet API, actor DID, location record, and region ID are required.");
       setProofStatus("failed");
       return;
     }
+    setProofError("");
     setProofStatus("creating");
     try {
       const proof = await createLocationRegionProof(apiConfig, {
@@ -2859,7 +2985,8 @@ function ProofCenterScreen({
       setProofs([proof, ...proofs.filter((item) => item.id !== proof.id)]);
       await refreshWalletAuditEvents().catch(() => undefined);
       setProofStatus("created");
-    } catch {
+    } catch (error) {
+      setProofError(proofApiErrorMessage(error));
       setProofStatus("failed");
     }
   }
@@ -2928,7 +3055,10 @@ function ProofCenterScreen({
             <StatusBanner tone="success">Proof receipt created and added to the wallet timeline.</StatusBanner>
           ) : null}
           {proofStatus === "failed" ? (
-            <StatusBanner tone="warning">Proof creation failed. Check the record ID, grant, and API proof mode.</StatusBanner>
+            <StatusBanner tone="warning">
+              Proof creation failed. {proofError || "Check the record ID, grant, and API proof mode."} No simulated
+              fallback was created.
+            </StatusBanner>
           ) : null}
           <Button disabled={!apiConfig?.actorDid || proofStatus === "creating"} type="submit" variant="secondary">
             {proofStatus === "creating" ? "Creating proof..." : "Create proof"}
@@ -2938,23 +3068,28 @@ function ProofCenterScreen({
       <div className="list-stack">
         {proofs.map((proof) => {
           const titleId = `proof-title-${proof.id}`;
+          const state = getProofReceiptUiState(proof);
 
           return (
-            <article aria-labelledby={titleId} className="proof-card" key={proof.id}>
+            <article
+              aria-labelledby={titleId}
+              className={`proof-card proof-system-${state.proofSystemFamily}`}
+              key={proof.id}
+            >
               <div className="scope-header">
                 <div>
                   <h3 id={titleId}>{proof.claim}</h3>
                   <p>
-                    {proof.proofType} · {proof.proofSystem} · {proof.verifier}
+                    {proof.proofType} · {proof.verifier}
                   </p>
                 </div>
-                <Badge tone={proof.simulated ? "warning" : "success"}>
-                  {proof.simulated ? "Simulated" : proof.verificationStatus}
-                </Badge>
+                <Badge tone={state.statusTone}>{state.statusLabel}</Badge>
               </div>
               <div className="badge-row">
                 <Badge>{proof.createdAt}</Badge>
-                <Badge>{proof.witnessLabel}</Badge>
+                {proof.simulated ? <Badge tone="warning">Simulated</Badge> : null}
+                <Badge>{state.inputBoundaryLabel}</Badge>
+                <Badge tone={state.productionEvidence ? "success" : "warning"}>{state.dashboardLabel}</Badge>
               </div>
               <div
                 className="capability-preview"
@@ -2966,9 +3101,7 @@ function ProofCenterScreen({
                     <h4>What this allows</h4>
                     <p>{proof.proofType} · public inputs only</p>
                   </div>
-                  <Badge tone={proof.simulated ? "warning" : "success"}>
-                    {proof.simulated ? "development proof" : "verified proof"}
-                  </Badge>
+                  <Badge tone={state.statusTone}>{state.accepted ? "verified proof" : "not accepted"}</Badge>
                 </div>
                 <div className="disclosure-package">
                   <div className="disclosure-row">
@@ -2976,8 +3109,28 @@ function ProofCenterScreen({
                     <span>proof/verify</span>
                   </div>
                   <div className="disclosure-row">
+                    <strong>Proof system</strong>
+                    <span>{state.proofSystemLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
                     <strong>Verification</strong>
-                    <span>{proof.verificationStatus}</span>
+                    <span>{state.statusLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Provider review</strong>
+                    <span>{state.providerLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Public dashboard</strong>
+                    <span>{state.dashboardLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>QR and export</strong>
+                    <span>{state.exportLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>On-chain status</strong>
+                    <span>{state.onChainLabel}</span>
                   </div>
                   {proof.circuitId ? (
                     <div className="disclosure-row">
@@ -3020,10 +3173,12 @@ function ProofCenterScreen({
 function ExportCenterScreen({
   apiConfig,
   bundles,
+  proofs,
   setBundles
 }: {
   apiConfig?: WalletApiConfig;
   bundles: ExportBundleView[];
+  proofs: ProofReceiptView[];
   setBundles: (bundles: ExportBundleView[]) => void;
 }) {
   const [audienceDid, setAudienceDid] = useState("did:key:legal-aid-desk");
@@ -3091,6 +3246,13 @@ function ExportCenterScreen({
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
       {importStatus === "imported" ? <StatusBanner tone="success">Export descriptors imported.</StatusBanner> : null}
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
+      <ProofSurfaceSummary
+        emptyMessage="No proof receipts are ready for QR review yet."
+        limit={6}
+        proofs={proofs}
+        surface="qr"
+        title="QR proof review"
+      />
       <Section title="Create export bundle">
         <form className="form-grid export-builder" onSubmit={createBundle}>
           <Field label="Recipient DID" required>
@@ -3157,6 +3319,15 @@ function ExportCenterScreen({
       <div className="list-stack">
         {bundles.map((bundle) => {
           const titleId = `export-title-${bundle.id}`;
+          const bundleProofs = proofReceiptsFromExportBundle(bundle);
+          const proofSystemLabels = uniqueProofSystemLabels(bundleProofs);
+          const failClosedProofCount = bundleProofs.filter((proof) => getProofReceiptUiState(proof).failClosed).length;
+          const onChainLabel = bundleProofs.some((proof) => {
+            const state = getProofReceiptUiState(proof);
+            return state.accepted && state.proofSystemFamily === "provekit_recursive_groth16";
+          })
+            ? "Recursive wrapper evidence included"
+            : "No on-chain claim in this export";
 
           return (
             <article aria-labelledby={titleId} className="export-card" key={bundle.id}>
@@ -3176,6 +3347,30 @@ function ExportCenterScreen({
               <div className="receipt-hash-row">
                 <span>Bundle hash</span>
                 <code>{bundle.bundleHash}</code>
+              </div>
+              <div className="disclosure-package" aria-label={`${bundle.audienceName} export proof review`}>
+                <div className="disclosure-row">
+                  <strong>Proof systems</strong>
+                  <span>
+                    {proofSystemLabels.length
+                      ? proofSystemLabels.join(", ")
+                      : bundle.proofCount
+                        ? "Proof receipts included; source wallet metadata only"
+                        : "No proofs included"}
+                  </span>
+                </div>
+                <div className="disclosure-row">
+                  <strong>QR review</strong>
+                  <span>Public proof metadata only; witness and private axiom content are not exported.</span>
+                </div>
+                <div className="disclosure-row">
+                  <strong>Verifier state</strong>
+                  <span>{failClosedProofCount ? `${failClosedProofCount} proof receipts fail closed` : "No blocked proof receipts"}</span>
+                </div>
+                <div className="disclosure-row">
+                  <strong>On-chain status</strong>
+                  <span>{onChainLabel}</span>
+                </div>
               </div>
               <div className="badge-row">
                 <Badge tone={bundle.hashOk ? "success" : "warning"}>
@@ -3223,12 +3418,27 @@ function shortHash(value?: string): string {
   return value.length > 24 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
 }
 
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function proofReceiptsFromExportBundle(bundle: ExportBundleView): ProofReceiptView[] {
+  const rawProofs = isPlainRecord(bundle.bundle) && Array.isArray(bundle.bundle.proofs) ? bundle.bundle.proofs : [];
+  return rawProofs.filter(isPlainRecord).map(mapProofReceiptRecordForUi);
+}
+
+function uniqueProofSystemLabels(proofs: ProofReceiptView[]): string[] {
+  return Array.from(new Set(proofs.map((proof) => getProofReceiptUiState(proof).proofSystemLabel)));
+}
+
 function SecurityScreen({
   apiConfig,
-  onSnapshotLoaded
+  onSnapshotLoaded,
+  proofs
 }: {
   apiConfig?: WalletApiConfig;
   onSnapshotLoaded: () => Promise<void> | void;
+  proofs: ProofReceiptView[];
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
@@ -3355,17 +3565,31 @@ function SecurityScreen({
           <ShieldCheck size={24} /> Bot check settings
         </button>
       </div>
+      <ProofSurfaceSummary
+        emptyMessage="No proof receipts are available for security review yet."
+        limit={6}
+        proofs={proofs}
+        surface="security"
+        title="Proof security review"
+      />
     </div>
   );
 }
 
-function AuditScreen({ events }: { events: AuditEvent[] }) {
+function AuditScreen({ events, proofs }: { events: AuditEvent[]; proofs: ProofReceiptView[] }) {
   return (
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Audit</p>
         <h1>Consent and access history</h1>
       </div>
+      <ProofSurfaceSummary
+        emptyMessage="No proof receipts have been recorded in the audit coverage view yet."
+        limit={6}
+        proofs={proofs}
+        surface="audit"
+        title="Proof audit coverage"
+      />
       <div className="timeline">
         {events.map((event) => (
           <article className="timeline-event" key={event.id}>
