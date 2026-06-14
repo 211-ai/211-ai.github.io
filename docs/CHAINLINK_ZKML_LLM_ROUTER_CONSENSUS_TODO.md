@@ -312,7 +312,7 @@ Track guide:
 - Acceptance: The gated integration test exercises a simulated CRE workflow result, verifies receipt metadata, rejects wrong workflow/request/output identifiers, and skips cleanly when Chainlink test configuration is absent.
 
 ## CLZKML-230 ZKML Proof Envelope Binding
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: proofs
