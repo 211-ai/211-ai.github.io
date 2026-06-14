@@ -6,6 +6,7 @@ export type ProveKitProofFixtureKey =
   | "provekitWhir"
   | "recursive"
   | "disabled"
+  | "unavailable"
   | "artifactHashMismatch"
   | "staleVerifierKey"
   | "verificationFailure"
@@ -266,6 +267,19 @@ const staleVerifierKeyApiReceipt: ProveKitProofFixtureApiReceipt = {
   }
 };
 
+const unavailableApiReceipt: ProveKitProofFixtureApiReceipt = {
+  ...provekitWhirApiReceipt,
+  proof_id: "proof-fixture-backend-unavailable",
+  proof_hash: "backend-unavailable-proof-hash",
+  verifier_id: "provekit-whir-unavailable-v1",
+  verification_status: "provekit_backend_unavailable",
+  metadata: {
+    ...commonProveKitMetadata,
+    cache_status: "unavailable",
+    sanitized_error: "ProveKit verifier is unavailable; no private witness material was exported."
+  }
+};
+
 const verificationFailureApiReceipt: ProveKitProofFixtureApiReceipt = {
   ...provekitWhirApiReceipt,
   proof_id: "proof-fixture-verification-failure",
@@ -335,6 +349,7 @@ export const provekitProofFixtureApiReceipts = {
   recursive: recursiveApiReceipt,
   artifactHashMismatch: artifactHashMismatchApiReceipt,
   staleVerifierKey: staleVerifierKeyApiReceipt,
+  unavailable: unavailableApiReceipt,
   verificationFailure: verificationFailureApiReceipt,
   witnessSentinel: witnessSentinelApiReceipt
 };
@@ -346,6 +361,7 @@ export const provekitProofFixtureUiReceipts = {
   recursive: toUiReceipt(recursiveApiReceipt, "ProveKit recursive Groth16 wrapper"),
   artifactHashMismatch: toUiReceipt(artifactHashMismatchApiReceipt, "ProveKit WHIR"),
   staleVerifierKey: toUiReceipt(staleVerifierKeyApiReceipt, "ProveKit WHIR"),
+  unavailable: toUiReceipt(unavailableApiReceipt, "ProveKit WHIR"),
   verificationFailure: toUiReceipt(verificationFailureApiReceipt, "ProveKit WHIR"),
   witnessSentinel: toUiReceipt(witnessSentinelApiReceipt, "ProveKit WHIR")
 };
@@ -449,6 +465,22 @@ export const provekitProofFixtureScenarios: Record<ProveKitProofFixtureKey, Prov
     proofSystem: "ProveKit-WHIR",
     uiReceipt: provekitProofFixtureUiReceipts.staleVerifierKey
   },
+  unavailable: {
+    apiError: {
+      code: "provekit_backend_unavailable",
+      detail: "ProveKit backend unavailable; no proof receipt was minted.",
+      status: 503
+    },
+    apiReceipt: unavailableApiReceipt,
+    coverageSurfaces: ["proof-center", "wallet-uploads", "security-audit", "provider-proofs", "public-analytics", "export-import"],
+    expectedLabel: "ProveKit backend unavailable",
+    key: "unavailable",
+    manualFallback: true,
+    onChainReady: false,
+    privacyAssertion: "Unavailable backend state exposes sanitized status text only.",
+    proofSystem: "ProveKit-WHIR",
+    uiReceipt: provekitProofFixtureUiReceipts.unavailable
+  },
   verificationFailure: {
     apiError: {
       code: "verification_failure",
@@ -519,6 +551,61 @@ export const provekitWalletProofQrBundleFixture = {
   proofs: Object.values(provekitProofFixtureUiReceipts)
 };
 
+export function createProveKitLocationRegionApiReceipt({
+  createdAt = verifiedAt,
+  metadata = {},
+  proofHash: receiptProofHash = proofHash,
+  proofId = "proof-fullstack-provekit-whir",
+  publicInputs = {},
+  statement = {},
+  verificationStatus = "verified",
+  walletId: receiptWalletId = walletId,
+  witnessRecordId = "rec-location-current"
+}: {
+  createdAt?: string;
+  metadata?: Record<string, unknown>;
+  proofHash?: string;
+  proofId?: string;
+  publicInputs?: Record<string, unknown>;
+  statement?: Record<string, unknown>;
+  verificationStatus?: string;
+  walletId?: string;
+  witnessRecordId?: string;
+} = {}): ProveKitProofFixtureApiReceipt {
+  return {
+    ...provekitWhirApiReceipt,
+    proof_id: proofId,
+    proof_type: "location_region",
+    statement: {
+      claim: "location_in_region",
+      circuit_ref: "provekit_knowledge_of_axioms@v1",
+      region_id: String(publicInputs.region_id ?? "multnomah_county"),
+      ...statement
+    },
+    verifier_id: "provekit-whir-eligibility-v1",
+    public_inputs: {
+      ...publicInputs,
+      ...commonProveKitPublicInputs,
+      claim: String(publicInputs.claim ?? "location_in_region")
+    },
+    proof_hash: receiptProofHash,
+    witness_record_ids: [witnessRecordId],
+    is_simulated: false,
+    proof_system: "ProveKit-WHIR",
+    circuit_id: "provekit_knowledge_of_axioms@v1",
+    verifier_digest: verifierDigest,
+    proof_artifact_ref: "ipfs://bafyprovekitwhirfixture/proof.np",
+    verification_status: verificationStatus,
+    created_at: createdAt,
+    metadata: {
+      ...commonProveKitMetadata,
+      fixture: "provekit_fullstack_http_backend",
+      ...metadata
+    },
+    wallet_id: receiptWalletId
+  };
+}
+
 export function buildProveKitWalletProofsApiResponse(
   keys: readonly ProveKitProofFixtureKey[] = [
     "simulated",
@@ -527,6 +614,7 @@ export function buildProveKitWalletProofsApiResponse(
     "recursive",
     "artifactHashMismatch",
     "staleVerifierKey",
+    "unavailable",
     "verificationFailure",
     "witnessSentinel"
   ]
