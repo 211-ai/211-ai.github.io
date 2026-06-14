@@ -413,7 +413,7 @@ Track guide:
 - Acceptance: Playwright launches the real Abby UI and live wallet API with deterministic mocked consensus responses, then verifies recipient access redacted analysis, wallet/uploads profiling, Proof Center/QR review, Security/audit, provider eligibility, and public analytics/proof dashboard behavior for success, fail-closed no-quorum, proof/CRE mismatch, manual fallback, audit refresh, and no visible or exported raw prompt/PII/proof/operator-secret leakage.
 
 ## CLZKML-285 Cross-Surface Consensus UX Accessibility And No-Leak Review
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ui

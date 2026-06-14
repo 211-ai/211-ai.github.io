@@ -171,6 +171,33 @@ test("review artifact covers required ProveKit UX surfaces and viewports", async
   expect(matrix.checks.join(" ")).toMatch(/private witness/i);
 });
 
+test("review artifact covers required Chainlink consensus UX surfaces and viewports", async () => {
+  const matrixPath = path.join(repoRoot, "artifacts/chainlink-zkml-ui-review/review-matrix.json");
+  const matrix = JSON.parse(readFileSync(matrixPath, "utf-8")) as {
+    checks: string[];
+    reviewed_surfaces: string[];
+    viewport_coverage: Array<{ name: string }>;
+  };
+  expect(matrix.reviewed_surfaces).toEqual(
+    expect.arrayContaining([
+      "recipient-access-artifacts",
+      "wallet-uploads",
+      "proof-center",
+      "qr-proof-review",
+      "provider-eligibility",
+      "public-analytics",
+      "security-audit",
+      "audit-history"
+    ])
+  );
+  expect(matrix.viewport_coverage.map((entry) => entry.name)).toEqual(
+    expect.arrayContaining(["Desktop Chrome", "Mobile Chrome", "Mobile Safari"])
+  );
+  expect(matrix.checks.join(" ")).toMatch(/keyboard focus/i);
+  expect(matrix.checks.join(" ")).toMatch(/manual-review fallback/i);
+  expect(matrix.checks.join(" ")).toMatch(/operator secret/i);
+});
+
 test("wallet proof review surfaces are scannable and do not expose private proof material", async ({ page }, testInfo) => {
   await installRoutes(page);
   const routes: Array<[string, RegExp, RegExp]> = [
