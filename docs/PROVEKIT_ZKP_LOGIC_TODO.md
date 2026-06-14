@@ -288,7 +288,7 @@ Track guide:
 - Acceptance: The matrix maps Proof Center, Wallet/uploads, QR review, Security/audit, provider eligibility/case proofs, public analytics/proof dashboards, and export/import to backend routes, proof systems, error states, labels, privacy assertions, and desktop/mobile Playwright coverage; fixtures include simulated, Groth16, ProveKit WHIR, recursive, disabled, artifact-hash-mismatch, stale-verifier-key, verification-failure, and witness-sentinel cases.
 
 ## PROVEKIT-240 Wallet API ProveKit Proof Contract Regression
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: wallet
