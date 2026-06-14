@@ -402,7 +402,7 @@ Track guide:
 - Acceptance: Tests cover divergent outputs, equivocation, duplicate operator IDs, replayed signatures, stale deadlines, malformed JSON, proof mismatch, CRE workflow mismatch, timeout races, and quorum ties.
 
 ## CLZKML-320 Backward Compatibility And Import Quietness
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: quality
