@@ -3,6 +3,26 @@ import type { ProofReceiptView } from "../models/abby";
 const qrImageAcceptedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const cidPattern = /\b(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})\b/;
 const walletProofBundleParam = "walletProofBundle";
+const worldIdProofType = "world_id_proof_of_human";
+const worldIdNullifierRefPrefix = "worldid-nullifier-ref:v1:";
+const privateProofMetadataKeyPattern =
+  /(^|_)(bearer|developer_portal_response|developer_response|email|full_name|idkit|key_hex|nonce|phone|pii|private|raw_nullifier|raw_proof|responses|root|rp_context|rp_signature|secret|session_id|session_nullifier|signature|ssn|token|witness)(_|$)/i;
+const piiValuePatterns = [
+  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+  /\b(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)\d{3}[-.\s]?\d{4}\b/,
+  /\b\d{3}-\d{2}-\d{4}\b/,
+  /\b\d{1,6}\s+[A-Za-z0-9.'-]+(?:\s+[A-Za-z0-9.'-]+){0,5}\s+(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Dr|Drive|Ln|Lane|Way|Ct|Court)\b/i
+];
+const privateProofValuePatterns = [
+  /0xraw/i,
+  /developer_portal_response/i,
+  /idkit_payload/i,
+  /idkit_proof/i,
+  /raw[-_\s]?world[-_\s]?id[-_\s]?nullifier/i,
+  /raw_nullifier/i,
+  /rp_signature/i,
+  /0xmocksig/i
+];
 
 type BarcodeDetectorLike = {
   detect(source: ImageBitmapSource): Promise<Array<{ rawValue?: string }>>;
@@ -77,20 +97,7 @@ export function buildWalletProofBundlePayload({
     .filter((proof): proof is LinkedProofReference => Boolean(proof));
   const inlineProofs = proofs
     .filter((proof) => !parseProofArtifactLocator(proof.proofArtifactRef))
-    .map((proof) => ({
-      claim: proof.claim,
-      createdAt: proof.createdAt,
-      id: proof.id,
-      proofArtifactRef: proof.proofArtifactRef,
-      proofSystem: proof.proofSystem,
-      proofType: proof.proofType,
-      publicInputs: proof.publicInputs,
-      simulated: proof.simulated,
-      verificationStatus: proof.verificationStatus,
-      verifier: proof.verifier,
-      verifierDigest: proof.verifierDigest,
-      witnessLabel: proof.witnessLabel
-    }));
+    .map(sanitizeProofViewForBundle);
   return JSON.stringify({
     "@context": {
       ipld: "https://ipld.io/",
@@ -469,7 +476,11 @@ function normalizeProofs(payload: unknown): ProofReceiptView[] {
 function normalizeProof(proof: unknown): ProofReceiptView | undefined {
   if (!proof || typeof proof !== "object") return undefined;
   const record = proof as Record<string, unknown>;
+  const proofType = sanitizeProofDisplayString(
+    firstString(record.proofType, record.proof_type, record.certificateType, record.type, record.pt) || "wallet_proof"
+  ) || "wallet_proof";
   const publicInputs = normalizePublicInputs(
+    proofType,
     record.publicInputs,
     record.public_inputs,
     record.disclosedClaims,
@@ -478,63 +489,172 @@ function normalizeProof(proof: unknown): ProofReceiptView | undefined {
     record.u
   );
   const claim =
-    firstString(record.claim, record.c, publicInputs.claim, objectString(record.statement, "claim"), record.title, record.name) ||
-    firstString(record.proofType, record.proof_type, record.certificateType, record.type, record.pt) ||
+    sanitizeProofDisplayString(
+      firstString(record.claim, record.c, publicInputs.claim, objectString(record.statement, "claim"), record.title, record.name)
+    ) ||
+    proofType ||
     "Verified claim";
-  const proofType = firstString(record.proofType, record.proof_type, record.certificateType, record.type, record.pt) || "wallet_proof";
   const witnessRecordIds = Array.isArray(record.witness_record_ids)
-    ? record.witness_record_ids.filter((value): value is string => typeof value === "string")
+    ? record.witness_record_ids
+        .filter((value): value is string => typeof value === "string")
+        .map(sanitizeProofDisplayString)
+        .filter(Boolean)
     : [];
 
   return {
-    id: firstString(record.id, record.proofId, record.proof_id, record.certificateId, record.certificate_id, record.i) || claim,
+    id:
+      sanitizeProofDisplayString(
+        firstString(record.id, record.proofId, record.proof_id, record.certificateId, record.certificate_id, record.i)
+      ) || claim,
     proofType,
     claim,
     verifier:
-      firstString(record.verifier, record.verifierId, record.verifier_id, record.issuer, record.issuedBy, record.issuerDid, record.v) ||
+      sanitizeProofDisplayString(
+        firstString(record.verifier, record.verifierId, record.verifier_id, record.issuer, record.issuedBy, record.issuerDid, record.v)
+      ) ||
       "Wallet verifier",
-    proofSystem: firstString(record.proofSystem, record.proof_system, record.system, record.ps) || "linked bundle",
-    verificationStatus: firstString(record.verificationStatus, record.verification_status, record.status, record.vs) || "verified",
-    circuitId: firstString(record.circuitId, record.circuit_id),
-    verifierDigest: firstString(record.verifierDigest, record.verifier_digest),
-    proofArtifactRef: firstString(record.proofArtifactRef, record.proof_artifact_ref, record.artifactRef, record.ipfsCid, record.cid),
+    proofSystem: sanitizeProofDisplayString(firstString(record.proofSystem, record.proof_system, record.system, record.ps)) || "linked bundle",
+    verificationStatus: sanitizeProofDisplayString(firstString(record.verificationStatus, record.verification_status, record.status, record.vs)) || "verified",
+    circuitId: sanitizeProofDisplayString(firstString(record.circuitId, record.circuit_id)),
+    verifierDigest: sanitizeProofDisplayString(firstString(record.verifierDigest, record.verifier_digest)),
+    proofArtifactRef: sanitizeProofDisplayString(
+      firstString(record.proofArtifactRef, record.proof_artifact_ref, record.artifactRef, record.ipfsCid, record.cid)
+    ),
     publicInputs,
     witnessLabel:
-      firstString(record.witnessLabel, record.witness_label, record.sourceLabel, record.source_label, record.w) ||
+      sanitizeProofDisplayString(firstString(record.witnessLabel, record.witness_label, record.sourceLabel, record.source_label, record.w)) ||
       witnessRecordIds.join(", ") ||
       "Wallet witness",
     simulated: Boolean(record.simulated ?? record.is_simulated),
-    createdAt: firstString(record.createdAt, record.created_at, record.issuedAt, record.issued_at) || "Reviewed from QR"
+    createdAt:
+      sanitizeProofDisplayString(firstString(record.createdAt, record.created_at, record.issuedAt, record.issued_at)) ||
+      "Reviewed from QR"
   };
 }
 
-function normalizePublicInputs(...values: Array<unknown>): Record<string, string> {
+function normalizePublicInputs(proofType: string, ...values: Array<unknown>): Record<string, string> {
   for (const value of values) {
     if (!value || typeof value !== "object" || Array.isArray(value)) continue;
     const record = value as Record<string, unknown>;
-    return Object.fromEntries(
-      Object.entries(record)
-        .map(([key, entry]) => [key, stringifyValue(entry)] as const)
-        .filter(([, entry]) => entry.length > 0)
-    );
+    return sanitizePublicProofInputs(proofType, record);
   }
   return {};
 }
 
-function stringifyValue(value: unknown): string {
-  if (typeof value === "string") return value;
+function sanitizeProofViewForBundle(proof: ProofReceiptView): Record<string, unknown> {
+  const proofType = sanitizeProofDisplayString(proof.proofType) || "wallet_proof";
+  return omitUndefinedValues({
+    claim: sanitizeProofDisplayString(proof.claim),
+    createdAt: sanitizeProofDisplayString(proof.createdAt),
+    id: sanitizeProofDisplayString(proof.id),
+    proofArtifactRef: sanitizeProofDisplayString(proof.proofArtifactRef),
+    proofSystem: sanitizeProofDisplayString(proof.proofSystem),
+    proofType,
+    publicInputs: sanitizePublicProofInputs(proofType, proof.publicInputs),
+    simulated: proof.simulated,
+    verificationStatus: sanitizeProofDisplayString(proof.verificationStatus),
+    verifier: sanitizeProofDisplayString(proof.verifier),
+    verifierDigest: sanitizeProofDisplayString(proof.verifierDigest),
+    witnessLabel: sanitizeProofDisplayString(proof.witnessLabel)
+  });
+}
+
+function sanitizePublicProofInputs(proofType: string, record: Record<string, unknown>): Record<string, string> {
+  const entries: Array<[string, string]> = [];
+  for (const [key, entry] of Object.entries(record)) {
+    if (key.toLowerCase() === "nullifier_ref" && "nullifier_commitment" in record) continue;
+    const normalizedKey = normalizePublicInputKey(proofType, key);
+    if (!normalizedKey) continue;
+    const value = stringifyPublicProofValue(entry);
+    if (value) entries.push([normalizedKey, value]);
+  }
+  return Object.fromEntries(entries);
+}
+
+function normalizePublicInputKey(proofType: string, key: string): string | undefined {
+  const normalizedKey = key.trim();
+  const lowered = normalizedKey.toLowerCase();
+  if (lowered === "nullifier_ref") {
+    return proofType === worldIdProofType ? "nullifier_commitment" : undefined;
+  }
+  if (lowered === "nullifier_commitment") return normalizedKey;
+  if (privateProofMetadataKey(normalizedKey)) return undefined;
+  return normalizedKey;
+}
+
+function stringifyPublicProofValue(value: unknown): string {
+  if (typeof value === "string") {
+    const commitment = value.startsWith(worldIdNullifierRefPrefix)
+      ? `hmac-sha256:${value.slice(worldIdNullifierRefPrefix.length)}`
+      : value;
+    return sanitizeProofDisplayString(commitment) || "";
+  }
   if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) return value.map(stringifyValue).filter(Boolean).join(", ");
+  if (Array.isArray(value)) {
+    return value.map(stringifyPublicProofValue).filter(Boolean).join(", ");
+  }
   if (value && typeof value === "object") {
-    const nestedClaim = objectString(value, "claim");
-    if (nestedClaim) return nestedClaim;
+    const nested = sanitizePublicProofRecord(value as Record<string, unknown>);
+    const nestedClaim = objectString(nested, "claim");
+    if (nestedClaim) return sanitizeProofDisplayString(nestedClaim) || "";
+    if (!Object.keys(nested).length) return "";
     try {
-      return JSON.stringify(value);
+      return sanitizeProofDisplayString(JSON.stringify(nested)) || "";
     } catch {
       return "";
     }
   }
   return "";
+}
+
+function sanitizePublicProofRecord(record: Record<string, unknown>): Record<string, unknown> {
+  const entries: Array<[string, unknown]> = [];
+  for (const [key, value] of Object.entries(record)) {
+    if (privateProofMetadataKey(key)) continue;
+    if (typeof value === "string") {
+      const safeValue = sanitizeProofDisplayString(value);
+      if (safeValue) entries.push([key, safeValue]);
+      continue;
+    }
+    if (typeof value === "number" || typeof value === "boolean" || value === null) {
+      entries.push([key, value]);
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const safeItems = value
+        .map((item) => {
+          if (item && typeof item === "object") return sanitizePublicProofRecord(item as Record<string, unknown>);
+          return sanitizeProofDisplayString(item);
+        })
+        .filter((item) => (typeof item === "object" ? Object.keys(item).length > 0 : Boolean(item)));
+      if (safeItems.length) entries.push([key, safeItems]);
+      continue;
+    }
+    if (value && typeof value === "object") {
+      const safeRecord = sanitizePublicProofRecord(value as Record<string, unknown>);
+      if (Object.keys(safeRecord).length) entries.push([key, safeRecord]);
+    }
+  }
+  return Object.fromEntries(entries);
+}
+
+function privateProofMetadataKey(key: string): boolean {
+  const lowered = key.toLowerCase();
+  if (["proof_hash", "proof_id", "proof_system", "proof_type", "proof_artifact_ref"].includes(lowered)) return false;
+  if (["nullifier", "proof"].includes(lowered)) return true;
+  return privateProofMetadataKeyPattern.test(lowered);
+}
+
+function sanitizeProofDisplayString(value: unknown): string | undefined {
+  const text = firstString(value);
+  if (!text) return undefined;
+  if (privateProofValuePatterns.some((pattern) => pattern.test(text))) return undefined;
+  if (piiValuePatterns.some((pattern) => pattern.test(text))) return undefined;
+  return text;
+}
+
+function omitUndefinedValues(record: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined && value !== ""));
 }
 
 function parseJson(value: string): unknown | undefined {

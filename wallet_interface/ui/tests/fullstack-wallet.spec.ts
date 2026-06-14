@@ -4,6 +4,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createServer } from "node:net";
+import { buildWalletProofBundlePayload, reviewWalletProofBundlePayload } from "../src/services/walletProofReview";
 
 type ApiServer = {
   baseUrl: string;
@@ -627,6 +628,112 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
 // ---------------------------------------------------------------------------
 // World ID sanitized proof display with a live wallet API
 // ---------------------------------------------------------------------------
+
+test("wallet proof QR bundles and imported review sanitize World ID proof metadata", async () => {
+  const forbidden = [
+    "0xraw-world-id-nullifier",
+    "0x1a",
+    "nullifier_ref",
+    "idkit_payload",
+    "idkit_proof",
+    "developer_portal_response",
+    "rp_signature",
+    "0xmocksig",
+    "jane@example.org",
+    "503-555-1212",
+    "123-45-6789",
+    "Jane Example"
+  ];
+  const leakyProof = {
+    id: "proof-world-id-qr",
+    proofType: "world_id_proof_of_human",
+    claim: "World ID proof of human is bound to this wallet",
+    verifier: "world_id_developer_portal_v4",
+    proofSystem: "world_id_idkit_v4",
+    verificationStatus: "verified",
+    circuitId: "world-id-proof-of-human-v4",
+    verifierDigest: "digest-world-id-qr",
+    publicInputs: {
+      claim: "World ID proof of human is bound to this wallet",
+      rp_id: "rp_demo",
+      app_id: "app_staging_demo",
+      action: "wallet-attach-world-id-v1",
+      credential_policy: "proof_of_human",
+      nullifier_ref: "worldid-nullifier-ref:v1:qrcommitment",
+      raw_nullifier: "0xraw-world-id-nullifier",
+      idkit_proof: "0x1a",
+      developer_portal_response: "developer_portal_response",
+      rp_signature: "0xmocksig",
+      email: "jane@example.org",
+      phone: "503-555-1212",
+      ssn: "123-45-6789"
+    },
+    witnessLabel: "World ID wallet binding",
+    simulated: false,
+    createdAt: "2026-06-14T16:00:00Z"
+  };
+  const payload = buildWalletProofBundlePayload({
+    actorDid: "did:key:qr-review-owner",
+    walletId: "wallet-qr-world-id",
+    proofs: [leakyProof]
+  });
+  const renderedPayload = JSON.stringify(JSON.parse(payload));
+
+  expect(renderedPayload).toContain("world_id_proof_of_human");
+  expect(renderedPayload).toContain("hmac-sha256:qrcommitment");
+  for (const token of forbidden) {
+    expect(renderedPayload).not.toContain(token);
+  }
+
+  const importedReview = reviewWalletProofBundlePayload({
+    schemaVersion: "211-ai-wallet-root-ipld-v1",
+    title: "Imported World ID proof bundle",
+    wallet: { id: "wallet-qr-world-id", label: "Wallet QR World ID", actorDid: "did:key:qr-review-owner" },
+    proofs: [
+      {
+        proof_id: "proof-world-id-imported",
+        proof_type: "world_id_proof_of_human",
+        statement: {
+          claim: "World ID proof of human is bound to this wallet",
+          idkit_payload: { responses: [{ proof: ["0x1a"], nullifier: "0xraw-world-id-nullifier" }] },
+          developer_portal_response: { nullifier: "0xraw-world-id-nullifier" }
+        },
+        verifier_id: "world_id_developer_portal_v4",
+        public_inputs: {
+          claim: "World ID proof of human is bound to this wallet",
+          rp_id: "rp_demo",
+          app_id: "app_staging_demo",
+          action: "wallet-attach-world-id-v1",
+          credential_policy: "proof_of_human",
+          nullifier_ref: "worldid-nullifier-ref:v1:importcommitment",
+          raw_nullifier: "0xraw-world-id-nullifier",
+          idkit_proof: "0x1a",
+          developer_portal_response: "developer_portal_response",
+          rp_signature: "0xmocksig",
+          contact_email: "jane@example.org",
+          contact_phone: "503-555-1212",
+          ssn: "123-45-6789"
+        },
+        proof_system: "world_id_idkit_v4",
+        circuit_id: "world-id-proof-of-human-v4",
+        verifier_digest: "digest-world-id-imported",
+        proof_artifact_ref: "worldid-proof://proof-world-id-imported",
+        verification_status: "verified",
+        created_at: "2026-06-14T16:00:00Z"
+      }
+    ]
+  });
+  const renderedReview = JSON.stringify(importedReview);
+
+  expect(importedReview.proofs).toHaveLength(1);
+  expect(importedReview.proofs[0].claim).toBe("World ID proof of human is bound to this wallet");
+  expect(importedReview.proofs[0].proofType).toBe("world_id_proof_of_human");
+  expect(importedReview.proofs[0].publicInputs.nullifier_commitment).toBe("hmac-sha256:importcommitment");
+  expect(importedReview.proofs[0].publicInputs.credential_policy).toBe("proof_of_human");
+  for (const token of forbidden) {
+    expect(renderedReview).not.toContain(token);
+  }
+});
 
 test("World ID disabled state is handled gracefully with a live wallet API", async ({ page }) => {
   const api = await startWalletApi();

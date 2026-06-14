@@ -63,6 +63,20 @@ export type RuntimeAgentConfig = {
   graphRagPrerenderMatchThreshold?: number | string;
 };
 
+export type RuntimeWorldIdEnvironment = "production" | "staging";
+
+export type RuntimeWorldIdConfig = {
+  action?: string;
+  appId?: string;
+  app_id?: string;
+  defaultAction?: string;
+  default_action?: string;
+  disabledReason?: string;
+  disabled_reason?: string;
+  enabled?: boolean | string;
+  environment?: RuntimeWorldIdEnvironment | string;
+};
+
 export type ResolvedRuntimeVoiceProxyConfig = {
   enabled?: boolean;
   model?: string;
@@ -84,6 +98,14 @@ export type ResolvedRuntimeAgentConfig = {
   graphRagPrerenderMatchThreshold?: number;
 };
 
+export type ResolvedRuntimeWorldIdConfig = {
+  action: string;
+  appId?: string;
+  disabledReason?: string;
+  enabled: boolean;
+  environment: RuntimeWorldIdEnvironment;
+};
+
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
@@ -91,6 +113,7 @@ export type AbbyRuntimeConfig = {
   voiceProxy?: RuntimeVoiceProxyConfig;
   precomputedAudio?: RuntimePrecomputedAudioConfig;
   agent?: RuntimeAgentConfig;
+  worldId?: RuntimeWorldIdConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
@@ -164,6 +187,10 @@ export function readRuntimeAgentConfig(): ResolvedRuntimeAgentConfig | undefined
   return normalizeAgentConfig(readRuntimeConfig().agent);
 }
 
+export function readRuntimeWorldIdConfig(): ResolvedRuntimeWorldIdConfig {
+  return normalizeWorldIdConfig(readRuntimeConfig().worldId);
+}
+
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -176,6 +203,7 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   const precomputedAudio = normalizePrecomputedAudioConfig(payload?.precomputedAudio);
   const agent = normalizeAgentConfig(payload?.agent);
+  const worldId = normalizeWorldIdConfig(payload?.worldId);
   return {
     ...(walletApi ? { walletApi } : {}),
     ...(filecoinStorage ? { filecoinStorage } : {}),
@@ -183,6 +211,7 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
     ...(voiceProxy ? { voiceProxy } : {}),
     ...(precomputedAudio ? { precomputedAudio } : {}),
     ...(agent ? { agent } : {}),
+    worldId,
   };
 }
 
@@ -299,6 +328,23 @@ function normalizeAgentConfig(
   return { graphRagPrerenderMatchThreshold };
 }
 
+function normalizeWorldIdConfig(config: RuntimeWorldIdConfig | null | undefined): ResolvedRuntimeWorldIdConfig {
+  const appId = normalizeOptionalString(config?.appId ?? config?.app_id);
+  const enabled = normalizeOptionalBoolean(config?.enabled) ?? Boolean(appId);
+  const action =
+    normalizeOptionalString(config?.action ?? config?.defaultAction ?? config?.default_action) ??
+    DEFAULT_WORLD_ID_ACTION;
+  const environment = normalizeWorldIdEnvironment(config?.environment);
+  const disabledReason = normalizeOptionalString(config?.disabledReason ?? config?.disabled_reason);
+  return {
+    action,
+    ...(appId ? { appId } : {}),
+    ...(disabledReason ? { disabledReason } : {}),
+    enabled,
+    environment
+  };
+}
+
 function normalizeOptionalString(value: string | null | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
@@ -321,6 +367,10 @@ function normalizeOptionalNumber(value: number | string | null | undefined): num
   if (!normalized) return undefined;
   const parsed = Number.parseFloat(normalized);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function normalizeWorldIdEnvironment(value: string | null | undefined): RuntimeWorldIdEnvironment {
+  return normalizeOptionalString(value)?.toLowerCase() === "production" ? "production" : DEFAULT_WORLD_ID_ENVIRONMENT;
 }
 
 function resolveWalletApiBaseUrl(value: string | null | undefined): string | undefined {

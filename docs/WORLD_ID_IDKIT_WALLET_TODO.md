@@ -205,7 +205,7 @@ Track guide:
 - Acceptance: Wallet/uploads, Register, and Security surfaces display consistent World ID verified/unverified state, offer verification only when wallet API config and actor DID are available, and avoid blocking emergency or essential-service flows when World ID is unavailable.
 
 ## WORLDID-160 Public Proof Bundle And Export Sanitization
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: privacy

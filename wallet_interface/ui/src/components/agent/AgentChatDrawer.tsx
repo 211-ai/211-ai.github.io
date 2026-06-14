@@ -44,7 +44,6 @@ export function AgentChatDrawer({
   onOpenText,
   onAudioReply,
   onOpenServiceDetail,
-  onAudioReply,
   onSend
 }: {
   activeRouteLabel: string;

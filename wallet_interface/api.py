@@ -12,17 +12,19 @@ import json
 import math
 import mimetypes
 import os
+import threading
 from typing import Any, Dict, List, Sequence
 
 from .app_service import WalletInterfaceService
 from .world_id import WorldIdVerificationError
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+    from fastapi import Body, FastAPI, File, Form, Header, HTTPException, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
     FastAPI = None  # type: ignore[assignment]
+    Body = None  # type: ignore[assignment]
     CORSMiddleware = None  # type: ignore[assignment]
     File = None  # type: ignore[assignment]
     Form = None  # type: ignore[assignment]
@@ -38,6 +40,7 @@ from ._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
+from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
 
 

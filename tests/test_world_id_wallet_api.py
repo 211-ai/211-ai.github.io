@@ -180,6 +180,92 @@ def test_wallet_interface_verifies_registers_persists_and_revokes_world_id_bindi
     assert "wallet/world_id_revoke" in [event.action for event in app.wallet_service.get_audit_log(wallet.wallet_id)]
 
 
+def test_world_id_export_bundle_carries_only_sanitized_public_proof_metadata(tmp_path) -> None:
+    config = load_world_id_config(env=enabled_env())
+    raw_nullifier = "0xraw-world-id-nullifier"
+
+    def fake_request_json(*_):
+        return {
+            "success": True,
+            "results": [{"success": True, "identifier": "proof_of_human", "nullifier": raw_nullifier}],
+            "action": DEFAULT_WORLD_ID_ACTION,
+            "nullifier": raw_nullifier,
+            "created_at": "2026-06-13T00:00:00Z",
+            "environment": "staging",
+            "message": "verified",
+        }
+
+    app = WalletInterfaceService(
+        world_id_config=config,
+        world_id_request_json=fake_request_json,
+        repository_root=tmp_path / "repo",
+        services=[],
+    )
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "benefits-note.txt"
+    source.write_text(
+        "Benefits note for Jane Example. Email jane@example.org, phone 503-555-1212, SSN 123-45-6789.",
+        encoding="utf-8",
+    )
+    document = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    result = app.register_world_id_verification(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        idkit_payload=sample_v4_idkit_payload(raw_nullifier),
+    )
+    proof = app.wallet_service.proofs[result["proof"]["proof_id"]]
+    proof.statement["idkit_payload"] = sample_v4_idkit_payload(raw_nullifier)
+    proof.statement["developer_portal_response"] = {"nullifier": raw_nullifier}
+    proof.public_inputs.update(
+        {
+            "raw_nullifier": raw_nullifier,
+            "nullifier": raw_nullifier,
+            "idkit_proof": ["0x1a", "0x2b"],
+            "developer_portal_response": {"results": [{"nullifier": raw_nullifier}]},
+            "rp_signature": "0xmocksig",
+            "email": "jane@example.org",
+            "phone": "503-555-1212",
+            "ssn": "123-45-6789",
+        }
+    )
+    proof.metadata["developer_portal_response"] = {"nullifier": raw_nullifier}
+    proof.metadata["rp_signature"] = "0xmocksig"
+
+    bundle = app.create_export_bundle(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        record_ids=[document.record_id],
+        include_proofs=True,
+    )
+    rendered_bundle = json.dumps(bundle, sort_keys=True)
+    world_id_proofs = [proof for proof in bundle["proofs"] if proof["proof_type"] == "world_id_proof_of_human"]
+
+    assert len(world_id_proofs) == 1
+    public_inputs = world_id_proofs[0]["public_inputs"]
+    assert public_inputs["claim"] == "world_id_proof_of_human"
+    assert public_inputs["credential_policy"] == "proof_of_human"
+    assert public_inputs["nullifier_commitment"].startswith("hmac-sha256:")
+    assert public_inputs["verification_result_hash"].startswith("sha256:")
+    assert "nullifier_ref" not in public_inputs
+    assert "nullifier_ref" not in world_id_proofs[0]["statement"]
+    assert app.verify_export_bundle(bundle)["valid"] is True
+
+    for forbidden in [
+        raw_nullifier,
+        "0x1a",
+        "idkit_payload",
+        "idkit_proof",
+        "developer_portal_response",
+        "rp_signature",
+        "0xmocksig",
+        "jane@example.org",
+        "503-555-1212",
+        "123-45-6789",
+        "Jane Example",
+    ]:
+        assert forbidden not in rendered_bundle
+
+
 def test_wallet_interface_world_id_registration_preserves_authorization_and_config_boundaries() -> None:
     config = load_world_id_config(env=enabled_env())
     app = WalletInterfaceService(world_id_config=config, services=[], auto_persist=False)
