@@ -622,6 +622,11 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "proof_verifier_service": "wallet-verifier.staging.svc",
             "proof_verifier_id": "verifier-http-v1",
             "proof_system": "groth16",
+            "world_id_enabled_decision": "enabled-for-pilot",
+            "world_id_environment": "production",
+            "world_id_app_id": "app_staging_world_id_wallet",
+            "world_id_rp_id": "rp_staging_world_id_wallet",
+            "world_id_verify_endpoint": "https://developer.world.org",
             "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
         },
         "secret_manager_refs": {
@@ -629,6 +634,8 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "alert_credentials": "secret://staging/wallet/ops-alert",
             "proof_verifier_credentials": "secret://staging/wallet/proof-verifier",
             "storage_credentials": "secret://staging/wallet/storage",
+            "world_id_rp_signing_key": "secret://staging/wallet/world-id-rp-signing",
+            "world_id_nullifier_commitment_key": "secret://staging/wallet/world-id-nullifier",
         },
         "artifact_refs": {
             "release_check_evidence": "evidence://wallet/release-checks/2026-05-05",
@@ -636,6 +643,12 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "ops_health_report": "evidence://wallet/ops-health/2026-05-05",
             "proof_contract_report": "evidence://wallet/proof-contract/2026-05-05",
             "distance_proof_contract_report": "evidence://wallet/distance-proof-contract/2026-05-05",
+            "world_id_staging_simulator": "evidence://wallet/world-id/staging-simulator/2026-05-05",
+            "world_id_fullstack_playwright": "evidence://wallet/world-id/fullstack/2026-05-05",
+            "world_id_ux_review": "evidence://wallet/world-id/ux-review/2026-05-05",
+            "world_id_privacy_nullifier_review": "evidence://wallet/world-id/privacy-nullifier/2026-05-05",
+            "world_id_security_signoff": "evidence://wallet/world-id/security/2026-05-05",
+            "world_id_support_playbook": "evidence://wallet/world-id/support/2026-05-05",
         },
         "retention_mapping": {
             "policy_version": "wallet-retention-2026-05-05",

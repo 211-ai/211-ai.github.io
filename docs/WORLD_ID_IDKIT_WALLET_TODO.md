@@ -325,7 +325,7 @@ Track guide:
 - Acceptance: Passport/NFC, selfie, and identity-check credential policies are documented separately from proof-of-human, with explicit allowed claims, prohibited claims, UI wording, privacy review, and provider eligibility constraints before any legal identity or eligibility wording is shipped.
 
 ## WORLDID-250 Pilot Production Signoff Packet
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ops

@@ -46,6 +46,11 @@ _SIGNOFF_REQUIRED_ENVIRONMENT_FIELDS = (
     "proof_verifier_service",
     "proof_verifier_id",
     "proof_system",
+    "world_id_enabled_decision",
+    "world_id_environment",
+    "world_id_app_id",
+    "world_id_rp_id",
+    "world_id_verify_endpoint",
     "retention_policy_version",
 )
 
@@ -54,6 +59,8 @@ _SIGNOFF_REQUIRED_SECRET_REFS = (
     "alert_credentials",
     "proof_verifier_credentials",
     "storage_credentials",
+    "world_id_rp_signing_key",
+    "world_id_nullifier_commitment_key",
 )
 
 _SIGNOFF_REQUIRED_ARTIFACT_REFS = (
@@ -62,6 +69,12 @@ _SIGNOFF_REQUIRED_ARTIFACT_REFS = (
     "ops_health_report",
     "proof_contract_report",
     "distance_proof_contract_report",
+    "world_id_staging_simulator",
+    "world_id_fullstack_playwright",
+    "world_id_ux_review",
+    "world_id_privacy_nullifier_review",
+    "world_id_security_signoff",
+    "world_id_support_playbook",
 )
 
 _SIGNOFF_REQUIRED_RETENTION_FIELDS = (

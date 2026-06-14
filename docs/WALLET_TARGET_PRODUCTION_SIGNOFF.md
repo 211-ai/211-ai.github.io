@@ -62,6 +62,12 @@ launch decision still requires validating the completed target packet path.
 | Secret-manager path for World ID nullifier commitment key |  |
 | World ID endpoint reachability evidence artifact |  |
 | World ID proof sanitization evidence artifact |  |
+| World ID staging simulator evidence artifact |  |
+| World ID full-stack Playwright evidence artifact |  |
+| World ID UX review evidence artifact |  |
+| World ID privacy/nullifier review evidence artifact |  |
+| World ID security signoff evidence artifact |  |
+| World ID support playbook evidence artifact |  |
 | Release-check evidence artifact |  |
 | Readiness report artifact |  |
 | Ops-health report artifact |  |
