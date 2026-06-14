@@ -539,6 +539,133 @@ body.playful-pulse .decor-shape {
   gap: 8px;
 }
 
+.consensus-surface-list {
+  display: grid;
+  gap: 12px;
+}
+
+.consensus-surface-item {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.consensus-surface-item h3 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+}
+
+.consensus-surface-item p {
+  color: #5b6776;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.consensus-panel {
+  background: #f8fafc;
+  border: 1px solid #d8dee6;
+  border-left: 4px solid #64748b;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px;
+}
+
+.consensus-panel.consensus-consensus {
+  border-left-color: #2563eb;
+}
+
+.consensus-panel.consensus-chainlink-cre {
+  border-left-color: #0f766e;
+}
+
+.consensus-panel.consensus-zkml {
+  border-left-color: #7c3aed;
+}
+
+.consensus-panel.consensus-tee {
+  border-left-color: #0e7490;
+}
+
+.consensus-panel.consensus-manual-review {
+  border-left-color: #dc2626;
+}
+
+.consensus-panel-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.consensus-panel-header div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.consensus-panel-header strong {
+  color: #17202a;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.consensus-panel-header span,
+.consensus-metadata-list span {
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.consensus-row-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.consensus-row {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.consensus-row span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.consensus-row strong {
+  color: #17202a;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.consensus-metadata-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.consensus-metadata-list span {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.consensus-metrics {
+  margin-bottom: 12px;
+}
+
 .home-footer {
   display: flex;
   align-items: center;

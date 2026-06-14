@@ -78,6 +78,8 @@ import {
   addBinaryDocument,
   addTextDocument,
   createLocationRegionProof,
+  getConsensusDisplayState,
+  getConsensusMetadataFromView,
   createVerifiedExportBundleView,
   getProofReceiptUiState,
   importExportBundleView,
@@ -92,9 +94,11 @@ import {
   saveWalletSnapshot,
   verifyWalletSnapshot,
   mapProofReceiptRecordForUi,
+  WalletApiConsensusFailClosedError,
   WalletApiRequestError,
   WalletSnapshotVerification,
-  WalletApiConfig
+  WalletApiConfig,
+  WalletConsensusMetadata
 } from "../services/walletApi";
 import {
   getWalrusStorageConfig,
@@ -609,7 +613,13 @@ export function App() {
         ) : null}
 
         {activeRoute === "home" ? (
-          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} recipients={recipients} uploads={uploads} />
+          <HomeScreen
+            accessRequests={accessRequests}
+            navigate={navigate}
+            nextCheckIn={nextCheckIn}
+            recipients={recipients}
+            uploads={uploads}
+          />
         ) : null}
         {activeRoute === "register" ? (
           <RegistrationScreen
@@ -836,16 +846,29 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string) => void }) {
 }
 
 function HomeScreen({
+  accessRequests,
   navigate,
   nextCheckIn,
   recipients,
   uploads
 }: {
+  accessRequests: WalletAccessRequest[];
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
   recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
 }) {
+  const accessConsensusItems = accessRequests.length
+    ? accessRequests.slice(0, 2)
+    : [
+        {
+          id: "direct-recipient-access",
+          purpose: "Advisory recipient-access summary",
+          requesterName: "Local wallet",
+          resourceLabel: "derived artifacts"
+        }
+      ];
+
   return (
     <div className="screen home-screen">
       <div className="page-title home-hero">
@@ -891,6 +914,23 @@ function HomeScreen({
           <span>Ready to review</span>
         </div>
       </div>
+      <Section title="Recipient access artifacts">
+        <div className="consensus-surface-list">
+          {accessConsensusItems.map((item) => (
+            <article className="consensus-surface-item" key={item.id}>
+              <div>
+                <h3>{item.resourceLabel}</h3>
+                <p>{item.requesterName} · {item.purpose}</p>
+              </div>
+              <ConsensusMetadataPanel
+                directLabel="Direct AI response"
+                metadata={getConsensusMetadataFromView(item)}
+                surfaceLabel="Recipient access derived artifacts"
+              />
+            </article>
+          ))}
+        </div>
+      </Section>
       <section className="support-card" aria-labelledby="support-card-title">
         <span className="support-card-badge" aria-hidden="true" />
         <div className="support-card-content">
@@ -910,6 +950,98 @@ function StatusPanel({ label, value, tone, onClick }: { label: string; value: st
     <div className={`status-panel panel-${tone}${onClick ? " status-panel-clickable" : ""}`} onClick={onClick} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} onKeyDown={onClick ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}>
       <small>{label}</small>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+function formatConsensusMode(mode: string): string {
+  const labels: Record<string, string> = {
+    chainlink_cre: "Chainlink CRE",
+    hybrid: "Hybrid consensus",
+    libp2p_quorum: "libp2p quorum",
+    receipt_only: "Receipt-only",
+    tee_or_zkml: "TEE or ZKML",
+    zkml_required: "ZKML required"
+  };
+  return labels[mode] ?? mode.replace(/_/g, " ");
+}
+
+function ConsensusMetadataPanel({
+  directLabel = "Direct AI response",
+  metadata,
+  surfaceLabel
+}: {
+  directLabel?: string;
+  metadata?: WalletConsensusMetadata;
+  surfaceLabel: string;
+}) {
+  const state = getConsensusDisplayState(metadata);
+  const modeLabel = metadata ? formatConsensusMode(metadata.mode) : "Direct";
+  const quorumLabel = metadata
+    ? metadata.operator_count > 0
+      ? `${metadata.selected_operator_count}/${metadata.operator_count}`
+      : "Not reported"
+    : "None";
+
+  return (
+    <div className={`consensus-panel consensus-${state.family}`} aria-label={`${surfaceLabel} ${state.statusLabel}`}>
+      <div className="consensus-panel-header">
+        <div>
+          <strong>{metadata ? state.statusLabel : directLabel}</strong>
+          <span>{state.detailLabel}</span>
+        </div>
+        <Badge tone={state.tone}>{state.badgeLabel}</Badge>
+      </div>
+      <div className="consensus-row-grid">
+        <div className="consensus-row">
+          <span>Mode</span>
+          <strong>{modeLabel}</strong>
+        </div>
+        <div className="consensus-row">
+          <span>Quorum</span>
+          <strong>{quorumLabel}</strong>
+        </div>
+        <div className="consensus-row">
+          <span>Evidence</span>
+          <strong>{state.evidenceLabel}</strong>
+        </div>
+        <div className="consensus-row">
+          <span>Boundary</span>
+          <strong>{state.inputBoundaryLabel}</strong>
+        </div>
+      </div>
+      {metadata ? (
+        <div className="consensus-metadata-list">
+          <span>{metadata.comparison.replace(/_/g, " ")}</span>
+          {metadata.receipt_hash ? <span>receipt {shortHash(metadata.receipt_hash)}</span> : null}
+          {metadata.receipt_cid ? <span>CID {shortHash(metadata.receipt_cid)}</span> : null}
+          {metadata.proof_cid ? <span>proof {shortHash(metadata.proof_cid)}</span> : null}
+          {metadata.public_inputs_hash ? <span>public inputs {shortHash(metadata.public_inputs_hash)}</span> : null}
+          {metadata.tee_attestation_hash ? <span>TEE {shortHash(metadata.tee_attestation_hash)}</span> : null}
+          {metadata.cre_workflow_id ? <span>CRE workflow {metadata.cre_workflow_id}</span> : null}
+          {metadata.cre_report_id ? <span>CRE report {metadata.cre_report_id}</span> : null}
+          {metadata.chain_id || metadata.tx_hash ? <span>{state.onChainLabel}</span> : null}
+          {metadata.fail_closed_error ? <span>{metadata.fail_closed_error.replace(/_/g, " ")}</span> : null}
+          {metadata.failure_reason ? <span>{metadata.failure_reason}</span> : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ConsensusSurfaceStats({ proofs }: { proofs: ProofReceiptView[] }) {
+  const consensusStates = proofs.map(getConsensusMetadataFromView).filter(Boolean) as WalletConsensusMetadata[];
+  const creCount = consensusStates.filter((metadata) => metadata.mode === "chainlink_cre").length;
+  const zkmlCount = consensusStates.filter((metadata) => metadata.proof_mode === "zkml_required" || metadata.mode === "zkml_required").length;
+  const teeCount = consensusStates.filter((metadata) => metadata.proof_mode === "tee_or_zkml" || Boolean(metadata.tee_attestation_hash)).length;
+  const manualCount = consensusStates.filter((metadata) => getConsensusDisplayState(metadata).manualReview).length;
+
+  return (
+    <div className="privacy-metrics consensus-metrics">
+      <StatusPanel label="CRE claims" value={String(creCount)} tone="teal" />
+      <StatusPanel label="ZKML claims" value={String(zkmlCount)} tone="gold" />
+      <StatusPanel label="TEE attestations" value={String(teeCount)} tone="teal" />
+      <StatusPanel label="Manual review" value={String(manualCount)} tone="red" />
     </div>
   );
 }
@@ -978,6 +1110,11 @@ function ProofSurfaceSummary({
                   <strong>On-chain</strong>
                   <span>{state.onChainLabel}</span>
                 </div>
+                <ConsensusMetadataPanel
+                  directLabel="Direct wallet proof"
+                  metadata={state.consensus}
+                  surfaceLabel={`${title} consensus state`}
+                />
               </article>
             );
           })}
@@ -1977,6 +2114,11 @@ function UploadsScreen({
                 ) : null}
                 <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
               </div>
+              <ConsensusMetadataPanel
+                directLabel="Direct upload profile"
+                metadata={getConsensusMetadataFromView(upload)}
+                surfaceLabel="Wallet uploads profiling"
+              />
             </div>
             <div className="row-actions list-item-action">
               {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
@@ -2144,6 +2286,9 @@ function SocialServicesScreen({ proofs }: { proofs: ProofReceiptView[] }) {
         surface="provider"
         title="Provider proof review"
       />
+      <Section title="Provider eligibility claims">
+        <ConsensusSurfaceStats proofs={proofs} />
+      </Section>
       <Section title="Matched services">
         <div className="list-stack">
           {serviceMatches.map((service) => (
@@ -2865,6 +3010,7 @@ function AnalyticsScreen({
           <StatusPanel label="Recursive wrappers" value={String(onChainWrapperCount)} tone="gold" />
           <StatusPanel label="Fail-closed receipts" value={String(failClosedCount)} tone="red" />
         </div>
+        <ConsensusSurfaceStats proofs={proofs} />
         <ProofSurfaceSummary
           emptyMessage="No public proof receipts are available for the dashboard yet."
           limit={6}
@@ -2966,6 +3112,7 @@ function ProofCenterScreen({
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
   const [proofError, setProofError] = useState("");
+  const [proofFailureConsensus, setProofFailureConsensus] = useState<WalletConsensusMetadata | undefined>();
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -2975,6 +3122,7 @@ function ProofCenterScreen({
       return;
     }
     setProofError("");
+    setProofFailureConsensus(undefined);
     setProofStatus("creating");
     try {
       const proof = await createLocationRegionProof(apiConfig, {
@@ -2987,6 +3135,7 @@ function ProofCenterScreen({
       setProofStatus("created");
     } catch (error) {
       setProofError(proofApiErrorMessage(error));
+      setProofFailureConsensus(error instanceof WalletApiConsensusFailClosedError ? error.consensus : undefined);
       setProofStatus("failed");
     }
   }
@@ -3060,11 +3209,18 @@ function ProofCenterScreen({
               fallback was created.
             </StatusBanner>
           ) : null}
+          {proofFailureConsensus ? (
+            <ConsensusMetadataPanel
+              metadata={proofFailureConsensus}
+              surfaceLabel="Proof Center fail-closed proof creation"
+            />
+          ) : null}
           <Button disabled={!apiConfig?.actorDid || proofStatus === "creating"} type="submit" variant="secondary">
             {proofStatus === "creating" ? "Creating proof..." : "Create proof"}
           </Button>
         </form>
       </article>
+      <ConsensusSurfaceStats proofs={proofs} />
       <div className="list-stack">
         {proofs.map((proof) => {
           const titleId = `proof-title-${proof.id}`;
@@ -3101,7 +3257,7 @@ function ProofCenterScreen({
                     <h4>What this allows</h4>
                     <p>{proof.proofType} · public inputs only</p>
                   </div>
-                  <Badge tone={state.statusTone}>{state.accepted ? "verified proof" : "not accepted"}</Badge>
+                  <Badge tone={state.statusTone}>{state.accepted ? state.evidenceLabel : "not accepted"}</Badge>
                 </div>
                 <div className="disclosure-package">
                   <div className="disclosure-row">
@@ -3131,6 +3287,10 @@ function ProofCenterScreen({
                   <div className="disclosure-row">
                     <strong>On-chain status</strong>
                     <span>{state.onChainLabel}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Evidence label</strong>
+                    <span>{state.evidenceLabel}</span>
                   </div>
                   {proof.circuitId ? (
                     <div className="disclosure-row">
@@ -3162,6 +3322,11 @@ function ProofCenterScreen({
                   </div>
                 ))}
               </div>
+              <ConsensusMetadataPanel
+                directLabel="Direct wallet proof"
+                metadata={state.consensus}
+                surfaceLabel="Proof Center proof card"
+              />
             </article>
           );
         })}
@@ -3603,6 +3768,12 @@ function AuditScreen({ events, proofs }: { events: AuditEvent[]; proofs: ProofRe
                 <small>
                   {[event.decision, event.resource, event.grantId].filter(Boolean).join(" · ")}
                 </small>
+              ) : null}
+              {getConsensusMetadataFromView(event) ? (
+                <ConsensusMetadataPanel
+                  metadata={getConsensusMetadataFromView(event)}
+                  surfaceLabel="Security audit event"
+                />
               ) : null}
             </div>
           </article>

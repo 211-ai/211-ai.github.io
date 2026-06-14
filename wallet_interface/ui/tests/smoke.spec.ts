@@ -3,6 +3,10 @@ import {
   buildProveKitWalletProofsApiResponse,
   provekitForbiddenWitnessTokens
 } from "./fixtures/provekit-proof-fixtures";
+import {
+  chainlinkConsensusFixturesById,
+  SANITIZER_SENTINEL_STRINGS
+} from "./fixtures/chainlink-consensus-fixtures";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 
@@ -14,6 +18,52 @@ function walletRoute(route: string, actorDid: string, params: Record<string, str
     ...params
   });
   return `/?${query.toString()}#/${route}`;
+}
+
+function fixtureConsensus(id: keyof typeof chainlinkConsensusFixturesById) {
+  const fixture = chainlinkConsensusFixturesById[id];
+  const response = fixture.response as Record<string, unknown> | undefined;
+  const output = response?.output as Record<string, unknown> | undefined;
+  const apiError = fixture.apiError as Record<string, unknown> | undefined;
+  const detail = apiError?.detail as Record<string, unknown> | undefined;
+  return response?.consensus ?? output?.consensus ?? detail?.consensus;
+}
+
+function consensusProofRecord({
+  claim,
+  consensus,
+  id,
+  proofSystem,
+  status = "verified",
+  type
+}: {
+  claim: string;
+  consensus?: unknown;
+  id: string;
+  proofSystem: string;
+  status?: string;
+  type: string;
+}) {
+  return {
+    proof_id: id,
+    proof_type: type,
+    statement: { claim },
+    verifier_id: `${proofSystem}-verifier`,
+    public_inputs: {
+      claim,
+      claim_hash: `sha256:${id}-public-claim`
+    },
+    proof_hash: `sha256:${id}-proof-hash`,
+    witness_record_ids: ["rec-benefits-letter"],
+    is_simulated: false,
+    proof_system: proofSystem,
+    circuit_id: `${type}-circuit-v1`,
+    verifier_digest: `sha256:${id}-verifier-digest`,
+    proof_artifact_ref: `proof://${id}`,
+    verification_status: status,
+    created_at: "2026-06-14T12:00:00Z",
+    ...(consensus ? { consensus } : {})
+  };
 }
 
 async function expectLoginForm(page: Page) {
@@ -616,6 +666,279 @@ test("ProveKit proof states render across wallet surfaces without private witnes
   await expect(page.getByRole("heading", { name: /Proof audit coverage/i })).toBeVisible();
   await expect(page.getByText(/proof\/verify/i)).toBeVisible();
   await assertNoForbiddenWitnessText();
+});
+
+test("Chainlink consensus states render across wallet surfaces without proof label confusion", async ({ page }) => {
+  const receiptOnlyConsensus = fixtureConsensus("receipt-only");
+  const libp2pConsensus = fixtureConsensus("libp2p");
+  const creConsensus = fixtureConsensus("cre");
+  const zkmlConsensus = fixtureConsensus("zkml");
+  const teeConsensus = fixtureConsensus("tee");
+  const proofFailureConsensus = fixtureConsensus("proof-failure");
+  const sanitizerConsensus = fixtureConsensus("sanitizer-sentinel");
+  const proofs = [
+    consensusProofRecord({
+      claim: "Document privacy profile",
+      consensus: zkmlConsensus,
+      id: "proof-zkml-consensus",
+      proofSystem: "zkml-checker",
+      type: "document_privacy_profile"
+    }),
+    consensusProofRecord({
+      claim: "TEE eligibility claim",
+      consensus: teeConsensus,
+      id: "proof-tee-consensus",
+      proofSystem: "tee-attested",
+      type: "eligibility_attestation"
+    }),
+    consensusProofRecord({
+      claim: "Public analytics release",
+      consensus: creConsensus,
+      id: "proof-cre-consensus",
+      proofSystem: "chainlink-cre",
+      type: "analytics_release"
+    }),
+    consensusProofRecord({
+      claim: "Receipt-only upload profile",
+      consensus: receiptOnlyConsensus,
+      id: "proof-receipt-only-consensus",
+      proofSystem: "consensus-receipt",
+      type: "consensus_receipt"
+    }),
+    consensusProofRecord({
+      claim: "Manual review proof failure",
+      consensus: proofFailureConsensus,
+      id: "proof-failure-consensus",
+      proofSystem: "zkml-checker",
+      status: "verification_failed",
+      type: "document_privacy_profile"
+    }),
+    consensusProofRecord({
+      claim: "Direct wallet proof",
+      id: "proof-direct-wallet",
+      proofSystem: "deterministic-test-proof",
+      type: "location_region"
+    }),
+    consensusProofRecord({
+      claim: "Sanitized consensus claim",
+      consensus: sanitizerConsensus,
+      id: "proof-sanitized-consensus",
+      proofSystem: "tee-attested-cre",
+      type: "consensus_receipt"
+    })
+  ];
+
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({
+        json: {
+          requests: [
+            {
+              request_id: "access-libp2p-consensus",
+              requester_did: "did:key:provider",
+              audience_did: "did:key:owner",
+              resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+              abilities: ["record/analyze"],
+              purpose: "recipient access derived artifact",
+              status: "pending",
+              created_at: "2026-06-14T12:00:00Z",
+              consensus: libp2pConsensus
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({
+        json: {
+          records: [
+            {
+              record_id: "rec-benefits-letter",
+              data_type: "document",
+              sensitivity: "high",
+              public_descriptor: "Benefits letter",
+              status: "active",
+              created_at: "2026-06-14T12:00:00Z",
+              metadata: { consensus: receiptOnlyConsensus }
+            },
+            {
+              record_id: "rec-direct-upload",
+              data_type: "document",
+              sensitivity: "moderate",
+              public_descriptor: "Direct upload profile",
+              status: "active",
+              created_at: "2026-06-14T12:02:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/storage") || path.endsWith("/records/rec-direct-upload/storage")) {
+      await route.fulfill({ json: { ok: true } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({
+        json: {
+          events: [
+            {
+              event_id: "audit-cre-consensus",
+              created_at: "2026-06-14T12:03:00Z",
+              actor_did: "did:key:owner",
+              action: "analytics/release",
+              resource: "wallet://wallet-demo/analytics/pilot_housing_gap_v1",
+              decision: "allow",
+              grant_id: null,
+              consensus: creConsensus
+            },
+            {
+              event_id: "audit-tee-consensus",
+              created_at: "2026-06-14T12:04:00Z",
+              actor_did: "did:key:owner",
+              action: "hmis/validate",
+              resource: "wallet://wallet-demo/hmis/referral-tee-eligibility",
+              decision: "allow",
+              grant_id: null,
+              consensus: teeConsensus
+            },
+            {
+              event_id: "audit-proof-failure-consensus",
+              created_at: "2026-06-14T12:05:00Z",
+              actor_did: "did:key:owner",
+              action: "proof/verify",
+              resource: "wallet://wallet-demo/proofs/proof-failure-consensus",
+              decision: "deny",
+              grant_id: null,
+              consensus: proofFailureConsensus
+            }
+          ]
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected consensus wallet API call", path } });
+  });
+
+  await openAppRoute(page, walletRoute("home", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /Recipient access artifacts/i })).toBeVisible();
+  await expect(page.getByText("libp2p quorum receipt").first()).toBeVisible();
+  await expect(page.getByText("Raw operator outputs hidden").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/uploads";
+  });
+  await expect(page.getByRole("heading", { name: /Wallet proof receipts/i })).toBeVisible();
+  await expect(page.getByText("Consensus receipt").first()).toBeVisible();
+  await expect(page.getByText("Direct upload profile").first()).toBeVisible();
+  await expect(page.getByText("Consensus receipt, not ZK proof").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/proof-center";
+  });
+  await expect(page.getByText("ZKML checker verified").first()).toBeVisible();
+  await expect(page.getByText("TEE attested").first()).toBeVisible();
+  await expect(page.getByText("Chainlink CRE verified").first()).toBeVisible();
+  await expect(page.getByText("Manual review required").first()).toBeVisible();
+  await expect(page.getByText("Direct wallet proof").first()).toBeVisible();
+  const teeCard = page.getByRole("article", { name: /TEE eligibility claim/i });
+  await expect(teeCard.getByText("TEE attestation accepted").first()).toBeVisible();
+  await expect(teeCard.getByText("TEE evidence, not ZK proof").first()).toBeVisible();
+  await expect(teeCard.getByText("verified proof", { exact: true })).toHaveCount(0);
+  const receiptCard = page.getByRole("article", { name: /Receipt-only upload profile/i });
+  await expect(receiptCard.getByText("Receipt metadata accepted").first()).toBeVisible();
+  await expect(receiptCard.getByText("ZKML proof coverage")).toHaveCount(0);
+
+  await page.evaluate(() => {
+    window.location.hash = "#/social-services";
+  });
+  await expect(page.getByRole("heading", { name: /Provider eligibility claims/i })).toBeVisible();
+  await expect(page.getByText("TEE attestations").first()).toBeVisible();
+  await expect(page.getByText("Provider may review TEE attestation metadata").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/analytics";
+  });
+  await expect(page.getByRole("heading", { name: /Public proof dashboard/i })).toBeVisible();
+  await expect(page.getByText("CRE claims").first()).toBeVisible();
+  await expect(page.getByText("ZKML claims").first()).toBeVisible();
+  await expect(page.getByText("Manual review").first()).toBeVisible();
+  await expect(page.getByText("CRE verification, not ZK proof").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/security";
+  });
+  await expect(page.getByRole("heading", { name: /Proof security review/i })).toBeVisible();
+  await expect(page.getByText("TEE quote bytes hidden").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/audit";
+  });
+  await expect(page.getByRole("heading", { name: /Proof audit coverage/i })).toBeVisible();
+  await expect(page.getByText(/analytics\/release/i)).toBeVisible();
+  await expect(page.getByText(/proof verification failed/i).first()).toBeVisible();
+
+  for (const sentinel of SANITIZER_SENTINEL_STRINGS) {
+    await expect(page.getByText(sentinel, { exact: false })).toHaveCount(0);
+  }
+});
+
+test("Chainlink fail-closed proof creation exposes typed manual-review metadata", async ({ page }) => {
+  let createRequests = 0;
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+
+    if (path.endsWith("/locations/rec-location-current/region-proofs")) {
+      createRequests += 1;
+      await route.fulfill({
+        status: chainlinkConsensusFixturesById["proof-failure"].apiError?.status ?? 422,
+        json: chainlinkConsensusFixturesById["proof-failure"].apiError
+      });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+
+  await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
+  await page.getByRole("button", { name: /Create proof/i }).click();
+  await expect(page.getByText(/Consensus failed closed because proof verification failed/i)).toBeVisible();
+  await expect(page.getByText("Manual review required").first()).toBeVisible();
+  await expect(page.getByText(/proof verification failed/i).first()).toBeVisible();
+  await expect(page.getByText(/No simulated fallback was created/i)).toBeVisible();
+  expect(createRequests).toBe(1);
 });
 
 test("ProveKit backend-disabled proof creation fails closed without minting a fallback", async ({ page }) => {
