@@ -17,6 +17,7 @@ os.environ.setdefault("IPFS_AUTO_INSTALL", "false")
 os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 
 from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import (
+    DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS,
     DEFAULT_TRACKS,
     TASK_HEADER_PREFIX,
     TodoTaskState as PortalTaskState,
@@ -211,7 +212,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="",
         help="Command used by the daemon for implementation. Defaults to codex exec with local Copilot CLI fallback when available.",
     )
-    parser.add_argument("--implementation-timeout", type=float, default=1800.0)
+    parser.add_argument("--implementation-timeout", type=float, default=DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS)
     parser.add_argument(
         "--no-ephemeral-worktree",
         action="store_true",

@@ -20,6 +20,7 @@ os.environ.setdefault("IPFS_AUTO_INSTALL", "false")
 os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 
 from ipfs_datasets_py.optimizers.todo_daemon.core import iter_processes, pid_alive, process_args, read_json, read_pid_file, terminate_pid_tree
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS
 from ipfs_datasets_py.optimizers.todo_daemon.wrapper import launch_restarting_wrapper
 
 
@@ -258,7 +259,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="",
         help="Implementation command passed to supervised daemons when --implement is set.",
     )
-    parser.add_argument("--implementation-timeout", type=float, default=1800.0)
+    parser.add_argument("--implementation-timeout", type=float, default=DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS)
     parser.add_argument(
         "--no-ephemeral-worktree",
         action="store_true",

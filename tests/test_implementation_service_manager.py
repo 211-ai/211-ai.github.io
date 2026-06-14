@@ -73,6 +73,12 @@ def test_parser_defaults_to_implementation_mode():
     assert args.implement is True
 
 
+def test_parser_uses_long_default_implementation_timeout():
+    args = manager.parse_args(["start", "clzkml"])
+
+    assert args.implementation_timeout == manager.DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS
+
+
 def test_restart_parser_defaults_to_implementation_mode():
     args = manager.parse_args(["restart", "all"])
 
@@ -240,7 +246,10 @@ def test_supervisor_entrypoints_default_to_implementation_mode():
         wallet_supervisor,
         provekit_supervisor,
     ):
-        assert module.parse_args(["--once"]).implement is True
+        args = module.parse_args(["--once"])
+
+        assert args.implement is True
+        assert args.implementation_timeout == manager.DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS
         assert module.parse_args(["--once", "--implement"]).implement is True
 
 
