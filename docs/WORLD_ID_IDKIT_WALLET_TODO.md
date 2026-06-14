@@ -185,7 +185,7 @@ Track guide:
 - Acceptance: A reusable React panel requests a fresh RP signature immediately before opening IDKit, starts the configured proof-of-human flow, sends the IDKit result to backend verification, refreshes proof/audit/status state on success, and handles cancellation, credential unavailable, RP expiry, replay, and backend failure states.
 
 ## WORLDID-140 Proof Center Integration
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
@@ -195,7 +195,7 @@ Track guide:
 - Acceptance: Proof Center shows World ID wallet status, launches verification, displays the `world_id_proof_of_human` receipt through the existing proof card, and makes clear that proof-of-human does not disclose or prove legal identity attributes.
 
 ## WORLDID-150 Wallet, Register, And Security Status Surfaces
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui

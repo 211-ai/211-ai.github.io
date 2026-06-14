@@ -592,7 +592,7 @@ export async function answer211InfoQuestion(
     try {
       const routerAnswer = await generateWalletRouterText(options.walletApiConfig, {
         prompt,
-        maxTokens,
+        maxNewTokens: maxTokens,
       });
       const answer = clean211GraphRagModelAnswer(routerAnswer.text);
       const grounded = isGrounded211GraphRagAnswer(answer);

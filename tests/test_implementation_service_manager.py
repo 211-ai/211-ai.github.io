@@ -176,11 +176,11 @@ def test_worldid_service_commands_preserve_parallel_scopes():
 
     assert "docs/WORLD_ID_IDKIT_WALLET_TODO.md" in backend_command
     assert "data/world_id_backend_implementation/state" in backend_command
-    assert "proofs,core,wallet,privacy,ops" in backend_command
-    assert "WORLDID-170" in backend_command
+    assert "proofs,core,wallet,privacy,ops,quality" in backend_command
+    assert "--allowed-task-ids" not in backend_command
     assert "data/world_id_ui_implementation/state" in ui_command
     assert "ui" in ui_command
-    assert "WORLDID-180" in ui_command
+    assert "--allowed-task-ids" not in ui_command
     assert "--until-complete" not in backend_command
     assert "--until-complete" not in ui_command
 

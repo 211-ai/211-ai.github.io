@@ -133,7 +133,7 @@ const MANUAL_INTAKE_FALLBACK_TOKEN = "manual-intake-fallback";
 const PROVIDER_STAFF_WORLD_ID_ACTION = "provider-staff-world-id-v1";
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 
-const routeIcons: Record<RouteId, typeof Home> = {
+const routeIcons: Partial<Record<RouteId, typeof Home>> = {
   home: Home,
   register: ClipboardCheck,
   "check-in": CalendarCheck,
@@ -154,10 +154,10 @@ const routeIcons: Record<RouteId, typeof Home> = {
 const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection"]);
 const routes = primaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
-  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
+  .map((route) => ({ ...route, icon: routeIcons[route.id] ?? Home }));
 const secondaryNavigationRoutes = secondaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
-  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
+  .map((route) => ({ ...route, icon: routeIcons[route.id] ?? Home }));
 const navigationRoutes = [...routes, ...secondaryNavigationRoutes];
 
 function normalizeAppRoute(route: RouteId): RouteId {
@@ -364,6 +364,7 @@ export function App() {
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
+  const [agentChatMode, setAgentChatMode] = useState<"text" | "audio">("text");
   const walletApiConfig = useMemo(readWalletApiConfig, []);
   const worldIdSurfaceState = useMemo(
     () => getWorldIdSurfaceState(walletApiConfig, walletProofReceipts),
@@ -600,9 +601,9 @@ export function App() {
     return next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }, [policy.intervalDays, policy.lastCheckInAt]);
 
-  const routes = useMemo(() => primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
-  const secondaryNavigationRoutes = useMemo(() => secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
-  const navigationRoutes = useMemo(() => appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+  const routes = useMemo(() => primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] ?? Home })), []);
+  const secondaryNavigationRoutes = useMemo(() => secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] ?? Home })), []);
+  const navigationRoutes = useMemo(() => appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] ?? Home })), []);
 
   if (!signedInUser) {
     return <LoginScreen onSignIn={handleSignIn} />;
@@ -730,7 +731,7 @@ export function App() {
           />
         ) : null}
         {serviceDetailDocId ? (
-          <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
+          <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} siteLocale="en" />
         ) : null}
         {activeRoute === "social-services" && !serviceDetailDocId ? (
           <SocialServicesScreen proofs={walletProofReceipts} />
@@ -787,9 +788,14 @@ export function App() {
         confirmations={agentChat.pendingConfirmations}
         evidenceBundles={agentChat.snapshot.session.evidenceBundles}
         messages={agentChat.messages}
+        mode={agentChatMode}
         onCancelConfirmation={(confirmationId) => agentChat.denyConfirmation(confirmationId)}
         onClose={() => setAgentChatOpen(false)}
         onConfirmConfirmation={(confirmationId) => agentChat.approveConfirmation(confirmationId)}
+        onOpenAudio={() => {
+          setAgentChatMode("audio");
+          setAgentChatOpen(true);
+        }}
         onOpenServiceDetail={(docId) =>
           openCanonicalServiceDetailRoute(docId, {
             setActiveRoute: (route) => {
@@ -804,7 +810,10 @@ export function App() {
         onSend={(message) => {
           void agentChat.sendMessage(message);
         }}
-        onToggle={() => setAgentChatOpen((open) => !open)}
+        onOpenText={() => {
+          setAgentChatMode("text");
+          setAgentChatOpen(true);
+        }}
         open={agentChatOpen}
         responding={agentChat.responding}
         toolCalls={agentChat.snapshot.session.toolCalls}

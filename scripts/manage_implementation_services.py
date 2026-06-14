@@ -184,7 +184,7 @@ SERVICES = {
             "--state-dir",
             "data/world_id_backend_implementation/state",
             "--allowed-tracks",
-            "proofs,core,wallet,privacy,ops",
+            "proofs,core,wallet,privacy,ops,quality",
         ),
     ),
     "worldid_ui": ServiceSpec(

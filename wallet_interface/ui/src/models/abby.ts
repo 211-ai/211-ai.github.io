@@ -118,7 +118,7 @@ export interface UploadItem {
   status: "stored" | "encrypting" | "failed";
   storageOk?: boolean;
   shared: boolean;
-  sharingMode?: "private" | "selected_contacts";
+  sharingMode?: "private" | "public" | "selected_contacts";
   allowedRecipientIds?: string[];
   decentralizedStorageStatus?: "not_configured" | "ready" | "uploading" | "stored" | "failed";
   decentralizedStorageProvider?: "ipfs" | "filecoin" | "ipfs-filecoin" | "walrus" | "wallet-api" | "local";
