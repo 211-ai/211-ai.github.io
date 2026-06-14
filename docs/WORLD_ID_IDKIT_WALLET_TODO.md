@@ -285,7 +285,7 @@ Track guide:
 - Acceptance: A staging runbook documents Developer Portal setup, simulator use, local env, successful verification, same-wallet retry, different-wallet conflict, snapshot save/load, QR proof review, and evidence expected for signoff.
 
 ## WORLDID-210 Client Intake Bot-Check Replacement
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui

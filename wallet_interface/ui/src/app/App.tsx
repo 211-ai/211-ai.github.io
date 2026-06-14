@@ -128,6 +128,8 @@ const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+const DEMO_BOT_CHECK_TOKEN = "mock-captcha-token";
+const MANUAL_INTAKE_FALLBACK_TOKEN = "manual-intake-fallback";
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 
 const routeIcons: Record<RouteId, typeof Home> = {
@@ -270,6 +272,43 @@ type WorldIdSurfaceState = {
   verified: boolean;
   walletLabel: string;
 };
+
+type IntakeVerificationDraft = Pick<RegistrationProfileDraft, "easyBotCheckStatus" | "captchaToken">;
+
+function hasManualIntakeFallback(draft: IntakeVerificationDraft): boolean {
+  return draft.easyBotCheckStatus === "failed" || draft.captchaToken === MANUAL_INTAKE_FALLBACK_TOKEN;
+}
+
+function hasDemoBotCheck(draft: IntakeVerificationDraft): boolean {
+  return draft.easyBotCheckStatus === "passed" && draft.captchaToken === DEMO_BOT_CHECK_TOKEN;
+}
+
+function isIntakeVerified(draft: IntakeVerificationDraft, worldIdState: WorldIdSurfaceState): boolean {
+  return worldIdState.verified || hasManualIntakeFallback(draft) || hasDemoBotCheck(draft);
+}
+
+function getIntakeVerificationMessage(draft: IntakeVerificationDraft, worldIdState: WorldIdSurfaceState): string {
+  if (worldIdState.verified) {
+    return "World ID proof-of-human satisfies intake without the demo bot check.";
+  }
+  if (hasManualIntakeFallback(draft)) {
+    return "Manual fallback is active for accessibility, device availability, or emergency service access.";
+  }
+  if (hasDemoBotCheck(draft)) {
+    return "Demo bot check is active for local testing only.";
+  }
+  return "Choose World ID verification, manual fallback, or the local demo bot check before assisted intake is submitted.";
+}
+
+function getIntakeVerificationTone(
+  draft: IntakeVerificationDraft,
+  worldIdState: WorldIdSurfaceState
+): "info" | "success" | "warning" {
+  if (worldIdState.verified) return "success";
+  if (hasManualIntakeFallback(draft)) return "warning";
+  if (hasDemoBotCheck(draft)) return "info";
+  return "warning";
+}
 
 function getWorldIdSurfaceState(apiConfig: WalletApiConfig | undefined, proofs: ProofReceiptView[]): WorldIdSurfaceState {
   const worldIdProofs = proofs.filter((proof) => proof.proofType === "world_id_proof_of_human");
@@ -707,6 +746,7 @@ export function App() {
             setShelterStaffAccounts={setShelterStaffAccounts}
             shelterUserAccounts={shelterUserAccounts}
             setShelterUserAccounts={setShelterUserAccounts}
+            worldIdState={worldIdSurfaceState}
           />
         ) : null}
         {activeRoute === "analytics" ? (
@@ -1362,14 +1402,52 @@ function RegistrationScreen({
           <span>Quick health check complete (step 1)</span>
         </label>
         <label className="captcha-box full-span">
+          <input checked={worldIdState.verified} disabled type="checkbox" />
+          <span>
+            <strong>World ID proof-of-human verified for intake</strong>
+            <small>
+              Uses the wallet-bound World ID receipt instead of the demo bot check when available.
+            </small>
+          </span>
+        </label>
+        <label className="captcha-box full-span">
           <input
-            checked={Boolean(profile.captchaToken)}
-            disabled={profile.easyBotCheckStatus !== "passed"}
-            onChange={(event) => update({ captchaToken: event.target.checked ? "mock-captcha-token" : "" })}
+            checked={hasManualIntakeFallback(profile)}
+            disabled={worldIdState.verified}
+            onChange={(event) =>
+              update({
+                easyBotCheckStatus: event.target.checked ? "failed" : "pending",
+                captchaToken: event.target.checked ? MANUAL_INTAKE_FALLBACK_TOKEN : ""
+              })
+            }
             type="checkbox"
           />
-          <span>Bot check complete (step 2)</span>
+          <span>
+            <strong>Use manual intake fallback</strong>
+            <small>Available for accessibility, device availability, or emergency service access.</small>
+          </span>
         </label>
+        <label className="captcha-box full-span">
+          <input
+            checked={hasDemoBotCheck(profile)}
+            disabled={
+              worldIdState.verified ||
+              hasManualIntakeFallback(profile) ||
+              profile.easyBotCheckStatus !== "passed"
+            }
+            onChange={(event) => update({ captchaToken: event.target.checked ? DEMO_BOT_CHECK_TOKEN : "" })}
+            type="checkbox"
+          />
+          <span>
+            <strong>Bot check complete (legacy demo fallback)</strong>
+            <small>Use only when World ID is not available in the local demo.</small>
+          </span>
+        </label>
+        <div className="full-span" aria-label="Client intake verification status">
+          <StatusBanner tone={getIntakeVerificationTone(profile, worldIdState)}>
+            {getIntakeVerificationMessage(profile, worldIdState)}
+          </StatusBanner>
+        </div>
         <label className="consent-box full-span">
           <input
             checked={isShelterStaff}
@@ -2424,7 +2502,8 @@ function ShelterScreen({
   shelterStaffAccounts,
   setShelterStaffAccounts,
   shelterUserAccounts,
-  setShelterUserAccounts
+  setShelterUserAccounts,
+  worldIdState
 }: {
   checklist: typeof defaultShelterChecklist;
   setChecklist: (value: typeof defaultShelterChecklist) => void;
@@ -2436,6 +2515,7 @@ function ShelterScreen({
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
   shelterUserAccounts: ShelterUserAccount[];
   setShelterUserAccounts: (accounts: ShelterUserAccount[]) => void;
+  worldIdState: WorldIdSurfaceState;
 }) {
   const [isShelterAdmin, setIsShelterAdmin] = useState(false);
   const [adminShelter, setAdminShelter] = useState(shelterOptions[0]);
@@ -2509,10 +2589,7 @@ function ShelterScreen({
   function createManagedUserAccount(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const hasRequiredIdentity = userDraft.legalName.trim() && userDraft.photoAssetId;
-    const botCheckReady =
-      userDraft.easyBotCheckStatus === "failed" ||
-      (userDraft.easyBotCheckStatus === "passed" && Boolean(userDraft.captchaToken));
-    if (!selectedOperator || !hasRequiredIdentity || !botCheckReady) return;
+    if (!selectedOperator || !hasRequiredIdentity || !isIntakeVerified(userDraft, worldIdState)) return;
 
     const newUser: ShelterUserAccount = {
       id: `user-${Date.now()}`,
@@ -2764,6 +2841,33 @@ function ShelterScreen({
                     />
                     <span>Quick health check complete (step 1)</span>
                   </label>
+                  <label className="captcha-box full-span">
+                    <input checked={worldIdState.verified} disabled type="checkbox" />
+                    <span>
+                      <strong>World ID proof-of-human verified for assisted intake</strong>
+                      <small>
+                        Uses the wallet-bound World ID receipt instead of the demo bot check when available.
+                      </small>
+                    </span>
+                  </label>
+                  <label className="captcha-box full-span">
+                    <input
+                      checked={hasManualIntakeFallback(userDraft)}
+                      disabled={worldIdState.verified}
+                      onChange={(event) =>
+                        setUserDraft({
+                          ...userDraft,
+                          easyBotCheckStatus: event.target.checked ? "failed" : "pending",
+                          captchaToken: event.target.checked ? MANUAL_INTAKE_FALLBACK_TOKEN : ""
+                        })
+                      }
+                      type="checkbox"
+                    />
+                    <span>
+                      <strong>Use manual intake fallback</strong>
+                      <small>Available for accessibility, device availability, or emergency service access.</small>
+                    </span>
+                  </label>
                   <div className="full-span">
                     <span className="field-label">Service needs</span>
                     <div className="chip-grid">
@@ -2782,15 +2886,27 @@ function ShelterScreen({
                   </div>
                   <label className="captcha-box full-span">
                     <input
-                      checked={Boolean(userDraft.captchaToken)}
-                      disabled={userDraft.easyBotCheckStatus !== "passed"}
+                      checked={hasDemoBotCheck(userDraft)}
+                      disabled={
+                        worldIdState.verified ||
+                        hasManualIntakeFallback(userDraft) ||
+                        userDraft.easyBotCheckStatus !== "passed"
+                      }
                       onChange={(event) =>
-                        setUserDraft({ ...userDraft, captchaToken: event.target.checked ? "mock-captcha-token" : "" })
+                        setUserDraft({ ...userDraft, captchaToken: event.target.checked ? DEMO_BOT_CHECK_TOKEN : "" })
                       }
                       type="checkbox"
                     />
-                    <span>Bot check complete (step 2)</span>
+                    <span>
+                      <strong>Bot check complete (legacy demo fallback)</strong>
+                      <small>Use only when World ID is not available in the local demo.</small>
+                    </span>
                   </label>
+                  <div className="full-span" aria-label="Assisted intake verification status">
+                    <StatusBanner tone={getIntakeVerificationTone(userDraft, worldIdState)}>
+                      {getIntakeVerificationMessage(userDraft, worldIdState)}
+                    </StatusBanner>
+                  </div>
                   <label className="consent-box full-span">
                     <input
                       checked={userDraft.localPrecinctNotified}
@@ -2816,8 +2932,7 @@ function ShelterScreen({
                       disabled={
                         !userDraft.legalName.trim() ||
                         !userDraft.photoAssetId ||
-                        (userDraft.easyBotCheckStatus === "pending") ||
-                        (userDraft.easyBotCheckStatus === "passed" && !userDraft.captchaToken)
+                        !isIntakeVerified(userDraft, worldIdState)
                       }
                       type="submit"
                     >
@@ -2947,7 +3062,8 @@ function ShelterScreen({
                             <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
                               {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
                             </Badge>
-                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                            {hasManualIntakeFallback(account) ? <Badge tone="warning">Manual fallback</Badge> : null}
+                            {hasDemoBotCheck(account) ? <Badge tone="neutral">Demo bot check</Badge> : null}
                           </div>
                         </div>
                       </article>
@@ -2970,7 +3086,8 @@ function ShelterScreen({
                             <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
                               {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
                             </Badge>
-                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                            {hasManualIntakeFallback(account) ? <Badge tone="warning">Manual fallback</Badge> : null}
+                            {hasDemoBotCheck(account) ? <Badge tone="neutral">Demo bot check</Badge> : null}
                           </div>
                         </div>
                       </article>

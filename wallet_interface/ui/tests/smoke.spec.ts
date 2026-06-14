@@ -293,6 +293,35 @@ test("registration enforces minimum required profile fields", async ({ page }) =
   await expect(page.getByLabel(/Bot check complete/i)).toBeChecked();
 });
 
+test("registration intake uses World ID proof-of-human before the demo bot check", async ({ page }) => {
+  await page.route("**/wallets/**", (route) => fulfillWorldIdSurfaceWalletRoute(route, { verified: true }));
+
+  await openAppRoute(page, walletRoute("register", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 10000 });
+
+  await expect(page.getByLabel(/World ID proof-of-human verified for intake/i)).toBeChecked();
+  await expect(page.getByLabel(/Use manual intake fallback/i)).toBeDisabled();
+  await expect(page.getByLabel(/Bot check complete/i)).toBeDisabled();
+  await expect(page.getByLabel(/Client intake verification status/i)).toContainText(
+    /World ID proof-of-human satisfies intake without the demo bot check/i
+  );
+});
+
+test("registration intake keeps manual fallback available when World ID is unavailable", async ({ page }) => {
+  await page.route("**/wallets/**", (route) => fulfillWorldIdSurfaceWalletRoute(route, { verified: false }));
+
+  await openAppRoute(page, walletRoute("register", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 10000 });
+
+  await expect(page.getByLabel(/World ID proof-of-human verified for intake/i)).not.toBeChecked();
+  await page.getByLabel(/Use manual intake fallback/i).check();
+  await expect(page.getByLabel(/Use manual intake fallback/i)).toBeChecked();
+  await expect(page.getByLabel(/Bot check complete/i)).toBeDisabled();
+  await expect(page.getByLabel(/Client intake verification status/i)).toContainText(
+    /Manual fallback is active for accessibility, device availability, or emergency service access/i
+  );
+});
+
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
   await openAppRoute(page, "/#/check-in");
   await expect(page.getByRole("heading", { name: /Set your schedule/i })).toBeVisible({ timeout: 10000 });
@@ -549,6 +578,34 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
   const nudge = page.locator(".access-request-item").filter({ hasText: "Casey Example" });
   await expect(nudge.getByText(/Shelter asked this user/i)).toBeVisible();
   await expect(nudge.getByText(/pending/i)).toBeVisible();
+});
+
+test("provider-assisted intake can create a client from World ID verification without the demo bot check", async ({ page }) => {
+  await page.route("**/wallets/**", (route) => fulfillWorldIdSurfaceWalletRoute(route, { verified: true }));
+
+  await openAppRoute(page, walletRoute("shelter", "did:key:owner"));
+  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
+  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+
+  const createUser = page.locator('section[aria-labelledby="Create-user-account"]');
+  await expect(createUser.getByLabel(/World ID proof-of-human verified for assisted intake/i)).toBeChecked();
+  await expect(createUser.getByLabel(/Bot check complete/i)).toBeDisabled();
+  await expect(createUser.getByLabel(/Assisted intake verification status/i)).toContainText(
+    /World ID proof-of-human satisfies intake without the demo bot check/i
+  );
+
+  await createUser.getByLabel(/Legal or full name/i).fill("World ID Client");
+  await createUser.getByLabel(/Photo or photo ID/i).setInputFiles({
+    name: "world-id-client.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  await expect(createUser.getByRole("button", { name: /Create user account/i })).toBeEnabled();
+  await createUser.getByRole("button", { name: /Create user account/i }).click();
+
+  const createdUser = page.locator(".list-item").filter({ hasText: "World ID Client" }).first();
+  await expect(createdUser).toBeVisible();
+  await expect(createdUser.getByText(/Demo bot check|Manual fallback/i)).toHaveCount(0);
 });
 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
