@@ -185,8 +185,6 @@ SERVICES = {
             "data/world_id_backend_implementation/state",
             "--allowed-tracks",
             "proofs,core,wallet,privacy,ops",
-            "--allowed-task-ids",
-            "WORLDID-170",
         ),
     ),
     "worldid_ui": ServiceSpec(
@@ -206,8 +204,6 @@ SERVICES = {
             "data/world_id_ui_implementation/state",
             "--allowed-tracks",
             "ui",
-            "--allowed-task-ids",
-            "WORLDID-180",
         ),
     ),
     "provekit": ServiceSpec(
