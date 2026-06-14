@@ -423,7 +423,7 @@ Track guide:
 - Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari Playwright evidence proves consensus controls and receipt badges are keyboard reachable, have accurate accessible names, avoid horizontal overflow or incoherent overlap, preserve manual-review fallback paths, use precise non-overclaiming labels, and archive screenshots or traces for release signoff.
 
 ## CLZKML-290 Observability And Readiness Checks
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ops
