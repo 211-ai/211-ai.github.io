@@ -513,6 +513,45 @@ def select_consensus_result(
             reason="no_successful_responses",
         )
 
+    responses_by_operator: dict[str, list[OperatorResponse]] = {}
+    for response in successful:
+        responses_by_operator.setdefault(response.operator_id, []).append(response)
+    duplicate_groups = {
+        operator_id: operator_responses
+        for operator_id, operator_responses in responses_by_operator.items()
+        if len(operator_responses) > 1
+    }
+    if duplicate_groups:
+        equivocated = any(
+            len(
+                {
+                    (response.output_hash, response.normalized_output_hash)
+                    for response in operator_responses
+                }
+            )
+            > 1
+            for operator_responses in duplicate_groups.values()
+        )
+        reason = "operator_equivocation" if equivocated else "duplicate_operator_id"
+        message = (
+            "Consensus quorum not met: operator equivocation detected"
+            if equivocated
+            else "Consensus quorum not met: duplicate operator IDs"
+        )
+        if fail_closed:
+            raise LLMConsensusError(message)
+        return ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash="",
+            selected_operator_ids=[],
+            rejected_operator_ids=sorted({response.operator_id for response in response_list}),
+            quorum=int(quorum),
+            total_successful=len(successful),
+            comparison=str(comparison or "exact"),
+            reason=reason,
+        )
+
     groups: dict[str, list[OperatorResponse]] = {}
     for response in successful:
         groups.setdefault(response.normalized_output_hash, []).append(response)
