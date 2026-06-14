@@ -198,6 +198,31 @@ test("review artifact covers required Chainlink consensus UX surfaces and viewpo
   expect(matrix.checks.join(" ")).toMatch(/operator secret/i);
 });
 
+test("review artifact covers required World ID UX surfaces and viewports", async () => {
+  const matrixPath = path.join(repoRoot, "artifacts/world-id-idkit-ui-review/review-matrix.json");
+  const matrix = JSON.parse(readFileSync(matrixPath, "utf-8")) as {
+    checks: string[];
+    reviewed_surfaces: string[];
+    viewport_coverage: Array<{ name: string }>;
+  };
+  expect(matrix.reviewed_surfaces).toEqual(
+    expect.arrayContaining([
+      "proof-center",
+      "wallet-uploads",
+      "register-intake",
+      "security",
+      "qr-proof-review",
+      "export-import"
+    ])
+  );
+  expect(matrix.viewport_coverage.map((entry) => entry.name)).toEqual(
+    expect.arrayContaining(["Desktop Chrome", "Mobile Chrome", "Mobile Safari"])
+  );
+  expect(matrix.checks.join(" ")).toMatch(/keyboard focus/i);
+  expect(matrix.checks.join(" ")).toMatch(/emergency.*fallback/i);
+  expect(matrix.checks.join(" ")).toMatch(/raw nullifier/i);
+});
+
 test("wallet proof review surfaces are scannable and do not expose private proof material", async ({ page }, testInfo) => {
   await installRoutes(page);
   const routes: Array<[string, RegExp, RegExp]> = [

@@ -3423,6 +3423,10 @@ function ProofCenterScreen({
             Proof-of-human can show that a World ID human credential is bound to this wallet. It does not disclose
             or prove legal name, age, citizenship, address, government ID, or other legal identity attributes.
           </p>
+          <p>
+            World ID is optional here. Emergency and essential-service flows remain available when World ID is
+            unavailable or cannot be used.
+          </p>
         </div>
         <div className="world-id-proof-center-facts" aria-label="World ID proof center facts">
           <StatusPanel

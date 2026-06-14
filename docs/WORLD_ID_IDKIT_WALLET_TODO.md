@@ -255,7 +255,7 @@ Track guide:
 - Acceptance: Playwright launches the real Abby UI and live wallet API with a mocked World Developer Portal verification path, then verifies disabled/missing-config guards, RP signature creation, IDKit completion, backend verification, proof/status/audit refresh, same-wallet idempotent replay, different-wallet nullifier conflict, revoke/status refresh, and sanitized QR/export review without exposing raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, or PII.
 
 ## WORLDID-183 Cross-Surface UX Accessibility And No-Leak Review
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
