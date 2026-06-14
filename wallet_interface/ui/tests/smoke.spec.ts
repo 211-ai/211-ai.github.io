@@ -1768,6 +1768,12 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
       }
     });
   });
+  await page.route("**/ipfs-proxy/bafywallet", async (route) => {
+    await route.fulfill({
+      body: "%PDF-1.4\nfrom-ipfs",
+      contentType: "application/pdf"
+    });
+  });
 
   await openAppRoute(page, "/#/uploads");
   await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
@@ -1778,10 +1784,129 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
     buffer: Buffer.from("%PDF-1.4\n")
   });
   const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
-  await expect(walletFile.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  await expect(walletFile.getByText(/^IPFS\/Filecoin$/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/IPFS\/Filecoin-backed wallet/i)).toBeVisible();
+  await expect(walletFile.getByText(/bafywallet/i)).toHaveCount(0);
+  await walletFile.getByRole("button", { name: /Show storage details/i }).click();
   await expect(walletFile.getByText(/bafywallet/i)).toBeVisible();
+  await expect(walletFile.getByText(/Deal ID/i)).toBeVisible();
+  await expect(walletFile.getByText(/42/i)).toBeVisible();
   await expect(walletFile.getByText(/Pinned through Synapse/i)).toBeVisible();
+  await expect(walletFile.getByRole("button", { name: /^Download$/i })).toBeVisible();
+  const originalDownload = await Promise.all([
+    page.waitForEvent("download"),
+    walletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(originalDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  await expect(walletFile.getByRole("button", { name: /Remove from wallet/i })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await walletFile.getByRole("button", { name: /Remove from wallet/i }).click();
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" })).toHaveCount(0);
   expect(fileStorageRequests).toBe(1);
+});
+
+test("wallet file uploads can write to a configured Walrus publisher", async ({ page }) => {
+  let walrusStorageRequests = 0;
+  let walrusDeleteRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+    window.localStorage.setItem(
+      "abby-walrus-storage-config",
+      JSON.stringify({
+        aggregatorUrl: "/walrus-aggregator",
+        deleteUrl: "/walrus-delete",
+        epochs: 2,
+        publisherUrl: "/walrus-publisher"
+      })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+  await page.route("**/walrus-delete/v1/blobs/**", async (route) => {
+    walrusDeleteRequests += 1;
+    expect(route.request().method()).toBe("DELETE");
+    expect(route.request().url()).toContain("walrus-blob-benefits");
+    await route.fulfill({ json: { status: "deleted" } });
+  });
+  await page.route("**/walrus-aggregator/v1/blobs/walrus-blob-benefits", async (route) => {
+    await route.fulfill({
+      body: "%PDF-1.4\nfrom-walrus",
+      contentType: "application/pdf"
+    });
+  });
+  await page.route("**/walrus-publisher/v1/blobs**", async (route) => {
+    walrusStorageRequests += 1;
+    expect(route.request().method()).toBe("PUT");
+    expect(route.request().headers()["content-type"]).toContain("application/pdf");
+    expect(new URL(route.request().url()).searchParams.get("epochs")).toBe("2");
+    await route.fulfill({
+      json: {
+        newlyCreated: {
+          blob_object: {
+            blob_id: "walrus-blob-benefits",
+            id: "0xwalrusobject",
+            storage: { end_epoch: 44 }
+          },
+          cost: 123
+        }
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).uncheck();
+  await page.getByLabel(/Store new wallet files on Walrus/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/^Walrus$/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/Walrus-backed wallet/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/walrus-blob-benefits/i)).toHaveCount(0);
+  await walletFile.getByRole("button", { name: /Show storage details/i }).click();
+  await expect(walletFile.getByText(/walrus-blob-benefits/i)).toBeVisible();
+  await expect(walletFile.getByText(/End epoch/i)).toBeVisible();
+  await expect(walletFile.getByText(/44/i)).toBeVisible();
+  await expect(walletFile.getByText(/Stored on Walrus/i)).toBeVisible();
+  await expect(walletFile.getByRole("button", { name: /^Download$/i })).toBeVisible();
+  const originalDownload = await Promise.all([
+    page.waitForEvent("download"),
+    walletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(originalDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  await page.reload();
+  const reloadedWalletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(reloadedWalletFile.getByRole("button", { name: /^Download$/i })).toBeEnabled();
+  const persistedDownload = await Promise.all([
+    page.waitForEvent("download"),
+    reloadedWalletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(persistedDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  page.once("dialog", (dialog) => dialog.accept());
+  await reloadedWalletFile.getByRole("button", { name: /Remove from wallet/i }).click();
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" })).toHaveCount(0);
+  expect(walrusDeleteRequests).toBe(1);
+  await page.getByLabel(/Store new wallet files on Walrus/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\nagain")
+  });
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" }).getByText(/Stored on Walrus/i)).toBeVisible();
+  expect(walrusStorageRequests).toBe(2);
 });
 
 test("wallet file uploads poll Filecoin status through the same-origin bridge", async ({ page }) => {

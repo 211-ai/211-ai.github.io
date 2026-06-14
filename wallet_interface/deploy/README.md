@@ -158,7 +158,8 @@ Recommended wiring:
 1. Build and publish `wallet_interface/ui/` with the existing Pages workflow.
 2. Set GitHub repository or environment variables for the Pages workflow:
   `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
-  `ABBY_PAGES_ACTOR_DID`, and optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`.
+  `ABBY_PAGES_ACTOR_DID`, optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`, and
+  optional Walrus publisher/aggregator values.
 3. Set `WALLET_API_CORS_ORIGINS` on the API to the exact GitHub Pages origin.
 4. Keep secrets only on the API/proof/storage side. GitHub Pages assets are
    public.
@@ -180,6 +181,12 @@ Example `runtime-config.json` for a split deployment:
   },
   "filecoinStorage": {
     "uploadUrl": "https://storage.example.com/upload"
+  },
+  "walrusStorage": {
+    "publisherUrl": "https://publisher.walrus.example.com",
+    "aggregatorUrl": "https://aggregator.walrus.example.com",
+    "epochs": 5,
+    "deletable": false
   },
   "voiceProxy": {
     "inferUrl": "https://voice.example.com/api/voice/infer",
@@ -212,6 +219,9 @@ deployment:
 ABBY_RUNTIME_WALLET_API_BASE_URL=same-origin
 ABBY_RUNTIME_WALLET_ID=wallet-demo
 ABBY_RUNTIME_ACTOR_DID=did:key:demo
+ABBY_RUNTIME_WALRUS_PUBLISHER_URL=https://publisher.walrus.example.com
+ABBY_RUNTIME_WALRUS_AGGREGATOR_URL=https://aggregator.walrus.example.com
+ABBY_RUNTIME_WALRUS_DELETE_URL=https://walrus-relay.example.com
 ABBY_RUNTIME_VOICE_PROXY_INFER_URL=https://voice.example.com/api/voice/infer
 ABBY_RUNTIME_VOICE_PROXY_TTS_URL=https://voice.example.com/api/voice/tts
 ABBY_RUNTIME_VOICE_PROXY_STT_URL=https://voice.example.com/api/voice/stt
@@ -439,6 +449,20 @@ Required production environment:
 - `ABBY_RUNTIME_FILECOIN_UPLOAD_URL`: set to `/filecoin-upload` for the
   bundled deployment so the UI can publish files and proof bundles through the
   wallet API on the same origin.
+- `ABBY_RUNTIME_WALRUS_PUBLISHER_URL`: optional Walrus publisher endpoint for
+  browser-side document writes. The UI writes bytes with `PUT /v1/blobs`.
+- `ABBY_RUNTIME_WALRUS_AGGREGATOR_URL`: optional Walrus aggregator endpoint
+  used to build blob links after a successful write.
+- `ABBY_RUNTIME_WALRUS_DELETE_URL`: optional trusted Walrus delete relay used
+  by the wallet UI to delete/reclaim deletable Walrus blobs. Public publishers
+  expose upload routes but not browser-side delete routes, so production should
+  point this at a backend you control.
+- `ABBY_RUNTIME_WALRUS_CLIENT_TOKEN`: optional bearer token for a trusted
+  Walrus publisher/proxy/delete relay.
+- `ABBY_RUNTIME_WALRUS_EPOCHS`: optional Walrus storage duration sent as the
+  `epochs` query parameter.
+- `ABBY_RUNTIME_WALRUS_DELETABLE`: optional boolean; set `true` to request
+  deletable blobs, otherwise the UI requests permanent storage when configured.
 - `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`: optional public gateway base used in
   `/filecoin-upload` responses. Defaults to `https://w3s.link/ipfs`.
 - `WALLET_IPFS_UPLOAD_BACKEND`: optional upload-bridge backend override. Set

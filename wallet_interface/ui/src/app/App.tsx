@@ -66,6 +66,15 @@ import {
   uploadRecoveryBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
+import {
+  buildWalrusBlobUrl,
+  canDeleteWalrusBlob,
+  deleteWalrusBlobFromStorage,
+  getWalrusStorageConfig,
+  toWalrusStoragePatch,
+  uploadFileToWalrusStorage,
+  uploadWalletRecordToWalrusStorage
+} from "../services/walrusStorage";
 import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../lib/runtimeConfig";
 import {
   buildWalletProofBundlePayload,
@@ -4189,15 +4198,23 @@ function UploadsScreen({
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
   const [filecoinUploadIds, setFilecoinUploadIds] = useState<string[]>([]);
+  const [walrusUploadIds, setWalrusUploadIds] = useState<string[]>([]);
+  const [walrusDeleteIds, setWalrusDeleteIds] = useState<string[]>([]);
   const [downloadingUploadIds, setDownloadingUploadIds] = useState<string[]>([]);
   const [deletingUploadIds, setDeletingUploadIds] = useState<string[]>([]);
+  const [expandedStorageDetailIds, setExpandedStorageDetailIds] = useState<string[]>([]);
   const [walletFileQuery, setWalletFileQuery] = useState("");
   const [walletFileFilter, setWalletFileFilter] = useState<WalletFileFilterMode>("all");
   const [walletFileSort, setWalletFileSort] = useState<WalletFileSortMode>("newest");
   const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(true);
+  const [storeNewFilesOnWalrus, setStoreNewFilesOnWalrus] = useState(false);
   const uploadsRef = useRef(uploads);
+  const originalUploadFilesRef = useRef(new Map<string, File>());
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
   const filecoinStorageReady = Boolean(filecoinStorageConfig);
+  const walrusStorageConfig = useMemo(() => getWalrusStorageConfig(), []);
+  const walrusStorageReady = Boolean(walrusStorageConfig);
+  const walrusDeleteReady = canDeleteWalrusBlob(walrusStorageConfig);
   const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
   const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
   const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
@@ -4340,6 +4357,7 @@ function UploadsScreen({
     if (apiConfig?.actorDid) {
       try {
         const uploaded = normalizeWalletUpload(await addBinaryDocument(apiConfig, { file, title: machineSummary }), file.name);
+        originalUploadFilesRef.current.set(uploaded.id, file);
         prependUpload(uploaded);
         await refreshWalletAuditEvents();
         void persistUploadMetadata(uploaded, {
@@ -4353,6 +4371,9 @@ function UploadsScreen({
         if (storeNewFilesOnFilecoin) {
           void storeWalletRecordOnFilecoin(uploaded);
         }
+        if (storeNewFilesOnWalrus) {
+          void storeWalletRecordOnWalrus(uploaded);
+        }
         return;
       } catch {
         try {
@@ -4361,6 +4382,7 @@ function UploadsScreen({
             text: await file.text(),
             title: machineSummary
           }), file.name);
+          originalUploadFilesRef.current.set(uploaded.id, file);
           prependUpload(uploaded);
           await refreshWalletAuditEvents();
           void persistUploadMetadata(uploaded, {
@@ -4373,6 +4395,9 @@ function UploadsScreen({
           void profileWalletUpload(uploaded, file);
           if (storeNewFilesOnFilecoin) {
             void storeWalletRecordOnFilecoin(uploaded);
+          }
+          if (storeNewFilesOnWalrus) {
+            void storeWalletRecordOnWalrus(uploaded);
           }
           return;
         } catch {
@@ -4392,9 +4417,13 @@ function UploadsScreen({
       },
       file.name
     );
+    originalUploadFilesRef.current.set(localUpload.id, file);
     prependUpload(localUpload);
     if (storeNewFilesOnFilecoin) {
       void storeFileUploadOnFilecoin(localUpload, file);
+    }
+    if (storeNewFilesOnWalrus) {
+      void storeFileUploadOnWalrus(localUpload, file);
     }
   }
 
@@ -4485,6 +4514,99 @@ function UploadsScreen({
       });
     } finally {
       setFilecoinUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function storeFileUploadOnWalrus(upload: UploadItem, file: File) {
+    if (!walrusStorageConfig) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: t(siteLocale, "wallet.walrusConnectBeforeUpload"),
+        decentralizedStorageStatus: "not_configured"
+      });
+      return;
+    }
+    setWalrusUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    updateUpload(upload.id, {
+      decentralizedStorageMessage: t(siteLocale, "wallet.walrusUploading"),
+      decentralizedStorageStatus: "uploading"
+    });
+    try {
+      const result = await uploadFileToWalrusStorage(file, {
+        allowedRecipientIds: upload.allowedRecipientIds ?? [],
+        clientConfig: walrusStorageConfig,
+        upload,
+        walletConfig: apiConfig
+      });
+      const patch = toWalrusStoragePatch(result, walrusStorageConfig);
+      updateUpload(upload.id, patch);
+      void persistUploadMetadata(upload, patch);
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: error instanceof Error ? error.message : t(siteLocale, "wallet.walrusUploadFailed"),
+        decentralizedStorageStatus: "failed"
+      });
+    } finally {
+      setWalrusUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function storeWalletRecordOnWalrus(upload: UploadItem) {
+    if (!walrusStorageConfig) return;
+    setWalrusUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    updateUpload(upload.id, {
+      decentralizedStorageMessage: t(siteLocale, "wallet.walrusSendRecord"),
+      decentralizedStorageStatus: "uploading"
+    });
+    try {
+      const result = await uploadWalletRecordToWalrusStorage(upload, {
+        clientConfig: walrusStorageConfig,
+        walletConfig: apiConfig
+      });
+      const patch = toWalrusStoragePatch(result, walrusStorageConfig);
+      const nextUpload = { ...upload, ...patch };
+      updateUpload(upload.id, patch);
+      void persistUploadMetadata(upload, patch);
+      if (!nextUpload.privacyProfileStatus || nextUpload.privacyProfileNeedsRefresh) {
+        void profileWalletUpload(nextUpload);
+      }
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: error instanceof Error ? error.message : t(siteLocale, "wallet.walrusUploadFailed"),
+        decentralizedStorageStatus: "failed"
+      });
+    } finally {
+      setWalrusUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function deleteWalrusBlobForUpload(upload: UploadItem): Promise<Partial<UploadItem> | undefined> {
+    if (!upload.walrusBlobId) return;
+    if (!walrusDeleteReady) {
+      throw new Error(t(siteLocale, "wallet.walrusDeleteBackendRequired"));
+    }
+    setWalrusDeleteIds((uploadIds) => [...new Set([...uploadIds, upload.id])]);
+    updateUpload(upload.id, {
+      decentralizedStorageMessage: t(siteLocale, "wallet.walrusDeleting"),
+      decentralizedStorageStatus: "uploading"
+    });
+    try {
+      await deleteWalrusBlobFromStorage(upload, {
+        clientConfig: walrusStorageConfig,
+        walletConfig: apiConfig
+      });
+      return {
+        decentralizedStorageMessage: t(siteLocale, "wallet.walrusDeleted"),
+        decentralizedStorageProvider: upload.ipfsCid ? "ipfs-filecoin" : upload.recordId ? "wallet-api" : "local",
+        decentralizedStorageStatus: upload.ipfsCid ? "stored" : "ready",
+        walrusBlobId: undefined,
+        walrusEndEpoch: undefined,
+        walrusGatewayUrl: undefined,
+        walrusObjectId: undefined,
+        walrusStorageCost: undefined,
+        walrusTxDigest: undefined
+      };
+    } finally {
+      setWalrusDeleteIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
   }
 
@@ -4598,9 +4720,17 @@ function UploadsScreen({
   }
 
   async function downloadDecryptedUpload(upload: UploadItem) {
-    if (!apiConfig?.actorDid || !upload.recordId) return;
+    const originalFile = originalUploadFilesRef.current.get(upload.id);
+    if (originalFile) {
+      downloadBlob(originalFile, upload.fileName || originalFile.name || "wallet-file");
+      return;
+    }
     setDownloadingUploadIds((uploadIds) => [...uploadIds, upload.id]);
     try {
+      if (!apiConfig?.actorDid || !upload.recordId) {
+        await downloadStoredUploadBlob(upload);
+        return;
+      }
       const decrypted = await decryptRecordWithGrant(apiConfig, { recordId: upload.recordId });
       const bytes = decrypted.base64 ? base64ToBytes(decrypted.base64) : new TextEncoder().encode(decrypted.text);
       const decryptedMimeType = detectDecryptedMimeType(bytes, upload.fileName, decrypted.text);
@@ -4617,18 +4747,25 @@ function UploadsScreen({
         decryptedMimeType
       });
       const payload = new Uint8Array(bytes).buffer as ArrayBuffer;
-      const blob = new Blob([payload], { type: decryptedMimeType });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = upload.fileName || `${upload.recordId}.bin`;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(url);
+      downloadBlob(new Blob([payload], { type: decryptedMimeType }), upload.fileName || `${upload.recordId}.bin`);
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage:
+          error instanceof Error
+            ? tFormat(siteLocale, "wallet.downloadFailedDetail", { error: error.message })
+            : t(siteLocale, "wallet.downloadFailed")
+      });
     } finally {
       setDownloadingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
+  }
+
+  async function downloadStoredUploadBlob(upload: UploadItem) {
+    const href = walrusGatewayHref(upload) || (upload.ipfsCid ? ipfsGatewayHref(upload) : undefined);
+    if (!href || href === "#") throw new Error("No downloadable wallet file source is available.");
+    const response = await fetch(href);
+    if (!response.ok) throw new Error(`Storage download failed with ${response.status}.`);
+    downloadBlob(await response.blob(), upload.fileName || `${upload.walrusBlobId || upload.ipfsCid || upload.id}.bin`);
   }
 
   async function persistUploadMetadata(upload: UploadItem, patch: Partial<UploadItem> = {}) {
@@ -4680,6 +4817,12 @@ function UploadsScreen({
       metadataIpldCid: upload.metadataIpldCid,
       metadataIpldLink: upload.metadataIpldLink,
       metadataStorageMessage: upload.metadataStorageMessage,
+      walrusBlobId: upload.walrusBlobId,
+      walrusEndEpoch: upload.walrusEndEpoch,
+      walrusGatewayUrl: upload.walrusGatewayUrl,
+      walrusObjectId: upload.walrusObjectId,
+      walrusStorageCost: upload.walrusStorageCost,
+      walrusTxDigest: upload.walrusTxDigest,
       privacyProfileArtifactIds: upload.privacyProfileArtifactIds,
       privacyProfileClassification: upload.privacyProfileClassification,
       privacyProfileLabels: upload.privacyProfileLabels,
@@ -4700,7 +4843,8 @@ function UploadsScreen({
       ...upload,
       allowedRecipientIds: upload.allowedRecipientIds ?? [],
       decentralizedStorageProvider: upload.decentralizedStorageProvider ?? (upload.recordId ? "wallet-api" : "local"),
-      decentralizedStorageStatus: upload.decentralizedStorageStatus ?? (filecoinStorageReady ? "ready" : "not_configured"),
+      decentralizedStorageStatus:
+        upload.decentralizedStorageStatus ?? (filecoinStorageReady || walrusStorageReady ? "ready" : "not_configured"),
       fileName,
       shared: upload.shared ?? false,
       sharingMode: upload.sharingMode ?? "private"
@@ -4720,16 +4864,37 @@ function UploadsScreen({
     replaceUploads(uploadsRef.current.map((item) => (item.id === uploadId ? { ...item, ...patch } : item)));
   }
 
-  async function deleteWalletUpload(upload: UploadItem) {
-    if (!apiConfig?.actorDid || !upload.recordId) return;
+  async function deleteOrRemoveUpload(upload: UploadItem) {
     const confirmed = window.confirm(
-      tFormat(siteLocale, "wallet.deleteConfirm", { name: upload.fileName })
+      tFormat(siteLocale, upload.recordId && apiConfig?.actorDid ? "wallet.deleteConfirm" : "wallet.removeLocalConfirm", {
+        name: upload.fileName
+      })
     );
     if (!confirmed) return;
     setDeletingUploadIds((uploadIds) => [...new Set([...uploadIds, upload.id])]);
     try {
-      await deleteWalletRecord(apiConfig, upload.recordId, { unpinIpfs: true });
+      let walrusPatch: Partial<UploadItem> = {};
+      if (upload.walrusBlobId) {
+        try {
+          walrusPatch = await deleteWalrusBlobForUpload(upload) ?? {};
+        } catch (error) {
+          walrusPatch = {
+            decentralizedStorageMessage:
+              error instanceof Error
+                ? tFormat(siteLocale, "wallet.walrusDeleteFailedDetail", { error: error.message })
+                : t(siteLocale, "wallet.walrusDeleteFailed"),
+            decentralizedStorageStatus: "failed"
+          };
+        }
+      }
+      if (apiConfig?.actorDid && upload.recordId) {
+        await deleteWalletRecord(apiConfig, upload.recordId, { unpinIpfs: true });
+      }
+      originalUploadFilesRef.current.delete(upload.id);
       replaceUploads(uploadsRef.current.filter((item) => item.id !== upload.id));
+      if (upload.recordId && Object.keys(walrusPatch).length) {
+        void persistUploadMetadata(upload, walrusPatch);
+      }
       await refreshWalletAuditEvents().catch(() => undefined);
     } catch (error) {
       updateUpload(upload.id, {
@@ -4741,6 +4906,16 @@ function UploadsScreen({
     } finally {
       setDeletingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
+  }
+
+  function storageDetailsExpanded(uploadId: string): boolean {
+    return expandedStorageDetailIds.includes(uploadId);
+  }
+
+  function toggleStorageDetails(uploadId: string) {
+    setExpandedStorageDetailIds((ids) =>
+      ids.includes(uploadId) ? ids.filter((id) => id !== uploadId) : [...ids, uploadId]
+    );
   }
 
   async function monitorFilecoinPersistence(uploadId: string, initialResult: Parameters<typeof toFilecoinStoragePatch>[0]) {
@@ -5217,29 +5392,45 @@ function UploadsScreen({
       <Section
         title={t(siteLocale, "wallet.addFileTitle")}
         actions={
-          <Badge tone={filecoinStorageReady ? "success" : "warning"}>
-            {filecoinStorageReady ? t(siteLocale, "wallet.storageReady") : t(siteLocale, "wallet.backendRequired")}
-          </Badge>
+          <div className="wallet-storage-badge-row">
+            <Badge tone={filecoinStorageReady ? "success" : "warning"}>
+              {filecoinStorageReady ? t(siteLocale, "wallet.storageReady") : t(siteLocale, "wallet.backendRequired")}
+            </Badge>
+            <Badge tone={walrusStorageReady ? "success" : "warning"}>
+              {walrusStorageReady ? t(siteLocale, "wallet.walrusReady") : t(siteLocale, "wallet.walrusBackendRequired")}
+            </Badge>
+          </div>
         }
       >
         <div className="wallet-storage-panel">
           <div>
             <strong>{t(siteLocale, "wallet.storageDestination")}</strong>
             <small>
-              {filecoinStorageReady
+              {filecoinStorageReady || walrusStorageReady
                 ? t(siteLocale, "wallet.storageReadyHelp")
                 : t(siteLocale, "wallet.storageMissingHelp")}
             </small>
           </div>
-          <label className="wallet-filecoin-toggle">
-            <input
-              checked={storeNewFilesOnFilecoin}
-              disabled={!filecoinStorageReady}
-              onChange={(event) => setStoreNewFilesOnFilecoin(event.target.checked)}
-              type="checkbox"
-            />
-            <span>{t(siteLocale, "wallet.storeNewFiles")}</span>
-          </label>
+          <div className="wallet-storage-toggle-group">
+            <label className="wallet-filecoin-toggle">
+              <input
+                checked={storeNewFilesOnFilecoin}
+                disabled={!filecoinStorageReady}
+                onChange={(event) => setStoreNewFilesOnFilecoin(event.target.checked)}
+                type="checkbox"
+              />
+              <span>{t(siteLocale, "wallet.storeNewFiles")}</span>
+            </label>
+            <label className="wallet-filecoin-toggle">
+              <input
+                checked={storeNewFilesOnWalrus}
+                disabled={!walrusStorageReady}
+                onChange={(event) => setStoreNewFilesOnWalrus(event.target.checked)}
+                type="checkbox"
+              />
+              <span>{t(siteLocale, "wallet.storeNewFilesOnWalrus")}</span>
+            </label>
+          </div>
         </div>
         <label className="upload-dropzone">
           <Upload aria-hidden="true" size={28} />
@@ -5250,7 +5441,11 @@ function UploadsScreen({
           </span>
           <input
             type="file"
-            onChange={(event) => addUpload(event.target.files?.[0] ?? null)}
+            onChange={(event) => {
+              const file = event.target.files?.[0] ?? null;
+              event.target.value = "";
+              void addUpload(file);
+            }}
             aria-label={t(siteLocale, "wallet.chooseFileAria")}
           />
         </label>
@@ -5319,9 +5514,34 @@ function UploadsScreen({
             key={upload.id}
           >
             <div className="wallet-file-primary">
-              <h3>{upload.fileName}</h3>
+              <div className="wallet-file-title-row">
+                <h3>{upload.fileName}</h3>
+                <Button
+                  className="wallet-file-delete-button"
+                  disabled={deletingUploadIds.includes(upload.id)}
+                  onClick={() => deleteOrRemoveUpload(upload)}
+                  variant="danger"
+                >
+                  <Trash2 aria-hidden="true" size={18} />
+                  {deletingUploadIds.includes(upload.id)
+                    ? t(siteLocale, "wallet.deleting")
+                    : upload.recordId && apiConfig?.actorDid
+                      ? t(siteLocale, "wallet.deleteFile")
+                      : t(siteLocale, "wallet.removeFromWallet")}
+                </Button>
+              </div>
               <p>{uploadTypeLabel(upload)}</p>
               <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
+              <div className="wallet-file-download-row">
+                <Button
+                  disabled={downloadingUploadIds.includes(upload.id) || !canDownloadUpload(upload, originalUploadFilesRef.current.has(upload.id), apiConfig)}
+                  onClick={() => void downloadDecryptedUpload(upload)}
+                  variant="secondary"
+                >
+                  <Download aria-hidden="true" size={18} />
+                  {downloadingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.downloading") : t(siteLocale, "wallet.download")}
+                </Button>
+              </div>
               <div className="badge-row">
                 <Badge tone="success">{upload.status}</Badge>
                 {upload.storageOk !== undefined ? (
@@ -5331,6 +5551,9 @@ function UploadsScreen({
                 ) : null}
                 <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload, siteLocale)}</Badge>
                 <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload, siteLocale)}</Badge>
+                {isWalrusBackedUpload(upload) ? (
+                  <Badge tone="success">{t(siteLocale, "wallet.walrusBackedWallet")}</Badge>
+                ) : null}
                 {upload.decryptedMimeType ? (
                   <Badge tone="success">{displayMimeType(upload.decryptedMimeType)}</Badge>
                 ) : null}
@@ -5347,11 +5570,47 @@ function UploadsScreen({
                 ) : null}
               </div>
               {upload.ipfsCid ? (
-                <div className="wallet-evidence-row">
-                  <span>IPFS</span>
-                  <a href={ipfsGatewayHref(upload)} rel="noreferrer" target="_blank">
-                    <code>{upload.ipfsCid}</code>
-                  </a>
+                <div className="wallet-decentralized-details wallet-filecoin-details" aria-label={t(siteLocale, "wallet.ipfsFilecoinDetails")}>
+                  <div className="wallet-decentralized-heading">
+                    <strong>{t(siteLocale, "wallet.ipfsFilecoinBackedWallet")}</strong>
+                    <button
+                      aria-expanded={storageDetailsExpanded(upload.id)}
+                      aria-label={t(siteLocale, storageDetailsExpanded(upload.id) ? "wallet.hideStorageDetails" : "wallet.showStorageDetails")}
+                      className="wallet-storage-toggle"
+                      onClick={() => toggleStorageDetails(upload.id)}
+                      type="button"
+                    >
+                      {storageDetailsExpanded(upload.id) ? "-" : "+"}
+                    </button>
+                  </div>
+                  {storageDetailsExpanded(upload.id) ? (
+                    <>
+                    <div className="wallet-evidence-row">
+                      <span>IPFS</span>
+                      <a href={ipfsGatewayHref(upload)} rel="noreferrer" target="_blank">
+                        <code>{upload.ipfsCid}</code>
+                      </a>
+                    </div>
+                    {upload.filecoinDealId ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.filecoinDeal")}</span>
+                      <code>{upload.filecoinDealId}</code>
+                    </div>
+                    ) : null}
+                    {upload.filecoinPieceCid ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.filecoinPiece")}</span>
+                      <code>{shortStorageId(upload.filecoinPieceCid)}</code>
+                    </div>
+                    ) : null}
+                    {upload.filecoinPinRequestId ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.filecoinPin")}</span>
+                      <code>{shortStorageId(upload.filecoinPinRequestId)}</code>
+                    </div>
+                    ) : null}
+                    </>
+                  ) : null}
                 </div>
               ) : null}
               {upload.ipldLinks?.length ? (
@@ -5372,6 +5631,68 @@ function UploadsScreen({
               ) : null}
               {upload.metadataStorageMessage ? (
                 <small className="wallet-storage-reference">{upload.metadataStorageMessage}</small>
+              ) : null}
+              {upload.walrusBlobId ? (
+                <div className="wallet-walrus-details" aria-label={t(siteLocale, "wallet.walrusDetails")}>
+                  <div className="wallet-walrus-heading">
+                    <strong>{t(siteLocale, "wallet.walrusBackedWallet")}</strong>
+                    <button
+                      aria-expanded={storageDetailsExpanded(upload.id)}
+                      aria-label={t(siteLocale, storageDetailsExpanded(upload.id) ? "wallet.hideStorageDetails" : "wallet.showStorageDetails")}
+                      className="wallet-storage-toggle"
+                      onClick={() => toggleStorageDetails(upload.id)}
+                      type="button"
+                    >
+                      {storageDetailsExpanded(upload.id) ? "-" : "+"}
+                    </button>
+                  </div>
+                  {storageDetailsExpanded(upload.id) ? (
+                    <>
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusBlob")}</span>
+                      {walrusGatewayHref(upload) ? (
+                        <a href={walrusGatewayHref(upload)} rel="noreferrer" target="_blank">
+                          <code>{upload.walrusBlobId}</code>
+                        </a>
+                      ) : (
+                        <code>{upload.walrusBlobId}</code>
+                      )}
+                    </div>
+                    {walrusGatewayHref(upload) ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusGateway")}</span>
+                      <a href={walrusGatewayHref(upload)} rel="noreferrer" target="_blank">
+                        {t(siteLocale, "wallet.openWalrusBlob")}
+                      </a>
+                    </div>
+                    ) : null}
+                    {upload.walrusObjectId ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusSuiObject")}</span>
+                      <code>{shortStorageId(upload.walrusObjectId)}</code>
+                    </div>
+                    ) : null}
+                    {upload.walrusEndEpoch ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusEndEpoch")}</span>
+                      <strong>{upload.walrusEndEpoch}</strong>
+                    </div>
+                    ) : null}
+                    {upload.walrusStorageCost !== undefined ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusStorageCost")}</span>
+                      <strong>{upload.walrusStorageCost}</strong>
+                    </div>
+                    ) : null}
+                    {upload.walrusTxDigest ? (
+                    <div className="wallet-evidence-row">
+                      <span>{t(siteLocale, "wallet.walrusTxDigest")}</span>
+                      <code>{shortStorageId(upload.walrusTxDigest)}</code>
+                    </div>
+                    ) : null}
+                    </>
+                  ) : null}
+                </div>
               ) : null}
               {upload.privacyProfileSummary ? (
                 <small className="wallet-storage-reference">{tFormat(siteLocale, "wallet.privateProfile", { value: upload.privacyProfileSummary })}</small>
@@ -5474,6 +5795,16 @@ function UploadsScreen({
                   {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id), siteLocale)}
                 </Button>
               ) : null}
+              {walrusStorageReady && upload.recordId && shouldShowWalrusAction(upload) ? (
+                <Button
+                  disabled={walrusUploadIds.includes(upload.id)}
+                  onClick={() => void storeWalletRecordOnWalrus(upload)}
+                  variant="secondary"
+                >
+                  <Upload aria-hidden="true" size={18} />
+                  {walrusActionLabel(walrusUploadIds.includes(upload.id), siteLocale)}
+                </Button>
+              ) : null}
               {upload.recordId && apiConfig?.actorDid && upload.privacyProfileStatus !== "profiled" ? (
                 <Button
                   disabled={upload.privacyProfileStatus === "profiling"}
@@ -5484,32 +5815,12 @@ function UploadsScreen({
                   {upload.privacyProfileStatus === "profiling" ? t(siteLocale, "wallet.profiling") : t(siteLocale, "wallet.generateProof")}
                 </Button>
               ) : null}
-              {upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={downloadingUploadIds.includes(upload.id)}
-                  onClick={() => void downloadDecryptedUpload(upload)}
-                  variant="secondary"
-                >
-                  <Download aria-hidden="true" size={18} />
-                  {downloadingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.decrypting") : t(siteLocale, "wallet.downloadDecrypted")}
-                </Button>
-              ) : null}
               <Button
                 onClick={() => (upload.shared ? makePrivate(upload) : allowSharing(upload))}
                 variant="secondary"
               >
                 {upload.shared ? t(siteLocale, "wallet.makePrivate") : t(siteLocale, "wallet.allowSharing")}
               </Button>
-              {upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={deletingUploadIds.includes(upload.id)}
-                  onClick={() => void deleteWalletUpload(upload)}
-                  variant="secondary"
-                >
-                  <Trash2 aria-hidden="true" size={18} />
-                  {deletingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.deleting") : t(siteLocale, "wallet.delete")}
-                </Button>
-              ) : null}
             </div>
           </article>
         ))}
@@ -5690,13 +6001,19 @@ function uploadStorageSortRank(upload: UploadItem): number {
 }
 
 function filecoinBadge(upload: UploadItem, locale: SupportedLocale): string {
+  if (upload.walrusBlobId && !upload.ipfsCid) return t(locale, "wallet.walrus");
   if (upload.filecoinPinStatus === "queued") return t(locale, "wallet.filecoinQueued");
   if (upload.filecoinPinStatus === "pinning") return t(locale, "wallet.filecoinPinning");
   if (upload.filecoinPinStatus === "failed") return t(locale, "wallet.ipfsOnly");
+  if (upload.decentralizedStorageProvider === "walrus") return t(locale, "wallet.walrus");
   if (upload.decentralizedStorageStatus === "stored") return t(locale, "wallet.ipfsFilecoin");
   if (upload.decentralizedStorageStatus === "uploading") return t(locale, "wallet.storing");
   if (upload.decentralizedStorageStatus === "failed") return t(locale, "wallet.storageFailed");
   return t(locale, "wallet.walletStorage");
+}
+
+function isWalrusBackedUpload(upload: UploadItem): boolean {
+  return Boolean(upload.walrusBlobId || upload.decentralizedStorageProvider === "walrus");
 }
 
 function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
@@ -5709,7 +6026,7 @@ function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" |
 }
 
 function shouldShowFilecoinAction(upload: UploadItem): boolean {
-  return upload.decentralizedStorageStatus !== "stored" || upload.filecoinPinStatus === "failed";
+  return !upload.ipfsCid || upload.filecoinPinStatus === "failed";
 }
 
 function filecoinActionLabel(upload: UploadItem, inProgress: boolean, locale: SupportedLocale): string {
@@ -5717,6 +6034,14 @@ function filecoinActionLabel(upload: UploadItem, inProgress: boolean, locale: Su
     return inProgress ? t(locale, "wallet.retrying") : t(locale, "wallet.retryFilecoin");
   }
   return inProgress ? t(locale, "wallet.storing") : t(locale, "wallet.storeOnFilecoin");
+}
+
+function shouldShowWalrusAction(upload: UploadItem): boolean {
+  return !upload.walrusBlobId;
+}
+
+function walrusActionLabel(inProgress: boolean, locale: SupportedLocale): string {
+  return inProgress ? t(locale, "wallet.storing") : t(locale, "wallet.storeOnWalrus");
 }
 
 function privacyProfileBadge(upload: UploadItem, locale: SupportedLocale): string {
@@ -5735,6 +6060,25 @@ function privacyProfileBadgeTone(upload: UploadItem): "neutral" | "info" | "succ
 
 function ipfsGatewayHref(upload: UploadItem): string {
   return normalizeIpfsGatewayUrl(upload.ipfsGatewayUrl) || sameOriginIpfsGatewayUrl(upload.ipfsCid) || "#";
+}
+
+function walrusGatewayHref(upload: UploadItem): string | undefined {
+  return upload.walrusGatewayUrl || buildWalrusBlobUrl(upload.walrusBlobId, getWalrusStorageConfig()?.aggregatorUrl);
+}
+
+function canDownloadUpload(upload: UploadItem, hasOriginalFile: boolean, apiConfig: WalletApiConfig | undefined): boolean {
+  return hasOriginalFile || Boolean(upload.recordId && apiConfig?.actorDid) || Boolean(walrusGatewayHref(upload) || upload.ipfsCid);
+}
+
+function downloadBlob(blob: Blob, fileName: string): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName || "wallet-file";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 function shortStorageId(value: string): string {

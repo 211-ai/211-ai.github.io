@@ -4108,7 +4108,12 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 metadata=metadata_patch,
             )
-            metadata_ipld_patch = _publish_record_metadata_ipld(record)
+            try:
+                metadata_ipld_patch = _publish_record_metadata_ipld(record)
+            except Exception as exc:
+                metadata_ipld_patch = {
+                    "metadataStorageMessage": f"Generated wallet metadata locally; IPLD publish failed: {exc}",
+                }
             if metadata_ipld_patch:
                 record = app_service.update_record_metadata(
                     wallet_id,

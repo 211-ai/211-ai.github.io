@@ -2549,6 +2549,9 @@ function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): Walle
 
 function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
   const metadata = isPlainRecord(record.metadata) ? record.metadata : {};
+  const privacyProfileLabels = readMetadataStringArray(metadata, "privacyProfileLabels");
+  const privacyProfileSummary = readMetadataString(metadata, "privacyProfileSummary");
+  const privacyProfileClassification = readMetadataString(metadata, "privacyProfileClassification");
   return {
     id: record.record_id,
     recordId: record.record_id,
@@ -2560,10 +2563,11 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
       record.public_descriptor ||
       labelFromResource(record.record_id),
     machineSummary:
+      privacyProfileSummary ||
       readMetadataString(metadata, "machineSummary") ||
       readMetadataString(metadata, "title") ||
       `${record.data_type} record stored ${formatTimestamp(record.created_at)}`,
-    category: record.public_descriptor || record.data_type,
+    category: privacyProfileClassification || privacyProfileLabels?.[0] || record.public_descriptor || record.data_type,
     sensitivity: record.sensitivity,
     status: record.status === "active" ? "stored" : "failed",
     shared: false,
@@ -2596,9 +2600,15 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     metadataIpldCid: readMetadataString(metadata, "metadataIpldCid"),
     metadataIpldLink: readMetadataIpldLink(metadata, "metadataIpldLink"),
     metadataStorageMessage: readMetadataString(metadata, "metadataStorageMessage"),
+    walrusBlobId: readMetadataString(metadata, "walrusBlobId"),
+    walrusEndEpoch: readMetadataNumber(metadata, "walrusEndEpoch"),
+    walrusGatewayUrl: readMetadataString(metadata, "walrusGatewayUrl"),
+    walrusObjectId: readMetadataString(metadata, "walrusObjectId"),
+    walrusStorageCost: readMetadataNumber(metadata, "walrusStorageCost"),
+    walrusTxDigest: readMetadataString(metadata, "walrusTxDigest"),
     privacyProfileArtifactIds: readMetadataStringArray(metadata, "privacyProfileArtifactIds"),
-    privacyProfileClassification: readMetadataString(metadata, "privacyProfileClassification"),
-    privacyProfileLabels: readMetadataStringArray(metadata, "privacyProfileLabels"),
+    privacyProfileClassification,
+    privacyProfileLabels,
     privacyProfileMessage: readMetadataString(metadata, "privacyProfileMessage"),
     privacyProfileMimeType: readMetadataString(metadata, "privacyProfileMimeType"),
     privacyProfileNeedsRefresh: Boolean(metadata.privacyProfileNeedsRefresh),
@@ -2606,7 +2616,7 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     privacyProfilePublicInputs: readMetadataRecord(metadata, "privacyProfilePublicInputs"),
     privacyProfileSearchText: readMetadataString(metadata, "privacyProfileSearchText"),
     privacyProfileStatus: readMetadataString(metadata, "privacyProfileStatus") as UploadItem["privacyProfileStatus"],
-    privacyProfileSummary: readMetadataString(metadata, "privacyProfileSummary"),
+    privacyProfileSummary,
     privacyProfileVectorTerms: readMetadataStringArray(metadata, "privacyProfileVectorTerms")
   };
 }
@@ -2637,6 +2647,11 @@ function readMetadataStringArray(metadata: Record<string, unknown>, key: string)
   if (!Array.isArray(value)) return undefined;
   const strings = value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
   return strings.length ? strings : undefined;
+}
+
+function readMetadataNumber(metadata: Record<string, unknown>, key: string): number | undefined {
+  const value = metadata[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
 function readMetadataRecord(metadata: Record<string, unknown>, key: string): Record<string, unknown> | undefined {

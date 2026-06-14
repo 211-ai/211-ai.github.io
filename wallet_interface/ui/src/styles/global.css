@@ -3099,6 +3099,14 @@ body.playful-pulse .decor-shape {
   padding: 12px;
 }
 
+.wallet-storage-badge-row,
+.wallet-storage-toggle-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .wallet-proof-qr-panel {
   align-items: center;
   background: rgba(248, 250, 252, 0.9);
@@ -3227,9 +3235,32 @@ body.playful-pulse .decor-shape {
   min-width: 0;
 }
 
+.wallet-file-title-row {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .wallet-file-primary h3,
 .wallet-file-primary p {
   overflow-wrap: anywhere;
+}
+
+.wallet-file-delete-button {
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.wallet-file-download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wallet-file-download-row .button {
+  min-height: 38px;
+  padding: 8px 10px;
 }
 
 .wallet-evidence-row {
@@ -3242,6 +3273,73 @@ body.playful-pulse .decor-shape {
   grid-template-columns: 86px minmax(0, 1fr);
   max-width: 100%;
   padding: 7px 9px;
+}
+
+.wallet-decentralized-details,
+.wallet-walrus-details {
+  background: rgba(237, 247, 244, 0.88);
+  border: 1px solid rgba(20, 122, 94, 0.24);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px;
+}
+
+.wallet-filecoin-details {
+  background: rgba(239, 246, 255, 0.9);
+  border-color: rgba(29, 78, 216, 0.24);
+}
+
+.wallet-decentralized-heading,
+.wallet-walrus-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.wallet-decentralized-heading > strong,
+.wallet-walrus-heading > strong {
+  color: #0f5c49;
+  font-size: 13px;
+}
+
+.wallet-filecoin-details .wallet-decentralized-heading > strong {
+  color: #1d4ed8;
+}
+
+.wallet-decentralized-heading .button,
+.wallet-walrus-heading .button {
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.wallet-storage-toggle {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #aeb8c5;
+  border-radius: 8px;
+  color: #0f172a;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 22px;
+  font-weight: 900;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  width: 42px;
+}
+
+.wallet-storage-toggle:hover {
+  border-color: #0f766e;
+  color: #0f766e;
+}
+
+.wallet-decentralized-details .wallet-evidence-row,
+.wallet-walrus-details .wallet-evidence-row {
+  background: #ffffff;
 }
 
 .wallet-evidence-row span {
@@ -5617,6 +5715,11 @@ textarea:focus-visible,
 
   .wallet-storage-panel {
     grid-template-columns: 1fr;
+  }
+
+  .wallet-storage-toggle-group {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .wallet-file-controls {

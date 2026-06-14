@@ -7,6 +7,22 @@ recipient access, and benefits-protection opt-in.
 The app currently uses local mock state and can be connected to the backend
 later through `src/services/`.
 
+## Dev server watcher limits
+
+The Vite dev server uses polling by default and ignores generated output and
+review artifacts: `artifacts/`, `dist/`, `test-results/`, `public/assets/`, and
+`public/corpus/`. This keeps hot-reload focused on source files and avoids
+Linux `EMFILE: too many open files, watch ...` failures on machines that already
+have many editor/browser watchers open or have exhausted inotify watcher
+instances.
+
+On a machine with plenty of inotify capacity, native file watching can be used
+instead:
+
+```bash
+npm run dev:native
+```
+
 The wallet implementation boundary now lives in Python. The browser app keeps
 `src/services/walletApi.ts` as a typed HTTP client, while the canonical wallet
 logic, snapshot persistence, audit history, grants, receipts, and proof state
@@ -341,14 +357,22 @@ In the repository settings, set Pages source to "GitHub Actions".
 The workflow can also write `public/runtime-config.json` from non-secret GitHub
 Actions variables before the build. Use repository or environment variables
 such as `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
-`ABBY_PAGES_ACTOR_DID`, optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`, and optional
+`ABBY_PAGES_ACTOR_DID`, optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`, optional
+Walrus publisher/aggregator variables, and optional
 `ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL` when you want the Pages sandbox to
 point at live backend/runtime assets like `https://211-ai.com` without
 committing a runtime-config change. A bundled same-origin deployment can set
 `ABBY_RUNTIME_FILECOIN_UPLOAD_URL=/filecoin-upload`; a Pages sandbox should
 usually point `ABBY_PAGES_FILECOIN_UPLOAD_URL` at the live origin explicitly,
-for example `https://211-ai.com/filecoin-upload`. The same runtime config can
-override Abby's precomputed audio manifest at runtime with:
+for example `https://211-ai.com/filecoin-upload`.
+
+Walrus document storage is configured separately from IPFS/Filecoin. Use
+`ABBY_RUNTIME_WALRUS_PUBLISHER_URL` for the publisher endpoint that accepts
+`PUT /v1/blobs`; optionally set `ABBY_RUNTIME_WALRUS_AGGREGATOR_URL` for blob
+links, `ABBY_RUNTIME_WALRUS_CLIENT_TOKEN` for a bearer token,
+`ABBY_RUNTIME_WALRUS_EPOCHS` for storage duration, and
+`ABBY_RUNTIME_WALRUS_DELETABLE=true` for deletable blobs. The same runtime
+config can override Abby's precomputed audio manifest at runtime with:
 
 ```json
 {
