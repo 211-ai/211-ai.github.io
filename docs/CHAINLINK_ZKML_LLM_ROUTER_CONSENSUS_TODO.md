@@ -243,7 +243,7 @@ Track guide:
 - Acceptance: Redacted receipts, persisted receipt files, proof errors, and verifier errors do not contain raw prompts, secrets, bearer tokens, private keys, or configured sensitive substrings.
 
 ## CLZKML-160 libp2p Multi-Peer Client Design
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: p2p
@@ -343,7 +343,7 @@ Track guide:
 - Acceptance: Optional verifier-contract event metadata can be parsed and matched to expected chain ID, contract address, workflow ID, request hash, output hash, proof hash, block number, and transaction hash without requiring a live RPC in unit tests.
 
 ## CLZKML-260 OpenAI-Compatible Chat Consensus Wrapper
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: router
@@ -363,7 +363,7 @@ Track guide:
 - Acceptance: High-impact wallet and API workflows are classified by required consensus mode, comparison mode, proof policy, fail-closed setting, audit receipt requirement, and allowed fallback behavior.
 
 ## CLZKML-280 Wallet/API Optional Integration
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: wallet
@@ -433,7 +433,7 @@ Track guide:
 - Acceptance: Consensus health summaries expose configured mode, quorum, operator count, CRE workflow ID presence, proof verifier policy, last failure reason, and redacted receipt counts for readiness reporting without exposing prompt content.
 
 ## CLZKML-300 Production Env Examples
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P2
 - Track: ops
@@ -463,7 +463,7 @@ Track guide:
 - Acceptance: Importing `ipfs_accelerate_py` and `ipfs_accelerate_py.llm_router` has no network, Chainlink, libp2p, ZKML, TEE, provider, or filesystem side effects, and existing `generate_text` tests or smoke calls remain unchanged.
 
 ## CLZKML-330 Documentation Examples
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P3
 - Track: ops
@@ -473,7 +473,7 @@ Track guide:
 - Acceptance: README and runbook examples show receipt-only local consensus, libp2p quorum, CRE-verified consensus, and proof-policy configuration with warnings about deterministic parameters and high-impact fail-closed behavior.
 
 ## CLZKML-340 Release Signoff Checklist
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P3
 - Track: ops
