@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
+import { WorldIdVerificationPanel } from "../components/world-id/WorldIdVerificationPanel";
 import { getRouteLabel } from "../agent/surfaceRegistry";
 import {
   getServiceDetailDocIdFromHash,
@@ -656,6 +657,7 @@ export function App() {
             apiConfig={walletApiConfig}
             proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
+            refreshWalletProofReceipts={refreshWalletProofReceipts}
             setProofs={setWalletProofReceipts}
           />
         ) : null}
@@ -2752,11 +2754,13 @@ function ProofCenterScreen({
   apiConfig,
   proofs,
   refreshWalletAuditEvents,
+  refreshWalletProofReceipts,
   setProofs
 }: {
   apiConfig?: WalletApiConfig;
   proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
+  refreshWalletProofReceipts: () => Promise<void>;
   setProofs: (proofs: ProofReceiptView[]) => void;
 }) {
   const [locationRecordId, setLocationRecordId] = useState(
@@ -2796,6 +2800,11 @@ function ProofCenterScreen({
       <p className="page-note">
         Proof receipts expose public claims and verifier details without showing raw documents or precise location.
       </p>
+      <WorldIdVerificationPanel
+        apiConfig={apiConfig}
+        onAuditRefresh={refreshWalletAuditEvents}
+        onProofsRefresh={refreshWalletProofReceipts}
+      />
       <article className="proof-card" aria-label="Create location region proof">
         <div className="scope-header">
           <div>
