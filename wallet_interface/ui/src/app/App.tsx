@@ -101,12 +101,6 @@ import {
   WalletConsensusMetadata
 } from "../services/walletApi";
 import {
-  getWalrusStorageConfig,
-  toWalrusStoragePatch,
-  uploadWalletRecordToWalrusStorage
-} from "../services/walrusStorage";
-import {
-  APP_PERSIST_KEY,
   appRoutes,
   createDefaultAppState,
   defaultManagedUserDraft,
@@ -359,24 +353,13 @@ export function App() {
   const [savedServices, setSavedServices] = useState<SavedService[]>([]);
   const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
   const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
-  const [benefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [agentChatMode, setAgentChatMode] = useState<"text" | "audio">("text");
   const walletApiConfig = useMemo(readWalletApiConfig, []);
-  const worldIdSurfaceState = useMemo(
-    () => getWorldIdSurfaceState(walletApiConfig, walletProofReceipts),
-    [walletApiConfig, walletProofReceipts]
-  );
-
-  async function refreshWalletAccessState() {
-    if (!walletApiConfig) return;
-    const state = await loadWalletAccessState(walletApiConfig);
-    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
-    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
-  }
+  const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
 
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
@@ -403,6 +386,13 @@ export function App() {
       refreshWalletDocuments().catch(() => setUploads(initialUploads)),
       refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts))
     ]);
+  }
+
+  async function refreshWalletAccessState() {
+    if (!walletApiConfig) return;
+    const state = await loadWalletAccessState(walletApiConfig);
+    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
+    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
   }
 
   const agentRuntime = useMemo<AppActionRuntime>(
@@ -543,6 +533,14 @@ export function App() {
   useEffect(() => {
     if (!walletApiConfig) return;
     refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts));
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
+    refreshWalletAccessState().catch(() => {
+      setAccessRequests([]);
+      setGrantReceipts([]);
+    });
   }, [walletApiConfig]);
 
   useEffect(() => {
@@ -718,6 +716,15 @@ export function App() {
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
+        ) : null}
+        {activeRoute === "recipient-access" ? (
+          <RecipientAccessScreen
+            accessRequests={accessRequests}
+            grantReceipts={grantReceipts}
+          />
+        ) : null}
+        {activeRoute === "benefits-protection" ? (
+          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
@@ -4105,26 +4112,10 @@ function AuditScreen({ events, proofs }: { events: AuditEvent[]; proofs: ProofRe
 
 function RecipientAccessScreen({
   accessRequests,
-  apiConfig,
-  grantReceipts,
-  recipients,
-  refreshWalletAuditEvents,
-  refreshWalletAccessState,
-  setAccessRequests,
-  setGrantReceipts,
-  verified,
-  setVerified
+  grantReceipts
 }: {
   accessRequests: WalletAccessRequest[];
-  apiConfig?: WalletApiConfig;
   grantReceipts: WalletGrantReceipt[];
-  recipients: DisclosureRecipientDraft[];
-  refreshWalletAuditEvents: () => Promise<void>;
-  refreshWalletAccessState: () => Promise<void>;
-  setAccessRequests: (requests: WalletAccessRequest[]) => void;
-  setGrantReceipts: (receipts: WalletGrantReceipt[]) => void;
-  verified: boolean;
-  setVerified: (verified: boolean) => void;
 }) {
   return (
     <div className="screen">
@@ -4138,14 +4129,14 @@ function RecipientAccessScreen({
       {accessRequests.length > 0 ? (
         <Section title="Access requests">
           {accessRequests.map((req) => (
-            <ActionCard key={req.id} title={req.requesterName} detail={req.purpose} icon={<KeyRound size={18} />} onClick={() => undefined} />
+            <ActionCard key={req.id} title={req.requesterName} detail={req.purpose} icon={<KeyRound size={18} />} />
           ))}
         </Section>
       ) : null}
       {grantReceipts.length > 0 ? (
         <Section title="Grant receipts">
           {grantReceipts.map((receipt) => (
-            <ActionCard key={receipt.id} title={receipt.audienceName} detail={receipt.purpose} icon={<ShieldCheck size={18} />} onClick={() => undefined} />
+            <ActionCard key={receipt.id} title={receipt.audienceName} detail={receipt.purpose} icon={<ShieldCheck size={18} />} />
           ))}
         </Section>
       ) : null}
