@@ -175,7 +175,7 @@ Track guide:
 - Acceptance: `@worldcoin/idkit` is installed, runtime config exposes only public World ID settings, builds remain deterministic, and the UI renders a disabled/fallback World ID state when the backend feature flag is off.
 
 ## WORLDID-130 World ID Verification Panel
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
