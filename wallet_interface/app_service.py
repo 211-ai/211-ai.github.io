@@ -2,16 +2,31 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import json
 import os
-from dataclasses import dataclass, field
+import re
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Sequence
 from uuid import uuid4
 
 from ._vendor import ensure_ipfs_datasets_py_path
+from .hmis import HmisExecutionResult, HmisService, ManualReviewHmisAdapter
+from .hmis.adapters import HmisAdapter
 from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
+from .world_id import (
+    WorldIdConfig,
+    WorldIdRequestJson,
+    WorldIdVerificationError,
+    load_world_id_config,
+    normalize_idkit_response,
+    sign_world_id_request_from_config,
+    verify_world_id_proof_from_config,
+)
 
 ensure_ipfs_datasets_py_path()
 
@@ -24,7 +39,9 @@ from ipfs_datasets_py.wallet import (  # noqa: E402
     WalletService,
     create_encrypted_blob_store,
 )
+from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
 from ipfs_datasets_py.wallet.audit import append_audit_event  # noqa: E402
+from ipfs_datasets_py.wallet.proofs import create_simulated_proof_receipt  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
     resource_for_export,
     resource_for_location,
@@ -36,6 +53,79 @@ from .proof_backends import HttpLocationRegionProofBackend
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _safe_document_profile_public_inputs(public_inputs: Mapping[str, Any]) -> Dict[str, Any]:
+    allowed_keys = {
+        "artifact_ids",
+        "chunk_count",
+        "edge_count",
+        "graph_type",
+        "mime_family",
+        "mime_type",
+        "node_count",
+        "openrouter_model",
+        "organizer_labels",
+        "organizer_summary",
+        "output_policies",
+        "privacy_policy",
+        "profile_methods",
+        "redaction_count",
+        "size_bucket",
+        "summary",
+    }
+    safe: Dict[str, Any] = {}
+    for key in allowed_keys:
+        if key not in public_inputs:
+            continue
+        value = public_inputs[key]
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            safe[key] = value
+        elif isinstance(value, list):
+            safe[key] = [
+                item
+                for item in value[:12]
+                if isinstance(item, (str, int, float, bool)) or item is None
+            ]
+    if "privacy_policy" not in safe:
+        safe["privacy_policy"] = "no_plaintext_public_inputs"
+    return safe
+
+
+def _record_delete_cids(metadata: Mapping[str, Any], versions: Sequence[Any]) -> List[str]:
+    cids: List[str] = []
+
+    def add(value: Any) -> None:
+        raw = str(value or "").strip()
+        if not raw:
+            return
+        if raw.startswith("ipfs://"):
+            raw = raw.removeprefix("ipfs://").split("/", 1)[0]
+        elif "://" in raw:
+            return
+        if raw and raw not in cids:
+            cids.append(raw)
+
+    for key in (
+        "ipfsCid",
+        "ipfsRootCid",
+        "metadataCid",
+        "metadataIpldCid",
+        "encryptedPayloadCid",
+        "encryptedMetadataCid",
+    ):
+        add(metadata.get(key))
+    for link in metadata.get("ipldLinks") or []:
+        if isinstance(link, Mapping):
+            add(link.get("/") or link.get("cid"))
+    for version in versions:
+        for storage_ref in (version.encrypted_payload_ref, version.encrypted_metadata_ref):
+            if storage_ref is None:
+                continue
+            add(getattr(storage_ref, "uri", ""))
+            for mirror in getattr(storage_ref, "mirrors", []) or []:
+                add(getattr(mirror, "uri", ""))
+    return cids
 
 
 def _storage_config_from_env() -> str | Dict[str, Any] | None:
@@ -138,10 +228,85 @@ def _flag_from_env(name: str, *, default: bool) -> bool:
 
 PORTAL_STATE_TYPE = "wallet_repository_portal_state_v1"
 PORTAL_STATE_FILENAME = "portal-state.json"
+PHONE_IDENTITY_NAMESPACE = "211-ai:phone-number:v1"
+
+
+def _default_hmis_lookup_fixtures() -> List[Dict[str, Any]]:
+    return [
+        {
+            "entity_type": "client",
+            "external_client_id": "hmis-client-001",
+            "name": "Alex Johnson",
+            "date_of_birth": "1989-02-14",
+            "program_ref": "rosehaven-day-center",
+            "status": "active",
+            "match_confidence": 0.98,
+        },
+        {
+            "entity_type": "client",
+            "external_client_id": "hmis-client-002",
+            "name": "Jordan Rivera",
+            "date_of_birth": "1992-09-08",
+            "program_ref": "downtown-shelter",
+            "status": "pending",
+            "match_confidence": 0.91,
+        },
+        {
+            "entity_type": "household",
+            "external_household_id": "hmis-household-001",
+            "household_name": "Johnson Household",
+            "program_ref": "rosehaven-day-center",
+            "status": "active",
+            "match_confidence": 0.95,
+        },
+        {
+            "entity_type": "program",
+            "local_program_ref": "rosehaven-day-center",
+            "external_program_id": "hmis-program-rosehaven",
+            "external_project_id": "hmis-project-001",
+            "program_name": "Rose Haven Day Center",
+            "status": "verified",
+            "match_confidence": 0.99,
+        },
+    ]
+SERVICE_PLAN_SHARE_DEFAULT_SCOPES = ("service_summary",)
+SERVICE_PLAN_SHARE_SCOPE_FIELDS: Dict[str, List[str]] = {
+    "service_summary": [
+        "service_doc_id",
+        "source_content_cid",
+        "source_page_cid",
+        "service_title",
+        "provider_name",
+        "goal",
+        "status",
+    ],
+    "checklist": ["steps", "documents_needed", "questions_to_ask"],
+    "schedule": ["appointment_at", "reminder_at", "travel_target"],
+    "worker_assignment": ["assigned_worker_recipient_id"],
+    "interaction_history": ["related_interaction_ids"],
+}
 
 
 def _portal_now() -> str:
     return _utc_now()
+
+
+def _portal_datetime(value: str | None) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _same_portal_timestamp(left: str | None, right: str | None) -> bool:
+    left_dt = _portal_datetime(left)
+    right_dt = _portal_datetime(right)
+    if left_dt is not None and right_dt is not None:
+        return left_dt == right_dt
+    return str(left or "").strip() == str(right or "").strip()
 
 
 def _portal_id(prefix: str) -> str:
@@ -162,6 +327,112 @@ def _unique_strings(values: Sequence[str] | None) -> List[str]:
 
 def _portal_resource(wallet_id: str, collection: str, entry_id: str) -> str:
     return f"{resource_for_wallet(wallet_id)}/portal/{collection}/{entry_id}"
+
+
+def _normalize_phone_identity_value(phone: str) -> str:
+    digits = re.sub(r"\D+", "", str(phone or ""))
+    if not digits:
+        return ""
+    if len(digits) == 10:
+        digits = f"1{digits}"
+    return f"+{digits}"
+
+
+def _raw_sha256_cid(data: bytes) -> str:
+    # CIDv1 raw block with sha2-256 multihash.
+    cid_bytes = b"\x01\x55\x12\x20" + hashlib.sha256(data).digest()
+    return "b" + base64.b32encode(cid_bytes).decode("ascii").lower().rstrip("=")
+
+
+def phone_identity_cid(phone: str) -> str:
+    normalized = _normalize_phone_identity_value(phone)
+    if not normalized:
+        return ""
+    namespace = str(os.getenv("WALLET_PHONE_IDENTITY_NAMESPACE") or PHONE_IDENTITY_NAMESPACE).strip()
+    secret = str(os.getenv("WALLET_PHONE_IDENTITY_SECRET") or "").strip()
+    payload = f"{namespace}:{normalized}".encode("utf-8")
+    digest_input = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).digest() if secret else payload
+    return _raw_sha256_cid(digest_input)
+
+
+def _phone_identity_link(name: str, cid: str) -> Dict[str, str]:
+    return {"name": name, "/": cid, "mediaType": "application/vnd.211-ai.phone-identity+raw"}
+
+
+def _with_phone_identity_metadata(
+    metadata: Mapping[str, Any] | None,
+    *,
+    from_phone: str = "",
+    to_phone: str = "",
+) -> Dict[str, Any]:
+    result = dict(metadata or {})
+    identities = dict(result.get("phoneIdentityCids") or {})
+    links = [dict(link) for link in result.get("ipldLinks") or [] if isinstance(link, Mapping)]
+    existing = {
+        (str(link.get("name") or ""), str(link.get("/") or link.get("cid") or ""))
+        for link in links
+    }
+    for key, phone in (("from_phone", from_phone), ("to_phone", to_phone)):
+        cid = phone_identity_cid(phone)
+        if not cid:
+            continue
+        identities[key] = cid
+        link = _phone_identity_link(f"sms_{key}_identity", cid)
+        marker = (link["name"], cid)
+        if marker not in existing:
+            links.append(link)
+            existing.add(marker)
+    if identities:
+        result["phoneIdentityCids"] = identities
+        result["ipldLinks"] = links
+        result.setdefault("phoneIdentitySchema", "211-ai-phone-identity-cid-v1")
+    return result
+
+
+def _normalize_service_plan_share_scopes(scopes: Sequence[str] | None) -> List[str]:
+    raw_values = list(SERVICE_PLAN_SHARE_DEFAULT_SCOPES if scopes is None else scopes)
+    normalized = _unique_strings(raw_values)
+    if not normalized:
+        raise ValueError("at least one service plan share scope is required")
+    unsupported = [scope for scope in normalized if scope not in SERVICE_PLAN_SHARE_SCOPE_FIELDS]
+    if unsupported:
+        raise ValueError(f"unsupported service plan share scope: {unsupported[0]}")
+    return normalized
+
+
+def _service_plan_share_fields(scopes: Sequence[str]) -> List[str]:
+    fields: List[str] = []
+    for scope in scopes:
+        fields.extend(SERVICE_PLAN_SHARE_SCOPE_FIELDS[scope])
+    return _unique_strings(fields)
+
+
+@dataclass
+class WalletRecordMetadataRecord:
+    wallet_id: str
+    record_id: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "wallet_id": self.wallet_id,
+            "record_id": self.record_id,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "WalletRecordMetadataRecord":
+        return cls(
+            wallet_id=str(payload.get("wallet_id") or ""),
+            record_id=str(payload.get("record_id") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
 
 
 @dataclass
@@ -389,6 +660,381 @@ class ServiceInteractionRecord:
         )
 
 
+@dataclass
+class HmisReferralDraftRecord:
+    referral_draft_id: str
+    wallet_id: str
+    actor_did: str
+    local_subject_ref: str
+    destination_program_ref: str
+    service_plan_id: str = ""
+    service_doc_id: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    summary: str = ""
+    eligibility_notes: str = ""
+    contact_notes: str = ""
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    status: str = "draft"
+    created_at: str = ""
+    updated_at: str = ""
+    packet: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "referral_draft_id": self.referral_draft_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "local_subject_ref": self.local_subject_ref,
+            "destination_program_ref": self.destination_program_ref,
+            "service_plan_id": self.service_plan_id,
+            "service_doc_id": self.service_doc_id,
+            "provider_name": self.provider_name,
+            "program_name": self.program_name,
+            "summary": self.summary,
+            "eligibility_notes": self.eligibility_notes,
+            "contact_notes": self.contact_notes,
+            "source_content_cid": self.source_content_cid,
+            "source_page_cid": self.source_page_cid,
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "packet": dict(self.packet),
+            "metadata": dict(self.metadata),
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "HmisReferralDraftRecord":
+        return cls(
+            referral_draft_id=str(payload.get("referral_draft_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            local_subject_ref=str(payload.get("local_subject_ref") or ""),
+            destination_program_ref=str(payload.get("destination_program_ref") or ""),
+            service_plan_id=str(payload.get("service_plan_id") or ""),
+            service_doc_id=str(payload.get("service_doc_id") or ""),
+            provider_name=str(payload.get("provider_name") or ""),
+            program_name=str(payload.get("program_name") or ""),
+            summary=str(payload.get("summary") or ""),
+            eligibility_notes=str(payload.get("eligibility_notes") or ""),
+            contact_notes=str(payload.get("contact_notes") or ""),
+            source_content_cid=str(payload.get("source_content_cid") or ""),
+            source_page_cid=str(payload.get("source_page_cid") or ""),
+            status=str(payload.get("status") or "draft"),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+            packet=dict(payload.get("packet") or {}),
+            metadata=dict(payload.get("metadata") or {}),
+        )
+
+
+@dataclass
+class MissingPersonDeadDropRecord:
+    wallet_id: str
+    actor_did: str = ""
+    enabled: bool = False
+    to_email: str = "missing@police.portlandoregon.gov"
+    subject: str = "Missing person report dead drop bundle"
+    body: str = ""
+    bundle: Dict[str, Any] = field(default_factory=dict)
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+    armed_at: str = ""
+    due_at: str = ""
+    last_check_in_at: str = ""
+    last_sent_at: str = ""
+    last_sent_for_check_in_at: str = ""
+    last_message_id: str = ""
+    last_error: str = ""
+    last_dispatched_reason: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "enabled": self.enabled,
+            "to_email": self.to_email,
+            "subject": self.subject,
+            "body": self.body,
+            "bundle": dict(self.bundle),
+            "bundle_filename": self.bundle_filename,
+            "armed_at": self.armed_at,
+            "due_at": self.due_at,
+            "last_check_in_at": self.last_check_in_at,
+            "last_sent_at": self.last_sent_at,
+            "last_sent_for_check_in_at": self.last_sent_for_check_in_at,
+            "last_message_id": self.last_message_id,
+            "last_error": self.last_error,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "MissingPersonDeadDropRecord":
+        return cls(
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            enabled=bool(payload.get("enabled")),
+            to_email=str(payload.get("to_email") or "missing@police.portlandoregon.gov"),
+            subject=str(payload.get("subject") or "Missing person report dead drop bundle"),
+            body=str(payload.get("body") or ""),
+            bundle=dict(payload.get("bundle") or {}),
+            bundle_filename=str(payload.get("bundle_filename") or "abby-missing-person-wallet-dead-drop.json"),
+            armed_at=str(payload.get("armed_at") or ""),
+            due_at=str(payload.get("due_at") or ""),
+            last_check_in_at=str(payload.get("last_check_in_at") or ""),
+            last_sent_at=str(payload.get("last_sent_at") or ""),
+            last_sent_for_check_in_at=str(payload.get("last_sent_for_check_in_at") or ""),
+            last_message_id=str(payload.get("last_message_id") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class SmsNotificationRecord:
+    notification_id: str
+    wallet_id: str
+    actor_did: str = ""
+    to_phone: str = ""
+    message: str = ""
+    reason: str = ""
+    status: str = "queued"
+    due_at: str = ""
+    sent_at: str = ""
+    last_error: str = ""
+    last_provider_message_id: str = ""
+    last_dispatched_reason: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "notification_id": self.notification_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "to_phone": self.to_phone,
+            "message": self.message,
+            "reason": self.reason,
+            "status": self.status,
+            "due_at": self.due_at,
+            "sent_at": self.sent_at,
+            "last_error": self.last_error,
+            "last_provider_message_id": self.last_provider_message_id,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "SmsNotificationRecord":
+        return cls(
+            notification_id=str(payload.get("notification_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            message=str(payload.get("message") or ""),
+            reason=str(payload.get("reason") or ""),
+            status=str(payload.get("status") or "queued"),
+            due_at=str(payload.get("due_at") or ""),
+            sent_at=str(payload.get("sent_at") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_provider_message_id=str(payload.get("last_provider_message_id") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class InboundSmsMessageRecord:
+    inbound_message_id: str
+    wallet_id: str
+    from_phone: str = ""
+    to_phone: str = ""
+    message: str = ""
+    provider: str = ""
+    status: str = "received"
+    provider_message_id: str = ""
+    bridge_message_id: str = ""
+    related_notification_id: str = ""
+    external_reference: str = ""
+    received_at: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "inbound_message_id": self.inbound_message_id,
+            "wallet_id": self.wallet_id,
+            "from_phone": self.from_phone,
+            "to_phone": self.to_phone,
+            "message": self.message,
+            "provider": self.provider,
+            "status": self.status,
+            "provider_message_id": self.provider_message_id,
+            "bridge_message_id": self.bridge_message_id,
+            "related_notification_id": self.related_notification_id,
+            "external_reference": self.external_reference,
+            "received_at": self.received_at,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "InboundSmsMessageRecord":
+        return cls(
+            inbound_message_id=str(payload.get("inbound_message_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            from_phone=str(payload.get("from_phone") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            message=str(payload.get("message") or ""),
+            provider=str(payload.get("provider") or ""),
+            status=str(payload.get("status") or "received"),
+            provider_message_id=str(payload.get("provider_message_id") or ""),
+            bridge_message_id=str(payload.get("bridge_message_id") or ""),
+            related_notification_id=str(payload.get("related_notification_id") or ""),
+            external_reference=str(payload.get("external_reference") or ""),
+            received_at=str(payload.get("received_at") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class PhoneCallNotificationRecord:
+    notification_id: str
+    wallet_id: str
+    actor_did: str = ""
+    to_phone: str = ""
+    script: str = ""
+    reason: str = ""
+    status: str = "queued"
+    due_at: str = ""
+    called_at: str = ""
+    last_error: str = ""
+    last_provider_call_id: str = ""
+    last_dispatched_reason: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "notification_id": self.notification_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "to_phone": self.to_phone,
+            "script": self.script,
+            "reason": self.reason,
+            "status": self.status,
+            "due_at": self.due_at,
+            "called_at": self.called_at,
+            "last_error": self.last_error,
+            "last_provider_call_id": self.last_provider_call_id,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "PhoneCallNotificationRecord":
+        return cls(
+            notification_id=str(payload.get("notification_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            script=str(payload.get("script") or ""),
+            reason=str(payload.get("reason") or ""),
+            status=str(payload.get("status") or "queued"),
+            due_at=str(payload.get("due_at") or ""),
+            called_at=str(payload.get("called_at") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_provider_call_id=str(payload.get("last_provider_call_id") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class WalletRecoveryBundleRecord:
+    bundle_id: str
+    wallet_id: str
+    actor_did: str = ""
+    encrypted_bundle: Dict[str, Any] = field(default_factory=dict)
+    wrapping_method: str = "passphrase"
+    kdf: Dict[str, Any] = field(default_factory=dict)
+    recovery_hint: str = ""
+    public_metadata: Dict[str, Any] = field(default_factory=dict)
+    status: str = "active"
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "bundle_id": self.bundle_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "encrypted_bundle": dict(self.encrypted_bundle),
+            "wrapping_method": self.wrapping_method,
+            "kdf": dict(self.kdf),
+            "recovery_hint": self.recovery_hint,
+            "public_metadata": dict(self.public_metadata),
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "WalletRecoveryBundleRecord":
+        return cls(
+            bundle_id=str(payload.get("bundle_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            encrypted_bundle=dict(payload.get("encrypted_bundle") or {}),
+            wrapping_method=str(payload.get("wrapping_method") or "passphrase"),
+            kdf=dict(payload.get("kdf") or {}),
+            recovery_hint=str(payload.get("recovery_hint") or ""),
+            public_metadata=dict(payload.get("public_metadata") or {}),
+            status=str(payload.get("status") or "active"),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class ServicePlanShareGrantResult:
+    grant: Any
+    receipt: Any | None
+    plan: ServicePlanRecord
+    interaction: ServiceInteractionRecord
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload = {
+            "grant_id": self.grant.grant_id,
+            "plan_id": self.plan.plan_id,
+            "interaction_id": self.interaction.interaction_id,
+            "grant": self.grant.to_dict(),
+            "plan": self.plan.to_dict(),
+            "interaction": self.interaction.to_dict(),
+        }
+        if self.receipt is not None:
+            payload["receipt"] = self.receipt.to_dict()
+        return payload
+
+
 class WalletInterfaceService:
     """Thin 211-AI interface around `ipfs_datasets_py.wallet`."""
 
@@ -406,7 +1052,11 @@ class WalletInterfaceService:
         repository_root: str | Path | None = None,
         auto_persist: bool | None = None,
         auto_load_repository: bool | None = None,
+        world_id_config: WorldIdConfig | None = None,
+        world_id_request_json: WorldIdRequestJson | None = None,
         services: Sequence[ServiceRecord] | None = None,
+        hmis_adapter: HmisAdapter | None = None,
+        hmis_lookup_fixtures: Sequence[Mapping[str, Any]] | None = None,
     ) -> None:
         if wallet_service is None:
             storage = create_encrypted_blob_store(
@@ -428,9 +1078,19 @@ class WalletInterfaceService:
         self.wallet_service = wallet_service
         resolved_repository_root = repository_root if repository_root is not None else _repository_root_from_env()
         self.repository = LocalWalletRepository(resolved_repository_root) if resolved_repository_root else None
+        self.world_id_config = world_id_config if world_id_config is not None else load_world_id_config()
+        self.world_id_request_json = world_id_request_json
+        self.wallet_record_metadata: Dict[str, WalletRecordMetadataRecord] = {}
         self.saved_services: Dict[str, SavedServiceRecord] = {}
         self.service_plans: Dict[str, ServicePlanRecord] = {}
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
+        self.hmis_referral_drafts: Dict[str, HmisReferralDraftRecord] = {}
+        self.missing_person_dead_drops: Dict[str, MissingPersonDeadDropRecord] = {}
+        self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
+        self.inbound_sms_messages: Dict[str, InboundSmsMessageRecord] = {}
+        self.phone_call_notifications: Dict[str, PhoneCallNotificationRecord] = {}
+        self.wallet_recovery_bundles: Dict[str, WalletRecoveryBundleRecord] = {}
+        self.phone_identity_links: Dict[str, List[str]] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
             if auto_persist is None
@@ -445,6 +1105,10 @@ class WalletInterfaceService:
             self.repository.load_all(self.wallet_service)
             self._load_portal_state(required=False)
         self.services = list(services or [])
+        resolved_hmis_adapter = hmis_adapter or ManualReviewHmisAdapter(
+            fixtures=[dict(item) for item in (hmis_lookup_fixtures or _default_hmis_lookup_fixtures())]
+        )
+        self.hmis_service = HmisService(adapter=resolved_hmis_adapter)
 
     @classmethod
     def from_services_jsonl(
@@ -477,6 +1141,425 @@ class WalletInterfaceService:
             auto_load_repository=auto_load_repository,
             services=load_services_jsonl(path),
         )
+
+    def _hmis_execution_to_dict(self, result: HmisExecutionResult) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
+            "adapter_result": {
+                "ok": result.adapter_result.ok,
+                "action_type": result.adapter_result.action_type,
+                "adapter_name": result.adapter_result.adapter_name,
+                "status": result.adapter_result.status,
+                "summary": result.adapter_result.summary,
+                "external_refs": dict(result.adapter_result.external_refs),
+                "normalized_payload": dict(result.adapter_result.normalized_payload),
+                "errors": list(result.adapter_result.errors),
+                "warnings": list(result.adapter_result.warnings),
+                "retryable": result.adapter_result.retryable,
+                "reconciliation_required": result.adapter_result.reconciliation_required,
+            },
+            "sync_event": asdict(result.sync_event),
+        }
+        if result.consent_decision is not None:
+            payload["consent_decision"] = asdict(result.consent_decision)
+        return payload
+
+    def lookup_hmis_clients(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        date_of_birth: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="lookup_client",
+            payload={
+                "action_type": "lookup_client",
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "date_of_birth": str(date_of_birth or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/lookup_client",
+            resource=_portal_resource(wallet_id, "hmis", "lookup-client"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
+
+    def lookup_hmis_households(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="lookup_household",
+            payload={
+                "action_type": "lookup_household",
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/lookup_household",
+            resource=_portal_resource(wallet_id, "hmis", "lookup-household"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
+
+    def list_hmis_program_links(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="list_program_links",
+            payload={
+                "action_type": "list_program_links",
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/list_program_links",
+            resource=_portal_resource(wallet_id, "hmis", "program-links"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
+
+    def list_hmis_referral_drafts(self, wallet_id: str, *, status: str | None = None) -> List[HmisReferralDraftRecord]:
+        self.wallet_service._wallet(wallet_id)
+        drafts = [draft for draft in self.hmis_referral_drafts.values() if draft.wallet_id == wallet_id]
+        if status is not None:
+            drafts = [draft for draft in drafts if draft.status == status]
+        return sorted(drafts, key=lambda item: (item.created_at, item.referral_draft_id))
+
+    def create_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str,
+        destination_program_ref: str,
+        service_plan_id: str = "",
+        service_doc_id: str = "",
+        provider_name: str = "",
+        program_name: str = "",
+        summary: str = "",
+        eligibility_notes: str = "",
+        contact_notes: str = "",
+        source_content_cid: str = "",
+        source_page_cid: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> HmisReferralDraftRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        now = _portal_now()
+        result = self.hmis_service.execute(
+            action_type="create_referral_draft",
+            payload={
+                "local_ref": wallet_id,
+                "local_subject_ref": str(local_subject_ref or "").strip(),
+                "destination_program_ref": str(destination_program_ref or "").strip(),
+                "service_plan_id": str(service_plan_id or "").strip(),
+                "service_doc_id": str(service_doc_id or "").strip(),
+                "provider_name": str(provider_name or "").strip(),
+                "program_name": str(program_name or "").strip(),
+                "summary": str(summary or "").strip(),
+                "eligibility_notes": str(eligibility_notes or "").strip(),
+                "contact_notes": str(contact_notes or "").strip(),
+            },
+            actor_id=actor_did,
+        )
+        if not result.adapter_result.ok:
+            raise ValueError(result.adapter_result.summary)
+
+        draft = HmisReferralDraftRecord(
+            referral_draft_id=_portal_id("hmis-referral-draft"),
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            local_subject_ref=str(local_subject_ref or "").strip(),
+            destination_program_ref=str(destination_program_ref or "").strip(),
+            service_plan_id=str(service_plan_id or "").strip(),
+            service_doc_id=str(service_doc_id or "").strip(),
+            provider_name=str(provider_name or "").strip(),
+            program_name=str(program_name or "").strip(),
+            summary=str(summary or "").strip(),
+            eligibility_notes=str(eligibility_notes or "").strip(),
+            contact_notes=str(contact_notes or "").strip(),
+            source_content_cid=str(source_content_cid or "").strip(),
+            source_page_cid=str(source_page_cid or "").strip(),
+            status="draft",
+            created_at=now,
+            updated_at=now,
+            packet=dict(result.adapter_result.normalized_payload.get("draft_packet") or {}),
+            metadata={
+                **dict(metadata or {}),
+                "adapter_name": result.adapter_result.adapter_name,
+                "adapter_summary": result.adapter_result.summary,
+                "warnings": list(result.adapter_result.warnings),
+            },
+        )
+        self.hmis_referral_drafts[draft.referral_draft_id] = draft
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/create_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return draft
+
+    def update_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str | None = None,
+        destination_program_ref: str | None = None,
+        service_plan_id: str | None = None,
+        service_doc_id: str | None = None,
+        provider_name: str | None = None,
+        program_name: str | None = None,
+        summary: str | None = None,
+        eligibility_notes: str | None = None,
+        contact_notes: str | None = None,
+        source_content_cid: str | None = None,
+        source_page_cid: str | None = None,
+        metadata: Mapping[str, Any] | None = None,
+    ) -> HmisReferralDraftRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+
+        updated_local_subject_ref = draft.local_subject_ref if local_subject_ref is None else str(local_subject_ref).strip()
+        updated_destination_program_ref = (
+            draft.destination_program_ref if destination_program_ref is None else str(destination_program_ref).strip()
+        )
+        updated_service_plan_id = draft.service_plan_id if service_plan_id is None else str(service_plan_id).strip()
+        updated_service_doc_id = draft.service_doc_id if service_doc_id is None else str(service_doc_id).strip()
+        updated_provider_name = draft.provider_name if provider_name is None else str(provider_name).strip()
+        updated_program_name = draft.program_name if program_name is None else str(program_name).strip()
+        updated_summary = draft.summary if summary is None else str(summary).strip()
+        updated_eligibility_notes = draft.eligibility_notes if eligibility_notes is None else str(eligibility_notes).strip()
+        updated_contact_notes = draft.contact_notes if contact_notes is None else str(contact_notes).strip()
+        updated_source_content_cid = draft.source_content_cid if source_content_cid is None else str(source_content_cid).strip()
+        updated_source_page_cid = draft.source_page_cid if source_page_cid is None else str(source_page_cid).strip()
+
+        result = self.hmis_service.execute(
+            action_type="create_referral_draft",
+            payload={
+                "local_ref": wallet_id,
+                "local_subject_ref": updated_local_subject_ref,
+                "destination_program_ref": updated_destination_program_ref,
+                "service_plan_id": updated_service_plan_id,
+                "service_doc_id": updated_service_doc_id,
+                "provider_name": updated_provider_name,
+                "program_name": updated_program_name,
+                "summary": updated_summary,
+                "eligibility_notes": updated_eligibility_notes,
+                "contact_notes": updated_contact_notes,
+            },
+            actor_id=actor_did,
+        )
+        if not result.adapter_result.ok:
+            raise ValueError(result.adapter_result.summary)
+
+        draft.actor_did = actor_did
+        draft.local_subject_ref = updated_local_subject_ref
+        draft.destination_program_ref = updated_destination_program_ref
+        draft.service_plan_id = updated_service_plan_id
+        draft.service_doc_id = updated_service_doc_id
+        draft.provider_name = updated_provider_name
+        draft.program_name = updated_program_name
+        draft.summary = updated_summary
+        draft.eligibility_notes = updated_eligibility_notes
+        draft.contact_notes = updated_contact_notes
+        draft.source_content_cid = updated_source_content_cid
+        draft.source_page_cid = updated_source_page_cid
+        draft.status = "draft"
+        draft.updated_at = _portal_now()
+        draft.packet = dict(result.adapter_result.normalized_payload.get("draft_packet") or {})
+        draft.metadata = {
+            **dict(draft.metadata),
+            **dict(metadata or {}),
+            "adapter_name": result.adapter_result.adapter_name,
+            "adapter_summary": result.adapter_result.summary,
+            "warnings": list(result.adapter_result.warnings),
+        }
+        draft.metadata.pop("validation_errors", None)
+        draft.metadata.pop("validation_warnings", None)
+        draft.metadata.pop("last_validated_by", None)
+        draft.metadata.pop("last_validated_at", None)
+
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/update_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return draft
+
+    def validate_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+
+        errors: List[str] = []
+        warnings: List[str] = []
+        if not draft.local_subject_ref:
+            errors.append("local_subject_ref is required")
+        if not draft.destination_program_ref:
+            errors.append("destination_program_ref is required")
+        if not draft.summary:
+            warnings.append("summary is empty")
+        if not draft.provider_name and not draft.program_name:
+            warnings.append("provider_name or program_name should be supplied for manual review")
+        if not draft.service_plan_id and not draft.service_doc_id:
+            warnings.append("service_plan_id or service_doc_id should be supplied for traceability")
+
+        draft.status = "validated" if not errors else "needs_revision"
+        draft.updated_at = _portal_now()
+        draft.metadata = {
+            **dict(draft.metadata),
+            "validation_errors": list(errors),
+            "validation_warnings": list(warnings),
+            "last_validated_by": actor_did,
+            "last_validated_at": draft.updated_at,
+        }
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/validate_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "status": draft.status,
+                "error_count": len(errors),
+                "warning_count": len(warnings),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "referral_draft": draft.to_dict(),
+            "validation": {
+                "ok": not errors,
+                "errors": errors,
+                "warnings": warnings,
+            },
+        }
+
+    def submit_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+        if draft.status != "validated":
+            raise ValueError("HMIS referral draft must be validated before submission")
+
+        draft.status = "queued_manual_review"
+        draft.updated_at = _portal_now()
+        draft.metadata = {
+            **dict(draft.metadata),
+            "submitted_by": actor_did,
+            "submitted_at": draft.updated_at,
+            "submission_mode": "manual_review_queue",
+        }
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/submit_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+                "submission_mode": "manual_review_queue",
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "referral_draft": draft.to_dict(),
+            "submission": {
+                "ok": True,
+                "mode": "manual_review_queue",
+                "status": draft.status,
+            },
+        }
 
     def save_wallet_snapshot(self, wallet_id: str) -> Path:
         if self.repository is None:
@@ -746,6 +1829,13 @@ class WalletInterfaceService:
     def _portal_state_payload(self) -> Dict[str, Any]:
         return {
             "snapshot_type": PORTAL_STATE_TYPE,
+            "wallet_record_metadata": [
+                record.to_dict()
+                for record in sorted(
+                    self.wallet_record_metadata.values(),
+                    key=lambda item: (item.wallet_id, item.record_id),
+                )
+            ],
             "saved_services": [
                 record.to_dict()
                 for record in sorted(self.saved_services.values(), key=lambda item: (item.wallet_id, item.saved_service_id))
@@ -761,6 +1851,50 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.timestamp, item.interaction_id),
                 )
             ],
+            "hmis_referral_drafts": [
+                record.to_dict()
+                for record in sorted(
+                    self.hmis_referral_drafts.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.referral_draft_id),
+                )
+            ],
+            "missing_person_dead_drops": [
+                record.to_dict()
+                for record in sorted(self.missing_person_dead_drops.values(), key=lambda item: item.wallet_id)
+            ],
+            "sms_notifications": [
+                record.to_dict()
+                for record in sorted(
+                    self.sms_notifications.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
+                )
+            ],
+            "inbound_sms_messages": [
+                record.to_dict()
+                for record in sorted(
+                    self.inbound_sms_messages.values(),
+                    key=lambda item: (item.wallet_id, item.received_at or item.created_at, item.inbound_message_id),
+                )
+            ],
+            "phone_call_notifications": [
+                record.to_dict()
+                for record in sorted(
+                    self.phone_call_notifications.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
+                )
+            ],
+            "wallet_recovery_bundles": [
+                record.to_dict()
+                for record in sorted(
+                    self.wallet_recovery_bundles.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.bundle_id),
+                )
+            ],
+            "phone_identity_links": {
+                cid: sorted(wallet_ids)
+                for cid, wallet_ids in sorted(self.phone_identity_links.items())
+                if cid and wallet_ids
+            },
         }
 
     def _save_portal_state(self) -> Path | None:
@@ -784,6 +1918,15 @@ class WalletInterfaceService:
         payload = json.loads(path.read_text(encoding="utf-8"))
         if str(payload.get("snapshot_type") or "") != PORTAL_STATE_TYPE:
             raise ValueError("Unsupported portal state snapshot type")
+        self.wallet_record_metadata = {
+            f"{record.wallet_id}:{record.record_id}": record
+            for record in (
+                WalletRecordMetadataRecord.from_dict(item)
+                for item in payload.get("wallet_record_metadata", [])
+                if isinstance(item, Mapping)
+            )
+            if record.wallet_id and record.record_id
+        }
         self.saved_services = {
             record.saved_service_id: record
             for record in (
@@ -811,6 +1954,71 @@ class WalletInterfaceService:
             )
             if record.interaction_id
         }
+        self.hmis_referral_drafts = {
+            record.referral_draft_id: record
+            for record in (
+                HmisReferralDraftRecord.from_dict(item)
+                for item in payload.get("hmis_referral_drafts", [])
+                if isinstance(item, Mapping)
+            )
+            if record.referral_draft_id
+        }
+        self.missing_person_dead_drops = {
+            record.wallet_id: record
+            for record in (
+                MissingPersonDeadDropRecord.from_dict(item)
+                for item in payload.get("missing_person_dead_drops", [])
+                if isinstance(item, Mapping)
+            )
+            if record.wallet_id
+        }
+        self.sms_notifications = {
+            record.notification_id: record
+            for record in (
+                SmsNotificationRecord.from_dict(item)
+                for item in payload.get("sms_notifications", [])
+                if isinstance(item, Mapping)
+            )
+            if record.notification_id
+        }
+        self.inbound_sms_messages = {
+            record.inbound_message_id: record
+            for record in (
+                InboundSmsMessageRecord.from_dict(item)
+                for item in payload.get("inbound_sms_messages", [])
+                if isinstance(item, Mapping)
+            )
+            if record.inbound_message_id
+        }
+        self.phone_call_notifications = {
+            record.notification_id: record
+            for record in (
+                PhoneCallNotificationRecord.from_dict(item)
+                for item in payload.get("phone_call_notifications", [])
+                if isinstance(item, Mapping)
+            )
+            if record.notification_id
+        }
+        self.wallet_recovery_bundles = {
+            record.bundle_id: record
+            for record in (
+                WalletRecoveryBundleRecord.from_dict(item)
+                for item in payload.get("wallet_recovery_bundles", [])
+                if isinstance(item, Mapping)
+            )
+            if record.bundle_id and record.wallet_id
+        }
+        raw_phone_identity_links = payload.get("phone_identity_links")
+        self.phone_identity_links = (
+            {
+                str(cid): _unique_strings([str(wallet_id) for wallet_id in wallet_ids])
+                for cid, wallet_ids in raw_phone_identity_links.items()
+                if isinstance(cid, str) and isinstance(wallet_ids, list)
+            }
+            if isinstance(raw_phone_identity_links, Mapping)
+            else {}
+        )
+        self._rebuild_phone_identity_links()
 
     def _wallet_principals(self, wallet_id: str) -> set[str]:
         wallet = self.wallet_service._wallet(wallet_id)
@@ -842,6 +2050,76 @@ class WalletInterfaceService:
             details=dict(details or {}),
         )
 
+    def _missing_person_dead_drop_resource(self, wallet_id: str) -> str:
+        return _portal_resource(wallet_id, "dead-drops", "missing-person")
+
+    def _sms_notification_resource(self, wallet_id: str, notification_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"sms/{notification_id}")
+
+    def _inbound_sms_message_resource(self, wallet_id: str, inbound_message_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"sms/inbound/{inbound_message_id}")
+
+    def _phone_call_notification_resource(self, wallet_id: str, notification_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"calls/{notification_id}")
+
+    def _link_phone_identity_to_wallet(self, phone_or_cid: str, wallet_id: str) -> None:
+        normalized_wallet_id = str(wallet_id or "").strip()
+        if not normalized_wallet_id:
+            return
+        cid = str(phone_or_cid or "").strip()
+        if not cid.startswith("baf"):
+            cid = phone_identity_cid(cid)
+        if not cid:
+            return
+        wallet_ids = self.phone_identity_links.setdefault(cid, [])
+        if normalized_wallet_id not in wallet_ids:
+            wallet_ids.append(normalized_wallet_id)
+            wallet_ids.sort()
+
+    def _wallet_ids_for_phone_identity(self, phone_or_cid: str) -> List[str]:
+        cid = str(phone_or_cid or "").strip()
+        if not cid.startswith("baf"):
+            cid = phone_identity_cid(cid)
+        if not cid:
+            return []
+        return _unique_strings(self.phone_identity_links.get(cid) or [])
+
+    def _rebuild_phone_identity_links(self) -> None:
+        for notification in self.sms_notifications.values():
+            if notification.wallet_id and notification.to_phone:
+                self._link_phone_identity_to_wallet(notification.to_phone, notification.wallet_id)
+            metadata_cids = notification.metadata.get("phoneIdentityCids")
+            if isinstance(metadata_cids, Mapping):
+                for cid in metadata_cids.values():
+                    self._link_phone_identity_to_wallet(str(cid or ""), notification.wallet_id)
+        for message in self.inbound_sms_messages.values():
+            if not message.wallet_id:
+                continue
+            if message.from_phone:
+                self._link_phone_identity_to_wallet(message.from_phone, message.wallet_id)
+            metadata_cids = message.metadata.get("phoneIdentityCids")
+            if isinstance(metadata_cids, Mapping):
+                for cid in metadata_cids.values():
+                    self._link_phone_identity_to_wallet(str(cid or ""), message.wallet_id)
+        for drop in self.missing_person_dead_drops.values():
+            profile = drop.bundle.get("profile") if isinstance(drop.bundle, Mapping) else None
+            if isinstance(profile, Mapping):
+                self._link_phone_identity_to_wallet(str(profile.get("phone") or ""), drop.wallet_id)
+
+    def _resolve_wallet_id_for_inbound_phone_identity(
+        self,
+        *,
+        from_phone: str,
+        external_reference: str = "",
+    ) -> str:
+        normalized_reference = str(external_reference or "").strip()
+        if normalized_reference:
+            notification = self.sms_notifications.get(normalized_reference)
+            if notification is not None:
+                return notification.wallet_id
+        matches = self._wallet_ids_for_phone_identity(from_phone)
+        return matches[0] if len(matches) == 1 else ""
+
     def create_wallet(
         self,
         owner_did: str,
@@ -869,6 +2147,173 @@ class WalletInterfaceService:
     def get_wallet(self, wallet_id: str):
         return self.wallet_service.get_wallet(wallet_id)
 
+    def get_world_id_config(self) -> Dict[str, Any]:
+        """Return browser-safe World ID configuration."""
+
+        return self.world_id_config.public_dict()
+
+    def get_world_id_status(self, wallet_id: str | None = None) -> Dict[str, Any]:
+        status: Dict[str, Any] = {
+            "enabled": self.world_id_config.enabled,
+            "environment": self.world_id_config.environment,
+            "app_id": self.world_id_config.app_id,
+            "rp_id": self.world_id_config.rp_id,
+            "allowed_actions": list(self.world_id_config.allowed_actions),
+            "default_action": self.world_id_config.default_action,
+            "credential_policy": self.world_id_config.credential_policy,
+            "configured": {
+                "rp_signing_key": self.world_id_config.rp_signing_key.configured,
+                "nullifier_hmac_key": self.world_id_config.nullifier_hmac_key.configured,
+            },
+        }
+        if wallet_id is not None:
+            self.wallet_service._wallet(wallet_id)
+            bindings = self.wallet_service.list_world_id_bindings(wallet_id)
+            status["wallet"] = {
+                "wallet_id": wallet_id,
+                "binding_count": len(bindings),
+                "active_binding_count": len([binding for binding in bindings if binding.status == "active"]),
+                "bindings": [binding.to_dict() for binding in bindings],
+            }
+        return status
+
+    def create_world_id_rp_signature(
+        self,
+        *,
+        action: str | None = None,
+        wallet_id: str | None = None,
+        actor_did: str | None = None,
+        random_bytes: bytes | None = None,
+        created_at: int | None = None,
+    ) -> Dict[str, Any]:
+        if wallet_id is not None or actor_did is not None:
+            if wallet_id is None or actor_did is None:
+                raise ValueError("wallet_id and actor_did are required together")
+            self._require_portal_actor(wallet_id, actor_did)
+        signature = sign_world_id_request_from_config(
+            self.world_id_config,
+            action=action,
+            random_bytes=random_bytes,
+            created_at=created_at,
+        )
+        payload = signature.to_rp_context(self.world_id_config.rp_id)
+        payload["signature"] = signature.signature
+        payload["action"] = signature.action or action or self.world_id_config.default_action
+        return payload
+
+    def register_world_id_verification(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        idkit_payload: Mapping[str, Any],
+        request_json: WorldIdRequestJson | None = None,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        normalized = normalize_idkit_response(idkit_payload)
+        action = normalized.action or self.world_id_config.default_action
+        if action not in self.world_id_config.allowed_actions:
+            raise ValueError("World ID action is not allowed for this wallet service")
+        if normalized.environment != self.world_id_config.environment:
+            raise ValueError("World ID payload environment does not match service configuration")
+        verification = verify_world_id_proof_from_config(
+            self.world_id_config,
+            idkit_payload,
+            request_json=request_json or self.world_id_request_json,
+        )
+        if not verification.success:
+            raise WorldIdVerificationError(
+                f"World ID verification was not successful: {verification.message or 'verification failed'}"
+            )
+        raw_nullifiers = list(normalized.nullifiers)
+        if not raw_nullifiers and verification.nullifier:
+            raw_nullifiers = [verification.nullifier]
+        if not raw_nullifiers:
+            raise WorldIdVerificationError("World ID verification did not include a nullifier")
+        issuer_schema_ids = [
+            response.issuer_schema_id
+            for response in normalized.responses
+            if response.issuer_schema_id is not None
+        ]
+        expires_at_min = min(normalized.expires_at_min_values) if normalized.expires_at_min_values else None
+        binding = self.wallet_service.add_world_id_binding(
+            wallet_id,
+            actor_did=actor_did,
+            rp_id=self.world_id_config.rp_id,
+            app_id=self.world_id_config.app_id,
+            action=action,
+            protocol_version=normalized.protocol_version,
+            environment=normalized.environment,
+            raw_nullifier=raw_nullifiers[0],
+            credential_identifiers=list(normalized.credential_identifiers),
+            issuer_schema_ids=issuer_schema_ids,
+            session_id=normalized.session_id,
+            expires_at_min=expires_at_min,
+            metadata={
+                "verification_created_at": verification.created_at,
+                "verification_result_count": len(verification.results),
+                "idkit_proof_type": normalized.proof_type,
+            },
+        )
+        proof = self.wallet_service.proofs.get(binding.proof_receipt_id or "")
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "binding": binding.to_dict(),
+            "proof": proof.to_dict() if proof is not None else None,
+            "verification": self._redacted_world_id_verification_result(verification),
+        }
+
+    def verify_and_register_world_id_binding(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        idkit_payload: Mapping[str, Any],
+        request_json: WorldIdRequestJson | None = None,
+    ) -> Dict[str, Any]:
+        return self.register_world_id_verification(
+            wallet_id,
+            actor_did=actor_did,
+            idkit_payload=idkit_payload,
+            request_json=request_json,
+        )
+
+    def revoke_world_id_binding(
+        self,
+        wallet_id: str,
+        binding_id: str,
+        *,
+        actor_did: str,
+        reason: str = "",
+    ):
+        self._require_portal_actor(wallet_id, actor_did)
+        binding = self.wallet_service.get_world_id_binding(binding_id)
+        if binding.wallet_id != wallet_id:
+            raise ValueError("World ID binding does not belong to this wallet")
+        binding.status = "revoked"
+        binding.updated_at = _utc_now()
+        append_audit_event(
+            self.wallet_service.audit_events[wallet_id],
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            action="wallet/world_id_revoke",
+            resource=f"wallet://{wallet_id}/world-id-bindings/{binding.binding_id}",
+            decision="allow",
+            details={
+                "binding_id": binding.binding_id,
+                "reason": str(reason or ""),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return binding
+
+    @staticmethod
+    def _redacted_world_id_verification_result(verification) -> Dict[str, Any]:
+        payload = verification.public_dict()
+        if payload.get("nullifier"):
+            payload["nullifier"] = "[redacted]"
+        return payload
+
     def add_controller(
         self,
         wallet_id: str,
@@ -887,6 +2332,616 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return wallet
+
+    def get_missing_person_dead_drop(self, wallet_id: str) -> MissingPersonDeadDropRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.missing_person_dead_drops.get(wallet_id)
+        if record is not None:
+            return record
+        return MissingPersonDeadDropRecord(wallet_id=wallet_id)
+
+    def save_missing_person_dead_drop(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        enabled: bool,
+        to_email: str,
+        subject: str,
+        body: str,
+        bundle: Mapping[str, Any] | None,
+        bundle_filename: str,
+        due_at: str = "",
+        last_check_in_at: str = "",
+    ) -> MissingPersonDeadDropRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        now = _portal_now()
+        current = self.missing_person_dead_drops.get(wallet_id)
+        normalized_body = str(body or "")
+        normalized_bundle = dict(bundle or {})
+        if enabled:
+            if not normalized_body.strip():
+                raise ValueError("body is required when missing-person dead drop is enabled")
+            if not normalized_bundle:
+                raise ValueError("bundle is required when missing-person dead drop is enabled")
+        record = MissingPersonDeadDropRecord(
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            enabled=bool(enabled),
+            to_email=str(to_email or "missing@police.portlandoregon.gov"),
+            subject=str(subject or "Missing person report dead drop bundle"),
+            body=normalized_body,
+            bundle=normalized_bundle,
+            bundle_filename=str(bundle_filename or "abby-missing-person-wallet-dead-drop.json"),
+            armed_at=(
+                current.armed_at
+                if current is not None and current.enabled == bool(enabled) and current.armed_at
+                else (now if enabled else "")
+            ),
+            due_at=str(due_at or ""),
+            last_check_in_at=str(last_check_in_at or ""),
+            last_sent_at=str(current.last_sent_at if current is not None else ""),
+            last_sent_for_check_in_at=str(current.last_sent_for_check_in_at if current is not None else ""),
+            last_message_id=str(current.last_message_id if current is not None else ""),
+            last_error="",
+            last_dispatched_reason=str(current.last_dispatched_reason if current is not None else ""),
+            updated_at=now,
+        )
+        self.missing_person_dead_drops[wallet_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/arm" if enabled else "dead_drop/disable",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "enabled": enabled,
+                "due_at": record.due_at,
+                "last_check_in_at": record.last_check_in_at,
+                "to_email": record.to_email,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_missing_person_dead_drop_for_dispatch(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        self.wallet_service._wallet(wallet_id)
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.missing_person_dead_drops.get(wallet_id)
+        if record is None or not record.enabled:
+            raise ValueError("missing-person dead drop is not armed")
+        if not record.body.strip():
+            raise ValueError("missing-person dead drop email body is missing")
+        if not record.bundle:
+            raise ValueError("missing-person dead drop bundle is missing")
+        return record
+
+    def mark_missing_person_dead_drop_sent(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        message_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        record = self.get_missing_person_dead_drop_for_dispatch(wallet_id)
+        now = str(dispatched_at or _portal_now())
+        record.last_sent_at = now
+        record.last_sent_for_check_in_at = record.last_check_in_at
+        record.last_message_id = str(message_id or "")
+        record.last_error = ""
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/dispatch",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "message_id": record.last_message_id,
+                "last_check_in_at": record.last_check_in_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_missing_person_dead_drop_failed(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        record = self.get_missing_person_dead_drop(wallet_id)
+        now = str(failed_at or _portal_now())
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/error",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+                "last_check_in_at": record.last_check_in_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_missing_person_dead_drops(self, *, now: str | None = None) -> List[MissingPersonDeadDropRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[MissingPersonDeadDropRecord] = []
+        for record in self.missing_person_dead_drops.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if not record.enabled or not record.body.strip() or not record.bundle:
+                continue
+            already_sent_for_current_check_in = record.last_sent_for_check_in_at and _same_portal_timestamp(
+                record.last_sent_for_check_in_at, record.last_check_in_at
+            )
+            if already_sent_for_current_check_in:
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id))
+
+    def list_sms_notifications(self, wallet_id: str) -> List[SmsNotificationRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.sms_notifications.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.created_at, item.notification_id),
+        )
+
+    def list_inbound_sms_messages(self, wallet_id: str) -> List[InboundSmsMessageRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.inbound_sms_messages.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.received_at or item.created_at, item.inbound_message_id),
+        )
+
+    def _related_sms_notification_for_inbound(
+        self,
+        wallet_id: str,
+        *,
+        from_phone: str,
+        external_reference: str = "",
+    ) -> SmsNotificationRecord | None:
+        normalized_reference = str(external_reference or "").strip()
+        if normalized_reference:
+            record = self.sms_notifications.get(normalized_reference)
+            if record is not None and record.wallet_id == wallet_id:
+                return record
+
+        matches = [
+            record
+            for record in self.sms_notifications.values()
+            if record.wallet_id == wallet_id and record.to_phone == str(from_phone or "").strip()
+        ]
+        if not matches:
+            return None
+        return sorted(
+            matches,
+            key=lambda item: (item.sent_at or item.updated_at or item.created_at, item.notification_id),
+            reverse=True,
+        )[0]
+
+    def record_inbound_sms_message(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        from_phone: str,
+        message: str,
+        to_phone: str = "",
+        provider: str = "",
+        status: str = "received",
+        provider_message_id: str = "",
+        bridge_message_id: str = "",
+        external_reference: str = "",
+        received_at: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> InboundSmsMessageRecord:
+        normalized_wallet_id = str(wallet_id or "").strip()
+        normalized_from_phone = str(from_phone or "").strip()
+        normalized_to_phone = str(to_phone or "").strip()
+        normalized_message = str(message or "")
+        if not normalized_from_phone:
+            raise ValueError("from_phone is required")
+        if not normalized_message.strip():
+            raise ValueError("message is required")
+        if not normalized_wallet_id:
+            normalized_wallet_id = self._resolve_wallet_id_for_inbound_phone_identity(
+                from_phone=normalized_from_phone,
+                external_reference=external_reference,
+            )
+        if normalized_wallet_id:
+            self.wallet_service._wallet(normalized_wallet_id)
+
+        related_notification = (
+            self._related_sms_notification_for_inbound(
+                normalized_wallet_id,
+                from_phone=normalized_from_phone,
+                external_reference=external_reference,
+            )
+            if normalized_wallet_id
+            else None
+        )
+        enriched_metadata = _with_phone_identity_metadata(
+            metadata,
+            from_phone=normalized_from_phone,
+            to_phone=normalized_to_phone,
+        )
+        now = _portal_now()
+        record = InboundSmsMessageRecord(
+            inbound_message_id=_portal_id("sms-inbound"),
+            wallet_id=normalized_wallet_id,
+            from_phone=normalized_from_phone,
+            to_phone=normalized_to_phone,
+            message=normalized_message,
+            provider=str(provider or "unknown"),
+            status=str(status or "received"),
+            provider_message_id=str(provider_message_id or ""),
+            bridge_message_id=str(bridge_message_id or ""),
+            related_notification_id=(related_notification.notification_id if related_notification is not None else ""),
+            external_reference=str(external_reference or ""),
+            received_at=str(received_at or now),
+            metadata=enriched_metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        self.inbound_sms_messages[record.inbound_message_id] = record
+        if normalized_wallet_id:
+            self._link_phone_identity_to_wallet(normalized_from_phone, normalized_wallet_id)
+            self._portal_audit(
+                normalized_wallet_id,
+                actor_did=str(actor_did or "did:wallet:sms-bridge"),
+                action="notification/sms_inbound",
+                resource=self._inbound_sms_message_resource(normalized_wallet_id, record.inbound_message_id),
+                details={
+                    "from_phone": record.from_phone,
+                    "provider": record.provider,
+                    "provider_message_id": record.provider_message_id,
+                    "related_notification_id": record.related_notification_id,
+                },
+            )
+            self._persist_wallet_if_configured(normalized_wallet_id)
+        elif self.repository is not None and self.auto_persist:
+            self._save_portal_state()
+        return record
+
+    def queue_sms_notification(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        to_phone: str,
+        message: str,
+        due_at: str = "",
+        reason: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> SmsNotificationRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        normalized_phone = str(to_phone or "").strip()
+        normalized_message = str(message or "")
+        if not normalized_phone:
+            raise ValueError("to_phone is required")
+        if not normalized_message.strip():
+            raise ValueError("message is required")
+        normalized_due_at = str(due_at or "").strip()
+        if normalized_due_at and _portal_datetime(normalized_due_at) is None:
+            raise ValueError("due_at must be an ISO 8601 timestamp")
+        enriched_metadata = _with_phone_identity_metadata(metadata, to_phone=normalized_phone)
+        now = _portal_now()
+        record = SmsNotificationRecord(
+            notification_id=_portal_id("sms"),
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            to_phone=normalized_phone,
+            message=normalized_message,
+            reason=str(reason or "").strip(),
+            status="queued",
+            due_at=normalized_due_at,
+            sent_at="",
+            last_error="",
+            last_provider_message_id="",
+            last_dispatched_reason="",
+            metadata=enriched_metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        self.sms_notifications[record.notification_id] = record
+        self._link_phone_identity_to_wallet(normalized_phone, wallet_id)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_queue",
+            resource=self._sms_notification_resource(wallet_id, record.notification_id),
+            details={
+                "to_phone": record.to_phone,
+                "due_at": record.due_at,
+                "reason": record.reason,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_sms_notification(self, wallet_id: str, notification_id: str) -> SmsNotificationRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.sms_notifications.get(notification_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("sms notification not found")
+        return record
+
+    def get_sms_notification_for_dispatch(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> SmsNotificationRecord:
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.get_sms_notification(wallet_id, notification_id)
+        if record.status not in {"queued", "failed"}:
+            raise ValueError("sms notification is not pending")
+        if not record.to_phone.strip():
+            raise ValueError("sms notification phone is missing")
+        if not record.message.strip():
+            raise ValueError("sms notification message is missing")
+        return record
+
+    def mark_sms_notification_sent(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        provider_message_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> SmsNotificationRecord:
+        record = self.get_sms_notification_for_dispatch(wallet_id, notification_id)
+        now = str(dispatched_at or _portal_now())
+        record.status = "sent"
+        record.sent_at = now
+        record.last_error = ""
+        record.last_provider_message_id = str(provider_message_id or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_dispatch",
+            resource=self._sms_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "provider_message_id": record.last_provider_message_id,
+                "sent_at": record.sent_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_sms_notification_failed(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> SmsNotificationRecord:
+        record = self.get_sms_notification(wallet_id, notification_id)
+        now = str(failed_at or _portal_now())
+        record.status = "failed"
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_error",
+            resource=self._sms_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_sms_notifications(self, *, now: str | None = None) -> List[SmsNotificationRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[SmsNotificationRecord] = []
+        for record in self.sms_notifications.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if record.status != "queued" or not record.to_phone.strip() or not record.message.strip():
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id, item.notification_id))
+
+    def list_phone_call_notifications(self, wallet_id: str) -> List[PhoneCallNotificationRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.phone_call_notifications.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.created_at, item.notification_id),
+        )
+
+    def queue_phone_call_notification(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        to_phone: str,
+        script: str,
+        due_at: str = "",
+        reason: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> PhoneCallNotificationRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        normalized_phone = str(to_phone or "").strip()
+        normalized_script = str(script or "")
+        if not normalized_phone:
+            raise ValueError("to_phone is required")
+        if not normalized_script.strip():
+            raise ValueError("script is required")
+        normalized_due_at = str(due_at or "").strip()
+        if normalized_due_at and _portal_datetime(normalized_due_at) is None:
+            raise ValueError("due_at must be an ISO 8601 timestamp")
+        now = _portal_now()
+        record = PhoneCallNotificationRecord(
+            notification_id=_portal_id("call"),
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            to_phone=normalized_phone,
+            script=normalized_script,
+            reason=str(reason or "").strip(),
+            status="queued",
+            due_at=normalized_due_at,
+            called_at="",
+            last_error="",
+            last_provider_call_id="",
+            last_dispatched_reason="",
+            metadata=dict(metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.phone_call_notifications[record.notification_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_queue",
+            resource=self._phone_call_notification_resource(wallet_id, record.notification_id),
+            details={
+                "to_phone": record.to_phone,
+                "due_at": record.due_at,
+                "reason": record.reason,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_phone_call_notification(self, wallet_id: str, notification_id: str) -> PhoneCallNotificationRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.phone_call_notifications.get(notification_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("phone call notification not found")
+        return record
+
+    def get_phone_call_notification_for_dispatch(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.get_phone_call_notification(wallet_id, notification_id)
+        if record.status not in {"queued", "failed"}:
+            raise ValueError("phone call notification is not pending")
+        if not record.to_phone.strip():
+            raise ValueError("phone call notification phone is missing")
+        if not record.script.strip():
+            raise ValueError("phone call notification script is missing")
+        return record
+
+    def mark_phone_call_notification_sent(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        provider_call_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        record = self.get_phone_call_notification_for_dispatch(wallet_id, notification_id)
+        now = str(dispatched_at or _portal_now())
+        record.status = "sent"
+        record.called_at = now
+        record.last_error = ""
+        record.last_provider_call_id = str(provider_call_id or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_dispatch",
+            resource=self._phone_call_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "provider_call_id": record.last_provider_call_id,
+                "called_at": record.called_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_phone_call_notification_failed(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        record = self.get_phone_call_notification(wallet_id, notification_id)
+        now = str(failed_at or _portal_now())
+        record.status = "failed"
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_error",
+            resource=self._phone_call_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_phone_call_notifications(self, *, now: str | None = None) -> List[PhoneCallNotificationRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[PhoneCallNotificationRecord] = []
+        for record in self.phone_call_notifications.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if record.status != "queued" or not record.to_phone.strip() or not record.script.strip():
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id, item.notification_id))
 
     def remove_controller(
         self,
@@ -959,6 +3014,75 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return wallet
+
+    def store_recovery_bundle(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        encrypted_bundle: Mapping[str, Any],
+        wrapping_method: str,
+        kdf: Mapping[str, Any] | None = None,
+        recovery_hint: str = "",
+        public_metadata: Mapping[str, Any] | None = None,
+    ) -> WalletRecoveryBundleRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        if not isinstance(encrypted_bundle, Mapping) or not encrypted_bundle:
+            raise ValueError("encrypted_bundle is required")
+        method = str(wrapping_method or "").strip() or "passphrase"
+        now = _portal_now()
+        record = WalletRecoveryBundleRecord(
+            bundle_id=_portal_id("recovery-bundle"),
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            encrypted_bundle=dict(encrypted_bundle),
+            wrapping_method=method,
+            kdf=dict(kdf or {}),
+            recovery_hint=str(recovery_hint or "").strip(),
+            public_metadata=dict(public_metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.wallet_recovery_bundles[record.bundle_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="wallet/recovery_bundle/store",
+            resource=_portal_resource(wallet_id, "recovery-bundles", record.bundle_id),
+            details={
+                "bundle_id": record.bundle_id,
+                "wrapping_method": record.wrapping_method,
+                "server_can_decrypt": False,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        self._save_portal_state()
+        return record
+
+    def list_recovery_bundles(self, wallet_id: str) -> List[WalletRecoveryBundleRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return [
+            record
+            for record in sorted(
+                self.wallet_recovery_bundles.values(),
+                key=lambda item: (item.created_at, item.bundle_id),
+                reverse=True,
+            )
+            if record.wallet_id == wallet_id and record.status == "active"
+        ]
+
+    def latest_recovery_bundle(self, wallet_id: str) -> WalletRecoveryBundleRecord:
+        bundles = self.list_recovery_bundles(wallet_id)
+        if not bundles:
+            raise ValueError("No recovery bundle is available for this wallet")
+        return bundles[0]
+
+    def get_recovery_bundle(self, wallet_id: str, bundle_id: str) -> WalletRecoveryBundleRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.wallet_recovery_bundles.get(str(bundle_id or "").strip())
+        if record is None or record.wallet_id != wallet_id or record.status != "active":
+            raise ValueError("Recovery bundle not found")
+        return record
 
     def recover_controller(
         self,
@@ -1066,6 +3190,137 @@ class WalletInterfaceService:
         if data_type is not None:
             records = [record for record in records if record.data_type == data_type]
         return sorted(records, key=lambda item: item.created_at)
+
+    def record_to_dict(self, record) -> Dict[str, Any]:
+        payload = record.to_dict()
+        metadata_record = self.wallet_record_metadata.get(f"{record.wallet_id}:{record.record_id}")
+        payload["metadata"] = dict(metadata_record.metadata) if metadata_record else {}
+        return payload
+
+    def update_record_metadata(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        metadata: Mapping[str, Any],
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service._record(wallet_id, record_id)
+        now = _portal_now()
+        key = f"{wallet_id}:{record_id}"
+        existing = self.wallet_record_metadata.get(key)
+        next_record = WalletRecordMetadataRecord(
+            wallet_id=wallet_id,
+            record_id=record_id,
+            metadata={**(existing.metadata if existing else {}), **dict(metadata or {})},
+            created_at=existing.created_at if existing else now,
+            updated_at=now,
+        )
+        self.wallet_record_metadata[key] = next_record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="record/metadata_update",
+            resource=resource_for_record(wallet_id, record_id),
+            details={"metadata_keys": sorted(next_record.metadata.keys())},
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self.record_to_dict(record)
+
+    def delete_record(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        unpin_ipfs: bool = True,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service._record(wallet_id, record_id)
+        metadata_key = f"{wallet_id}:{record_id}"
+        metadata_record = self.wallet_record_metadata.get(metadata_key)
+        metadata = dict(metadata_record.metadata) if metadata_record else {}
+        versions = [
+            version
+            for version in self.wallet_service.versions.values()
+            if version.record_id == record_id
+        ]
+        proof_ids = {
+            proof_id
+            for proof_id, proof in self.wallet_service.proofs.items()
+            if proof.wallet_id == wallet_id and record_id in proof.witness_record_ids
+        }
+        artifact_ids = {
+            artifact_id
+            for artifact_id, artifact in self.wallet_service.derived_artifacts.items()
+            if artifact.wallet_id == wallet_id and record_id in artifact.source_record_ids
+        }
+        cids = _record_delete_cids(metadata, versions)
+        unpin_results = self._unpin_cids(cids) if unpin_ipfs else []
+        metadata_deleted = metadata_key in self.wallet_record_metadata
+
+        self.wallet_service.records.pop(record.record_id, None)
+        for version in versions:
+            self.wallet_service.versions.pop(version.version_id, None)
+        for proof_id in proof_ids:
+            self.wallet_service.proofs.pop(proof_id, None)
+        for artifact_id in artifact_ids:
+            self.wallet_service.derived_artifacts.pop(artifact_id, None)
+        self.wallet_record_metadata.pop(metadata_key, None)
+
+        resource = resource_for_record(wallet_id, record_id)
+        for grant in self.wallet_service.grants.values():
+            if grant.status == "active" and resource in grant.resources:
+                grant.status = "revoked"
+        for receipt in self.wallet_service.grant_receipts.values():
+            if receipt.status == "active" and resource in receipt.resources:
+                receipt.status = "revoked"
+        for request in self.wallet_service.access_requests.values():
+            if request.status in {"pending", "approved"} and resource in request.resources:
+                request.status = "revoked"
+
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="record/delete",
+            resource=resource,
+            details={
+                "artifact_ids": sorted(artifact_ids),
+                "ipfs_cids": cids,
+                "proof_ids": sorted(proof_ids),
+                "unpin_attempted": unpin_ipfs,
+                "version_ids": [version.version_id for version in versions],
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "artifact_ids": sorted(artifact_ids),
+            "deleted": True,
+            "ipfs_cids": cids,
+            "metadata_deleted": metadata_deleted,
+            "proof_ids": sorted(proof_ids),
+            "record_id": record_id,
+            "unpin_results": unpin_results,
+            "version_ids": [version.version_id for version in versions],
+            "wallet_id": wallet_id,
+        }
+
+    def _unpin_cids(self, cids: Sequence[str]) -> List[Dict[str, Any]]:
+        if not cids:
+            return []
+        try:
+            backend = get_ipfs_backend()
+        except Exception as exc:
+            return [{"cid": cid, "ok": False, "error": str(exc)} for cid in cids]
+        results: List[Dict[str, Any]] = []
+        for cid in cids:
+            try:
+                backend.unpin(cid)
+                results.append({"cid": cid, "ok": True})
+            except Exception as exc:
+                results.append({"cid": cid, "ok": False, "error": str(exc)})
+        return results
 
     def save_service_for_wallet(
         self,
@@ -1343,6 +3598,189 @@ class WalletInterfaceService:
         if status is not None:
             records = [record for record in records if record.status == status]
         return sorted(records, key=lambda item: (item.updated_at or item.created_at, item.plan_id))
+
+    def create_service_plan_share_grant(
+        self,
+        wallet_id: str,
+        plan_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        scopes: Sequence[str] | None = None,
+        purpose: str = "service_plan_collaboration",
+        worker_recipient_id: str = "",
+        worker_name: str = "",
+        expires_at: str | None = None,
+        approval_id: str | None = None,
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        extra_caveats: Mapping[str, Any] | None = None,
+    ) -> ServicePlanShareGrantResult:
+        self._require_portal_actor(wallet_id, issuer_did)
+        plan = self.service_plans.get(plan_id)
+        if plan is None or plan.wallet_id != wallet_id:
+            raise ValueError("service plan not found")
+        audience = str(audience_did or "").strip()
+        if not audience:
+            raise ValueError("audience_did is required")
+        normalized_scopes = _normalize_service_plan_share_scopes(scopes)
+        resource = _portal_resource(wallet_id, "plans", plan.plan_id)
+        allowed_fields = _service_plan_share_fields(normalized_scopes)
+        caveats: Dict[str, Any] = dict(extra_caveats or {})
+        caveats.update(
+            {
+                "purpose": purpose or caveats.get("purpose") or "service_plan_collaboration",
+                "portal_collection": "service_plans",
+                "service_plan_id": plan.plan_id,
+                "service_doc_id": plan.service_doc_id,
+                "source_content_cid": plan.source_content_cid,
+                "source_page_cid": plan.source_page_cid,
+                "service_plan_scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "redacted_by_default": True,
+                "privacy_level": "restricted",
+            }
+        )
+        if worker_recipient_id:
+            caveats["worker_recipient_id"] = str(worker_recipient_id)
+        if worker_name:
+            caveats["worker_name"] = str(worker_name)
+        if approval_id:
+            caveats["approval_id"] = approval_id
+
+        grant = self.wallet_service.create_grant(
+            wallet_id=wallet_id,
+            issuer_did=issuer_did,
+            audience_did=audience,
+            resources=[resource],
+            abilities=["service_plan/read"],
+            caveats=caveats,
+            expires_at=expires_at,
+            approval_id=approval_id,
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+        )
+        now = _portal_now()
+        interaction = ServiceInteractionRecord(
+            interaction_id=_portal_id("interaction"),
+            wallet_id=wallet_id,
+            service_doc_id=plan.service_doc_id,
+            source_content_cid=plan.source_content_cid,
+            source_page_cid=plan.source_page_cid,
+            provider_name=plan.provider_name,
+            program_name=plan.service_title,
+            interaction_type="shared_service_plan",
+            channel="wallet_grant",
+            actor_did=str(issuer_did),
+            counterparty_name=str(worker_name or worker_recipient_id or audience),
+            counterparty_contact=audience,
+            timestamp=now,
+            status="grant_active",
+            outcome="Scoped service plan grant created",
+            related_grant_ids=[grant.grant_id],
+            privacy_level="restricted",
+            created_at=now,
+            updated_at=now,
+            metadata={
+                "plan_id": plan.plan_id,
+                "resource": resource,
+                "scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "worker_recipient_id": str(worker_recipient_id or ""),
+            },
+        )
+        self.service_interactions[interaction.interaction_id] = interaction
+        plan.assigned_worker_recipient_id = str(worker_recipient_id or plan.assigned_worker_recipient_id or audience)
+        plan.related_interaction_ids = _unique_strings([*plan.related_interaction_ids, interaction.interaction_id])
+        plan.updated_at = now
+        receipt = next(
+            (
+                item
+                for item in self.wallet_service.grant_receipts.values()
+                if item.wallet_id == wallet_id and item.grant_id == grant.grant_id
+            ),
+            None,
+        )
+        self._portal_audit(
+            wallet_id,
+            actor_did=issuer_did,
+            action="interaction/create",
+            resource=_portal_resource(wallet_id, "interactions", interaction.interaction_id),
+            details={
+                "service_doc_id": plan.service_doc_id,
+                "interaction_type": interaction.interaction_type,
+                "channel": interaction.channel,
+                "related_grant_ids": [grant.grant_id],
+            },
+        )
+        self._portal_audit(
+            wallet_id,
+            actor_did=issuer_did,
+            action="service_plan/share",
+            resource=resource,
+            details={
+                "service_doc_id": plan.service_doc_id,
+                "grant_id": grant.grant_id,
+                "audience_did": audience,
+                "worker_recipient_id": worker_recipient_id,
+                "scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "interaction_id": interaction.interaction_id,
+                "privacy_level": "restricted",
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return ServicePlanShareGrantResult(grant=grant, receipt=receipt, plan=plan, interaction=interaction)
+
+    def create_service_share_grant(
+        self,
+        wallet_id: str,
+        service_doc_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        scopes: Sequence[str] | None = None,
+        purpose: str = "service_plan_collaboration",
+        worker_recipient_id: str = "",
+        worker_name: str = "",
+        expires_at: str | None = None,
+        approval_id: str | None = None,
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        extra_caveats: Mapping[str, Any] | None = None,
+    ) -> ServicePlanShareGrantResult:
+        service_doc = str(service_doc_id or "").strip()
+        if not service_doc:
+            raise ValueError("service_doc_id is required")
+        plan = max(
+            (
+                record
+                for record in self.service_plans.values()
+                if record.wallet_id == wallet_id and record.service_doc_id == service_doc
+            ),
+            key=lambda item: (item.updated_at or item.created_at, item.plan_id),
+            default=None,
+        )
+        if plan is None:
+            raise ValueError("service plan not found")
+        return self.create_service_plan_share_grant(
+            wallet_id,
+            plan.plan_id,
+            issuer_did=issuer_did,
+            audience_did=audience_did,
+            scopes=scopes,
+            purpose=purpose,
+            worker_recipient_id=worker_recipient_id,
+            worker_name=worker_name,
+            expires_at=expires_at,
+            approval_id=approval_id,
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+            extra_caveats=extra_caveats,
+        )
+
+    def share_service_plan_with_worker(self, wallet_id: str, plan_id: str, **kwargs: Any) -> ServicePlanShareGrantResult:
+        return self.create_service_plan_share_grant(wallet_id, plan_id, **kwargs)
 
     def create_service_interaction(
         self,
@@ -2453,6 +4891,51 @@ class WalletInterfaceService:
         self._persist_wallet_if_configured(wallet_id)
         return plaintext
 
+    def export_record_plaintext(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+    ) -> bytes:
+        return self.wallet_service.decrypt_record(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+        )
+
+    def export_record_encrypted_blobs(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service.records.get(record_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("record not found")
+        version = self.wallet_service.versions.get(record.current_version_id)
+        if version is None:
+            raise ValueError("record version not found")
+        payload = self.wallet_service.storage.get(version.encrypted_payload_ref)
+        metadata = (
+            self.wallet_service.storage.get(version.encrypted_metadata_ref)
+            if version.encrypted_metadata_ref is not None
+            else None
+        )
+        return {
+            "metadata": self.record_to_dict(record).get("metadata", {}),
+            "record": record.to_dict(),
+            "version": version.to_dict(),
+            "encrypted_payload": payload,
+            "encrypted_metadata": metadata,
+        }
+
     def rotate_record_key(
         self,
         wallet_id: str,
@@ -2509,6 +4992,53 @@ class WalletInterfaceService:
             ],
             key=lambda item: item.created_at,
         )
+
+    def create_document_profile_proof(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        public_inputs: Mapping[str, Any],
+    ):
+        self._require_portal_actor(wallet_id, actor_did)
+        self.wallet_service._wallet(wallet_id)
+        record = self.wallet_service._record(wallet_id, record_id)
+        if record.data_type != "document":
+            raise ValueError("document profile proofs require a document record")
+        safe_public_inputs = _safe_document_profile_public_inputs(public_inputs)
+        proof = create_simulated_proof_receipt(
+            wallet_id=wallet_id,
+            proof_type="document_privacy_profile",
+            statement={
+                "claim": "A wallet document was profiled with redacted GraphRAG, redacted vector metadata, and encrypted derived artifacts.",
+                "record_id": record_id,
+                "privacy_policy": "no_plaintext_public_inputs",
+            },
+            public_inputs={
+                "claim": "Document profile generated without exposing plaintext",
+                "record_id": record_id,
+                **safe_public_inputs,
+            },
+            witness_record_ids=[record_id],
+            circuit_id="document-privacy-profile-v1",
+        )
+        self.wallet_service.proofs[proof.proof_id] = proof
+        append_audit_event(
+            self.wallet_service.audit_events[wallet_id],
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            action="proof/document_privacy_profile",
+            resource=resource_for_record(wallet_id, record_id),
+            decision="allow",
+            details={
+                "proof_id": proof.proof_id,
+                "proof_type": proof.proof_type,
+                "public_input_keys": sorted(proof.public_inputs.keys()),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return proof
 
     def match_services_for_wallet(
         self,

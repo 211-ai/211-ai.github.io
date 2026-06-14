@@ -1,6 +1,9 @@
 import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
+import QRCode from "qrcode";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
+const appSessionKey = "abby-ui-session-v1";
+const appPersistKey = "abby-ui-state-v1";
 
 function walletRoute(route: string, actorDid: string, params: Record<string, string> = {}) {
   const query = new URLSearchParams({
@@ -13,22 +16,28 @@ function walletRoute(route: string, actorDid: string, params: Record<string, str
 }
 
 async function expectLoginForm(page: Page) {
-  await expect(page.getByLabel(/username/i)).toBeVisible({ timeout: 10000 });
-  await expect(page.getByLabel(/password/i)).toBeVisible();
+  await expect(page.locator(".login-page")).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("group", { name: /Choose portal/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Client$/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Service provider/i })).toBeVisible();
+  await expect(page.getByLabel(/Email address or telephone/i)).toBeVisible();
 }
 
 async function signInIfNeeded(page: Page) {
-  const username = page.getByLabel(/username/i).first();
+  const contact = page.getByLabel(/Email address or telephone/i).first();
 
   try {
-    await username.waitFor({ state: "visible", timeout: 1000 });
+    await contact.waitFor({ state: "visible", timeout: 1000 });
   } catch {
     return false;
   }
 
-  await username.fill("abby");
-  await page.getByLabel(/password/i).fill("safety-plan");
-  await page.getByRole("button", { name: /log in|login|sign in|continue/i }).click();
+  await page.getByRole("button", { name: /^Client$/i }).click();
+  await contact.fill("abby@example.org");
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
+  const oneTimePad = (await page.locator('code[aria-label="Generated one-time pad code"]').innerText()).trim();
+  await page.getByRole("textbox", { name: /One-time pad number/i }).fill(oneTimePad);
+  await page.getByRole("button", { name: /Verify code/i }).click();
   return true;
 }
 
@@ -61,6 +70,85 @@ test("login page appears before the home screen", async ({ page }) => {
   await expectLoginForm(page);
   await signInIfNeeded(page);
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
+});
+
+test("telephone login requests a server-signed magic link text message", async ({ page }) => {
+  const magicLinkRequests: unknown[] = [];
+  await page.route("**/auth/magic-link/request", async (route: Route) => {
+    magicLinkRequests.push(route.request().postDataJSON());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ status: "sent", channel: "sms", provider_status: "queued", provider_message_id: "mock-login-sms" })
+    });
+  });
+
+  await page.goto("/");
+  await expectLoginForm(page);
+  await page.getByRole("button", { name: /^Client$/i }).click();
+  await page.getByLabel(/Email address or telephone/i).fill("(503) 555-0199");
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
+
+  await expect(page.getByText(/We texted your Abby sign-in link/i)).toBeVisible();
+  expect(magicLinkRequests).toHaveLength(1);
+  expect(magicLinkRequests[0]).toMatchObject({
+    contact: "5035550199",
+    portal: "client"
+  });
+});
+
+test("email login requests a server-signed magic link email", async ({ page }) => {
+  const magicLinkRequests: unknown[] = [];
+  await page.route("**/auth/magic-link/request", async (route: Route) => {
+    magicLinkRequests.push(route.request().postDataJSON());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        channel: "email",
+        provider_message_id: "mock-login-email",
+        provider_status: "queued",
+        status: "sent"
+      })
+    });
+  });
+
+  await page.goto("/");
+  await expectLoginForm(page);
+  await page.getByRole("button", { name: /Service provider/i }).click();
+  await page.getByLabel(/Email address or telephone/i).fill("Abby.User@example.org");
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
+
+  await expect(page.getByText(/We emailed your Abby sign-in link/i)).toBeVisible();
+  expect(magicLinkRequests).toHaveLength(1);
+  expect(magicLinkRequests[0]).toMatchObject({
+    contact: "abby.user@example.org",
+    portal: "provider"
+  });
+});
+
+test("desktop sidebar keeps legal links at the bottom", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openAppRoute(page, "/");
+
+  const boxes = await page.evaluate(() => {
+    const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
+    const nav = document.querySelector(".nav-sections")?.getBoundingClientRect();
+    const footer = document.querySelector(".sidebar-footer")?.getBoundingClientRect();
+    if (!sidebar || !nav || !footer) return null;
+    return {
+      footerBottom: footer.bottom,
+      footerTop: footer.top,
+      navBottom: nav.bottom,
+      navOverflowY: window.getComputedStyle(document.querySelector(".nav-sections")!).overflowY,
+      sidebarBottom: sidebar.bottom
+    };
+  });
+
+  expect(boxes).not.toBeNull();
+  expect(boxes!.footerTop).toBeGreaterThanOrEqual(boxes!.navBottom - 1);
+  expect(boxes!.sidebarBottom - boxes!.footerBottom).toBeLessThanOrEqual(28);
+  expect(boxes!.navOverflowY).not.toBe("auto");
+  await expect(page.getByRole("link", { name: /Terms and Conditions/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Privacy Policy/i })).toBeVisible();
 });
 
 test("mobile home exposes the safety plan heading and quick check-in action", async ({ page }) => {
@@ -134,13 +222,67 @@ test("registration enforces minimum required profile fields", async ({ page }) =
   await expect(page.getByText(/Selected file: id-card\.jpg \(JPG\)/i)).toBeVisible();
   await expect(page.locator(".photo-preview-card, .photo-preview-toggle")).toHaveCount(0);
   await expect(page.locator(".field").filter({ hasText: "Photo or photo ID" }).locator("img, object, embed, canvas")).toHaveCount(0);
-  await expect(page.getByLabel(/Bot check complete/i)).toBeDisabled();
   await page.getByLabel(/Legal or full name/i).fill("Abby Example");
   await page.getByLabel(/Birth date/i).fill("1990-01-01");
-  await page.getByLabel(/Quick health check complete/i).check();
-  await expect(page.getByLabel(/Bot check complete/i)).toBeEnabled();
-  await page.getByLabel(/Bot check complete/i).check();
-  await expect(page.getByLabel(/Bot check complete/i)).toBeChecked();
+  await expect(page.locator('section[aria-labelledby="Government-help"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Government help$/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Start request$/i })).toBeVisible();
+  await expect(page.locator(".screen .captcha-box")).toHaveCount(0);
+  await expect(page.locator(".screen .consent-box")).toHaveCount(0);
+
+  await page.getByRole("button", { name: /^Start request$/i }).click();
+  await expect(page.getByRole("button", { name: /^Clear request$/i })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText(/This account is flagged for service partners/i)).toBeVisible();
+  await expect(page.getByText("Help requested", { exact: true })).toBeVisible();
+  await page.waitForFunction(() => {
+    const state = JSON.parse(window.localStorage.getItem("abby-ui-state-v1") ?? "{}");
+    return state.profile?.servicePartnerHelpRequested === true && Boolean(state.profile?.servicePartnerHelpRequestedAt);
+  });
+  await page.goto("/#/shelter");
+  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible({ timeout: 10000 });
+  const partnerRequests = page.getByRole("region", { name: /Partner help requests/i });
+  await expect(partnerRequests).toBeVisible();
+  await expect(partnerRequests.getByText(/Needs partner help/i)).toBeVisible();
+});
+
+test("client settings edits profile and less-used preferences", async ({ page }, testInfo) => {
+  await openAppRoute(page, "/#/settings");
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel(/Legal or full name/i)).toBeVisible();
+  await expect(page.getByLabel(/Birth date/i)).toBeVisible();
+  await expect(page.getByLabel(/Photo or photo ID/i)).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="Government-help"]')).toBeVisible();
+  await expect(page.getByLabel(/Days between check-ins/i)).toBeVisible();
+  await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).toBeVisible();
+  await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="Account-safety"]')).toBeVisible();
+
+  await page.getByLabel(/Legal or full name/i).fill("Settings User");
+  await page.getByLabel(/Days between check-ins/i).fill("12");
+  await page.getByLabel(/Allow Abby to prepare benefits notices/i).uncheck();
+  await page.getByLabel(/Unsheltered residents seeking beds/i).uncheck();
+  await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel(/Legal or full name/i)).toHaveValue("Settings User");
+  await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
+  await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).not.toBeChecked();
+  await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).not.toBeChecked();
+
+  await openAppRoute(page, "/#/security");
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
+
+  if (!/Mobile/i.test(testInfo.project.name)) {
+    const nav = page.getByRole("navigation", { name: /Portal navigation/i });
+    await expect(nav.getByRole("button", { name: /^Register$/i })).toHaveCount(0);
+    await expect(nav.getByRole("button", { name: /^Settings$/i })).toBeVisible();
+    await expectFirstAboveSecond(
+      nav.getByRole("button", { name: /^Wallet$/i }),
+      nav.getByRole("button", { name: /^Settings$/i })
+    );
+  }
 });
 
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
@@ -185,6 +327,271 @@ test("check-in interval cannot exceed thirty days", async ({ page }) => {
   await expect(page.getByText(/Checked in by email/i)).toBeVisible();
 });
 
+test("calendar collects service appointments and follow-ups", async ({ page }) => {
+  const now = Date.now();
+  const appointmentAt = new Date(now + 36 * 60 * 60 * 1000).toISOString();
+  const reminderAt = new Date(now + 34 * 60 * 60 * 1000).toISOString();
+  const followUpAt = new Date(now + 72 * 60 * 60 * 1000).toISOString();
+  const lastCheckInAt = new Date(now).toISOString();
+
+  await page.addInitScript(
+    ({ appointmentAt, appPersistKey, appSessionKey, followUpAt, lastCheckInAt, reminderAt }) => {
+      window.localStorage.setItem(appSessionKey, JSON.stringify({ username: "calendar-reviewer" }));
+      window.localStorage.setItem(
+        appPersistKey,
+        JSON.stringify({
+          policy: {
+            intervalDays: 2,
+            reminderChannels: ["email", "sms"],
+            gracePeriodHours: 12,
+            escalationEnabled: true,
+            lastCheckInAt
+          },
+          servicePlans: [
+            {
+              plan_id: "plan-calendar-test",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What should I bring next time?"],
+              appointment_at: appointmentAt,
+              reminder_at: reminderAt,
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: [],
+              private_notes_record_id: "",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt
+            }
+          ],
+          serviceInteractions: [
+            {
+              interaction_id: "int-follow-up-test",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:example:user",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: lastCheckInAt,
+              status: "active",
+              outcome: "Call confirmed",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: followUpAt,
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt,
+              metadata: {}
+            }
+          ]
+        })
+      );
+    },
+    { appointmentAt, appPersistKey, appSessionKey, followUpAt, lastCheckInAt, reminderAt }
+  );
+
+  await page.goto("/#/calendar");
+  await expect(page.getByRole("heading", { name: /^Calendar$/i })).toBeVisible({ timeout: 10000 });
+  const foodAppointment = page.getByRole("article").filter({ hasText: /Food pantry intake/i });
+  const clinicFollowUp = page.getByRole("article").filter({ hasText: /Bring paperwork/i });
+  const checkInReminder = page.getByRole("article").filter({ hasText: /Check in with Abby/i });
+  await expect(foodAppointment).toBeVisible();
+  await expect(foodAppointment.getByText(/Bus 12 to 4th Ave/i)).toBeVisible();
+  await expect(clinicFollowUp).toBeVisible();
+  await expect(checkInReminder).toBeVisible();
+  await expect(page.getByRole("button", { name: /Open plan/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Add to calendar/i }).first()).toBeVisible();
+});
+
+test("wallet-backed interaction history feeds the timeline and calendar", async ({ page }, testInfo) => {
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      await route.fulfill({
+        json: {
+          saved_services: [
+            {
+              saved_service_id: "saved-food-pantry",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              title: "Food pantry intake",
+              label: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              notes: "",
+              saved_at: "2026-05-03T18:00:00Z",
+              updated_at: "2026-05-03T18:00:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      await route.fulfill({
+        json: {
+          plans: [
+            {
+              plan_id: "plan-wallet-history",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment and confirm next pickup window.",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What should I bring next time?"],
+              appointment_at: "2026-05-12T18:00:00.000Z",
+              reminder_at: "2026-05-12T16:00:00.000Z",
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: ["int-wallet-history-1"],
+              private_notes_record_id: "",
+              created_at: "2026-05-10T16:30:00.000Z",
+              updated_at: "2026-05-10T16:30:00.000Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      await route.fulfill({
+        json: {
+          interactions: [
+            {
+              interaction_id: "int-wallet-history-1",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:key:owner",
+              counterparty_name: "Pantry intake desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: "2026-05-10T16:30:00.000Z",
+              status: "active",
+              outcome: "Appointment confirmed for Tuesday.",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: "2026-05-11T12:00:00.000Z",
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: "2026-05-10T16:30:00.000Z",
+              updated_at: "2026-05-10T16:30:00.000Z",
+              metadata: {}
+            },
+            {
+              interaction_id: "int-wallet-history-2",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "called_provider",
+              channel: "phone",
+              actor_did: "did:key:owner",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0199",
+              timestamp: "2026-05-09T14:00:00.000Z",
+              status: "needs_follow_up",
+              outcome: "Left a voicemail.",
+              notes_record_id: "",
+              next_action: "Call back if no response",
+              next_follow_up_at: "2026-05-10T09:00:00.000Z",
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "restricted",
+              created_at: "2026-05-09T14:00:00.000Z",
+              updated_at: "2026-05-09T14:00:00.000Z",
+              metadata: {}
+            }
+          ]
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: `unexpected wallet API call for ${path}` } });
+  });
+
+  await openAppRoute(page, walletRoute("interactions", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /Interaction history/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText(/Connected wallet: wallet-demo/i)).toBeVisible();
+  await expect(page.getByText(/2 recorded events/i)).toBeVisible();
+  await expect(page.getByText(/Calendar carry-over/i)).toBeVisible();
+  await expect(page.locator(".interaction-calendar-preview").filter({ hasText: /Bring paperwork/i })).toBeVisible();
+  await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toHaveCount(2);
+  await expect(page.getByText(/Follow-up times recorded here feed the Calendar screen/i)).toBeVisible();
+
+  const filters = page.locator(".interaction-filter-panel");
+  const calendar = page.locator(".interaction-calendar-panel");
+  const main = page.locator(".interaction-history-main");
+  const filtersBox = await filters.boundingBox();
+  const calendarBox = await calendar.boundingBox();
+  const mainBox = await main.boundingBox();
+  expect(filtersBox, "expected interaction filters to have a layout box").not.toBeNull();
+  expect(calendarBox, "expected interaction calendar preview to have a layout box").not.toBeNull();
+  expect(mainBox, "expected interaction main column to have a layout box").not.toBeNull();
+  expect(filtersBox!.y).toBeLessThan(mainBox!.y);
+  expect(calendarBox!.y).toBeLessThan(mainBox!.y);
+  if (!/Mobile/i.test(testInfo.project.name)) {
+    expect(Math.abs(filtersBox!.x - mainBox!.x)).toBeLessThan(24);
+  }
+
+  await page.goto(walletRoute("calendar", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /^Calendar$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("article").filter({ hasText: /Bring paperwork/i })).toBeVisible();
+  await expect(page.getByRole("article").filter({ hasText: /Food pantry intake/i })).toBeVisible();
+});
+
 test("hash navigation updates the active screen without a full reload", async ({ page }) => {
   await openAppRoute(page, "/");
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible();
@@ -195,7 +602,7 @@ test("hash navigation updates the active screen without a full reload", async ({
   await page.evaluate(() => {
     window.location.hash = "#/analytics";
   });
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
 });
 
 test("mobile menu opens navigation and routes to contacts", async ({ page }, testInfo) => {
@@ -209,7 +616,7 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
   await expect(mobileNav.getByRole("button", { name: /Who can see info/i })).toHaveCount(0);
   await expectFirstAboveSecond(
     mobileNav.getByRole("button", { name: /Services/i }),
-    mobileNav.getByRole("button", { name: /Uploads/i })
+    mobileNav.getByRole("button", { name: /Wallet/i })
   );
   await mobileNav.getByRole("button", { name: /Contacts/i }).click();
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible();
@@ -218,29 +625,60 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
 
 test("analytics consent shows privacy controls and safe details", async ({ page }) => {
   await openAppRoute(page, "/#/analytics");
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
-  const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  await expect(housingStudy.getByLabel(/Allow this choice/i)).toBeChecked();
-  await expect(housingStudy.locator(".privacy-metrics").getByText(/Group size/i)).toBeVisible();
-  await expect(housingStudy.locator(".privacy-metrics").getByText(/Privacy left/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
+  const dashboardSummary = page.getByRole("region", { name: /Dashboard summary/i });
+  await expect(dashboardSummary).toContainText(/People in verified cohorts/i);
+  await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /People in verified cohorts/i })).toContainText(
+    /6,158/
+  );
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Providers in verified releases/i })
+  ).toContainText(/67/);
+  await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /Counties covered/i })).toContainText(/5/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Mock proof certificates/i })
+  ).toContainText(/120/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Shelter requests this week/i })
+  ).toContainText(/1,966/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Average shelter fill rate/i })
+  ).toContainText(/68%/);
+  await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /Recovery intake rate/i })).toContainText(/67%/);
+  await expect(page.getByRole("region", { name: /Substance use treatment and recovery statistics/i })).toContainText(
+    /People referred to drug rehab services/i
+  );
+  const mockCertificates = page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i });
+  await expect(mockCertificates).toContainText(/120 verified mock proof certificates/i);
+  await expect(mockCertificates).toContainText(/210 shelter requests/i);
+  await expect(mockCertificates).toContainText(/41 shelter requests/i);
+  await expect(mockCertificates).toContainText(/228\/295 occupied beds/i);
+  await expect(mockCertificates).toContainText(/57\/90 occupied beds/i);
+  await expect(mockCertificates).toContainText(/58 rehab referrals/i);
+  await expect(mockCertificates).toContainText(/36 rehab intakes/i);
+  const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
+  await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();
+  await expect(housingStudy.locator(".privacy-metrics").getByText(/Privacy left/i)).toHaveCount(0);
   await expect(housingStudy.getByText("county", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need type", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need_category", { exact: true })).toHaveCount(0);
-  const preview = housingStudy.getByLabel(/Housing service gaps analytics capability preview/i);
-  await expect(preview.getByText(/share group facts/i)).toBeVisible();
-  await expect(preview.getByText(/open file contents/i)).toBeVisible();
-  await expect(preview.getByText(/ask group questions/i)).toBeVisible();
+  const preview = housingStudy.getByLabel(/Unsheltered residents seeking beds public analytics preview/i);
+  await expect(preview.getByText(/What the public can learn/i)).toBeVisible();
+  await expect(preview.getByText(/Published total/i)).toBeVisible();
+  await expect(preview.getByText(/Never published/i)).toBeVisible();
+  await expect(page.getByText(/privacy budget left/i)).toHaveCount(0);
 });
 
 test("analytics consent preserves opt-out after refresh", async ({ page }) => {
   await openAppRoute(page, "/#/analytics");
-  const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  const studyOptIn = housingStudy.getByLabel(/Allow this choice/i);
+  const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  const studyOptIn = housingStudy.getByLabel(/Include this measure/i);
   await studyOptIn.uncheck();
   await expect(studyOptIn).not.toBeChecked();
   await page.reload();
-  const reloadedStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  await expect(reloadedStudy.getByLabel(/Allow this choice/i)).not.toBeChecked();
+  const reloadedStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  await expect(reloadedStudy.getByLabel(/Include this measure/i)).not.toBeChecked();
 });
 
 test("removed standalone sharing, benefits, and recipient routes fall back home", async ({ page }) => {
@@ -254,12 +692,14 @@ test("removed standalone sharing, benefits, and recipient routes fall back home"
 test("contacts add flow saves sharing choices and opens edit panel by keyboard", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const addPersonSection = page.getByRole("region", { name: "Add contact" });
+  await addPersonSection.getByRole("radio", { name: /^Person$/i }).check();
   await expectFirstAboveSecond(
     addPersonSection.getByLabel(/Type/i),
     addPersonSection.getByText(/Sharing choices for this person/i)
   );
-  await addPersonSection.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+  await addPersonSection.getByLabel(/First name/i).fill("Morgan");
+  await addPersonSection.getByLabel(/Last name/i).fill("Caseworker");
   await addPersonSection.getByLabel(/Relationship or role/i).fill("Outreach case worker");
   await addPersonSection.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
   await addPersonSection.getByLabel("Email", { exact: true }).fill("morgan@example.org");
@@ -273,7 +713,8 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
   await expect(savedMorgan.getByText("9 items", { exact: true })).toBeVisible();
   await savedMorgan.locator(".recipient-open-button").focus();
   await page.keyboard.press("Enter");
-  const editPanel = savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i })).toHaveCount(0);
+  const editPanel = savedContacts.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
   await expect(editPanel).toBeVisible();
   await expect(editPanel.getByLabel(/Minimum identity/i)).toBeChecked();
   await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
@@ -288,23 +729,26 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
   await expect(reloadedMorgan.getByText("8 items", { exact: true })).toBeVisible();
   await reloadedMorgan.locator(".recipient-open-button").focus();
   await page.keyboard.press("Space");
-  const reloadedPanel = reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i })).toHaveCount(0);
+  const reloadedPanel = page
+    .locator('section[aria-labelledby="Saved-contacts"]')
+    .getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
   await expect(reloadedPanel.getByLabel(/Benefits information/i)).not.toBeChecked();
 });
 
 test("contact list shelter nudge requires user approval before adding contact", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
-  const addShelterSection = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
-  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const addContactSection = page.getByRole("region", { name: "Add contact" });
   const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
-  await expect(addShelterSection).toBeVisible();
+  await expect(addContactSection).toBeVisible();
   await expect(savedContacts.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" })).toBeVisible();
-  await expect(addPersonSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
-  expect(await addPersonSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
-  await expect(addPersonSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
-  await expect(addPersonSection.getByLabel(/Minimum identity/i)).toBeChecked();
-  await expect(addPersonSection.getByText("name, birthdate and contact status").first()).toBeVisible();
-  const nudge = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
+  await expect(addContactSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
+  expect(await addContactSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
+  await expect(addContactSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  await expect(addContactSection.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(addContactSection.getByText("name, birthdate and contact status").first()).toBeVisible();
+  await addContactSection.getByRole("radio", { name: /Shelter or group/i }).check();
+  const nudge = addContactSection.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(nudge.getByText(/asked to be added to your contacts/i)).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Approve$/i })).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Deny$/i })).toBeVisible();
@@ -313,7 +757,8 @@ test("contact list shelter nudge requires user approval before adding contact", 
   const shelterRules = page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(shelterRules.getByText("1 items", { exact: true })).toBeVisible();
   await shelterRules.getByRole("button", { name: /^Edit sharing$/i }).click();
-  const shelterPanel = shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
+  await expect(shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i })).toHaveCount(0);
+  const shelterPanel = savedContacts.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
   await expect(shelterPanel.getByText("1 selected", { exact: true })).toBeVisible();
   await expect(shelterPanel.getByLabel(/Minimum identity/i)).toBeChecked();
   await expect(shelterPanel.getByLabel(/Profile/i)).not.toBeChecked();
@@ -322,21 +767,22 @@ test("contact list shelter nudge requires user approval before adding contact", 
 test("user can request a shelter contact and shelter staff can approve it", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
+  const shelterRequests = page.getByRole("region", { name: "Add contact" });
+  await shelterRequests.getByRole("radio", { name: /Shelter or group/i }).check();
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
   await expect(shelterRequests.getByText(/already waiting/i)).toBeVisible();
-  await shelterRequests.locator("select").selectOption("Downtown Outreach Shelter");
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Downtown Outreach Shelter");
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
-  await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Harbor Night Shelter");
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeEnabled();
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   await expect(page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).getByText(/pending/i)).toBeVisible();
 
   await page.evaluate(() => {
-    window.location.hash = "#/shelter";
+    window.location.hash = "#/provider-operations";
   });
-  await page.getByLabel("Shelter").first().selectOption("Harbor Night Shelter");
-  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Riley Chen" });
+  await page.getByLabel(/Service organization/i).selectOption("Harbor Night Shelter");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Riley Chen" });
   const request = page.locator(".access-request-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "User asked" });
   await request.getByRole("button", { name: /^Approve$/i }).click();
   await expect(request.getByText(/approved/i)).toBeVisible();
@@ -346,10 +792,26 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
   await expect(page.locator(".recipient-list-item").filter({ hasText: "Harbor Night Shelter" })).toBeVisible();
 });
 
+test("user can add a local police precinct from the provider contact flow", async ({ page }) => {
+  await openAppRoute(page, "/#/contacts");
+  const addContact = page.getByRole("region", { name: "Add contact" });
+  await addContact.getByRole("radio", { name: /Shelter or group/i }).check();
+  await addContact.getByLabel(/Provider type/i).selectOption("police_precinct");
+  await expect(addContact.getByLabel(/Local precinct/i)).toHaveValue("Local police precinct");
+  await expect(addContact.getByRole("button", { name: /Add local precinct/i })).toBeEnabled();
+  await addContact.getByRole("button", { name: /Add local precinct/i }).click();
+  const precinctContact = page.locator(".recipient-list-item").filter({ hasText: "Local police precinct" });
+  await expect(precinctContact).toBeVisible();
+  await expect(precinctContact.getByText("Local precinct", { exact: true })).toBeVisible();
+  await expect(addContact.getByRole("button", { name: /Add local precinct/i })).toBeDisabled();
+  await expect(addContact.getByText(/already saved/i)).toBeVisible();
+});
+
 test("user can cancel a pending shelter contact request", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
-  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
-  await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
+  const shelterRequests = page.getByRole("region", { name: "Add contact" });
+  await shelterRequests.getByRole("radio", { name: /Shelter or group/i }).check();
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Harbor Night Shelter");
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   const request = page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "You asked this shelter." });
   await expect(request.getByText(/pending/i)).toBeVisible();
@@ -360,9 +822,9 @@ test("user can cancel a pending shelter contact request", async ({ page }) => {
 });
 
 test("verified shelter staff can send a contact-list nudge", async ({ page }) => {
-  await openAppRoute(page, "/#/shelter");
-  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
-  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+  await openAppRoute(page, "/#/provider-operations");
+  await page.getByLabel(/Service organization/i).selectOption("Rose City Shelter");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
   await expect(page.getByRole("button", { name: /Send contact request/i })).toBeDisabled();
   await expect(page.getByText(/already waiting/i)).toBeVisible();
   const createUser = page.locator('section[aria-labelledby="Create-user-account"]');
@@ -408,12 +870,125 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
   await expect(nudge.getByText(/pending/i)).toBeVisible();
 });
 
+test("provider administrator can add and remove staff", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-operations");
+  await page.getByLabel(/Service organization/i).selectOption("Rose City Shelter");
+  await expect(page.getByRole("region", { name: /Add staff member/i })).toHaveCount(0);
+
+  await page.getByLabel(/I am an administrator for this provider/i).check();
+  const addStaff = page.getByRole("region", { name: /Add staff member/i });
+  await addStaff.getByLabel(/Staff name/i).fill("Taylor Admin");
+  await addStaff.getByLabel(/Staff email/i).fill("taylor@rose.example");
+  await addStaff.getByRole("button", { name: /Add staff member/i }).click();
+
+  const roster = page.getByRole("region", { name: /Provider staff roster/i });
+  const newStaff = roster.locator(".provider-staff-roster-item").filter({ hasText: "Taylor Admin" });
+  await expect(newStaff.getByText(/Verified/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Revoke access/i }).click();
+  await expect(newStaff.getByText(/Revoked/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Re-verify/i }).click();
+  await expect(newStaff.getByText(/Verified/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Remove staff/i }).click();
+  await expect(roster.locator(".provider-staff-roster-item").filter({ hasText: "Taylor Admin" })).toHaveCount(0);
+});
+
+test("provider case management sends messages and proves eligibility criteria", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-cases");
+  await expect(page.locator("h1", { hasText: /Case management/i })).toBeVisible();
+  const caseSection = page.locator('section[aria-labelledby="Case-management"]');
+  const abbyCase = caseSection.locator(".provider-case-item").filter({ hasText: "Abby" });
+  await expect(abbyCase.getByLabel("Next step")).toHaveValue(/Verify citizenship eligibility/i);
+  await abbyCase.getByLabel("Status").selectOption("eligible");
+  await expect(abbyCase.getByLabel("Status")).toHaveValue("eligible");
+
+  await abbyCase.getByRole("button", { name: /Message client/i }).click();
+  const messageSection = page.locator('section[aria-labelledby="Client-notifications-and-messages"]');
+  await expect(page.locator("h1", { hasText: /Client messages/i })).toBeVisible();
+  await messageSection.getByRole("textbox", { name: /Message/i }).fill("Your case is ready for eligibility verification.");
+  await messageSection.getByRole("button", { name: /Send message/i }).click();
+  await expect(messageSection.locator(".provider-message-item").filter({ hasText: /ready for eligibility verification/i })).toBeVisible();
+
+  await page.goto("/#/provider-cases");
+  const refreshedAbbyCase = page.locator('section[aria-labelledby="Case-management"] .provider-case-item').filter({ hasText: "Abby" });
+  await refreshedAbbyCase.getByRole("button", { name: /Prove US citizen/i }).click();
+  const proofSection = page.locator('section[aria-labelledby="Zero-knowledge-proof-certificates"]');
+  await expect(page.locator("h1", { hasText: /Zero-knowledge certificates/i })).toBeVisible();
+  await expect(proofSection.getByLabel("Eligibility criterion")).toHaveValue("us_citizen");
+  await expect(proofSection.getByLabel("Certificate type")).toHaveValue("us_citizenship");
+  await proofSection.getByRole("button", { name: /Process certificate/i }).click();
+
+  const transparencyLog = page.getByRole("region", { name: /Verifier transparency log/i });
+  const citizenshipProof = transparencyLog.locator(".provider-proof-item").filter({ hasText: /US citizenship criteria/i });
+  await expect(citizenshipProof).toBeVisible();
+  await expect(citizenshipProof.getByText("US citizen", { exact: true })).toBeVisible();
+  await expect(citizenshipProof.getByText(/Client commitment/i)).toBeVisible();
+
+  await page.goto("/#/provider-cases");
+  const provedCase = page.locator('section[aria-labelledby="Case-management"] .provider-case-item').filter({ hasText: "Abby" });
+  await expect(provedCase.getByText(/US citizen proved/i)).toBeVisible();
+});
+
+test("provider portal sends client messages and processes ZK certificates", async ({ page }) => {
+  await openAppRoute(page, "/#/shelter");
+  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible();
+  await page.goto("/#/provider-clients");
+  await expect(page.locator("h1", { hasText: /Clients served/i })).toBeVisible();
+  await page.locator(".provider-client-list").getByRole("button", { name: /^Message$/i }).first().click();
+
+  const messageSection = page.locator('section[aria-labelledby="Client-notifications-and-messages"]');
+  await expect(page.locator("h1", { hasText: /Client messages/i })).toBeVisible();
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
+  await messageSection.locator("select").first().selectOption({ label: "Abby" });
+  await messageSection.getByRole("textbox", { name: /Message/i }).fill("Please arrive 10 minutes early for your service appointment.");
+  await messageSection.getByRole("button", { name: /Send message/i }).click();
+  const sentMessage = messageSection.locator(".provider-message-item").filter({ hasText: /Please arrive 10 minutes early/i });
+  await expect(sentMessage).toBeVisible();
+  await expect(sentMessage.getByText(/Sent by Avery Patel/i)).toBeVisible();
+
+  await page.goto("/#/messages");
+  const clientInbox = page.locator('section[aria-labelledby="Service-staff-messages"]');
+  await expect(page.getByRole("heading", { name: /^Messages$/i })).toBeVisible();
+  await expect(clientInbox.getByText(/Please arrive 10 minutes early/i)).toBeVisible();
+  await clientInbox.getByRole("button", { name: /Mark read/i }).first().click();
+  await expect(clientInbox.getByText("Read", { exact: true }).first()).toBeVisible();
+
+  await page.goto("/#/provider-proofs");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
+  const proofSection = page.locator('section[aria-labelledby="Zero-knowledge-proof-certificates"]');
+  await proofSection.locator("select").first().selectOption({ label: "Abby" });
+  await proofSection.getByLabel("Certificate type").selectOption("benefits_referral");
+  await proofSection.getByLabel("Public claim").fill("Client received a benefits referral without exposing private documents.");
+  await proofSection.getByRole("button", { name: /Process certificate/i }).click();
+  const processedProof = page
+    .getByRole("region", { name: /Verifier transparency log/i })
+    .locator(".provider-proof-item")
+    .filter({ hasText: /Client received a benefits referral/i });
+  await expect(processedProof).toBeVisible();
+  await expect(processedProof.getByText(/Client commitment/i)).toBeVisible();
+  await expect(processedProof.getByText(/verified/i)).toBeVisible();
+});
+
+test("provider analytics and proof menus expose operational insights", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-analytics");
+  await expect(page.locator("h1", { hasText: /Staff analytics/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Operational insights/i })).toContainText(/Proof coverage/i);
+  await expect(page.getByRole("region", { name: /Operational insights/i })).toContainText(/Message reach/i);
+  await expect(page.getByRole("region", { name: /Client need distribution/i })).toContainText(/Shelter/i);
+  await expect(page.getByRole("region", { name: /Recent provider activity/i })).toContainText(/Message sent/i);
+
+  await page.goto("/#/provider-proofs");
+  await expect(page.locator("h1", { hasText: /Zero-knowledge certificates/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Zero-knowledge proof certificates/i })).toContainText(/Client coverage/i);
+  await expect(page.getByRole("region", { name: /Certificate queue/i })).toContainText(/Needs certificate/i);
+  await expect(page.getByRole("region", { name: /Verifier transparency log/i })).toBeVisible();
+});
+
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toBeVisible();
-  await expect(page.getByLabel(/Create proof capability preview/i).getByText(/location\/prove_region/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /Create proof/i })).toBeDisabled();
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
   await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
@@ -425,8 +1000,81 @@ test("proof center shows public proof inputs without private coordinates", async
   await expect(regionProof.getByText(/^lon$/i)).not.toBeVisible();
 });
 
-test("proof center can create an API-backed location region proof", async ({ page }) => {
-  let createRequests = 0;
+test("proof center reviews proof certificates from a wallet QR screenshot", async ({ page }) => {
+  await page.addInitScript(() => {
+    class MockBarcodeDetector {
+      async detect() {
+        return [{ rawValue: "ipfs://bafyproofbundlecid" }];
+      }
+    }
+
+    Object.defineProperty(window, "BarcodeDetector", {
+      configurable: true,
+      value: MockBarcodeDetector
+    });
+  });
+
+  await page.route("**/ipfs-proxy/bafyproofbundlecid", async (route) => {
+    await route.fulfill({
+      json: {
+        title: "Homeless services proof bundle",
+        proofs: [
+          {
+            proof_id: "proof-us-citizenship",
+            proof_type: "us_citizenship",
+            claim: "US citizenship verified",
+            verifier_id: "shelter-enrollment-verifier",
+            proof_system: "groth16",
+            verification_status: "verified",
+            public_inputs: {
+              claim: "us_citizenship_verified",
+              issuing_authority: "State identity verifier"
+            },
+            witness_label: "Citizenship certificate",
+            created_at: "2026-05-08T10:30:00Z"
+          },
+          {
+            proof_id: "proof-income",
+            proof_type: "income_eligibility",
+            claim: "Income eligibility verified",
+            verifier_id: "housing-benefits-verifier",
+            proof_system: "groth16",
+            verification_status: "verified",
+            public_inputs: {
+              claim: "income_eligible",
+              program: "Rapid rehousing"
+            },
+            witness_label: "Income proof",
+            created_at: "2026-05-08T10:31:00Z"
+          }
+        ]
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/proof-center");
+  await expect(page.getByText(/Take a picture with your camera/i)).toBeVisible();
+  await expect(page.getByLabel(/Take proof QR photo with camera/i)).toHaveAttribute("capture", "environment");
+  await page.getByLabel(/Upload proof QR picture/i).setInputFiles({
+    buffer: Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB+UlEQVR4nO2bQYrjMBBFX40MvbRhDpCjyFebI80NrKPkBvLSoPBnIdmdpofB3eDYA1WLJCRv8eFTpa9KYmJnpR97SXDUUUcdddTRI1Fr1UEaHmY2AMzr2+PhAhzdVV19ihPA/BOLGcHcFSAUAOxIAY5+A523Fpo72iug9tsrBDj6HTQNQLoVbDxHgKP7UU087EwBjv6j1jnXC5iBmAdg7oqY4fnufLpWRxuazGoStJEgYgYbedRI+AoBju6p2lvPLdQXBIu1fjtagKNfv2+NAMxtLppZh35ZV5vuBQIc3VeSJOgLRKkOQWIGSQUgqNZ0ulZHn9zStDmjvH46QbXR3boYGlVosWJrNXrpL+gxAhzdhUr3N1WjoiQbCYLZjJgffm5dBl0nIUHt3JKkqS/U6SgV/Ny6CtrcijVRQBuCmQ+hw926Btq9vxSAxd8ddY2RLJRn9HStjm5uBZFGgL50BqEYdWO4WXa6VkdbyphgDYH1BNsy4WsEOLqv1pQBQFD1jV4i5tASvJ9b10Lj+524l6T7dunyBH8hdM2EGYg5SMrh4zLXN08XRtNtMSkH1UXU1C/+K5rrojEHkW6LQb8Y8f7mm6fLoJ++O05jKBbvHe1h2u5cp2t1tLmVapQIWBRALywNoZCGfKwAR7+Amv9rwVFHHXXU0f8I/QOFNg2uEDfTqgAAAABJRU5ErkJggg==",
+      "base64"
+    ),
+    mimeType: "image/png",
+    name: "wallet-qr.png"
+  });
+
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Homeless services proof bundle/i);
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/US citizenship verified/i);
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Income eligibility verified/i);
+  const citizenshipProof = page.getByRole("article", { name: /US citizenship verified/i });
+  await expect(citizenshipProof).toContainText(/From QR bundle/i);
+  await expect(citizenshipProof).toContainText(/State identity verifier/i);
+  const incomeProof = page.getByRole("article", { name: /Income eligibility verified/i });
+  await expect(incomeProof).toContainText(/Rapid rehousing/i);
+});
+
+test("proof center hides manual proof creation while showing API-backed proofs", async ({ page }) => {
   await page.route("**/wallets/**", async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
@@ -447,41 +1095,35 @@ test("proof center can create an API-backed location region proof", async ({ pag
       return;
     }
     if (path.endsWith("/proofs")) {
-      await route.fulfill({ json: { proofs: [] } });
-      return;
-    }
-    if (path.endsWith("/locations/rec-location-current/region-proofs")) {
-      createRequests += 1;
-      expect(route.request().method()).toBe("POST");
-      expect(await route.request().postDataJSON()).toMatchObject({
-        actor_did: "did:key:owner",
-        region_id: "multnomah_county"
-      });
       await route.fulfill({
         json: {
-          proof_id: "proof-deterministic-location",
-          wallet_id: "wallet-demo",
-          proof_type: "location_region",
-          statement: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            witness_commitment: "commitment"
-          },
-          verifier_id: "deterministic-location-region-v0.1",
-          public_inputs: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            region_policy_hash: "425551d64c5b78caa09fd67d24b099c1ca8749bc9747daa0ae84a69cf3507e3e"
-          },
-          proof_hash: "proofhash",
-          witness_record_ids: ["rec-location-current"],
-          is_simulated: false,
-          proof_system: "deterministic-test-proof",
-          circuit_id: "deterministic-location-region-v0.1",
-          verifier_digest: "digest1234567890abcdef",
-          proof_artifact_ref: "deterministic-proof://proofhash",
-          verification_status: "verified",
-          created_at: "2026-05-03T18:04:00Z"
+          proofs: [
+            {
+              proof_id: "proof-deterministic-location",
+              wallet_id: "wallet-demo",
+              proof_type: "location_region",
+              statement: {
+                claim: "location_in_region",
+                region_id: "multnomah_county",
+                witness_commitment: "commitment"
+              },
+              verifier_id: "deterministic-location-region-v0.1",
+              public_inputs: {
+                claim: "location_in_region",
+                region_id: "multnomah_county",
+                region_policy_hash: "425551d64c5b78caa09fd67d24b099c1ca8749bc9747daa0ae84a69cf3507e3e"
+              },
+              proof_hash: "proofhash",
+              witness_record_ids: ["rec-location-current"],
+              is_simulated: false,
+              proof_system: "deterministic-test-proof",
+              circuit_id: "deterministic-location-region-v0.1",
+              verifier_digest: "digest1234567890abcdef",
+              proof_artifact_ref: "deterministic-proof://proofhash",
+              verification_status: "verified",
+              created_at: "2026-05-03T18:04:00Z"
+            }
+          ]
         }
       });
       return;
@@ -490,21 +1132,23 @@ test("proof center can create an API-backed location region proof", async ({ pag
   });
 
   await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
-  await page.getByRole("button", { name: /Create proof/i }).click();
-  await expect(page.getByText(/Proof receipt created/i)).toBeVisible();
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
   const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
+  await expect(createdProof).toBeVisible();
   await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();
   await expect(createdProof.locator(".scope-header").getByText("verified", { exact: true })).toBeVisible();
   await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
   await expect(createdProof.getByText(/^lat$/i)).not.toBeVisible();
   await expect(createdProof.getByText(/^lon$/i)).not.toBeVisible();
-  expect(createRequests).toBe(1);
 });
 
-test("exports show receipt hashes and storage status", async ({ page }) => {
-  await openAppRoute(page, "/#/exports");
-  await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Create export bundle/i })).toBeVisible();
+test("wallet screen shows export and proof sharing tools", async ({ page }) => {
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Export or import wallet bundles/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share wallet proof QR/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
   const preview = page.getByLabel("Export capability preview");
   await expect(preview.getByText(/export\/create/i)).toBeVisible();
@@ -513,7 +1157,7 @@ test("exports show receipt hashes and storage status", async ({ page }) => {
   await expect(legalAidExport.getByText(/Bundle hash/i)).toBeVisible();
   await expect(legalAidExport.getByText(/storage verified/i)).toBeVisible();
   await expect(legalAidExport.getByText(/import verified/i)).toBeVisible();
-  await expect(legalAidExport.getByRole("button", { name: /Import descriptors/i })).toBeDisabled();
+  await expect(legalAidExport.getByText(/Descriptors are already imported for this bundle/i)).toBeVisible();
   const benefitsExport = page.getByRole("article", { name: /Benefits help clinic/i });
   await expect(benefitsExport.getByText(/storage missing/i)).toBeVisible();
 });
@@ -645,7 +1289,7 @@ test("configured exports create verify and import encrypted descriptors", async 
   await page.route("**/exports/**", handleWalletApiRoute);
 
   await page.goto(
-    walletRoute("exports", "did:key:owner", {
+    walletRoute("uploads", "did:key:owner", {
       audienceKeyHex: "22".repeat(32),
       issuerKeyHex: "11".repeat(32)
     })
@@ -666,7 +1310,284 @@ test("configured exports create verify and import encrypted descriptors", async 
   expect(calls).toEqual(["grant", "invocation", "bundle", "verify", "storage", "import"]);
 });
 
-test("security screen saves and restores wallet snapshots", async ({ page }) => {
+test("wallet page can generate and connect a new wallet", async ({ page }) => {
+  const calls: string[] = [];
+  await page.route("**/wallets", async (route) => {
+    calls.push("create");
+    expect(route.request().method()).toBe("POST");
+    const request = route.request().postDataJSON();
+    expect(String(request.owner_did)).toMatch(/^did:key:/i);
+    await route.fulfill({
+      json: {
+        wallet_id: "wallet-generated",
+        owner_did: request.owner_did,
+        controller_dids: [request.owner_did],
+        device_dids: [],
+        governance_policy: { approval_threshold: 1, controllers: [request.owner_did] }
+      }
+    });
+  });
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      calls.push("access");
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      calls.push("grants");
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      calls.push("records");
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      calls.push("audit");
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      calls.push("proofs");
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      calls.push("saved-services");
+      await route.fulfill({ json: { saved_services: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      calls.push("plans");
+      await route.fulfill({ json: { plans: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      calls.push("interactions");
+      await route.fulfill({ json: { interactions: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
+  });
+
+  const createRoute = `/?walletApiBaseUrl=${walletApiBaseUrl}#/uploads`;
+  await openAppRoute(page, createRoute);
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByRole("button", { name: /Generate new wallet/i }).click();
+
+  await expect(page.getByText(/New wallet generated and connected/i)).toBeVisible();
+  await expect(page.getByRole("region", { name: /Wallet connection/i }).getByText(/^wallet-generated$/i)).toBeVisible();
+  await expect(calls).toContain("create");
+  await expect(calls).toContain("records");
+  await expect(calls).toContain("proofs");
+});
+
+test("wallet recovery works with magic link plus QR passphrase", async ({ page }) => {
+  const passphrase = "correct horse battery staple";
+  const walletId = "wallet-qr-recovery";
+  const actorDid = "did:key:owner-qr";
+  const bundleId = "recovery-bundle-passphrase";
+  let storedEncryptedBundle: Record<string, unknown> | undefined;
+  let sawRecoveryBundleRead = false;
+  let filecoinBackupPayload = "";
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem("abby-filecoin-storage-config", JSON.stringify({ uploadUrl: "/filecoin-upload" }));
+    class MockBarcodeDetector {
+      async detect() {
+        return [{ rawValue: (window as Window & { __abbyRecoveryQrRawValue?: string }).__abbyRecoveryQrRawValue || "" }];
+      }
+    }
+    (window as Window & { BarcodeDetector?: typeof MockBarcodeDetector }).BarcodeDetector = MockBarcodeDetector;
+  });
+
+  await page.route("**/filecoin-upload", async (route) => {
+    const payload = route.request().postDataBuffer()?.toString("utf8") || "";
+    if (!payload.includes("211-ai-wallet-recovery-backup-v1")) {
+      await route.fulfill({
+        json: {
+          ipfsCid: "bafy-wallet-proof",
+          message: "Stored wallet proof bundle.",
+          provider: "ipfs-filecoin"
+        }
+      });
+      return;
+    }
+    filecoinBackupPayload = payload;
+    expect(payload).toContain("wallet-recovery-bundle.json");
+    expect(payload).not.toContain(passphrase);
+    expect(payload).not.toContain("walletContentKey");
+    await route.fulfill({
+      json: {
+        filecoinPinRequestId: "pin-recovery-backup",
+        filecoinPinStatus: "queued",
+        ipfsCid: "bafy-recovery-backup",
+        message: "Encrypted recovery bundle queued.",
+        provider: "ipfs-filecoin",
+        statusUrl: "/filecoin-upload/status/pin-recovery-backup"
+      }
+    });
+  });
+
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path === `/wallets/${walletId}`) {
+      await route.fulfill({
+        json: {
+          wallet_id: walletId,
+          owner_did: actorDid,
+          controller_dids: [actorDid],
+          device_dids: [],
+          governance_policy: {}
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/recovery-bundles") && route.request().method() === "POST") {
+      const request = route.request().postDataJSON();
+      storedEncryptedBundle = request.encrypted_bundle;
+      expect(request.wrapping_method).toBe("passphrase");
+      expect(storedEncryptedBundle?.plaintextKeySentToServer).toBe(false);
+      await route.fulfill({
+        json: {
+          bundle: {
+            actor_did: actorDid,
+            bundle_id: bundleId,
+            created_at: new Date().toISOString(),
+            encrypted_bundle: storedEncryptedBundle,
+            kdf: request.kdf,
+            public_metadata: request.public_metadata,
+            recovery_hint: request.recovery_hint,
+            status: "active",
+            updated_at: new Date().toISOString(),
+            wallet_id: walletId,
+            wrapping_method: "passphrase"
+          },
+          privacy: { plaintext_wallet_key_received: false, server_can_decrypt: false }
+        }
+      });
+      return;
+    }
+    if (path.endsWith(`/recovery-bundles/${bundleId}`) && route.request().method() === "GET") {
+      sawRecoveryBundleRead = true;
+      expect(route.request().headers().authorization).toContain("abby-magic-ucan-v1.mock");
+      await route.fulfill({
+        json: {
+          bundle: {
+            actor_did: actorDid,
+            bundle_id: bundleId,
+            created_at: new Date().toISOString(),
+            encrypted_bundle: storedEncryptedBundle,
+            kdf: {},
+            public_metadata: {},
+            recovery_hint: "",
+            status: "active",
+            updated_at: new Date().toISOString(),
+            wallet_id: walletId,
+            wrapping_method: "passphrase"
+          },
+          privacy: { plaintext_wallet_key_returned: false, server_can_decrypt: false }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      await route.fulfill({ json: { saved_services: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      await route.fulfill({ json: { plans: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      await route.fulfill({ json: { interactions: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
+  });
+
+  await page.goto(walletRoute("uploads", actorDid, { walletId }));
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Recovery passphrase/i).fill(passphrase);
+  await page.getByRole("button", { name: /Save passphrase recovery/i }).click();
+  await expect(page.getByText(/Passphrase recovery and recovery QR are ready/i)).toBeVisible();
+  await expect(page.getByText(/Encrypted recovery backup queued on IPFS\/Filecoin \(bafy-recovery-backup\)/i)).toBeVisible();
+  await expect(page.getByAltText(/Wallet recovery QR code/i)).toBeVisible();
+  await expect(page.getByText(/QR contains the recovery passphrase/i)).toBeVisible();
+  expect(storedEncryptedBundle).toBeTruthy();
+  expect(JSON.stringify(storedEncryptedBundle)).not.toContain(passphrase);
+  expect(filecoinBackupPayload).toContain("211-ai-wallet-recovery-backup-v1");
+  expect(filecoinBackupPayload).not.toContain(passphrase);
+
+  const recoveryQrPayload = JSON.stringify({
+    apiBaseUrl: decodeURIComponent(walletApiBaseUrl),
+    bundleId,
+    containsRecoverySecret: true,
+    passphrase,
+    schema: "211-ai-wallet-recovery-qr-v1",
+    serverCanDecrypt: false,
+    walletId,
+    wrappingMethod: "passphrase"
+  });
+  expect(JSON.parse(recoveryQrPayload)).toMatchObject({
+    containsRecoverySecret: true,
+    passphrase,
+    serverCanDecrypt: false
+  });
+  await page.evaluate(
+    ({ payload }) => {
+      window.localStorage.setItem(
+        "abby.magicLoginUcan.v1",
+        JSON.stringify({
+          audience: "did:abby:contact:test",
+          capabilities: [{ can: "wallet/recovery/read_encrypted", with: `wallet://${location.hostname}/recovery-bundles/*` }],
+          expires_at: Date.now() + 600000,
+          profile: "abby-magic-ucan-v1",
+          token: "abby-magic-ucan-v1.mock"
+        })
+      );
+      (window as Window & { __abbyRecoveryQrRawValue?: string }).__abbyRecoveryQrRawValue = payload;
+    },
+    { payload: recoveryQrPayload }
+  );
+  await page.getByLabel(/Import recovery QR picture/i).setInputFiles({
+    name: "recovery-qr.png",
+    mimeType: "image/png",
+    buffer: await QRCode.toBuffer(recoveryQrPayload)
+  });
+
+  await expect(page.getByText(/Recovery QR unlocked the wallet locally/i)).toBeVisible();
+  expect(sawRecoveryBundleRead).toBe(true);
+  await page.getByLabel(/Recovery passphrase/i).fill(passphrase);
+  await page.getByRole("button", { name: /Unlock cached recovery/i }).click();
+  await expect(page.getByText(/Wallet recovery key restored locally/i)).toBeVisible();
+});
+
+test("settings screen saves and restores wallet snapshots", async ({ page }) => {
   let saved = false;
   let saveRequests = 0;
   let loadRequests = 0;
@@ -722,16 +1643,19 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
     }
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
-  await openAppRoute(page, walletRoute("security", "did:key:owner"));
+  await openAppRoute(page, walletRoute("settings", "did:key:owner"));
 
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText(/no backup/i)).toBeVisible();
-  await page.getByRole("button", { name: /Save backup/i }).click();
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 15_000 });
+  const accountSafety = page.locator('section[aria-labelledby="Account-safety"]');
+  const backupCheckRow = accountSafety.locator(".disclosure-row").filter({ hasText: /Backup check/i });
+  await expect(accountSafety.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
+  await expect(accountSafety.getByText(/no backup/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Save backup/i }).click();
   await expect(page.getByText(/Wallet backup saved/i)).toBeVisible();
-  await expect(page.getByText(/backup ready/i)).toBeVisible();
-  await expect(page.getByText(/verified/i)).toBeVisible();
-  await expect(page.getByText(/abc123def456/i)).toBeVisible();
-  await page.getByRole("button", { name: /Load backup/i }).click();
+  await expect(accountSafety.getByText(/backup ready/i)).toBeVisible();
+  await expect(backupCheckRow.getByText(/verified/i)).toBeVisible();
+  await expect(accountSafety.getByText(/abc123def456/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Load backup/i }).click();
   await expect(page.getByText(/Wallet backup loaded/i)).toBeVisible();
   expect(saveRequests).toBe(1);
   expect(loadRequests).toBe(1);
@@ -807,6 +1731,397 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
   await expect(page.getByText(/storage\/repair/i)).toBeVisible();
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i)).toBeVisible();
   expect(repairRequests).toBe(1);
+});
+
+test("wallet file uploads can use a configured IPFS and Filecoin backend", async ({ page }) => {
+  let fileStorageRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    expect(route.request().method()).toBe("POST");
+    expect(route.request().headers()["content-type"]).toContain("multipart/form-data");
+    const body = route.request().postData() || "";
+    if (body.includes("wallet-proof-bundle.json")) {
+      await route.fulfill({
+        json: {
+          ipfsCid: "bafywalletproofbundlecid",
+          message: "Stored wallet proof bundle.",
+          provider: "ipfs-filecoin"
+        }
+      });
+      return;
+    }
+
+    fileStorageRequests += 1;
+    expect(body).toContain("benefits-update.pdf");
+    await route.fulfill({
+      json: {
+        filecoinDealId: "42",
+        filecoinPieceCid: "baga-wallet-piece",
+        ipfsCid: "bafywallet",
+        message: "Pinned through Synapse.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+  await page.route("**/ipfs-proxy/bafywallet", async (route) => {
+    await route.fulfill({
+      body: "%PDF-1.4\nfrom-ipfs",
+      contentType: "application/pdf"
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/^IPFS\/Filecoin$/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/IPFS\/Filecoin-backed wallet/i)).toBeVisible();
+  await expect(walletFile.getByText(/bafywallet/i)).toHaveCount(0);
+  await walletFile.getByRole("button", { name: /Show storage details/i }).click();
+  await expect(walletFile.getByText(/bafywallet/i)).toBeVisible();
+  await expect(walletFile.getByText(/Deal ID/i)).toBeVisible();
+  await expect(walletFile.getByText(/42/i)).toBeVisible();
+  await expect(walletFile.getByText(/Pinned through Synapse/i)).toBeVisible();
+  await expect(walletFile.getByRole("button", { name: /^Download$/i })).toBeVisible();
+  const originalDownload = await Promise.all([
+    page.waitForEvent("download"),
+    walletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(originalDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  await expect(walletFile.getByRole("button", { name: /Remove from wallet/i })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await walletFile.getByRole("button", { name: /Remove from wallet/i }).click();
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" })).toHaveCount(0);
+  expect(fileStorageRequests).toBe(1);
+});
+
+test("wallet file uploads can write to a configured Walrus publisher", async ({ page }) => {
+  let walrusStorageRequests = 0;
+  let walrusDeleteRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+    window.localStorage.setItem(
+      "abby-walrus-storage-config",
+      JSON.stringify({
+        aggregatorUrl: "/walrus-aggregator",
+        deleteUrl: "/walrus-delete",
+        epochs: 2,
+        publisherUrl: "/walrus-publisher"
+      })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+  await page.route("**/walrus-delete/v1/blobs/**", async (route) => {
+    walrusDeleteRequests += 1;
+    expect(route.request().method()).toBe("DELETE");
+    expect(route.request().url()).toContain("walrus-blob-benefits");
+    await route.fulfill({ json: { status: "deleted" } });
+  });
+  await page.route("**/walrus-aggregator/v1/blobs/walrus-blob-benefits", async (route) => {
+    await route.fulfill({
+      body: "%PDF-1.4\nfrom-walrus",
+      contentType: "application/pdf"
+    });
+  });
+  await page.route("**/walrus-publisher/v1/blobs**", async (route) => {
+    walrusStorageRequests += 1;
+    expect(route.request().method()).toBe("PUT");
+    expect(route.request().headers()["content-type"]).toContain("application/pdf");
+    expect(new URL(route.request().url()).searchParams.get("epochs")).toBe("2");
+    await route.fulfill({
+      json: {
+        newlyCreated: {
+          blob_object: {
+            blob_id: "walrus-blob-benefits",
+            id: "0xwalrusobject",
+            storage: { end_epoch: 44 }
+          },
+          cost: 123
+        }
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).uncheck();
+  await page.getByLabel(/Store new wallet files on Walrus/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/^Walrus$/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/Walrus-backed wallet/i).first()).toBeVisible();
+  await expect(walletFile.getByText(/walrus-blob-benefits/i)).toHaveCount(0);
+  await walletFile.getByRole("button", { name: /Show storage details/i }).click();
+  await expect(walletFile.getByText(/walrus-blob-benefits/i)).toBeVisible();
+  await expect(walletFile.getByText(/End epoch/i)).toBeVisible();
+  await expect(walletFile.getByText(/44/i)).toBeVisible();
+  await expect(walletFile.getByText(/Stored on Walrus/i)).toBeVisible();
+  await expect(walletFile.getByRole("button", { name: /^Download$/i })).toBeVisible();
+  const originalDownload = await Promise.all([
+    page.waitForEvent("download"),
+    walletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(originalDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  await page.reload();
+  const reloadedWalletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(reloadedWalletFile.getByRole("button", { name: /^Download$/i })).toBeEnabled();
+  const persistedDownload = await Promise.all([
+    page.waitForEvent("download"),
+    reloadedWalletFile.getByRole("button", { name: /^Download$/i }).click()
+  ]);
+  expect(persistedDownload[0].suggestedFilename()).toBe("benefits-update.pdf");
+  page.once("dialog", (dialog) => dialog.accept());
+  await reloadedWalletFile.getByRole("button", { name: /Remove from wallet/i }).click();
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" })).toHaveCount(0);
+  expect(walrusDeleteRequests).toBe(1);
+  await page.getByLabel(/Store new wallet files on Walrus/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\nagain")
+  });
+  await expect(page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" }).getByText(/Stored on Walrus/i)).toBeVisible();
+  expect(walrusStorageRequests).toBe(2);
+});
+
+test("wallet file uploads poll Filecoin status through the same-origin bridge", async ({ page }) => {
+  let statusRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload/status/pin-123", async (route) => {
+    statusRequests += 1;
+    await route.fulfill({
+      json: {
+        info: { synapse_piece_cid: "baga-wallet-piece" },
+        requestid: "pin-123",
+        status: "pinned"
+      }
+    });
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        filecoinPinRequestId: "pin-123",
+        filecoinPinStatus: "queued",
+        ipfsCid: "bafywallet",
+        message: "Pinned to IPFS and queued for Filecoin persistence through the wallet upload bridge.",
+        provider: "ipfs-filecoin",
+        requestId: "pin-123",
+        statusUrl: "/filecoin-upload/status/pin-123"
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/confirmed by Filecoin persistence/i)).toBeVisible();
+  await expect(walletFile.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  expect(statusRequests).toBe(1);
+});
+
+test("wallet uploads let users retry Filecoin persistence after a failed sidecar status", async ({ page }) => {
+  let recordStorageRequests = 0;
+  let statusRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({
+        json: {
+          records: [
+            {
+              record_id: "rec-benefits-letter",
+              data_type: "document",
+              sensitivity: "high",
+              public_descriptor: "Benefits letter",
+              status: "active",
+              created_at: "2026-05-03T18:00:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/storage")) {
+      await route.fulfill({ json: { ok: true } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+  await page.route("**/filecoin-upload/status/pin-123", async (route) => {
+    statusRequests += 1;
+    await route.fulfill({
+      json: {
+        requestid: "pin-123",
+        status: statusRequests === 1 ? "failed" : "pinned"
+      }
+    });
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    expect(route.request().method()).toBe("POST");
+    const contentType = route.request().headers()["content-type"] || "";
+    if (contentType.includes("application/json")) {
+      recordStorageRequests += 1;
+      const payload = route.request().postDataJSON() as { recordId?: string; walletId?: string };
+      expect(payload.recordId).toBe("rec-benefits-letter");
+      expect(payload.walletId).toBe("wallet-demo");
+      await route.fulfill({
+        json: {
+          filecoinPinRequestId: "pin-123",
+          filecoinPinStatus: "queued",
+          ipfsCid: "bafywallet",
+          provider: "ipfs-filecoin",
+          requestId: "pin-123",
+          statusUrl: "/filecoin-upload/status/pin-123"
+        }
+      });
+      return;
+    }
+
+    expect(contentType).toContain("multipart/form-data");
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+
+  await openAppRoute(page, walletRoute("uploads", "did:key:owner"));
+  const upload = page.locator(".upload-list-item").filter({ hasText: "Benefits letter" });
+  await upload.getByRole("button", { name: /Store on IPFS\/Filecoin/i }).click();
+  await expect(upload.getByText(/IPFS only/i)).toBeVisible();
+  await expect(upload.getByRole("button", { name: /Retry Filecoin/i })).toBeVisible();
+  await upload.getByRole("button", { name: /Retry Filecoin/i }).click();
+  await expect(upload.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  expect(recordStorageRequests).toBe(2);
+  expect(statusRequests).toBe(2);
+});
+
+test("wallet page renders a scannable proof QR that opens proof center review", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+  await page.route("**/ipfs-proxy/bafywalletproofbundlecid", async (route) => {
+    await route.fulfill({
+      json: {
+        title: "Client wallet proof bundle",
+        proofs: [
+          {
+            claim: "Location is in service region",
+            id: "proof-1",
+            proofSystem: "simulated",
+            proofType: "location_region",
+            publicInputs: {
+              claim: "location_in_region",
+              region_id: "multnomah_county"
+            },
+            simulated: true,
+            verificationStatus: "verified",
+            verifier: "211 service matcher",
+            witnessLabel: "Current location"
+          },
+          {
+            claim: "Contribution follows study consent",
+            id: "proof-2",
+            proofSystem: "simulated",
+            proofType: "analytics_contribution",
+            publicInputs: {
+              fields: "county, need_category",
+              template_id: "housing_service_gap_v1"
+            },
+            simulated: true,
+            verificationStatus: "verified",
+            verifier: "Analytics template verifier",
+            witnessLabel: "Derived service needs"
+          }
+        ]
+      }
+    });
+  });
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  const qrImage = page.getByRole("img", { name: /Wallet proof QR code/i });
+  await expect(qrImage).toBeVisible();
+  await expect(page.getByText(/Scan to open the client proof bundle/i)).toBeVisible();
+  await expect(page.getByText(/IPFS wallet root QR/i)).toBeVisible();
+  await expect(page.getByText(/bafywalletproofbundlecid/i)).toBeVisible();
+  await expect(page.getByText(/Location is in service region/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open proof review/i })).toBeVisible();
+  const qrSource = await qrImage.getAttribute("src");
+  expect(qrSource).toMatch(/^data:image\/png;base64,/);
+
+  await page.getByRole("link", { name: /Open proof review/i }).click();
+  await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Client wallet proof bundle/i);
+  await expect(page.getByRole("article", { name: /Location is in service region/i }).first()).toContainText(/From QR bundle|Wallet proof bundle link/i);
 });
 
 test("recipient receipt can create an encrypted derived analysis artifact", async ({ page }) => {
@@ -1345,5 +2660,3 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i).first()).toBeVisible();
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
 });
-
-
