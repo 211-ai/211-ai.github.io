@@ -256,6 +256,37 @@ async function generateUploadSummary(file: File): Promise<string> {
   return toShortSummaryTitle(fileNameWithoutExtension || "Uploaded document");
 }
 
+type WorldIdSurfaceState = {
+  actorDidLabel: string;
+  availabilityLabel: string;
+  canOfferVerification: boolean;
+  proofReceiptLabel: string;
+  statusLabel: string;
+  statusTone: "success" | "warning";
+  verified: boolean;
+  walletLabel: string;
+};
+
+function getWorldIdSurfaceState(apiConfig: WalletApiConfig | undefined, proofs: ProofReceiptView[]): WorldIdSurfaceState {
+  const worldIdProofs = proofs.filter((proof) => proof.proofType === "world_id_proof_of_human");
+  const verifiedProof = worldIdProofs.find((proof) => getProofReceiptUiState(proof).accepted);
+  const latestProof = verifiedProof ?? worldIdProofs[0];
+  const walletReady = Boolean(apiConfig?.apiBaseUrl && apiConfig.walletId);
+  const actorReady = Boolean(apiConfig?.actorDid);
+  const canOfferVerification = walletReady && actorReady;
+
+  return {
+    actorDidLabel: apiConfig?.actorDid || "Required",
+    availabilityLabel: canOfferVerification ? "Verification available" : walletReady ? "Actor DID required" : "Wallet API required",
+    canOfferVerification,
+    proofReceiptLabel: latestProof ? getProofReceiptUiState(latestProof).statusLabel : "No proof receipt",
+    statusLabel: verifiedProof ? "World ID verified" : "World ID unverified",
+    statusTone: verifiedProof ? "success" : "warning",
+    verified: Boolean(verifiedProof),
+    walletLabel: apiConfig?.walletId ?? "Not connected"
+  };
+}
+
 export function App() {
   const persistedState = useMemo(() => readPersistedAppState(), []);
   const defaultAppState = useMemo(() => createDefaultAppState(persistedState), [persistedState]);
@@ -290,6 +321,10 @@ export function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
+  const worldIdSurfaceState = useMemo(
+    () => getWorldIdSurfaceState(walletApiConfig, walletProofReceipts),
+    [walletApiConfig, walletProofReceipts]
+  );
 
   async function refreshWalletAccessState() {
     if (!walletApiConfig) return;
@@ -613,10 +648,12 @@ export function App() {
         ) : null}
         {activeRoute === "register" ? (
           <RegistrationScreen
+            onVerifyWorldId={() => navigate("proof-center")}
             profile={profile}
             setProfile={setProfile}
             shelterStaffAccounts={shelterStaffAccounts}
             setShelterStaffAccounts={setShelterStaffAccounts}
+            worldIdState={worldIdSurfaceState}
           />
         ) : null}
         {activeRoute === "check-in" ? (
@@ -634,10 +671,12 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            onVerifyWorldId={() => navigate("proof-center")}
             proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             uploads={uploads}
             setUploads={setUploads}
+            worldIdState={worldIdSurfaceState}
           />
         ) : null}
         {serviceDetailDocId ? (
@@ -670,6 +709,7 @@ export function App() {
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             refreshWalletProofReceipts={refreshWalletProofReceipts}
             setProofs={setWalletProofReceipts}
+            worldIdState={worldIdSurfaceState}
           />
         ) : null}
         {activeRoute === "exports" ? (
@@ -683,8 +723,10 @@ export function App() {
         {activeRoute === "security" ? (
           <SecurityScreen
             apiConfig={walletApiConfig}
+            onVerifyWorldId={() => navigate("proof-center")}
             onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
             proofs={walletProofReceipts}
+            worldIdState={worldIdSurfaceState}
           />
         ) : null}
         {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} proofs={walletProofReceipts} /> : null}
@@ -989,16 +1031,64 @@ function ProofSurfaceSummary({
   );
 }
 
+function WorldIdSurfaceSummary({
+  description,
+  onVerify,
+  state,
+  surfaceLabel
+}: {
+  description: string;
+  onVerify: () => void;
+  state: WorldIdSurfaceState;
+  surfaceLabel: string;
+}) {
+  const headingId = `world-id-${surfaceLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-status`;
+
+  return (
+    <section aria-label={`${surfaceLabel} World ID status`} className="world-id-surface-summary">
+      <div className="scope-header">
+        <div>
+          <p className="eyebrow">{surfaceLabel} World ID status</p>
+          <h2 id={headingId}>Proof-of-human status</h2>
+        </div>
+        <Badge tone={state.statusTone}>{state.statusLabel}</Badge>
+      </div>
+      <p className="world-id-surface-copy">{description}</p>
+      <div className="world-id-surface-facts" aria-label={`${surfaceLabel} World ID facts`}>
+        <StatusPanel label="Status" tone={state.statusTone} value={state.verified ? "Verified proof-of-human" : "Not verified"} />
+        <StatusPanel label="Proof receipt" tone={state.statusTone} value={state.proofReceiptLabel} />
+        <StatusPanel label="Verification" tone={state.canOfferVerification ? "success" : "warning"} value={state.availabilityLabel} />
+        <StatusPanel label="Wallet" tone={state.walletLabel === "Not connected" ? "warning" : "success"} value={state.walletLabel} />
+        <StatusPanel label="Actor DID" tone={state.actorDidLabel === "Required" ? "warning" : "success"} value={state.actorDidLabel} />
+      </div>
+      <StatusBanner tone="info">
+        World ID is optional on this surface. Emergency and essential-service flows remain available even when World ID is unavailable.
+      </StatusBanner>
+      <div className="world-id-surface-actions">
+        {state.canOfferVerification ? (
+          <Button onClick={onVerify} variant="secondary">
+            <ShieldCheck aria-hidden="true" size={18} /> Verify with World ID
+          </Button>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function RegistrationScreen({
+  onVerifyWorldId,
   profile,
   setProfile,
   shelterStaffAccounts,
-  setShelterStaffAccounts
+  setShelterStaffAccounts,
+  worldIdState
 }: {
+  onVerifyWorldId: () => void;
   profile: RegistrationProfileDraft;
   setProfile: (profile: RegistrationProfileDraft) => void;
   shelterStaffAccounts: ShelterStaffAccount[];
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
+  worldIdState: WorldIdSurfaceState;
 }) {
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
   const [photoFileDetail, setPhotoFileDetail] = useState("");
@@ -1048,6 +1138,12 @@ function RegistrationScreen({
         <h1>Create your Abby profile</h1>
       </div>
       <p className="page-note">To start, add your name, birth date, photo or ID.</p>
+      <WorldIdSurfaceSummary
+        description="World ID can add an optional proof-of-human receipt to the wallet. It does not prove legal name, age, citizenship, address, or document ownership."
+        onVerify={onVerifyWorldId}
+        state={worldIdState}
+        surfaceLabel="Register"
+      />
       <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
         <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
           <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
@@ -1807,16 +1903,20 @@ function ContactsScreen({
 
 function UploadsScreen({
   apiConfig,
+  onVerifyWorldId,
   proofs,
   refreshWalletAuditEvents,
   uploads,
-  setUploads
+  setUploads,
+  worldIdState
 }: {
   apiConfig?: WalletApiConfig;
+  onVerifyWorldId: () => void;
   proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
+  worldIdState: WorldIdSurfaceState;
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
   const [walrusUploadIds, setWalrusUploadIds] = useState<string[]>([]);
@@ -1946,6 +2046,12 @@ function UploadsScreen({
         <p className="eyebrow">Uploads</p>
         <h1>Saved files and info</h1>
       </div>
+      <WorldIdSurfaceSummary
+        description="Saved files can carry an optional World ID proof-of-human receipt beside other wallet proof receipts. Uploads do not require World ID."
+        onVerify={onVerifyWorldId}
+        state={worldIdState}
+        surfaceLabel="Uploads"
+      />
       <Section title="Add information">
         <label className="upload-dropzone">
           <Upload aria-hidden="true" size={28} />
@@ -2951,13 +3057,15 @@ function ProofCenterScreen({
   proofs,
   refreshWalletAuditEvents,
   refreshWalletProofReceipts,
-  setProofs
+  setProofs,
+  worldIdState
 }: {
   apiConfig?: WalletApiConfig;
   proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   refreshWalletProofReceipts: () => Promise<void>;
   setProofs: (proofs: ProofReceiptView[]) => void;
+  worldIdState: WorldIdSurfaceState;
 }) {
   const [locationRecordId, setLocationRecordId] = useState(
     (import.meta.env.VITE_DEMO_LOCATION_RECORD_ID as string | undefined) ?? "rec-location-current"
@@ -2969,13 +3077,11 @@ function ProofCenterScreen({
   const worldIdProofs = proofs.filter((proof) => proof.proofType === "world_id_proof_of_human");
   const verifiedWorldIdProof = worldIdProofs.find((proof) => getProofReceiptUiState(proof).accepted);
   const worldIdReceiptState = verifiedWorldIdProof ? getProofReceiptUiState(verifiedWorldIdProof) : null;
-  const worldIdStatusLabel = verifiedWorldIdProof
+  const worldIdStatusLabel = worldIdState.verified
     ? "Verified proof-of-human"
-    : apiConfig?.actorDid
+    : worldIdState.canOfferVerification
       ? "Ready to verify"
-      : apiConfig
-        ? "Actor DID required"
-        : "Wallet API required";
+      : worldIdState.availabilityLabel;
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -3483,12 +3589,16 @@ function uniqueProofSystemLabels(proofs: ProofReceiptView[]): string[] {
 
 function SecurityScreen({
   apiConfig,
+  onVerifyWorldId,
   onSnapshotLoaded,
-  proofs
+  proofs,
+  worldIdState
 }: {
   apiConfig?: WalletApiConfig;
+  onVerifyWorldId: () => void;
   onSnapshotLoaded: () => Promise<void> | void;
   proofs: ProofReceiptView[];
+  worldIdState: WorldIdSurfaceState;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
@@ -3561,6 +3671,12 @@ function SecurityScreen({
       {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet backup saved.</StatusBanner> : null}
       {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet backup loaded.</StatusBanner> : null}
       {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet backup action failed.</StatusBanner> : null}
+      <WorldIdSurfaceSummary
+        description="Security review shows the same World ID proof-of-human state as the wallet proof center. Backups and recovery do not require World ID."
+        onVerify={onVerifyWorldId}
+        state={worldIdState}
+        surfaceLabel="Security"
+      />
       <Section
         title="Wallet backups"
         actions={
