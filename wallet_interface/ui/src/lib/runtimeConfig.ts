@@ -312,6 +312,42 @@ function normalizePrecomputedAudioConfig(
   return { manifestUrl };
 }
 
+<<<<<<< HEAD
+function normalizeRuntimeWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined
+): ResolvedRuntimeWorldIdConfig | undefined {
+  return resolveWorldIdConfig(config);
+}
+
+function readEnvWorldIdConfig(): RuntimeWorldIdConfig | undefined {
+  const enabled =
+    readEnv("VITE_WORLD_ID_ENABLED") ??
+    readEnv("VITE_WALLET_WORLD_ID_ENABLED");
+  const appId =
+    readEnv("VITE_WORLD_ID_APP_ID") ??
+    readEnv("VITE_WALLET_WORLD_ID_APP_ID");
+  const action =
+    readEnv("VITE_WORLD_ID_ACTION") ??
+    readEnv("VITE_WALLET_WORLD_ID_ACTION");
+  const environment =
+    readEnv("VITE_WORLD_ID_ENVIRONMENT") ??
+    readEnv("VITE_WALLET_WORLD_ID_ENVIRONMENT");
+  if (enabled === undefined && !appId && !action && !environment) return undefined;
+  return { enabled, appId, action, environment };
+}
+
+function resolveWorldIdConfig(
+  config: RuntimeWorldIdConfig | null | undefined
+): ResolvedRuntimeWorldIdConfig | undefined {
+  if (!config) return undefined;
+  const enabled = normalizeOptionalBoolean(config.enabled) ?? false;
+  const appId = normalizeOptionalString(config.appId);
+  const action = normalizeOptionalString(config.action) ?? DEFAULT_WORLD_ID_ACTION;
+  const environment = normalizeWorldIdEnvironment(config.environment);
+  if (!enabled) return createDisabledWorldIdConfig("backend_disabled", { appId, action, environment });
+  if (!appId) return createDisabledWorldIdConfig("missing_app_id", { action, environment });
+  if (!action) return createDisabledWorldIdConfig("missing_action", { appId, environment });
+=======
 function readEnvWorldIdConfig(): RuntimeWorldIdConfig | undefined {
   const env = import.meta.env;
   const enabled = normalizeOptionalBoolean(env?.VITE_WORLD_ID_ENABLED);
@@ -367,31 +403,64 @@ function resolveWorldIdConfig(
   if (!action) {
     return createDisabledWorldIdConfig("missing_action", { appId, environment });
   }
+>>>>>>> a90409846cc36413f571329274065072a8136277
   return {
     enabled: true,
     backendEnabled: true,
     environment,
     action,
+<<<<<<< HEAD
+    appId
+=======
     appId,
+>>>>>>> a90409846cc36413f571329274065072a8136277
   };
 }
 
 function createDisabledWorldIdConfig(
   disabledReason: RuntimeWorldIdDisabledReason,
+<<<<<<< HEAD
+  {
+    action = DEFAULT_WORLD_ID_ACTION,
+    appId,
+    environment = DEFAULT_WORLD_ID_ENVIRONMENT
+  }: {
+    action?: string;
+    appId?: string;
+    environment?: RuntimeWorldIdEnvironment;
+  } = {}
+=======
   overrides: Partial<ResolvedRuntimeWorldIdConfig> = {},
+>>>>>>> a90409846cc36413f571329274065072a8136277
 ): ResolvedRuntimeWorldIdConfig {
   return {
     enabled: false,
     backendEnabled: false,
+<<<<<<< HEAD
+    environment,
+    action,
+    ...(appId ? { appId } : {}),
+    disabledReason
+=======
     environment: overrides.environment ?? DEFAULT_WORLD_ID_ENVIRONMENT,
     action: overrides.action ?? DEFAULT_WORLD_ID_ACTION,
     appId: overrides.appId,
     disabledReason,
+>>>>>>> a90409846cc36413f571329274065072a8136277
   };
 }
 
 function normalizeWorldIdEnvironment(value: string | null | undefined): RuntimeWorldIdEnvironment {
+<<<<<<< HEAD
+  return normalizeOptionalString(value) === "production" ? "production" : DEFAULT_WORLD_ID_ENVIRONMENT;
+}
+
+function readEnv(key: string): string | undefined {
+  const value = import.meta.env[key];
+  return typeof value === "string" && value.trim() ? value : undefined;
+=======
   return value === "production" || value === "staging" ? value : DEFAULT_WORLD_ID_ENVIRONMENT;
+>>>>>>> a90409846cc36413f571329274065072a8136277
 }
 
 function normalizeOptionalString(value: number | string | null | undefined): string | undefined {
