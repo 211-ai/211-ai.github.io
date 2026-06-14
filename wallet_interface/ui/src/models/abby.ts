@@ -104,10 +104,10 @@ export interface UploadItem {
   status: "stored" | "encrypting" | "failed";
   storageOk?: boolean;
   shared: boolean;
-  sharingMode?: "private" | "grant" | "public";
+  sharingMode?: "private" | "grant" | "public" | "selected_contacts";
   allowedRecipientIds?: string[];
   decentralizedStorageProvider?: "filecoin" | "walrus" | "ipfs" | "wallet-api" | "local" | "ipfs-filecoin";
-  decentralizedStorageStatus?: "stored" | "queued" | "pinning" | "pinned" | "failed";
+  decentralizedStorageStatus?: "not_configured" | "ready" | "uploading" | "stored" | "queued" | "pinning" | "pinned" | "failed";
   decentralizedStorageMessage?: string;
   encryptedMetadataCid?: string;
   encryptedPayloadCid?: string;

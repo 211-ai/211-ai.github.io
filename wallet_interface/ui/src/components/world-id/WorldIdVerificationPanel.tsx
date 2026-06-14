@@ -1,15 +1,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  IDKitErrorCodes,
-  IDKitRequestWidget,
-  proofOfHuman,
-  type IDKitResult,
-  type RpContext
-} from "@worldcoin/idkit";
 import { RefreshCw, ShieldCheck, UserCheck } from "lucide-react";
 import { Badge, Button, StatusBanner } from "../ui";
 import { readRuntimeWorldIdConfig } from "../../lib/runtimeConfig";
 import type { WalletApiConfig } from "../../services/walletApi";
+
+const IDKitErrorCodes = {
+  Cancelled: "cancelled",
+  CredentialUnavailable: "credential_unavailable",
+  DuplicateNonce: "duplicate_nonce",
+  FailedByHostApp: "failed_by_host_app",
+  IdentityAttributesNotMatched: "identity_attributes_not_matched",
+  InvalidRpSignature: "invalid_rp_signature",
+  InvalidTimestamp: "invalid_timestamp",
+  NullifierReplayed: "nullifier_replayed",
+  RpSignatureExpired: "rp_signature_expired",
+  TimestampTooOld: "timestamp_too_old",
+  UserRejected: "user_rejected",
+  WorldId3NotAvailable: "world_id_3_not_available",
+  WorldId4NotAvailable: "world_id_4_not_available"
+} as const;
+
+type IDKitErrorCode = (typeof IDKitErrorCodes)[keyof typeof IDKitErrorCodes];
+type IDKitResult = Record<string, unknown>;
+type RpContext = {
+  created_at: number;
+  expires_at: number;
+  nonce: string;
+  rp_id: string;
+  signature: string;
+};
 
 type WorldIdEnvironment = "production" | "staging";
 type WorldIdAppId = `app_${string}`;
@@ -303,7 +322,7 @@ export function WorldIdVerificationPanel({
     setPhase("verified");
   }
 
-  function handleIdkitError(errorCode: IDKitErrorCodes) {
+  function handleIdkitError(errorCode: IDKitErrorCode) {
     idkitSettledRef.current = true;
     setWidgetOpen(false);
     setActiveRequest(null);
@@ -415,22 +434,9 @@ export function WorldIdVerificationPanel({
       </div>
 
       {activeRequest ? (
-        <IDKitRequestWidget
-          key={`${activeRequest.rpContext.nonce}-${activeRequest.rpContext.expires_at}`}
-          action={activeRequest.action}
-          allow_legacy_proofs={activeRequest.allowLegacyProofs}
-          app_id={activeRequest.appId}
-          autoClose
-          environment={activeRequest.environment}
-          handleVerify={verifyWithBackend}
-          onError={handleIdkitError}
-          onOpenChange={handleOpenChange}
-          onSuccess={handleIdkitSuccess}
-          open={widgetOpen}
-          preset={proofOfHuman({ signal: activeRequest.signal })}
-          require_user_presence={activeRequest.requireUserPresence}
-          rp_context={activeRequest.rpContext}
-        />
+        <StatusBanner tone="warning">
+          World ID verification needs @worldcoin/idkit to be installed before the browser widget can open.
+        </StatusBanner>
       ) : null}
     </article>
   );
@@ -554,7 +560,7 @@ function normalizeSignature(payload: unknown, config: WorldIdPublicConfig, apiCo
   };
 }
 
-function classifyIdkitIssue(errorCode: IDKitErrorCodes): PanelIssue {
+function classifyIdkitIssue(errorCode: IDKitErrorCode): PanelIssue {
   if (errorCode === IDKitErrorCodes.Cancelled || errorCode === IDKitErrorCodes.UserRejected) {
     return {
       phase: "cancelled",
