@@ -442,13 +442,17 @@ def build_outputs(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, A
     return duplicate_manifest, residual_manifest, report
 
 
+def atomic_write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = path.with_name(f".{path.name}.tmp")
+    temp_path.write_text(content, encoding="utf-8")
+    temp_path.replace(path)
+
+
 def write_outputs(args: argparse.Namespace, duplicate_manifest: dict[str, Any], residual_manifest: dict[str, Any], report: str) -> None:
-    args.duplicate_manifest.parent.mkdir(parents=True, exist_ok=True)
-    args.duplicate_manifest.write_text(json.dumps(duplicate_manifest, indent=2), encoding="utf-8")
-    args.residual_manifest.parent.mkdir(parents=True, exist_ok=True)
-    args.residual_manifest.write_text(json.dumps(residual_manifest, indent=2), encoding="utf-8")
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(report, encoding="utf-8")
+    atomic_write_text(args.duplicate_manifest, json.dumps(duplicate_manifest, indent=2))
+    atomic_write_text(args.residual_manifest, json.dumps(residual_manifest, indent=2))
+    atomic_write_text(args.report, report)
 
 
 def main() -> None:

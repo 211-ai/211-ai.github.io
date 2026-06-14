@@ -42,6 +42,7 @@ export function AgentChatDrawer({
   onConfirmConfirmation,
   onOpenAudio,
   onOpenText,
+  onAudioReply,
   onOpenServiceDetail,
   onAudioReply,
   onSend
