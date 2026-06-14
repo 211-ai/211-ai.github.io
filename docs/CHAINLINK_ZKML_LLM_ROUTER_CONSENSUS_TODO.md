@@ -79,6 +79,7 @@ Track guide:
 - `proofs`: ZKML, TEE, signatures, public inputs, and proof envelopes
 - `privacy`: prompt redaction, receipt boundaries, no-leak behavior
 - `quality`: unit, integration, adversarial, and regression tests
+- `ui`: Abby React app, TypeScript wallet API client, workflow states, and Playwright tests
 - `wallet`: downstream `wallet_interface` and high-impact route integration
 
 ## CLZKML-000 Plan And Executable Backlog
@@ -371,6 +372,56 @@ Track guide:
 - Validation: pytest tests/test_wallet_interface_api.py -q
 - Acceptance: Selected wallet AI router endpoints can request consensus mode through validated request fields or environment policy, record receipt metadata in responses or audit fields, and preserve existing non-consensus behavior unless policy requires fail-closed consensus.
 
+## CLZKML-281 UI/API Consensus Workflow Matrix And Fixtures
+- Status: todo
+- Completion: evidence
+- Priority: P2
+- Track: ui
+- Depends on: CLZKML-270, CLZKML-280
+- Outputs: docs/CHAINLINK_ZKML_LLM_ROUTER_UI_WORKFLOW_MATRIX.md, wallet_interface/ui/tests/fixtures/chainlink-consensus-fixtures.ts
+- Validation: python scripts/portal_implementation_daemon.py --once --no-implement --todo-path docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md --task-prefix '## CLZKML-' --state-prefix clzkml --state-dir data/chainlink_zkml_implementation/state; npm --prefix wallet_interface/ui run build
+- Acceptance: A workflow matrix maps recipient access, wallet/uploads, Proof Center, QR proof review, Security/audit, provider eligibility, and public analytics/proof dashboards to backend routes, TypeScript calls, consensus modes, fail-closed errors, receipt metadata fields, no-leak assertions, and desktop/mobile Playwright coverage; shared fixtures provide deterministic direct, receipt-only, libp2p, CRE, ZKML, TEE, quorum-failure, proof-failure, and sanitizer sentinel payloads.
+
+## CLZKML-282 TypeScript Consensus Client And UI Surfaces
+- Status: todo
+- Completion: evidence
+- Priority: P2
+- Track: ui
+- Depends on: CLZKML-281
+- Outputs: wallet_interface/ui/src/services/walletApi.ts, wallet_interface/ui/src/app/App.tsx, wallet_interface/ui/src/styles/global.css, wallet_interface/ui/tests/smoke.spec.ts
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
+- Acceptance: The TypeScript wallet API client exposes sanitized consensus metadata and typed fail-closed errors, and the UI shows precise direct/consensus/CRE/ZKML/TEE/manual-review state on recipient access derived artifacts, wallet/uploads profiling, Proof Center proof cards, Security/audit events, provider eligibility claims, and public analytics/proof dashboards without labeling receipt-only or TEE evidence as mathematical ZK proof.
+
+## CLZKML-283 Backend/UI Consensus Contract Regression Tests
+- Status: todo
+- Completion: evidence
+- Priority: P2
+- Track: quality
+- Depends on: CLZKML-280, CLZKML-281
+- Outputs: tests/test_wallet_interface_api.py, wallet_interface/ui/tests/agent-unit.spec.ts
+- Validation: pytest tests/test_wallet_interface_api.py -q; npm --prefix wallet_interface/ui run build
+- Acceptance: Backend and TypeScript contract tests cover request-field and environment-policy consensus activation, route response shapes consumed by the UI client, fail-closed error codes, no silent downgrade to direct LLM output, sanitized receipt hashes/CIDs, and no raw prompt, wallet plaintext, operator secret, proof witness, CRE private report, or raw proof payload leakage.
+
+## CLZKML-284 Full-Stack Chainlink Consensus Playwright Harness
+- Status: todo
+- Completion: evidence
+- Priority: P2
+- Track: ui
+- Depends on: CLZKML-282, CLZKML-283
+- Outputs: wallet_interface/ui/tests/chainlink-consensus-fullstack.spec.ts, wallet_interface/ui/tests/fixtures/chainlink-consensus-fixtures.ts
+- Validation: pytest tests/test_wallet_interface_api.py -q; npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/chainlink-consensus-fullstack.spec.ts
+- Acceptance: Playwright launches the real Abby UI and live wallet API with deterministic mocked consensus responses, then verifies recipient access redacted analysis, wallet/uploads profiling, Proof Center/QR review, Security/audit, provider eligibility, and public analytics/proof dashboard behavior for success, fail-closed no-quorum, proof/CRE mismatch, manual fallback, audit refresh, and no visible or exported raw prompt/PII/proof/operator-secret leakage.
+
+## CLZKML-285 Cross-Surface Consensus UX Accessibility And No-Leak Review
+- Status: todo
+- Completion: evidence
+- Priority: P2
+- Track: ui
+- Depends on: CLZKML-284
+- Outputs: wallet_interface/ui/tests/chainlink-consensus-ux.spec.ts, wallet_interface/ui/tests/wallet-ux-review.spec.ts, artifacts/chainlink-zkml-ui-review
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/chainlink-consensus-ux.spec.ts; npm --prefix wallet_interface/ui test -- tests/wallet-ux-review.spec.ts
+- Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari Playwright evidence proves consensus controls and receipt badges are keyboard reachable, have accurate accessible names, avoid horizontal overflow or incoherent overlap, preserve manual-review fallback paths, use precise non-overclaiming labels, and archive screenshots or traces for release signoff.
+
 ## CLZKML-290 Observability And Readiness Checks
 - Status: todo
 - Completion: evidence
@@ -426,7 +477,7 @@ Track guide:
 - Completion: artifact
 - Priority: P3
 - Track: ops
-- Depends on: CLZKML-290, CLZKML-300, CLZKML-310, CLZKML-320, CLZKML-330
+- Depends on: CLZKML-285, CLZKML-290, CLZKML-300, CLZKML-310, CLZKML-320, CLZKML-330
 - Outputs: docs/CHAINLINK_ZKML_LLM_ROUTER_RELEASE_CHECKLIST.md
 - Validation: test -f docs/CHAINLINK_ZKML_LLM_ROUTER_RELEASE_CHECKLIST.md
-- Acceptance: The release checklist captures test commands, required env vars, unsupported downgrade paths, operator identity assumptions, proof-policy limitations, Chainlink CRE deployment evidence, and residual risks before enabling consensus for production high-impact routes.
+- Acceptance: The release checklist captures backend test commands, full-stack and UX Playwright evidence, required env vars, unsupported downgrade paths, operator identity assumptions, proof-policy limitations, Chainlink CRE deployment evidence, frontend no-leak evidence, and residual risks before enabling consensus for production high-impact routes.

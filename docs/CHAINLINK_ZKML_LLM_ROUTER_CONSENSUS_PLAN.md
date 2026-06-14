@@ -1,6 +1,6 @@
 # Chainlink ZKML LLM Router Consensus Plan
 
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
 Executable backlog: `docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md`
 
@@ -455,6 +455,9 @@ Acceptance:
 Files:
 
 - `wallet_interface/api.py`
+- `wallet_interface/ui/src/services/walletApi.ts`
+- `wallet_interface/ui/src/app/App.tsx`
+- `wallet_interface/ui/tests/*`
 - call sites that perform high-impact AI decisions
 - docs and env examples
 
@@ -464,6 +467,11 @@ Work:
 - Require consensus for selected high-risk workflows: eligibility extraction,
   service routing, safety-critical advice, and automated claims.
 - Expose receipt IDs/CIDs to audit views.
+- Add TypeScript models for sanitized consensus metadata and fail-closed error
+  states.
+- Add UI status surfaces for recipient access, wallet/uploads, Proof Center,
+  Security/audit, provider eligibility, and public proof dashboards.
+- Add a UI/backend workflow matrix before expanding Playwright coverage.
 - Keep low-risk chat on the existing fast path.
 
 Acceptance:
@@ -472,6 +480,57 @@ Acceptance:
 - Audit records include receipt hashes and selected operator IDs.
 - UI/API callers can inspect whether output was direct, libp2p consensus, CRE
   verified, ZKML verified, or TEE attested.
+- Frontend tests prove users see verified/attested state, fail-closed fallback,
+  and no raw prompt/proof/operator secret leakage.
+
+## UI/UX Workflow Gap Review
+
+The core router implementation is strong, but the existing plan needs an
+explicit frontend contract so consensus does not remain hidden inside backend
+metadata. The UI must make the trust state inspectable without overclaiming what
+the receipt proves.
+
+Required surfaces:
+
+- Recipient access: redacted analysis, extraction, form analysis, vector
+  profile, and GraphRAG actions show direct/consensus/verified state on derived
+  artifacts.
+- Wallet/uploads: document profiling and organizer metadata generation show
+  whether consensus was required, satisfied, bypassed, or unavailable.
+- Proof Center and QR proof review: public proof cards show sanitized consensus
+  receipt metadata when a proof or derived artifact depends on consensus.
+- Security/audit: fail-closed events, receipt hashes, and verifier labels are
+  visible to wallet operators without exposing private prompts.
+- Provider eligibility and case workflows: automated eligibility claims are
+  blocked or marked manual-review when consensus policy is not satisfied.
+- Public analytics/proof dashboards: release copy that depends on AI-derived
+  claims shows proof/consensus freshness and blocks publication when policy
+  fails.
+
+Required UI states:
+
+- consensus disabled or direct fast path
+- consensus pending
+- receipt-only success
+- libp2p quorum success
+- Chainlink CRE verified success
+- ZKML checker verified success
+- TEE attested success
+- quorum failure
+- proof or CRE verification failure
+- fail-closed manual fallback
+- redacted receipt unavailable
+
+The UI language must distinguish "consensus receipt", "Chainlink CRE verified",
+"ZKML checker verified", and "TEE attested". It must not call a receipt-only
+or TEE-attested result a mathematical ZK proof.
+
+Full-stack Playwright coverage should launch the Abby UI and live wallet API
+with deterministic mock consensus responses. The browser should exercise real
+transport calls for wallet AI router and redacted-analysis routes, then assert
+status refresh, audit evidence, fail-closed behavior, and no visible leakage of
+raw prompts, wallet plaintext, proof witnesses, operator secrets, or raw proof
+payloads.
 
 ### Phase 6: Production hardening
 
@@ -508,6 +567,21 @@ Integration tests:
 - libp2p fan-out to multiple local workers.
 - CRE simulation, gated behind `IPFS_ACCELERATE_PY_RUN_CHAINLINK_CRE_TESTS=1`.
 - ZKML/TEE verifier tests, gated by backend-specific env vars.
+- Wallet/API consensus policy tests for request-field and environment-policy
+  activation, typed errors, fail-closed behavior, and sanitized metadata.
+
+Frontend and Playwright tests:
+
+- TypeScript API client maps sanitized consensus metadata and fail-closed error
+  states.
+- Mocked UI tests cover every consensus state shown in the workflow matrix.
+- Full-stack Playwright drives recipient access and wallet/uploads against a
+  live wallet API with deterministic mock consensus.
+- Proof Center, QR review, Security/audit, provider eligibility, and public
+  analytics surfaces show sanitized receipt state without raw prompt/proof/PII
+  leakage.
+- Desktop Chrome, Mobile Chrome, and Mobile Safari layouts have no horizontal
+  overflow, incoherent overlap, or hidden manual-review fallback.
 
 Security tests:
 
