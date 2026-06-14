@@ -304,19 +304,68 @@ A `ConsensusReceipt` includes:
 
 ---
 
+## Readiness Checks
+
+Use `consensus_health_summary` for readiness and ops health endpoints. The
+summary is designed to be safe to emit to dashboards because it reports only
+configuration state, verifier-policy booleans, fixed failure reason codes, and
+count-only receipt metrics.
+
+```python
+from ipfs_accelerate_py.llm_consensus import consensus_health_summary
+
+summary = consensus_health_summary(
+    {
+        "mode": "libp2p_quorum",
+        "quorum": 2,
+        "min_operators": 3,
+        "peers": ["peer-a", "peer-b", "peer-c"],
+        "cre_workflow_id": "wf-eligibility-v1",
+    },
+    receipts=recent_consensus_receipts,
+    proof_policy={"mode": "chainlink_cre", "verifier": "chainlink-cre-bridge-v1"},
+)
+
+assert summary["status"] in {"ready", "not_ready", "disabled"}
+```
+
+Required readiness fields:
+
+| Field | Meaning |
+| --- | --- |
+| `configured_mode` | Active consensus mode after explicit config and environment resolution |
+| `quorum` | Required agreement threshold |
+| `operator_count` | Configured or observed operator count used for readiness |
+| `cre_workflow_id_present` | Boolean presence check; the workflow ID value is not emitted |
+| `proof_verifier_policy` | Proof mode plus verifier/contract/signature requirement booleans |
+| `last_failure_reason` | Fixed reason code such as `quorum_not_met`; free-form errors are redacted |
+| `redacted_receipt_counts` | Receipt, operator response, proof verification, and CRE receipt counts only |
+
+Readiness output must not include raw prompts, OpenAI chat message content,
+generated output text, operator output text, full receipt bodies, request hashes,
+prompt hashes, CRE workflow ID values, API keys, signing keys, or bearer tokens.
+Use full `ConsensusReceipt` records only in restricted audit storage.
+
+---
+
 ## Environment Variables
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `LLM_CONSENSUS_ENABLED` | `false` | Enable consensus mode |
-| `LLM_CONSENSUS_MODE` | `local_quorum` | Consensus mode |
-| `LLM_CONSENSUS_QUORUM` | `1` | Required agreement count |
-| `LLM_CONSENSUS_MIN_OPERATORS` | `1` | Minimum operator count |
-| `LLM_CONSENSUS_COMPARISON` | `exact` | Output comparison mode |
-| `LLM_CONSENSUS_FAIL_CLOSED` | `true` | Raise on quorum failure |
-| `LLM_CONSENSUS_TIMEOUT_S` | `30` | Total fan-out timeout (seconds) |
-| `LLM_CONSENSUS_RECEIPT_PATH` | — | Write receipt JSON to this path |
-| `LLM_CONSENSUS_RECEIPT_JSONL_PATH` | — | Append receipt to this JSONL file |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_ENABLED` | `true` | Enable consensus mode |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_MODE` | `local_quorum` | Consensus mode |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_QUORUM` | `1` | Required agreement count |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_MIN_OPERATORS` | `1` | Minimum operator count |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_OPERATOR_COUNT` | — | Explicit readiness operator count when operators are not passed |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_PEERS` | — | Comma-separated peer/operator list used for readiness counts |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_COMPARISON` | `exact` | Output comparison mode |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_FAIL_CLOSED` | `true` | Raise on quorum failure |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_TIMEOUT_S` | `60` | Total fan-out timeout (seconds) |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_RECEIPT_PATH` | — | Write receipt JSON to this path |
+| `IPFS_ACCELERATE_PY_LLM_CONSENSUS_RECEIPT_JSONL_PATH` | — | Append receipt to this JSONL file |
+| `IPFS_ACCELERATE_PY_CHAINLINK_CRE_WORKFLOW_ID` | — | CRE workflow ID; readiness reports only whether it is present |
+| `IPFS_ACCELERATE_PY_LLM_PROOF_VERIFIER` | — | Proof verifier identifier for readiness policy checks |
+| `IPFS_ACCELERATE_PY_CHAINLINK_VERIFIER_CONTRACT` | — | Verifier contract address; readiness reports only whether it is present |
 
 ---
 
