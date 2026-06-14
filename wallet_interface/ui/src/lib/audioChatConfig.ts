@@ -1,5 +1,9 @@
 import { readRuntimeVoiceProxyConfig } from "./runtimeConfig";
 
+const DEFAULT_VOICE_PROXY_INFER_URL = "/voice/indextts/infer";
+const DEFAULT_VOICE_PROXY_TTS_URL = "/voice/indextts/tts";
+const DEFAULT_VOICE_PROXY_STT_URL = "/voice/hf-whisper/stt";
+
 type AudioChatConfig = {
   readonly defaultModel: string;
   readonly fallbackVoiceModel: string;
@@ -44,12 +48,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
     if (runtimeEnabled !== undefined) return runtimeEnabled;
     const envEnabled = normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_ENABLED as string | undefined);
     if (envEnabled !== undefined) return envEnabled !== "false";
-    return Boolean(
-      getConfiguredVoiceProxyBaseUrl(runtimeConfig) ||
-        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "infer") ||
-        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "tts") ||
-        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "stt"),
-    );
+    return true;
   },
   get voiceProxyBaseUrl() {
     return (
@@ -65,7 +64,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "infer") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "infer") ||
-      ""
+      DEFAULT_VOICE_PROXY_INFER_URL
     );
   },
   get voiceProxyTtsUrl() {
@@ -75,7 +74,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "tts") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "tts") ||
-      ""
+      DEFAULT_VOICE_PROXY_TTS_URL
     );
   },
   get voiceProxySttUrl() {
@@ -85,7 +84,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "stt") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "stt") ||
-      ""
+      DEFAULT_VOICE_PROXY_STT_URL
     );
   },
   get voiceProxyFallbackModel() {

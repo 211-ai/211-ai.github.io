@@ -334,6 +334,31 @@ test.describe("agent unit contracts", () => {
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
   });
 
+  test("uses same-origin voice proxy defaults when runtime config is empty", () => {
+    const runtimeGlobal = globalThis as typeof globalThis & {
+      __ABBY_RUNTIME_CONFIG__?: {
+        voiceProxy?: {
+          enabled?: boolean;
+          inferUrl?: string;
+          ttsUrl?: string;
+          sttUrl?: string;
+        };
+      };
+    };
+    const previousConfig = runtimeGlobal.__ABBY_RUNTIME_CONFIG__;
+
+    runtimeGlobal.__ABBY_RUNTIME_CONFIG__ = {};
+
+    try {
+      expect(AUDIO_CHAT_CONFIG.voiceProxyEnabled).toBe(true);
+      expect(AUDIO_CHAT_CONFIG.voiceProxyInferUrl).toBe("/voice/indextts/infer");
+      expect(AUDIO_CHAT_CONFIG.voiceProxyTtsUrl).toBe("/voice/indextts/tts");
+      expect(AUDIO_CHAT_CONFIG.voiceProxySttUrl).toBe("/voice/hf-whisper/stt");
+    } finally {
+      runtimeGlobal.__ABBY_RUNTIME_CONFIG__ = previousConfig;
+    }
+  });
+
   test("patches the LiquidAI audio demo runner with local bundled dependencies", () => {
     const source = `
 import * as ort from 'onnxruntime-web';

@@ -26,9 +26,12 @@ from typing import Any, Mapping, Sequence
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from ipfs_accelerate_py.hf_space_inference import HFSpaceClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
 DEFAULT_RESULTS = REPO_ROOT / "docs/211_chatbot_simulation_results.json"
@@ -2689,6 +2692,13 @@ def main() -> None:
                 break
             audio_path = args.output_dir / f"{item['id']}.wav"
             mp3_path = args.output_dir / f"{item['id']}.mp3"
+            if not args.force:
+                if mp3_path.exists() and file_size(mp3_path) == 0:
+                    mp3_path.unlink(missing_ok=True)
+                    print(f"[{index}/{len(responses)}] dropped invalid zero-byte cache {mp3_path.name}")
+                if audio_path.exists() and file_size(audio_path) == 0:
+                    audio_path.unlink(missing_ok=True)
+                    print(f"[{index}/{len(responses)}] dropped invalid zero-byte cache {audio_path.name}")
             if not audio_path.exists() and mp3_path.exists() and not args.force:
                 manifest_entries.append(
                     {

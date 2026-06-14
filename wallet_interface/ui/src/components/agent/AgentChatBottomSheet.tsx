@@ -41,6 +41,7 @@ export function AgentChatBottomSheet({
   onConfirmConfirmation,
   onOpenAudio,
   onOpenText,
+  onAudioReply,
   onOpenServiceDetail,
   onSend
 }: {

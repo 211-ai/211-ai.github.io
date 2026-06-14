@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import time
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
@@ -90,10 +91,25 @@ def write_state(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def load_json_file(path: Path, *, retry_attempts: int = 5, retry_delay_seconds: float = 0.2) -> Any:
+    last_error: Exception | None = None
+    for attempt in range(max(1, retry_attempts)):
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, JSONDecodeError) as error:
+            last_error = error
+            if attempt + 1 >= max(1, retry_attempts):
+                raise
+            time.sleep(retry_delay_seconds)
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError(f"Failed to load JSON from {path}")
+
+
 def read_manifest_rate_limit(path: Path) -> dict[str, str] | None:
     if not path.exists():
         return None
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = load_json_file(path)
     rate_limit = (((payload.get("batchInference") or {}).get("rateLimitDetected")) or {})
     if not rate_limit:
         return None
@@ -125,7 +141,7 @@ def is_retryable_failure_message(message: str) -> bool:
 def read_manifest_failures(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"failedCount": 0, "retryableCount": 0, "allRetryable": False, "messages": []}
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = load_json_file(path)
     responses = payload.get("responses") or []
     failures = [
         entry

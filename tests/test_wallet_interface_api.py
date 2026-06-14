@@ -3673,6 +3673,47 @@ def test_indextts_batch_extracts_audio_from_zip_output(monkeypatch) -> None:
     assert refs[0]["_inline_bytes"] == b"RIFFoneWAVE"
 
 
+def test_indextts_single_tts_accepts_batch_shaped_result(monkeypatch) -> None:
+    wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
+    wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
+    wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
+
+    class FakeClient:
+        def get_config(self) -> dict[str, object]:
+            return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
+
+        def resolve_fn_index(self, api_name: str, config: Mapping[str, object], *, fallback_markers=()):
+            return 17
+
+        def upload_file(self, file_name: str, data: bytes, mime_type: str) -> dict[str, object]:
+            return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+        def queue_join(self, fn_index: int, data: Sequence[object], *, session_hash: str | None = None) -> str:
+            return session_hash or "session-123"
+
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5) -> dict[str, object]:
+            return {
+                "data": [
+                    {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
+                    {"__type__": "update", "value": [{"path": "/tmp/item-1.wav"}]},
+                    {"__type__": "update", "value": None},
+                ]
+            }
+
+        def fetch_file(self, reference: object, *, accept: str = "audio/*, application/octet-stream") -> tuple[bytes, str]:
+            return b"RIFFstubWAVE", "audio/wav"
+
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+
+    result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
+
+    assert result["audioBase64"]
+    assert result["mimeType"] == "audio/wav"
+    assert result["text"] == "Call two one one."
+
+
 def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
     from ipfs_datasets_py import llm_router
 
@@ -3714,6 +3755,32 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
     assert body["latency"]["llm_request_ms"] >= 0
     assert body["latency"]["llm_model"] == "Qwen/Qwen3.5-2B"
     assert prompts and "I need food help" in str(prompts[0]["prompt"])
+
+
+def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:
+    class FakeResponse:
+        headers = {"content-type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps({"items": [{"text": "hello from nested whisper"}]}).encode("utf-8")
+
+    def fake_urlopen(request, timeout: float):
+        return FakeResponse()
+
+    monkeypatch.setenv("HF_TOKEN", "test-token")
+    monkeypatch.setenv("WALLET_HF_WHISPER_MODEL_NAME", "openai/whisper-large-v3-turbo")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+
+    result = wallet_api_module._run_hf_whisper_stt(b"RIFFstubWAVE", audio_name="speech.wav", audio_type="audio/wav")
+
+    assert result["text"] == "hello from nested whisper"
+    assert result["provider"] == "huggingface-whisper"
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:

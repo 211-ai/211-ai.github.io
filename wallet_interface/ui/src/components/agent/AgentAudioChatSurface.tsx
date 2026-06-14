@@ -35,6 +35,8 @@ const MIC_CAPTURE_WORKLET_NAME = "abby-voice-capture-processor";
 const VOICE_RESPONSE_MAX_TOKENS = 512;
 const SPEECH_RECOGNITION_WARMUP_ABORT_MS = 180;
 const SPEECH_RECOGNITION_WARMUP_COOLDOWN_MS = 8000;
+const REMOTE_STT_CAPTURE_DURATION_MS = 4200;
+const REMOTE_STT_PREFLIGHT_CACHE_MS = 60_000;
 const MIC_CAPTURE_WORKLET_SOURCE = `
 class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
   process(inputs, outputs) {
@@ -60,6 +62,7 @@ let primedOpeningClipAudio: HTMLAudioElement | null = null;
 let primedOpeningClipPromise: Promise<HTMLAudioElement | null> | null = null;
 let lastSpeechRecognitionWarmupAt = 0;
 let remoteSpeechToTextPreflightPromise: Promise<boolean> | null = null;
+let remoteSpeechToTextPreflightReadyUntil = 0;
 
 interface BrowserSpeechRecognition extends EventTarget {
   continuous: boolean;
@@ -179,6 +182,7 @@ export function AgentAudioChatSurface({
   const micCaptureSinkRef = useRef<GainNode | null>(null);
   const micCaptureChunksRef = useRef<Float32Array[]>([]);
   const micCaptureEnabledRef = useRef(false);
+  const remoteSpeechCaptureTimeoutRef = useRef<number | null>(null);
   const lastCapturedVoiceBlobRef = useRef<Blob | null>(null);
   const mutedRef = useRef(muted);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
@@ -337,22 +341,38 @@ export function AgentAudioChatSurface({
     ) {
       return;
     }
-    if (!getSpeechRecognitionConstructor()) {
-      setStatusDetail("Speech recognition is not available in this browser.");
-      return;
-    }
     resetVoiceActivityDetector();
     const microphoneReady = await startMicrophoneMeter({ detectVoiceActivity: true });
     if (!microphoneReady || !openRef.current || !voiceDetectionEnabledRef.current) return;
     setSessionState("monitoring");
+    if (!getSpeechRecognitionConstructor()) {
+      setStatusDetail("Listening for speech with remote transcription.");
+      return;
+    }
     setStatusDetail("Listening for speech.");
   }
 
   async function startListening({ fromVoiceActivity = false }: { fromVoiceActivity?: boolean } = {}) {
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) {
-      setSessionState("unavailable");
-      setStatusDetail("Speech recognition is not available in this browser.");
+      stopPlayback();
+      if (fromVoiceActivity) {
+        detectVoiceActivityRef.current = false;
+      } else {
+        setVoiceDetectionEnabled(true);
+        voiceDetectionEnabledRef.current = true;
+        const microphoneReady = await startMicrophoneMeter({ detectVoiceActivity: false });
+        if (!microphoneReady || !openRef.current) return;
+      }
+      setStatusDetail("Checking speech-to-text proxy.");
+      const remoteSpeechReady = await preflightRemoteSpeechToText();
+      if (!remoteSpeechReady) {
+        setSessionState("unavailable");
+        setStatusDetail("Speech recognition is unavailable and speech-to-text proxy is not ready.");
+        stopMicrophoneMeter();
+        return;
+      }
+      startRemoteSpeechCaptureSession();
       return;
     }
     stopPlayback();
@@ -417,6 +437,10 @@ export function AgentAudioChatSurface({
     voiceDetectionEnabledRef.current = false;
     const recognition = recognitionRef.current;
     if (!recognition) {
+      if (micCaptureEnabledRef.current) {
+        void finishRemoteSpeechCaptureSession(true);
+        return;
+      }
       stopMicrophoneMeter();
       setSessionState("ready");
       setStatusDetail("Voice detection paused.");
@@ -463,6 +487,8 @@ export function AgentAudioChatSurface({
     } catch (error) {
       console.warn("[Abby] Remote speech-to-text unavailable; using browser/local speech fallback.", error);
       clientAudioReplyService.markRemoteSpeechToTextPreflight(false, error);
+      remoteSpeechToTextPreflightPromise = null;
+      remoteSpeechToTextPreflightReadyUntil = 0;
       return browserTranscript;
     }
   }
@@ -470,6 +496,8 @@ export function AgentAudioChatSurface({
   function cancelListening() {
     const recognition = recognitionRef.current;
     if (!recognition) {
+      clearRemoteSpeechCaptureTimeout();
+      finalizeVoiceCapture(false);
       stopMicrophoneMeter();
       return;
     }
@@ -608,6 +636,7 @@ export function AgentAudioChatSurface({
 
   function stopMicrophoneMeter() {
     detectVoiceActivityRef.current = false;
+    clearRemoteSpeechCaptureTimeout();
     if (micRafRef.current !== null) {
       window.cancelAnimationFrame(micRafRef.current);
       micRafRef.current = null;
@@ -659,6 +688,37 @@ export function AgentAudioChatSurface({
     const sampleRate = micSampleRateRef.current || 48_000;
     lastCapturedVoiceBlobRef.current = createWavBlobFromFloat32Chunks(micCaptureChunksRef.current, sampleRate);
     micCaptureChunksRef.current = [];
+  }
+
+  function startRemoteSpeechCaptureSession() {
+    clearRemoteSpeechCaptureTimeout();
+    finalTranscriptRef.current = "";
+    setInterimTranscript("Listening...");
+    beginVoiceCapture();
+    setSessionState("listening");
+    setStatusDetail("Capturing speech for transcription.");
+    remoteSpeechCaptureTimeoutRef.current = window.setTimeout(() => {
+      void finishRemoteSpeechCaptureSession(false);
+    }, REMOTE_STT_CAPTURE_DURATION_MS);
+  }
+
+  function clearRemoteSpeechCaptureTimeout() {
+    if (remoteSpeechCaptureTimeoutRef.current === null) return;
+    window.clearTimeout(remoteSpeechCaptureTimeoutRef.current);
+    remoteSpeechCaptureTimeoutRef.current = null;
+  }
+
+  async function finishRemoteSpeechCaptureSession(cancelled: boolean) {
+    clearRemoteSpeechCaptureTimeout();
+    finalizeVoiceCapture(!cancelled);
+    stopMicrophoneMeter();
+    if (cancelled) {
+      setInterimTranscript("");
+      setSessionState("ready");
+      setStatusDetail("Voice detection paused.");
+      return;
+    }
+    await handleSpeechRecognitionEnd("");
   }
 
   function shouldTriggerSpeechRecognition(analyser: AnalyserNode, rms: number): boolean {
@@ -1436,17 +1496,24 @@ function warmupSpeechRecognition(): void {
 }
 
 async function preflightRemoteSpeechToText(): Promise<boolean> {
+  if (Date.now() < remoteSpeechToTextPreflightReadyUntil) {
+    return true;
+  }
   if (!remoteSpeechToTextPreflightPromise) {
     remoteSpeechToTextPreflightPromise = preflightRemoteSpeechToTextProxy()
       .then(() => {
         clientAudioReplyService.markRemoteSpeechToTextPreflight(true);
+        remoteSpeechToTextPreflightReadyUntil = Date.now() + REMOTE_STT_PREFLIGHT_CACHE_MS;
         return true;
       })
       .catch((error) => {
         console.warn("[Abby] Speech-to-text proxy preflight failed; local/browser fallback remains available.", error);
         clientAudioReplyService.markRemoteSpeechToTextPreflight(false, error);
-        remoteSpeechToTextPreflightPromise = null;
+        remoteSpeechToTextPreflightReadyUntil = 0;
         return false;
+      })
+      .finally(() => {
+        remoteSpeechToTextPreflightPromise = null;
       });
   }
   return remoteSpeechToTextPreflightPromise;

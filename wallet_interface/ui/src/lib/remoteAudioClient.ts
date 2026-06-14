@@ -62,6 +62,18 @@ export async function transcribeRemoteSpeech(options: {
     }
 
     try {
+      const contentType = (response.headers.get("Content-Type") || "").toLowerCase();
+      if (contentType.startsWith("text/")) {
+        const transcriptText = (await response.text()).trim();
+        if (transcriptText || options.audioBlob.size > 0) {
+          return {
+            endpointRole: endpoint.role,
+            modelName: endpoint.modelName,
+            provider: "remote-voice-proxy",
+            text: transcriptText,
+          };
+        }
+      }
       const payload = await response.json();
       const normalized = normalizeSpeechToTextJsonPayload(payload, endpoint);
       if (normalized.text || options.audioBlob.size > 0) return normalized;
@@ -269,11 +281,13 @@ function normalizeJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoi
     throw new Error("Voice proxy returned an invalid JSON payload.");
   }
 
-  const generatedText = firstString(payload, ["text", "outputText", "output_text"]);
-  const modelName = firstString(payload, ["model", "modelName", "model_name"]) || endpoint.modelName;
-  const audioBase64 = firstString(payload, ["audioBase64", "audio_base64", "audio", "wavBase64", "wav_base64"]);
+  const normalizedPayload = unwrapFirstBatchItem(payload);
+
+  const generatedText = firstString(normalizedPayload, ["text", "outputText", "output_text"]);
+  const modelName = firstString(normalizedPayload, ["model", "modelName", "model_name"]) || endpoint.modelName;
+  const audioBase64 = firstString(normalizedPayload, ["audioBase64", "audio_base64", "audio", "wavBase64", "wav_base64"]);
   if (audioBase64) {
-    const mimeType = firstString(payload, ["mimeType", "mime_type"]) || "audio/wav";
+    const mimeType = firstString(normalizedPayload, ["mimeType", "mime_type"]) || "audio/wav";
     return {
       audioBlob: base64ToBlob(audioBase64, mimeType),
       endpointRole: endpoint.role,
@@ -294,16 +308,50 @@ function normalizeJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoi
   throw new Error("Voice proxy JSON response did not include base64 audio.");
 }
 
+function unwrapFirstBatchItem(payload: Record<string, unknown>): Record<string, unknown> {
+  const items = payload.items;
+  if (!Array.isArray(items) || items.length === 0) return payload;
+  const firstItem = items[0];
+  if (!isRecord(firstItem)) return payload;
+  return {
+    ...payload,
+    ...firstItem,
+  };
+}
+
 function normalizeSpeechToTextJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoint): RemoteSpeechToTextResult {
   if (!isRecord(payload)) {
     throw new Error("Speech-to-text proxy returned an invalid JSON payload.");
   }
+  const normalizedPayload = unwrapFirstBatchItem(payload);
   return {
     endpointRole: endpoint.role,
-    modelName: firstString(payload, ["model", "modelName", "model_name"]) || endpoint.modelName,
-    provider: firstString(payload, ["provider"]),
-    text: firstString(payload, ["text", "transcript", "transcription", "outputText", "output_text"]) || "",
+    modelName: firstString(normalizedPayload, ["model", "modelName", "model_name"]) || endpoint.modelName,
+    provider: firstString(normalizedPayload, ["provider"]),
+    text: extractSpeechToTextText(normalizedPayload),
   };
+}
+
+function extractSpeechToTextText(payload: Record<string, unknown>): string {
+  const direct = firstString(payload, ["text", "transcript", "transcription", "outputText", "output_text", "generated_text"]);
+  if (direct) return direct;
+
+  const nestedArrays = [payload.items, payload.results, payload.segments, payload.chunks, payload.output];
+  for (const candidate of nestedArrays) {
+    if (!Array.isArray(candidate)) continue;
+    const pieces = candidate
+      .map((item) => {
+        if (typeof item === "string") return item.trim();
+        if (!isRecord(item)) return "";
+        return firstString(item, ["text", "transcript", "transcription", "outputText", "output_text", "generated_text"]) || "";
+      })
+      .filter(Boolean);
+    if (pieces.length) {
+      return pieces.join(" ").trim();
+    }
+  }
+
+  return "";
 }
 
 function firstString(payload: Record<string, unknown>, keys: string[]): string | undefined {

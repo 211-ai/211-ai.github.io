@@ -5701,6 +5701,13 @@ def _run_indextts_gradio_tts(
     timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
     audio_ref = _find_gradio_audio_reference(result)
     if not audio_ref:
+        # Some Space revisions return batch-shaped outputs (including zip bundles)
+        # even for single-item invocations. Reuse batch extraction and keep the
+        # first generated audio to preserve the single-route contract.
+        batch_refs = _indextts_batch_audio_references(result)
+        if batch_refs:
+            audio_ref = batch_refs[0]
+    if not audio_ref:
         raise ValueError("IndexTTS completed without an audio file in the Gradio output")
     stage_start = time.perf_counter()
     audio_bytes, mime_type = _fetch_gradio_file(audio_ref)
@@ -6221,13 +6228,39 @@ def _run_hf_whisper_stt(
     with urllib_request.urlopen(request, timeout=_hf_whisper_timeout_seconds()) as response:
         raw = response.read()
     result = json.loads(raw.decode("utf-8"))
-    text = str(result.get("text") or result.get("transcription") or "").strip()
+    text = _extract_hf_whisper_text(result)
     return {
         "model": selected_model,
         "modelName": selected_model,
         "provider": "huggingface-whisper",
         "text": text,
     }
+
+
+def _extract_hf_whisper_text(payload: Any) -> str:
+    if isinstance(payload, Mapping):
+        for key in ("text", "transcription", "transcript", "generated_text", "output_text"):
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        for key in ("items", "results", "segments", "chunks", "output", "data"):
+            nested = payload.get(key)
+            extracted = _extract_hf_whisper_text(nested)
+            if extracted:
+                return extracted
+        return ""
+    if isinstance(payload, Sequence) and not isinstance(payload, (str, bytes, bytearray)):
+        pieces: List[str] = []
+        for item in payload:
+            extracted = _extract_hf_whisper_text(item)
+            if extracted:
+                pieces.append(extracted)
+        if pieces:
+            return " ".join(pieces).strip()
+        return ""
+    if isinstance(payload, str):
+        return payload.strip()
+    return ""
 
 
 def _hf_whisper_timeout_seconds() -> float:
