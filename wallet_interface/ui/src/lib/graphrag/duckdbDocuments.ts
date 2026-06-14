@@ -1,8 +1,42 @@
-import * as duckdb from "@duckdb/duckdb-wasm";
 import type { CorpusDocument } from "./types";
 
-let duckDbPromise: Promise<duckdb.AsyncDuckDB> | null = null;
-let duckDbBundlesPromise: Promise<duckdb.DuckDBBundles> | null = null;
+interface DuckDbBundle {
+  mainModule: string;
+  mainWorker: string;
+}
+
+interface DuckDbBundles {
+  mvp: DuckDbBundle;
+  eh: DuckDbBundle;
+}
+
+interface DuckDbSelectedBundle {
+  mainModule: string;
+  mainWorker?: string;
+  pthreadWorker?: string;
+}
+
+interface DuckDbLogger {}
+
+interface DuckDbConnection {
+  query(sql: string): Promise<{ toArray(): unknown[] }>;
+  close(): Promise<void>;
+}
+
+interface DuckDbInstance {
+  connect(): Promise<DuckDbConnection>;
+  instantiate(mainModule: string, pthreadWorker?: string): Promise<void>;
+}
+
+interface DuckDbRuntime {
+  selectBundle(bundles: DuckDbBundles): Promise<DuckDbSelectedBundle>;
+  VoidLogger: new () => DuckDbLogger;
+  AsyncDuckDB: new (logger: DuckDbLogger, worker: Worker) => DuckDbInstance;
+}
+
+let duckDbRuntimePromise: Promise<DuckDbRuntime> | null = null;
+let duckDbPromise: Promise<DuckDbInstance> | null = null;
+let duckDbBundlesPromise: Promise<DuckDbBundles> | null = null;
 const parquetQueryPromises = new Map<string, Promise<Record<string, unknown>[]>>();
 const MAX_PARQUET_QUERY_CACHE_ENTRIES = 96;
 
@@ -53,7 +87,10 @@ async function queryParquetRowsUncached(
   const connection = await database.connect();
   try {
     const table = await connection.query(buildReadParquetQuery(parquetUrl, query));
-    return table.toArray().map((row) => normalizeDuckDbValue(row)).map((row) => toRecord(row));
+    return table
+      .toArray()
+      .map((row: unknown) => normalizeDuckDbValue(row))
+      .map((row: unknown) => toRecord(row));
   } finally {
     await connection.close();
   }
@@ -108,29 +145,52 @@ export async function loadDocumentsFromParquet(
   return rows.map((row) => coerceCorpusDocumentFromRow(row));
 }
 
-async function getDuckDb(): Promise<duckdb.AsyncDuckDB> {
+async function getDuckDbRuntime(): Promise<DuckDbRuntime> {
+  if (!duckDbRuntimePromise) {
+    duckDbRuntimePromise = loadDuckDbRuntime();
+  }
+  return duckDbRuntimePromise;
+}
+
+async function getDuckDb(): Promise<DuckDbInstance> {
   if (!duckDbPromise) {
     duckDbPromise = instantiateDuckDb();
   }
   return duckDbPromise;
 }
 
-async function instantiateDuckDb(): Promise<duckdb.AsyncDuckDB> {
-  const bundle = await duckdb.selectBundle(await loadDuckDbBundles());
+async function instantiateDuckDb(): Promise<DuckDbInstance> {
+  const runtime = await getDuckDbRuntime();
+  const bundle = await runtime.selectBundle(await loadDuckDbBundles());
+  if (!bundle.mainWorker) {
+    throw new Error("DuckDB worker URL was not resolved.");
+  }
   const worker = new Worker(bundle.mainWorker!);
-  const logger = new duckdb.VoidLogger();
-  const database = new duckdb.AsyncDuckDB(logger, worker);
+  const logger = new runtime.VoidLogger();
+  const database = new runtime.AsyncDuckDB(logger, worker);
   await database.instantiate(bundle.mainModule, bundle.pthreadWorker);
   return database;
 }
 
-async function loadDuckDbBundles(): Promise<duckdb.DuckDBBundles> {
+async function loadDuckDbRuntime(): Promise<DuckDbRuntime> {
+  const packageName = "@duckdb/duckdb-wasm";
+  try {
+    return (await import(/* @vite-ignore */ packageName)) as unknown as DuckDbRuntime;
+  } catch {
+    throw new Error(
+      "DuckDB support is unavailable because @duckdb/duckdb-wasm is not installed in this environment.",
+    );
+  }
+}
+
+async function loadDuckDbBundles(): Promise<DuckDbBundles> {
   if (!duckDbBundlesPromise) {
+    const distBase = "@duckdb/duckdb-wasm/dist";
     duckDbBundlesPromise = Promise.all([
-      import("@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url"),
-      import("@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url"),
-      import("@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url"),
-      import("@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url"),
+      import(/* @vite-ignore */ `${distBase}/duckdb-mvp.wasm?url`),
+      import(/* @vite-ignore */ `${distBase}/duckdb-browser-mvp.worker.js?url`),
+      import(/* @vite-ignore */ `${distBase}/duckdb-eh.wasm?url`),
+      import(/* @vite-ignore */ `${distBase}/duckdb-browser-eh.worker.js?url`),
     ]).then(([duckdbWasmMvp, duckdbWorkerMvp, duckdbWasmEh, duckdbWorkerEh]) => ({
       mvp: {
         mainModule: duckdbWasmMvp.default,
