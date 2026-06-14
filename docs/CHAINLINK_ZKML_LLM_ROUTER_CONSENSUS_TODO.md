@@ -392,7 +392,7 @@ Track guide:
 - Acceptance: Environment examples document consensus mode, peer list, operator identity, receipt path, fail-closed behavior, CRE workflow settings, verifier contract settings, and proof backend gates without adding secrets.
 
 ## CLZKML-310 Adversarial Consensus Tests
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: quality
