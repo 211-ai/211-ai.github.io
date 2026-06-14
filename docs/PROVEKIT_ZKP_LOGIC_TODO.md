@@ -298,7 +298,7 @@ Track guide:
 - Acceptance: Wallet API regression tests cover ProveKit proof receipt mapping, disabled/unavailable backend responses, artifact hash mismatch, stale verifier key, verification failure, cache hit/miss metadata, simulated-proof overclaim prevention, QR/export proof metadata sanitization, audit event proof-system metadata, and no witness/private-axiom leakage.
 
 ## PROVEKIT-250 Frontend ProveKit Proof UI Surfaces
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
@@ -308,7 +308,7 @@ Track guide:
 - Acceptance: TypeScript proof mappers and UI surfaces preserve exact proof-system labels and states; proof cards, QR review, Security/audit, provider, public-dashboard, and export/import views distinguish simulated, Groth16, ProveKit WHIR, and recursive-wrapper proofs, fail closed on disabled/error states, avoid on-chain overclaiming, and never render witness/private-axiom content.
 
 ## PROVEKIT-260 Full-Stack ProveKit Playwright Harness
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
