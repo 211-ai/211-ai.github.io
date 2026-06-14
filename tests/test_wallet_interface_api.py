@@ -3794,6 +3794,75 @@ def test_indextts_single_tts_accepts_batch_shaped_result(monkeypatch) -> None:
     assert result["text"] == "Call two one one."
 
 
+def test_indextts_wait_for_result_expands_empty_space_queue_error(monkeypatch) -> None:
+    class FakeClient:
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5):
+            raise RuntimeError("Space queue failed: {'error': None}")
+
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+
+    try:
+        wallet_api_module._indextts_wait_for_result("session-opaque-error")
+        raise AssertionError("Expected _indextts_wait_for_result to raise ValueError")
+    except ValueError as exc:
+        assert "Space queue failed without diagnostic details" in str(exc)
+
+
+def test_indextts_tts_falls_back_to_api_name_call_after_opaque_queue_failures(monkeypatch) -> None:
+    wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
+    wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
+    wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
+
+    calls = {"wait": 0, "api_call": 0, "predict": 0}
+
+    class FakeClient:
+        def get_config(self) -> dict[str, object]:
+            return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
+
+        def resolve_fn_index(self, api_name: str, config: Mapping[str, object], *, fallback_markers=()):
+            return 17
+
+        def upload_file(self, file_name: str, data: bytes, mime_type: str) -> dict[str, object]:
+            return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+        def queue_join(self, fn_index: int, data: Sequence[object], *, session_hash: str | None = None) -> str:
+            return session_hash or "session-opaque"
+
+        def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5):
+            calls["wait"] += 1
+            raise RuntimeError("Space queue failed: {'error': None}")
+
+        def call_api_name(
+            self,
+            api_name: str,
+            data: Sequence[object],
+            *,
+            timeout_seconds: float | None = None,
+            poll_interval_seconds: float = 0.5,
+        ) -> Mapping[str, object]:
+            calls["api_call"] += 1
+            return {"data": [{"path": "/tmp/api-name-fallback.wav"}]}
+
+        def call_endpoint(self, fn_index: int, data: Sequence[object]) -> list[object]:
+            calls["predict"] += 1
+            return [{"path": "/tmp/direct-predict.wav"}]
+
+        def fetch_file(self, reference: object, *, accept: str = "audio/*, application/octet-stream") -> tuple[bytes, str]:
+            return b"RIFFstubWAVE", "audio/wav"
+
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
+    monkeypatch.setenv("WALLET_INDEXTTS_ALLOW_DIRECT_PREDICT_FALLBACK", "true")
+    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+
+    result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
+
+    assert result["audioBase64"]
+    assert result["mimeType"] == "audio/wav"
+    assert result["latency"].get("result_path") == "api-name-fallback"
+    assert calls == {"wait": 2, "api_call": 1, "predict": 0}
+
+
 def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
     from ipfs_datasets_py import llm_router
 

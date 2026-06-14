@@ -338,6 +338,71 @@ class HFSpaceClient:
         result = parsed.get("data") if isinstance(parsed, Mapping) else []
         return result if isinstance(result, list) else []
 
+    def call_api_name(
+        self,
+        api_name: str,
+        data: Sequence[Any],
+        *,
+        timeout_seconds: float | None = None,
+        poll_interval_seconds: float = 0.5,
+    ) -> dict[str, Any]:
+        normalized_api_name = normalize_api_name(api_name).lstrip("/")
+        if not normalized_api_name:
+            raise ValueError("api_name is required for Gradio call fallback")
+        timeout = self.timeout_seconds if timeout_seconds is None else float(timeout_seconds)
+
+        submit_response = self._session.post(
+            f"{self.space_url}/gradio_api/call/{urllib_parse.quote(normalized_api_name)}",
+            json={"data": list(data)},
+            headers=self._headers(),
+            timeout=timeout,
+        )
+        submit_response.raise_for_status()
+        submitted = submit_response.json()
+        if not isinstance(submitted, Mapping):
+            raise ValueError("Gradio call submit response is not a JSON object")
+        event_id = str(submitted.get("event_id") or submitted.get("eventId") or "").strip()
+        if not event_id:
+            # Some Gradio revisions may return immediate output.
+            if isinstance(submitted.get("data"), list):
+                return dict(submitted)
+            raise ValueError("Gradio call submit response did not include event_id")
+
+        deadline = time.time() + max(1.0, timeout)
+        stream_url = (
+            f"{self.space_url}/gradio_api/call/{urllib_parse.quote(normalized_api_name)}/"
+            f"{urllib_parse.quote(event_id)}"
+        )
+        while time.time() < deadline:
+            response = self._session.get(
+                stream_url,
+                headers=self._headers(),
+                timeout=min(30.0, max(5.0, timeout)),
+                stream=True,
+            )
+            response.raise_for_status()
+            for raw_line in response.iter_lines(decode_unicode=True):
+                line = str(raw_line or "").strip()
+                if not line.startswith("data:"):
+                    continue
+                payload_text = line.removeprefix("data:").strip()
+                if not payload_text:
+                    continue
+                event = json.loads(payload_text)
+                if not isinstance(event, Mapping):
+                    continue
+                message = str(event.get("msg") or "")
+                if message == "process_completed":
+                    if event.get("success") is False:
+                        output = event.get("output") or event
+                        raise RuntimeError(f"Space Gradio call failed: {output}")
+                    output = event.get("output")
+                    return dict(output) if isinstance(output, Mapping) else dict(event)
+                if message in {"process_failed", "queue_full"}:
+                    raise RuntimeError(f"Space Gradio call failed: {event}")
+            time.sleep(max(0.05, float(poll_interval_seconds)))
+        raise TimeoutError("Space Gradio call timed out")
+
     def queue_join(self, fn_index: int, data: Sequence[Any], *, session_hash: str | None = None) -> str:
         resolved_session_hash = str(session_hash or uuid.uuid4().hex)
         payload = {

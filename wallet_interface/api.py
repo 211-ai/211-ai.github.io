@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import base64
+import concurrent.futures
+from contextlib import contextmanager
 import hashlib
 import hmac
 import io
@@ -1504,7 +1506,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
             "spaceUrl": _indextts_space_base_url(),
             "apiName": _indextts_api_name(),
             "batchApiName": _indextts_batch_api_name(),
-            "modelName": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
+            "modelName": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo"),
             "billTo": (
                 os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
                 or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
@@ -2547,13 +2549,16 @@ def create_app(*, service: WalletInterfaceService | None = None):
         voice_description: str | None = Form(default=None),
     ) -> Dict[str, Any]:
         try:
-            audio = _run_indextts_gradio_tts(
-                text=text,
-                voice_description=voice_description,
+            audio = _run_indextts_with_endpoint_retry(
+                "tts",
+                lambda: _run_indextts_tts_with_batch_fallback(
+                    text=text,
+                    voice_description=voice_description,
+                ),
             )
             return audio
         except Exception as exc:
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
+            raise HTTPException(status_code=503, detail=_indextts_degraded_error_payload(exc, "tts")) from exc
 
     @app.post("/voice/indextts/batch")
     def indextts_voice_batch(payload: Dict[str, Any] = Body(default_factory=dict)) -> Dict[str, Any]:
@@ -2565,15 +2570,18 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 texts = [str(item) for item in raw_texts if str(item or "").strip()]
             else:
                 texts = []
-            audio = _run_indextts_gradio_batch_tts(
-                texts=texts,
-                voice_description=str(payload.get("voice_description") or payload.get("voiceDescription") or "")
-                if isinstance(payload, Mapping)
-                else "",
+            audio = _run_indextts_with_endpoint_retry(
+                "batch",
+                lambda: _run_indextts_gradio_batch_tts(
+                    texts=texts,
+                    voice_description=str(payload.get("voice_description") or payload.get("voiceDescription") or "")
+                    if isinstance(payload, Mapping)
+                    else "",
+                ),
             )
             return audio
         except Exception as exc:
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
+            raise HTTPException(status_code=503, detail=_indextts_degraded_error_payload(exc, "batch")) from exc
 
     @app.post("/voice/indextts/infer")
     async def indextts_voice_infer(
@@ -2592,19 +2600,25 @@ def create_app(*, service: WalletInterfaceService | None = None):
             reference_audio = await audio.read() if audio is not None else None
             reference_name = getattr(audio, "filename", None) if audio is not None else None
             reference_type = getattr(audio, "content_type", None) if audio is not None else None
-            reply_text, generation_latency = _generate_indextts_voice_reply_text(
-                mode=mode,
-                text=text,
-                system_prompt=system_prompt or systemPrompt,
-                user_prompt=user_prompt or userPrompt,
-                fallback_text=fallback_text or fallbackText,
+            reply_text, generation_latency = _run_indextts_with_endpoint_retry(
+                "infer-generate",
+                lambda: _generate_indextts_voice_reply_text(
+                    mode=mode,
+                    text=text,
+                    system_prompt=system_prompt or systemPrompt,
+                    user_prompt=user_prompt or userPrompt,
+                    fallback_text=fallback_text or fallbackText,
+                ),
             )
-            audio_payload = _run_indextts_gradio_tts(
-                text=reply_text,
-                voice_description=voice_description,
-                reference_audio=reference_audio,
-                reference_audio_name=reference_name,
-                reference_audio_mime_type=reference_type,
+            audio_payload = _run_indextts_with_endpoint_retry(
+                "infer",
+                lambda: _run_indextts_tts_with_batch_fallback(
+                    text=reply_text,
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_name,
+                    reference_audio_mime_type=reference_type,
+                ),
             )
             audio_payload["text"] = reply_text
             latency = dict(audio_payload.get("latency") or {})
@@ -2612,7 +2626,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
             audio_payload["latency"] = latency
             return audio_payload
         except Exception as exc:
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
+            raise HTTPException(status_code=503, detail=_indextts_degraded_error_payload(exc, "infer")) from exc
 
     @app.post("/voice/hf-whisper/stt")
     async def hf_whisper_voice_stt(
@@ -4681,7 +4695,32 @@ def _build_privacy_vector_terms(outputs: Sequence[Mapping[str, Any]], public_inp
 
 
 def _indextts_space_base_url() -> str:
-    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+    override = str(getattr(_INDEXTTS_ACTIVE_SPACE_URL, "value", "") or "").strip().rstrip("/")
+    if override:
+        return override
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space").strip().rstrip("/")
+
+
+def _indextts_fallback_space_base_url() -> str:
+    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+
+
+def _indextts_space_base_urls() -> List[str]:
+    urls: List[str] = []
+    for candidate in (_indextts_space_base_url(), _indextts_fallback_space_base_url()):
+        normalized = str(candidate or "").strip().rstrip("/")
+        if normalized and normalized not in urls:
+            urls.append(normalized)
+    return urls
+
+
+def _indextts_model_name() -> str:
+    primary_model = os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo").strip()
+    fallback_model = os.getenv("WALLET_INDEXTTS_FALLBACK_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo").strip()
+    active_space = _indextts_space_base_url().strip().rstrip("/")
+    if active_space and active_space == _indextts_fallback_space_base_url():
+        return fallback_model or primary_model
+    return primary_model
 
 
 def _indextts_api_name() -> str:
@@ -4693,6 +4732,12 @@ def _indextts_batch_api_name() -> str:
 
 
 def _indextts_timeout_seconds() -> float:
+    override = getattr(_INDEXTTS_ACTIVE_TIMEOUT_SECONDS, "value", None)
+    if override is not None:
+        try:
+            return max(5.0, float(override))
+        except Exception:
+            pass
     try:
         return max(5.0, float(os.getenv("WALLET_INDEXTTS_TIMEOUT_SECONDS", "180")))
     except Exception:
@@ -5670,6 +5715,86 @@ def _indextts_cache_ttl_seconds() -> float:
 
 _INDEXTTS_SPACE_CLIENT: HFSpaceClient | None = None
 _INDEXTTS_SPACE_CLIENT_KEY = ""
+_INDEXTTS_ACTIVE_SPACE_URL = threading.local()
+_INDEXTTS_ACTIVE_TIMEOUT_SECONDS = threading.local()
+_INDEXTTS_FAST_FAIL_MODE = threading.local()
+_INDEXTTS_FORCE_REQUIRE_BATCH = threading.local()
+
+
+@contextmanager
+def _indextts_use_space_base_url(base_url: str):
+    previous = getattr(_INDEXTTS_ACTIVE_SPACE_URL, "value", None)
+    _INDEXTTS_ACTIVE_SPACE_URL.value = str(base_url or "").strip().rstrip("/")
+    try:
+        yield
+    finally:
+        if previous is None:
+            try:
+                delattr(_INDEXTTS_ACTIVE_SPACE_URL, "value")
+            except AttributeError:
+                pass
+        else:
+            _INDEXTTS_ACTIVE_SPACE_URL.value = previous
+
+
+@contextmanager
+def _indextts_use_timeout_seconds(seconds: float | None):
+    previous = getattr(_INDEXTTS_ACTIVE_TIMEOUT_SECONDS, "value", None)
+    _INDEXTTS_ACTIVE_TIMEOUT_SECONDS.value = None if seconds is None else float(seconds)
+    try:
+        yield
+    finally:
+        if previous is None:
+            try:
+                delattr(_INDEXTTS_ACTIVE_TIMEOUT_SECONDS, "value")
+            except AttributeError:
+                pass
+        else:
+            _INDEXTTS_ACTIVE_TIMEOUT_SECONDS.value = previous
+
+
+def _indextts_attempt_timeout_seconds(space_index: int, total_spaces: int) -> float:
+    default_timeout = _indextts_timeout_seconds()
+    if total_spaces > 1 and space_index == 0:
+        return min(default_timeout, 20.0)
+    if total_spaces > 1 and space_index == total_spaces - 1:
+        return min(default_timeout, 45.0)
+    return default_timeout
+
+
+def _indextts_degraded_fast_fail_enabled() -> bool:
+    value = str(os.getenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "true")).strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+@contextmanager
+def _indextts_fast_fail_mode(enabled: bool):
+    previous = getattr(_INDEXTTS_FAST_FAIL_MODE, "value", False)
+    _INDEXTTS_FAST_FAIL_MODE.value = bool(enabled)
+    try:
+        yield
+    finally:
+        _INDEXTTS_FAST_FAIL_MODE.value = previous
+
+
+def _indextts_is_fast_fail_mode() -> bool:
+    return bool(getattr(_INDEXTTS_FAST_FAIL_MODE, "value", False))
+
+
+@contextmanager
+def _indextts_force_require_batch(enabled: bool):
+    previous = getattr(_INDEXTTS_FORCE_REQUIRE_BATCH, "value", False)
+    _INDEXTTS_FORCE_REQUIRE_BATCH.value = bool(enabled)
+    try:
+        yield
+    finally:
+        _INDEXTTS_FORCE_REQUIRE_BATCH.value = previous
+
+
+def _indextts_require_batch_mode() -> bool:
+    if bool(getattr(_INDEXTTS_FORCE_REQUIRE_BATCH, "value", False)):
+        return True
+    return str(os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "")).strip().lower() in {"1", "true", "yes"}
 
 
 def _indextts_space_client() -> HFSpaceClient:
@@ -5760,7 +5885,197 @@ def _indextts_queue_join(fn_index: int, data: Sequence[Any]) -> str:
     return _indextts_space_client().queue_join(int(fn_index), list(data))
 
 
+def _is_opaque_indextts_queue_failure(detail: str) -> bool:
+    normalized = str(detail or "").lower()
+    return "space queue failed" in normalized and (
+        "error=null" in normalized or "{'error': none}" in normalized
+    )
+
+
+def _indextts_allow_direct_predict_fallback() -> bool:
+    value = str(os.getenv("WALLET_INDEXTTS_ALLOW_DIRECT_PREDICT_FALLBACK", "true")).strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _indextts_execute_with_queue_fallback(
+    *,
+    fn_index: int,
+    data: Sequence[Any],
+    timings: Dict[str, Any],
+    api_name: str,
+) -> Mapping[str, Any]:
+    stage_start = time.perf_counter()
+    session_hash = _indextts_queue_join(fn_index, data)
+    timings["queue_join_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+
+    stage_start = time.perf_counter()
+    queue_error: Exception | None = None
+    should_retry_queue = True
+    try:
+        result = _indextts_wait_for_result(session_hash)
+        timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+        timings["result_path"] = "queue"
+        return result
+    except Exception as exc:
+        timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+        timings["queue_error"] = str(exc)
+        if _indextts_is_fast_fail_mode():
+            raise
+        if not _indextts_allow_direct_predict_fallback():
+            raise
+        if not _is_opaque_indextts_queue_failure(str(exc)):
+            should_retry_queue = False
+        queue_error = exc
+
+    if _indextts_is_fast_fail_mode():
+        if queue_error is not None:
+            raise queue_error
+        raise ValueError("IndexTTS fast-fail mode reached fallback guard without queue error")
+
+    if _indextts_degraded_fast_fail_enabled():
+        if queue_error is not None:
+            raise queue_error
+        raise ValueError("IndexTTS degraded fast-fail mode reached fallback guard without queue error")
+
+    if should_retry_queue:
+        # Opaque queue failures are commonly transient. Retry one fresh queue session
+        # before using direct predict as a compatibility fallback.
+        retry_start = time.perf_counter()
+        retry_session_hash = _indextts_queue_join(fn_index, data)
+        timings["queue_retry_join_ms"] = max(0, int((time.perf_counter() - retry_start) * 1000))
+        retry_start = time.perf_counter()
+        try:
+            result = _indextts_wait_for_result(retry_session_hash)
+            timings["queue_retry_wait_ms"] = max(0, int((time.perf_counter() - retry_start) * 1000))
+            timings["result_path"] = "queue-retry"
+            return result
+        except Exception as retry_exc:
+            timings["queue_retry_wait_ms"] = max(0, int((time.perf_counter() - retry_start) * 1000))
+            timings["queue_retry_error"] = str(retry_exc)
+            if not _is_opaque_indextts_queue_failure(str(retry_exc)):
+                raise
+            queue_error = retry_exc
+
+    api_name_fallback_start = time.perf_counter()
+    try:
+        api_name_result = _indextts_space_client().call_api_name(
+            api_name,
+            data,
+            timeout_seconds=_indextts_timeout_seconds(),
+            poll_interval_seconds=0.5,
+        )
+        timings["api_name_fallback_ms"] = max(0, int((time.perf_counter() - api_name_fallback_start) * 1000))
+        timings["result_path"] = "api-name-fallback"
+        return api_name_result if isinstance(api_name_result, Mapping) else {"data": api_name_result}
+    except Exception as api_name_exc:
+        timings["api_name_fallback_ms"] = max(0, int((time.perf_counter() - api_name_fallback_start) * 1000))
+        timings["api_name_fallback_error"] = str(api_name_exc)
+
+    direct_start = time.perf_counter()
+    try:
+        direct_result = _indextts_space_client().call_endpoint(fn_index, data)
+        timings["direct_predict_ms"] = max(0, int((time.perf_counter() - direct_start) * 1000))
+        timings["result_path"] = "direct-predict-fallback"
+        return {"data": direct_result if isinstance(direct_result, list) else [direct_result]}
+    except Exception as direct_predict_exc:
+        timings["direct_predict_ms"] = max(0, int((time.perf_counter() - direct_start) * 1000))
+        timings["direct_predict_error"] = str(direct_predict_exc)
+        if queue_error is not None:
+            raise queue_error
+        raise
+
+
+def _indextts_degraded_error_payload(exc: Exception, operation: str) -> Dict[str, Any]:
+    return {
+        "code": "indextts_temporarily_unavailable",
+        "message": "IndexTTS is temporarily unavailable across configured spaces.",
+        "operation": operation,
+        "retryable": True,
+        "degraded": True,
+        "fallbackRecommended": "local-audio",
+        "detail": str(exc),
+        "spaceUrls": _indextts_space_base_urls(),
+    }
+
+
+def _indextts_endpoint_timeout_seconds() -> float:
+    try:
+        return max(5.0, float(os.getenv("WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS", "95")))
+    except Exception:
+        return 95.0
+
+
+def _indextts_endpoint_retry_count() -> int:
+    try:
+        return max(0, min(2, int(os.getenv("WALLET_INDEXTTS_ENDPOINT_RETRIES", "1"))))
+    except Exception:
+        return 1
+
+
+def _run_indextts_with_endpoint_timeout(operation: str, fn):
+    timeout_seconds = _indextts_endpoint_timeout_seconds()
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(fn)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except concurrent.futures.TimeoutError as exc:
+        future.cancel()
+        raise TimeoutError(f"IndexTTS {operation} exceeded endpoint timeout ({timeout_seconds:.0f}s)") from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _run_indextts_with_endpoint_retry(operation: str, fn):
+    retries = _indextts_endpoint_retry_count()
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            return _run_indextts_with_endpoint_timeout(operation, fn)
+        except Exception as exc:
+            last_exc = exc
+            if attempt >= retries:
+                raise
+            # Short pause before retrying to avoid immediately re-hitting a transient failure.
+            time.sleep(0.2)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"IndexTTS {operation} failed without an explicit error")
+
+
 def _run_indextts_gradio_tts(
+    *,
+    text: str,
+    voice_description: str | None = None,
+    reference_audio: bytes | None = None,
+    reference_audio_name: str | None = None,
+    reference_audio_mime_type: str | None = None,
+) -> Dict[str, Any]:
+    last_error: Exception | None = None
+    errors_by_space: Dict[str, str] = {}
+    space_urls = _indextts_space_base_urls()
+    for index, space_url in enumerate(space_urls):
+        with _indextts_use_space_base_url(space_url), _indextts_use_timeout_seconds(
+            _indextts_attempt_timeout_seconds(index, len(space_urls))
+        ), _indextts_fast_fail_mode(index < (len(space_urls) - 1)):
+            try:
+                return _run_indextts_gradio_tts_for_space(
+                    text=text,
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_audio_name,
+                    reference_audio_mime_type=reference_audio_mime_type,
+                )
+            except Exception as exc:
+                last_error = exc
+                errors_by_space[space_url] = str(exc)
+                continue
+    detail = "; ".join(f"{url}: {message}" for url, message in errors_by_space.items())
+    if last_error is not None:
+        raise ValueError(f"IndexTTS failed across configured spaces ({detail})") from last_error
+    raise ValueError("IndexTTS failed: no configured spaces available")
+
+
+def _run_indextts_gradio_tts_for_space(
     *,
     text: str,
     voice_description: str | None = None,
@@ -5788,12 +6103,12 @@ def _run_indextts_gradio_tts(
         voice_description=voice_description,
         reference_audio=uploaded_reference,
     )
-    stage_start = time.perf_counter()
-    session_hash = _indextts_queue_join(fn_index, data)
-    timings["queue_join_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
-    stage_start = time.perf_counter()
-    result = _indextts_wait_for_result(session_hash)
-    timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+    result = _indextts_execute_with_queue_fallback(
+        fn_index=fn_index,
+        data=data,
+        timings=timings,
+        api_name=_indextts_api_name(),
+    )
     audio_ref = _find_gradio_audio_reference(result)
     if not audio_ref:
         # Some Space revisions return batch-shaped outputs (including zip bundles)
@@ -5813,7 +6128,8 @@ def _run_indextts_gradio_tts(
     return {
         "audioBase64": base64.b64encode(audio_bytes).decode("ascii"),
         "mimeType": mime_type or "audio/wav",
-        "model": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
+        "model": _indextts_model_name(),
+        "spaceUrl": _indextts_space_base_url(),
         "provider": "huggingface-zero-gpu-gradio",
         "billTo": os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus",
         "referenceAudio": str(uploaded_reference.get("orig_name") or uploaded_reference.get("path") or "")
@@ -5826,6 +6142,39 @@ def _run_indextts_gradio_tts(
 
 
 def _run_indextts_gradio_batch_tts(
+    *,
+    texts: Sequence[str],
+    voice_description: str | None = None,
+    reference_audio: bytes | None = None,
+    reference_audio_name: str | None = None,
+    reference_audio_mime_type: str | None = None,
+) -> Dict[str, Any]:
+    last_error: Exception | None = None
+    errors_by_space: Dict[str, str] = {}
+    space_urls = _indextts_space_base_urls()
+    for index, space_url in enumerate(space_urls):
+        with _indextts_use_space_base_url(space_url), _indextts_use_timeout_seconds(
+            _indextts_attempt_timeout_seconds(index, len(space_urls))
+        ), _indextts_fast_fail_mode(index < (len(space_urls) - 1)):
+            try:
+                return _run_indextts_gradio_batch_tts_for_space(
+                    texts=texts,
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_audio_name,
+                    reference_audio_mime_type=reference_audio_mime_type,
+                )
+            except Exception as exc:
+                last_error = exc
+                errors_by_space[space_url] = str(exc)
+                continue
+    detail = "; ".join(f"{url}: {message}" for url, message in errors_by_space.items())
+    if last_error is not None:
+        raise ValueError(f"IndexTTS batch failed across configured spaces ({detail})") from last_error
+    raise ValueError("IndexTTS batch failed: no configured spaces available")
+
+
+def _run_indextts_gradio_batch_tts_for_space(
     *,
     texts: Sequence[str],
     voice_description: str | None = None,
@@ -5850,12 +6199,12 @@ def _run_indextts_gradio_batch_tts(
             voice_description=voice_description,
             reference_audio=uploaded_reference,
         )
-        stage_start = time.perf_counter()
-        session_hash = _indextts_queue_join(fn_index, data)
-        timings["queue_join_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
-        stage_start = time.perf_counter()
-        result = _indextts_wait_for_result(session_hash)
-        timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+        result = _indextts_execute_with_queue_fallback(
+            fn_index=fn_index,
+            data=data,
+            timings=timings,
+            api_name=_indextts_batch_api_name(),
+        )
         audio_refs = _indextts_batch_audio_references(result)
         if len(audio_refs) < len(prompts):
             raise ValueError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(prompts)} texts")
@@ -5876,11 +6225,11 @@ def _run_indextts_gradio_batch_tts(
         timings["file_fetch_ms"] = max(0, int((time.perf_counter() - fetch_start) * 1000))
         mode = "batch"
     except Exception as exc:
-        if str(os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "")).strip().lower() in {"1", "true", "yes"}:
+        if _indextts_require_batch_mode():
             raise
         fallback_start = time.perf_counter()
         items = [
-            _run_indextts_gradio_tts(
+            _run_indextts_gradio_tts_for_space(
                 text=raw_prompt,
                 voice_description=voice_description,
                 reference_audio=reference_audio,
@@ -5897,11 +6246,76 @@ def _run_indextts_gradio_batch_tts(
         "items": items,
         "batchSize": len(items),
         "mode": mode,
-        "model": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
+        "model": _indextts_model_name(),
+        "spaceUrl": _indextts_space_base_url(),
         "provider": "huggingface-zero-gpu-gradio",
         "billTo": os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus",
         "latency": timings,
     }
+
+
+def _indextts_single_batch_fallback_enabled() -> bool:
+    value = str(os.getenv("WALLET_INDEXTTS_SINGLE_BATCH_FALLBACK", "true")).strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _run_indextts_tts_with_batch_fallback(
+    *,
+    text: str,
+    voice_description: str | None = None,
+    reference_audio: bytes | None = None,
+    reference_audio_name: str | None = None,
+    reference_audio_mime_type: str | None = None,
+) -> Dict[str, Any]:
+    try:
+        return _run_indextts_gradio_tts(
+            text=text,
+            voice_description=voice_description,
+            reference_audio=reference_audio,
+            reference_audio_name=reference_audio_name,
+            reference_audio_mime_type=reference_audio_mime_type,
+        )
+    except Exception as single_exc:
+        if not _indextts_single_batch_fallback_enabled():
+            raise
+        try:
+            with _indextts_force_require_batch(True):
+                batch = _run_indextts_gradio_batch_tts(
+                    texts=[text],
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_audio_name,
+                    reference_audio_mime_type=reference_audio_mime_type,
+                )
+        except Exception as batch_exc:
+            raise ValueError(
+                f"IndexTTS single failed and batch fallback failed: single={single_exc}; batch={batch_exc}"
+            ) from batch_exc
+        items = batch.get("items") if isinstance(batch, Mapping) else None
+        if not isinstance(items, list) or not items:
+            raise ValueError("IndexTTS batch fallback returned no items") from single_exc
+        first_item = items[0] if isinstance(items[0], Mapping) else {}
+        response: Dict[str, Any] = {
+            "audioBase64": str(first_item.get("audioBase64") or ""),
+            "mimeType": str(first_item.get("mimeType") or "audio/wav"),
+            "model": str(batch.get("model") or _indextts_model_name()) if isinstance(batch, Mapping) else _indextts_model_name(),
+            "spaceUrl": str(batch.get("spaceUrl") or _indextts_space_base_url()) if isinstance(batch, Mapping) else _indextts_space_base_url(),
+            "provider": str(batch.get("provider") or "huggingface-zero-gpu-gradio") if isinstance(batch, Mapping) else "huggingface-zero-gpu-gradio",
+            "billTo": str(batch.get("billTo") or os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus")
+            if isinstance(batch, Mapping)
+            else (os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus"),
+            "referenceAudio": "",
+            "text": str(first_item.get("text") or text),
+            "originalText": str(first_item.get("originalText") or ""),
+            "latency": {
+                "result_path": "single-batch-fallback",
+                "single_error": str(single_exc),
+                "batch_latency": dict(batch.get("latency") or {}) if isinstance(batch, Mapping) else {},
+            },
+        }
+        if not response["audioBase64"]:
+            raise ValueError("IndexTTS batch fallback did not return audioBase64") from single_exc
+        return response
 
 
 def _indextts_upload_reference_audio(
@@ -6121,7 +6535,19 @@ def _indextts_wait_for_result(session_hash: str) -> Dict[str, Any]:
             poll_interval_seconds=0.5,
         )
     except Exception as exc:
-        raise ValueError(f"IndexTTS Gradio queue failed: {exc}") from exc
+        detail = _normalize_indextts_queue_failure(exc)
+        raise ValueError(f"IndexTTS Gradio queue failed: {detail}") from exc
+
+
+def _normalize_indextts_queue_failure(error: Exception) -> str:
+    detail = str(error or "").strip() or type(error).__name__
+    normalized = detail.replace('"', "'").lower()
+    if "space queue failed" in normalized and "{'error': none}" in normalized:
+        return (
+            "Space queue failed without diagnostic details (error=null). "
+            "The Hugging Face Space may be overloaded or dropped the job; retry shortly."
+        )
+    return detail
 
 
 def _find_gradio_audio_reference(value: Any) -> Any:

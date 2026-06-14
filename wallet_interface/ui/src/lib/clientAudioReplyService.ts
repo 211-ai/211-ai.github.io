@@ -281,7 +281,7 @@ export class ClientAudioReplyService {
           onProgress: options.onProgress,
         });
       } catch (error) {
-        this.remoteAudioLastError = formatError(error);
+        this.markRemoteAudioUnavailable(error);
       }
     }
     if (this.shouldUseWarmupFallback()) {
@@ -384,7 +384,7 @@ export class ClientAudioReplyService {
           onProgress: options.onProgress,
         });
       } catch (error) {
-        this.remoteAudioLastError = formatError(error);
+        this.markRemoteAudioUnavailable(error);
       }
     }
     if (this.shouldUseWarmupFallback()) {
@@ -487,7 +487,7 @@ export class ClientAudioReplyService {
       return "Local audio generation is disabled by configuration.";
     }
     if (!this.canTryLocalAudioAfterRemoteVoiceFailure()) {
-      return "Local audio generation waits until Hugging Face Whisper and IndexTTS preflights both fail.";
+      return "Local audio generation waits until IndexTTS preflight fails.";
     }
     const blockReason = this.getLocalAudioBlockReason();
     if (blockReason) return blockReason;
@@ -612,7 +612,13 @@ export class ClientAudioReplyService {
   }
 
   private canTryLocalAudioAfterRemoteVoiceFailure(): boolean {
-    return this.remoteAudioPreflight === "failed" && this.remoteSpeechToTextPreflight === "failed";
+    if (!this.canUseRemoteAudio()) return true;
+    return this.remoteAudioPreflight === "failed" || Boolean(this.remoteAudioLastError);
+  }
+
+  private markRemoteAudioUnavailable(error: unknown): void {
+    this.remoteAudioLastError = formatError(error);
+    this.remoteAudioPreflight = "failed";
   }
 
   private startLocalWarmupInBackground(): void {

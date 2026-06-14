@@ -41,6 +41,10 @@ export type RuntimePrecomputedAudioConfig = {
   manifestUrl?: string;
 };
 
+export type RuntimeAgentConfig = {
+  graphRagPrerenderMatchThreshold?: number | string;
+};
+
 export type ResolvedRuntimeVoiceProxyConfig = {
   enabled?: boolean;
   model?: string;
@@ -58,11 +62,16 @@ export type ResolvedRuntimePrecomputedAudioConfig = {
   manifestUrl: string;
 };
 
+export type ResolvedRuntimeAgentConfig = {
+  graphRagPrerenderMatchThreshold?: number;
+};
+
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
   voiceProxy?: RuntimeVoiceProxyConfig;
   precomputedAudio?: RuntimePrecomputedAudioConfig;
+  agent?: RuntimeAgentConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
@@ -125,6 +134,10 @@ export function readRuntimePrecomputedAudioManifestUrl(): string | undefined {
   return readRuntimePrecomputedAudioConfig()?.manifestUrl;
 }
 
+export function readRuntimeAgentConfig(): ResolvedRuntimeAgentConfig | undefined {
+  return normalizeAgentConfig(readRuntimeConfig().agent);
+}
+
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -135,11 +148,13 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   const precomputedAudio = normalizePrecomputedAudioConfig(payload?.precomputedAudio);
+  const agent = normalizeAgentConfig(payload?.agent);
   return {
     ...(walletApi ? { walletApi } : {}),
     ...(filecoinStorage ? { filecoinStorage } : {}),
     ...(voiceProxy ? { voiceProxy } : {}),
     ...(precomputedAudio ? { precomputedAudio } : {}),
+    ...(agent ? { agent } : {}),
   };
 }
 
@@ -231,6 +246,15 @@ function normalizePrecomputedAudioConfig(
   return { manifestUrl };
 }
 
+function normalizeAgentConfig(
+  config: RuntimeAgentConfig | null | undefined
+): ResolvedRuntimeAgentConfig | undefined {
+  if (!config) return undefined;
+  const graphRagPrerenderMatchThreshold = normalizeOptionalNumber(config.graphRagPrerenderMatchThreshold);
+  if (graphRagPrerenderMatchThreshold === undefined) return undefined;
+  return { graphRagPrerenderMatchThreshold };
+}
+
 function normalizeOptionalString(value: string | null | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
@@ -243,6 +267,16 @@ function normalizeOptionalBoolean(value: boolean | string | null | undefined): b
   if (["1", "true", "yes", "on"].includes(normalized.toLowerCase())) return true;
   if (["0", "false", "no", "off"].includes(normalized.toLowerCase())) return false;
   return undefined;
+}
+
+function normalizeOptionalNumber(value: number | string | null | undefined): number | undefined {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : undefined;
+  }
+  const normalized = normalizeOptionalString(value);
+  if (!normalized) return undefined;
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function resolveWalletApiBaseUrl(value: string | null | undefined): string | undefined {

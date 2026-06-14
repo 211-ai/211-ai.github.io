@@ -1,5 +1,7 @@
 import type { AppActionResult } from "../app/appActions";
 import type { ClientLlmRuntimeService } from "../lib/clientLLMWorkerService";
+import { findSlottedResponseMatch } from "../lib/graphrag";
+import { readRuntimeAgentConfig } from "../lib/runtimeConfig";
 import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";
@@ -81,6 +83,8 @@ export interface AgentChatSendOptions {
   disableLocalLlmReasoning?: boolean;
   preferGraphRagForGeneralQuestions?: boolean;
 }
+
+const GRAPH_RAG_PRERENDER_MATCH_THRESHOLD = 0.62;
 
 export interface AgentMessageAudioRecord {
   /** Precomputed audio entry ID, if a precomputed reply was used */
@@ -315,8 +319,12 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
     }
-    if (sendOptions.preferGraphRagForGeneralQuestions && shouldRouteGeneralQuestionToGraphRag(turn)) {
-      turn = createGraphRagAnswerTurn(content, localLlmReasoningEnabled);
+    if (shouldRouteGeneralQuestionToGraphRag(turn)) {
+      const graphRagRouting = await resolveGraphRagRouting(content, sendOptions.preferGraphRagForGeneralQuestions);
+      if (graphRagRouting.routeToGraphRag) {
+        pushProgress("planning", graphRagRouting.reason);
+        turn = createGraphRagAnswerTurn(content, localLlmReasoningEnabled);
+      }
     }
     if (!localLlmReasoningEnabled) {
       if (shouldTryLocalLlmResponse(turn)) {
@@ -361,6 +369,43 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       }
     }
     await executeToolPlan(turn, context);
+  }
+
+  async function resolveGraphRagRouting(
+    content: string,
+    forceGraphRag = false,
+  ): Promise<{ routeToGraphRag: boolean; reason: string }> {
+    if (forceGraphRag) {
+      return {
+        routeToGraphRag: true,
+        reason: "Routing to GraphRAG (forced by preference).",
+      };
+    }
+    try {
+      const threshold = getGraphRagPrerenderMatchThreshold();
+      const match = await findSlottedResponseMatch(content);
+      if (!match) {
+        return {
+          routeToGraphRag: false,
+          reason: "No confident prerendered-audio match; using chatbot response.",
+        };
+      }
+      if (match.exact || match.score >= threshold) {
+        return {
+          routeToGraphRag: true,
+          reason: `Routing to GraphRAG via prerendered-audio similarity (${match.score.toFixed(2)} >= ${threshold.toFixed(2)}).`,
+        };
+      }
+      return {
+        routeToGraphRag: false,
+        reason: `Prerendered-audio similarity too low (${match.score.toFixed(2)} < ${threshold.toFixed(2)}); using chatbot response.`,
+      };
+    } catch {
+      return {
+        routeToGraphRag: false,
+        reason: "Prerendered-audio matcher unavailable; using chatbot response.",
+      };
+    }
   }
 
   async function executeToolPlan(turn: AgentPlannedTurn, context: SurfaceContext) {
@@ -742,6 +787,19 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       )
     });
   }
+}
+
+function getGraphRagPrerenderMatchThreshold(): number {
+  const runtimeThreshold = readRuntimeAgentConfig()?.graphRagPrerenderMatchThreshold;
+  const envThreshold = Number.parseFloat(
+    (import.meta.env?.VITE_GRAPH_RAG_PRERENDER_MATCH_THRESHOLD as string | undefined) || "",
+  );
+  const raw = typeof runtimeThreshold === "number" && Number.isFinite(runtimeThreshold)
+    ? runtimeThreshold
+    : Number.isFinite(envThreshold)
+      ? envThreshold
+      : GRAPH_RAG_PRERENDER_MATCH_THRESHOLD;
+  return Math.min(0.99, Math.max(0.0, raw));
 }
 
 function updateToolCall(

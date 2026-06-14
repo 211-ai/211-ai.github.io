@@ -958,6 +958,36 @@ export class AudioModel {
     expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Evidence bundle for reasoning");
   });
 
+  test("tries local audio immediately after IndexTTS preflight failure", async () => {
+    const service = new ClientAudioReplyService({
+      createWorker: () => {
+        throw new Error("Local audio worker failed to start.");
+      },
+      generateRemoteAudio: async () => {
+        throw new Error("Remote generation should not run after failed preflight.");
+      },
+      preflightRemoteAudioProxy: async () => {
+        throw new Error("IndexTTS preflight failed with 502.");
+      },
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const result = await service.generateAudio("Neighborhood Pantry can help with food today.");
+
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      provider: "browser-speech",
+      text: "Neighborhood Pantry can help with food today.",
+    });
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("IndexTTS preflight failed");
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("Local audio worker failed to start");
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").not.toContain(
+      "Whisper and IndexTTS preflights both fail",
+    );
+  });
+
   test("reports a clear failure when no local audio or browser speech path is available", async () => {
     const service = new ClientAudioReplyService({
       createWorker: () => {
