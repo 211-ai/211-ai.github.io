@@ -2966,6 +2966,16 @@ function ProofCenterScreen({
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
   const [proofError, setProofError] = useState("");
+  const worldIdProofs = proofs.filter((proof) => proof.proofType === "world_id_proof_of_human");
+  const verifiedWorldIdProof = worldIdProofs.find((proof) => getProofReceiptUiState(proof).accepted);
+  const worldIdReceiptState = verifiedWorldIdProof ? getProofReceiptUiState(verifiedWorldIdProof) : null;
+  const worldIdStatusLabel = verifiedWorldIdProof
+    ? "Verified proof-of-human"
+    : apiConfig?.actorDid
+      ? "Ready to verify"
+      : apiConfig
+        ? "Actor DID required"
+        : "Wallet API required";
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -3000,6 +3010,33 @@ function ProofCenterScreen({
       <p className="page-note">
         Proof receipts expose public claims and verifier details without showing raw documents or precise location.
       </p>
+      <section className="world-id-proof-center-summary" aria-label="World ID wallet status">
+        <div>
+          <p className="eyebrow">World ID wallet status</p>
+          <h2>{worldIdStatusLabel}</h2>
+          <p>
+            Proof-of-human can show that a World ID human credential is bound to this wallet. It does not disclose
+            or prove legal name, age, citizenship, address, government ID, or other legal identity attributes.
+          </p>
+        </div>
+        <div className="world-id-proof-center-facts" aria-label="World ID proof center facts">
+          <StatusPanel
+            label="Wallet"
+            tone={apiConfig ? "success" : "warning"}
+            value={apiConfig?.walletId ?? "Not connected"}
+          />
+          <StatusPanel
+            label="Actor DID"
+            tone={apiConfig?.actorDid ? "success" : "warning"}
+            value={apiConfig?.actorDid ?? "Required"}
+          />
+          <StatusPanel
+            label="Proof receipt"
+            tone={worldIdReceiptState?.statusTone ?? "warning"}
+            value={worldIdReceiptState?.statusLabel ?? "Not created"}
+          />
+        </div>
+      </section>
       <WorldIdVerificationPanel
         apiConfig={apiConfig}
         onAuditRefresh={refreshWalletAuditEvents}
@@ -3069,11 +3106,12 @@ function ProofCenterScreen({
         {proofs.map((proof) => {
           const titleId = `proof-title-${proof.id}`;
           const state = getProofReceiptUiState(proof);
+          const isWorldIdProof = proof.proofType === "world_id_proof_of_human";
 
           return (
             <article
               aria-labelledby={titleId}
-              className={`proof-card proof-system-${state.proofSystemFamily}`}
+              className={`proof-card proof-system-${state.proofSystemFamily}${isWorldIdProof ? " world-id-proof-receipt-card" : ""}`}
               key={proof.id}
             >
               <div className="scope-header">
@@ -3091,6 +3129,12 @@ function ProofCenterScreen({
                 <Badge>{state.inputBoundaryLabel}</Badge>
                 <Badge tone={state.productionEvidence ? "success" : "warning"}>{state.dashboardLabel}</Badge>
               </div>
+              {isWorldIdProof ? (
+                <StatusBanner tone="info">
+                  This World ID proof-of-human receipt is not legal identity. It does not disclose or prove legal name,
+                  age, citizenship, address, government ID, or document possession.
+                </StatusBanner>
+              ) : null}
               <div
                 className="capability-preview"
                 role="group"
@@ -3148,6 +3192,12 @@ function ProofCenterScreen({
                     <strong>Public inputs</strong>
                     <span>{Object.keys(proof.publicInputs).join(", ")}</span>
                   </div>
+                  {isWorldIdProof ? (
+                    <div className="disclosure-row">
+                      <strong>Not a legal ID claim</strong>
+                      <span>Legal name, age, citizenship, address, government ID, document possession</span>
+                    </div>
+                  ) : null}
                   <div className="disclosure-row">
                     <strong>Not allowed</strong>
                     <span>{nonGrantedCapabilities(["proof/verify"]).join(", ")}</span>
