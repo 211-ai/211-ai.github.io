@@ -24,21 +24,11 @@ const extraRouteAliases = {
   home: ["dashboard", "start", "today", "safety plan"],
   register: ["registration", "profile", "intake"],
   "check-in": ["reminder", "reminders", "checkins"],
-  calendar: ["appointments", "appointment", "schedule", "scheduled services", "service schedule"],
-  messages: ["inbox", "client messages", "service staff messages", "notifications"],
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
-  uploads: ["wallet", "documents", "files", "records", "export", "import", "bundle", "bundles", "share proofs"],
-  settings: ["account settings", "profile settings", "preferences", "personal information"],
+  uploads: ["documents", "files", "records"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
-  interactions: ["interaction history", "service history", "service interactions", "timeline"],
-  shelter: ["provider overview", "provider portal", "shelter staff", "shelters", "shelter services", "beds"],
-  "provider-clients": ["served clients", "clients served", "provider clients", "case list"],
-  "provider-cases": ["case management", "cases", "caseload", "service cases", "eligibility cases"],
-  "provider-messages": ["provider messages", "send client messages", "client notifications", "notifications"],
-  "provider-analytics": ["staff analytics", "provider analytics", "staff reports"],
-  "provider-proofs": ["zk certificates", "zero knowledge certificates", "provider proofs", "proof certificates"],
-  "provider-operations": ["staff operations", "provider operations", "create user account", "contact requests"],
+  shelter: ["shelters", "shelter services", "beds"],
   "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
   "benefits-protection": ["benefits", "benefits protection", "public benefits"],
   analytics: ["reports", "group facts"],
@@ -56,32 +46,11 @@ const routeSummaries = {
   register: (state) => `Registration draft is active with ${state.profile.serviceNeeds.length} service needs selected.`,
   "check-in": (state) =>
     `Check-in is configured every ${state.policy.intervalDays} days through ${state.policy.reminderChannels.length} channels.`,
-  calendar: (state) => {
-    const appointments = state.servicePlans?.filter((plan) => Boolean(plan.appointment_at)).length ?? 0;
-    const followUps =
-      state.serviceInteractions?.filter((interaction) => Boolean(interaction.next_follow_up_at)).length ?? 0;
-
-    return `${appointments + followUps} scheduled appointments, services, and follow-ups.`;
-  },
-  messages: (state) => `${state.shelterProviderMessages?.length ?? 0} service staff messages are available.`,
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
-  uploads: (state) => `${state.uploads.length} wallet files, ${state.exportBundleViews.length} export bundles, and ${state.walletProofReceipts.length} proof receipts are visible.`,
-  settings: (state) =>
-    `Settings are active with ${state.profile.serviceNeeds.length} service needs, ${state.policy.reminderChannels.length} check-in channels, and ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} explicit analytics choices.`,
+  uploads: (state) => `${state.uploads.length} uploads are visible.`,
   "social-services": () => "Services search and public 211 guidance are active.",
-  interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
   shelter: (state) =>
-    `Provider overview is active with ${state.shelterUserAccounts?.length ?? 0} served clients, ${
-      state.shelterProviderMessages?.length ?? 0
-    } messages, and ${providerProofCount(state)} provider proof certificates.`,
-  "provider-clients": (state) => `${state.shelterUserAccounts?.length ?? 0} served clients are visible.`,
-  "provider-cases": (state) => `${state.shelterCaseRecords?.length ?? 0} provider case records are visible.`,
-  "provider-messages": (state) => `${state.shelterProviderMessages?.length ?? 0} provider messages are visible.`,
-  "provider-analytics": (state) =>
-    `${state.shelterStaffAccounts?.length ?? 0} provider staff accounts are available for analytics.`,
-  "provider-proofs": (state) => `${providerProofCount(state)} provider proof certificates are visible.`,
-  "provider-operations": (state) =>
     `Shelter workspace is active with ${state.shelterStaffAccounts?.length ?? 0} staff accounts, ${
       state.shelterUserAccounts?.length ?? 0
     } managed user accounts, and ${state.shelterContactRequests?.filter((request) => request.status === "pending").length ?? 0} pending contact requests.`,
@@ -91,7 +60,7 @@ const routeSummaries = {
     `Group facts and aggregate reporting are active with ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} studies selected.`,
   "proof-center": (state) => `${state.walletProofReceipts.length} proof receipts are visible.`,
   exports: (state) => `${state.exportBundleViews.length} export bundles are visible.`,
-  security: (state) => `Security settings and wallet safety information are active with ${state.exportBundleViews.length} export bundles visible.`,
+  security: () => "Security settings and wallet safety information are active.",
   audit: (state) => `${state.walletAuditEvents.length} audit events are visible.`
 } satisfies Record<RouteId, RouteSummaryBuilder>;
 
@@ -343,14 +312,6 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
         selectedServiceNeedCount: state.profile.serviceNeeds.length,
         preferredCheckInChannelCount: state.profile.preferredCheckInChannels.length
       };
-    case "settings":
-      return {
-        selectedServiceNeedCount: state.profile.serviceNeeds.length,
-        intervalDays: state.policy.intervalDays,
-        reminderChannelCount: state.policy.reminderChannels.length,
-        benefitsOptIn: state.benefitsOptIn,
-        selectedAnalyticsStudyCount: Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length
-      };
     case "check-in":
       return {
         intervalDays: state.policy.intervalDays,
@@ -378,13 +339,6 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
         uploadCategoryCounts: countBy(state.uploads.map((upload) => upload.category)),
         uploadSensitivityCounts: countBy(state.uploads.map((upload) => upload.sensitivity))
       };
-    case "interactions":
-      return {
-        serviceInteractionCount: state.serviceInteractions?.length ?? 0,
-        serviceInteractionStatusCounts: countBy(
-          (state.serviceInteractions ?? []).map((interaction) => interaction.status).filter(Boolean)
-        )
-      };
     case "recipient-access":
       return {
         approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length,
@@ -401,10 +355,6 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
         simulatedProofCount: state.walletProofReceipts.filter((proof) => proof.simulated).length
       };
     case "exports":
-      return {
-        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
-      };
-    case "security":
       return {
         verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
       };
@@ -430,10 +380,6 @@ function privateRouteMetadata(route: RouteId, state: AppActionState): Record<str
         visibleProofReceiptIds: state.walletProofReceipts.map((proof) => proof.id)
       };
     case "exports":
-      return {
-        visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
-      };
-    case "security":
       return {
         visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
       };
@@ -484,10 +430,6 @@ function canReadPrivateSurfaceContext(
 
 function pendingAccessRequestCount(state: AppActionState): number {
   return state.accessRequests.filter((request) => request.status === "pending").length;
-}
-
-function providerProofCount(state: AppActionState): number {
-  return state.walletProofReceipts.filter((proof) => proof.proofType.startsWith("provider_")).length;
 }
 
 function countBy(values: string[]): Record<string, number> {

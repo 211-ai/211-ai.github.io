@@ -28,19 +28,17 @@ ENV/
 *.swo
 *~
 
-.hypothesis
+
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Scraped data (large, regenerated)
-data/
 data/raw/
 data/processed/
 data/portal/*
 !data/portal/upload_audit.json
-!data/portal/release_checklist.json
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
@@ -57,7 +55,6 @@ coverage.xml
 # Dotenv
 .env
 .env.*
-wallet_interface/deploy/env.production.local
 etl_warehouse.duckdb
 state.duckdb
 *.duckdb
@@ -71,27 +68,3 @@ data/agent_chat_implementation/state/
 data/portal_implementation/
 data/wallet_implementation/
 data/portland_graphrag_implementation/
-
-# Large phone dialog monolith artifacts (use shard outputs instead)
-docs/phone_dialog_generation/phone_dialog_memory.json
-docs/phone_dialog_generation/phone_dialog_results.json
-docs/phone_dialog_generation/phone_dialog_results.jsonl
-docs/phone_dialog_generation/voice_response_chunk_dedupe.json
-
-# Additional large monolith artifacts (use shard outputs instead)
-docs/211_conversation_memory_textprep_4096.json
-wallet_interface/ui/public/corpus/211-info/current/generated/bm25-documents.json
-wallet_interface/ui/public/corpus/211-info/current/generated/embeddings.parquet
-docs/211_chatbot_simulation_results_textprep_4096.json
-docs/phone_dialog_generation/phone_dialog_dag.json
-
-# Large generated binaries
-wallet_interface/ui/public/corpus/211-info/current/generated/embeddings.f32
-docs/2026-36- CHA- Pre-Proposal meeting Q and A.mp3
-
-# Generated Abby TTS artifacts are staged to Hugging Face datasets instead of git
-tmp_assets/**/abby-tts-*.mp3
-tmp_assets/**/abby-tts-*.wav
-tmp_assets/hf-abby-tts-dataset/
-wallet_interface/ui/public/assets/audio/precomputed/**/abby-tts-*.mp3
-wallet_interface/ui/public/assets/audio/precomputed/**/abby-tts-*.wav

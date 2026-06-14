@@ -1,13 +1,7 @@
-import { LogLevel, env, pipeline } from "@huggingface/transformers";
-import ortWasmAsyncifyMjsUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
-import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
-import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
+import { env, pipeline } from "@xenova/transformers";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
-env.useWasmCache = true;
-env.logLevel = LogLevel.ERROR;
-installWarningSuppression();
 
 type EmbeddingRequest =
   | {
@@ -32,35 +26,24 @@ interface EmbeddingResponse {
   error?: string;
 }
 
-const DEFAULT_EMBEDDING_MODEL = "onnx-community/bge-small-en-v1.5-ONNX";
-const EMBEDDING_MODEL_ALIASES: Record<string, string> = {
-  "BAAI/bge-small-en-v1.5": DEFAULT_EMBEDDING_MODEL,
-  "Xenova/bge-small-en-v1.5": DEFAULT_EMBEDDING_MODEL,
-};
+const DEFAULT_EMBEDDING_MODEL = "Xenova/bge-small-en-v1.5";
 
 let extractor: any = null;
 let currentModelName = DEFAULT_EMBEDDING_MODEL;
 let initializePromise: Promise<void> | null = null;
 
 async function initialize(modelName = DEFAULT_EMBEDDING_MODEL): Promise<void> {
-  const resolvedModelName = resolveEmbeddingModelName(modelName);
-  if (extractor && currentModelName === resolvedModelName) {
+  if (extractor && currentModelName === modelName) {
     return;
   }
 
   if (!initializePromise) {
     configureTransformersRuntime();
-    initializePromise = pipeline("feature-extraction", resolvedModelName, {
-      device: "wasm",
-      dtype: "q8",
-      session_options: {
-        logSeverityLevel: 3,
-        logVerbosityLevel: 0,
-        enableProfiling: false,
-      },
+    initializePromise = pipeline("feature-extraction", modelName, {
+      quantized: true,
     }).then((pipe: any) => {
       extractor = pipe;
-      currentModelName = resolvedModelName;
+      currentModelName = modelName;
     });
   }
 
@@ -108,27 +91,15 @@ function configureTransformersRuntime(): void {
       wasm?: {
         numThreads?: number;
         simd?: boolean;
-        wasmPaths?: {
-          mjs: string;
-          wasm: string;
-        };
       };
     };
   };
   if (backends.onnx?.wasm) {
-    backends.onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
+    backends.onnx.wasm.numThreads = Math.min(navigator.hardwareConcurrency || 4, 8);
     backends.onnx.wasm.simd = true;
-    backends.onnx.wasm.wasmPaths = {
-      mjs: ortWasmAsyncifyMjsUrl,
-      wasm: ortWasmAsyncifyWasmUrl,
-    };
   }
 }
 
 function postResponse(response: EmbeddingResponse): void {
   self.postMessage(response);
-}
-
-function resolveEmbeddingModelName(modelName: string): string {
-  return EMBEDDING_MODEL_ALIASES[modelName] || modelName || DEFAULT_EMBEDDING_MODEL;
 }

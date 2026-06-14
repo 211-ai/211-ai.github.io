@@ -46,21 +46,11 @@ const allRoutes = [
   "home",
   "register",
   "check-in",
-  "calendar",
-  "messages",
   "contacts",
   "sharing-rules",
   "uploads",
-  "settings",
   "social-services",
-  "interactions",
   "shelter",
-  "provider-clients",
-  "provider-cases",
-  "provider-messages",
-  "provider-analytics",
-  "provider-proofs",
-  "provider-operations",
   "recipient-access",
   "benefits-protection",
   "analytics",
@@ -74,24 +64,14 @@ const routeLabels: Record<RouteId, string> = {
   home: "Home",
   register: "Register",
   "check-in": "Check in",
-  calendar: "Calendar",
-  messages: "Messages",
   contacts: "Contacts",
   "sharing-rules": "Sharing",
-  uploads: "Wallet",
-  settings: "Settings",
+  uploads: "Uploads",
   "social-services": "Services",
-  interactions: "Interactions",
-  shelter: "Provider overview",
-  "provider-clients": "Clients served",
-  "provider-cases": "Case management",
-  "provider-messages": "Client messages",
-  "provider-analytics": "Staff analytics",
-  "provider-proofs": "ZK certificates",
-  "provider-operations": "Staff operations",
+  shelter: "Shelter",
   "recipient-access": "Who can see info",
   "benefits-protection": "Benefits",
-  analytics: "Analytics",
+  analytics: "Group facts",
   "proof-center": "Proofs",
   exports: "Exports",
   security: "Security",
@@ -126,14 +106,12 @@ const walletPrivateContext: SurfaceContextProviderDefinition = {
   permissionLevel: "wallet_private"
 };
 
-const commonReadTools: AgentCommandName[] = ["navigate", "read_surface_context", "search_211_services", "answer_211_question"];
+const commonReadTools: AgentCommandName[] = ["navigate", "read_surface_context"];
 
 const surfaceTools: Record<RouteId, AgentCommandName[]> = {
   home: commonReadTools,
   register: [...commonReadTools, "update_registration_draft"],
   "check-in": [...commonReadTools, "update_check_in_policy"],
-  calendar: commonReadTools,
-  messages: commonReadTools,
   contacts: [
     ...commonReadTools,
     "add_recipient",
@@ -160,7 +138,6 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "repair_upload_storage",
     "toggle_upload_shared"
   ],
-  settings: [...commonReadTools, "update_registration_draft", "update_check_in_policy"],
   "social-services": [
     ...commonReadTools,
     "search_211_services",
@@ -172,18 +149,7 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "set_service_plan_reminder",
     "record_service_interaction"
   ],
-  interactions: [...commonReadTools],
   shelter: [
-    ...commonReadTools,
-    "search_211_services",
-    "answer_211_question"
-  ],
-  "provider-clients": [...commonReadTools, "search_211_services", "answer_211_question"],
-  "provider-cases": [...commonReadTools, "search_211_services", "answer_211_question", "create_proof"],
-  "provider-messages": [...commonReadTools],
-  "provider-analytics": [...commonReadTools],
-  "provider-proofs": [...commonReadTools, "create_proof", "explain_proof_receipt", "verify_proof_status"],
-  "provider-operations": [
     ...commonReadTools,
     "search_211_services",
     "answer_211_question",
@@ -223,7 +189,7 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "verify_proof_status"
   ],
   exports: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle"],
-  security: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle", "save_wallet_snapshot", "restore_wallet_snapshot"],
+  security: [...commonReadTools, "save_wallet_snapshot", "restore_wallet_snapshot"],
   audit: [
     ...commonReadTools,
     "refresh_wallet_audit",
@@ -237,21 +203,11 @@ const contextProvidersByRoute: Record<RouteId, SurfaceContextProviderDefinition[
   home: [publicContext, appStateContext],
   register: [publicContext, appStateContext, walletPrivateContext],
   "check-in": [publicContext, appStateContext, walletPrivateContext],
-  calendar: [publicContext, appStateContext],
-  messages: [publicContext, appStateContext],
   contacts: [publicContext, appStateContext, walletMetadataContext],
   "sharing-rules": [publicContext, appStateContext, walletMetadataContext],
   uploads: [publicContext, appStateContext, walletMetadataContext],
-  settings: [publicContext, appStateContext, walletPrivateContext],
   "social-services": [publicContext, appStateContext],
-  interactions: [publicContext, appStateContext],
   shelter: [publicContext, appStateContext],
-  "provider-clients": [publicContext, appStateContext],
-  "provider-cases": [publicContext, appStateContext, walletMetadataContext],
-  "provider-messages": [publicContext, appStateContext],
-  "provider-analytics": [publicContext, appStateContext],
-  "provider-proofs": [publicContext, appStateContext, walletMetadataContext],
-  "provider-operations": [publicContext, appStateContext],
   "recipient-access": [publicContext, appStateContext, walletMetadataContext],
   "benefits-protection": [publicContext, appStateContext, walletMetadataContext],
   analytics: [publicContext, appStateContext, walletMetadataContext],
@@ -281,9 +237,9 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresPrivateContextOptIn: false
   },
   search_211_services: {
-    title: "Search the 211 service index",
+    title: "Search 211 services",
     permissionLevel: "public",
-    surfaces: [...allRoutes],
+    surfaces: ["social-services", "shelter", "benefits-protection"],
     requiresConfirmation: false,
     requiresWalletUnlock: false,
     requiresUserPresence: false,
@@ -292,7 +248,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   answer_211_question: {
     title: "Answer 211 question",
     permissionLevel: "public",
-    surfaces: [...allRoutes],
+    surfaces: ["social-services", "shelter", "benefits-protection"],
     requiresConfirmation: false,
     requiresWalletUnlock: false,
     requiresUserPresence: false,
@@ -360,7 +316,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   update_registration_draft: {
     title: "Update registration draft",
     permissionLevel: "wallet_private",
-    surfaces: ["register", "settings"],
+    surfaces: ["register"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -370,7 +326,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   update_check_in_policy: {
     title: "Update check-in policy",
     permissionLevel: "wallet_write",
-    surfaces: ["check-in", "settings"],
+    surfaces: ["check-in"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -429,7 +385,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   request_shelter_contact: {
     title: "Request shelter contact",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts", "provider-operations"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -439,7 +395,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   approve_shelter_contact_request: {
     title: "Approve shelter contact request",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts", "provider-operations"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -449,7 +405,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   deny_shelter_contact_request: {
     title: "Deny shelter contact request",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts", "provider-operations"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -459,7 +415,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   create_managed_user_account: {
     title: "Create managed user account",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -469,7 +425,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   create_shelter_staff_account: {
     title: "Create shelter staff account",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -479,7 +435,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   send_shelter_nudge: {
     title: "Send shelter nudge",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -489,7 +445,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   approve_user_shelter_request: {
     title: "Approve user shelter request",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -499,7 +455,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   deny_user_shelter_request: {
     title: "Deny user shelter request",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -509,7 +465,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   add_shelter_as_recipient: {
     title: "Add shelter as recipient",
     permissionLevel: "wallet_write",
-    surfaces: ["provider-operations"],
+    surfaces: ["shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -647,7 +603,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   create_proof: {
     title: "Create proof",
     permissionLevel: "wallet_write",
-    surfaces: ["proof-center", "provider-cases", "provider-proofs"],
+    surfaces: ["proof-center"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -657,7 +613,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   explain_proof_receipt: {
     title: "Explain proof receipt",
     permissionLevel: "wallet_metadata",
-    surfaces: ["proof-center", "provider-proofs"],
+    surfaces: ["proof-center"],
     requiresConfirmation: false,
     requiresWalletUnlock: true,
     requiresUserPresence: false,
@@ -666,7 +622,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   verify_proof_status: {
     title: "Verify proof status",
     permissionLevel: "wallet_metadata",
-    surfaces: ["proof-center", "provider-proofs"],
+    surfaces: ["proof-center"],
     requiresConfirmation: false,
     requiresWalletUnlock: true,
     requiresUserPresence: false,
@@ -675,7 +631,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   create_verified_export_bundle: {
     title: "Create verified export bundle",
     permissionLevel: "wallet_write",
-    surfaces: ["exports", "security"],
+    surfaces: ["exports"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -685,7 +641,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   import_export_bundle: {
     title: "Import export bundle",
     permissionLevel: "wallet_write",
-    surfaces: ["exports", "security"],
+    surfaces: ["exports"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,

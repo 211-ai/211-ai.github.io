@@ -5,14 +5,12 @@ from io import StringIO
 
 from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
-    _PROOF_CONTRACT_TARGET_ENV_VARS,
     WalletOpsHealthWorker,
     main,
     validate_local_production_readiness_self_check,
     validate_distance_proof_contract,
     validate_production_readiness,
     validate_proof_contract,
-    validate_storage_repair_report_safety,
     validate_target_signoff_packet,
     validate_target_signoff_packet_template,
 )
@@ -269,10 +267,7 @@ def test_validate_distance_proof_contract_reports_http_backend_success() -> None
     }
 
 
-def test_ops_cli_distance_proof_contract_runs_local_self_check_without_target_env(tmp_path, monkeypatch) -> None:
-    for name in _PROOF_CONTRACT_TARGET_ENV_VARS:
-        monkeypatch.delenv(name, raising=False)
-    monkeypatch.setenv("WALLET_REPOSITORY_ROOT", str(tmp_path / "wallet-repository"))
+def test_ops_cli_accepts_distance_proof_contract_validation_flag(tmp_path) -> None:
     output_path = tmp_path / "ops" / "distance-proof-contract.jsonl"
 
     exit_code = main(
@@ -284,40 +279,9 @@ def test_ops_cli_distance_proof_contract_runs_local_self_check_without_target_en
     )
 
     report = json.loads(output_path.read_text(encoding="utf-8"))
-    assert exit_code == 0
-    assert report["status"] == "ok"
-    assert report["mode"] == "local_self_check"
-    assert {check["name"] for check in report["checks"]} == {
-        "health",
-        "prove",
-        "public_input_safety",
-        "verify",
-    }
-
-
-def test_ops_cli_proof_contract_runs_local_self_check_without_target_env(tmp_path, monkeypatch) -> None:
-    for name in _PROOF_CONTRACT_TARGET_ENV_VARS:
-        monkeypatch.delenv(name, raising=False)
-    output_path = tmp_path / "ops" / "proof-contract.jsonl"
-
-    exit_code = main(
-        [
-            "--validate-proof-contract",
-            "--output-jsonl",
-            str(output_path),
-        ]
-    )
-
-    report = json.loads(output_path.read_text(encoding="utf-8"))
-    assert exit_code == 0
-    assert report["status"] == "ok"
-    assert report["mode"] == "local_self_check"
-    assert {check["name"] for check in report["checks"]} == {
-        "health",
-        "prove",
-        "public_input_safety",
-        "verify",
-    }
+    assert exit_code == 2
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
 
 
 def test_validate_production_readiness_reports_missing_target_environment() -> None:
@@ -336,8 +300,6 @@ def test_validate_production_readiness_reports_missing_target_environment() -> N
     assert checks["proof_credentials"]["status"] == "error"
     assert checks["ops_credentials"]["status"] == "error"
     assert checks["secret_manager_references"]["status"] == "error"
-    assert checks["storage_retention_controls"]["status"] == "error"
-    assert checks["storage_repair_safety"]["status"] == "ok"
 
 
 def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_path) -> None:
@@ -415,12 +377,6 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "WALLET_OPS_ALERT_SECRET_REF": "secret://staging/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://staging/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://staging/wallet/storage",
-        "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
-        "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://staging/wallet/ipfs-pinning",
-        "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://staging/wallet/filecoin-deals",
-        "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://staging/wallet/s3-lifecycle",
-        "WALLET_BACKUP_PURGE_POLICY_REF": "policy://staging/wallet/backup-purge",
-        "WALLET_ALERT_RETENTION_POLICY_REF": "policy://staging/wallet/alert-retention",
     }
 
     report = validate_production_readiness(
@@ -437,8 +393,6 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "proof_credentials": "ok",
         "ops_credentials": "ok",
         "secret_manager_references": "ok",
-        "storage_retention_controls": "ok",
-        "storage_repair_safety": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
         "distance_proof_contract": "ok",
@@ -532,27 +486,13 @@ def test_local_production_readiness_self_check_passes_without_target_env() -> No
         "proof_credentials": "ok",
         "ops_credentials": "ok",
         "secret_manager_references": "ok",
-        "storage_retention_controls": "ok",
-        "storage_repair_safety": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
         "distance_proof_contract": "ok",
     }
 
 
-def test_storage_repair_report_safety_keeps_operator_output_metadata_only() -> None:
-    report = validate_storage_repair_report_safety()
-
-    assert report["status"] == "ok"
-    checks = {check["name"]: check for check in report["checks"]}
-    assert checks["repair_execution"]["status"] == "ok"
-    assert checks["operator_output_safety"]["status"] == "ok"
-    assert checks["report_schema"]["status"] == "ok"
-    rendered = json.dumps(report)
-    assert "wallet-130 repair plaintext sentinel" not in rendered
-
-
-def test_validate_target_signoff_packet_accepts_completed_packet_and_rejects_raw_query_routes(tmp_path) -> None:
+def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> None:
     packet_path = tmp_path / "target-signoff.json"
     packet = {
         "environment": {
@@ -633,50 +573,14 @@ def test_validate_target_signoff_packet_accepts_completed_packet_and_rejects_raw
             },
         },
         "analytics_privacy_review": {
-            "production_query_policy": "production analytics releases only approved template IDs through aggregate routes",
-            "approved_aggregate_routes": [
-                "/analytics/{template_id}/count",
-                "/analytics/{template_id}/count-by-fields",
-            ],
-            "approved_template_registry_evidence": "evidence://wallet/analytics/registry/2026-05-05",
-            "raw_query_block_evidence": "evidence://wallet/analytics/no-raw-query-surface/2026-05-05",
             "approved_templates": [
                 {
                     "template_id": "needs_by_zip_v1",
                     "reviewer": "Privacy Reviewer",
                     "review_date": "2026-05-05",
-                    "consent_copy_artifact": "evidence://wallet/analytics/needs-by-zip-consent-v1",
-                    "allowed_record_types": ["derived_need"],
-                    "allowed_derived_fields": ["zip3", "need_category"],
                     "min_cohort_size": 10,
-                    "k_threshold": 10,
+                    "epsilon_budget": 1.0,
                     "allowed_dimensions": ["zip3", "need_category"],
-                    "proof_statements": [
-                        {
-                            "proof_type": "analytics_contribution",
-                            "statement": "contribution fields match consented template schema",
-                            "verifier_or_mode": "wallet analytics contribution proof",
-                        }
-                    ],
-                    "nullifier_policy": "per-template consent nullifier rejects duplicates for study window",
-                    "privacy_budget": {
-                        "epsilon_budget": 1.0,
-                        "per_query_epsilon": 0.25,
-                        "sensitivity": 1.0,
-                        "budget_key": "template:needs_by_zip_v1",
-                        "budget_limit": 1.0,
-                        "budget_exhaustion_behavior": "block further aggregate release",
-                    },
-                    "retention_mapping": {
-                        "template_definition": "retain active plus audit window",
-                        "consent_copy": "retain consent copy for consent lifetime plus audit window",
-                        "consents_withdrawals": "retain withdrawal evidence without raw contribution values",
-                        "contributions": "retain aggregate contribution audit metadata only",
-                        "nullifiers": "retain through study window to prevent duplicate counting",
-                        "query_budget_ledger": "retain with released aggregate audit trail",
-                        "released_aggregates": "retain aggregate results for study window",
-                        "audit_events": "retain wallet audit hash-chain events for audit window",
-                    },
                     "retention_decision": "aggregate results retained for study window",
                     "withdrawal_behavior": "future contributions blocked; released aggregate audit preserved",
                 }
@@ -697,15 +601,3 @@ def test_validate_target_signoff_packet_accepts_completed_packet_and_rejects_raw
     assert {check["status"] for check in report["checks"]} == {"ok"}
     rendered = json.dumps(report)
     assert "secret://staging/wallet/proof-verifier" not in rendered
-
-    packet["analytics_privacy_review"]["approved_aggregate_routes"] = ["/analytics/raw-sql"]
-    packet_path.write_text(json.dumps(packet), encoding="utf-8")
-
-    raw_query_report = validate_target_signoff_packet(packet_path)
-
-    raw_query_checks = {check["name"]: check for check in raw_query_report["checks"]}
-    assert raw_query_report["status"] == "error"
-    assert raw_query_checks["analytics_privacy_review"]["status"] == "error"
-    assert "approved_aggregate_routes" in raw_query_checks["analytics_privacy_review"]["details"][
-        "missing_workflow_fields"
-    ]

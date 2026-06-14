@@ -30,7 +30,6 @@ export interface AgentChatServiceHandle {
   denyConfirmation: AgentChatService["denyConfirmation"];
   retry: AgentChatService["retry"];
   resetError: AgentChatService["resetError"];
-  patchMessageMetadata: AgentChatService["patchMessageMetadata"];
 }
 
 export function createAgentChatService(
@@ -143,8 +142,7 @@ function toHandle(service: AgentChatService, snapshot: AgentChatSnapshot): Agent
     approveConfirmation: service.approveConfirmation,
     denyConfirmation: service.denyConfirmation,
     retry: service.retry,
-    resetError: service.resetError,
-    patchMessageMetadata: service.patchMessageMetadata,
+    resetError: service.resetError
   };
 }
 

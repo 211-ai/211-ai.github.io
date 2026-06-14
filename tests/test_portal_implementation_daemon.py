@@ -11,7 +11,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-import scripts.portal_implementation_daemon as portal_daemon_module
 from scripts.portal_implementation_daemon import PortalImplementationDaemon, PortalTaskState, parse_task_file
 import scripts.agent_chat_implementation_daemon as agent_daemon_module
 import scripts.portal_implementation_supervisor as supervisor_module
@@ -168,46 +167,6 @@ def test_supervisor_builds_shared_ipfs_supervisor_loop_config(tmp_path):
     assert loop_config.spec.child_pid_path == state_dir / "portal_managed_daemon.pid"
     assert loop_config.max_restarts == 3
     assert Path(loop_config.command[1]).name == "portal_implementation_daemon.py"
-
-
-def test_supervisor_until_complete_config_stops_on_completed_state(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "todo.md"
-    state_dir = repo_root / "state"
-    repo_root.mkdir(parents=True)
-    state_dir.mkdir(parents=True)
-    write_todo(todo_path)
-    state = PortalTaskState(
-        heartbeat_at=datetime.now(timezone.utc).isoformat(),
-        last_progress_at=datetime.now(timezone.utc).isoformat(),
-        completed_task_ids=["PORTAL-000", "PORTAL-010", "PORTAL-020"],
-        task_statuses={
-            "PORTAL-000": "completed",
-            "PORTAL-010": "completed",
-            "PORTAL-020": "completed",
-        },
-        completed_count=3,
-        task_count=3,
-    )
-    state.save(state_dir / "portal_task_state.json")
-
-    supervisor = PortalImplementationSupervisor(
-        PortalSupervisorConfig(
-            todo_path=todo_path,
-            state_path=state_dir / "portal_task_state.json",
-            strategy_path=state_dir / "portal_strategy.json",
-            events_path=state_dir / "portal_supervisor_events.jsonl",
-            state_dir=state_dir,
-            until_complete=True,
-        )
-    )
-
-    result = supervisor.run_once()
-    loop_config = supervisor.build_supervisor_loop_config()
-
-    assert result["complete"] is True
-    assert result["completed_count"] == 3
-    assert loop_config.status_static_fields["until_complete"] is True
 
 
 def test_shared_supervisor_launches_real_daemon_until_task_completion(tmp_path, monkeypatch):
@@ -409,60 +368,6 @@ def test_daemon_selects_agent_tasks_with_custom_prefix(tmp_path):
     assert state.active_task_id == "AGENT-010"
 
 
-def test_daemon_scope_filters_selection_but_respects_external_dependencies(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "scoped_todo.md"
-    state_dir = tmp_path / "state"
-    repo_root.mkdir(parents=True)
-    todo_path.write_text(
-        """
-# Scoped Todo
-
-## TST-000 Shared Dependency
-- Status: completed
-- Priority: P0
-- Track: core
-- Depends on: none
-- Outputs: docs/shared.md
-
-## TST-010 Backend Task
-- Status: todo
-- Priority: P0
-- Track: wallet
-- Depends on: TST-000
-- Outputs: api.py
-
-## TST-020 UI Task
-- Status: todo
-- Priority: P1
-- Track: ui
-- Depends on: TST-000
-- Outputs: ui.tsx
-""".strip()
-        + "\n",
-        encoding="utf-8",
-    )
-
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "scoped_task_state.json",
-        strategy_path=state_dir / "scoped_strategy.json",
-        events_path=state_dir / "scoped_events.jsonl",
-        repo_root=repo_root,
-        task_header_prefix="TST-",
-        allowed_tracks=("ui",),
-    )
-
-    result = daemon.run_once()
-    state = PortalTaskState.load(state_dir / "scoped_task_state.json")
-
-    assert result["task_count"] == 1
-    assert result["ready_count"] == 1
-    assert result["active_task_id"] == "TST-020"
-    assert state.ready_task_ids == ["TST-020"]
-    assert state.task_statuses == {"TST-020": "ready"}
-
-
 def test_daemon_can_invoke_autonomous_implementation_command(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
@@ -505,66 +410,6 @@ Path("docs/agent.md").write_text("implemented", encoding="utf-8")
     assert state.implementation_attempts["AGENT-000"] == 1
     assert state.last_implementation_task_id == "AGENT-000"
     assert output.read_text(encoding="utf-8") == "implemented"
-
-
-def test_daemon_until_complete_drains_ready_backlog(tmp_path, monkeypatch):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "state"
-    fake_worker = repo_root / "fake_worker.py"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    fake_worker.write_text(
-        """
-from pathlib import Path
-import sys
-
-prompt = sys.stdin.read()
-if "- ID: AGENT-010" in prompt:
-    Path("ui").mkdir(exist_ok=True)
-    Path("ui/chat.tsx").write_text("agent-chat", encoding="utf-8")
-elif "- ID: AGENT-000" in prompt:
-    Path("docs").mkdir(exist_ok=True)
-    Path("docs/agent.md").write_text("agent-control", encoding="utf-8")
-else:
-    raise SystemExit(f"unexpected task prompt: {prompt}")
-""".strip()
-        + "\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(portal_daemon_module, "REPO_ROOT", repo_root)
-
-    portal_daemon_module.main(
-        [
-            "--todo-path",
-            str(todo_path),
-            "--state-dir",
-            str(state_dir),
-            "--task-prefix",
-            "AGENT-",
-            "--state-prefix",
-            "agent_chat",
-            "--implement",
-            "--implementation-command",
-            f"{sys.executable} {fake_worker}",
-            "--no-ephemeral-worktree",
-            "--until-complete",
-            "--interval",
-            "0",
-            "--max-passes",
-            "5",
-        ]
-    )
-
-    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
-    todo_text = todo_path.read_text(encoding="utf-8")
-
-    assert state.completed_count == 2
-    assert state.completed_task_ids == ["AGENT-000", "AGENT-010"]
-    assert "## AGENT-000 Control Plane\n- Status: completed" in todo_text
-    assert "## AGENT-010 Chat Shell\n- Status: completed" in todo_text
-    assert (repo_root / "docs" / "agent.md").read_text(encoding="utf-8") == "agent-control"
-    assert (repo_root / "ui" / "chat.tsx").read_text(encoding="utf-8") == "agent-chat"
 
 
 def test_daemon_default_command_uses_codex_with_copilot_fallback(tmp_path, monkeypatch):
@@ -691,248 +536,6 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert branch_check.returncode != 0
 
 
-def test_daemon_merges_to_main_from_non_main_checkout(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "agent_state"
-    fake_worker = repo_root / "fake_worker.py"
-    worktree_root = tmp_path / "worktrees"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    fake_worker.write_text(
-        """
-from pathlib import Path
-import os
-import sys
-
-prompt = sys.stdin.read()
-assert "AGENT-000" in prompt
-assert "agent-000-attempt-1" in os.getcwd()
-Path("docs").mkdir(exist_ok=True)
-Path("docs/agent.md").write_text("implemented from feature checkout", encoding="utf-8")
-""".strip()
-        + "\n",
-        encoding="utf-8",
-    )
-    init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/sandbox"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature only\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature-only"], cwd=repo_root, check=True, capture_output=True, text=True)
-
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=state_dir / "agent_chat_events.jsonl",
-        repo_root=repo_root,
-        task_header_prefix="AGENT-",
-        implement=True,
-        implementation_command=f"python {fake_worker}",
-        implementation_timeout=10,
-        use_ephemeral_worktree=True,
-        worktree_root=worktree_root,
-    )
-
-    result = daemon.run_once()
-    implementation = result["implementation_result"]
-    merge_result = implementation["merge_result"]
-
-    assert implementation["returncode"] == 0
-    assert merge_result["merged"] is True
-    assert merge_result["target_branch"] == "main"
-    assert merge_result["used_ephemeral_main_worktree"] is True
-    assert not Path(merge_result["main_worktree_path"]).exists()
-    current_branch = subprocess.run(
-        ["git", "branch", "--show-current"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    assert current_branch == "feature/sandbox"
-    main_agent_file = subprocess.run(
-        ["git", "show", "main:docs/agent.md"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
-    assert main_agent_file == "implemented from feature checkout"
-    main_feature_file = subprocess.run(
-        ["git", "cat-file", "-e", "main:docs/feature.md"],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert main_feature_file.returncode != 0
-    assert not (repo_root / "docs" / "agent.md").exists()
-
-
-def test_daemon_refuses_merge_when_baseline_is_not_on_main(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "agent_state"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/review"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature baseline\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature baseline"], cwd=repo_root, check=True, capture_output=True, text=True)
-    baseline_ref = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    branch_name = "implementation/agent-000-attempt-1-unsafe-baseline"
-    subprocess.run(
-        ["git", "checkout", "-b", branch_name],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs" / "agent.md").write_text("unsafe implementation\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "unsafe implementation"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(["git", "checkout", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=state_dir / "agent_chat_events.jsonl",
-        repo_root=repo_root,
-        task_header_prefix="AGENT-",
-        worktree_root=tmp_path / "worktrees",
-    )
-
-    task = parse_task_file(todo_path, "## AGENT-")[0]
-    result = daemon._merge_branch_to_main(branch_name, task, 1, baseline_ref=baseline_ref)
-
-    assert result["attempted"] is False
-    assert result["merged"] is False
-    assert result["reason"] == "baseline_not_ancestor_of_target"
-    main_agent_file = subprocess.run(
-        ["git", "cat-file", "-e", "main:docs/agent.md"],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert main_agent_file.returncode != 0
-
-
-def test_daemon_abandons_unsafe_baseline_without_completing_task(tmp_path):
-    repo_root = tmp_path / "repo"
-    todo_path = repo_root / "agent_todo.md"
-    state_dir = tmp_path / "agent_state"
-    events_path = state_dir / "agent_chat_events.jsonl"
-    repo_root.mkdir(parents=True)
-    write_agent_todo(todo_path)
-    init_git_repo(repo_root)
-    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    subprocess.run(
-        ["git", "checkout", "-b", "feature/review"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    (repo_root / "docs").mkdir(exist_ok=True)
-    (repo_root / "docs" / "feature.md").write_text("feature baseline\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "feature baseline"], cwd=repo_root, check=True, capture_output=True, text=True)
-    baseline_ref = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    branch_name = "implementation/agent-000-attempt-1-unsafe-baseline"
-    subprocess.run(["git", "checkout", "-b", branch_name], cwd=repo_root, check=True, capture_output=True, text=True)
-    (repo_root / "docs" / "agent.md").write_text("unsafe implementation\n", encoding="utf-8")
-    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
-    subprocess.run(["git", "commit", "-m", "unsafe implementation"], cwd=repo_root, check=True, capture_output=True, text=True)
-    implementation_commit = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    subprocess.run(["git", "checkout", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
-    events_path.parent.mkdir(parents=True, exist_ok=True)
-    events_path.write_text(
-        json.dumps(
-            {
-                "type": "implementation_finished",
-                "task_id": "AGENT-000",
-                "attempt": 1,
-                "returncode": 2,
-                "branch": branch_name,
-                "baseline_ref": baseline_ref,
-                "implementation_commit": implementation_commit,
-                "merge_result": {"attempted": True, "merged": False, "returncode": 2},
-                "validation_result": {"attempted": True, "passed": True, "returncode": 0},
-                "cleanup_result": {"cleaned": False},
-            }
-        )
-        + "\n"
-        + json.dumps(
-            {
-                "type": "merge_reconciled",
-                "task_id": "AGENT-000",
-                "attempt": 1,
-                "branch": branch_name,
-                "baseline_ref": baseline_ref,
-                "implementation_commit": implementation_commit,
-                "resolved": False,
-                "reason": "merge_retried",
-                "merge_result": {"reason": "baseline_not_ancestor_of_target"},
-                "cleanup_result": {},
-            }
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    daemon = PortalImplementationDaemon(
-        todo_path=todo_path,
-        state_path=state_dir / "agent_chat_task_state.json",
-        strategy_path=state_dir / "agent_chat_strategy.json",
-        events_path=events_path,
-        repo_root=repo_root,
-        task_header_prefix="AGENT-",
-        worktree_root=tmp_path / "worktrees",
-    )
-
-    result = daemon.run_once()
-
-    assert daemon._failed_merge_candidates() == []
-    assert result["completed_count"] == 0
-    assert result["active_task_id"] == "AGENT-000"
-
-
 def test_daemon_validation_failure_blocks_commit_and_merge(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
@@ -989,15 +592,10 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert implementation["task_id"] == "AGENT-000"
     assert implementation["returncode"] == 7
     assert implementation["validation_result"]["passed"] is False
-    assert implementation["commit_result"]["committed"] is True
-    assert implementation["implementation_commit"]
+    assert implementation["commit_result"]["committed"] is False
     assert implementation["merge_result"]["merged"] is False
-    assert implementation["cleanup_result"]["cleaned"] is True
-    assert implementation["failed_preservation_result"]["preserved"] is True
-    rescue_branch = implementation["failed_preservation_result"]["rescue_branch"]
-    assert rescue_branch.startswith("rescue/agent-000-attempt-1-")
-    assert rescue_branch.endswith("-failed-validation")
-    assert not Path(implementation["worktree_path"]).exists()
+    assert implementation["cleanup_result"]["cleaned"] is False
+    assert Path(implementation["worktree_path"]).exists()
     assert not (repo_root / "docs" / "agent.md").exists()
     branch_check = subprocess.run(
         ["git", "rev-parse", "--verify", implementation["branch"]],
@@ -1006,16 +604,7 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
         text=True,
         check=False,
     )
-    assert branch_check.returncode != 0
-    rescued_file = subprocess.run(
-        ["git", "show", f"{rescue_branch}:docs/agent.md"],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert rescued_file.returncode == 0
-    assert rescued_file.stdout == "implemented in worktree"
+    assert branch_check.returncode == 0
 
 
 def test_daemon_cleans_no_change_ephemeral_worktree(tmp_path):

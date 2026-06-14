@@ -108,9 +108,7 @@ async function detectWebGPU(): Promise<boolean> {
     if (!gpu?.requestAdapter) {
       return false;
     }
-    const adapter =
-      (await gpu.requestAdapter({ powerPreference: "high-performance", forceFallbackAdapter: false })) ||
-      (await gpu.requestAdapter());
+    const adapter = await gpu.requestAdapter({ powerPreference: "high-performance" });
     if (!adapter) {
       return false;
     }
@@ -252,9 +250,7 @@ async function benchmarkWebGpu(targetDurationMs: number): Promise<BackendBenchma
   let output: any;
 
   try {
-    const adapter =
-      (await gpu.requestAdapter({ powerPreference: "high-performance", forceFallbackAdapter: false })) ||
-      (await gpu.requestAdapter());
+    const adapter = await gpu.requestAdapter({ powerPreference: "high-performance" });
     if (!adapter) {
       return unsupportedBenchmark("webgpu", "WebGPU adapter unavailable");
     }

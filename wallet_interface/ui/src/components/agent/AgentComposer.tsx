@@ -4,13 +4,9 @@ import { Button } from "../ui";
 
 export function AgentComposer({
   disabled = false,
-  label = "Message Abby assistant",
-  placeholder = "Ask about this screen, routes, or public 211 services",
   onSend
 }: {
   disabled?: boolean;
-  label?: string;
-  placeholder?: string;
   onSend: (message: string) => void;
 }) {
   const [draft, setDraft] = useState("");
@@ -34,14 +30,14 @@ export function AgentComposer({
   return (
     <form className="agent-composer" onSubmit={submitMessage}>
       <label className="sr-only" htmlFor={composerId}>
-        {label}
+        Message Abby assistant
       </label>
       <textarea
         disabled={disabled}
         id={composerId}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder="Ask about this screen, routes, or public 211 services"
         rows={3}
         value={draft}
       />

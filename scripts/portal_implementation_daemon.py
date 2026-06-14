@@ -69,17 +69,6 @@ class PortalImplementationDaemon(TodoImplementationDaemon):
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the portal implementation backlog daemon")
     parser.add_argument("--once", action="store_true", help="Run one backlog pass and exit")
-    parser.add_argument(
-        "--until-complete",
-        action="store_true",
-        help="Run backlog passes until every parsed task is completed, then exit",
-    )
-    parser.add_argument(
-        "--max-passes",
-        type=int,
-        default=0,
-        help="Maximum backlog passes before exiting; 0 disables the limit",
-    )
     parser.add_argument("--interval", type=float, default=300.0, help="Seconds between backlog passes")
     parser.add_argument(
         "--todo-path",
@@ -108,18 +97,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--state-prefix",
         default="portal",
         help="State file prefix inside --state-dir",
-    )
-    parser.add_argument(
-        "--allowed-tracks",
-        action="append",
-        default=[],
-        help="Comma-separated task tracks this daemon may select; repeatable. Defaults to all tracks.",
-    )
-    parser.add_argument(
-        "--allowed-task-ids",
-        action="append",
-        default=[],
-        help="Comma-separated task IDs this daemon may select; repeatable. Defaults to all task IDs.",
     )
     parser.add_argument(
         "--no-implement",
@@ -167,21 +144,11 @@ def main(argv: list[str] | None = None) -> None:
         implementation_timeout=args.implementation_timeout,
         use_ephemeral_worktree=implement and not args.no_ephemeral_worktree,
         worktree_root=args.worktree_root,
-        allowed_tracks=args.allowed_tracks,
-        allowed_task_ids=args.allowed_task_ids,
     )
-    passes = 0
     while True:
         result = daemon.run_once()
-        passes += 1
         logger.info("Portal implementation daemon pass complete: %s", result)
-        if args.until_complete and int(result.get("completed_count") or 0) >= int(result.get("task_count") or 0):
-            logger.info("Portal implementation daemon backlog complete after %s pass(es)", passes)
-            break
         if args.once:
-            break
-        if args.max_passes > 0 and passes >= args.max_passes:
-            logger.info("Portal implementation daemon reached max passes: %s", args.max_passes)
             break
         time.sleep(args.interval)
 

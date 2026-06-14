@@ -57,7 +57,6 @@ type ButtonProps = {
   ariaLabel?: string;
   ariaControls?: string;
   ariaExpanded?: boolean;
-  ariaPressed?: boolean;
 };
 
 export function Button({
@@ -71,15 +70,13 @@ export function Button({
   className = "",
   ariaLabel,
   ariaControls,
-  ariaExpanded,
-  ariaPressed
+  ariaExpanded
 }: ButtonProps) {
   return (
     <button
       aria-controls={ariaControls}
       aria-expanded={ariaExpanded}
       aria-label={ariaLabel}
-      aria-pressed={ariaPressed}
       aria-busy={loading || undefined}
       className={`button button-${variant} ${className}`}
       data-loading={loading ? "true" : undefined}

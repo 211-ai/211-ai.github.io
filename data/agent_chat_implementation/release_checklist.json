@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "task_id": "AGENT-090",
+  "title": "Production Readiness",
+  "generated_at": "2026-05-05",
+  "release_decision": "ready_for_release_validation",
+  "decision_rule": "Agent chat can ship only when every required gate is passing in the target environment or has a documented launch exception.",
+  "scope": {
+    "plan": "docs/AI_AGENT_CHAT_IMPLEMENTATION_PLAN.md",
+    "todo": "docs/AI_AGENT_CHAT_IMPLEMENTATION_TODO.md",
+    "runbook": "docs/AI_AGENT_CHAT_RUNBOOK.md",
+    "threat_model": "docs/AI_AGENT_CHAT_THREAT_MODEL.md",
+    "accessibility_review": "docs/AI_AGENT_CHAT_ACCESSIBILITY_REVIEW.md"
+  },
+  "dependencies": [
+    {
+      "task_id": "AGENT-080",
+      "name": "Agent Unit Tests",
+      "required": true,
+      "evidence": [
+        "wallet_interface/ui/tests/agent-unit.spec.ts"
+      ],
+      "validation": "npm --prefix wallet_interface/ui test -- tests/agent-unit.spec.ts"
+    },
+    {
+      "task_id": "AGENT-081",
+      "name": "Agent Smoke Tests",
+      "required": true,
+      "evidence": [
+        "wallet_interface/ui/tests/agent-chat-smoke.spec.ts"
+      ],
+      "validation": "npm --prefix wallet_interface/ui test -- tests/agent-chat-smoke.spec.ts"
+    },
+    {
+      "task_id": "AGENT-082",
+      "name": "Accessibility And Mobile Review",
+      "required": true,
+      "evidence": [
+        "docs/AI_AGENT_CHAT_ACCESSIBILITY_REVIEW.md"
+      ],
+      "validation": "npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts"
+    },
+    {
+      "task_id": "AGENT-083",
+      "name": "Agent Threat Model And Runbook",
+      "required": true,
+      "evidence": [
+        "docs/AI_AGENT_CHAT_THREAT_MODEL.md",
+        "docs/AI_AGENT_CHAT_RUNBOOK.md"
+      ],
+      "validation": "pytest tests/test_portal_implementation_daemon.py -q"
+    }
+  ],
+  "required_validation": [
+    {
+      "name": "UI production build",
+      "command": "npm --prefix wallet_interface/ui run build",
+      "required_for_release": true
+    },
+    {
+      "name": "Agent chat smoke flow",
+      "command": "npm --prefix wallet_interface/ui test -- tests/agent-chat-smoke.spec.ts",
+      "required_for_release": true
+    },
+    {
+      "name": "Agent policy and schema unit coverage",
+      "command": "npm --prefix wallet_interface/ui test -- tests/agent-unit.spec.ts",
+      "required_for_release": true
+    },
+    {
+      "name": "Agent private-context regression coverage",
+      "command": "npm --prefix wallet_interface/ui test -- tests/agent-privacy.spec.ts",
+      "required_for_release": true
+    },
+    {
+      "name": "GUI and chat action convergence coverage",
+      "command": "npm --prefix wallet_interface/ui test -- tests/agent-action-convergence.spec.ts",
+      "required_for_release": true
+    }
+  ],
+  "release_gates": [
+    {
+      "id": "deterministic_fallback",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Core workflows remain usable without a local LLM.",
+      "evidence": [
+        "wallet_interface/ui/src/agent/agentPlanner.ts",
+        "wallet_interface/ui/src/agent/chatController.ts",
+        "wallet_interface/ui/src/services/agentChatService.ts",
+        "wallet_interface/ui/tests/agent-unit.spec.ts",
+        "wallet_interface/ui/tests/agent-chat-smoke.spec.ts"
+      ],
+      "release_checks": [
+        "Chat opens without model initialization as a hard dependency.",
+        "Deterministic planning handles public service questions, route navigation, and confirmation replies.",
+        "Local LLM output remains advisory and is validated before execution."
+      ]
+    },
+    {
+      "id": "public_graphrag_answers",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Public 211 answers are grounded in browser GraphRAG evidence and cite service records.",
+      "evidence": [
+        "wallet_interface/ui/src/agent/serviceNavigationAgent.ts",
+        "wallet_interface/ui/src/services/graphRagService.ts",
+        "wallet_interface/ui/public/corpus/211-info/current",
+        "wallet_interface/ui/tests/agent-chat-smoke.spec.ts"
+      ],
+      "release_checks": [
+        "Public service facts include citations or explicit missing-fact guidance.",
+        "Answers use the existing static corpus path rather than a second retrieval stack.",
+        "No private wallet context is required for public 211 retrieval."
+      ]
+    },
+    {
+      "id": "route_navigation",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Chat can navigate supported Abby routes through typed app actions.",
+      "evidence": [
+        "wallet_interface/ui/src/agent/tools/navigationTools.ts",
+        "wallet_interface/ui/src/agent/surfaceApi.ts",
+        "wallet_interface/ui/src/agent/surfaceRegistry.ts",
+        "wallet_interface/ui/src/models/abby.ts",
+        "wallet_interface/ui/tests/agent-chat-smoke.spec.ts"
+      ],
+      "release_checks": [
+        "Navigation uses registered route IDs.",
+        "Navigation does not require confirmation because it is read-public app control.",
+        "GUI and chat route changes share the app state route model."
+      ]
+    },
+    {
+      "id": "confirmation_gated_write_tools",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Wallet writes, disclosures, proofs, exports, analytics consent, and destructive tools are confirmation gated.",
+      "evidence": [
+        "wallet_interface/ui/src/agent/permissionPolicy.ts",
+        "wallet_interface/ui/src/agent/toolExecutor.ts",
+        "wallet_interface/ui/src/components/agent/AgentConfirmationCard.tsx",
+        "wallet_interface/ui/tests/agent-unit.spec.ts",
+        "wallet_interface/ui/tests/agent-action-convergence.spec.ts",
+        "wallet_interface/ui/tests/agent-chat-smoke.spec.ts"
+      ],
+      "release_checks": [
+        "write_wallet and share_or_disclose tools stage a confirmation request before execution.",
+        "Denied, expired, or canceled confirmations do not execute partial writes.",
+        "Confirmed execution still goes through the surface API, wallet authorization, and audit requirements."
+      ]
+    },
+    {
+      "id": "privacy_controls",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Private wallet context is redacted by default and tested before release.",
+      "evidence": [
+        "wallet_interface/ui/src/agent/promptGuards.ts",
+        "wallet_interface/ui/src/agent/agentConversation.ts",
+        "wallet_interface/ui/tests/agent-privacy.spec.ts",
+        "docs/AI_AGENT_CHAT_THREAT_MODEL.md"
+      ],
+      "release_checks": [
+        "Private notes, precise location, document text, provider conversations, and raw query history are excluded unless explicitly allowed.",
+        "Private-context opt-in is scoped to the current task.",
+        "Raw chat transcripts are not persisted by default."
+      ]
+    },
+    {
+      "id": "operating_procedures",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Operators have documented validation, troubleshooting, rollback, and privacy incident procedures.",
+      "evidence": [
+        "docs/AI_AGENT_CHAT_RUNBOOK.md",
+        "docs/AI_AGENT_CHAT_THREAT_MODEL.md",
+        "docs/WALLET_OPERATIONS_RUNBOOK.md",
+        "docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md"
+      ],
+      "release_checks": [
+        "Runbook lists standard validation and release gates.",
+        "Threat model documents model boundaries, trust boundaries, confirmation policy, and private-context handling.",
+        "Rollback and privacy incident procedures are linked to wallet operations guidance."
+      ]
+    },
+    {
+      "id": "accessibility_mobile_review",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Chat drawer, bottom sheet, confirmation cards, and consent cards have accessibility and mobile review coverage.",
+      "evidence": [
+        "docs/AI_AGENT_CHAT_ACCESSIBILITY_REVIEW.md",
+        "wallet_interface/ui/src/components/agent/AgentChatDrawer.tsx",
+        "wallet_interface/ui/src/components/agent/AgentChatBottomSheet.tsx",
+        "wallet_interface/ui/src/components/agent/AgentConfirmationCard.tsx",
+        "wallet_interface/ui/src/components/agent/PrivateContextConsentCard.tsx"
+      ],
+      "release_checks": [
+        "No P0/P1 accessibility blockers are accepted without a launch exception.",
+        "Keyboard, focus, screen-reader, reduced-motion, and mobile viewport behavior are reviewed.",
+        "Known follow-ups remain tracked outside the release blocker list."
+      ]
+    }
+  ],
+  "launch_exceptions": [],
+  "operator_handoff": {
+    "go_no_go_owner": "release owner",
+    "incident_runbook": "docs/AI_AGENT_CHAT_RUNBOOK.md",
+    "privacy_incident_source": "docs/WALLET_OPERATIONS_RUNBOOK.md",
+    "rollback_strategy": "Disable affected tools in surfaceRegistry.ts, fall back to deterministic read-only chat, and re-run validation before re-enabling."
+  }
+}
