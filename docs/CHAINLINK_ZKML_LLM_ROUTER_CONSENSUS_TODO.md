@@ -383,7 +383,7 @@ Track guide:
 - Acceptance: A workflow matrix maps recipient access, wallet/uploads, Proof Center, QR proof review, Security/audit, provider eligibility, and public analytics/proof dashboards to backend routes, TypeScript calls, consensus modes, fail-closed errors, receipt metadata fields, no-leak assertions, and desktop/mobile Playwright coverage; shared fixtures provide deterministic direct, receipt-only, libp2p, CRE, ZKML, TEE, quorum-failure, proof-failure, and sanitizer sentinel payloads.
 
 ## CLZKML-282 TypeScript Consensus Client And UI Surfaces
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ui
