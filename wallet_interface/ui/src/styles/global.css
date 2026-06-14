@@ -1123,6 +1123,64 @@ body.playful-pulse .decor-shape {
   gap: 12px;
 }
 
+.proof-card,
+.export-card,
+.proof-surface-card {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.proof-surface-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.proof-surface-card h3 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+}
+
+.proof-surface-card p {
+  color: #5b6776;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.proof-state-row {
+  display: grid;
+  gap: 3px;
+}
+
+.proof-state-row strong {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.proof-state-row span,
+.proof-inputs span,
+.receipt-hash-row code {
+  overflow-wrap: anywhere;
+}
+
+.proof-inputs {
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  overflow: hidden;
+}
+
+.receipt-hash-row {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+}
+
 .card {
   background: var(--abby-color-surface);
   border: 1px solid var(--abby-color-border);
@@ -1894,6 +1952,11 @@ body.playful-pulse .decor-shape {
   color: #744b00;
 }
 
+.badge-danger {
+  background: #fff0ed;
+  color: #b42318;
+}
+
 .scope-header {
   align-items: start;
   display: grid;
@@ -2617,6 +2680,9 @@ textarea {
 .list-item,
 .scope-editor,
 .analytics-card,
+.proof-card,
+.export-card,
+.proof-surface-card,
 .timeline-event,
 .liaison-panel,
 .schedule-preview,
@@ -2939,6 +3005,11 @@ textarea {
 .badge-warning {
   background: #fff3c8;
   color: #755a08;
+}
+
+.badge-danger {
+  background: #fff0ed;
+  color: #8c2b22;
 }
 
 .upload-dropzone {

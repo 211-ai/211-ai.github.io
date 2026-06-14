@@ -1,4 +1,8 @@
 import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
+import {
+  buildProveKitWalletProofsApiResponse,
+  provekitForbiddenWitnessTokens
+} from "./fixtures/provekit-proof-fixtures";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 
@@ -491,6 +495,173 @@ test("proof center can create an API-backed location region proof", async ({ pag
   await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
   await expect(createdProof.getByText(/^lat$/i)).not.toBeVisible();
   await expect(createdProof.getByText(/^lon$/i)).not.toBeVisible();
+  expect(createRequests).toBe(1);
+});
+
+test("ProveKit proof states render across wallet surfaces without private witness leakage", async ({ page }) => {
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+
+    if (path === "/wallets/snapshots") {
+      await route.fulfill({ json: { wallet_ids: ["wallet-demo"] } });
+      return;
+    }
+    if (path.endsWith("/snapshot") && route.request().method() === "GET") {
+      await route.fulfill({
+        json: {
+          wallet_id: "wallet-demo",
+          path: "/tmp/wallet-demo.json",
+          exists: true,
+          valid: true,
+          format: "envelope",
+          snapshot_hash: "abc123def456abc123def456abc123def456abc123def456abc123def456abcd",
+          computed_hash: "abc123def456abc123def456abc123def456abc123def456abc123def456abcd"
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: buildProveKitWalletProofsApiResponse() });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({
+        json: {
+          events: [
+            {
+              event_id: "audit-provekit-fixture",
+              created_at: "2026-06-14T09:01:00Z",
+              actor_did: "did:key:provekit-ui-owner",
+              action: "proof/verify",
+              resource: "wallet://wallet-demo/proofs/proof-fixture-provekit-whir",
+              decision: "allow",
+              grant_id: null
+            }
+          ]
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+
+  await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
+
+  await expect(page.getByText("Simulated proof, demo-only").first()).toBeVisible();
+  await expect(page.getByText("Groth16 BN254").first()).toBeVisible();
+  await expect(page.getByText("ProveKit WHIR").first()).toBeVisible();
+  await expect(page.getByText("ProveKit recursive Groth16 wrapper").first()).toBeVisible();
+  await expect(page.getByText("ProveKit artifact hash mismatch").first()).toBeVisible();
+  await expect(page.getByText("Stale ProveKit verifier key").first()).toBeVisible();
+  await expect(page.getByText("ProveKit verification failed").first()).toBeVisible();
+  await expect(page.getByText("Not on-chain ready without recursive wrapper").first()).toBeVisible();
+  await expect(page.getByText("Not counted as production proof coverage").first()).toBeVisible();
+
+  const assertNoForbiddenWitnessText = async () => {
+    for (const token of provekitForbiddenWitnessTokens) {
+      await expect(page.getByText(token, { exact: false })).toHaveCount(0);
+    }
+  };
+  await assertNoForbiddenWitnessText();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/uploads";
+  });
+  await expect(page.getByRole("heading", { name: /Wallet proof receipts/i })).toBeVisible();
+  await expect(page.getByText("Private witness and private axioms hidden").first()).toBeVisible();
+  await assertNoForbiddenWitnessText();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/social-services";
+  });
+  await expect(page.getByRole("heading", { name: /Provider proof review/i })).toBeVisible();
+  await expect(page.getByText("Provider may review public proof metadata").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/analytics";
+  });
+  await expect(page.getByRole("heading", { name: /Public proof dashboard/i })).toBeVisible();
+  await expect(page.getByText("Production proof evidence").first()).toBeVisible();
+  await expect(page.getByText("Fail-closed receipts").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/exports";
+  });
+  await expect(page.getByRole("heading", { name: /QR proof review/i })).toBeVisible();
+  await expect(page.getByText("QR review shows proof system, verifier, and public inputs only").first()).toBeVisible();
+  await expect(page.getByText(/No on-chain claim in this export/i).first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/security";
+  });
+  await expect(page.getByRole("heading", { name: /Proof security review/i })).toBeVisible();
+  await expect(page.getByText("Verifier state fails closed").first()).toBeVisible();
+
+  await page.evaluate(() => {
+    window.location.hash = "#/audit";
+  });
+  await expect(page.getByRole("heading", { name: /Proof audit coverage/i })).toBeVisible();
+  await expect(page.getByText(/proof\/verify/i)).toBeVisible();
+  await assertNoForbiddenWitnessText();
+});
+
+test("ProveKit backend-disabled proof creation fails closed without minting a fallback", async ({ page }) => {
+  let createRequests = 0;
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+
+    if (path.endsWith("/locations/rec-location-current/region-proofs")) {
+      createRequests += 1;
+      await route.fulfill({
+        status: 503,
+        json: {
+          code: "provekit_backend_disabled",
+          detail: "ProveKit backend disabled; no simulated fallback was created."
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+
+  await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
+  await page.getByRole("button", { name: /Create proof/i }).click();
+  await expect(page.getByText(/ProveKit backend disabled/i)).toBeVisible();
+  await expect(page.getByText(/No simulated fallback was created/i)).toBeVisible();
   expect(createRequests).toBe(1);
 });
 
@@ -1304,5 +1475,3 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i).first()).toBeVisible();
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
 });
-
-

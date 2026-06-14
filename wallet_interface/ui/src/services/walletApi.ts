@@ -92,7 +92,7 @@ interface ServiceInteractionsApiResponse {
   interactions: ServiceInteractionEvent[];
 }
 
-interface ProofReceiptApiRecord {
+export interface ProofReceiptApiRecord {
   proof_id: string;
   proof_type: string;
   statement?: Record<string, unknown>;
@@ -107,6 +107,9 @@ interface ProofReceiptApiRecord {
   proof_artifact_ref?: string | null;
   verification_status?: string;
   created_at: string;
+  metadata?: Record<string, unknown>;
+  wallet_id?: string;
+  witness_label?: string;
 }
 
 interface ProofReceiptsApiResponse {
@@ -425,6 +428,56 @@ export interface WalletApiConfig {
   actorDid?: string;
   issuerKeyHex?: string;
   audienceKeyHex?: string;
+}
+
+export type ProofSystemFamily =
+  | "simulated"
+  | "groth16"
+  | "provekit"
+  | "provekit_recursive_groth16"
+  | "unknown";
+
+export interface ProofReceiptDisplayState {
+  proofSystemFamily: ProofSystemFamily;
+  proofSystemLabel: string;
+  statusLabel: string;
+  statusTone: "neutral" | "success" | "warning" | "danger";
+  accepted: boolean;
+  productionEvidence: boolean;
+  failClosed: boolean;
+  manualFallback: boolean;
+  onChainLabel: string;
+  providerLabel: string;
+  dashboardLabel: string;
+  exportLabel: string;
+  qrReviewLabel: string;
+  inputBoundaryLabel: string;
+}
+
+const PRIVATE_PUBLIC_INPUT_KEY_PATTERN =
+  /(^|_)(private|private_axiom|private_axioms|private_axiom_text|witness|prover|prover_key|pkp|pkp_path|prover_toml)(_|$)/i;
+
+const PRIVATE_PUBLIC_INPUT_VALUE_PATTERNS = [
+  /PRIVATE_WITNESS_SENTINEL/i,
+  /private_axiom_text/i,
+  /Prover\.toml/i,
+  /witness_theorem_hash_field/i,
+  /prover_key_path/i,
+  /pkp_path/i
+];
+
+export class WalletApiRequestError extends Error {
+  code?: string;
+  detail?: string;
+  status: number;
+
+  constructor(label: string, status: number, detail?: string, code?: string) {
+    super(`${label} request failed with status ${status}${detail ? `: ${detail}` : ""}`);
+    this.name = "WalletApiRequestError";
+    this.code = code;
+    this.detail = detail;
+    this.status = status;
+  }
 }
 
 export interface ServicePlanShareGrantResponse {
@@ -1812,26 +1865,90 @@ function toDerivedAnalysisResultView(result: DerivedAnalysisResultApiResponse): 
   };
 }
 
-function toProofReceiptView(proof: ProofReceiptApiRecord): ProofReceiptView {
-  const claim = stringValue(proof.public_inputs.claim) || proof.proof_type;
+export function toProofReceiptView(proof: ProofReceiptApiRecord): ProofReceiptView {
+  const publicInputs = sanitizeProofPublicInputs(proof.public_inputs);
+  const claim = sanitizeProofDisplayValue(publicInputs.claim ?? proof.statement?.claim ?? proof.proof_type) || proof.proof_type;
+  const system = proofSystemDetails(proof.proof_system, proof.is_simulated);
+  const witnessLabel = proof.witness_record_ids.length
+    ? proof.witness_record_ids
+        .map(labelFromResource)
+        .filter((label) => !containsPrivateProofToken(label))
+        .join(", ")
+    : "";
   return {
     id: proof.proof_id,
     proofType: proof.proof_type,
     claim,
     verifier: proof.verifier_id,
-    proofSystem: proof.proof_system ?? (proof.is_simulated ? "simulated" : "unknown"),
+    proofSystem: system.label,
     verificationStatus: proof.verification_status ?? "unknown",
     circuitId: proof.circuit_id ?? undefined,
     verifierDigest: proof.verifier_digest ?? undefined,
     proofArtifactRef: proof.proof_artifact_ref ?? undefined,
-    publicInputs: Object.fromEntries(
-      Object.entries(proof.public_inputs).map(([key, value]) => [key, stringValue(value)])
-    ),
-    witnessLabel: proof.witness_record_ids.length
-      ? proof.witness_record_ids.map(labelFromResource).join(", ")
-      : "Wallet witness",
+    publicInputs,
+    witnessLabel: witnessLabel || "Wallet commitment reference",
     simulated: proof.is_simulated,
     createdAt: formatTimestamp(proof.created_at)
+  };
+}
+
+export function mapProofReceiptRecordForUi(record: Record<string, unknown>): ProofReceiptView {
+  const publicInputs = isRecord(record.public_inputs) ? record.public_inputs : {};
+  const statement = isRecord(record.statement) ? record.statement : undefined;
+  return toProofReceiptView({
+    proof_id: stringValue(record.proof_id) || "proof-receipt",
+    proof_type: stringValue(record.proof_type) || "proof",
+    statement,
+    verifier_id: stringValue(record.verifier_id) || "unknown verifier",
+    public_inputs: publicInputs,
+    proof_hash: stringValue(record.proof_hash),
+    witness_record_ids: stringArray(record.witness_record_ids),
+    is_simulated: Boolean(record.is_simulated),
+    proof_system: stringValue(record.proof_system) || undefined,
+    circuit_id: stringValue(record.circuit_id) || null,
+    verifier_digest: stringValue(record.verifier_digest) || null,
+    proof_artifact_ref: stringValue(record.proof_artifact_ref) || null,
+    verification_status: stringValue(record.verification_status) || "unknown",
+    created_at: stringValue(record.created_at) || new Date(0).toISOString(),
+    metadata: isRecord(record.metadata) ? record.metadata : undefined,
+    wallet_id: stringValue(record.wallet_id) || undefined,
+    witness_label: stringValue(record.witness_label) || undefined
+  });
+}
+
+export function getProofReceiptUiState(proof: ProofReceiptView): ProofReceiptDisplayState {
+  const system = proofSystemDetails(proof.proofSystem, proof.simulated);
+  const status = verificationStatusDetails(proof.verificationStatus, system.family, proof.simulated);
+  const productionEvidence = status.accepted && system.family !== "simulated" && system.family !== "unknown";
+  const onChainReady = status.accepted && system.family === "provekit_recursive_groth16";
+
+  return {
+    proofSystemFamily: system.family,
+    proofSystemLabel: system.label,
+    statusLabel: status.label,
+    statusTone: status.tone,
+    accepted: status.accepted,
+    productionEvidence,
+    failClosed: status.failClosed,
+    manualFallback: status.failClosed || system.family === "unknown",
+    onChainLabel: onChainReady
+      ? "Recursive Groth16 wrapper evidence only"
+      : system.family === "provekit"
+        ? "Not on-chain ready without recursive wrapper"
+        : system.family === "simulated"
+          ? "No on-chain claim"
+          : "No contract submission claimed here",
+    providerLabel: productionEvidence
+      ? "Provider may review public proof metadata"
+      : "Provider must use manual review",
+    dashboardLabel: productionEvidence
+      ? "Counts as proof coverage"
+      : "Not counted as production proof coverage",
+    exportLabel: status.failClosed
+      ? "Export blocked until verifier state is accepted"
+      : "Export carries public proof metadata only",
+    qrReviewLabel: "QR review shows proof system, verifier, and public inputs only",
+    inputBoundaryLabel: "Private witness and private axioms hidden"
   };
 }
 
@@ -1900,7 +2017,7 @@ async function toUploadItemViewWithStorage(
 async function fetchJson<T>(url: URL, label: string): Promise<T> {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`${label} request failed with status ${response.status}`);
+    throw await toWalletApiRequestError(response, label);
   }
   return (await response.json()) as T;
 }
@@ -1912,7 +2029,7 @@ async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
     method: "POST"
   });
   if (!response.ok) {
-    throw new Error(`${label} request failed with status ${response.status}`);
+    throw await toWalletApiRequestError(response, label);
   }
   return (await response.json()) as T;
 }
@@ -1924,9 +2041,20 @@ async function patchJson<T>(url: URL, label: string, body: unknown): Promise<T> 
     method: "PATCH"
   });
   if (!response.ok) {
-    throw new Error(`${label} request failed with status ${response.status}`);
+    throw await toWalletApiRequestError(response, label);
   }
   return (await response.json()) as T;
+}
+
+async function toWalletApiRequestError(response: Response, label: string): Promise<WalletApiRequestError> {
+  try {
+    const payload = (await response.clone().json()) as Record<string, unknown>;
+    const detail = stringValue(payload.detail ?? payload.message ?? payload.error);
+    const code = stringValue(payload.code);
+    return new WalletApiRequestError(label, response.status, detail || undefined, code || undefined);
+  } catch {
+    return new WalletApiRequestError(label, response.status);
+  }
 }
 
 async function postAccessRequestDecision(
@@ -1991,6 +2119,95 @@ function stringArray(value: unknown): string[] {
     return [];
   }
   return value.map((item) => stringValue(item)).filter(Boolean);
+}
+
+function sanitizeProofPublicInputs(publicInputs: Record<string, unknown>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(publicInputs).flatMap(([key, value]) => {
+      if (PRIVATE_PUBLIC_INPUT_KEY_PATTERN.test(key) || containsPrivateProofToken(value)) {
+        return [];
+      }
+      const safeValue = sanitizeProofDisplayValue(value);
+      return safeValue ? [[key, safeValue]] : [];
+    })
+  );
+}
+
+function sanitizeProofDisplayValue(value: unknown): string {
+  const text = stringValue(value);
+  return containsPrivateProofToken(text) ? "" : text;
+}
+
+function containsPrivateProofToken(value: unknown): boolean {
+  const serialized = stringValue(value);
+  return PRIVATE_PUBLIC_INPUT_VALUE_PATTERNS.some((pattern) => pattern.test(serialized));
+}
+
+function proofSystemDetails(
+  proofSystem: string | undefined,
+  isSimulated: boolean
+): { family: ProofSystemFamily; label: string } {
+  const raw = (proofSystem ?? "").trim();
+  const normalized = raw.toLowerCase().replace(/[\s_/-]+/g, "");
+
+  if (isSimulated || normalized.includes("simulated")) {
+    return { family: "simulated", label: "Simulated proof, demo-only" };
+  }
+  if (normalized.includes("provekit") && normalized.includes("recursive") && normalized.includes("groth16")) {
+    return { family: "provekit_recursive_groth16", label: "ProveKit recursive Groth16 wrapper" };
+  }
+  if (normalized.includes("provekit") && normalized.includes("groth16") && normalized.includes("wrapper")) {
+    return { family: "provekit_recursive_groth16", label: "ProveKit recursive Groth16 wrapper" };
+  }
+  if (normalized.includes("provekit") || normalized.includes("whir")) {
+    return { family: "provekit", label: "ProveKit WHIR" };
+  }
+  if (normalized.includes("groth16") || normalized.includes("bn254")) {
+    return { family: "groth16", label: "Groth16 BN254" };
+  }
+  return { family: "unknown", label: raw || "Unknown proof system" };
+}
+
+function verificationStatusDetails(
+  verificationStatus: string | undefined,
+  family: ProofSystemFamily,
+  isSimulated: boolean
+): {
+  label: string;
+  tone: "neutral" | "success" | "warning" | "danger";
+  accepted: boolean;
+  failClosed: boolean;
+} {
+  const normalized = (verificationStatus ?? "unknown").trim().toLowerCase().replace(/[\s-]+/g, "_");
+
+  if (isSimulated || family === "simulated" || normalized === "demo_only") {
+    return { accepted: false, failClosed: false, label: "Demo only", tone: "warning" };
+  }
+  if (["verified", "verification_success", "success", "ok"].includes(normalized)) {
+    return { accepted: true, failClosed: false, label: "verified", tone: "success" };
+  }
+  if (["pending", "proof_pending", "queued"].includes(normalized)) {
+    return { accepted: false, failClosed: false, label: "Pending verification", tone: "neutral" };
+  }
+  if (normalized.includes("artifact_hash_mismatch")) {
+    return { accepted: false, failClosed: true, label: "ProveKit artifact hash mismatch", tone: "danger" };
+  }
+  if (normalized.includes("stale_verifier_key")) {
+    return { accepted: false, failClosed: true, label: "Stale ProveKit verifier key", tone: "warning" };
+  }
+  if (normalized.includes("verification_failed") || normalized.includes("verification_failure")) {
+    return { accepted: false, failClosed: true, label: "ProveKit verification failed", tone: "danger" };
+  }
+  if (normalized.includes("disabled")) {
+    return { accepted: false, failClosed: true, label: "ProveKit backend disabled", tone: "warning" };
+  }
+  if (normalized.includes("unavailable")) {
+    return { accepted: false, failClosed: true, label: "ProveKit backend unavailable", tone: "warning" };
+  }
+  if (normalized.includes("error") || normalized.includes("failed") || normalized.includes("mismatch")) {
+    return { accepted: false, failClosed: true, label: verificationStatus || "Verification failed", tone: "danger" };
+  }
+  return { accepted: false, failClosed: true, label: verificationStatus || "Unknown verifier state", tone: "warning" };
 }
 
 function numberFromPolicy(value: unknown, fallback: number): number {
