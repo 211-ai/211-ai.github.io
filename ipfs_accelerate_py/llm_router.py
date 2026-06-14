@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import json
+import importlib
 from dataclasses import dataclass
+from types import ModuleType
 from typing import Any
-
-from ipfs_datasets_py import llm_router as _datasets_llm_router
 
 from .llm_consensus import (
     ConsensusReceipt,
@@ -15,6 +15,40 @@ from .llm_consensus import (
     load_consensus_config,
     run_local_consensus,
 )
+
+
+class _LazyDatasetsLLMRouter:
+    """Load the upstream datasets router only when a delegated API is used."""
+
+    _module: ModuleType | None
+
+    def __init__(self) -> None:
+        object.__setattr__(self, "_module", None)
+
+    def _load(self) -> ModuleType:
+        module = object.__getattribute__(self, "_module")
+        if module is None:
+            module = importlib.import_module("ipfs_datasets_py.llm_router")
+            object.__setattr__(self, "_module", module)
+        return module
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._load(), name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name == "_module":
+            object.__setattr__(self, name, value)
+            return
+        setattr(self._load(), name, value)
+
+    def __delattr__(self, name: str) -> None:
+        if name == "_module":
+            object.__delattr__(self, name)
+            return
+        delattr(self._load(), name)
+
+
+_datasets_llm_router = _LazyDatasetsLLMRouter()
 
 
 def _normalize_provider(provider: str | None) -> str | None:

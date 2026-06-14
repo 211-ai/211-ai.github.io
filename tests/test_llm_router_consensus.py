@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+import subprocess
+import sys
+import textwrap
 from typing import Any
 
 from ipfs_accelerate_py import llm_router
@@ -15,6 +20,148 @@ from ipfs_accelerate_py.llm_router import (
     _canonicalize_messages,
     chat_completions_create_consensus,
 )
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _run_import_probe(script: str) -> None:
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env.pop("IPFS_DATASETS_AUTO_INSTALL", None)
+    env.pop("IPFS_KIT_AUTO_INSTALL_DEPS", None)
+    completed = subprocess.run(
+        [sys.executable, "-c", textwrap.dedent(script)],
+        cwd=REPO_ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+def test_import_ipfs_accelerate_py_has_no_optional_side_effects() -> None:
+    _run_import_probe(
+        """
+        import builtins
+        import os
+        import pathlib
+        import socket
+        import subprocess
+        import sys
+        import urllib.request
+
+        events = []
+
+        def guarded(name):
+            def _guard(*args, **kwargs):
+                events.append(name)
+                raise AssertionError(name)
+            return _guard
+
+        socket.create_connection = guarded("socket.create_connection")
+        socket.socket = guarded("socket.socket")
+        urllib.request.urlopen = guarded("urllib.request.urlopen")
+        subprocess.Popen = guarded("subprocess.Popen")
+        subprocess.run = guarded("subprocess.run")
+        os.makedirs = guarded("os.makedirs")
+        os.mkdir = guarded("os.mkdir")
+        pathlib.Path.mkdir = guarded("Path.mkdir")
+        pathlib.Path.write_text = guarded("Path.write_text")
+        pathlib.Path.write_bytes = guarded("Path.write_bytes")
+
+        original_open = builtins.open
+
+        def guarded_open(file, mode="r", *args, **kwargs):
+            if any(flag in str(mode) for flag in ("w", "a", "x", "+")):
+                events.append(f"open:{mode}")
+                raise AssertionError(f"write open: {mode}")
+            return original_open(file, mode, *args, **kwargs)
+
+        builtins.open = guarded_open
+
+        import ipfs_accelerate_py
+
+        blocked = [
+            name
+            for name in sys.modules
+            if name == "ipfs_datasets_py"
+            or name.startswith("ipfs_datasets_py.")
+            or name in {"requests", "huggingface_hub", "libp2p"}
+            or name.startswith("ipfs_accelerate_py.chainlink")
+            or name.startswith("ipfs_accelerate_py.proof_verifiers")
+            or name.startswith("ipfs_accelerate_py.p2p")
+        ]
+        assert blocked == [], blocked
+        assert events == [], events
+        assert "IPFS_DATASETS_AUTO_INSTALL" not in os.environ
+        assert "IPFS_KIT_AUTO_INSTALL_DEPS" not in os.environ
+        assert "llm_router" in ipfs_accelerate_py.__all__
+        """
+    )
+
+
+def test_import_ipfs_accelerate_llm_router_defers_upstream_router_side_effects() -> None:
+    _run_import_probe(
+        """
+        import builtins
+        import os
+        import pathlib
+        import socket
+        import subprocess
+        import sys
+        import urllib.request
+
+        events = []
+
+        def guarded(name):
+            def _guard(*args, **kwargs):
+                events.append(name)
+                raise AssertionError(name)
+            return _guard
+
+        socket.create_connection = guarded("socket.create_connection")
+        socket.socket = guarded("socket.socket")
+        urllib.request.urlopen = guarded("urllib.request.urlopen")
+        subprocess.Popen = guarded("subprocess.Popen")
+        subprocess.run = guarded("subprocess.run")
+        os.makedirs = guarded("os.makedirs")
+        os.mkdir = guarded("os.mkdir")
+        pathlib.Path.mkdir = guarded("Path.mkdir")
+        pathlib.Path.write_text = guarded("Path.write_text")
+        pathlib.Path.write_bytes = guarded("Path.write_bytes")
+
+        original_open = builtins.open
+
+        def guarded_open(file, mode="r", *args, **kwargs):
+            if any(flag in str(mode) for flag in ("w", "a", "x", "+")):
+                events.append(f"open:{mode}")
+                raise AssertionError(f"write open: {mode}")
+            return original_open(file, mode, *args, **kwargs)
+
+        builtins.open = guarded_open
+
+        import ipfs_accelerate_py.llm_router as router
+
+        blocked = [
+            name
+            for name in sys.modules
+            if name == "ipfs_datasets_py"
+            or name.startswith("ipfs_datasets_py.")
+            or name in {"requests", "huggingface_hub", "libp2p"}
+            or name.startswith("ipfs_accelerate_py.chainlink")
+            or name.startswith("ipfs_accelerate_py.proof_verifiers")
+            or name.startswith("ipfs_accelerate_py.p2p")
+        ]
+        assert blocked == [], blocked
+        assert events == [], events
+        assert "IPFS_DATASETS_AUTO_INSTALL" not in os.environ
+        assert "IPFS_KIT_AUTO_INSTALL_DEPS" not in os.environ
+        assert router._datasets_llm_router._module is None
+        assert router._normalize_provider("hf") == "hf_inference_api"
+        """
+    )
 
 
 def test_generate_text_consensus_returns_receipt_with_explicit_operators() -> None:
