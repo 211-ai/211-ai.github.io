@@ -403,7 +403,7 @@ Track guide:
 - Acceptance: Backend and TypeScript contract tests cover request-field and environment-policy consensus activation, route response shapes consumed by the UI client, fail-closed error codes, no silent downgrade to direct LLM output, sanitized receipt hashes/CIDs, and no raw prompt, wallet plaintext, operator secret, proof witness, CRE private report, or raw proof payload leakage.
 
 ## CLZKML-284 Full-Stack Chainlink Consensus Playwright Harness
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ui
