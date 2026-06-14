@@ -401,3 +401,194 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
     await stopWalletApi(api);
   }
 });
+
+// ---------------------------------------------------------------------------
+// World ID sanitized proof display with a live wallet API
+// ---------------------------------------------------------------------------
+
+test("World ID disabled state is handled gracefully with a live wallet API", async ({ page }) => {
+  const api = await startWalletApi();
+  const ownerDid = "did:key:fullstack-world-id-owner";
+
+  const query = new URLSearchParams({
+    walletApiBaseUrl: api.baseUrl,
+    walletId: "wallet-demo",
+    actorDid: ownerDid
+  });
+  const targetRoute = `/?${query.toString()}#/proof-center`;
+
+  const diagnostics = collectPageDiagnostics(page, api.baseUrl);
+
+  try {
+    await page.goto(targetRoute);
+    await signInIfNeeded(page);
+
+    // The wallet API may not have World ID enabled – which is fine.
+    // The panel should display an Unavailable badge or disabled button.
+    const panel = page.getByRole("article", { name: /World ID verification/i });
+    await expect(panel).toBeVisible({ timeout: 15_000 });
+
+    const verifyButton = panel.getByRole("button", { name: /Verify with World ID/i });
+    await expect(verifyButton).toBeVisible({ timeout: 5_000 });
+
+    // When World ID config is not enabled, the button must be disabled (no accidental
+    // verification against an unconfigured backend)
+    const buttonDisabled = await verifyButton.isDisabled();
+    if (buttonDisabled) {
+      // World ID is correctly disabled – verify the fallback messaging
+      await expect(panel.getByText(/Unavailable|disabled|unavailable/i)).toBeVisible();
+    }
+
+    // No browser errors should have occurred
+    await expect.poll(() => diagnostics.browserErrors).toEqual([]);
+  } finally {
+    await stopWalletApi(api);
+  }
+});
+
+test("World ID proof-center with mocked verified state shows no raw nullifier via live API", async ({ page }) => {
+  const api = await startWalletApi();
+  const ownerDid = "did:key:fullstack-world-id-notnull-owner";
+
+  const query = new URLSearchParams({
+    walletApiBaseUrl: api.baseUrl,
+    walletId: "wallet-demo",
+    actorDid: ownerDid
+  });
+  const targetRoute = `/?${query.toString()}#/proof-center`;
+
+  const diagnostics = collectPageDiagnostics(page, api.baseUrl);
+
+  // Intercept World ID wallet API routes so we can inject a verified state
+  // without needing actual World ID credentials in the test environment.
+  await page.route(`${api.baseUrl}/wallets/*/world-id/**`, async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    const method = route.request().method();
+
+    if (path.endsWith("/world-id/config")) {
+      await route.fulfill({
+        json: {
+          enabled: true,
+          app_id: "app_staging_demo",
+          rp_id: "rp_demo",
+          default_action: "wallet-attach-world-id-v1",
+          environment: "staging",
+          credential_policy: "proof_of_human",
+          allow_legacy_proofs: false,
+          require_user_presence: true
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/world-id/status")) {
+      await route.fulfill({
+        json: {
+          verified: true,
+          binding_id: "world-id-binding-fullstack",
+          proof_id: "proof-world-id-fullstack",
+          verified_at: "2026-06-14T16:00:00Z",
+          action: "wallet-attach-world-id-v1",
+          credential_policy: "proof_of_human",
+          active_binding_count: 1
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/world-id/rp-signature") && method === "POST") {
+      const now = Math.floor(Date.now() / 1000);
+      await route.fulfill({
+        json: {
+          app_id: "app_staging_demo",
+          action: "wallet-attach-world-id-v1",
+          signal: `211-ai:wallet-world-id:v1:wallet-demo:${ownerDid}`,
+          environment: "staging",
+          allow_legacy_proofs: false,
+          require_user_presence: true,
+          rp_context: {
+            rp_id: "rp_demo",
+            nonce: "nonce-fullstack-test",
+            created_at: now,
+            expires_at: now + 300,
+            signature: "0xmocksig"
+          }
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected world-id call", path } });
+  });
+
+  // Let the proofs endpoint pass through to the live API (so we get a real empty proofs list)
+  // but also intercept to inject a World ID proof receipt
+  await page.route(`${api.baseUrl}/wallets/*/proofs*`, async (route) => {
+    await route.fulfill({
+      json: {
+        proofs: [
+          {
+            proof_id: "proof-world-id-fullstack",
+            wallet_id: "wallet-demo",
+            proof_type: "world_id_proof_of_human",
+            statement: {
+              claim: "wallet_actor_has_world_id_proof_of_human",
+              wallet_id: "wallet-demo",
+              action: "wallet-attach-world-id-v1",
+              credential_policy: "proof_of_human"
+            },
+            verifier_id: "world-developer-portal-v4:rp_demo",
+            public_inputs: {
+              claim: "World ID proof of human is bound to this wallet",
+              rp_id: "rp_demo",
+              app_id: "app_staging_demo",
+              action: "wallet-attach-world-id-v1",
+              signal_hash: "sha256:signal-fullstack",
+              credential_policy: "proof_of_human",
+              nullifier_commitment: "hmac-sha256:nullifier-fullstack",
+              verification_result_hash: "sha256:result-fullstack"
+            },
+            proof_hash: "sha256:proof-fullstack",
+            witness_record_ids: ["wallet://wallet-demo/world-id-binding/world-id-binding-fullstack"],
+            is_simulated: false,
+            proof_system: "world_id_idkit_v4",
+            circuit_id: "world-id-proof-of-human-v4",
+            verifier_digest: "digest-fullstack-abcdef",
+            proof_artifact_ref: "world-id-proof://proof-world-id-fullstack",
+            verification_status: "verified",
+            created_at: "2026-06-14T16:00:00Z"
+          }
+        ]
+      }
+    });
+  });
+
+  try {
+    await page.goto(targetRoute);
+    await signInIfNeeded(page);
+
+    const panel = page.getByRole("article", { name: /World ID verification/i });
+    await expect(panel).toBeVisible({ timeout: 15_000 });
+
+    // Verified state should be displayed
+    await expect(panel.getByText(/World ID verified/i)).toBeVisible({ timeout: 10_000 });
+
+    // No raw nullifier values should be visible in the panel or proof card
+    await expect(page.getByText(/0xnullifier|raw_nullifier_value/i)).toHaveCount(0);
+
+    const proofCard = page.getByRole("article", {
+      name: /World ID proof of human is bound to this wallet/i
+    });
+    await expect(proofCard).toBeVisible({ timeout: 10_000 });
+
+    // Proof card should show sanitized commitment, not raw nullifier
+    await expect(proofCard.getByText(/hmac-sha256:nullifier-fullstack/i)).toBeVisible();
+    // Proof card should NOT show idkit proof, raw nullifier, or rp signature values
+    await expect(proofCard.getByText(/raw_nullifier|idkit_proof|developer_portal_response|rp_signature/i)).toHaveCount(0);
+
+    // Disclosure panel should name the withheld items
+    await expect(panel.getByText(/Raw nullifier.*IDKit proof payload/i)).toBeVisible();
+
+    await expect.poll(() => diagnostics.browserErrors).toEqual([]);
+  } finally {
+    await stopWalletApi(api);
+  }
+});

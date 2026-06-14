@@ -352,6 +352,27 @@ export function WorldIdVerificationPanel({
     setWidgetOpen(nextOpen);
   }
 
+  // Expose test hooks only when Playwright explicitly opts in.
+  useEffect(() => {
+    if (!activeRequest) return;
+    type WorldIdPanelTestHook = {
+      simulateSuccess: (result: IDKitResult) => Promise<void>;
+      simulateError: (errorCode: string) => void;
+    };
+    const g = globalThis as typeof globalThis & {
+      __abbyEnableWorldIdPanelTest?: boolean;
+      __abbyWorldIdPanelTest?: WorldIdPanelTestHook;
+    };
+    if (g.__abbyEnableWorldIdPanelTest !== true) return;
+    g.__abbyWorldIdPanelTest = {
+      simulateSuccess: verifyWithBackend,
+      simulateError: (errorCode: string) => handleIdkitError(errorCode as IDKitErrorCode)
+    };
+    return () => {
+      delete g.__abbyWorldIdPanelTest;
+    };
+  }, [activeRequest, verifyWithBackend]);
+
   return (
     <article className="world-id-panel proof-card" aria-label="World ID verification">
       <div className="scope-header">
