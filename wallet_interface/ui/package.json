@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:native": "VITE_DEV_NATIVE_WATCH=1 vite --host 0.0.0.0",
+    "dev:poll": "vite --host 0.0.0.0",
     "build": "tsc && vite build --configLoader runner",
     "preview": "vite preview --host 0.0.0.0 --configLoader runner",
     "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
