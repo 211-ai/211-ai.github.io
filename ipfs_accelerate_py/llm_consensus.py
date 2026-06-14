@@ -292,6 +292,22 @@ def _first_config_value(options: dict[str, Any], env: dict[str, str], aliases: t
     return default
 
 
+def _first_config_value_any_env(
+    options: dict[str, Any],
+    env: dict[str, str],
+    aliases: tuple[str, ...],
+    env_names: tuple[str, ...],
+    default: Any,
+) -> Any:
+    for alias in aliases:
+        if alias in options and options[alias] is not None:
+            return options[alias]
+    for env_name in env_names:
+        if env_name in env and str(env[env_name]).strip():
+            return env[env_name]
+    return default
+
+
 def _split_csv(value: Any) -> list[str]:
     if value is None:
         return []
@@ -463,6 +479,52 @@ def load_consensus_config(
             resolved_env,
             ("receipt_jsonl_path", "receiptJsonlPath"),
             prefix + "RECEIPT_JSONL_PATH",
+            None,
+        ),
+        "peers": _split_csv(
+            _first_config_value(
+                explicit,
+                resolved_env,
+                ("peers",),
+                prefix + "PEERS",
+                None,
+            )
+        ),
+        "operator_count": _first_config_value(
+            explicit,
+            resolved_env,
+            ("operator_count", "operatorCount"),
+            prefix + "OPERATOR_COUNT",
+            None,
+        ),
+        "cre_workflow_id": _first_config_value_any_env(
+            explicit,
+            resolved_env,
+            ("cre_workflow_id", "creWorkflowId"),
+            (
+                "IPFS_ACCELERATE_PY_CHAINLINK_CRE_WORKFLOW_ID",
+                prefix + "CRE_WORKFLOW_ID",
+            ),
+            None,
+        ),
+        "proof_verifier": _first_config_value_any_env(
+            explicit,
+            resolved_env,
+            ("proof_verifier", "proofVerifier", "verifier"),
+            (
+                "IPFS_ACCELERATE_PY_LLM_PROOF_VERIFIER",
+                prefix + "PROOF_VERIFIER",
+            ),
+            None,
+        ),
+        "verifier_contract": _first_config_value_any_env(
+            explicit,
+            resolved_env,
+            ("verifier_contract", "verifierContract", "verifier_contract_address", "verifierContractAddress"),
+            (
+                "IPFS_ACCELERATE_PY_CHAINLINK_VERIFIER_CONTRACT",
+                prefix + "VERIFIER_CONTRACT",
+            ),
             None,
         ),
     }
@@ -1044,6 +1106,284 @@ def persist_consensus_receipt(
     else:
         output_path.write_text(rendered + "\n", encoding="utf-8")
     return record
+
+
+def _present(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (dict, list, tuple, set)):
+        return bool(value)
+    return bool(value)
+
+
+def _coerce_health_receipt(value: Any) -> ConsensusReceipt:
+    if isinstance(value, ConsensusReceipt):
+        return value
+    if isinstance(value, str):
+        return ConsensusReceipt.from_json(value)
+    if isinstance(value, dict):
+        receipt_data = value.get("receipt")
+        if isinstance(receipt_data, dict):
+            return ConsensusReceipt.from_dict(receipt_data)
+        return ConsensusReceipt.from_dict(value)
+    raise TypeError(f"Unsupported consensus receipt value for health summary: {type(value).__name__}")
+
+
+def _coerce_health_receipts(receipts: Any) -> list[ConsensusReceipt]:
+    if receipts is None:
+        return []
+    if isinstance(receipts, (ConsensusReceipt, str, dict)):
+        return [_coerce_health_receipt(receipts)]
+    return [_coerce_health_receipt(item) for item in list(receipts)]
+
+
+def _safe_observability_reason(value: Any) -> str | None:
+    text = " ".join(str(value or "").strip().split())
+    if not text:
+        return None
+    if re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", text):
+        return text
+    return "redacted_failure"
+
+
+def _last_failure_reason_from_receipts(receipts: list[ConsensusReceipt]) -> str | None:
+    for receipt in reversed(receipts):
+        if receipt.consensus.accepted:
+            continue
+        safe_reason = _safe_observability_reason(receipt.consensus.reason)
+        if safe_reason:
+            return safe_reason
+        if any(response.error for response in receipt.responses):
+            return "operator_error"
+        return "consensus_failure"
+    return None
+
+
+def _receipt_cre_workflow_present(receipt: ConsensusReceipt) -> bool:
+    if _present(receipt.proof.cre_workflow_id):
+        return True
+    if _present(receipt.proof.metadata.get("cre_workflow_id")):
+        return True
+    if _present(receipt.request.proof_policy.get("cre_workflow_id")):
+        return True
+    request_hash_payload = receipt.request.metadata.get("request_hash_payload")
+    if isinstance(request_hash_payload, dict):
+        metadata = request_hash_payload.get("metadata")
+        if isinstance(metadata, dict) and _present(metadata.get("cre_workflow_id")):
+            return True
+    return _present(receipt.request.metadata.get("cre_workflow_id"))
+
+
+def _proof_policy_from_inputs(
+    *,
+    proof_policy: Any,
+    options: dict[str, Any],
+    receipts: list[ConsensusReceipt],
+) -> dict[str, Any]:
+    latest_receipt = receipts[-1] if receipts else None
+    policy: dict[str, Any] = {}
+    if latest_receipt is not None:
+        policy.update(_sanitize_canonical_value(latest_receipt.request.proof_policy))
+        policy.setdefault("mode", latest_receipt.proof.policy)
+        if latest_receipt.proof.verifier:
+            policy.setdefault("verifier", latest_receipt.proof.verifier)
+        if latest_receipt.proof.cre_workflow_id:
+            policy.setdefault("cre_workflow_id", latest_receipt.proof.cre_workflow_id)
+    if isinstance(options.get("proof_policy"), dict):
+        policy.update(_sanitize_canonical_value(options["proof_policy"]))
+    if isinstance(proof_policy, ProofReceipt):
+        policy.update(
+            {
+                "mode": proof_policy.policy,
+                "verifier": proof_policy.verifier,
+                "cre_workflow_id": proof_policy.cre_workflow_id,
+                "verified": proof_policy.verified,
+            }
+        )
+    elif isinstance(proof_policy, dict):
+        policy.update(_sanitize_canonical_value(proof_policy))
+    return policy
+
+
+def _proof_mode_from_policy(policy: dict[str, Any]) -> str:
+    return str(policy.get("mode") or policy.get("policy") or "receipt_only").strip() or "receipt_only"
+
+
+def _policy_bool(policy: dict[str, Any], *keys: str) -> bool:
+    for key in keys:
+        if key in policy:
+            return _coerce_bool(policy.get(key), default=False)
+    return False
+
+
+def _operator_count_for_health(
+    *,
+    options: dict[str, Any],
+    config: dict[str, Any],
+    operators: Any,
+    receipts: list[ConsensusReceipt],
+) -> int:
+    if operators is not None:
+        return len(list(operators))
+    for source in (options, config):
+        for key in ("operator_count", "operatorCount"):
+            value = source.get(key)
+            if value not in (None, ""):
+                return max(0, int(value))
+    peers = config.get("peers")
+    if isinstance(peers, list) and peers:
+        return len(peers)
+    if receipts:
+        return len(receipts[-1].responses)
+    return int(config.get("min_operators") or 0)
+
+
+def consensus_receipt_counts(receipts: Any) -> dict[str, int]:
+    """Return count-only receipt metrics safe for health and readiness output."""
+
+    receipt_list = _coerce_health_receipts(receipts)
+    counts = {
+        "receipt_count": 0,
+        "accepted_receipt_count": 0,
+        "failed_receipt_count": 0,
+        "quorum_met_receipt_count": 0,
+        "quorum_not_met_receipt_count": 0,
+        "operator_response_count": 0,
+        "successful_operator_response_count": 0,
+        "failed_operator_response_count": 0,
+        "verified_proof_receipt_count": 0,
+        "unverified_proof_receipt_count": 0,
+        "cre_receipt_count": 0,
+    }
+    for receipt in receipt_list:
+        counts["receipt_count"] += 1
+        if receipt.consensus.accepted:
+            counts["accepted_receipt_count"] += 1
+        else:
+            counts["failed_receipt_count"] += 1
+        if receipt.consensus.reason == "quorum_met":
+            counts["quorum_met_receipt_count"] += 1
+        elif receipt.consensus.reason == "quorum_not_met":
+            counts["quorum_not_met_receipt_count"] += 1
+
+        counts["operator_response_count"] += len(receipt.responses)
+        for response in receipt.responses:
+            if not response.error and response.output_hash and response.normalized_output_hash:
+                counts["successful_operator_response_count"] += 1
+            else:
+                counts["failed_operator_response_count"] += 1
+
+        if receipt.proof.verified:
+            counts["verified_proof_receipt_count"] += 1
+        else:
+            counts["unverified_proof_receipt_count"] += 1
+        if _receipt_cre_workflow_present(receipt):
+            counts["cre_receipt_count"] += 1
+    return counts
+
+
+def consensus_health_summary(
+    options: dict[str, Any] | None = None,
+    *,
+    env: dict[str, str] | None = None,
+    operators: Any = None,
+    receipts: Any = None,
+    proof_policy: dict[str, Any] | ProofReceipt | None = None,
+    last_failure_reason: str | None = None,
+) -> dict[str, Any]:
+    """Build a redacted consensus health summary for readiness reporting."""
+
+    explicit_options = dict(options or {})
+    config = load_consensus_config(explicit_options, env=env)
+    receipt_list = _coerce_health_receipts(receipts)
+    policy = _proof_policy_from_inputs(
+        proof_policy=proof_policy,
+        options=explicit_options,
+        receipts=receipt_list,
+    )
+    proof_mode = _proof_mode_from_policy(policy)
+    operator_count = _operator_count_for_health(
+        options=explicit_options,
+        config=config,
+        operators=operators,
+        receipts=receipt_list,
+    )
+    cre_workflow_id_present = any(
+        (
+            _present(config.get("cre_workflow_id")),
+            _present(policy.get("cre_workflow_id")),
+            any(_receipt_cre_workflow_present(receipt) for receipt in receipt_list),
+        )
+    )
+
+    normalized_mode = str(config["mode"]).strip().lower()
+    normalized_proof_mode = proof_mode.lower()
+    cre_workflow_required = (
+        normalized_mode in {"chainlink_cre", "hybrid"}
+        or normalized_proof_mode == "chainlink_cre"
+        or _policy_bool(policy, "cre_verified", "creVerified")
+    )
+    verifier_present = any(
+        _present(value)
+        for value in (
+            config.get("proof_verifier"),
+            policy.get("verifier"),
+            policy.get("verifier_id"),
+            policy.get("verifierId"),
+            policy.get("verifier_key_hash"),
+            policy.get("verifierKeyHash"),
+            policy.get("circuit_id"),
+            policy.get("circuitId"),
+        )
+    )
+    verifier_contract_present = any(
+        _present(value)
+        for value in (
+            config.get("verifier_contract"),
+            policy.get("verifier_contract"),
+            policy.get("verifierContract"),
+            policy.get("verifier_contract_address"),
+            policy.get("verifierContractAddress"),
+        )
+    )
+    verifier_required = normalized_proof_mode in {"zkml_required", "tee_or_zkml"}
+    operator_ready = operator_count >= max(int(config["quorum"]), int(config["min_operators"]))
+    proof_ready = not verifier_required or verifier_present or verifier_contract_present
+    cre_ready = not cre_workflow_required or cre_workflow_id_present
+    enabled = bool(config["enabled"])
+    ready = bool(enabled and operator_ready and proof_ready and cre_ready)
+    status = "ready" if ready else ("disabled" if not enabled else "not_ready")
+    resolved_last_failure_reason = (
+        _safe_observability_reason(last_failure_reason)
+        if last_failure_reason is not None
+        else _last_failure_reason_from_receipts(receipt_list)
+    )
+
+    return {
+        "schema_version": "llm-consensus-health-summary-v1",
+        "status": status,
+        "ready": ready,
+        "enabled": enabled,
+        "configured_mode": str(config["mode"]),
+        "comparison": str(config["comparison"]),
+        "quorum": int(config["quorum"]),
+        "min_operators": int(config["min_operators"]),
+        "operator_count": int(operator_count),
+        "fail_closed": bool(config["fail_closed"]),
+        "cre_workflow_id_present": bool(cre_workflow_id_present),
+        "proof_verifier_policy": {
+            "mode": proof_mode,
+            "requires_verifier": bool(verifier_required),
+            "verifier_present": bool(verifier_present),
+            "verifier_contract_present": bool(verifier_contract_present),
+            "cre_workflow_required": bool(cre_workflow_required),
+            "require_signatures": _policy_bool(policy, "require_signatures", "requireSignatures"),
+        },
+        "last_failure_reason": resolved_last_failure_reason,
+        "redacted_receipt_counts": consensus_receipt_counts(receipt_list),
+    }
 
 
 def build_p2p_request_payload(
@@ -1853,6 +2193,8 @@ __all__ = [
     "build_consensus_request",
     "canonical_request_hash",
     "canonical_request_payload",
+    "consensus_health_summary",
+    "consensus_receipt_counts",
     "fan_out_p2p_consensus",
     "is_advisory_comparison",
     "load_consensus_config",

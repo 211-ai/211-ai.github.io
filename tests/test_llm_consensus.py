@@ -20,6 +20,8 @@ from ipfs_accelerate_py.llm_consensus import (
     build_consensus_request,
     canonical_request_hash,
     canonical_request_payload,
+    consensus_health_summary,
+    consensus_receipt_counts,
     is_advisory_comparison,
     normalize_output_text,
     normalized_output_hash,
@@ -704,6 +706,166 @@ def test_persisted_receipt_does_not_contain_raw_prompt_or_secret_fields(tmp_path
     assert "secret-api-key" not in rendered
     assert "secret-key" not in rendered
     assert "secret-token" not in rendered
+
+
+def test_consensus_health_summary_reports_readiness_fields_without_prompt_or_output_content() -> None:
+    raw_prompt = "caller says private housing eligibility details"
+    output_text = "{\"answer\":\"sensitive route recommendation\"}"
+    workflow_id = "wf-sensitive-eligibility-v1"
+    request = build_consensus_request(
+        prompt=raw_prompt,
+        comparison="canonical_json",
+        quorum=2,
+        min_operators=2,
+        proof_policy={"mode": "chainlink_cre", "cre_workflow_id": workflow_id},
+        metadata={"cre_workflow_id": workflow_id, "purpose": "readiness-test"},
+        nonce="nonce-1",
+    )
+    receipt = ConsensusReceipt(
+        request=request,
+        responses=[
+            _sample_response("op-a", output_text=output_text),
+            _sample_response("op-b", output_text=output_text, signature="sig-b"),
+        ],
+        consensus=ConsensusResult(
+            accepted=True,
+            selected_output_hash="sha256:raw",
+            selected_normalized_hash="sha256:normalized",
+            selected_operator_ids=["op-a", "op-b"],
+            quorum=2,
+            total_successful=2,
+            comparison="canonical_json",
+            reason="quorum_met",
+        ),
+        proof=ProofReceipt(
+            policy="chainlink_cre",
+            verified=True,
+            verifier="chainlink-cre-bridge-v1",
+            cre_workflow_id=workflow_id,
+        ),
+        text=output_text,
+        created_at="2026-06-13T12:00:00Z",
+    )
+
+    summary = consensus_health_summary(
+        {
+            "mode": "chainlink_cre",
+            "comparison": "canonical_json",
+            "quorum": 2,
+            "min_operators": 2,
+            "cre_workflow_id": workflow_id,
+            "verifier_contract": "0xVerifier",
+        },
+        receipts=[receipt],
+        proof_policy={"mode": "chainlink_cre", "verifier": "chainlink-cre-bridge-v1", "cre_verified": True},
+    )
+
+    assert summary["schema_version"] == "llm-consensus-health-summary-v1"
+    assert summary["status"] == "ready"
+    assert summary["configured_mode"] == "chainlink_cre"
+    assert summary["quorum"] == 2
+    assert summary["operator_count"] == 2
+    assert summary["cre_workflow_id_present"] is True
+    assert summary["proof_verifier_policy"] == {
+        "mode": "chainlink_cre",
+        "requires_verifier": False,
+        "verifier_present": True,
+        "verifier_contract_present": True,
+        "cre_workflow_required": True,
+        "require_signatures": False,
+    }
+    assert summary["last_failure_reason"] is None
+    assert summary["redacted_receipt_counts"]["receipt_count"] == 1
+    assert summary["redacted_receipt_counts"]["accepted_receipt_count"] == 1
+    assert summary["redacted_receipt_counts"]["operator_response_count"] == 2
+    assert summary["redacted_receipt_counts"]["cre_receipt_count"] == 1
+
+    rendered = json.dumps(summary, sort_keys=True)
+    assert raw_prompt not in rendered
+    assert output_text not in rendered
+    assert workflow_id not in rendered
+    assert "request_hash" not in rendered
+    assert "prompt_hash" not in rendered
+
+
+def test_consensus_health_summary_reports_redacted_counts_and_failure_reason() -> None:
+    raw_prompt = "private prompt must not appear in health"
+    failed_receipt = ConsensusReceipt(
+        request=_sample_request(quorum=2, min_operators=2),
+        responses=[
+            _sample_response("op-a"),
+            _sample_response(
+                "op-b",
+                output_text="",
+                output_hash="",
+                normalized_output_hash="",
+                error=f"provider failed for {raw_prompt}",
+            ),
+        ],
+        consensus=ConsensusResult(
+            accepted=False,
+            selected_output_hash="",
+            selected_normalized_hash="",
+            selected_operator_ids=[],
+            rejected_operator_ids=["op-a", "op-b"],
+            quorum=2,
+            total_successful=1,
+            comparison="canonical_json",
+            reason="quorum_not_met",
+        ),
+        proof=ProofReceipt(policy="receipt_only", verified=False),
+        text="",
+        created_at="2026-06-13T12:00:00Z",
+    )
+
+    counts = consensus_receipt_counts([failed_receipt])
+    assert counts["receipt_count"] == 1
+    assert counts["failed_receipt_count"] == 1
+    assert counts["quorum_not_met_receipt_count"] == 1
+    assert counts["successful_operator_response_count"] == 1
+    assert counts["failed_operator_response_count"] == 1
+
+    summary = consensus_health_summary(
+        {"mode": "local_quorum", "quorum": 2, "min_operators": 2},
+        receipts=[failed_receipt],
+    )
+
+    assert summary["status"] == "ready"
+    assert summary["last_failure_reason"] == "quorum_not_met"
+    rendered = json.dumps(summary, sort_keys=True)
+    assert raw_prompt not in rendered
+    assert "provider failed" not in rendered
+
+    explicit_summary = consensus_health_summary(
+        {"mode": "local_quorum", "quorum": 1, "min_operators": 1},
+        last_failure_reason=f"provider failed for prompt: {raw_prompt}",
+    )
+
+    assert explicit_summary["last_failure_reason"] == "redacted_failure"
+    assert raw_prompt not in json.dumps(explicit_summary, sort_keys=True)
+
+
+def test_consensus_health_summary_counts_configured_peers_and_verifier_env() -> None:
+    summary = consensus_health_summary(
+        env={
+            "IPFS_ACCELERATE_PY_LLM_CONSENSUS_MODE": "libp2p_quorum",
+            "IPFS_ACCELERATE_PY_LLM_CONSENSUS_QUORUM": "2",
+            "IPFS_ACCELERATE_PY_LLM_CONSENSUS_MIN_OPERATORS": "3",
+            "IPFS_ACCELERATE_PY_LLM_CONSENSUS_PEERS": "peer-a,peer-b,peer-c",
+            "IPFS_ACCELERATE_PY_CHAINLINK_CRE_WORKFLOW_ID": "wf-env-secret",
+            "IPFS_ACCELERATE_PY_LLM_PROOF_VERIFIER": "zkml-verifier-v1",
+        },
+        proof_policy={"mode": "zkml_required"},
+    )
+
+    assert summary["configured_mode"] == "libp2p_quorum"
+    assert summary["operator_count"] == 3
+    assert summary["cre_workflow_id_present"] is True
+    assert summary["proof_verifier_policy"]["mode"] == "zkml_required"
+    assert summary["proof_verifier_policy"]["requires_verifier"] is True
+    assert summary["proof_verifier_policy"]["verifier_present"] is True
+    assert summary["status"] == "ready"
+    assert "wf-env-secret" not in json.dumps(summary, sort_keys=True)
 
 
 def test_operator_signature_payload_binds_request_and_output() -> None:
