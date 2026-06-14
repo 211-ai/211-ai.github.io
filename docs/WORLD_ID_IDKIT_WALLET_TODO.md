@@ -225,7 +225,7 @@ Track guide:
 - Acceptance: API tests cover disabled config, signature authorization, mocked Developer Portal success/failure, action and signal enforcement, route response/error shapes consumed by the TypeScript wallet API client, idempotent same-wallet replay, different-wallet conflict, proof/audit creation, snapshot save/load, and sanitized export behavior.
 
 ## WORLDID-180 Frontend Mocked IDKit Tests
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: quality
