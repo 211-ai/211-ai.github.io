@@ -217,6 +217,34 @@ ABBY_RUNTIME_VOICE_PROXY_TTS_URL=https://voice.example.com/api/voice/tts
 ABBY_RUNTIME_VOICE_PROXY_STT_URL=https://voice.example.com/api/voice/stt
 ```
 
+When the same-origin wallet bridge targets the Publicus IndexTTS Space, set a
+Hugging Face token for the bridge in addition to the Space URL. The wallet API
+forwards `Authorization` and `X-HF-Bill-To` headers to every Gradio call.
+
+```bash
+WALLET_INDEXTTS_SPACE_URL=https://publicus-indextts-2-demo.hf.space
+WALLET_INDEXTTS_MODEL_NAME=Publicus/IndexTTS-2-Demo
+WALLET_INDEXTTS_HF_TOKEN=hf_your_token_here
+WALLET_INDEXTTS_HF_BILL_TO=publicus
+
+# Optional shared fallback for other HF helpers in the same container.
+HF_TOKEN=hf_your_token_here
+IPFS_DATASETS_PY_HF_BILL_TO=publicus
+```
+
+If those credentials are missing, the wallet API health surfaces report a
+`publicus_indextts_missing_hf_token` warning.
+
+For an explicit voice bridge diagnostics probe (separate from general
+repository/storage checks), call:
+
+```bash
+curl -sS https://211-ai.com/ops/voice-proxy/status
+```
+
+When `WALLET_OPS_HEALTH_SHARED_SECRET` is configured, include it as either
+`Authorization: Bearer <secret>` or `X-Wallet-Ops-Shared-Secret: <secret>`.
+
 Equivalent GitHub Pages repository or environment variables for a sandbox build
 that points at the prod API:
 

@@ -1379,8 +1379,12 @@ def create_app(*, service: WalletInterfaceService | None = None):
         )
 
     @app.get("/health")
-    def health() -> Dict[str, str]:
-        return {"status": "ok"}
+    def health() -> Dict[str, Any]:
+        warnings = _voice_proxy_runtime_warnings()
+        response: Dict[str, Any] = {"status": "ok"}
+        if warnings:
+            response["warnings"] = warnings
+        return response
 
     @app.post("/auth/magic-link/request")
     def request_magic_login_link(request: MagicLoginRequest) -> Dict[str, Any]:
@@ -1462,9 +1466,53 @@ def create_app(*, service: WalletInterfaceService | None = None):
             if supplied_secret != expected_secret:
                 raise HTTPException(status_code=401, detail="ops health authorization required")
         try:
-            return app_service.ops_health(verify_storage=verify_storage)
+            report = app_service.ops_health(verify_storage=verify_storage)
+            voice_warning = _publicus_indextts_credential_warning()
+            if voice_warning:
+                checks = list(report.get("checks") or [])
+                checks.append(
+                    {
+                        "name": "voice_proxy_credentials",
+                        "status": "warning",
+                        "summary": voice_warning["message"],
+                        "details": voice_warning,
+                    }
+                )
+                report["checks"] = checks
+                report["check_count"] = len(checks)
+                if report.get("status") == "ok":
+                    report["status"] = "warning"
+            return report
         except Exception as exc:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    @app.get("/ops/voice-proxy/status")
+    def ops_voice_proxy_status(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if expected_secret:
+            supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+            if supplied_secret != expected_secret:
+                raise HTTPException(status_code=401, detail="ops voice proxy authorization required")
+
+        warnings = _voice_proxy_runtime_warnings()
+        status = "warning" if warnings else "ok"
+        return {
+            "status": status,
+            "spaceUrl": _indextts_space_base_url(),
+            "apiName": _indextts_api_name(),
+            "batchApiName": _indextts_batch_api_name(),
+            "modelName": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
+            "billTo": (
+                os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
+                or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+                or "publicus"
+            ).strip() or "publicus",
+            "tokenConfigured": bool(_configured_hf_token()),
+            "warnings": warnings,
+        }
 
     @app.get("/wallets/snapshots")
     def list_wallet_snapshots() -> Dict[str, Any]:
@@ -5451,6 +5499,53 @@ def _indextts_headers(*, accept: str = "application/json") -> Dict[str, str]:
     if bill_to:
         headers["X-HF-Bill-To"] = bill_to
     return headers
+
+
+def _configured_hf_token() -> str:
+    return (
+        resolve_secret(
+            "WALLET_INDEXTTS_HF_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+        )
+        or ""
+    ).strip()
+
+
+def _publicus_indextts_credential_warning() -> Dict[str, Any] | None:
+    space_url = _indextts_space_base_url().lower()
+    if "publicus-indextts" not in space_url and "publicus/indextts" not in (os.getenv("WALLET_INDEXTTS_MODEL_NAME", "").lower()):
+        return None
+    token_present = bool(_configured_hf_token())
+    if token_present:
+        return None
+    bill_to = (
+        os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
+        or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+        or "publicus"
+    ).strip() or "publicus"
+    return {
+        "code": "publicus_indextts_missing_hf_token",
+        "message": (
+            "Publicus IndexTTS is configured without a Hugging Face token. "
+            "Set WALLET_INDEXTTS_HF_TOKEN or HF_TOKEN and keep X-HF-Bill-To set to the Publicus account."
+        ),
+        "spaceUrl": _indextts_space_base_url(),
+        "modelName": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo"),
+        "billTo": bill_to,
+        "envVars": ["WALLET_INDEXTTS_HF_TOKEN", "HF_TOKEN", "WALLET_INDEXTTS_HF_BILL_TO"],
+    }
+
+
+def _voice_proxy_runtime_warnings() -> List[Dict[str, Any]]:
+    warnings: List[Dict[str, Any]] = []
+    publicus_warning = _publicus_indextts_credential_warning()
+    if publicus_warning:
+        warnings.append(publicus_warning)
+    return warnings
 
 
 def _http_json(method: str, url: str, payload: Mapping[str, Any] | None = None) -> Dict[str, Any]:

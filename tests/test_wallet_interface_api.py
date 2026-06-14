@@ -56,6 +56,86 @@ def test_wallet_api_cors_allows_configured_browser_origin(monkeypatch) -> None:
     assert response.headers["access-control-allow-origin"] == origin
 
 
+def test_health_warns_when_publicus_indextts_has_no_hf_token(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
+    monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
+    for key in (
+        "WALLET_INDEXTTS_HF_TOKEN",
+        "HF_TOKEN",
+        "HUGGINGFACEHUB_API_TOKEN",
+        "IPFS_DATASETS_PY_HF_API_TOKEN",
+        "HUGGINGFACE_API_TOKEN",
+        "HUGGINGFACE_HUB_TOKEN",
+    ):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    client = _client()
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "ok"
+    assert body["warnings"][0]["code"] == "publicus_indextts_missing_hf_token"
+
+
+def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
+    monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
+    for key in (
+        "WALLET_INDEXTTS_HF_TOKEN",
+        "HF_TOKEN",
+        "HUGGINGFACEHUB_API_TOKEN",
+        "IPFS_DATASETS_PY_HF_API_TOKEN",
+        "HUGGINGFACE_API_TOKEN",
+        "HUGGINGFACE_HUB_TOKEN",
+    ):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
+    client = _client_with_service(service)
+
+    response = client.get("/ops/health")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "warning"
+    checks = {check["name"]: check for check in body["checks"]}
+    assert checks["voice_proxy_credentials"]["status"] == "warning"
+    assert checks["voice_proxy_credentials"]["details"]["code"] == "publicus_indextts_missing_hf_token"
+
+
+def test_ops_voice_proxy_status_reports_publicus_warning(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
+    monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
+    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    client = _client()
+
+    response = client.get("/ops/voice-proxy/status")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "warning"
+    assert body["spaceUrl"] == "https://publicus-indextts-2-demo.hf.space"
+    assert body["tokenConfigured"] is False
+    assert body["warnings"][0]["code"] == "publicus_indextts_missing_hf_token"
+
+
+def test_ops_voice_proxy_status_requires_shared_secret_when_configured(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "top-secret")
+    client = _client()
+
+    unauthorized = client.get("/ops/voice-proxy/status")
+    assert unauthorized.status_code == 401
+    assert "authorization required" in unauthorized.json()["detail"]
+
+    authorized = client.get(
+        "/ops/voice-proxy/status",
+        headers={"authorization": "Bearer top-secret"},
+    )
+    assert authorized.status_code == 200
+
+
 def test_magic_login_request_sends_signed_sms_and_verify_connects_wallet(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
     deliveries: list[dict[str, object]] = []
