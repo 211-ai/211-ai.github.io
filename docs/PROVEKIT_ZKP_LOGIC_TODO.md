@@ -45,6 +45,7 @@ Track guide:
 - `quality`: unit, integration, golden-vector, and regression coverage
 - `ops`: build, packaging, availability, readiness, and signoff
 - `wallet`: downstream wallet/verifier interoperability
+- `ui`: wallet_interface React surfaces, TypeScript proof receipt mapping, and Playwright workflows
 
 ## PROVEKIT-000 Control Plane And Backlog
 - Status: completed
@@ -275,3 +276,63 @@ Track guide:
 - Outputs: docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md, artifacts/provekit-release-checks/results.json
 - Validation: pytest ipfs_datasets_py/tests/unit_tests/logic/zkp -q; pytest ipfs_datasets_py/tests/unit_tests/logic/deontic/test_deontic_provekit_bridge.py -q; test -f docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md
 - Acceptance: A target environment demonstrates real ProveKit proof generation and verification for supported circuits, bridge integration, hybrid prover selection, deontic guidance commitments, cache/IPFS public payload safety, and documented rollback/readiness evidence.
+
+## PROVEKIT-230 Wallet UI Proof Workflow Matrix And Fixtures
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: PROVEKIT-220
+- Outputs: docs/PROVEKIT_ZKP_WALLET_UI_WORKFLOW_MATRIX.md, wallet_interface/ui/tests/fixtures/provekit-proof-fixtures.ts
+- Validation: python scripts/provekit_implementation_daemon.py --once --no-implement --todo-path docs/PROVEKIT_ZKP_LOGIC_TODO.md --task-prefix "## PROVEKIT-" --state-dir data/provekit_implementation/state --state-prefix provekit; npm --prefix wallet_interface/ui run build
+- Acceptance: The matrix maps Proof Center, Wallet/uploads, QR review, Security/audit, provider eligibility/case proofs, public analytics/proof dashboards, and export/import to backend routes, proof systems, error states, labels, privacy assertions, and desktop/mobile Playwright coverage; fixtures include simulated, Groth16, ProveKit WHIR, recursive, disabled, artifact-hash-mismatch, stale-verifier-key, verification-failure, and witness-sentinel cases.
+
+## PROVEKIT-240 Wallet API ProveKit Proof Contract Regression
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: wallet
+- Depends on: PROVEKIT-220, PROVEKIT-230
+- Outputs: tests/test_wallet_interface_api.py, tests/test_wallet_interface_proof_backends.py
+- Validation: pytest tests/test_wallet_interface_api.py tests/test_wallet_interface_proof_backends.py -q
+- Acceptance: Wallet API regression tests cover ProveKit proof receipt mapping, disabled/unavailable backend responses, artifact hash mismatch, stale verifier key, verification failure, cache hit/miss metadata, simulated-proof overclaim prevention, QR/export proof metadata sanitization, audit event proof-system metadata, and no witness/private-axiom leakage.
+
+## PROVEKIT-250 Frontend ProveKit Proof UI Surfaces
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: PROVEKIT-230, PROVEKIT-240
+- Outputs: wallet_interface/ui/src/services/walletApi.ts, wallet_interface/ui/src/app/App.tsx, wallet_interface/ui/src/styles/global.css, wallet_interface/ui/tests/smoke.spec.ts
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/smoke.spec.ts
+- Acceptance: TypeScript proof mappers and UI surfaces preserve exact proof-system labels and states; proof cards, QR review, Security/audit, provider, public-dashboard, and export/import views distinguish simulated, Groth16, ProveKit WHIR, and recursive-wrapper proofs, fail closed on disabled/error states, avoid on-chain overclaiming, and never render witness/private-axiom content.
+
+## PROVEKIT-260 Full-Stack ProveKit Playwright Harness
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: PROVEKIT-250
+- Outputs: wallet_interface/ui/tests/provekit-proof-fullstack.spec.ts, wallet_interface/ui/tests/fixtures/provekit-proof-fixtures.ts
+- Validation: pytest tests/test_wallet_interface_api.py tests/test_wallet_interface_proof_backends.py -q; npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/provekit-proof-fullstack.spec.ts
+- Acceptance: Playwright launches the live Abby UI and wallet API with deterministic proof backend or mock ProveKit receipts, then verifies proof creation/listing, QR review, export/import, audit refresh, provider/public surfaces, disabled/unavailable/artifact-mismatch/error states, and no witness/private-axiom leakage.
+
+## PROVEKIT-270 Cross-Surface ProveKit UX Accessibility And No-Leak Review
+- Status: todo
+- Completion: evidence
+- Priority: P1
+- Track: ui
+- Depends on: PROVEKIT-260
+- Outputs: wallet_interface/ui/tests/provekit-proof-ux.spec.ts, wallet_interface/ui/tests/wallet-ux-review.spec.ts, artifacts/provekit-ui-review
+- Validation: npm --prefix wallet_interface/ui run build; npm --prefix wallet_interface/ui test -- tests/provekit-proof-ux.spec.ts; npm --prefix wallet_interface/ui test -- tests/wallet-ux-review.spec.ts
+- Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari coverage verifies proof label clarity, keyboard focus, touch ergonomics, no overflow or overlap, no legal/cryptographic overclaim, no witness/private-axiom leakage in screenshots/traces/downloads, and archived review artifacts under `artifacts/provekit-ui-review`.
+
+## PROVEKIT-280 Wallet UI Signoff Addendum
+- Status: todo
+- Completion: evidence
+- Priority: P0
+- Track: ops
+- Depends on: PROVEKIT-220, PROVEKIT-270
+- Outputs: docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md, artifacts/provekit-ui-signoff
+- Validation: test -f docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md; test -d artifacts/provekit-ui-signoff
+- Acceptance: The ProveKit signoff includes the original backend evidence plus wallet API contract results, full-stack Playwright results, UX/accessibility review evidence, QR/export no-leak evidence, proof-system label review, and an explicit production-visible rollout decision before clients can attach ProveKit-backed proof identity to wallet files.

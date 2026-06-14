@@ -1,6 +1,6 @@
 # ProveKit ZKP Logic Implementation Plan
 
-Date: 2026-06-13
+Date: 2026-06-14
 
 ## Objective
 
@@ -136,6 +136,52 @@ The ProveKit backend should return the existing `ZKPProof` dataclass shape:
 
 Private witness material must never be stored in `metadata`, `public_inputs`,
 LegalIR views, IPFS proof cache payloads, or logs.
+
+## Wallet API And UI Workflow Gap Review
+
+The backend signoff proves that ProveKit can generate, verify, cache, and
+attest supported ZKP envelopes. It does not by itself prove that user-facing
+wallet workflows expose those proofs accurately. A separate wallet/UI addendum
+is required before ProveKit-backed proofs are production-visible to clients,
+providers, or public dashboards.
+
+Required wallet surfaces:
+
+- Proof Center proof creation, capability preview, and proof receipt cards.
+- Wallet/uploads proof receipts, saved wallet proof bundles, and QR bundle
+  review.
+- Security, audit, and transparency-log views that explain proof status.
+- Provider eligibility, case, and zero-knowledge certificate workflows.
+- Public analytics and proof dashboards that summarize proof coverage.
+- Export/import flows for proof bundles, attestations, and wallet files.
+
+Required UI states:
+
+- `simulated`, `groth16`, `provekit`, and future
+  `provekit_recursive_groth16` proof systems must have distinct labels and
+  claim language.
+- Backend disabled, backend unavailable, artifact hash mismatch, stale
+  verifier key, proof pending, verification success, verification failure,
+  cache hit/miss, and on-chain unsupported/manual fallback states must be
+  visible without leaking witness material.
+- ProveKit WHIR proofs must not be labeled as Groth16, EVM-verifiable, or
+  on-chain-ready unless the recursive wrapper path has independent evidence.
+- Simulated proofs must remain visibly non-production and must not be counted as
+  production ProveKit evidence.
+
+Required contract and Playwright coverage:
+
+- Wallet API proof receipts must preserve backend metadata, public inputs,
+  verifier IDs, artifact refs, and verification status while redacting private
+  axioms, witness labels that reveal private facts, and raw witness content.
+- TypeScript mappers must round-trip ProveKit receipts from the API into the
+  UI's internal proof receipt shape without replacing the proof system with
+  generic `unknown` or `simulated` labels.
+- Full-stack Playwright tests must launch the wallet API and Abby UI with a
+  deterministic proof backend or mock ProveKit receipts, then verify proof
+  creation/listing, QR review, export/import, audit refresh, provider/public
+  surfaces, disabled/error states, and no witness leakage across desktop and
+  mobile projects.
 
 ## Circuit Strategy
 
@@ -503,6 +549,30 @@ Integration tests, gated by `IPFS_DATASETS_RUN_PROVEKIT_TESTS=1`:
 - CEC bridge proof with mocked or real ProveKit, depending on runtime.
 - deontic text to ZKP attestation bridge.
 
+Wallet API contract tests:
+
+- proof receipt shapes preserve `proof_system`, verifier, public inputs,
+  artifact refs, and verification status for simulated, Groth16, ProveKit WHIR,
+  and future recursive wrappers.
+- backend disabled, unavailable binary, stale/mismatched artifact, verification
+  failure, and cache hit/miss responses are deterministic and fail closed.
+- QR/export/import payloads contain only public proof metadata and sanitized
+  public inputs.
+- audit events include proof system and verifier metadata without private
+  witness data.
+
+Frontend and Playwright tests:
+
+- Proof Center, Wallet/uploads, QR review, Security/audit,
+  provider-certificate, public-dashboard, and export/import workflows display
+  distinct proof-system labels and failure states.
+- full-stack Playwright runs against a live wallet API with deterministic proof
+  fixtures for simulated, Groth16, ProveKit WHIR, recursive, disabled, and
+  artifact-mismatch cases.
+- desktop and mobile projects verify keyboard focus, no overflow or overlap,
+  no legal/cryptographic overclaim, and no witness/private-axiom leakage in
+  rendered text, downloads, QR bundles, traces, or screenshots.
+
 Golden vectors:
 
 - theorem canonicalization.
@@ -553,10 +623,24 @@ Tests:
 - `ipfs_datasets_py/tests/unit_tests/logic/zkp/test_provekit_golden_vectors.py`
 - `ipfs_datasets_py/tests/integration/test_provekit_zkp.py`
 - bridge and deontic/TDFOL/CEC tests as needed.
+- `tests/test_wallet_interface_api.py`
+- `tests/test_wallet_interface_proof_backends.py`
+- `wallet_interface/ui/tests/provekit-proof-fullstack.spec.ts`
+- `wallet_interface/ui/tests/provekit-proof-ux.spec.ts`
+- `wallet_interface/ui/tests/smoke.spec.ts`
+
+Wallet/UI:
+
+- `wallet_interface/proof_backends.py`
+- `wallet_interface/ui/src/services/walletApi.ts`
+- `wallet_interface/ui/src/app/App.tsx`
+- `wallet_interface/ui/src/styles/global.css`
+- `wallet_interface/ui/tests/fixtures/provekit-proof-fixtures.ts`
 
 Docs/ops:
 
 - `docs/PROVEKIT_ZKP_LOGIC_IMPLEMENTATION_PLAN.md`
+- `docs/PROVEKIT_ZKP_WALLET_UI_WORKFLOW_MATRIX.md`
 - optional `docs/PROVEKIT_ZKP_SECURITY_NOTES.md`
 - optional `scripts/build_provekit_backend.sh`
 - optional release/readiness checks.
@@ -603,4 +687,8 @@ The integration is complete when:
   `provekit` proof systems.
 - CI has unit coverage for unavailable/fail-closed behavior and gated
   integration coverage for real ProveKit runs.
-
+- Wallet API and UI surfaces distinguish simulated, Groth16, ProveKit WHIR, and
+  future recursive-wrapper proofs without overclaiming on-chain readiness.
+- Full-stack Playwright coverage validates proof creation/listing, QR review,
+  export/import, audit, provider, public-dashboard, disabled/error, and no-leak
+  user workflows before production-visible ProveKit rollout.

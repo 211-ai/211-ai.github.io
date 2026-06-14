@@ -16,6 +16,14 @@ verification for supported circuits, bridge integration, hybrid prover
 selection, deontic guidance commitments, cache/IPFS public payload safety,
 and documented rollback/readiness.
 
+## Scope Note
+
+This is a backend and logic-layer signoff. It does not certify production
+wallet UI workflows, wallet API receipt contracts, QR/export user journeys, or
+Playwright coverage. Those frontend-facing requirements are tracked separately
+by PROVEKIT-230 through PROVEKIT-280 and must pass before ProveKit-backed proof
+identity is presented as production-visible in client wallet files.
+
 ---
 
 ## Validation Results
