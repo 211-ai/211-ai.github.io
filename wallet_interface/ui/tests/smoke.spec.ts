@@ -608,6 +608,30 @@ test("provider-assisted intake can create a client from World ID verification wi
   await expect(createdUser.getByText(/Demo bot check|Manual fallback/i)).toHaveCount(0);
 });
 
+test("provider staff verification uses a separate World ID action after admin policy checks", async ({ page }) => {
+  await openAppRoute(page, "/#/shelter");
+  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
+  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+
+  const createStaff = page.locator('section[aria-labelledby="Create-staff-account"]');
+  await createStaff.getByLabel(/Staff name/i).fill("Morgan Staff");
+  await createStaff.getByLabel(/Staff email/i).fill("morgan@rose.example");
+  await createStaff.getByRole("button", { name: /Create staff account/i }).click();
+
+  await page.getByLabel(/I am shelter administrator/i).check();
+  await page
+    .getByRole("region", { name: /Shelter administrator/i })
+    .getByRole("combobox", { name: /^Shelter/ })
+    .selectOption("Rose City Shelter");
+  const staffCard = page.locator(".list-item").filter({ hasText: "Morgan Staff" }).first();
+  await expect(staffCard.getByText(/Revoked/i)).toBeVisible();
+  await expect(staffCard.getByText(/provider-staff-world-id-v1/i)).toBeVisible();
+
+  await staffCard.getByRole("button", { name: /Verify with provider staff World ID/i }).click();
+  await expect(staffCard.getByText(/Verified/i)).toBeVisible();
+  await expect(staffCard.getByText(/World ID staff proof/i)).toBeVisible();
+});
+
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();

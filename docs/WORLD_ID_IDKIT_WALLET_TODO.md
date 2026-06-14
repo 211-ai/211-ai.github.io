@@ -295,7 +295,7 @@ Track guide:
 - Acceptance: Client registration/intake can use World ID verified status instead of the demo captcha/easy-bot check when enabled, while preserving an explicit manual fallback path for accessibility, device availability, and emergency service access.
 
 ## WORLDID-220 Provider Staff Verification Action
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P2
 - Track: ui

@@ -44,6 +44,8 @@ from .world_id import (
     verify_world_id_proof_from_config,
 )
 
+PROVIDER_STAFF_WORLD_ID_ACTION = "provider-staff-world-id-v1"
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -2587,6 +2589,39 @@ class WalletInterfaceService:
             "app_id": self.world_id_config.app_id,
             "environment": self.world_id_config.environment,
             "credential_policy": self.world_id_config.credential_policy,
+        }
+
+    def create_provider_staff_world_id_rp_signature(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        provider_id: str,
+        provider_staff_id: str,
+        random_bytes: bytes | None = None,
+        created_at: int | None = None,
+    ) -> Dict[str, Any]:
+        """Create a World ID RP signature scoped to provider staff verification."""
+
+        normalized_provider_id = str(provider_id or "").strip()
+        normalized_staff_id = str(provider_staff_id or "").strip()
+        if not normalized_provider_id:
+            raise ValueError("provider organization policy is required before staff World ID verification")
+        if not normalized_staff_id:
+            raise ValueError("provider staff ID is required before staff World ID verification")
+        payload = self.create_world_id_rp_signature(
+            wallet_id,
+            actor_did=actor_did,
+            action=PROVIDER_STAFF_WORLD_ID_ACTION,
+            random_bytes=random_bytes,
+            created_at=created_at,
+        )
+        return {
+            **payload,
+            "action": PROVIDER_STAFF_WORLD_ID_ACTION,
+            "provider_id": normalized_provider_id,
+            "provider_staff_id": normalized_staff_id,
+            "signal_context": "provider_staff_verification",
         }
 
     def register_world_id_verification(

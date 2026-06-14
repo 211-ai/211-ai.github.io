@@ -133,6 +133,12 @@ class WorldIdRpSignatureRequest(BaseModel):
     action: str | None = None
 
 
+class WorldIdProviderStaffRpSignatureRequest(BaseModel):
+    actor_did: str
+    provider_id: str
+    provider_staff_id: str
+
+
 class WorldIdVerificationRequest(BaseModel):
     actor_did: str
     idkit_payload: Dict[str, Any]
@@ -654,6 +660,21 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 wallet_id,
                 actor_did=request.actor_did,
                 action=request.action,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/world-id/provider-staff/rp-signature")
+    def create_provider_staff_world_id_rp_signature(
+        wallet_id: str,
+        request: WorldIdProviderStaffRpSignatureRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.create_provider_staff_world_id_rp_signature(
+                wallet_id,
+                actor_did=request.actor_did,
+                provider_id=request.provider_id,
+                provider_staff_id=request.provider_staff_id,
             )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc

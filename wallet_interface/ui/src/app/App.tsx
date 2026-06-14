@@ -130,6 +130,7 @@ const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const DEMO_BOT_CHECK_TOKEN = "mock-captcha-token";
 const MANUAL_INTAKE_FALLBACK_TOKEN = "manual-intake-fallback";
+const PROVIDER_STAFF_WORLD_ID_ACTION = "provider-staff-world-id-v1";
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 
 const routeIcons: Record<RouteId, typeof Home> = {
@@ -2526,6 +2527,7 @@ function ShelterScreen({
   const [nudgeDraft, setNudgeDraft] = useState({ userName: "Abby Example", userContact: "abby@example.org" });
   const [managedUserFileDetail, setManagedUserFileDetail] = useState("");
   const [managedUserUploadError, setManagedUserUploadError] = useState("");
+  const [providerStaffWorldIdProofs, setProviderStaffWorldIdProofs] = useState<Record<string, boolean>>({});
 
   const staffForShelter = shelterStaffAccounts.filter((account) => account.shelter === adminShelter);
   const verifiedStaffForOperatorShelter = shelterStaffAccounts.filter(
@@ -2631,6 +2633,26 @@ function ShelterScreen({
     };
     setShelterStaffAccounts([...shelterStaffAccounts, newStaff]);
     setStaffDraft({ displayName: "", email: "" });
+  }
+
+  function verifyStaffWithProviderWorldId(account: ShelterStaffAccount) {
+    if (!isShelterAdmin || account.shelter !== adminShelter) return;
+    setShelterStaffAccounts(
+      shelterStaffAccounts.map((item) =>
+        item.id === account.id ? { ...item, verified: true, updatedAt: new Date().toISOString() } : item
+      )
+    );
+    setProviderStaffWorldIdProofs({ ...providerStaffWorldIdProofs, [account.id]: true });
+  }
+
+  function revokeStaffWorldIdVerification(account: ShelterStaffAccount) {
+    const { [account.id]: _removed, ...remainingProofs } = providerStaffWorldIdProofs;
+    setProviderStaffWorldIdProofs(remainingProofs);
+    setShelterStaffAccounts(
+      shelterStaffAccounts.map((item) =>
+        item.id === account.id ? { ...item, verified: false, updatedAt: new Date().toISOString() } : item
+      )
+    );
   }
 
   function shelterRecipientExists(shelterName: string) {
@@ -3162,22 +3184,24 @@ function ShelterScreen({
                         <Badge tone={account.verified ? "success" : "warning"}>
                           {account.verified ? "Verified" : "Revoked"}
                         </Badge>
+                        {providerStaffWorldIdProofs[account.id] ? (
+                          <Badge tone="success">World ID staff proof</Badge>
+                        ) : null}
                       </div>
+                      <small>World ID action: {PROVIDER_STAFF_WORLD_ID_ACTION}</small>
                     </div>
-                    <Button
-                      onClick={() =>
-                        setShelterStaffAccounts(
-                          shelterStaffAccounts.map((item) =>
-                            item.id === account.id
-                              ? { ...item, verified: !item.verified, updatedAt: new Date().toISOString() }
-                              : item
-                          )
-                        )
-                      }
-                      variant="secondary"
-                    >
-                      {account.verified ? "Revoke verification" : "Re-verify"}
-                    </Button>
+                    {account.verified ? (
+                      <Button
+                        onClick={() => revokeStaffWorldIdVerification(account)}
+                        variant="secondary"
+                      >
+                        Revoke verification
+                      </Button>
+                    ) : (
+                      <Button onClick={() => verifyStaffWithProviderWorldId(account)} variant="secondary">
+                        Verify with provider staff World ID
+                      </Button>
+                    )}
                   </article>
                 ))
               ) : (

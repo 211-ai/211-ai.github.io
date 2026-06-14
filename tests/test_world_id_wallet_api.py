@@ -11,6 +11,7 @@ from wallet_interface.world_id import DEFAULT_WORLD_ID_ACTION, WorldIdVerificati
 
 OWNER = "did:key:owner"
 ADVOCATE = "did:key:advocate"
+PROVIDER_STAFF_ACTION = "provider-staff-world-id-v1"
 
 
 def enabled_env(**overrides: str) -> dict[str, str]:
@@ -69,6 +70,44 @@ def test_wallet_interface_world_id_config_status_and_rp_signature() -> None:
     assert signature["action"] == DEFAULT_WORLD_ID_ACTION
     with pytest.raises(ValueError, match="not authorized"):
         app.create_world_id_rp_signature(wallet_id=wallet.wallet_id, actor_did=ADVOCATE)
+
+
+def test_wallet_interface_provider_staff_world_id_action_is_separate_and_policy_gated() -> None:
+    config = load_world_id_config(
+        env=enabled_env(WORLD_ID_ALLOWED_ACTIONS=f"{DEFAULT_WORLD_ID_ACTION},{PROVIDER_STAFF_ACTION}")
+    )
+    app = WalletInterfaceService(world_id_config=config, services=[], auto_persist=False)
+    wallet = app.create_wallet(OWNER)
+
+    client_signature = app.create_world_id_rp_signature(
+        wallet_id=wallet.wallet_id,
+        actor_did=OWNER,
+        action=DEFAULT_WORLD_ID_ACTION,
+        random_bytes=bytes(range(32)),
+        created_at=1_700_000_000,
+    )
+    staff_signature = app.create_provider_staff_world_id_rp_signature(
+        wallet_id=wallet.wallet_id,
+        actor_did=OWNER,
+        provider_id="Rose City Shelter",
+        provider_staff_id="staff-demo-rose",
+        random_bytes=bytes(range(32)),
+        created_at=1_700_000_000,
+    )
+
+    assert client_signature["action"] == DEFAULT_WORLD_ID_ACTION
+    assert staff_signature["action"] == PROVIDER_STAFF_ACTION
+    assert staff_signature["signal_context"] == "provider_staff_verification"
+    assert staff_signature["provider_id"] == "Rose City Shelter"
+    assert staff_signature["provider_staff_id"] == "staff-demo-rose"
+    assert client_signature["action"] != staff_signature["action"]
+    with pytest.raises(ValueError, match="provider organization policy"):
+        app.create_provider_staff_world_id_rp_signature(
+            wallet_id=wallet.wallet_id,
+            actor_did=OWNER,
+            provider_id="",
+            provider_staff_id="staff-demo-rose",
+        )
 
 
 def test_wallet_interface_verifies_registers_persists_and_revokes_world_id_binding(tmp_path) -> None:
@@ -261,3 +300,38 @@ def test_world_id_fastapi_routes_cover_config_signature_registration_replay_and_
     assert revoke_response.json()["status"] == "revoked"
     assert final_status.json()["wallet"]["active_binding_count"] == 0
     assert raw_nullifier not in snapshot_text
+
+
+def test_world_id_fastapi_provider_staff_signature_is_policy_gated() -> None:
+    config = load_world_id_config(
+        env=enabled_env(WORLD_ID_ALLOWED_ACTIONS=f"{DEFAULT_WORLD_ID_ACTION},{PROVIDER_STAFF_ACTION}")
+    )
+    service = WalletInterfaceService(world_id_config=config, services=[], auto_persist=False)
+    client = TestClient(create_app(service=service))
+    wallet = client.post("/wallets", json={"owner_did": OWNER}).json()
+    wallet_id = wallet["wallet_id"]
+
+    missing_policy = client.post(
+        f"/wallets/{wallet_id}/world-id/provider-staff/rp-signature",
+        json={"actor_did": OWNER, "provider_id": "", "provider_staff_id": "staff-demo-rose"},
+    )
+    staff_signature = client.post(
+        f"/wallets/{wallet_id}/world-id/provider-staff/rp-signature",
+        json={
+            "actor_did": OWNER,
+            "provider_id": "Rose City Shelter",
+            "provider_staff_id": "staff-demo-rose",
+        },
+    )
+    client_signature = client.post(
+        f"/wallets/{wallet_id}/world-id/rp-signature",
+        json={"actor_did": OWNER, "action": DEFAULT_WORLD_ID_ACTION},
+    )
+
+    assert missing_policy.status_code == 400
+    assert "provider organization policy" in missing_policy.text
+    assert staff_signature.status_code == 200, staff_signature.text
+    assert staff_signature.json()["action"] == PROVIDER_STAFF_ACTION
+    assert staff_signature.json()["signal_context"] == "provider_staff_verification"
+    assert client_signature.status_code == 200, client_signature.text
+    assert client_signature.json()["action"] == DEFAULT_WORLD_ID_ACTION
