@@ -318,7 +318,7 @@ Track guide:
 - Acceptance: Playwright launches the live Abby UI and wallet API with deterministic proof backend or mock ProveKit receipts, then verifies proof creation/listing, QR review, export/import, audit refresh, provider/public surfaces, disabled/unavailable/artifact-mismatch/error states, and no witness/private-axiom leakage.
 
 ## PROVEKIT-270 Cross-Surface ProveKit UX Accessibility And No-Leak Review
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ui
