@@ -422,6 +422,154 @@ test("proof center shows public proof inputs without private coordinates", async
   await expect(regionProof.getByText(/^lon$/i)).not.toBeVisible();
 });
 
+test("proof center integrates World ID status, launch, and proof-of-human receipt", async ({ page }) => {
+  let signatureRequests = 0;
+
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+
+    if (path.endsWith("/world-id/config")) {
+      await route.fulfill({
+        json: {
+          enabled: true,
+          app_id: "app_staging_demo",
+          rp_id: "rp_demo",
+          default_action: "wallet-attach-world-id-v1",
+          environment: "staging",
+          credential_policy: "proof_of_human",
+          allow_legacy_proofs: false,
+          require_user_presence: true
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/world-id/status")) {
+      expect(url.searchParams.get("actor_did")).toBe("did:key:owner");
+      await route.fulfill({
+        json: {
+          verified: true,
+          binding_id: "world-id-binding-demo",
+          proof_id: "proof-world-id-human",
+          verified_at: "2026-06-14T16:00:00Z",
+          action: "wallet-attach-world-id-v1",
+          credential_policy: "proof_of_human",
+          active_binding_count: 1
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/world-id/rp-signature")) {
+      signatureRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:owner",
+        action: "wallet-attach-world-id-v1",
+        signal_context: "wallet_binding"
+      });
+      const now = Math.floor(Date.now() / 1000);
+      await route.fulfill({
+        json: {
+          app_id: "app_staging_demo",
+          action: "wallet-attach-world-id-v1",
+          signal: "211-ai:wallet-world-id:v1:wallet-demo:did:key:owner",
+          environment: "staging",
+          allow_legacy_proofs: false,
+          require_user_presence: true,
+          rp_context: {
+            rp_id: "rp_demo",
+            nonce: "nonce-proof-center-demo",
+            created_at: now,
+            expires_at: now + 300,
+            signature: "0xsignature"
+          }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({
+        json: {
+          proofs: [
+            {
+              proof_id: "proof-world-id-human",
+              wallet_id: "wallet-demo",
+              proof_type: "world_id_proof_of_human",
+              statement: {
+                claim: "wallet_actor_has_world_id_proof_of_human",
+                wallet_id: "wallet-demo",
+                action: "wallet-attach-world-id-v1",
+                credential_policy: "proof_of_human"
+              },
+              verifier_id: "world-developer-portal-v4:rp_demo",
+              public_inputs: {
+                claim: "World ID proof of human is bound to this wallet",
+                rp_id: "rp_demo",
+                app_id: "app_staging_demo",
+                action: "wallet-attach-world-id-v1",
+                signal_hash: "sha256:signal",
+                credential_policy: "proof_of_human",
+                nullifier_commitment: "hmac-sha256:nullifier",
+                verification_result_hash: "sha256:result"
+              },
+              proof_hash: "sha256:proof",
+              witness_record_ids: ["wallet://wallet-demo/world-id-binding/world-id-binding-demo"],
+              is_simulated: false,
+              proof_system: "world_id_idkit_v4",
+              circuit_id: "world-id-proof-of-human-v4",
+              verifier_digest: "digest1234567890abcdef",
+              proof_artifact_ref: "world-id-proof://proof-world-id-human",
+              verification_status: "verified",
+              created_at: "2026-06-14T16:00:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+
+  await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
+  const worldIdStatus = page.getByLabel(/World ID wallet status/i);
+  await expect(worldIdStatus.getByRole("heading", { name: /Verified proof-of-human/i })).toBeVisible();
+  await expect(worldIdStatus.getByText(/does not disclose or prove legal name, age, citizenship, address/i)).toBeVisible();
+
+  const worldIdPanel = page.getByRole("article", { name: /World ID verification/i });
+  await expect(worldIdPanel.getByText(/World ID verified/i)).toBeVisible();
+  await expect(worldIdPanel.getByText(/Proof-of-human wallet binding/i)).toBeVisible();
+
+  const worldIdProof = page.getByRole("article", { name: /World ID proof of human is bound to this wallet/i });
+  await expect(worldIdProof).toHaveClass(/proof-card/);
+  await expect(worldIdProof).toContainText("world_id_proof_of_human");
+  await expect(worldIdProof).toContainText("world_id_idkit_v4");
+  await expect(worldIdProof).toContainText("proof_of_human");
+  await expect(worldIdProof).toContainText("not legal identity");
+  await expect(worldIdProof).toContainText(/does not disclose or prove legal name, age, citizenship, address/i);
+  await expect(worldIdProof.getByText(/raw_nullifier|idkit_proof|developer_portal_response|rp_signature/i)).toHaveCount(0);
+
+  await worldIdPanel.getByRole("button", { name: /Verify with World ID/i }).click();
+  await expect(worldIdPanel.getByRole("button", { name: /Opening IDKit/i })).toBeVisible();
+  await expect(worldIdPanel.getByText(/needs @worldcoin\/idkit/i)).toBeVisible();
+  expect(signatureRequests).toBe(1);
+});
+
 test("proof center can create an API-backed location region proof", async ({ page }) => {
   let createRequests = 0;
   await page.route("**/wallets/**", async (route) => {
