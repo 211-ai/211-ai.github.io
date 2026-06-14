@@ -265,7 +265,7 @@ Track guide:
 - Acceptance: Desktop Chrome, Mobile Chrome, and Mobile Safari Playwright coverage proves World ID controls across Proof Center, Wallet/uploads, Register/intake, Security, and QR proof review have keyboard focus, accessible names, no horizontal overflow or incoherent text overlap, visible fallback paths for emergency/essential access, no legal-identity overclaiming, and archived screenshot or trace evidence for signoff.
 
 ## WORLDID-190 Ops Health And Production Readiness Checks
-- Status: todo
+- Status: completed
 - Completion: evidence
 - Priority: P1
 - Track: ops

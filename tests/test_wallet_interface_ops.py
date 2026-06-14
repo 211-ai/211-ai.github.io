@@ -302,6 +302,116 @@ def test_validate_production_readiness_reports_missing_target_environment() -> N
     assert checks["secret_manager_references"]["status"] == "error"
 
 
+def test_validate_production_readiness_fails_world_id_enabled_missing_release_gates() -> None:
+    report = validate_production_readiness(
+        WalletInterfaceService(),
+        env={
+            "WORLD_ID_ENABLED": "1",
+            "WORLD_ID_ENVIRONMENT": "staging",
+            "WORLD_ID_APP_ID": "",
+            "WORLD_ID_RP_ID": "",
+            "WORLD_ID_VERIFY_BASE_URL": "https://developer.world.org",
+        },
+        run_proof_contract=False,
+        run_distance_proof_contract=False,
+        verify_storage=False,
+    )
+
+    checks = {check["name"]: check for check in report["checks"]}
+    assert report["status"] == "error"
+    assert checks["world_id_environment"]["status"] == "error"
+    assert checks["world_id_secret_references"]["status"] == "error"
+    assert checks["world_id_rp_signature_vector"]["status"] == "error"
+    assert checks["world_id_verify_endpoint"]["status"] == "error"
+    assert checks["world_id_proof_sanitization"]["status"] == "error"
+    assert "WORLD_ID_VERIFY_ENDPOINT_REACHABILITY_EVIDENCE" in checks["world_id_verify_endpoint"]["details"][
+        "missing_or_invalid"
+    ]
+    assert "WORLD_ID_PROOF_SANITIZATION_EVIDENCE" in checks["world_id_proof_sanitization"]["details"][
+        "missing_or_invalid"
+    ]
+
+
+def test_validate_production_readiness_passes_world_id_release_gates(tmp_path) -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        return {"verified": True}
+
+    repository_root = tmp_path / "wallet-repository"
+    storage_root = tmp_path / "wallet-blobs"
+    env = {
+        "WALLET_REPOSITORY_ROOT": str(repository_root),
+        "WALLET_STORAGE_CONFIG": json.dumps({"primary": {"type": "local", "root": str(storage_root)}}),
+        "WALLET_AUTO_LOAD_REPOSITORY": "true",
+        "WALLET_AUTO_PERSIST": "true",
+        "WALLET_PROOF_MODE": "production",
+        "WALLET_PROOF_BACKEND": "http-location-region",
+        "WALLET_PROOF_SERVICE_URL": "https://verifier.staging.211.local",
+        "WALLET_PROOF_VERIFIER_ID": "verifier-http-v1",
+        "WALLET_PROOF_SYSTEM": "groth16",
+        "WALLET_PROOF_CIRCUIT_ID": "location-region-v1",
+        "WALLET_PROOF_BEARER_TOKEN": "proof-service-token",
+        "WALLET_OPS_HEALTH_SHARED_SECRET": "ops-health-secret",
+        "WALLET_OPS_ALERT_WEBHOOK_URL": "https://ops.staging.211.local/hooks/wallet",
+        "WALLET_OPS_ALERT_BEARER_TOKEN": "ops-alert-token",
+        "WALLET_OPS_HEALTH_SECRET_REF": "secret://staging/wallet/ops-health",
+        "WALLET_OPS_ALERT_SECRET_REF": "secret://staging/wallet/ops-alert",
+        "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://staging/wallet/proof-verifier",
+        "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://staging/wallet/storage",
+        "WORLD_ID_ENABLED": "1",
+        "WORLD_ID_ENVIRONMENT": "production",
+        "WORLD_ID_APP_ID": "app_production_world_id_wallet",
+        "WORLD_ID_RP_ID": "rp_production_world_id_wallet",
+        "WORLD_ID_ALLOWED_ACTIONS": "wallet-attach-world-id-v1",
+        "WORLD_ID_DEFAULT_ACTION": "wallet-attach-world-id-v1",
+        "WORLD_ID_RP_SIGNING_KEY": "0x" + "11" * 32,
+        "WORLD_ID_RP_SIGNING_KEY_SECRET_REF": "secret://staging/wallet/world-id-rp-signing",
+        "WORLD_ID_NULLIFIER_HMAC_KEY": "world-id-nullifier-hmac-key",
+        "WORLD_ID_NULLIFIER_HMAC_KEY_SECRET_REF": "secret://staging/wallet/world-id-nullifier",
+        "WORLD_ID_VERIFY_BASE_URL": "https://developer.world.org",
+        "WORLD_ID_VERIFY_ENDPOINT_REACHABILITY_EVIDENCE": "artifact://staging/world-id/reachability",
+        "WORLD_ID_PROOF_SANITIZATION_EVIDENCE": "artifact://staging/world-id/sanitization",
+    }
+
+    report = validate_production_readiness(
+        WalletInterfaceService(
+            repository_root=repository_root,
+            storage_config={"primary": {"type": "local", "root": str(storage_root)}},
+            proof_backend=HttpLocationRegionProofBackend(
+                base_url="https://verifier.staging.211.local",
+                verifier_id="verifier-http-v1",
+                proof_system="groth16",
+                circuit_id="location-region-v1",
+                request_json=fake_request_json,
+            ),
+            allow_simulated_proofs=False,
+        ),
+        env=env,
+        run_proof_contract=False,
+        run_distance_proof_contract=False,
+        verify_storage=False,
+    )
+
+    checks = {check["name"]: check for check in report["checks"]}
+    assert report["status"] == "ok"
+    assert checks["world_id_environment"]["status"] == "ok"
+    assert checks["world_id_secret_references"]["status"] == "ok"
+    assert checks["world_id_rp_signature_vector"]["status"] == "ok"
+    assert checks["world_id_verify_endpoint"]["status"] == "ok"
+    assert checks["world_id_proof_sanitization"]["status"] == "ok"
+    rendered = json.dumps(report, sort_keys=True)
+    assert "world-id-nullifier-hmac-key" not in rendered
+    assert "WORLD_ID_RAW_NULLIFIER_READINESS_SENTINEL" not in rendered
+    assert "WORLD_ID_RAW_RP_SIGNATURE_READINESS_SENTINEL" not in rendered
+
+
 def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_path) -> None:
     def fake_request_json(
         method: str,
@@ -486,6 +596,11 @@ def test_local_production_readiness_self_check_passes_without_target_env() -> No
         "proof_credentials": "ok",
         "ops_credentials": "ok",
         "secret_manager_references": "ok",
+        "world_id_environment": "ok",
+        "world_id_secret_references": "ok",
+        "world_id_rp_signature_vector": "ok",
+        "world_id_verify_endpoint": "ok",
+        "world_id_proof_sanitization": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
         "distance_proof_contract": "ok",

@@ -171,6 +171,46 @@ class LocationDistanceProofRequest(BaseModel):
     grant_id: str | None = None
 
 
+class DocumentPrivacyProfileProofRequest(BaseModel):
+    actor_did: str
+    public_inputs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WalletEmbeddingsRouterRequest(BaseModel):
+    actor_did: str
+    wallet_cid: str | None = None
+    text: str | None = None
+    texts: List[str] = Field(default_factory=list)
+    provider: str | None = None
+    model_name: str | None = None
+    kwargs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WalletLlmRouterRequest(BaseModel):
+    actor_did: str
+    wallet_cid: str | None = None
+    prompt: str
+    system_prompt: str | None = None
+    provider: str | None = None
+    model_name: str | None = None
+    max_new_tokens: int | None = None
+    kwargs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WalletMultimodalRouterRequest(BaseModel):
+    actor_did: str
+    wallet_cid: str | None = None
+    prompt: str
+    provider: str | None = None
+    model_name: str | None = None
+    image_urls: List[str] = Field(default_factory=list)
+    additional_text_blocks: List[str] = Field(default_factory=list)
+    messages: List[Dict[str, Any]] = Field(default_factory=list)
+    image_detail: str | None = None
+    max_new_tokens: int | None = None
+    kwargs: Dict[str, Any] = Field(default_factory=dict)
+
+
 class WorldIdRpSignatureRequest(BaseModel):
     actor_did: str
     action: str | None = None
