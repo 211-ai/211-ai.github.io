@@ -66,7 +66,6 @@ import {
   uploadRecoveryBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
-import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../lib/runtimeConfig";
 import {
   buildWalletProofBundlePayload,
   buildWalletProofReviewUrl,
@@ -175,10 +174,8 @@ import {
   defaultManagedUserDraft,
   defaultShelterChecklist,
   getRouteFromHash,
-  primaryRoutes,
   providerEligibilityCriteria,
   readPersistedAppState,
-  secondaryRoutes,
   setLocationRouteHash,
   shelterOptions,
   disclosureScopes,
@@ -213,8 +210,20 @@ import {
 } from "../lib/localization";
 import { generateHuggingFaceWalletRouterText } from "../lib/huggingFaceWalletRouterClient";
 import { generateOpenRouterText } from "../lib/openRouterClient";
+import { NavigationGroup } from "./components/NavigationGroup";
+import { StatusPanel } from "./components/StatusPanel";
+import { AccountSafetySection } from "./components/AccountSafetySection";
+import {
+  clientNavigationRoutes,
+  getProviderPortalView,
+  normalizeAppRoute,
+  type ProviderPortalView,
+  providerNavigationRoutes,
+  providerRouteIds,
+  secondaryNavigationRoutes,
+} from "./config/navigation";
+import { WALLET_API_CONFIG_KEY, readUrlWalletApiConfig, readWalletApiBaseUrl, readWalletApiConfig } from "./services/walletConfig";
 const APP_SESSION_KEY = "abby-ui-session-v1";
-const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
@@ -265,77 +274,6 @@ type ServerMagicLoginResponse = {
   };
   ucan?: WalletMagicUcan;
 };
-
-const routeIcons: Record<RouteId, typeof Home> = {
-  home: Home,
-  register: ClipboardCheck,
-  "check-in": CalendarCheck,
-  calendar: CalendarClock,
-  messages: MessageSquare,
-  contacts: ContactRound,
-  "provider-cases": ClipboardCheck,
-  "provider-messages": MessageSquare,
-  "provider-analytics": BarChart3,
-  "provider-proofs": ShieldCheck,
-  "provider-operations": Wrench,
-  "sharing-rules": Share2,
-  uploads: Upload,
-  settings: SettingsIcon,
-  "social-services": HeartHandshake,
-  interactions: History,
-  shelter: Home,
-  "provider-clients": UsersRound,
-  "recipient-access": KeyRound,
-  "benefits-protection": Landmark,
-  analytics: BarChart3,
-  "proof-center": ShieldCheck,
-  exports: LogOut,
-  security: LockKeyhole,
-  audit: ClipboardCheck
-};
-
-const removedStandaloneRoutes = new Set<RouteId>([
-  "sharing-rules",
-  "recipient-access",
-  "benefits-protection",
-  "exports",
-  "security"
-]);
-const routes = primaryRoutes
-  .filter((route) => !removedStandaloneRoutes.has(route.id))
-  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
-const secondaryNavigationRoutes = secondaryRoutes
-  .filter((route) => !removedStandaloneRoutes.has(route.id))
-  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
-const providerRouteIds = new Set<RouteId>([
-  "shelter",
-  "provider-clients",
-  "provider-cases",
-  "provider-messages",
-  "provider-analytics",
-  "provider-proofs",
-  "provider-operations"
-]);
-const clientNavigationRoutes = routes.filter((route) => !providerRouteIds.has(route.id) && route.id !== "register");
-const providerNavigationRoutes = routes.filter((route) => providerRouteIds.has(route.id));
-
-type ProviderPortalView = "overview" | "clients" | "cases" | "messages" | "analytics" | "proofs" | "operations";
-
-function getProviderPortalView(route: RouteId): ProviderPortalView {
-  if (route === "provider-clients") return "clients";
-  if (route === "provider-cases") return "cases";
-  if (route === "provider-messages") return "messages";
-  if (route === "provider-analytics") return "analytics";
-  if (route === "provider-proofs") return "proofs";
-  if (route === "provider-operations") return "operations";
-  return "overview";
-}
-
-function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
-  if (route === "exports") return "uploads";
-  if (route === "security") return "settings";
-  return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
-}
 
 function getInitialRouteFromHash(): RouteId {
   return getServicePlanDocIdFromHash() || getServiceDetailDocIdFromHash()
@@ -1306,13 +1244,6 @@ export function App() {
     setAgentChatOpen(nextOpen);
   }
 
-  async function refreshWalletAccessState() {
-    if (!walletApiConfig) return;
-    const state = await loadWalletAccessState(walletApiConfig);
-    setAccessRequests(state.accessRequests);
-    setGrantReceipts(state.grantReceipts);
-  }
-
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
     const events = await listWalletAuditEvents(walletApiConfig);
@@ -1987,15 +1918,6 @@ export function App() {
             setRecipients={setRecipients}
           />
         ) : null}
-        {activeRoute === "recipient-access" ? (
-          <RecipientAccessScreen
-            accessRequests={accessRequests}
-            grantReceipts={grantReceipts}
-          />
-        ) : null}
-        {activeRoute === "benefits-protection" ? (
-          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
-        ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiBaseUrl={walletApiBaseUrl}
@@ -2180,162 +2102,6 @@ export function App() {
         voiceLabel={t(siteLocale, "chat.voice")}
       />
     </div>
-  );
-}
-
-function readWalletApiConfig(): WalletApiConfig | undefined {
-  const apiBaseUrl = resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
-  const walletId = import.meta.env.VITE_DEMO_WALLET_ID as string | undefined;
-  const runtimeConfig = readRuntimeWalletApiConfig();
-  const envConfig =
-    apiBaseUrl && walletId
-      ? {
-          apiBaseUrl,
-          walletId,
-          actorDid: import.meta.env.VITE_DEMO_ACTOR_DID as string | undefined,
-          issuerKeyHex: import.meta.env.VITE_DEMO_ISSUER_KEY_HEX as string | undefined,
-          audienceKeyHex: import.meta.env.VITE_DEMO_AUDIENCE_KEY_HEX as string | undefined
-        }
-      : undefined;
-  return (
-    readUrlWalletApiConfig() ??
-    (runtimeConfig
-      ? {
-          apiBaseUrl: runtimeConfig.apiBaseUrl,
-          walletId: runtimeConfig.walletId,
-          actorDid: runtimeConfig.actorDid,
-          issuerKeyHex: runtimeConfig.issuerKeyHex,
-          audienceKeyHex: runtimeConfig.audienceKeyHex
-        }
-      : undefined) ??
-    readStoredWalletApiConfig() ??
-    envConfig
-  );
-}
-
-function readWalletApiBaseUrl(): string | undefined {
-  const urlBaseUrl = readUrlWalletApiBaseUrl();
-  if (urlBaseUrl) return urlBaseUrl;
-  const runtimeBaseUrl = readRuntimeWalletApiBaseUrl();
-  if (runtimeBaseUrl) return runtimeBaseUrl;
-  const storedBaseUrl = readStoredWalletApiBaseUrl();
-  if (storedBaseUrl) return storedBaseUrl;
-  const envBaseUrl = resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
-  if (envBaseUrl) return envBaseUrl;
-  return readProductionWalletApiBaseUrl();
-}
-
-function readUrlWalletApiBaseUrl(): string | undefined {
-  if (typeof window === "undefined") return undefined;
-  return new URL(window.location.href).searchParams.get("walletApiBaseUrl") ?? undefined;
-}
-
-function readProductionWalletApiBaseUrl(): string | undefined {
-  if (typeof window === "undefined") return undefined;
-  return window.location.hostname === "211-ai.com" || window.location.hostname === "www.211-ai.com"
-    ? window.location.origin
-    : undefined;
-}
-
-function resolveWalletApiBaseUrl(apiBaseUrl: string | undefined): string | undefined {
-  const trimmed = apiBaseUrl?.trim();
-  if (!trimmed) return undefined;
-  return trimmed === "same-origin" ? window.location.origin : trimmed;
-}
-
-function readUrlWalletApiConfig(): WalletApiConfig | undefined {
-  if (typeof window === "undefined") return undefined;
-  const params = new URL(window.location.href).searchParams;
-  const apiBaseUrl = params.get("walletApiBaseUrl") ?? undefined;
-  const walletId = params.get("walletId") ?? undefined;
-  if (!apiBaseUrl || !walletId) return undefined;
-  return {
-    apiBaseUrl,
-    walletId,
-    actorDid: params.get("actorDid") ?? undefined,
-    issuerKeyHex: params.get("issuerKeyHex") ?? undefined,
-    audienceKeyHex: params.get("audienceKeyHex") ?? undefined
-  };
-}
-
-function readStoredWalletApiConfig(): WalletApiConfig | undefined {
-  if (typeof window === "undefined") return undefined;
-  try {
-    const storedConfig = JSON.parse(window.localStorage.getItem(WALLET_API_CONFIG_KEY) ?? "null") as Partial<
-      WalletApiConfig
-    > | null;
-    if (!storedConfig?.apiBaseUrl || !storedConfig.walletId) return undefined;
-    return {
-      apiBaseUrl: storedConfig.apiBaseUrl,
-      walletId: storedConfig.walletId,
-      actorDid: storedConfig.actorDid,
-      issuerKeyHex: storedConfig.issuerKeyHex,
-      audienceKeyHex: storedConfig.audienceKeyHex
-    };
-  } catch {
-    return undefined;
-  }
-}
-
-function readStoredWalletApiBaseUrl(): string | undefined {
-  if (typeof window === "undefined") return undefined;
-  try {
-    const storedConfig = JSON.parse(window.localStorage.getItem(WALLET_API_CONFIG_KEY) ?? "null") as Partial<
-      WalletApiConfig
-    > | null;
-    return storedConfig?.apiBaseUrl ?? undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function NavigationGroup({
-  activeRoute,
-  className = "",
-  label,
-  routes,
-  onNavigate
-}: {
-  activeRoute: RouteId;
-  className?: string;
-  label: string;
-  routes: Array<{ id: RouteId; label: string; icon: typeof Home }>;
-  onNavigate: (route: RouteId) => void;
-}) {
-  return (
-    <div className={`nav-group ${className}`}>
-      <p className="nav-section-label">{label}</p>
-      <div className="nav-list">
-        {routes.map((route) => (
-          <NavButton
-            active={activeRoute === route.id}
-            icon={route.icon}
-            key={route.id}
-            label={route.label}
-            onClick={() => onNavigate(route.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function NavButton({
-  active,
-  icon: Icon,
-  label,
-  onClick
-}: {
-  active: boolean;
-  icon: typeof Home;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button aria-current={active ? "page" : undefined} className="nav-button" onClick={onClick} type="button">
-      <Icon aria-hidden="true" size={19} />
-      <span>{label}</span>
-    </button>
   );
 }
 
@@ -2875,15 +2641,6 @@ function HomeScreen({
           </Button>
         </div>
       </section>
-    </div>
-  );
-}
-
-function StatusPanel({ label, value, tone, onClick }: { label: string; value: string; tone: string; onClick?: () => void }) {
-  return (
-    <div className={`status-panel panel-${tone}${onClick ? " status-panel-clickable" : ""}`} onClick={onClick} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} onKeyDown={onClick ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}>
-      <small>{label}</small>
-      <strong>{value}</strong>
     </div>
   );
 }
@@ -10040,138 +9797,5 @@ function parseRecordIds(value: string): string[] {
         .map((recordId) => recordId.trim())
         .filter(Boolean)
     )
-  );
-}
-
-function shortHash(value?: string): string {
-  if (!value) return "Unavailable";
-  return value.length > 24 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
-}
-
-function AccountSafetySection({
-  apiConfig,
-  onSnapshotLoaded
-}: {
-  apiConfig?: WalletApiConfig;
-  onSnapshotLoaded: () => Promise<void> | void;
-}) {
-  const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
-  const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
-    "idle"
-  );
-  const [snapshotReport, setSnapshotReport] = useState<WalletSnapshotVerification | null>(null);
-  const hasCurrentSnapshot = Boolean(apiConfig && snapshotIds.includes(apiConfig.walletId));
-
-  async function refreshSnapshotState(): Promise<string[]> {
-    if (!apiConfig) return [];
-    const ids = await listWalletSnapshots(apiConfig);
-    setSnapshotIds(ids);
-    if (ids.includes(apiConfig.walletId)) {
-      setSnapshotReport(await verifyWalletSnapshot(apiConfig));
-    } else {
-      setSnapshotReport(null);
-    }
-    return ids;
-  }
-
-  useEffect(() => {
-    if (!apiConfig) return;
-    let cancelled = false;
-    refreshSnapshotState()
-      .then(() => undefined)
-      .catch(() => {
-        if (!cancelled) {
-          setSnapshotReport(null);
-        }
-      })
-    return () => {
-      cancelled = true;
-    };
-  }, [apiConfig]);
-
-  async function saveSnapshot() {
-    if (!apiConfig) return;
-    setSnapshotStatus("saving");
-    try {
-      await saveWalletSnapshot(apiConfig);
-      await refreshSnapshotState();
-      setSnapshotStatus("saved");
-    } catch {
-      setSnapshotStatus("failed");
-    }
-  }
-
-  async function restoreSnapshot() {
-    if (!apiConfig || !hasCurrentSnapshot) return;
-    setSnapshotStatus("loading");
-    try {
-      await loadWalletSnapshot(apiConfig);
-      setSnapshotReport(await verifyWalletSnapshot(apiConfig));
-      await onSnapshotLoaded();
-      setSnapshotStatus("loaded");
-    } catch {
-      setSnapshotStatus("failed");
-    }
-  }
-
-  return (
-    <Section
-      title="Account safety"
-      actions={
-        <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>{hasCurrentSnapshot ? "backup ready" : "no backup"}</Badge>
-      }
-    >
-      {!apiConfig ? (
-        <StatusBanner tone="warning">Connect Abby to save and load wallet backups.</StatusBanner>
-      ) : null}
-      {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet backup saved.</StatusBanner> : null}
-      {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet backup loaded.</StatusBanner> : null}
-      {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet backup action failed.</StatusBanner> : null}
-      <div className="disclosure-package">
-        <div className="disclosure-row">
-          <strong>Wallet</strong>
-          <span>{apiConfig?.walletId ?? "Not connected"}</span>
-        </div>
-        <div className="disclosure-row">
-          <strong>Backups</strong>
-          <span>{snapshotIds.length}</span>
-        </div>
-        <div className="disclosure-row">
-          <strong>Backup place</strong>
-          <span>{apiConfig ? "backup store" : "API required"}</span>
-        </div>
-        <div className="disclosure-row">
-          <strong>Backup check</strong>
-          <span>{snapshotReport ? (snapshotReport.valid ? "verified" : "failed") : "not checked"}</span>
-        </div>
-        <div className="disclosure-row">
-          <strong>Backup code</strong>
-          <span>{snapshotReport?.computed_hash ? <code>{shortHash(snapshotReport.computed_hash)}</code> : "Unavailable"}</span>
-        </div>
-      </div>
-      <div className="row-actions">
-        <Button disabled={!apiConfig || snapshotStatus === "saving" || snapshotStatus === "loading"} onClick={saveSnapshot}>
-          <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save backup"}
-        </Button>
-        <Button
-          disabled={!apiConfig || !hasCurrentSnapshot || snapshotStatus === "saving" || snapshotStatus === "loading"}
-          onClick={restoreSnapshot}
-          variant="secondary"
-        >
-          <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load backup"}
-        </Button>
-      </div>
-      <div className="tool-grid">
-        <button className="tool-tile" type="button">
-          <LockKeyhole size={24} /> Session timeout
-        </button>
-        <button className="tool-tile" type="button">
-          <KeyRound size={24} /> Recovery settings
-        </button>
-        <button className="tool-tile" type="button">
-          <ShieldCheck size={24} /> Bot check settings
-        </button>
-      </div>
-    </Section>
   );
 }
