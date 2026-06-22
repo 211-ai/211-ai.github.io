@@ -227,6 +227,65 @@ import { AnalyticsScreen } from "./screens/AnalyticsScreen";
 import { BenefitsProtectionScreen } from "./screens/BenefitsProtectionScreen";
 import { ExportCenterScreen } from "./screens/ExportCenterScreen";
 import { ProofCenterScreen } from "./screens/ProofCenterScreen";
+import {
+  base64ToBytes,
+  buildWalletFileStats,
+  filecoinActionLabel,
+  filecoinBadge,
+  filecoinBadgeTone,
+  getWalletFileFilterOptions,
+  ipfsGatewayHref,
+  privacyProfileBadge,
+  privacyProfileBadgeTone,
+  searchWalletFiles,
+  sharingBadge,
+  shortStorageId,
+  shouldShowFilecoinAction,
+  uploadTypeLabel,
+  type WalletFileFilterMode,
+  type WalletFileSortMode
+} from "./utils/walletFiles";
+import {
+  contactLabelForShelterUser,
+  formatProviderActivityDate,
+  formatProviderPercent,
+  formatShelterDate,
+  latestProviderTimestamp,
+  providerActivityToneLabel,
+  providerCasePriorityLabel,
+  providerCasePriorityRank,
+  providerCaseStatusLabel,
+  providerClientCommitment,
+  providerEligibilityClaim,
+  providerEligibilityLabel,
+  providerProofClientLabel,
+  providerProofTypeLabel,
+  providerProofVerificationStatusLabel
+} from "./utils/providerHelpers";
+import {
+  analysisLines,
+  artifactLines,
+  buildDocumentPrivacyProfilePublicInputs,
+  buildFallbackDocumentProfileOutput,
+  buildOpenRouterOrganizerProfile,
+  buildPrivacySearchText,
+  buildPrivacyVectorTerms,
+  classifyDocumentProfile,
+  compactRecord,
+  defaultLabelsForMimeType,
+  detectDecryptedMimeType,
+  displayMimeType,
+  normalizePublicMimeType,
+  outputTypeForAnalysisMode,
+  readStringArray,
+  receiptHasAbility,
+  receiptRequiresUserPresence,
+  runDerivedAnalysis,
+  summarizeDerivedOutput,
+  summarizeDocumentPrivacyProfile,
+  toSafeOrganizerSignal,
+  type RecipientAnalysisMode
+} from "./utils/privacyProfile";
 const APP_SESSION_KEY = "abby-ui-session-v1";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
@@ -1645,6 +1704,15 @@ export function App() {
     });
   }
 
+  const openServicePlanFromServices = useCallback((nextDocId: string) => {
+    setLocationServicePlanHash(nextDocId);
+    setServicePlanDocId(nextDocId);
+    setServiceDetailDocId(null);
+    activeRouteRef.current = "social-services";
+    setActiveRoute("social-services");
+    setMobileNavOpen(false);
+  }, []);
+
   function handleSignIn(username: string) {
     const nextUsername = username.trim();
     setSignedInUser(nextUsername);
@@ -1889,14 +1957,7 @@ export function App() {
         {activeRoute === "calendar" ? (
           <CalendarScreen
             interactions={serviceInteractions}
-            onOpenPlan={(nextDocId) => {
-              setLocationServicePlanHash(nextDocId);
-              setServicePlanDocId(nextDocId);
-              setServiceDetailDocId(null);
-              activeRouteRef.current = "social-services";
-              setActiveRoute("social-services");
-              setMobileNavOpen(false);
-            }}
+            onOpenPlan={openServicePlanFromServices}
             onOpenService={openServiceDetailFromServices}
             policy={policy}
             siteLocale={siteLocale}
@@ -1961,14 +2022,7 @@ export function App() {
           <SocialServicesScreen
             apiConfig={walletApiConfig}
             onOpenDetail={openServiceDetailFromServices}
-            onOpenPlan={(nextDocId) => {
-              setLocationServicePlanHash(nextDocId);
-              setServicePlanDocId(nextDocId);
-              setServiceDetailDocId(null);
-              activeRouteRef.current = "social-services";
-              setActiveRoute("social-services");
-              setMobileNavOpen(false);
-            }}
+            onOpenPlan={openServicePlanFromServices}
             refreshWalletPortalState={refreshWalletPortalState}
             savedServices={savedServices}
             servicePlans={servicePlans}
@@ -1987,14 +2041,7 @@ export function App() {
             grantReceipts={grantReceipts}
             interactions={serviceInteractions}
             loading={walletPortalLoading}
-            onOpenPlan={(nextDocId) => {
-              setLocationServicePlanHash(nextDocId);
-              setServicePlanDocId(nextDocId);
-              setServiceDetailDocId(null);
-              activeRouteRef.current = "social-services";
-              setActiveRoute("social-services");
-              setMobileNavOpen(false);
-            }}
+            onOpenPlan={openServicePlanFromServices}
             onOpenService={openServiceDetailFromServices}
             onRefresh={refreshWalletPortalState ? () => void refreshWalletPortalState() : undefined}
             proofReceipts={walletProofReceipts}
@@ -5297,236 +5344,6 @@ function UploadsScreen({
   );
 }
 
-function sharingBadge(upload: UploadItem, locale: SupportedLocale): string {
-  const count = upload.allowedRecipientIds?.length ?? 0;
-  if (!upload.shared || count === 0) return t(locale, "wallet.private");
-  return tFormat(locale, "wallet.selectedCount", { count: String(count) });
-}
-
-type WalletFileSortMode = "newest" | "oldest" | "name" | "type" | "profile" | "storage";
-type WalletFileFilterMode = "all" | "profiled" | "needs_proof" | "stored" | "shared";
-
-function getWalletFileFilterOptions(locale: SupportedLocale): Array<{ label: string; value: WalletFileFilterMode }> {
-  return [
-    { label: t(locale, "wallet.filter.all"), value: "all" },
-    { label: t(locale, "wallet.filter.profiled"), value: "profiled" },
-    { label: t(locale, "wallet.filter.needsProof"), value: "needs_proof" },
-    { label: t(locale, "wallet.filter.stored"), value: "stored" },
-    { label: t(locale, "wallet.filter.shared"), value: "shared" }
-  ];
-}
-
-function searchWalletFiles(
-  uploads: UploadItem[],
-  query: string,
-  sortMode: WalletFileSortMode,
-  filterMode: WalletFileFilterMode
-): UploadItem[] {
-  const filtered = filterWalletFilesByMode(uploads, filterMode);
-  const tokens = query
-    .trim()
-    .toLocaleLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (!tokens.length) return sortWalletFiles(filtered, sortMode);
-  return filtered
-    .map((upload) => ({ score: walletFileSearchScore(upload, tokens), upload }))
-    .filter((item) => item.score > 0)
-    .sort((left, right) => right.score - left.score || compareWalletFiles(left.upload, right.upload, sortMode))
-    .map((item) => item.upload);
-}
-
-function filterWalletFilesByMode(uploads: UploadItem[], filterMode: WalletFileFilterMode): UploadItem[] {
-  switch (filterMode) {
-    case "profiled":
-      return uploads.filter((upload) => upload.privacyProfileStatus === "profiled");
-    case "needs_proof":
-      return uploads.filter((upload) => upload.recordId && upload.privacyProfileStatus !== "profiled");
-    case "stored":
-      return uploads.filter((upload) => upload.decentralizedStorageStatus === "stored" || Boolean(upload.ipfsCid));
-    case "shared":
-      return uploads.filter((upload) => upload.shared || (upload.allowedRecipientIds?.length ?? 0) > 0);
-    case "all":
-    default:
-      return uploads;
-  }
-}
-
-function buildWalletFileStats(uploads: UploadItem[]) {
-  return {
-    ipldLinked: uploads.filter((upload) => upload.ipldLinks?.length || upload.metadataCid).length,
-    profiled: uploads.filter((upload) => upload.privacyProfileStatus === "profiled").length
-  };
-}
-
-function sortWalletFiles(uploads: UploadItem[], sortMode: WalletFileSortMode): UploadItem[] {
-  const sorted = [...uploads];
-  sorted.sort((left, right) => compareWalletFiles(left, right, sortMode));
-  return sorted;
-}
-
-function compareWalletFiles(left: UploadItem, right: UploadItem, sortMode: WalletFileSortMode): number {
-  switch (sortMode) {
-    case "oldest":
-      return uploadCreatedTime(left) - uploadCreatedTime(right);
-    case "name":
-      return left.fileName.localeCompare(right.fileName) || uploadCreatedTime(right) - uploadCreatedTime(left);
-    case "type":
-      return uploadTypeLabel(left).localeCompare(uploadTypeLabel(right)) || left.fileName.localeCompare(right.fileName);
-    case "profile":
-      return uploadProfileSortRank(left) - uploadProfileSortRank(right) || left.fileName.localeCompare(right.fileName);
-    case "storage":
-      return uploadStorageSortRank(left) - uploadStorageSortRank(right) || left.fileName.localeCompare(right.fileName);
-    case "newest":
-    default:
-      return uploadCreatedTime(right) - uploadCreatedTime(left);
-  }
-}
-
-function walletFileSearchScore(upload: UploadItem, tokens: string[]): number {
-  const proofIndex = [
-    upload.privacyProfileSearchText,
-    upload.privacyProfileVectorTerms?.join(" "),
-    stringifySearchRecord(upload.privacyProfilePublicInputs)
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase();
-  const visibleIndex = [
-    upload.fileName,
-    upload.category,
-    upload.machineSummary,
-    upload.decentralizedStorageProvider,
-    upload.decentralizedStorageStatus,
-    upload.decryptedClassification,
-    upload.decryptedMimeType,
-    upload.filecoinPinStatus,
-    upload.privacyProfileClassification,
-    upload.privacyProfileLabels?.join(" "),
-    upload.privacyProfileMimeType,
-    upload.privacyProfileStatus,
-    upload.privacyProfileSummary,
-    upload.status
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase();
-  let score = 0;
-  for (const token of tokens) {
-    if (proofIndex.includes(token)) {
-      score += 4;
-      continue;
-    }
-    if (visibleIndex.includes(token)) {
-      score += 1;
-    } else {
-      return 0;
-    }
-  }
-  if (upload.privacyProfileProofId) score += 0.5;
-  if (upload.privacyProfileVectorTerms?.length) score += 0.5;
-  return score;
-}
-
-function stringifySearchRecord(record: Record<string, unknown> | undefined): string {
-  if (!record) return "";
-  return Object.entries(record)
-    .flatMap(([key, value]) => [key, ...searchValueParts(value)])
-    .join(" ");
-}
-
-function searchValueParts(value: unknown): string[] {
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return [String(value)];
-  if (Array.isArray(value)) return value.flatMap(searchValueParts);
-  if (value && typeof value === "object") return Object.values(value as Record<string, unknown>).flatMap(searchValueParts);
-  return [];
-}
-
-function uploadCreatedTime(upload: UploadItem): number {
-  const time = Date.parse(upload.createdAtRaw || upload.createdAt || "");
-  return Number.isFinite(time) ? time : 0;
-}
-
-function uploadTypeLabel(upload: UploadItem): string {
-  return upload.privacyProfileClassification || upload.decryptedClassification || upload.privacyProfileMimeType || upload.decryptedMimeType || upload.category;
-}
-
-function uploadProfileSortRank(upload: UploadItem): number {
-  if (upload.privacyProfileStatus === "profiled") return 0;
-  if (upload.privacyProfileStatus === "profiling") return 1;
-  if (upload.privacyProfileStatus === "failed") return 2;
-  return 3;
-}
-
-function uploadStorageSortRank(upload: UploadItem): number {
-  if (upload.decentralizedStorageStatus === "stored" && upload.storageOk !== false) return 0;
-  if (upload.decentralizedStorageStatus === "uploading") return 1;
-  if (upload.storageOk === false) return 2;
-  if (upload.decentralizedStorageStatus === "failed") return 3;
-  return 4;
-}
-
-function filecoinBadge(upload: UploadItem, locale: SupportedLocale): string {
-  if (upload.filecoinPinStatus === "queued") return t(locale, "wallet.filecoinQueued");
-  if (upload.filecoinPinStatus === "pinning") return t(locale, "wallet.filecoinPinning");
-  if (upload.filecoinPinStatus === "failed") return t(locale, "wallet.ipfsOnly");
-  if (upload.decentralizedStorageStatus === "stored") return t(locale, "wallet.ipfsFilecoin");
-  if (upload.decentralizedStorageStatus === "uploading") return t(locale, "wallet.storing");
-  if (upload.decentralizedStorageStatus === "failed") return t(locale, "wallet.storageFailed");
-  return t(locale, "wallet.walletStorage");
-}
-
-function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
-  if (upload.filecoinPinStatus === "queued" || upload.filecoinPinStatus === "pinning") return "info";
-  if (upload.filecoinPinStatus === "failed") return "warning";
-  if (upload.decentralizedStorageStatus === "stored") return "success";
-  if (upload.decentralizedStorageStatus === "uploading") return "info";
-  if (upload.decentralizedStorageStatus === "failed") return "danger";
-  return "neutral";
-}
-
-function shouldShowFilecoinAction(upload: UploadItem): boolean {
-  return upload.decentralizedStorageStatus !== "stored" || upload.filecoinPinStatus === "failed";
-}
-
-function filecoinActionLabel(upload: UploadItem, inProgress: boolean, locale: SupportedLocale): string {
-  if (upload.filecoinPinStatus === "failed") {
-    return inProgress ? t(locale, "wallet.retrying") : t(locale, "wallet.retryFilecoin");
-  }
-  return inProgress ? t(locale, "wallet.storing") : t(locale, "wallet.storeOnFilecoin");
-}
-
-function privacyProfileBadge(upload: UploadItem, locale: SupportedLocale): string {
-  if (upload.privacyProfileStatus === "profiled") return t(locale, "wallet.privacyProof");
-  if (upload.privacyProfileStatus === "profiling") return t(locale, "wallet.profiling");
-  if (upload.privacyProfileStatus === "failed") return t(locale, "wallet.profileFailed");
-  return t(locale, "wallet.profilePending");
-}
-
-function privacyProfileBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
-  if (upload.privacyProfileStatus === "profiled") return "success";
-  if (upload.privacyProfileStatus === "profiling") return "info";
-  if (upload.privacyProfileStatus === "failed") return "warning";
-  return "neutral";
-}
-
-function ipfsGatewayHref(upload: UploadItem): string {
-  return normalizeIpfsGatewayUrl(upload.ipfsGatewayUrl) || sameOriginIpfsGatewayUrl(upload.ipfsCid) || "#";
-}
-
-function shortStorageId(value: string): string {
-  return value.length > 18 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
-}
-
-function base64ToBytes(value: string): Uint8Array {
-  const binary = atob(value);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  return bytes;
-}
-
 function SocialServicesScreen({
   apiConfig,
   onOpenDetail,
@@ -7714,109 +7531,6 @@ function ShelterScreen({
   );
 }
 
-function contactLabelForShelterUser(account: ShelterUserAccount, locale: SupportedLocale): string {
-  return account.phone || account.email || t(locale, "providerPortal.operations.noContact");
-}
-
-function formatShelterDate(value: string): string {
-  const dateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const date = dateOnly
-    ? new Date(Number(dateOnly[1]), Number(dateOnly[2]) - 1, Number(dateOnly[3]))
-    : new Date(value);
-  if (Number.isNaN(date.getTime())) return value || "Date unavailable";
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
-
-function providerClientCommitment(account: ShelterUserAccount): string {
-  return appStableSuffix(`${account.id}:${account.dateOfBirth}`);
-}
-
-function providerProofClientLabel(proof: ProofReceiptView, accounts: ShelterUserAccount[]): string {
-  const client = accounts.find((account) => providerClientCommitment(account) === proof.publicInputs.client_commitment);
-  return client ? client.preferredName || client.legalName : "Committed client";
-}
-
-function providerCasePriorityRank(priority: ShelterCasePriority): number {
-  if (priority === "urgent") return 0;
-  if (priority === "standard") return 1;
-  return 2;
-}
-
-function providerCasePriorityLabel(priority: ShelterCasePriority, locale: SupportedLocale): string {
-  if (priority === "urgent") return t(locale, "providerPortal.cases.urgent");
-  if (priority === "standard") return t(locale, "providerPortal.cases.standard");
-  return t(locale, "providerPortal.cases.monitor");
-}
-
-function providerCaseStatusLabel(status: ShelterCaseStatus, locale: SupportedLocale): string {
-  if (status === "intake") return t(locale, "providerPortal.cases.intake");
-  if (status === "active") return t(locale, "providerPortal.cases.active");
-  if (status === "waiting_on_client") return t(locale, "providerPortal.cases.waitingOnClient");
-  if (status === "eligible") return t(locale, "providerPortal.cases.eligible");
-  return t(locale, "providerPortal.cases.closed");
-}
-
-function providerEligibilityLabel(criterionId: ShelterEligibilityCriterion, locale: SupportedLocale): string {
-  if (criterionId === "us_citizen") return t(locale, "providerPortal.criteria.usCitizen");
-  if (criterionId === "service_area_resident") return t(locale, "providerPortal.criteria.serviceAreaResident");
-  if (criterionId === "income_eligible") return t(locale, "providerPortal.criteria.incomeEligible");
-  if (criterionId === "identity_verified") return t(locale, "providerPortal.criteria.identityVerified");
-  return providerEligibilityCriteria.find((criterion) => criterion.id === criterionId)?.label ?? criterionId;
-}
-
-function providerEligibilityClaim(criterionId: ShelterEligibilityCriterion, locale: SupportedLocale): string {
-  if (criterionId === "us_citizen") return t(locale, "providerPortal.criteria.claim.usCitizen");
-  if (criterionId === "service_area_resident") return t(locale, "providerPortal.criteria.claim.serviceAreaResident");
-  if (criterionId === "income_eligible") return t(locale, "providerPortal.criteria.claim.incomeEligible");
-  if (criterionId === "identity_verified") return t(locale, "providerPortal.criteria.claim.identityVerified");
-  return t(locale, "providerPortal.proofs.defaultEligibilityClaim");
-}
-
-function providerProofTypeLabel(proofType: string | undefined, locale: SupportedLocale): string {
-  if (!proofType) return "";
-  if (proofType === "service_attendance") return t(locale, "providerPortal.proofs.proofType.serviceAttendance");
-  if (proofType === "document_reviewed") return t(locale, "providerPortal.proofs.proofType.documentReviewed");
-  if (proofType === "benefits_referral") return t(locale, "providerPortal.proofs.proofType.benefitsReferral");
-  if (proofType === "housing_step") return t(locale, "providerPortal.proofs.proofType.housingStep");
-  if (proofType === "us_citizenship") return t(locale, "providerPortal.proofs.proofType.usCitizenship");
-  if (proofType === "service_area_residency") return t(locale, "providerPortal.proofs.proofType.serviceAreaResidency");
-  if (proofType === "income_eligibility") return t(locale, "providerPortal.proofs.proofType.incomeEligibility");
-  if (proofType === "identity_verified") return t(locale, "providerPortal.proofs.proofType.identityVerified");
-  return proofType.replace(/_/g, " ");
-}
-
-function providerProofVerificationStatusLabel(status: string, locale: SupportedLocale): string {
-  if (status === "verified") return t(locale, "providerPortal.proofs.verificationStatus.verified");
-  return status;
-}
-
-function formatProviderPercent(value: number, total: number): string {
-  if (!total) return "0%";
-  return `${Math.round((value / total) * 100)}%`;
-}
-
-function latestProviderTimestamp(values: string[]): string | undefined {
-  return values
-    .map((value) => ({ value, time: new Date(value).getTime() }))
-    .filter((item) => Number.isFinite(item.time))
-    .sort((left, right) => right.time - left.time)[0]?.value;
-}
-
-function formatProviderActivityDate(value: string | undefined, locale: SupportedLocale): string {
-  if (!value) return t(locale, "providerPortal.analytics.noActivity");
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString(locale, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-}
-
-function providerActivityToneLabel(tone: "neutral" | "warning" | "success", locale: SupportedLocale): string {
-  if (tone === "success") return t(locale, "providerPortal.analytics.toneSuccess");
-  if (tone === "warning") return t(locale, "providerPortal.analytics.toneWarning");
-  return t(locale, "providerPortal.analytics.toneNeutral");
-}
-
-type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";
-
 function RecipientAccessScreen({
   accessRequests,
   apiConfig,
@@ -8166,484 +7880,3 @@ function RecipientAccessScreen({
     </div>
   );
 }
-
-function receiptHasAbility(receipt: WalletGrantReceipt, ability: string) {
-  return receipt.abilities.includes("*") || receipt.abilities.includes(ability);
-}
-
-function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
-  return receipt.caveats?.user_presence_required === true || receipt.caveats?.require_user_presence === true;
-}
-
-function outputTypeForAnalysisMode(mode: RecipientAnalysisMode) {
-  if (mode === "redacted") return "redacted_derived_only";
-  if (mode === "vector") return "vector_profile";
-  if (mode === "extract-text") return "redacted_extracted_text";
-  if (mode === "form") return "redacted_form_analysis";
-  if (mode === "graphrag") return "redacted_graphrag";
-  return "summary";
-}
-
-async function runDerivedAnalysis(
-  apiConfig: WalletApiConfig,
-  receipt: WalletGrantReceipt,
-  mode: Exclude<RecipientAnalysisMode, "summary">,
-  invocationToken?: string
-) {
-  const grantId = receipt.grantId;
-  const recordId = receipt.recordId || "";
-  if (mode === "redacted") return analyzeRecordRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
-  if (mode === "vector") return createRecordVectorProfileWithGrant(apiConfig, { grantId, invocationToken, recordId });
-  if (mode === "extract-text") return extractRecordTextRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
-  if (mode === "form") return analyzeRecordFormRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
-  return createRedactedGraphRAG(apiConfig, { grantId, invocationToken, recordIds: [recordId] });
-}
-
-function artifactLines(artifact: { artifactType: string; outputPolicy: string; encryptedPayloadRef: string; sourceRecordIds: string[] }) {
-  return [
-    `${artifact.artifactType} · ${artifact.outputPolicy}`,
-    artifact.encryptedPayloadRef,
-    ...artifact.sourceRecordIds
-  ];
-}
-
-function analysisLines(result: {
-  artifact: { artifactType: string; outputPolicy: string; encryptedPayloadRef: string; sourceRecordIds: string[] };
-  output: Record<string, unknown>;
-}) {
-  return [
-    ...artifactLines(result.artifact),
-    summarizeDerivedOutput(result.output)
-  ];
-}
-
-function summarizeDerivedOutput(output: Record<string, unknown>) {
-  const organizerProfile = output.openrouter_organizer_profile;
-  if (organizerProfile && typeof organizerProfile === "object" && !Array.isArray(organizerProfile)) {
-    const record = organizerProfile as Record<string, unknown>;
-    const summary = typeof record.summary === "string" ? record.summary.trim() : "";
-    if (summary) return summary;
-  }
-  if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
-  if (typeof output.text === "string" && output.text.trim()) return output.text;
-  const profile = output.profile;
-  if (profile && typeof profile === "object" && !Array.isArray(profile)) {
-    const record = profile as Record<string, unknown>;
-    const profileType = typeof record.profile_type === "string" ? record.profile_type : "vector profile";
-    return typeof record.chunk_count === "number" ? `${profileType} · ${record.chunk_count} chunks` : profileType;
-  }
-  const fields = output.fields;
-  if (Array.isArray(fields)) {
-    const labels = fields
-      .map((field) => {
-        if (!field || typeof field !== "object" || Array.isArray(field)) return "";
-        return String((field as Record<string, unknown>).label ?? "").trim();
-      })
-      .filter(Boolean)
-      .slice(0, 3);
-    return labels.length ? `${fields.length} redacted fields: ${labels.join(", ")}` : `${fields.length} redacted fields`;
-  }
-  const graph = output.graph;
-  if (graph && typeof graph === "object" && !Array.isArray(graph)) {
-    const record = graph as Record<string, unknown>;
-    const graphType = typeof record.graph_type === "string" ? record.graph_type : "redacted graph";
-    if (typeof record.node_count === "number" && typeof record.edge_count === "number") {
-      return `${graphType} · ${record.node_count} nodes · ${record.edge_count} edges`;
-    }
-    return graphType;
-  }
-  return typeof output.output_policy === "string" ? output.output_policy : "Safe derived output created.";
-}
-
-async function buildOpenRouterOrganizerProfile({
-  fileName,
-  mimeType,
-  outputs
-}: {
-  fileName: string;
-  mimeType: string;
-  outputs: Record<string, unknown>[];
-}): Promise<Record<string, unknown> | undefined> {
-  const safeSignals = outputs.map(toSafeOrganizerSignal).filter((signal) => Object.keys(signal).length > 0);
-  const prompt = {
-    prompt: "Create privacy-preserving organizer metadata from redacted wallet document signals.",
-    systemPrompt: [
-      "You create privacy-preserving document organizer metadata for a wallet app.",
-      "Use only redacted derived signals. Do not infer names, addresses, account numbers, medical facts, legal facts, or other private content.",
-      "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
-      "summary must be a short generic description. labels, browseHints, and riskSignals must be arrays of generic non-identifying strings."
-    ].join("\n"),
-    userPrompt: JSON.stringify({
-      fileName: redactFileNameForRemoteProfile(fileName),
-      mimeType,
-      redactedSignals: safeSignals.slice(0, 8)
-    })
-  };
-  try {
-    const result = await generateHuggingFaceWalletRouterText({
-      fallbackReason: "wallet_document_privacy_profile",
-      maxTokens: 350,
-      prompt
-    });
-    return normalizeOrganizerProfileJson(result.text, result.model);
-  } catch {
-    // OpenRouter is a secondary fallback after the wallet-scoped Hugging Face router.
-  }
-  try {
-    const result = await generateOpenRouterText({
-      fallbackReason: "wallet_document_privacy_profile",
-      localModelName: "openrouter/free",
-      maxTokens: 350,
-      prompt
-    });
-    return normalizeOrganizerProfileJson(result.text, result.model);
-  } catch {
-    return undefined;
-  }
-}
-
-function toSafeOrganizerSignal(output: Record<string, unknown>): Record<string, unknown> {
-  const signal: Record<string, unknown> = {
-    output_policy: readString(output, "output_policy"),
-    summary: safeShortText(readString(output, "summary")),
-    text: safeShortText(readString(output, "text"))
-  };
-  const profile = output.profile;
-  if (profile && typeof profile === "object" && !Array.isArray(profile)) {
-    signal.profile = compactRecord({
-      profile_type: readString(profile, "profile_type"),
-      chunk_count: readNumber(profile, "chunk_count")
-    });
-  }
-  const graph = output.graph;
-  if (graph && typeof graph === "object" && !Array.isArray(graph)) {
-    signal.graph = compactRecord({
-      graph_type: readString(graph, "graph_type"),
-      node_count: readNumber(graph, "node_count"),
-      edge_count: readNumber(graph, "edge_count")
-    });
-  }
-  const fields = output.fields;
-  if (Array.isArray(fields)) {
-    signal.field_count = fields.length;
-    signal.field_labels = fields
-      .map((field) => (field && typeof field === "object" && !Array.isArray(field) ? readString(field, "label") : undefined))
-      .filter(Boolean)
-      .slice(0, 8);
-  }
-  const redactionCounts = output.redaction_counts;
-  if (redactionCounts && typeof redactionCounts === "object" && !Array.isArray(redactionCounts)) {
-    signal.redaction_counts = Object.fromEntries(
-      Object.entries(redactionCounts)
-        .filter(([, value]) => typeof value === "number")
-        .slice(0, 8)
-    );
-  }
-  return compactRecord(signal);
-}
-
-function buildPrivacySearchText(outputs: Record<string, unknown>[], publicInputs: Record<string, unknown>): string {
-  return [
-    "zero knowledge proof",
-    "redacted vector profile",
-    ...buildPrivacyVectorTerms(outputs, publicInputs),
-    stringifyPrivacySearchValue(publicInputs)
-  ]
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function buildPrivacyVectorTerms(outputs: Record<string, unknown>[], publicInputs: Record<string, unknown>): string[] {
-  const terms = new Set<string>();
-  const add = (value: unknown) => {
-    for (const part of privacySearchParts(value)) {
-      const normalized = part.trim().toLocaleLowerCase();
-      if (normalized.length >= 2 && normalized.length <= 80) terms.add(normalized);
-    }
-  };
-  add(publicInputs);
-  for (const output of outputs) {
-    add(toSafeOrganizerSignal(output));
-  }
-  return Array.from(terms).slice(0, 80);
-}
-
-function stringifyPrivacySearchValue(value: unknown): string {
-  return privacySearchParts(value).join(" ");
-}
-
-function privacySearchParts(value: unknown): string[] {
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return [String(value)];
-  if (Array.isArray(value)) return value.flatMap(privacySearchParts);
-  if (value && typeof value === "object") {
-    return Object.entries(value as Record<string, unknown>).flatMap(([key, nestedValue]) => [key, ...privacySearchParts(nestedValue)]);
-  }
-  return [];
-}
-
-function normalizeOrganizerProfileJson(text: string, model: string): Record<string, unknown> | undefined {
-  const parsed = parseFirstJsonObject(text);
-  if (!parsed) return undefined;
-  const summary = safeShortText(typeof parsed.summary === "string" ? parsed.summary : "");
-  const labels = readSafeStringList(parsed.labels, 6);
-  const browseHints = readSafeStringList(parsed.browseHints, 6);
-  const riskSignals = readSafeStringList(parsed.riskSignals, 6);
-  if (!summary && !labels.length && !browseHints.length && !riskSignals.length) return undefined;
-  return compactRecord({
-    browseHints,
-    labels,
-    model,
-    riskSignals,
-    summary
-  });
-}
-
-function parseFirstJsonObject(text: string): Record<string, unknown> | undefined {
-  const trimmed = text.trim();
-  const start = trimmed.indexOf("{");
-  const end = trimmed.lastIndexOf("}");
-  if (start < 0 || end <= start) return undefined;
-  try {
-    const parsed = JSON.parse(trimmed.slice(start, end + 1));
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function readSafeStringList(value: unknown, limit: number): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => safeShortText(typeof item === "string" ? item : ""))
-    .filter(Boolean)
-    .slice(0, limit);
-}
-
-function safeShortText(value: string | undefined): string {
-  return (value || "")
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
-    .replace(/\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b/g, "[phone]")
-    .replace(/\b\d{4,}\b/g, "[number]")
-    .trim()
-    .slice(0, 240);
-}
-
-function redactFileNameForRemoteProfile(fileName: string): string {
-  const extension = fileName.split(".").pop()?.toLowerCase();
-  return extension && extension !== fileName.toLowerCase() ? `document.${extension}` : "document";
-}
-
-function buildFallbackDocumentProfileOutput(upload: UploadItem, mimeType: string): Record<string, unknown> {
-  return {
-    output_policy: "local_metadata_only",
-    profile: {
-      chunk_count: 0,
-      profile_type: "metadata fallback"
-    },
-    summary: `${mimeType} wallet file queued for redacted profiling.`,
-    upload_state: compactRecord({
-      decentralizedStorageStatus: upload.decentralizedStorageStatus,
-      hasIpfsCid: Boolean(upload.ipfsCid),
-      mimeType
-    })
-  };
-}
-
-function buildDocumentPrivacyProfilePublicInputs({
-  artifactIds,
-  file,
-  fileName,
-  mimeType,
-  outputs
-}: {
-  artifactIds: string[];
-  file?: File;
-  fileName: string;
-  mimeType: string;
-  outputs: Record<string, unknown>[];
-}): Record<string, unknown> {
-  const graphOutput = outputs
-    .map((output) => output.graph)
-    .find((graph) => graph && typeof graph === "object" && !Array.isArray(graph)) as Record<string, unknown> | undefined;
-  const profileOutput = outputs
-    .map((output) => output.profile)
-    .find((profile) => profile && typeof profile === "object" && !Array.isArray(profile)) as Record<string, unknown> | undefined;
-  const organizerProfile = outputs
-    .map((output) => output.openrouter_organizer_profile)
-    .find((profile) => profile && typeof profile === "object" && !Array.isArray(profile)) as Record<string, unknown> | undefined;
-  const redactionCount = outputs.reduce((count, output) => {
-    const counts = output.redaction_counts;
-    if (!counts || typeof counts !== "object" || Array.isArray(counts)) return count;
-    return count + Object.values(counts).reduce((sum, value) => sum + (typeof value === "number" ? value : 0), 0);
-  }, 0);
-  const publicMimeType = normalizePublicMimeType(mimeType, file?.name || fileName);
-  return {
-    artifact_ids: artifactIds,
-    chunk_count: readNumber(profileOutput, "chunk_count"),
-    edge_count: readNumber(graphOutput, "edge_count"),
-      graph_type: readString(graphOutput, "graph_type"),
-      mime_family: publicMimeType.split("/")[0] || "application",
-      mime_type: publicMimeType,
-      node_count: readNumber(graphOutput, "node_count"),
-      openrouter_model: readString(organizerProfile, "model"),
-      organizer_labels: readStringArray(organizerProfile, "labels") || defaultLabelsForMimeType(publicMimeType),
-      organizer_summary: readString(organizerProfile, "summary") || displayMimeType(publicMimeType),
-    output_policies: Array.from(new Set(outputs.map((output) => readString(output, "output_policy")).filter(Boolean))),
-    privacy_policy: "no_plaintext_public_inputs",
-    profile_methods: Array.from(new Set(outputs.map((output) => readString(output, "output_policy")).filter(Boolean))),
-    redaction_count: redactionCount,
-    size_bucket: typeof file?.size === "number" ? sizeBucket(file.size) : "unknown",
-    summary: "Redacted GraphRAG, vector metadata, and derived descriptors created inside the wallet boundary."
-  };
-}
-
-function summarizeDocumentPrivacyProfile(publicInputs: Record<string, unknown>) {
-  const mimeType = typeof publicInputs.mime_type === "string" ? publicInputs.mime_type : "document";
-  const graphType = typeof publicInputs.graph_type === "string" ? publicInputs.graph_type : "redacted graph";
-  const nodes = typeof publicInputs.node_count === "number" ? `${publicInputs.node_count} nodes` : "safe graph";
-  const chunks = typeof publicInputs.chunk_count === "number" ? `${publicInputs.chunk_count} chunks` : "vector metadata";
-  return `${mimeType} · ${graphType} · ${nodes} · ${chunks}`;
-}
-
-function classifyDocumentProfile(publicInputs: Record<string, unknown>) {
-  const organizerSummary = readString(publicInputs, "organizer_summary");
-  if (organizerSummary) return organizerSummary;
-  const labels = readStringArray(publicInputs, "organizer_labels");
-  if (labels?.length) return labels.slice(0, 3).join(", ");
-  return displayMimeType(readString(publicInputs, "mime_type") || "");
-}
-
-function displayMimeType(mimeType: string) {
-  const normalized = mimeType.trim().toLowerCase();
-  if (!normalized) return "Unknown file";
-  if (normalized === "application/pdf") return "PDF document";
-  if (normalized.startsWith("image/")) return `${normalized.split("/")[1]?.toUpperCase() || "Image"} image`;
-  if (normalized.startsWith("text/")) return "Text document";
-  if (normalized.includes("json")) return "JSON data";
-  if (normalized.includes("spreadsheet") || normalized.includes("excel") || normalized.includes("csv")) return "Spreadsheet";
-  if (normalized.includes("wordprocessing") || normalized.includes("msword")) return "Word document";
-  if (normalized.includes("presentation") || normalized.includes("powerpoint")) return "Presentation";
-  if (normalized.startsWith("audio/")) return "Audio file";
-  if (normalized.startsWith("video/")) return "Video file";
-  if (normalized === "application/octet-stream") return "Encrypted/binary file";
-  return normalized;
-}
-
-function detectDecryptedMimeType(bytes: Uint8Array, fileName: string, text: string) {
-  const signature = Array.from(bytes.slice(0, 16));
-  if (startsWithBytes(signature, [0x25, 0x50, 0x44, 0x46])) return "application/pdf";
-  if (startsWithBytes(signature, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return "image/png";
-  if (startsWithBytes(signature, [0xff, 0xd8, 0xff])) return "image/jpeg";
-  if (startsWithBytes(signature, [0x47, 0x49, 0x46, 0x38])) return "image/gif";
-  if (startsWithBytes(signature, [0x50, 0x4b, 0x03, 0x04])) return officeOrZipMimeType(fileName);
-  const trimmed = text.trim();
-  if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
-    try {
-      JSON.parse(trimmed);
-      return "application/json";
-    } catch {
-      // Fall back to extension/text detection below.
-    }
-  }
-  const extensionMimeType = mimeTypeFromFileName(fileName);
-  if (extensionMimeType) return extensionMimeType;
-  return looksLikeText(bytes) ? "text/plain" : "application/octet-stream";
-}
-
-function startsWithBytes(bytes: number[], prefix: number[]) {
-  return prefix.every((value, index) => bytes[index] === value);
-}
-
-function officeOrZipMimeType(fileName: string) {
-  const extensionMimeType = mimeTypeFromFileName(fileName);
-  return extensionMimeType || "application/zip";
-}
-
-function mimeTypeFromFileName(fileName: string) {
-  const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
-  if (extension === "pdf") return "application/pdf";
-  if (["jpg", "jpeg"].includes(extension)) return "image/jpeg";
-  if (extension === "png") return "image/png";
-  if (extension === "gif") return "image/gif";
-  if (extension === "txt") return "text/plain";
-  if (extension === "json") return "application/json";
-  if (extension === "csv") return "text/csv";
-  if (extension === "doc") return "application/msword";
-  if (extension === "docx") return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  if (extension === "xls") return "application/vnd.ms-excel";
-  if (extension === "xlsx") return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-  if (extension === "ppt") return "application/vnd.ms-powerpoint";
-  if (extension === "pptx") return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-  if (extension === "zip") return "application/zip";
-  return "";
-}
-
-function looksLikeText(bytes: Uint8Array) {
-  const sample = bytes.slice(0, Math.min(bytes.length, 512));
-  if (!sample.length) return true;
-  let printable = 0;
-  for (const byte of sample) {
-    if (byte === 9 || byte === 10 || byte === 13 || (byte >= 32 && byte < 127) || byte >= 194) {
-      printable += 1;
-    }
-  }
-  return printable / sample.length > 0.85;
-}
-
-function defaultLabelsForMimeType(mimeType: string) {
-  const label = displayMimeType(mimeType);
-  return label === "Unknown file" ? [] : [label];
-}
-
-function normalizePublicMimeType(mimeType: string, fileName: string) {
-  const trimmed = mimeType.trim().toLowerCase();
-  if (trimmed) return trimmed;
-  const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
-  if (extension === "pdf") return "application/pdf";
-  if (["jpg", "jpeg"].includes(extension)) return "image/jpeg";
-  if (extension === "png") return "image/png";
-  if (extension === "txt") return "text/plain";
-  if (extension === "json") return "application/json";
-  return "application/octet-stream";
-}
-
-function sizeBucket(sizeBytes: number) {
-  if (sizeBytes < 100_000) return "under_100kb";
-  if (sizeBytes < 1_000_000) return "100kb_to_1mb";
-  if (sizeBytes < 10_000_000) return "1mb_to_10mb";
-  if (sizeBytes < 100_000_000) return "10mb_to_100mb";
-  return "over_100mb";
-}
-
-function readString(record: unknown, key: string) {
-  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
-  const value = (record as Record<string, unknown>)[key];
-  return typeof value === "string" && value.trim() ? value : undefined;
-}
-
-function readStringArray(record: unknown, key: string) {
-  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
-  const value = (record as Record<string, unknown>)[key];
-  if (!Array.isArray(value)) return undefined;
-  const strings = value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
-  return strings.length ? strings.slice(0, 12) : undefined;
-}
-
-function readNumber(record: unknown, key: string) {
-  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
-  const value = (record as Record<string, unknown>)[key];
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
-}
-
-function compactRecord(record: Record<string, unknown>): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(record).filter(([, value]) => {
-      if (value === undefined || value === null) return false;
-      if (typeof value === "string") return value.trim().length > 0;
-      if (Array.isArray(value)) return value.length > 0;
-      return true;
-    })
-  );
-}
-
