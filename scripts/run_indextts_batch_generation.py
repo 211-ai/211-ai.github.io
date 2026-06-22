@@ -31,6 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--parallel-workers", type=int, default=int(os.getenv("WALLET_INDEXTTS_PARALLEL_WORKERS", "1") or "1"))
     parser.add_argument("--space-url", default="")
     parser.add_argument("--bucket-uri", default=os.getenv("WALLET_INDEXTTS_BUCKET_URI", "").strip())
+    parser.add_argument("--require-upload-capable-batch", action="store_true")
     parser.add_argument(
         "--batch-retry-attempts",
         type=int,
@@ -75,6 +76,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--transcript-validation-device", default="auto")
     parser.add_argument("--transcript-validation-threshold", type=float, default=0.72)
     parser.add_argument("--transcript-validation-soft-fail", action="store_true")
+    parser.add_argument("--prune-local-audio-after-sync", action="store_true",
+        help="Pass --prune-local-audio-after-sync to precompute; deletes local audio after each bucket sync.")
     return parser.parse_args()
 
 
@@ -127,6 +130,8 @@ _TRANSIENT_FAILURE_MARKERS = (
     "service unavailable",
     "bad gateway",
     "gateway timeout",
+    "space queue failed",
+    "queue failed",
     "timed out",
     "connection reset",
     "remote disconnected",
@@ -243,6 +248,10 @@ def build_precompute_command(
         cmd.extend(["--space-url", args.space_url])
     if args.bucket_uri:
         cmd.extend(["--bucket-uri", args.bucket_uri])
+    if args.require_upload_capable_batch:
+        cmd.append("--require-upload-capable-batch")
+    if getattr(args, "prune_local_audio_after_sync", False):
+        cmd.append("--prune-local-audio-after-sync")
     if args.response_manifest is not None:
         cmd.extend(["--response-manifest", str(args.response_manifest)])
     else:

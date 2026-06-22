@@ -84,6 +84,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--factory-reboot-on-final-restart", action="store_true")
     parser.add_argument("--contract-probe-timeout-seconds", type=float, default=120.0)
     parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument(
+        "--require-upload-capable-batch",
+        action="store_true",
+        default=True,
+        help="Fail unless the rented Space exposes upload-capable batch endpoints for remote bucket workflows.",
+    )
+    parser.add_argument(
+        "--allow-local-sync-fallback",
+        dest="require_upload_capable_batch",
+        action="store_false",
+        help="Allow the supervisor to continue when the Space only supports local-sync fallback behavior.",
+    )
     parser.add_argument("--remote-batch-size", type=int, default=int(os.getenv("WALLET_INDEXTTS_REMOTE_BATCH_SIZE", "8") or "8"))
     parser.add_argument("--parallel-workers", type=int, default=int(os.getenv("WALLET_INDEXTTS_PARALLEL_WORKERS", "1") or "1"))
     parser.add_argument("--batch-retry-attempts", type=int, default=int(os.getenv("WALLET_INDEXTTS_BATCH_RETRY_ATTEMPTS", "4") or "4"))
@@ -122,6 +134,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--transcript-validation-device", default="auto")
     parser.add_argument("--transcript-validation-threshold", type=float, default=0.72)
     parser.add_argument("--transcript-validation-soft-fail", action="store_true")
+    parser.add_argument("--prune-local-audio-after-sync", action="store_true",
+        help="Delete local audio after each successful bucket sync to keep disk usage bounded.")
     parser.add_argument("--upload", action="store_true")
     parser.add_argument("--upload-repo-id", default=os.getenv("ABBY_TTS_HF_REPO_ID", "Publicus/211-abby-tts"))
     parser.add_argument("--upload-remote-prefix", default="")
@@ -199,6 +213,12 @@ def build_wrapper_command(args: argparse.Namespace) -> tuple[str, ...]:
         "--max-runtime-seconds",
         str(args.max_runtime_seconds),
     ]
+    if args.require_upload_capable_batch:
+        command.append("--require-upload-capable-batch")
+    else:
+        command.append("--allow-local-sync-fallback")
+    if getattr(args, "prune_local_audio_after_sync", False):
+        command.append("--prune-local-audio-after-sync")
     if args.run_label:
         command.extend(["--run-label", args.run_label])
     if args.refresh_input_manifests:
@@ -352,6 +372,31 @@ def format_phase_progress(status: PhaseProgress) -> str:
     return summary
 
 
+def stop_reason_requires_manual_repair(stop_reason: str) -> bool:
+    normalized = str(stop_reason or "").strip().casefold()
+    if not normalized:
+        return False
+    return any(
+        marker in normalized
+        for marker in (
+            "filenotfounderror",
+            "no such file or directory",
+            "permission denied",
+            "not a directory",
+            "is a directory",
+        )
+    )
+
+
+def first_manual_repair_status(statuses: Sequence[PhaseProgress]) -> PhaseProgress | None:
+    for status in statuses:
+        if status.complete:
+            continue
+        if stop_reason_requires_manual_repair(status.stop_reason):
+            return status
+    return None
+
+
 def build_log_tail(api: Any, repo_id: str, *, build: bool, line_limit: int = 40) -> list[str]:
     tail: deque[str] = deque(maxlen=max(1, line_limit))
     try:
@@ -437,9 +482,27 @@ def wake_sleeping_space(api: Any, args: argparse.Namespace) -> Any:
 def run_wrapper(plan: MonitorPlan) -> int:
     print("Starting full preprocessing run:")
     print(format_command(plan.wrapper_command))
-    completed = subprocess.run(plan.wrapper_command, cwd=REPO_ROOT, check=False)
-    print(f"Full preprocessing exited with code {completed.returncode}")
-    return int(completed.returncode)
+    try:
+        completed = subprocess.run(
+            plan.wrapper_command,
+            cwd=REPO_ROOT,
+            check=False,
+            timeout=None,  # No timeout on subprocess level
+        )
+        exit_code = int(completed.returncode)
+        if exit_code == 0:
+            print(f"Full preprocessing completed with exit code 0")
+        else:
+            print(f"WARNING: Full preprocessing exited with non-zero code {exit_code}")
+        return exit_code
+    except subprocess.TimeoutExpired as exc:
+        print(f"ERROR: Full preprocessing timed out after {exc.timeout}s")
+        return 124
+    except Exception as exc:
+        print(f"ERROR: Full preprocessing failed with {type(exc).__name__}: {exc}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 
 def main() -> None:
@@ -532,6 +595,12 @@ def main() -> None:
                 if backlog_complete(phase_statuses):
                     print("All Abby TTS phases are complete.")
                     return
+                blocking_status = first_manual_repair_status(phase_statuses)
+                if blocking_status is not None:
+                    raise RuntimeError(
+                        "Wrapper exited with a non-retryable phase failure that still depends on a local artifact: "
+                        f"{format_phase_progress(blocking_status)}"
+                    )
                 print(
                     f"Wrapper exited before backlog completion (exit code {wrapper_returncode}). Pending phases:"
                 )

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RefreshCw, ShieldCheck, UserCheck } from "lucide-react";
+import { IDKitRequestWidget, proofOfHuman, type IDKitResult } from "@worldcoin/idkit";
 import { Badge, Button, StatusBanner } from "../ui";
 import { readRuntimeWorldIdConfig } from "../../lib/runtimeConfig";
 import type { WalletApiConfig } from "../../services/walletApi";
@@ -21,7 +22,6 @@ const IDKitErrorCodes = {
 } as const;
 
 type IDKitErrorCode = (typeof IDKitErrorCodes)[keyof typeof IDKitErrorCodes];
-type IDKitResult = Record<string, unknown>;
 type RpContext = {
   created_at: number;
   expires_at: number;
@@ -455,9 +455,21 @@ export function WorldIdVerificationPanel({
       </div>
 
       {activeRequest ? (
-        <StatusBanner tone="warning">
-          World ID verification needs @worldcoin/idkit to be installed before the browser widget can open.
-        </StatusBanner>
+        <IDKitRequestWidget
+          open={widgetOpen}
+          onOpenChange={handleOpenChange}
+          app_id={activeRequest.appId}
+          action={activeRequest.action}
+          rp_context={activeRequest.rpContext}
+          allow_legacy_proofs={activeRequest.allowLegacyProofs}
+          require_user_presence={activeRequest.requireUserPresence}
+          environment={activeRequest.environment}
+          return_to={typeof window !== "undefined" ? window.location.href : undefined}
+          preset={proofOfHuman({ signal: activeRequest.signal })}
+          handleVerify={verifyWithBackend}
+          onSuccess={handleIdkitSuccess}
+          onError={(errorCode) => handleIdkitError(String(errorCode) as IDKitErrorCode)}
+        />
       ) : null}
     </article>
   );
@@ -468,7 +480,14 @@ function walletUrl(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">, pat
 }
 
 function normalizedBaseUrl(value: string): string {
-  return value.endsWith("/") ? value : `${value}/`;
+  const raw = value.trim();
+  if (!raw || raw === "same-origin") {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/`;
+    }
+    return "/";
+  }
+  return raw.endsWith("/") ? raw : `${raw}/`;
 }
 
 async function fetchJson(url: URL, label: string, init?: RequestInit): Promise<unknown> {
@@ -487,7 +506,7 @@ function configFromRuntime(runtimeConfig: ReturnType<typeof readRuntimeWorldIdCo
     enabled: runtimeConfig.enabled,
     appId: runtimeConfig.appId,
     action: runtimeConfig.action,
-    environment: runtimeConfig.environment,
+    environment: normalizeEnvironment(runtimeConfig.environment),
     credentialPolicy: "proof_of_human",
     allowLegacyProofs: true,
     requireUserPresence: false,

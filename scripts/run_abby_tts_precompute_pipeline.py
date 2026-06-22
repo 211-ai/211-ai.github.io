@@ -79,6 +79,16 @@ def parse_args() -> argparse.Namespace:
         help="Root HF bucket prefix for precompute syncs. Each phase writes to <bucket-uri>/<phase-key>.",
     )
     parser.add_argument(
+        "--require-upload-capable-batch",
+        action="store_true",
+        help="Fail unless the live Space exposes upload-capable batch endpoints for remote bucket workflows.",
+    )
+    parser.add_argument(
+        "--prune-local-audio-after-sync",
+        action="store_true",
+        help="Delete local audio after each successful bucket sync to keep disk usage bounded.",
+    )
+    parser.add_argument(
         "--parallel-workers",
         type=int,
         default=int(os.getenv("WALLET_INDEXTTS_PARALLEL_WORKERS", "1") or "1"),
@@ -403,6 +413,10 @@ def build_batch_step(spec: BatchPhaseSpec, args: argparse.Namespace, repo_root: 
     phase_bucket_uri = append_path_suffix(args.bucket_uri, spec.key)
     if phase_bucket_uri:
         cmd.extend(["--bucket-uri", phase_bucket_uri])
+    if args.require_upload_capable_batch:
+        cmd.append("--require-upload-capable-batch")
+    if getattr(args, "prune_local_audio_after_sync", False):
+        cmd.append("--prune-local-audio-after-sync")
     if args.force:
         cmd.append("--force")
     if args.stop_on_error:

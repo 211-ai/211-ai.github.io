@@ -1,6 +1,6 @@
 # Pregenerated Text Audio Response Phases
 
-Generated at: 2026-06-14T00:52:10Z
+Generated at: 2026-06-22T15:22:02Z
 Input manifest: docs/pregenerated_text_response_manifest.json
 Audio plan: docs/pregenerated_text_audio_slot_plan.json
 Source opportunities: docs/pregenerated_text_rewrite_opportunities.json

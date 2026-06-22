@@ -61,6 +61,23 @@ def parse_args() -> argparse.Namespace:
         help="HF bucket prefix under which this run should write phase outputs.",
     )
     parser.add_argument(
+        "--require-upload-capable-batch",
+        action="store_true",
+        default=True,
+        help="Fail unless the rented Space exposes upload-capable batch endpoints for remote bucket workflows.",
+    )
+    parser.add_argument(
+        "--allow-local-sync-fallback",
+        dest="require_upload_capable_batch",
+        action="store_false",
+        help="Allow rented preprocessing to continue with local sync behavior when upload-capable batch endpoints are unavailable.",
+    )
+    parser.add_argument(
+        "--prune-local-audio-after-sync",
+        action="store_true",
+        help="Delete local audio after each successful bucket sync to keep disk usage bounded.",
+    )
+    parser.add_argument(
         "--run-label",
         default="",
         help="Optional run label used for the bucket prefix and local run-plan path.",
@@ -236,6 +253,10 @@ def build_pipeline_command(args: argparse.Namespace, *, space_url: str, bucket_u
             str(args.max_runtime_seconds),
         ]
     )
+    if args.require_upload_capable_batch:
+        command.append("--require-upload-capable-batch")
+    if getattr(args, "prune_local_audio_after_sync", False):
+        command.append("--prune-local-audio-after-sync")
     if args.force:
         command.append("--force")
     if args.stop_on_error:
@@ -287,7 +308,10 @@ def build_preprocessing_plan(args: argparse.Namespace) -> PreprocessingPlan:
         bucket_uri=bucket_uri,
         run_dir=run_dir,
         plan_path=plan_path,
-        contract_command=build_contract_command(space_url),
+        contract_command=(
+            *build_contract_command(space_url),
+            *( ("--require-upload-capable-batch",) if args.require_upload_capable_batch else () ),
+        ),
         pipeline_command=build_pipeline_command(args, space_url=space_url, bucket_uri=bucket_uri),
     )
 

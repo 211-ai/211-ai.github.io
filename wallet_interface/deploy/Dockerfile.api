@@ -5,9 +5,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app:/app/ipfs_datasets_py \
     IPFS_DATASETS_AUTO_INSTALL=false \
     IPFS_AUTO_INSTALL=false \
-    IPFS_DATASETS_PY_MINIMAL_IMPORTS=1
+    IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
+    IPFS_DATASETS_PY_INCLUDE_VCS_DEPENDENCIES=0
 
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install --no-cache-dir --upgrade pip \
     && python -m pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" pydantic

@@ -11,6 +11,7 @@ def _build_args(tmp_path: Path, **overrides: object) -> SimpleNamespace:
     payload = {
         "space_url": "https://publicus-indextts-2-demo.hf.space",
         "bucket_root": "hf://buckets/Publicus/abby-voice/runs",
+        "require_upload_capable_batch": True,
         "run_label": "",
         "run_root": tmp_path / "tmp_assets" / "abby-tts-runs",
         "refresh_input_manifests": True,
@@ -60,8 +61,12 @@ def test_build_preprocessing_plan_uses_all_phases_and_bucket_run_label(tmp_path:
     assert command[command.index("--space-url") + 1] == "https://publicus-indextts-2-demo.hf.space"
     assert command[command.index("--remote-batch-size") + 1] == "8"
     assert command[command.index("--batch-retry-attempts") + 1] == "4"
+    assert "--require-upload-capable-batch" in command
     assert "--refresh-input-manifests" in command
     assert "--dry-run" in command
+
+    contract_command = list(plan.contract_command)
+    assert "--require-upload-capable-batch" in contract_command
 
 
 def test_build_preprocessing_plan_supports_restart_and_rerender_phase2(tmp_path: Path) -> None:

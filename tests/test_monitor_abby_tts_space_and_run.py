@@ -13,6 +13,7 @@ def _build_args(tmp_path: Path, **overrides: object) -> SimpleNamespace:
         "space_url": "https://publicus-indextts-2-demo.hf.space",
         "expected_hardware": "l40sx1",
         "bucket_root": "hf://buckets/Publicus/abby-voice/runs",
+        "require_upload_capable_batch": True,
         "monitor_label": "",
         "run_label": "gpu-run",
         "monitor_root": tmp_path / "tmp_assets" / "abby-tts-runs",
@@ -77,6 +78,7 @@ def test_build_wrapper_command_targets_full_preprocessing_entrypoint(tmp_path: P
     assert command[command.index("--space-url") + 1] == "https://publicus-indextts-2-demo.hf.space"
     assert command[command.index("--remote-batch-size") + 1] == "8"
     assert command[command.index("--max-runtime-seconds") + 1] == "43200.0"
+    assert "--require-upload-capable-batch" in command
     assert "--rerender-phase2" in command
     assert "--restart-all" in command
     assert "--validate-transcripts" in command
@@ -174,3 +176,46 @@ def test_maybe_set_space_sleep_time_calls_api(tmp_path: Path) -> None:
     monitor.maybe_set_space_sleep_time(FakeApi(), _build_args(tmp_path, space_sleep_time_seconds=-1))
 
     assert calls == [("Publicus/IndexTTS-2-Demo", -1)]
+
+
+def test_stop_reason_requires_manual_repair_detects_local_artifact_failures() -> None:
+    assert monitor.stop_reason_requires_manual_repair(
+        "32 response(s) failed in batch 202: FileNotFoundError: [Errno 2] No such file or directory"
+    ) is True
+    assert monitor.stop_reason_requires_manual_repair(
+        "Permission denied while opening output manifest"
+    ) is True
+    assert monitor.stop_reason_requires_manual_repair("IndexTTS quota exhausted") is False
+    assert monitor.stop_reason_requires_manual_repair("") is False
+
+
+def test_first_manual_repair_status_returns_first_incomplete_local_artifact_failure(tmp_path: Path) -> None:
+    statuses = [
+        monitor.PhaseProgress(
+            key="phase1-bm25",
+            label="BM25 vocabulary",
+            response_manifest=tmp_path / "phase1.json",
+            state=tmp_path / "phase1-state.json",
+            next_offset=10,
+            total_responses=10,
+            complete=True,
+            stop_reason="",
+            retry_after="",
+        ),
+        monitor.PhaseProgress(
+            key="phase4-residual",
+            label="Residual full responses",
+            response_manifest=tmp_path / "phase4.json",
+            state=tmp_path / "phase4-state.json",
+            next_offset=6464,
+            total_responses=13688,
+            complete=False,
+            stop_reason="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/foo.wav'",
+            retry_after="",
+        ),
+    ]
+
+    blocking = monitor.first_manual_repair_status(statuses)
+
+    assert blocking is not None
+    assert blocking.key == "phase4-residual"

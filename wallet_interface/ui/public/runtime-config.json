@@ -1,4 +1,47 @@
 {
+  "chainlink": {
+    "enabled": true,
+    "mode": "chainlink_cre",
+    "comparison": "canonical_json",
+    "quorum": 1,
+    "minOperators": 1,
+    "operatorCount": 1,
+    "peers": ["chainlink-cre"],
+    "operatorId": "wallet-router-local",
+    "timeoutS": 10,
+    "operatorTimeoutS": 5,
+    "failClosed": false,
+    "promptRedactionPolicy": "hash_only",
+    "modelCommitment": "mock-model-policy@local",
+    "tokenizerCommitment": "mock-tokenizer@local",
+    "receiptPath": "/tmp/211-ai-llm-consensus/latest-receipt.json",
+    "receiptJsonlPath": "/tmp/211-ai-llm-consensus/receipts.jsonl",
+    "creWorkflowId": "",
+    "proofVerifier": "chainlink-cre-verifier-v1",
+    "verifierContract": ""
+  },
+  "voiceProxy": {
+    "enabled": true,
+    "baseUrl": "/voice",
+    "model": "indextts-voice-reply",
+    "inferUrl": "/voice/indextts/infer",
+    "ttsUrl": "/voice/indextts/tts",
+    "sttUrl": "/voice/hf-whisper/stt",
+    "fallbackModel": "browser-speech-synthesis",
+    "fallbackInferUrl": "",
+    "fallbackTtsUrl": "",
+    "fallbackSttUrl": ""
+  },
+  "worldId": {
+    "enabled": true,
+    "appId": "app_211_ai_staging",
+    "rpId": "rp_211_ai_wallet",
+    "action": "wallet-attach-world-id-v1",
+    "environment": "staging",
+    "credentialPolicy": "proof_of_human",
+    "allowLegacyProofs": true,
+    "requireUserPresence": false
+  },
   "walrusStorage": {
     "publisherUrl": "https://publisher.walrus-testnet.walrus.space",
     "aggregatorUrl": "https://aggregator.walrus-testnet.walrus.space",

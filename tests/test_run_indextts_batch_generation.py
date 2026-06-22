@@ -19,6 +19,7 @@ def _build_args(tmp_path: Path, **overrides: object) -> SimpleNamespace:
         "parallel_workers": 1,
         "space_url": "https://publicus-indextts-2-demo.hf.space",
         "bucket_uri": "hf://buckets/Publicus/abby-voice/test-phase",
+        "require_upload_capable_batch": True,
         "batch_retry_attempts": 1,
         "batch_retry_backoff_seconds": 0.1,
         "batch_retry_backoff_multiplier": 2.0,
@@ -60,6 +61,7 @@ def test_build_precompute_command_passes_space_and_bucket_args(tmp_path: Path) -
 
     assert command[command.index("--space-url") + 1] == "https://publicus-indextts-2-demo.hf.space"
     assert command[command.index("--bucket-uri") + 1] == "hf://buckets/Publicus/abby-voice/test-phase"
+    assert "--require-upload-capable-batch" in command
     assert command[command.index("--offset") + 1] == "4"
 
 
@@ -82,6 +84,10 @@ def test_runtime_deadline_is_unbounded_for_non_positive_values() -> None:
     assert batch_runner.runtime_deadline(100.0, -1.0) is None
     assert batch_runner.runtime_deadline(100.0, None) is None
     assert batch_runner.runtime_deadline(100.0, 30.0) == 130.0
+
+
+def test_space_queue_failed_without_details_is_retryable() -> None:
+    assert batch_runner.is_retryable_failure_message("RuntimeError: Space queue failed: {'error': None}") is True
 
 
 def test_main_retries_transient_manifest_failures_before_advancing_offset(monkeypatch, tmp_path: Path) -> None:

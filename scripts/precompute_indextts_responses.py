@@ -30,7 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ipfs_accelerate_py.hf_space_inference import HFSpaceClient
+from ipfs_accelerate_py.hf_space_inference import HFBucketBackend, HFSpaceClient
 
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
@@ -92,6 +92,8 @@ def is_indextts_transient_worker_error(value: Any) -> bool:
             "service unavailable",
             "bad gateway",
             "gateway timeout",
+            "space queue failed",
+            "queue failed",
             "timed out",
             "connection reset",
             "remote disconnected",
@@ -1000,6 +1002,77 @@ def audio_url_for(path_text: str) -> str:
     return f"/assets/audio/precomputed/211-dag-indextts/{path.name}"
 
 
+def hf_bucket_backend(bucket_uri: str) -> HFBucketBackend:
+    return HFBucketBackend(bucket_uri)
+
+
+def bucket_audio_uris(bucket_uri: str, response_id: str) -> dict[str, str]:
+    targets = bucket_sync_targets(bucket_uri)
+    if not targets:
+        return {}
+    base_audio_uri = str(targets["audioUri"]).rstrip("/")
+    normalized_response_id = str(response_id or "").strip()
+    if not normalized_response_id:
+        return {}
+    return {
+        "bucketAudioUri": f"{base_audio_uri}/{normalized_response_id}.wav",
+        "bucketMp3Uri": f"{base_audio_uri}/{normalized_response_id}.mp3",
+    }
+
+
+def attach_bucket_audio_uris(entry: dict[str, Any], bucket_uri: str, *, prefer_mp3: bool) -> dict[str, Any]:
+    uris = bucket_audio_uris(bucket_uri, str(entry.get("id") or ""))
+    if not uris:
+        return entry
+    entry.update(uris)
+    preferred_bucket_uri = uris["bucketMp3Uri"] if prefer_mp3 else uris["bucketAudioUri"]
+    entry["preferredBucketAudioUri"] = preferred_bucket_uri
+    return entry
+
+
+def cached_bucket_audio_entry(
+    item: Mapping[str, Any],
+    *,
+    bucket_uri: str,
+    prefer_mp3: bool,
+) -> dict[str, Any] | None:
+    uris = bucket_audio_uris(bucket_uri, str(item.get("id") or ""))
+    if not uris:
+        return None
+    backend = hf_bucket_backend(bucket_uri)
+    mp3_exists = backend.exists(f"audio/{item['id']}.mp3")
+    wav_exists = backend.exists(f"audio/{item['id']}.wav") if (not mp3_exists or not prefer_mp3) else False
+    if prefer_mp3 and mp3_exists:
+        entry = {
+            **item,
+            "status": "cached_bucket_mp3",
+            "audioPath": "",
+            "mimeType": "",
+            "audioBytes": 0,
+            "mp3Path": "",
+            "mp3MimeType": "audio/mpeg",
+            "mp3Bytes": 0,
+            "preferredAudioPath": uris["bucketMp3Uri"],
+            "preferredMimeType": "audio/mpeg",
+            "wavDeprecated": True,
+        }
+        return attach_bucket_audio_uris(entry, bucket_uri, prefer_mp3=prefer_mp3)
+    if wav_exists:
+        entry = {
+            **item,
+            "status": "cached_bucket",
+            "audioPath": "",
+            "mimeType": "",
+            "audioBytes": 0,
+            "mp3Path": "",
+            "preferredAudioPath": uris["bucketAudioUri"],
+            "preferredMimeType": "audio/wav",
+            "wavDeprecated": False,
+        }
+        return attach_bucket_audio_uris(entry, bucket_uri, prefer_mp3=prefer_mp3)
+    return None
+
+
 def resolve_repo_path(path_text: str) -> Path:
     path = Path(str(path_text or "").strip())
     if path.is_absolute():
@@ -1457,6 +1530,18 @@ def indextts_batch_api_name() -> str:
     return os.getenv("WALLET_INDEXTTS_BATCH_API_NAME", "/gen_batch").strip()
 
 
+def indextts_batch_upload_api_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_BATCH_UPLOAD_API_NAME", "/gen_batch_with_upload").strip()
+
+
+def indextts_upload_generated_results_api_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_UPLOAD_RESULTS_API_NAME", "/upload_generated_results").strip()
+
+
+def indextts_auto_upload_generated_results_api_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_AUTO_UPLOAD_RESULTS_API_NAME", "/maybe_auto_upload_generated_results").strip()
+
+
 def lookup_dependency_id_by_api_name(config: Mapping[str, Any], api_name: str) -> int | None:
     try:
         return int(indextts_space_client().resolve_fn_index(api_name, config))
@@ -1488,6 +1573,16 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
     batch_api_name = indextts_batch_api_name()
     batch_fn_index = lookup_dependency_id_by_api_name(config, batch_api_name)
     batch_input_count = lookup_dependency_input_count(config, batch_fn_index) if batch_fn_index is not None else None
+    batch_upload_api_name = indextts_batch_upload_api_name()
+    batch_upload_fn_index = lookup_dependency_id_by_api_name(config, batch_upload_api_name)
+    upload_results_api_name = indextts_upload_generated_results_api_name()
+    upload_results_fn_index = lookup_dependency_id_by_api_name(config, upload_results_api_name)
+    auto_upload_results_api_name = indextts_auto_upload_generated_results_api_name()
+    auto_upload_results_fn_index = lookup_dependency_id_by_api_name(config, auto_upload_results_api_name)
+    remote_bucket_pipeline_ready = bool(
+        batch_upload_fn_index is not None
+        and (upload_results_fn_index is not None or auto_upload_results_fn_index is not None)
+    )
     summary: dict[str, Any] = {
         "singleApiName": os.getenv("WALLET_INDEXTTS_API_NAME", "/gen_single").strip() or "/gen_single",
         "singleFnIndex": resolved_single_fn_index,
@@ -1498,6 +1593,16 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
         "batchFnIndex": batch_fn_index,
         "batchInputCount": batch_input_count,
         "batchContract": indextts_contract_name(batch_input_count),
+        "batchUploadApiName": batch_upload_api_name,
+        "batchUploadRegistered": batch_upload_fn_index is not None,
+        "batchUploadFnIndex": batch_upload_fn_index,
+        "uploadResultsApiName": upload_results_api_name,
+        "uploadResultsRegistered": upload_results_fn_index is not None,
+        "uploadResultsFnIndex": upload_results_fn_index,
+        "autoUploadResultsApiName": auto_upload_results_api_name,
+        "autoUploadResultsRegistered": auto_upload_results_fn_index is not None,
+        "autoUploadResultsFnIndex": auto_upload_results_fn_index,
+        "remoteBucketPipelineReady": remote_bucket_pipeline_ready,
         "registeredApiNames": dependency_api_names(config),
     }
     if batch_fn_index is None:
@@ -1505,9 +1610,22 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
         summary["deploymentDriftReason"] = (
             f"Configured batch api_name {batch_api_name!r} is not registered by the live Space dependencies"
         )
+    elif not remote_bucket_pipeline_ready:
+        summary["recommendedMode"] = "gen_batch-local-sync-fallback"
+        summary["deploymentDriftReason"] = (
+            "The live Space exposes batch synthesis but not the upload-capable batch pipeline "
+            f"({batch_upload_api_name!r} plus {upload_results_api_name!r} or {auto_upload_results_api_name!r})"
+        )
     else:
-        summary["recommendedMode"] = "gen_batch"
+        summary["recommendedMode"] = "gen_batch_with_upload"
     return summary
+
+
+def ensure_upload_capable_batch_contract(config: Mapping[str, Any], single_fn_index: int | None = None) -> dict[str, Any]:
+    summary = indextts_contract_summary(config, single_fn_index)
+    if summary.get("remoteBucketPipelineReady"):
+        return summary
+    raise RuntimeError(str(summary.get("deploymentDriftReason") or "IndexTTS remote bucket pipeline is not available"))
 
 
 def indextts_batch_available(config: Mapping[str, Any]) -> bool:
@@ -1626,6 +1744,34 @@ def batch_request_data(
         ]
     )
     return data
+
+
+def batch_upload_request_data(
+    texts: Sequence[str],
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+    bucket_uri: str,
+    *,
+    input_count: int | None = None,
+) -> list[Any]:
+    text_list = [str(text) for text in texts]
+    raw_template = os.getenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", "").strip()
+    if raw_template:
+        rendered = (
+            raw_template.replace("{texts}", json.dumps(text_list))
+            .replace("{text}", json.dumps(json.dumps(text_list)))
+            .replace("{voice_description}", json.dumps(voice_description))
+            .replace("{reference_audio}", json.dumps(reference_audio))
+            .replace("{bucket_uri}", json.dumps(str(bucket_uri or "")))
+        )
+        parsed = json.loads(rendered)
+        if not isinstance(parsed, list):
+            raise RuntimeError("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE must render to a JSON array")
+        return parsed
+    # Default: same layout as the regular batch but with bucket_uri appended.
+    base = list(batch_request_data(texts, reference_audio, voice_description, input_count=input_count))
+    base.append(str(bucket_uri or ""))
+    return base
 
 
 def wait_for_result(session_hash: str) -> dict[str, Any]:
@@ -1833,6 +1979,57 @@ def direct_batch_synthesis(
                 "batchMode": "batch",
             }
         )
+    return outputs
+
+
+def direct_batch_upload_synthesis(
+    texts: Sequence[str],
+    config: Mapping[str, Any],
+    reference_audio: Mapping[str, Any],
+    voice_description: str,
+    bucket_uri: str,
+    response_ids: Sequence[str],
+) -> list[dict[str, Any]]:
+    """Trigger gen_batch_with_upload on the Space. The Space generates audio
+    and uploads it directly to bucket_uri; no audio bytes are downloaded locally.
+    Returns per-item results with deterministic bucket URIs."""
+    text_list = [str(text) for text in texts]
+    if not text_list:
+        return []
+    start = time.perf_counter()
+    batch_upload_api_name = indextts_batch_upload_api_name()
+    batch_upload_fn_index = lookup_dependency_id_by_api_name(config, batch_upload_api_name)
+    if batch_upload_fn_index is None:
+        raise RuntimeError(
+            f"IndexTTS batch upload api_name {batch_upload_api_name!r} was not found in the live Space config"
+        )
+    batch_upload_input_count = lookup_dependency_input_count(config, batch_upload_fn_index)
+    session_hash = indextts_space_client().queue_join(
+        int(batch_upload_fn_index),
+        batch_upload_request_data(
+            text_list,
+            reference_audio,
+            voice_description,
+            bucket_uri,
+            input_count=batch_upload_input_count,
+        ),
+    )
+    wait_for_result(session_hash)
+    batch_latency_ms = int((time.perf_counter() - start) * 1000)
+    targets = bucket_sync_targets(bucket_uri)
+    bucket_audio_base = str(targets.get("audioUri", "")).rstrip("/")
+    outputs: list[dict[str, Any]] = []
+    for response_id in list(response_ids)[: len(text_list)]:
+        mp3_uri = f"{bucket_audio_base}/{response_id}.mp3"
+        wav_uri = f"{bucket_audio_base}/{response_id}.wav"
+        outputs.append({
+            "bucketMp3Uri": mp3_uri,
+            "bucketAudioUri": wav_uri,
+            "preferredBucketAudioUri": mp3_uri,
+            "latencyMs": batch_latency_ms,
+            "batchLatencyMs": batch_latency_ms,
+            "batchMode": "batch-upload",
+        })
     return outputs
 
 
@@ -2519,6 +2716,16 @@ def parse_args() -> argparse.Namespace:
         default=os.getenv("WALLET_INDEXTTS_BUCKET_URI", "").strip(),
         help="If set, sync generated audio to <bucket-uri>/audio and local manifests to <bucket-uri>/metadata using the hf CLI.",
     )
+    parser.add_argument(
+        "--require-upload-capable-batch",
+        action="store_true",
+        help="Fail unless the live Space exposes upload-capable batch endpoints for remote bucket workflows.",
+    )
+    parser.add_argument(
+        "--prune-local-audio-after-sync",
+        action="store_true",
+        help="Delete local audio files from --output-dir after a successful bucket sync. Keeps disk usage bounded.",
+    )
     return parser.parse_args()
 
 
@@ -2544,7 +2751,10 @@ def main() -> None:
         print(f"IndexTTS auth: {describe_indextts_auth()}")
         config = indextts_config()
         fn_index = indextts_fn_index(config)
-        print(json.dumps(indextts_contract_summary(config, fn_index), indent=2))
+        summary = indextts_contract_summary(config, fn_index)
+        print(json.dumps(summary, indent=2))
+        if args.require_upload_capable_batch:
+            ensure_upload_capable_batch_contract(config, fn_index)
         return
     if args.response_manifest is not None:
         responses = load_audio_responses_from_manifest(
@@ -2589,10 +2799,45 @@ def main() -> None:
             config = indextts_config()
             fn_index = indextts_fn_index(config)
             contract_summary = indextts_contract_summary(config, fn_index)
+            if args.require_upload_capable_batch:
+                contract_summary = ensure_upload_capable_batch_contract(config, fn_index)
             if contract_summary.get("deploymentDriftReason"):
                 print(f"IndexTTS batch drift: {contract_summary['deploymentDriftReason']}")
             reference = upload_reference(args.reference_audio)
             return config, fn_index, reference
+
+        def _record_upload_batch_results(
+            batch: list[tuple[int, dict[str, Any], Path, Path]],
+            results: list[dict[str, Any]],
+        ) -> None:
+            """Record results from direct_batch_upload_synthesis (no local audio bytes)."""
+            for (index, item, _audio_path, _mp3_path), result in zip(batch, results):
+                preferred_mp3_uri = str(result.get("bucketMp3Uri") or "")
+                preferred_wav_uri = str(result.get("bucketAudioUri") or "")
+                preferred_uri = preferred_mp3_uri or preferred_wav_uri
+                preferred_mime = "audio/mpeg" if preferred_mp3_uri else "audio/wav"
+                entry = {
+                    **item,
+                    "status": "uploaded",
+                    "audioPath": "",
+                    "mimeType": "",
+                    "audioBytes": 0,
+                    "mp3Path": "",
+                    "preferredAudioPath": preferred_uri,
+                    "preferredMimeType": preferred_mime,
+                    "wavDeprecated": bool(preferred_mp3_uri),
+                    "latencyMs": int(result.get("latencyMs") or 0),
+                    "batchMode": str(result.get("batchMode") or "batch-upload"),
+                }
+                if result.get("batchLatencyMs") is not None:
+                    entry["batchLatencyMs"] = result["batchLatencyMs"]
+                if result.get("bucketMp3Uri"):
+                    entry["mp3Path"] = str(result["bucketMp3Uri"])
+                    entry["mp3MimeType"] = "audio/mpeg"
+                attach_bucket_audio_uris(entry, args.bucket_uri, prefer_mp3=bool(args.write_mp3))
+                manifest_entries.append(entry)
+                print(f"[{index}/{len(responses)}] uploaded {item['id']} -> {preferred_uri}")
+                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
 
         def flush_pending() -> None:
             if not pending:
@@ -2602,6 +2847,37 @@ def main() -> None:
             texts = [item["text"] for _, item, _, _ in batch]
             try:
                 active_config, active_fn_index, active_reference = ensure_remote_client()
+                use_upload_path = bool(
+                    args.bucket_uri
+                    and contract_summary is not None
+                    and contract_summary.get("remoteBucketPipelineReady")
+                )
+                if use_upload_path:
+                    response_ids = [item["id"] for _, item, _, _ in batch]
+                    print(f"uploading remote chunk of {len(batch)} response(s) via {indextts_batch_upload_api_name()}")
+                    try:
+                        results = direct_batch_upload_synthesis(
+                            texts,
+                            active_config,
+                            active_reference,
+                            args.voice_description,
+                            args.bucket_uri,
+                            response_ids,
+                        )
+                    except Exception as exc:
+                        if isinstance(exc, IndexTTSQuotaExceededError) or not is_indextts_transient_worker_error(exc):
+                            raise
+                        print(
+                            f"remote upload chunk failed transiently; falling back to local generation + bucket sync: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                    else:
+                        if len(results) != len(batch):
+                            raise RuntimeError(
+                                f"IndexTTS batch upload returned {len(results)} result(s) for {len(batch)} response(s)"
+                            )
+                        _record_upload_batch_results(batch, results)
+                        return
                 print(f"processing remote chunk of {len(batch)} response(s)")
                 results = synthesize_batch(
                     texts,
@@ -2665,6 +2941,7 @@ def main() -> None:
                         )
                     else:
                         entry.update({"mp3Path": "", "preferredAudioPath": display_path(audio_path), "preferredMimeType": result["mimeType"]})
+                    attach_bucket_audio_uris(entry, args.bucket_uri, prefer_mp3=bool(args.write_mp3))
                     manifest_entries.append(entry)
                     print(f"[{index}/{len(responses)}] generated {mp3_path.name if mp3_path.exists() else audio_path.name}")
                     write_progress(args.progress_json, manifest_entries, len(responses), started_at)
@@ -2700,21 +2977,21 @@ def main() -> None:
                     audio_path.unlink(missing_ok=True)
                     print(f"[{index}/{len(responses)}] dropped invalid zero-byte cache {audio_path.name}")
             if not audio_path.exists() and mp3_path.exists() and not args.force:
-                manifest_entries.append(
-                    {
-                        **item,
-                        "status": "cached_mp3",
-                        "audioPath": "",
-                        "mimeType": "",
-                        "audioBytes": 0,
-                        "mp3Path": display_path(mp3_path),
-                        "mp3MimeType": "audio/mpeg",
-                        "mp3Bytes": file_size(mp3_path),
-                        "preferredAudioPath": display_path(mp3_path),
-                        "preferredMimeType": "audio/mpeg",
-                        "wavDeprecated": True,
-                    }
-                )
+                entry = {
+                    **item,
+                    "status": "cached_mp3",
+                    "audioPath": "",
+                    "mimeType": "",
+                    "audioBytes": 0,
+                    "mp3Path": display_path(mp3_path),
+                    "mp3MimeType": "audio/mpeg",
+                    "mp3Bytes": file_size(mp3_path),
+                    "preferredAudioPath": display_path(mp3_path),
+                    "preferredMimeType": "audio/mpeg",
+                    "wavDeprecated": True,
+                }
+                attach_bucket_audio_uris(entry, args.bucket_uri, prefer_mp3=bool(args.write_mp3))
+                manifest_entries.append(entry)
                 print(f"[{index}/{len(responses)}] cached {mp3_path.name}")
                 write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 continue
@@ -2742,10 +3019,22 @@ def main() -> None:
                     )
                 else:
                     entry.update({"mp3Path": "", "preferredAudioPath": display_path(audio_path), "preferredMimeType": "audio/wav"})
+                attach_bucket_audio_uris(entry, args.bucket_uri, prefer_mp3=bool(args.write_mp3))
                 manifest_entries.append(entry)
                 print(f"[{index}/{len(responses)}] cached {audio_path.name}")
                 write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 continue
+            if not args.force and args.bucket_uri:
+                cached_bucket_entry = cached_bucket_audio_entry(
+                    item,
+                    bucket_uri=args.bucket_uri,
+                    prefer_mp3=bool(args.write_mp3),
+                )
+                if cached_bucket_entry is not None:
+                    manifest_entries.append(cached_bucket_entry)
+                    print(f"[{index}/{len(responses)}] cached bucket {item['id']}")
+                    write_progress(args.progress_json, manifest_entries, len(responses), started_at)
+                    continue
             print(f"[{index}/{len(responses)}] queued {item['id']}: {item['text']}")
             pending.append((index, item, audio_path, mp3_path))
             if len(pending) >= remote_batch_size:
@@ -2810,6 +3099,7 @@ def main() -> None:
             **bucket_targets,
             "enabled": True,
             "tool": "hf sync",
+            "sourceOfTruth": "bucket",
         }
     if isinstance(fatal_exception, IndexTTSQuotaExceededError):
         payload["batchInference"]["rateLimitDetected"] = {
@@ -2851,6 +3141,14 @@ def main() -> None:
         sync_summary = sync_generated_outputs_to_bucket(args.output_dir, args.manifest, args.public_manifest, args.bucket_uri)
         print(f"Synced generated audio to {sync_summary['audioUri']}")
         print(f"Synced manifests to {sync_summary['metadataUri']}")
+        if getattr(args, "prune_local_audio_after_sync", False):
+            pruned = 0
+            for audio_file in args.output_dir.glob("abby-tts-*"):
+                if audio_file.suffix.lower() in {".wav", ".mp3"}:
+                    audio_file.unlink(missing_ok=True)
+                    pruned += 1
+            if pruned:
+                print(f"Pruned {pruned} local audio file(s) from {display_path(args.output_dir)} after bucket sync.")
     if fatal_exception is not None:
         raise fatal_exception
     if args.validate_transcripts and payload["transcriptValidation"]["failureCount"] and not args.transcript_validation_soft_fail:

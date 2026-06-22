@@ -442,6 +442,14 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface WalletMagicUcan {
+  token: string;
+  audience?: string;
+  expires_at?: number;
+  profile?: string;
+  capabilities?: unknown[];
+}
+
 export interface WorldIdWalletConfig {
   enabled: boolean;
   environment: "staging" | "production" | string;
@@ -1312,6 +1320,214 @@ export async function createLocationRegionProof(
     region_id: regionId
   });
   return toProofReceiptView(proof);
+}
+
+export async function createDocumentPrivacyProfileProof(
+  config: WalletApiConfig,
+  input: {
+    publicInputs: Record<string, unknown>;
+    recordId: string;
+  }
+): Promise<any> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${input.recordId}/document-profile-proofs`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const proof = await postJson<Record<string, unknown>>(url, "Document profile proof", {
+    actor_did: requiredActorDid(config),
+    public_inputs: input.publicInputs
+  });
+  return normalizeProofResponse(proof);
+}
+
+export async function createWallet(
+  input: {
+    apiBaseUrl: string;
+    ownerDid: string;
+    controllerDids?: string[];
+    approvalThreshold?: number;
+  }
+): Promise<any> {
+  const url = new URL("/wallets", normalizedBaseUrl(input.apiBaseUrl));
+  const wallet = await postJson<Record<string, unknown>>(url, "Create wallet", {
+    owner_did: input.ownerDid,
+    controller_dids: input.controllerDids || undefined,
+    approval_threshold: input.approvalThreshold
+  });
+  return normalizeWalletResponse(wallet);
+}
+
+export async function deleteWalletRecord(
+  config: WalletApiConfig,
+  recordId: string,
+  options: { unpinIpfs?: boolean } = {}
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}`, normalizedBaseUrl(config.apiBaseUrl));
+  const response = await fetchJson<Record<string, unknown>>(url, "Delete wallet record", {
+    body: JSON.stringify({ actor_did: requiredActorDid(config), unpin_ipfs: options.unpinIpfs ?? false }),
+    headers: { "Content-Type": "application/json" },
+    method: "DELETE"
+  });
+  return response;
+}
+
+export async function dispatchMissingPersonDeadDrop(config: WalletApiConfig): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person/dispatch`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Dispatch missing person dead drop", {
+    body: JSON.stringify({ actor_did: requiredActorDid(config) }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+}
+
+export async function generateWalletRecordMetadata(
+  config: WalletApiConfig,
+  recordId: string,
+  input: {
+    fileName?: string;
+    mimeType?: string;
+    walletCid?: string;
+    grantId?: string;
+    invocationToken?: string;
+    maxBytesPerRecord?: number;
+    maxCharsPerRecord?: number;
+    useOcr?: boolean;
+    provider?: string;
+    modelName?: string;
+    kwargs?: Record<string, unknown>;
+  } = {}
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/metadata/generate`, normalizedBaseUrl(config.apiBaseUrl));
+  const response = await postJson<Record<string, unknown>>(url, "Generate wallet record metadata", {
+    actor_did: requiredActorDid(config),
+    file_name: input.fileName,
+    mime_type: input.mimeType,
+    grant_id: input.grantId,
+    invocation_token: input.invocationToken,
+    wallet_cid: input.walletCid,
+    max_bytes_per_record: input.maxBytesPerRecord,
+    max_chars_per_record: input.maxCharsPerRecord,
+    use_ocr: input.useOcr,
+    provider: input.provider,
+    model_name: input.modelName,
+    kwargs: input.kwargs
+  });
+  return normalizeGeneratedMetadataResponse(response);
+}
+
+export async function loadLatestWalletRecoveryBundle(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">, token: string): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-bundles/latest`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Latest wallet recovery bundle", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+export async function loadWalletRecoveryBundleById(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  bundleId: string,
+  token: string
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-bundles/${bundleId}`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Wallet recovery bundle", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+export async function saveMissingPersonDeadDrop(
+  config: WalletApiConfig,
+  input: {
+    enabled?: boolean;
+    toEmail?: string;
+    subject?: string;
+    body?: string;
+    bundle?: Record<string, unknown>;
+    bundleFilename?: string;
+    bundleFileName?: string;
+    dueAt?: string;
+    lastCheckInAt?: string;
+  } = {}
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Save missing person dead drop", {
+    body: JSON.stringify({
+      actor_did: requiredActorDid(config),
+      enabled: input.enabled ?? false,
+      to_email: input.toEmail,
+      subject: input.subject,
+      body: input.body,
+      bundle: input.bundle,
+      bundle_filename: input.bundleFilename || input.bundleFileName,
+      due_at: input.dueAt,
+      last_check_in_at: input.lastCheckInAt
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "PUT"
+  });
+}
+
+export async function sendMissingPersonDeadDropEmail(
+  config: WalletApiConfig,
+  input: {
+    toEmail?: string;
+    subject?: string;
+    body?: string;
+    bundle?: Record<string, unknown>;
+    bundleFilename?: string;
+    bundleFileName?: string;
+  } = {}
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Send missing person dead drop email", {
+    body: JSON.stringify({
+      actor_did: requiredActorDid(config),
+      to_email: input.toEmail,
+      subject: input.subject,
+      body: input.body,
+      bundle: input.bundle,
+      bundle_filename: input.bundleFilename || input.bundleFileName
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+}
+
+export async function storeWalletRecoveryBundle(
+  config: WalletApiConfig,
+  input: {
+    encryptedBundle: Record<string, unknown> | string;
+    wrappingMethod?: string;
+    kdf?: Record<string, unknown>;
+    recoveryHint?: string;
+    publicMetadata?: Record<string, unknown>;
+  }
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-bundles`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<Record<string, unknown>>(url, "Store wallet recovery bundle", {
+    body: JSON.stringify({
+      actor_did: requiredActorDid(config),
+      encrypted_bundle: input.encryptedBundle,
+      wrapping_method: input.wrappingMethod,
+      kdf: input.kdf,
+      recovery_hint: input.recoveryHint,
+      public_metadata: input.publicMetadata
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+}
+
+export async function updateWalletRecordMetadata(
+  config: WalletApiConfig,
+  recordId: string,
+  metadata: Record<string, unknown>
+): Promise<any> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/metadata`, normalizedBaseUrl(config.apiBaseUrl));
+  const record = await fetchJson<Record<string, unknown>>(url, "Update wallet record metadata", {
+    body: JSON.stringify({ actor_did: requiredActorDid(config), metadata }),
+    headers: { "Content-Type": "application/json" },
+    method: "PATCH"
+  });
+  return normalizeWalletResponse(record);
 }
 
 export async function createLocationDistanceProof(
@@ -3042,6 +3258,38 @@ function toWalletAnalyticsContributionResult(payload: Record<string, unknown>): 
   };
 }
 
+function normalizeWalletResponse(payload: Record<string, unknown>): Record<string, unknown> {
+  const normalized = { ...payload };
+  const recordId = stringValue(payload.record_id) || stringValue(payload.recordId) || stringValue(payload.wallet_id);
+  if (recordId && !normalized.recordId) normalized.recordId = recordId;
+  if (stringValue(payload.wallet_id) && !normalized.walletId) normalized.walletId = stringValue(payload.wallet_id);
+  return normalized;
+}
+
+function normalizeGeneratedMetadataResponse(payload: Record<string, unknown>): Record<string, unknown> {
+  const record = payload.record && typeof payload.record === "object" ? (payload.record as Record<string, unknown>) : {};
+  const metadata = payload.metadata && typeof payload.metadata === "object" ? (payload.metadata as Record<string, unknown>) : {};
+  return {
+    ...normalizeWalletResponse(record),
+    ...metadata,
+    proof: payload.proof,
+    router: payload.router,
+    record: normalizeWalletResponse(record),
+    metadata,
+  };
+}
+
+function normalizeProofResponse(payload: Record<string, unknown>): Record<string, unknown> {
+  const proofId = stringValue(payload.proof_id) || stringValue(payload.proofId) || stringValue(payload.id);
+  const publicInputs = payload.public_inputs ?? payload.publicInputs ?? {};
+  return {
+    ...payload,
+    id: proofId || stringValue(payload.id) || "proof",
+    proofId: proofId || stringValue(payload.id) || "proof",
+    publicInputs
+  };
+}
+
 function toWalletAnalyticsAggregateResult(payload: Record<string, unknown>): WalletAnalyticsAggregateResult {
   const countValue = nullableNumber(payload.count);
   const noisyCountValue = nullableNumber(payload.noisy_count);
@@ -3096,8 +3344,8 @@ async function toUploadItemViewWithStorage(
   }
 }
 
-async function fetchJson<T>(url: URL, label: string): Promise<T> {
-  const response = await fetch(url);
+async function fetchJson<T>(url: URL, label: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, init);
   if (!response.ok) {
     throw await toWalletApiRequestError(response, label);
   }
