@@ -8647,14 +8647,3 @@ function compactRecord(record: Record<string, unknown>): Record<string, unknown>
   );
 }
 
-
-function parseRecordIds(value: string): string[] {
-  return Array.from(
-    new Set(
-      value
-        .split(/[\n,]/)
-        .map((recordId) => recordId.trim())
-        .filter(Boolean)
-    )
-  );
-}

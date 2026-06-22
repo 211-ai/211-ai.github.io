@@ -16,7 +16,7 @@ import {
 import { ProofReceiptView, UploadItem } from "../../models/abby";
 
 const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
-const hiddenProofCenterProofTypes = new Set(["location" + "_distance"]);
+const hiddenProofCenterProofTypes = new Set(["location_distance"]);
 
 function visibleProofCenterProofs(proofs: ProofReceiptView[]) {
   return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
