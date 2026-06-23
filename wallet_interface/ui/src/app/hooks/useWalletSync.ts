@@ -175,32 +175,27 @@ export function useWalletSync(
   }, [persistWalletApiConfig, walletApiConfig, setWalletActorResolved]);
 
   useEffect(() => {
-    if (!walletApiConfig) return;
     void refreshWalletDocuments().catch(() => setUploads(initialUploads));
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshWalletDocuments, setUploads]);
 
   useEffect(() => {
-    if (!walletApiConfig) return;
     void refreshWalletAccessState().catch(() => {
       setAccessRequests(initialAccessRequests);
       setGrantReceipts(initialGrantReceipts);
     });
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshWalletAccessState, setAccessRequests, setGrantReceipts]);
 
   useEffect(() => {
-    if (!walletApiConfig) return;
     void refreshWalletAuditEvents().catch(() => setWalletAuditEvents(auditEvents));
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshWalletAuditEvents, setWalletAuditEvents]);
 
   useEffect(() => {
-    if (!walletApiConfig) return;
     void refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts));
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshWalletProofReceipts, setWalletProofReceipts]);
 
   useEffect(() => {
-    if (!walletApiConfig) return;
     void refreshWalletPortalState();
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshWalletPortalState]);
 
   useEffect(() => {
     if (!walletApiConfig) return;
@@ -223,7 +218,7 @@ export function useWalletSync(
     } catch {
       // Ignore malformed optional demo data and keep the static bundle examples.
     }
-  }, [walletApiConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [walletApiConfig, setExportBundleViews]);
 
   return {
     refreshWalletAccessState,

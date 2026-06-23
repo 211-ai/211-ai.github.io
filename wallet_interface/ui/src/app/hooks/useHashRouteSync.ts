@@ -33,6 +33,5 @@ export function useHashRouteSync({
     };
     window.addEventListener("hashchange", syncRouteFromHash);
     return () => window.removeEventListener("hashchange", syncRouteFromHash);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeRouteRef, setActiveRoute, setMobileNavOpen, setServiceDetailDocId, setServicePlanDocId]);
 }
