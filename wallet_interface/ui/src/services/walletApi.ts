@@ -3320,7 +3320,7 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
   const view: UploadItem & ConsensusBearingView = {
     id: record.record_id,
     recordId: record.record_id,
-    fileName: labelFromResource(record.record_id),
+    fileName: sanitizeProofDisplayValue(record.public_descriptor) || labelFromResource(record.record_id),
     machineSummary: `${record.data_type} record stored ${formatTimestamp(record.created_at)}`,
     category: record.public_descriptor || record.data_type,
     sensitivity: record.sensitivity,

@@ -4,6 +4,9 @@ import { Badge, Button, Field, Section, StatusBanner } from "../../components/ui
 import { nonGrantedCapabilities } from "../../services/capabilities";
 import {
   createLocationRegionProof,
+  getProofReceiptUiState,
+  WalletApiConsensusFailClosedError,
+  WalletApiRequestError,
   type WalletApiConfig
 } from "../../services/walletApi";
 import {
@@ -14,12 +17,22 @@ import {
   type WalletProofQrReview
 } from "../../services/walletProofReview";
 import { ProofReceiptView, UploadItem } from "../../models/abby";
+import { WorldIdSurfaceStatus } from "../components/WorldIdSurfaceStatus";
 
 const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
 const hiddenProofCenterProofTypes = new Set(["location_distance"]);
+const hiddenProofCenterAnalyticsCertificateTypes = new Set([
+  "analytics_housing_outcome",
+  "analytics_outreach_followup",
+  "analytics_population_snapshot",
+  "analytics_provider_capacity",
+  "analytics_recovery_outcome"
+]);
 
 function visibleProofCenterProofs(proofs: ProofReceiptView[]) {
-  return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
+  return proofs.filter(
+    (proof) => !hiddenProofCenterProofTypes.has(proof.proofType) && !hiddenProofCenterAnalyticsCertificateTypes.has(proof.proofType)
+  );
 }
 
 function shortStorageId(value: string): string {
@@ -45,6 +58,7 @@ export function ProofCenterScreen({
   const [regionId, setRegionId] = useState("multnomah_county");
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+  const [proofErrorMessage, setProofErrorMessage] = useState("");
   const [reviewStatus, setReviewStatus] = useState<"idle" | "reviewing" | "reviewed" | "failed">("idle");
   const [reviewError, setReviewError] = useState("");
   const [reviewedQrProofs, setReviewedQrProofs] = useState<WalletProofQrReview | null>(null);
@@ -78,10 +92,12 @@ export function ProofCenterScreen({
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!apiConfig?.actorDid || !locationRecordId.trim() || !regionId.trim()) {
+      setProofErrorMessage("Proof creation failed. Check the record ID, grant, and API proof mode.");
       setProofStatus("failed");
       return;
     }
     setProofStatus("creating");
+    setProofErrorMessage("");
     try {
       const proof = await createLocationRegionProof(apiConfig, {
         grantId: grantId.trim() || undefined,
@@ -91,7 +107,8 @@ export function ProofCenterScreen({
       setProofs([proof, ...proofs.filter((item) => item.id !== proof.id)]);
       await refreshWalletAuditEvents().catch(() => undefined);
       setProofStatus("created");
-    } catch {
+    } catch (error) {
+      setProofErrorMessage(formatProofCreationError(error));
       setProofStatus("failed");
     }
   }
@@ -146,6 +163,11 @@ export function ProofCenterScreen({
         Wallet QR imports resolve the IPFS/Filecoin root CID, recover encrypted wallet record links, and review public proof
         certificates without exposing raw documents or precise location.
       </p>
+      <WorldIdSurfaceStatus
+        apiConfig={apiConfig}
+        ariaLabel="World ID wallet status"
+        onAuditRefresh={refreshWalletAuditEvents}
+      />
       <article className="proof-card" aria-label="Active wallet proof center">
         <div className="scope-header">
           <div>
@@ -270,7 +292,7 @@ export function ProofCenterScreen({
           </div>
         </Section>
       ) : null}
-      <article className="proof-card" aria-label="Create location region proof" style={{ display: "none" }}>
+      <article className="proof-card" aria-label="Create location region proof">
         <div className="scope-header">
           <div>
             <h3>Create location-region proof</h3>
@@ -320,7 +342,7 @@ export function ProofCenterScreen({
             <StatusBanner tone="success">Proof receipt created and added to the wallet timeline.</StatusBanner>
           ) : null}
           {proofStatus === "failed" ? (
-            <StatusBanner tone="warning">Proof creation failed. Check the record ID, grant, and API proof mode.</StatusBanner>
+            <StatusBanner tone="warning">{proofErrorMessage || "Proof creation failed. Check the record ID, grant, and API proof mode."}</StatusBanner>
           ) : null}
           <Button disabled={!apiConfig?.actorDid || proofStatus === "creating"} type="submit" variant="secondary">
             {proofStatus === "creating" ? "Creating proof..." : "Create proof"}
@@ -329,6 +351,24 @@ export function ProofCenterScreen({
       </article>
     </div>
   );
+}
+
+function formatProofCreationError(error: unknown): string {
+  const parts: string[] = [];
+
+  if (error instanceof WalletApiConsensusFailClosedError) {
+    parts.push(error.detail || "Consensus failed closed before this proof could be accepted.");
+    parts.push(error.consensus?.verification_label || "Manual review required");
+    parts.push(error.consensus?.failure_reason || error.failClosedError.replace(/_/g, " "));
+    parts.push("No simulated fallback was created.");
+  } else if (error instanceof WalletApiRequestError) {
+    parts.push(error.detail || error.message);
+    parts.push("No simulated fallback was created.");
+  } else if (error instanceof Error) {
+    parts.push(error.message);
+  }
+
+  return Array.from(new Set(parts.map((part) => part.trim()).filter(Boolean))).join(" ");
 }
 
 function ProofReceiptCard({
@@ -340,6 +380,8 @@ function ProofReceiptCard({
 }) {
   const titleId = `proof-title-${proof.id}`;
   const publicInputKeys = Object.keys(proof.publicInputs);
+  const proofState = getProofReceiptUiState(proof);
+  const isWorldIdProof = proof.proofType === "world_id_proof_of_human" || proof.proofSystem.includes("world_id");
 
   return (
     <article aria-labelledby={titleId} className="proof-card">
@@ -347,12 +389,10 @@ function ProofReceiptCard({
         <div>
           <h3 id={titleId}>{proof.claim}</h3>
           <p>
-            {proof.proofType} · {proof.proofSystem} · {proof.verifier}
+            {proof.proofType} · {proofState.proofSystemLabel} · {proof.verifier}
           </p>
         </div>
-        <Badge tone={proof.simulated ? "warning" : "success"}>
-          {proof.simulated ? "Simulated" : proof.verificationStatus}
-        </Badge>
+        <Badge tone={proofState.statusTone}>{proof.simulated ? "Simulated" : proofState.statusLabel}</Badge>
       </div>
       <div className="badge-row">
         <Badge>{proof.createdAt}</Badge>
@@ -370,7 +410,7 @@ function ProofReceiptCard({
             <p>{proof.proofType} · public inputs only</p>
           </div>
           <Badge tone={proof.simulated ? "warning" : "success"}>
-            {proof.simulated ? "development proof" : "verified proof"}
+            {proof.simulated ? "development proof" : proofState.evidenceLabel}
           </Badge>
         </div>
         <div className="disclosure-package">
@@ -380,7 +420,35 @@ function ProofReceiptCard({
           </div>
           <div className="disclosure-row">
             <strong>Verification</strong>
-            <span>{proof.verificationStatus}</span>
+            <span>{proofState.statusLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Evidence</strong>
+            <span>{proofState.evidenceLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Provider review</strong>
+            <span>{proofState.providerLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Dashboard</strong>
+            <span>{proofState.dashboardLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Export</strong>
+            <span>{proofState.exportLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>QR review</strong>
+            <span>{proofState.qrReviewLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Input boundary</strong>
+            <span>{proofState.inputBoundaryLabel}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>On-chain</strong>
+            <span>{proofState.onChainLabel}</span>
           </div>
           {proof.circuitId ? (
             <div className="disclosure-row">
@@ -404,6 +472,17 @@ function ProofReceiptCard({
           </div>
         </div>
       </div>
+      {isWorldIdProof ? (
+        <div className="disclosure-package world-id-disclosure">
+          <div className="disclosure-row">
+            <strong>Privacy</strong>
+            <span>
+              not legal identity; World ID proof-of-human does not disclose or prove legal name, age, citizenship,
+              address, or document possession.
+            </span>
+          </div>
+        </div>
+      ) : null}
       <div className="proof-inputs" aria-label={`${proof.claim} public inputs`}>
         {publicInputKeys.length ? (
           Object.entries(proof.publicInputs).map(([key, value]) => (

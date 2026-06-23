@@ -67,6 +67,7 @@ import {
 import { t, tFormat, type SupportedLocale } from "../../lib/localization";
 import { AccountSafetySection } from "../components/AccountSafetySection";
 import { StatusPanel } from "../components/StatusPanel";
+import { WorldIdSurfaceStatus } from "../components/WorldIdSurfaceStatus";
 import { ExportCenterScreen } from "./ExportCenterScreen";
 import {
   buildPassphraseWrappedRecoveryBundle,
@@ -1002,6 +1003,11 @@ export function UploadsScreen({
           <strong>{walletFileStats.ipldLinked}</strong>
         </div>
       </div>
+      <WorldIdSurfaceStatus
+        apiConfig={apiConfig}
+        ariaLabel="Uploads World ID status"
+        onAuditRefresh={refreshWalletAuditEvents}
+      />
       <Section
         title={t(siteLocale, "wallet.connectionTitle")}
         actions={

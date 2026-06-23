@@ -242,9 +242,18 @@ export function formatAnalyticsField(field: string): string {
 // ─── Proof center helpers ─────────────────────────────────────────────────────
 
 export const hiddenProofCenterProofTypes = new Set(["location_distance"]);
+export const hiddenProofCenterAnalyticsCertificateTypes = new Set([
+  "analytics_housing_outcome",
+  "analytics_outreach_followup",
+  "analytics_population_snapshot",
+  "analytics_provider_capacity",
+  "analytics_recovery_outcome"
+]);
 
 export function visibleProofCenterProofs(proofs: ProofReceiptView[]): ProofReceiptView[] {
-  return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
+  return proofs.filter(
+    (proof) => !hiddenProofCenterProofTypes.has(proof.proofType) && !hiddenProofCenterAnalyticsCertificateTypes.has(proof.proofType)
+  );
 }
 
 export function summarizeWalletProofClaims(proofs: ProofReceiptView[]): string {

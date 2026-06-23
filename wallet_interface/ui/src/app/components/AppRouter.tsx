@@ -70,7 +70,7 @@ export interface AppRouterProps {
 
   // Wallet config
   persistWalletApiConfig: (config: WalletApiConfig) => void;
-  walletApiBaseUrl: string;
+  walletApiBaseUrl?: string;
   walletApiConfig: WalletApiConfig | undefined;
   walletDeadDropReady: boolean;
   walletPortalError: string;
@@ -224,7 +224,13 @@ export function AppRouter({
         />
       ) : null}
       {activeRoute === "register" ? (
-        <RegistrationScreen profile={profile} setProfile={setProfile} siteLocale={siteLocale} />
+        <RegistrationScreen
+          apiConfig={walletApiConfig}
+          onWorldIdAuditRefresh={refreshWalletAuditEvents}
+          profile={profile}
+          setProfile={setProfile}
+          siteLocale={siteLocale}
+        />
       ) : null}
       {activeRoute === "settings" ? (
         <SettingsScreen
@@ -237,6 +243,7 @@ export function AppRouter({
           missingPersonDeadDropEnabled={missingPersonDeadDropEnabled}
           navigate={navigate}
           nextCheckIn={nextCheckIn}
+          onWorldIdAuditRefresh={refreshWalletAuditEvents}
           onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
           policy={policy}
           profile={profile}

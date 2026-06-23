@@ -18,6 +18,7 @@ import { AccountSafetySection } from "../components/AccountSafetySection";
 import { GovernmentHelpSection } from "../components/GovernmentHelpSection";
 import { ProfileInformationForm, togglePartnerHelpRequest } from "../components/ProfileInformationForm";
 import { StatusPanel } from "../components/StatusPanel";
+import { WorldIdSurfaceStatus } from "../components/WorldIdSurfaceStatus";
 import { PORTLAND_POLICE_MISSING_EMAIL, formatCheckInChannel } from "../utils/formatHelpers";
 
 export function SettingsScreen({
@@ -30,6 +31,7 @@ export function SettingsScreen({
   missingPersonDeadDropEnabled,
   navigate,
   nextCheckIn,
+  onWorldIdAuditRefresh,
   onSnapshotLoaded,
   policy,
   profile,
@@ -55,6 +57,7 @@ export function SettingsScreen({
   missingPersonDeadDropEnabled: boolean;
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
+  onWorldIdAuditRefresh?: () => Promise<void> | void;
   onSnapshotLoaded: () => Promise<void> | void;
   policy: typeof defaultCheckInPolicy;
   profile: RegistrationProfileDraft;
@@ -270,6 +273,12 @@ export function SettingsScreen({
           </span>
         </label>
       </Section>
+
+      <WorldIdSurfaceStatus
+        apiConfig={apiConfig}
+        ariaLabel="Security World ID status"
+        onAuditRefresh={onWorldIdAuditRefresh}
+      />
 
       <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
 

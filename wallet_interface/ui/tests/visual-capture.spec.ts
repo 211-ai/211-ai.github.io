@@ -476,6 +476,7 @@ const captureScenarios: CaptureScenario[] = [
 ];
 
 const artifactRoot = path.resolve(process.cwd(), "artifacts/ui-screenshots/latest");
+const appPersistKey = "abby-ui-state-v1";
 const appSessionKey = "abby-ui-session-v1";
 const routeReadyHeadings: Record<string, RegExp> = {
   "/": /Welcome to your safety plan!/i,
@@ -521,7 +522,13 @@ function buildPrompt(route: CaptureScenario, viewport: CaptureViewport) {
 async function openCaptureScenario(page: Page, scenarioPath: string) {
   if (scenarioPath === "/__login") {
     await page.goto("/");
-    await page.evaluate((key) => window.localStorage.removeItem(key), appSessionKey);
+    await page.evaluate(
+      ({ persistKey, sessionKey }) => {
+        window.localStorage.removeItem(persistKey);
+        window.localStorage.removeItem(sessionKey);
+      },
+      { persistKey: appPersistKey, sessionKey: appSessionKey }
+    );
     await page.reload();
     await expect(page.locator(".login-page")).toBeVisible();
     await expect(page.getByRole("group", { name: /Choose portal/i })).toBeVisible();
@@ -531,8 +538,11 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
 
   await page.goto("/");
   await page.evaluate(
-    (key) => window.localStorage.setItem(key, JSON.stringify({ username: "visual-reviewer" })),
-    appSessionKey
+    ({ persistKey, sessionKey }) => {
+      window.localStorage.removeItem(persistKey);
+      window.localStorage.setItem(sessionKey, JSON.stringify({ username: "visual-reviewer" }));
+    },
+    { persistKey: appPersistKey, sessionKey: appSessionKey }
   );
 
   if (scenarioPath === "/#/interactions") {
@@ -746,6 +756,14 @@ async function verifyShelterStaffForCapture(page: Page) {
 }
 
 async function captureScenarioScreenshot(page: Page, outputPath: string): Promise<string[]> {
+  const dimensions = await page.evaluate(() => ({
+    height: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, document.documentElement.clientHeight),
+    width: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, document.documentElement.clientWidth)
+  }));
+  if (dimensions.height > MAX_SCREENSHOT_DIMENSION || dimensions.width > MAX_SCREENSHOT_DIMENSION) {
+    return captureScenarioScreenshotTiles(page, outputPath);
+  }
+
   try {
     await page.screenshot({
       fullPage: true,
