@@ -241,7 +241,7 @@ export function formatAnalyticsField(field: string): string {
 
 // ─── Proof center helpers ─────────────────────────────────────────────────────
 
-export const hiddenProofCenterProofTypes = new Set(["location" + "_distance"]);
+export const hiddenProofCenterProofTypes = new Set(["location_distance"]);
 
 export function visibleProofCenterProofs(proofs: ProofReceiptView[]): ProofReceiptView[] {
   return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
