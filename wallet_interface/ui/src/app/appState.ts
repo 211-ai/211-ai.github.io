@@ -19,6 +19,8 @@ import {
   initialUploads
 } from "../services/mockAbbyService";
 
+export { defaultCheckInPolicy };
+
 export const APP_PERSIST_KEY = "abby-ui-state-v1";
 
 export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
