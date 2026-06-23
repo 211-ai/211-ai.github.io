@@ -210,8 +210,8 @@ export function useWalletSync(
         imported: true,
       })
         .then((bundleView) => {
-          setExportBundleViews((current) =>
-            current.some((item) => item.id === bundleView.id) ? current : [bundleView, ...current]
+          setExportBundleViews((current: ExportBundleView[]) =>
+            current.some((item: ExportBundleView) => item.id === bundleView.id) ? current : [bundleView, ...current]
           );
         })
         .catch(() => undefined);

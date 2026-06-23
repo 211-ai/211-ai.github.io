@@ -176,6 +176,7 @@ export function AppRouter({
   setProfile,
   setRecipientVerified,
   setRecipients,
+  setSavedServices,
   setShelterCaseRecords,
   setShelterChecklist,
   setShelterContactRequests,
