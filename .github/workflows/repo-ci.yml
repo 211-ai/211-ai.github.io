@@ -1,0 +1,98 @@
+name: Repository CI
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "pyproject.toml"
+      - "requirements.txt"
+      - "scraper/**"
+      - "wallet_interface/**"
+      - "scripts/install_wallet_python_dependencies.sh"
+      - "tests/test_scraper.py"
+      - "tests/test_wallet_python_dependencies.py"
+      - ".github/workflows/repo-ci.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "README.md"
+      - "pyproject.toml"
+      - "requirements.txt"
+      - "scraper/**"
+      - "wallet_interface/**"
+      - "scripts/install_wallet_python_dependencies.sh"
+      - "tests/test_scraper.py"
+      - "tests/test_wallet_python_dependencies.py"
+      - ".github/workflows/repo-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-scraper:
+    name: Python scraper tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[wallet,test]"
+
+      - name: Run scraper tests
+        run: python -m pytest tests/test_scraper.py -q
+
+  python-packaging:
+    name: Python packaging docs checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[wallet,test]"
+
+      - name: Run packaging tests
+        run: python -m pytest tests/test_wallet_python_dependencies.py -q
+  ui-build:
+    name: Abby UI build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet_interface/ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: wallet_interface/ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build UI
+        run: npm run build
+
