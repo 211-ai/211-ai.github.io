@@ -10,7 +10,7 @@ def main() -> None:
         import uvicorn
     except ImportError as exc:  # pragma: no cover - dependency guard
         raise RuntimeError(
-            'uvicorn is required to run the wallet API CLI. Install it with: pip install ".[wallet]"'
+            'uvicorn is required to run the wallet API CLI. Install it with: python3 -m pip install -e ".[wallet]"'
         ) from exc
 
     host = os.getenv("WALLET_API_HOST", "127.0.0.1")
