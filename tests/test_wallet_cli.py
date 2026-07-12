@@ -54,10 +54,14 @@ def test_wallet_cli_reports_missing_asgi_app(monkeypatch) -> None:
 def test_wallet_cli_runs_uvicorn_with_env_config(monkeypatch) -> None:
     uvicorn_run = Mock()
 
+    def import_asgi_module(module_name: str) -> SimpleNamespace:
+        assert module_name == "wallet_interface.asgi"
+        return SimpleNamespace(app=object())
+
     monkeypatch.setenv("WALLET_API_HOST", "0.0.0.0")
     monkeypatch.setenv("WALLET_API_PORT", "9001")
     monkeypatch.setenv("WALLET_API_RELOAD", "yes")
-    monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=lambda _: SimpleNamespace(app=object())))
+    monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=import_asgi_module))
     monkeypatch.setitem(sys.modules, "uvicorn", SimpleNamespace(run=uvicorn_run))
 
     cli.main()
