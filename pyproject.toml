@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "211-ai"
+version = "0.1.0"
+description = "Monorepo packaging for the 211-AI scraper and wallet application surfaces"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "requests>=2.31.0",
+  "pdfplumber>=0.11.0",
+  "beautifulsoup4>=4.12.0",
+  "lxml>=5.1.0",
+  "playwright>=1.42.0",
+  "aiohttp>=3.9.0",
+  "aiofiles>=23.2.1",
+  "tqdm>=4.66.0",
+  "tenacity>=8.2.3",
+  "pandas>=2.2.0",
+  "duckdb>=1.4.0",
+  "pyarrow>=16.0.0",
+  "networkx>=3.3",
+  "sentence-transformers>=3.0.0,<6.0.0",
+  "datasets>=2.20.0",
+  "huggingface-hub>=0.34.0",
+  "python-dotenv>=1.0.0",
+  "fake-useragent>=1.4.0",
+]
+
+[project.optional-dependencies]
+wallet = [
+  "fastapi>=0.110,<1.0",
+  "uvicorn[standard]>=0.29,<1.0",
+  "pydantic>=2.7,<3.0",
+  "python-multipart>=0.0.30,<1.0",
+]
+test = [
+  "pytest>=8.2,<9.0",
+]
+
+[project.scripts]
+ai211-scraper = "scraper.main:main"
+ai211-wallet-api = "wallet_interface.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["scraper*", "wallet_interface*"]
+exclude = ["wallet_interface.ui*", "tests*", "artifacts*", "docs*", "data*", "state*", "tmp_assets*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "wallet_interface/tests"]

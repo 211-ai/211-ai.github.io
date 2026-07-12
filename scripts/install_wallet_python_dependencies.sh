@@ -8,7 +8,7 @@ PACKAGE_PATH="$SUBMODULE_PATH/ipfs_datasets_py"
 cd "$REPO_ROOT"
 
 python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+python3 -m pip install -e ".[wallet]"
 
 if [ ! -d "$PACKAGE_PATH" ]; then
     echo "ipfs_datasets_py checkout is missing; initializing the git submodule." >&2

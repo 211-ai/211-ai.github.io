@@ -41,11 +41,8 @@ import argparse
 import asyncio
 import json
 import logging
-import sys
 from pathlib import Path
 
-# Ensure the package root is importable when run as `python -m scraper.main`
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scraper.browser_scraper import BrowserScraper
 from scraper.config import Config
