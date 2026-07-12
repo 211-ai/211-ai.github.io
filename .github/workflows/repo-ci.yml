@@ -73,6 +73,7 @@ jobs:
 
       - name: Run packaging tests
         run: python -m pytest tests/test_wallet_python_dependencies.py -q
+
   ui-build:
     name: Abby UI build
     runs-on: ubuntu-latest
@@ -95,4 +96,3 @@ jobs:
 
       - name: Build UI
         run: npm run build
-

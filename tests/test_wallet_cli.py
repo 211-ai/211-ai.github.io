@@ -15,6 +15,7 @@ CLI_SPEC = importlib.util.spec_from_file_location("wallet_interface_cli_module",
 assert CLI_SPEC is not None and CLI_SPEC.loader is not None
 cli = importlib.util.module_from_spec(CLI_SPEC)
 CLI_SPEC.loader.exec_module(cli)
+EXPECTED_ASGI_MODULE = "wallet_interface.asgi"
 
 
 def test_wallet_cli_reports_missing_uvicorn_dependency(monkeypatch) -> None:
@@ -43,7 +44,7 @@ def test_wallet_cli_reports_missing_asgi_app(monkeypatch) -> None:
     uvicorn_run = Mock()
 
     def import_asgi_module(module_name: str) -> SimpleNamespace:
-        assert module_name == "wallet_interface.asgi"
+        assert module_name == EXPECTED_ASGI_MODULE
         return SimpleNamespace()
 
     monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=import_asgi_module))
@@ -59,7 +60,7 @@ def test_wallet_cli_reports_missing_asgi_module(monkeypatch) -> None:
     uvicorn_run = Mock()
 
     def import_asgi_module(module_name: str) -> SimpleNamespace:
-        assert module_name == "wallet_interface.asgi"
+        assert module_name == EXPECTED_ASGI_MODULE
         raise ImportError("missing asgi module")
 
     monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=import_asgi_module))
@@ -75,7 +76,7 @@ def test_wallet_cli_runs_uvicorn_with_env_config(monkeypatch) -> None:
     uvicorn_run = Mock()
 
     def import_asgi_module(module_name: str) -> SimpleNamespace:
-        assert module_name == "wallet_interface.asgi"
+        assert module_name == EXPECTED_ASGI_MODULE
         return SimpleNamespace(app=object())
 
     monkeypatch.setenv("WALLET_API_HOST", "0.0.0.0")
