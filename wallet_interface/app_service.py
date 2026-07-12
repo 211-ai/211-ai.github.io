@@ -8,7 +8,7 @@ import os
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 from uuid import uuid4
 
 from ._vendor import ensure_ipfs_datasets_py_path

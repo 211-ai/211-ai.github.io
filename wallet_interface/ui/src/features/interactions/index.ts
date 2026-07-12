@@ -7,4 +7,12 @@
  *   services/serviceInteractionService.ts
  */
 
-// Re-export public API when components/hooks are migrated here.
+// Types — re-exported from lib once migration is complete
+export type { ServiceInteraction, InteractionNote } from "./lib/types";
+
+// Components — uncomment as screens are migrated
+// export { InteractionsScreen } from './components/InteractionsScreen';
+// export { InteractionTimeline } from './components/InteractionTimeline';
+
+// Hooks — uncomment as hooks are migrated
+// export { useInteractions } from './hooks/useInteractions';

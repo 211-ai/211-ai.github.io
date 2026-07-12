@@ -9,4 +9,13 @@
  *   workers/ — LLM and audio workers
  */
 
-// Re-export public API when components/hooks are migrated here.
+// Types — re-exported from lib once migration is complete
+export type { AgentMessage, AgentSession, AgentConfig } from "./lib/types";
+
+// Components — uncomment as screens are migrated
+// export { AgentChatScreen } from './components/AgentChatScreen';
+// export { AudioChatButton } from './components/AudioChatButton';
+
+// Hooks — uncomment as hooks are migrated
+// export { useAgentChat } from './hooks/useAgentChat';
+// export { useAgentSession } from './hooks/useAgentSession';

@@ -6,11 +6,23 @@
  *   app/screens/ProofCenterScreen.tsx
  *   app/screens/ExportCenterScreen.tsx
  *   app/screens/RecipientAccessScreen.tsx
+ *   app/screens/UploadsScreen.tsx
+ *   app/screens/BenefitsProtectionScreen.tsx
  *   services/walletApi.ts
- *   services/walletProofReview.ts (future)
+ *   services/walletProofReview.ts
+ *   services/filecoinStorage.ts
+ *   services/walrusStorage.ts
  */
 
-// Re-export public API when components/hooks are migrated here.
-// Example:
-//   export { ProofCenterScreen } from './components/ProofCenterScreen';
-//   export { useWalletSync } from './hooks/useWalletSync';
+// Types — re-exported from lib once migration is complete
+export type { WalletApiConfig, UploadResult } from "./lib/types";
+
+// Components — uncomment as screens are migrated
+// export { ProofCenterScreen } from './components/ProofCenterScreen';
+// export { ExportCenterScreen } from './components/ExportCenterScreen';
+// export { RecipientAccessScreen } from './components/RecipientAccessScreen';
+// export { UploadsScreen } from './components/UploadsScreen';
+
+// Hooks — uncomment as hooks are migrated
+// export { useWalletSync } from './hooks/useWalletSync';
+// export { useWalletRecords } from './hooks/useWalletRecords';

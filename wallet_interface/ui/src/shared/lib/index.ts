@@ -9,3 +9,8 @@
 // Example:
 //   export { runtimeConfig } from './runtimeConfig';
 //   export { createFilecoinStorageAdapter } from './filecoinStorage';
+//   export { createWalrusStorageAdapter } from './walrusStorage';
+//   export { formatDate, formatRelativeTime } from './dateUtils';
+
+/** Placeholder export so this barrel resolves as a valid module. */
+export const _sharedLibPlaceholder = true;

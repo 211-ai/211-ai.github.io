@@ -9,3 +9,9 @@
 // Example:
 //   export { Button } from './Button';
 //   export { Modal } from './Modal';
+//   export { Spinner } from './Spinner';
+//   export { ErrorBoundary } from './ErrorBoundary';
+//   export { BottomNav } from './BottomNav';
+
+/** Placeholder export so this barrel resolves as a valid module. */
+export const _sharedComponentsPlaceholder = true;

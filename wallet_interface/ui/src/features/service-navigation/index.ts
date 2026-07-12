@@ -15,4 +15,14 @@
  *   services/graphRagService.ts
  */
 
-// Re-export public API when components/hooks are migrated here.
+// Types — re-exported from lib once migration is complete
+export type { ServiceDirectoryEntry, ServiceSearchParams } from "./lib/types";
+
+// Components — uncomment as screens are migrated
+// export { SocialServicesScreen } from './components/SocialServicesScreen';
+// export { ServiceDetailScreen } from './components/ServiceDetailScreen';
+// export { ServicePlanScreen } from './components/ServicePlanScreen';
+
+// Hooks — uncomment as hooks are migrated
+// export { useServiceSearch } from './hooks/useServiceSearch';
+// export { useServicePlan } from './hooks/useServicePlan';
