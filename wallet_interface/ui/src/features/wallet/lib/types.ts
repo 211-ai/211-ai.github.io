@@ -9,7 +9,7 @@
 export interface WalletApiConfig {
   /** Base URL of the wallet backend (e.g. "https://wallet.211-ai.com"). */
   baseUrl: string;
-  /** ****** obtained after magic-login. */
+  /** Bearer token (JWT) obtained after magic-login; required for authenticated endpoints. */
   bearerToken?: string;
 }
 
