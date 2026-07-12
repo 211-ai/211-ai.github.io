@@ -19,7 +19,7 @@ os.environ.setdefault("IPFS_DATASETS_AUTO_INSTALL", "false")
 os.environ.setdefault("IPFS_AUTO_INSTALL", "false")
 os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 
-from scraper.enrich_service_addresses import (  # noqa: E402
+from scraper.enrichment.enrich_service_addresses import (  # noqa: E402
     AddressQuery,
     DEFAULT_CACHE_PATH,
     DEFAULT_PORTAL_DIR,

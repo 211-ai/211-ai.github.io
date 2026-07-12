@@ -27,9 +27,9 @@ logger = logging.getLogger("scraper.provekit.implementation.daemon")
 
 PROVEKIT_TASK_PREFIX = "## PROVEKIT-"
 PROVEKIT_STATE_PREFIX = "provekit"
-DEFAULT_TODO_PATH = Path("docs/PROVEKIT_ZKP_LOGIC_TODO.md")
+DEFAULT_TODO_PATH = Path("docs/planning/PROVEKIT_ZKP_LOGIC_TODO.md")
 DEFAULT_STATE_DIR = Path("data/provekit_implementation/state")
-DEFAULT_PLAN_PATH = Path("docs/PROVEKIT_ZKP_LOGIC_IMPLEMENTATION_PLAN.md")
+DEFAULT_PLAN_PATH = Path("docs/planning/PROVEKIT_ZKP_LOGIC_IMPLEMENTATION_PLAN.md")
 
 
 class ProveKitImplementationDaemon(PortalImplementationDaemon):

@@ -26,7 +26,7 @@ logger = logging.getLogger("scraper.wallet.implementation.daemon")
 
 WALLET_TASK_PREFIX = "## WALLET-"
 WALLET_STATE_PREFIX = "wallet"
-DEFAULT_TODO_PATH = Path("docs/UCAN_ZK_DATA_WALLET_TODO.md")
+DEFAULT_TODO_PATH = Path("docs/planning/UCAN_ZK_DATA_WALLET_TODO.md")
 DEFAULT_STATE_DIR = Path("data/wallet_implementation/state")
 
 

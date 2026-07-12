@@ -148,7 +148,7 @@ def test_chainlink_service_command_uses_consensus_todo_scope():
         use_ephemeral_worktree=True,
     )
 
-    assert "docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md" in command
+    assert "docs/planning/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md" in command
     assert "## CLZKML-" in command
     assert "clzkml" in command
     assert "--until-complete" not in command
@@ -174,7 +174,7 @@ def test_worldid_service_commands_preserve_parallel_scopes():
         use_ephemeral_worktree=True,
     )
 
-    assert "docs/WORLD_ID_IDKIT_WALLET_TODO.md" in backend_command
+    assert "docs/planning/WORLD_ID_IDKIT_WALLET_TODO.md" in backend_command
     assert "data/world_id_backend_implementation/state" in backend_command
     assert "proofs,core,wallet,privacy,ops,quality" in backend_command
     assert "--allowed-task-ids" not in backend_command

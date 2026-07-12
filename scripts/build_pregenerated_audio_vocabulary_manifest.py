@@ -37,7 +37,7 @@ from scripts.precompute_indextts_responses import (  # noqa: E402
 )
 
 try:  # noqa: E402
-    from scraper.enrich_service_addresses import normalized_query_address_text
+    from scraper.enrichment.enrich_service_addresses import normalized_query_address_text
 except Exception:  # pragma: no cover - fallback for lean environments
     def normalized_query_address_text(address: str) -> str:
         return re.sub(r"\s+", " ", str(address or "")).strip()

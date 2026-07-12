@@ -4,11 +4,11 @@ import re
 from pathlib import Path
 
 
-PLAN = Path("docs/UCAN_ZK_DATA_WALLET_IMPLEMENTATION_PLAN.md")
-TODO = Path("docs/UCAN_ZK_DATA_WALLET_TODO.md")
-RETENTION_POLICY = Path("docs/WALLET_RETENTION_POLICY.md")
-TARGET_SIGNOFF = Path("docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md")
-TARGET_SIGNOFF_PACKET = Path("docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json")
+PLAN = Path("docs/planning/UCAN_ZK_DATA_WALLET_IMPLEMENTATION_PLAN.md")
+TODO = Path("docs/planning/UCAN_ZK_DATA_WALLET_TODO.md")
+RETENTION_POLICY = Path("docs/specs/WALLET_RETENTION_POLICY.md")
+TARGET_SIGNOFF = Path("docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF.md")
+TARGET_SIGNOFF_PACKET = Path("docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json")
 UI_APP = Path("wallet_interface/ui/src/app/App.tsx")
 UI_API = Path("wallet_interface/ui/src/services/walletApi.ts")
 
@@ -18,14 +18,14 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
 
     assert "## Open Decisions" not in text
     assert "## Resolved Decisions" in text
-    assert "docs/WALLET_PRODUCTION_DECISIONS_ADR.md" in text
-    assert "docs/WALLET_UCAN_PROFILE.md" in text
-    assert "docs/WALLET_RETENTION_POLICY.md" in text
-    assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md" in text
-    assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in text
+    assert "docs/adr/WALLET_PRODUCTION_DECISIONS_ADR.md" in text
+    assert "docs/specs/WALLET_UCAN_PROFILE.md" in text
+    assert "docs/specs/WALLET_RETENTION_POLICY.md" in text
+    assert "docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF.md" in text
+    assert "docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in text
     assert "complete conformance fixture validation" in text
     assert "CLI fixture round-trip validation" in text
-    assert "ucan-validate-fixture" in Path("docs/WALLET_UCAN_PROFILE.md").read_text(encoding="utf-8")
+    assert "ucan-validate-fixture" in Path("docs/specs/WALLET_UCAN_PROFILE.md").read_text(encoding="utf-8")
     assert "python -m wallet_interface.ops --validate-production-readiness" in text
     assert "python -m wallet_interface.ops --validate-distance-proof-contract" in text
     assert "python -m wallet_interface.ops --validate-target-signoff-packet" in text
@@ -44,7 +44,7 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "recipient delegated analysis workflows against the live API" in text
     assert "recipient-access UI" in text
     assert "live API browser blackbox" in text
-    assert "docs/UCAN_ZK_DATA_WALLET_TODO.md" in text
+    assert "docs/planning/UCAN_ZK_DATA_WALLET_TODO.md" in text
     assert "scripts/wallet_implementation_daemon.py" in text
     assert "scripts/wallet_implementation_supervisor.py" in text
     assert "ipfs_datasets_py.optimizers.todo_daemon" in text
@@ -119,7 +119,7 @@ def test_ucan_zk_wallet_plan_has_no_stale_mvp_or_open_gap_phrasing() -> None:
 
 
 def test_wallet_docs_do_not_reintroduce_mvp_status_language() -> None:
-    wallet_docs = [PLAN, *sorted(Path("docs").glob("WALLET_*.md"))]
+    wallet_docs = [PLAN, *sorted(Path("docs").rglob("WALLET_*.md"))]
 
     for path in wallet_docs:
         assert "MVP" not in path.read_text(encoding="utf-8")
@@ -134,8 +134,8 @@ def test_ucan_zk_wallet_has_target_signoff_and_retention_artifacts() -> None:
     assert "WALLET_STORAGE_CONFIG" in retention_text
     assert "python -m wallet_interface.ops --validate-production-readiness" in retention_text
     assert "Do not paste secret values" in signoff_text
-    assert "docs/WALLET_RETENTION_POLICY.md" in signoff_text
-    assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in signoff_text
+    assert "docs/specs/WALLET_RETENTION_POLICY.md" in signoff_text
+    assert "docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in signoff_text
     assert "approved `retention_policy_version`" in signoff_text
     assert "status=ok" in signoff_text
     assert "secret_manager_refs" in packet_text
@@ -163,7 +163,7 @@ def test_ucan_zk_wallet_todo_is_connected_to_optimizer_daemon() -> None:
     plan_text = PLAN.read_text(encoding="utf-8")
     todo_text = TODO.read_text(encoding="utf-8")
 
-    assert "Executable backlog: `docs/UCAN_ZK_DATA_WALLET_TODO.md`" in plan_text
+    assert "Executable backlog: `docs/planning/UCAN_ZK_DATA_WALLET_TODO.md`" in plan_text
     assert "python scripts/manage_implementation_services.py status wallet" in plan_text
     assert "restart wallet --implement" in plan_text
     assert "wrapper restart window" in plan_text

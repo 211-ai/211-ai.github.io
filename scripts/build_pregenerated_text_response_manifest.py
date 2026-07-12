@@ -30,7 +30,7 @@ from scripts.precompute_indextts_responses import (  # noqa: E402
 
 
 DEFAULT_OUTPUT = REPO_ROOT / "docs/pregenerated_text_response_manifest.json"
-DEFAULT_REPORT = REPO_ROOT / "docs/PREGENERATED_TEXT_RESPONSE_INVENTORY.md"
+DEFAULT_REPORT = REPO_ROOT / "docs/specs/PREGENERATED_TEXT_RESPONSE_INVENTORY.md"
 SERVED_PUBLIC_ROOT = REPO_ROOT / "wallet_interface" / "ui" / "public"
 
 

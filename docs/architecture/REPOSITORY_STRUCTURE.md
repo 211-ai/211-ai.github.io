@@ -17,16 +17,42 @@ This document is the source of truth for the 211-AI monorepo layout.
 ## Monorepo domains
 
 ### `scraper/`
-Owns service discovery, crawling, extraction, ETL, enrichment, and export workflows for 211 data.
+Owns service discovery, crawling, extraction, ETL, enrichment, and export workflows for 211 data. Organized in processing layers:
+
+- `scraper/acquisition/` — browser, static, and WARC-archive fetching
+- `scraper/parsing/` — text extraction from PDFs and office documents
+- `scraper/enrichment/` — geocoding, DuckDB ETL, normalization, backfill
+- `scraper/export/` — canonical service export, retrieval packages, portal packages
+- `scraper/orchestration/` — supervisors, daemon, main entry point
+- `scraper/config.py`, `scraper/utils.py`, `scraper/storage.py`, `scraper/duckdb_state.py` — shared root modules
+
+Legacy flat import paths (`from scraper import BrowserScraper`, `import scraper.processor`) remain available via `scraper/__init__.py` backward-compatibility aliases.
 
 ### `wallet_interface/`
-Owns the Python wallet application surface, proof integrations, deployment assets, and the embedded Abby UI package.
+Owns the Python wallet application surface, proof integrations, deployment assets, and the embedded Abby UI package. Organized by bounded context:
+
+- `wallet_interface/routes/` — FastAPI router factories grouped by feature area (wallets, records, proofs, exports, analytics, grants, hmis, notifications, dead_drops, ai_router, storage, ops, auth)
+- `wallet_interface/services/` — domain service mixins (wallet, record, interaction)
+- `wallet_interface/schemas/` — Pydantic request/response models grouped by domain
+- `wallet_interface/api.py` — thin FastAPI app factory registering all route modules
+- `wallet_interface/app_service.py` — `WalletInterfaceService` orchestrator
+- `wallet_interface/proof_backends.py`, `world_id.py`, `service_matching.py`, `ops.py`, `cli.py` — domain modules
+- `wallet_interface/deploy/` — Kubernetes, Docker, and storage configuration
+- `wallet_interface/ui/` — Abby React/Vite frontend package
 
 ### `wallet_interface/ui/`
 Owns the React/Vite frontend, client-side agent flows, browser storage adapters, and Playwright-driven UI validation.
 
 ### `docs/`
-Owns canonical architecture records, runbooks, plans, and policy references. Historical working notes are allowed, but they must be called out as non-canonical.
+Owns canonical architecture records, runbooks, plans, and policy references. Organized into subdirectories:
+
+- `docs/adr/` — Architecture Decision Records (stable, append-only)
+- `docs/runbooks/` — Operational runbooks for live environments
+- `docs/specs/` — System specifications, contracts, threat models, and policies
+- `docs/planning/` — Implementation plans, TODO backlogs, and historical working notes *(non-canonical)*
+- `docs/architecture/` — Repository structure contract
+
+Historical working notes are allowed in `docs/planning/`, but they must be clearly labeled as non-canonical.
 
 ### `ops/`
 Owns sandbox or operator-adjacent local files that should not live at repository root.
@@ -58,6 +84,13 @@ Owns historical deliverables, screenshots, review packets, and signoff bundles t
 Use the narrowest existing validation that covers the changed surface:
 
 - scraper changes: `python -m pytest tests/test_scraper.py -q`
+- wallet backend changes: `python -m pytest tests/test_wallet_interface.py tests/test_wallet_interface_api.py -q`
 - packaging/docs changes: `python -m pytest tests/test_wallet_python_dependencies.py -q`
 - UI changes: `cd wallet_interface/ui && npm ci && npm run build`
 - UI browser smoke: `cd wallet_interface/ui && npm run test:smoke`
+- Python lint: `ruff check scraper/ wallet_interface/ tests/`
+- TypeScript type check: `cd wallet_interface/ui && npx tsc --noEmit`
+
+Unit tests (when available): `python -m pytest tests/unit/ -q`
+Contract tests: `python -m pytest tests/contract/ -q`
+Experimental tests (on-demand only): `python -m pytest tests/experimental/ -q`

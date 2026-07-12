@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 import duckdb
 
 if TYPE_CHECKING:
-    from .agentic_daemon import CrawlItem, CrawlState
+    from .orchestration.agentic_daemon import CrawlItem, CrawlState
 
 
 class DuckDBCrawlStore:
@@ -254,7 +254,7 @@ class DuckDBCrawlStore:
                 )
 
     def claim_batch(self, *, limit: int, blocked_urls: set[str]) -> list["CrawlItem"]:
-        from .agentic_daemon import CrawlItem
+        from .orchestration.agentic_daemon import CrawlItem
 
         blocked_urls = {str(url) for url in blocked_urls if str(url).strip()}
         claimed: list["CrawlItem"] = []
@@ -354,7 +354,7 @@ class DuckDBCrawlStore:
         return int(row[0]) if row else 0
 
     def queue_preview(self, *, limit: int = 50) -> list["CrawlItem"]:
-        from .agentic_daemon import CrawlItem
+        from .orchestration.agentic_daemon import CrawlItem
 
         with self._connect(read_only=True) as conn:
             rows = conn.execute(

@@ -213,7 +213,7 @@ def load_query_specs(path: Path | None) -> list[dict[str, Any]]:
 
 def load_vector_context(generated_dir: Path, embedding_index: dict[str, Any]) -> dict[str, Any]:
     try:
-        from scraper.build_retrieval_package import _ensure_torchvision_stub
+        from scraper.export.build_retrieval_package import _ensure_torchvision_stub
 
         _ensure_torchvision_stub()
         from sentence_transformers import SentenceTransformer

@@ -262,7 +262,7 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "world_id_app_id": "app_ci_world_id_wallet",
             "world_id_rp_id": "rp_ci_world_id_wallet",
             "world_id_verify_endpoint": "https://developer.world.org",
-            "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
+            "retention_policy_version": "docs/specs/WALLET_RETENTION_POLICY.md@2026-05-05",
         },
         "secret_manager_refs": {
             "ops_health_secret": "secret://ci/wallet/ops-health",

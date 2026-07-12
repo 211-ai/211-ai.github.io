@@ -182,7 +182,7 @@ python -m wallet_interface.ops --watch --interval-seconds 300 --output-jsonl /va
 ```
 
 Reference Docker and Compose assets are in `wallet_interface/deploy/`. The
-operator runbook is `docs/WALLET_OPERATIONS_RUNBOOK.md`.
+operator runbook is `docs/runbooks/WALLET_OPERATIONS_RUNBOOK.md`.
 
 Repository API endpoints:
 

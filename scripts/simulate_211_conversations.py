@@ -35,7 +35,7 @@ if str(REPO_ROOT) not in sys.path:
 DEFAULT_CORPUS = REPO_ROOT / "wallet_interface/ui/public/corpus/211-info/current/generated/documents.parquet"
 DEFAULT_PROMPTS = REPO_ROOT / "docs/211_service_navigation_prompt_templates.json"
 DEFAULT_RESULTS = REPO_ROOT / "docs/211_chatbot_simulation_results.json"
-DEFAULT_REPORT = REPO_ROOT / "docs/211_chatbot_simulation_report.md"
+DEFAULT_REPORT = REPO_ROOT / "docs/planning/211_chatbot_simulation_report.md"
 DEFAULT_TREE = REPO_ROOT / "docs/211_service_decision_tree.json"
 DEFAULT_MEMORY = REPO_ROOT / "docs/211_conversation_memory.json"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"

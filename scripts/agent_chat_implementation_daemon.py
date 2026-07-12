@@ -26,7 +26,7 @@ logger = logging.getLogger("scraper.agent_chat.implementation.daemon")
 
 AGENT_TASK_PREFIX = "## AGENT-"
 AGENT_STATE_PREFIX = "agent_chat"
-DEFAULT_TODO_PATH = Path("docs/AI_AGENT_CHAT_IMPLEMENTATION_TODO.md")
+DEFAULT_TODO_PATH = Path("docs/planning/AI_AGENT_CHAT_IMPLEMENTATION_TODO.md")
 DEFAULT_STATE_DIR = Path("data/agent_chat_implementation/state")
 
 

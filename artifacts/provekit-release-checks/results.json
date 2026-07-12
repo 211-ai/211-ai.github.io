@@ -28,7 +28,7 @@
       "duration_s": 59.63
     },
     "signoff_doc_exists": {
-      "command": "test -f docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md",
+      "command": "test -f docs/planning/PROVEKIT_ZKP_TARGET_SIGNOFF.md",
       "result": "pass"
     }
   },
@@ -59,7 +59,7 @@
     "fail_closed_zkp_behavior": "Groth16 backend disabled by default; all fail-closed tests pass",
     "deterministic_public_inputs": "Golden vector tests pass; canonicalization determinism verified",
     "no_leak_witness_boundaries": "test_provekit_witness_no_leak.py passes",
-    "security_notes": "docs/PROVEKIT_ZKP_SECURITY_NOTES.md present (PROVEKIT-210 completed)"
+    "security_notes": "docs/specs/PROVEKIT_ZKP_SECURITY_NOTES.md present (PROVEKIT-210 completed)"
   },
   "rollback_readiness": {
     "groth16_backend": "Disabled by default (IPFS_DATASETS_ENABLE_GROTH16=0); set env var to 1 to enable",
