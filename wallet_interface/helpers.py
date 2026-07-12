@@ -782,7 +782,7 @@ def _record_metadata_value(record: Mapping[str, Any], key: str) -> str:
 
 def _safe_short_text(value: Any, *, limit: int = 240) -> str:
     text = str(value or "")
-    text = re.sub(r"[A-Z0-9._%+\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,}", "[email]", text, flags=re.IGNORECASE)
+    text = re.sub(r"[^\s@]+@(?:[A-Z0-9\-]{1,63}\.){1,10}[A-Z]{2,10}", "[email]", text, flags=re.IGNORECASE)
     text = re.sub(r"\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b", "[phone]", text)
     text = re.sub(r"\b\d{4,}\b", "[number]", text)
     return text.strip()[:limit]
