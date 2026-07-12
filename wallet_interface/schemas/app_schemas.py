@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Sequence
+from typing import Any, Dict, List
 
-def _unique_strings(values: Sequence[str] | None) -> List[str]:
+
+def _unique_strings(values: Sequence[str] | None) -> list[str]:
     seen: set[str] = set()
-    result: List[str] = []
+    result: list[str] = []
     for value in values or []:
         item = str(value or "").strip()
         if not item or item in seen:
@@ -33,9 +35,9 @@ class SavedServiceRecord:
     created_at: str = ""
     updated_at: str = ""
     private_notes_record_id: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "saved_service_id": self.saved_service_id,
             "wallet_id": self.wallet_id,
@@ -57,7 +59,7 @@ class SavedServiceRecord:
         }
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "SavedServiceRecord":
+    def from_dict(cls, payload: Mapping[str, Any]) -> SavedServiceRecord:
         return cls(
             saved_service_id=str(payload.get("saved_service_id") or ""),
             wallet_id=str(payload.get("wallet_id") or ""),
@@ -88,20 +90,20 @@ class ServicePlanRecord:
     service_title: str = ""
     provider_name: str = ""
     goal: str = ""
-    steps: List[str] = field(default_factory=list)
-    documents_needed: List[str] = field(default_factory=list)
-    questions_to_ask: List[str] = field(default_factory=list)
+    steps: list[str] = field(default_factory=list)
+    documents_needed: list[str] = field(default_factory=list)
+    questions_to_ask: list[str] = field(default_factory=list)
     appointment_at: str = ""
     reminder_at: str = ""
     travel_target: str = ""
     assigned_worker_recipient_id: str = ""
     status: str = "active"
-    related_interaction_ids: List[str] = field(default_factory=list)
+    related_interaction_ids: list[str] = field(default_factory=list)
     private_notes_record_id: str = ""
     created_at: str = ""
     updated_at: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "plan_id": self.plan_id,
             "wallet_id": self.wallet_id,
@@ -126,7 +128,7 @@ class ServicePlanRecord:
         }
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "ServicePlanRecord":
+    def from_dict(cls, payload: Mapping[str, Any]) -> ServicePlanRecord:
         return cls(
             plan_id=str(payload.get("plan_id") or ""),
             wallet_id=str(payload.get("wallet_id") or ""),
@@ -171,14 +173,14 @@ class ServiceInteractionRecord:
     next_action: str = ""
     next_follow_up_at: str = ""
     source_action_url: str = ""
-    related_grant_ids: List[str] = field(default_factory=list)
-    related_record_ids: List[str] = field(default_factory=list)
+    related_grant_ids: list[str] = field(default_factory=list)
+    related_record_ids: list[str] = field(default_factory=list)
     privacy_level: str = "private"
     created_at: str = ""
     updated_at: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "interaction_id": self.interaction_id,
             "wallet_id": self.wallet_id,
@@ -208,7 +210,7 @@ class ServiceInteractionRecord:
         }
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "ServiceInteractionRecord":
+    def from_dict(cls, payload: Mapping[str, Any]) -> ServiceInteractionRecord:
         return cls(
             interaction_id=str(payload.get("interaction_id") or ""),
             wallet_id=str(payload.get("wallet_id") or ""),

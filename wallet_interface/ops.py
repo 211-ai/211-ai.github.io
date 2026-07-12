@@ -8,10 +8,11 @@ import os
 import sys
 import tempfile
 import time
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, IO, Mapping, Sequence
+from typing import IO, Any
 from urllib import request as urllib_request
 
 from .app_service import WalletInterfaceService
@@ -429,7 +430,7 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
     scraping reviewer notes from the human-readable Markdown checklist.
     """
 
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     checks: list[dict[str, Any]] = []
 
     def add_check(name: str, status: str, summary: str, details: dict[str, Any] | None = None) -> None:
@@ -664,7 +665,7 @@ def validate_target_signoff_packet_template(
 ) -> dict[str, Any]:
     """Validate that the committed signoff packet template has the required shape."""
 
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     resolved_path = Path(template_path)
     checks: list[dict[str, Any]] = []
 
@@ -807,7 +808,7 @@ def validate_proof_contract(service: WalletInterfaceService | None = None) -> di
     """Validate the configured external location proof verifier contract."""
     resolved_service = service or WalletInterfaceService()
     backend = resolved_service.wallet_service.proof_backend
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     if not hasattr(backend, "validate_contract"):
         return {
             "source": "wallet_interface.ops",
@@ -857,7 +858,7 @@ def validate_distance_proof_contract(service: WalletInterfaceService | None = No
     """Validate the configured external location-distance proof verifier contract."""
     resolved_service = service or WalletInterfaceService()
     backend = resolved_service.wallet_service.proof_backend
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     if not hasattr(backend, "validate_distance_contract"):
         return {
             "source": "wallet_interface.ops",
@@ -918,7 +919,7 @@ def validate_production_readiness(
     the secret values themselves.
     """
 
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     checks: list[dict[str, Any]] = []
 
     def add_check(name: str, status: str, summary: str, details: dict[str, Any] | None = None) -> None:

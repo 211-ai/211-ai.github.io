@@ -1,6 +1,7 @@
 """HMIS integration contracts for 211-AI wallet workflows."""
 
 from .adapters import ManualReviewHmisAdapter
+from .consent import HmisConsentDecision, evaluate_hmis_consent
 from .errors import (
     HmisAdapterError,
     HmisConfigError,
@@ -10,7 +11,6 @@ from .errors import (
     HmisMatchError,
     HmisPolicyError,
 )
-from .consent import HmisConsentDecision, evaluate_hmis_consent
 from .mapper import HmisFieldMapping, HmisMappingRegistry
 from .models import (
     HmisActionType,

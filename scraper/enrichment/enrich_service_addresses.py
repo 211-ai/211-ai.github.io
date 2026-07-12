@@ -17,7 +17,6 @@ import pandas as pd
 from ..export.build_service_portal_package import compact_json, utc_now
 from ..utils import clean_text, setup_logging
 
-
 logger = setup_logging()
 
 DEFAULT_PORTAL_DIR = Path("data/portal")

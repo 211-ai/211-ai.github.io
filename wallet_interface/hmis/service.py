@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from hashlib import sha256
 import json
-from typing import Any, Mapping
+from collections.abc import Mapping
+from dataclasses import dataclass
+from datetime import UTC, datetime, timezone
+from hashlib import sha256
+from typing import Any
 from uuid import uuid4
 
 from .adapters.base import HmisAdapter
@@ -16,7 +17,7 @@ from .models import HmisActionType, HmisAdapterResult, HmisConsentRecord, HmisSy
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _payload_hash(payload: Mapping[str, Any]) -> str:

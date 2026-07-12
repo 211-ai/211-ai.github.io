@@ -2,14 +2,29 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    status = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _match_to_dict,
+)
+from ..schemas import (
+    AnalyticsConsentFromTemplateRequest,
+    AnalyticsConsentRevokeRequest,
+    AnalyticsContributionRequest,
+    AnalyticsTemplateRequest,
+    DerivedServiceMatchRequest,
+    PrivateAggregateCohortCountRequest,
+    PrivateAggregateCountRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +33,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.post("/analytics/templates")
-    def create_analytics_template(request: AnalyticsTemplateRequest) -> Dict[str, Any]:
+    def create_analytics_template(request: AnalyticsTemplateRequest) -> dict[str, Any]:
         try:
             template = app_service.create_analytics_template(
                 template_id=request.template_id,
@@ -38,7 +53,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/analytics/templates")
-    def list_analytics_templates(include_inactive: bool = False) -> Dict[str, Any]:
+    def list_analytics_templates(include_inactive: bool = False) -> dict[str, Any]:
         return {
             "templates": [
                 template.to_dict()
@@ -48,7 +63,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/analytics/consents")
-    def list_analytics_consents(wallet_id: str, status: str = "all") -> Dict[str, Any]:
+    def list_analytics_consents(wallet_id: str, status: str = "all") -> dict[str, Any]:
         try:
             return {
                 "consents": [
@@ -64,7 +79,7 @@ def create_router(service: WalletInterfaceService):
     def create_analytics_consent_from_template(
         wallet_id: str,
         request: AnalyticsConsentFromTemplateRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             consent = app_service.create_analytics_consent_from_template(
                 wallet_id,
@@ -82,7 +97,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         consent_id: str,
         request: AnalyticsConsentRevokeRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             consent = app_service.revoke_analytics_consent(
                 wallet_id,
@@ -98,7 +113,7 @@ def create_router(service: WalletInterfaceService):
     def create_analytics_contribution(
         wallet_id: str,
         request: AnalyticsContributionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             contribution = app_service.contribute_analytics_facts(
                 wallet_id,
@@ -118,7 +133,7 @@ def create_router(service: WalletInterfaceService):
     def run_private_aggregate_count(
         template_id: str,
         request: PrivateAggregateCountRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             result = app_service.run_private_aggregate_count(
                 template_id,
@@ -137,7 +152,7 @@ def create_router(service: WalletInterfaceService):
     def run_private_aggregate_count_by_fields(
         template_id: str,
         request: PrivateAggregateCohortCountRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             result = app_service.run_private_aggregate_count_by_fields(
                 template_id,
@@ -154,7 +169,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/services/match-derived")
-    def match_services_from_derived(request: DerivedServiceMatchRequest) -> Dict[str, Any]:
+    def match_services_from_derived(request: DerivedServiceMatchRequest) -> dict[str, Any]:
         try:
             matches = app_service.match_services_from_derived_facts(
                 derived_facts={

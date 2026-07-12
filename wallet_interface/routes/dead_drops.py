@@ -2,14 +2,30 @@
 
 from __future__ import annotations
 
+from typing import Any
+from urllib import error as urllib_error
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, Header, HTTPException
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    Header = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    OPS_DEAD_DROP_ACTOR_DID,
+    _extract_bearer_token,
+    _ops_health_shared_secret,
+    _require_portland_police_missing_email,
+    _send_dead_drop_email,
+)
+from ..schemas import (
+    MissingPersonDeadDropConfigRequest,
+    MissingPersonDeadDropDispatchRequest,
+    MissingPersonDeadDropEmailRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -20,7 +36,7 @@ def create_router(service: WalletInterfaceService):
     @router.post("/wallets/{wallet_id}/dead-drops/missing-person")
     def send_missing_person_dead_drop_email(
         wallet_id: str, request: MissingPersonDeadDropEmailRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             app_service.get_wallet(wallet_id)
             app_service._require_portal_actor(wallet_id, request.actor_did)
@@ -59,7 +75,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/dead-drops/missing-person")
-    def get_missing_person_dead_drop(wallet_id: str) -> Dict[str, Any]:
+    def get_missing_person_dead_drop(wallet_id: str) -> dict[str, Any]:
         try:
             return app_service.get_missing_person_dead_drop(wallet_id).to_dict()
         except Exception as exc:
@@ -67,7 +83,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.put("/wallets/{wallet_id}/dead-drops/missing-person")
-    def save_missing_person_dead_drop(wallet_id: str, request: MissingPersonDeadDropConfigRequest) -> Dict[str, Any]:
+    def save_missing_person_dead_drop(wallet_id: str, request: MissingPersonDeadDropConfigRequest) -> dict[str, Any]:
         try:
             record = app_service.save_missing_person_dead_drop(
                 wallet_id,
@@ -89,7 +105,7 @@ def create_router(service: WalletInterfaceService):
     @router.post("/wallets/{wallet_id}/dead-drops/missing-person/dispatch")
     def dispatch_missing_person_dead_drop(
         wallet_id: str, request: MissingPersonDeadDropDispatchRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             record = app_service.get_missing_person_dead_drop_for_dispatch(
                 wallet_id,
@@ -141,7 +157,7 @@ def create_router(service: WalletInterfaceService):
     def process_due_missing_person_dead_drops(
         authorization: str | None = Header(default=None),
         x_wallet_ops_shared_secret: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         expected_secret = _ops_health_shared_secret()
         if not expected_secret:
             raise HTTPException(
@@ -155,7 +171,7 @@ def create_router(service: WalletInterfaceService):
             due_records = app_service.list_due_missing_person_dead_drops()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        results: List[Dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
         sent = 0
         failed = 0
         for record in due_records:

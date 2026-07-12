@@ -2,14 +2,35 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    status = None  # type: ignore[assignment]
+
+from ipfs_datasets_py.wallet.ucan import invocation_to_token
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _key_from_optional_hex,
+)
+from ..schemas import (
+    AccessRequestCreateRequest,
+    AccessRequestDecisionRequest,
+    AnalysisGrantRequest,
+    AnalysisInvocationRequest,
+    DelegateGrantRequest,
+    EmergencyRevokeRequest,
+    RecordGrantRequest,
+    RevokeGrantRequest,
+    ServicePlanShareGrantRequest,
+    ThresholdApprovalCreateRequest,
+    ThresholdApprovalDecisionRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -22,7 +43,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         plan_id: str,
         request: ServicePlanShareGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             result = app_service.create_service_plan_share_grant(
                 wallet_id,
@@ -49,7 +70,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         service_doc_id: str,
         request: ServicePlanShareGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             result = app_service.create_service_share_grant(
                 wallet_id,
@@ -76,7 +97,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: AnalysisGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.create_record_analysis_grant(
                 wallet_id,
@@ -97,7 +118,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RecordGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.create_record_grant(
                 wallet_id,
@@ -125,7 +146,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: AnalysisInvocationRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             invocation = app_service.issue_record_analysis_invocation(
                 wallet_id,
@@ -148,7 +169,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: AnalysisInvocationRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             invocation = app_service.issue_record_decrypt_invocation(
                 wallet_id,
@@ -167,7 +188,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/access-requests")
-    def request_access(wallet_id: str, request: AccessRequestCreateRequest) -> Dict[str, Any]:
+    def request_access(wallet_id: str, request: AccessRequestCreateRequest) -> dict[str, Any]:
         try:
             access_request = app_service.request_record_access(
                 wallet_id,
@@ -189,7 +210,7 @@ def create_router(service: WalletInterfaceService):
         status: str = "pending",
         requester_did: str | None = None,
         audience_did: str | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             normalized_status = None if status == "all" else status
             requests = app_service.access_request_review_items(
@@ -208,7 +229,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         request_id: str,
         request: AccessRequestDecisionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             access_request = app_service.approve_access_request(
                 wallet_id,
@@ -234,7 +255,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         request_id: str,
         request: AccessRequestDecisionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             access_request = app_service.reject_access_request(
                 wallet_id,
@@ -252,7 +273,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         request_id: str,
         request: AccessRequestDecisionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             access_request = app_service.revoke_access_request(
                 wallet_id,
@@ -269,7 +290,7 @@ def create_router(service: WalletInterfaceService):
     def request_threshold_approval(
         wallet_id: str,
         request: ThresholdApprovalCreateRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             approval = app_service.request_threshold_approval(
                 wallet_id,
@@ -285,7 +306,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/approvals")
-    def list_threshold_approvals(wallet_id: str, status: str = "all") -> Dict[str, Any]:
+    def list_threshold_approvals(wallet_id: str, status: str = "all") -> dict[str, Any]:
         try:
             normalized_status = None if status == "all" else status
             approvals = app_service.list_threshold_approvals(wallet_id, status=normalized_status)
@@ -299,7 +320,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         approval_id: str,
         request: ThresholdApprovalDecisionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             approval = app_service.approve_threshold_approval(
                 wallet_id,
@@ -312,7 +333,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/grants/{grant_id}/revoke")
-    def revoke_grant(wallet_id: str, grant_id: str, request: RevokeGrantRequest) -> Dict[str, Any]:
+    def revoke_grant(wallet_id: str, grant_id: str, request: RevokeGrantRequest) -> dict[str, Any]:
         try:
             grant = app_service.revoke_grant(wallet_id, grant_id, actor_did=request.actor_did)
             return grant.to_dict()
@@ -321,7 +342,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/emergency-revoke")
-    def emergency_revoke(wallet_id: str, request: EmergencyRevokeRequest) -> Dict[str, Any]:
+    def emergency_revoke(wallet_id: str, request: EmergencyRevokeRequest) -> dict[str, Any]:
         try:
             return app_service.emergency_revoke(
                 wallet_id,
@@ -340,7 +361,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         parent_grant_id: str,
         request: DelegateGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.delegate_grant(
                 wallet_id,
@@ -364,7 +385,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         audience_did: str | None = None,
         status: str = "all",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             normalized_status = None if status == "all" else status
             receipts = app_service.list_grant_receipts(

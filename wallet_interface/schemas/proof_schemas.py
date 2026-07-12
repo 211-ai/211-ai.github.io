@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any, Dict, List
 
 from .base import BaseModel, Field
+
 
 class CoarseLocationGrantRequest(BaseModel):
     issuer_did: str
@@ -54,7 +56,7 @@ class LocationDistanceProofRequest(BaseModel):
 
 class DocumentPrivacyProfileProofRequest(BaseModel):
     actor_did: str
-    public_inputs: Dict[str, Any] = Field(default_factory=dict)
+    public_inputs: dict[str, Any] = Field(default_factory=dict)
 
 
 __all__ = [

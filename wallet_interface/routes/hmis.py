@@ -2,14 +2,26 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    status = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..schemas import (
+    HmisClientLookupRequest,
+    HmisHouseholdLookupRequest,
+    HmisProgramLinkListRequest,
+    HmisReferralDraftRequest,
+    HmisReferralDraftSubmitRequest,
+    HmisReferralDraftUpdateRequest,
+    HmisReferralDraftValidationRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +30,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.post("/wallets/{wallet_id}/hmis/lookup-clients")
-    def lookup_hmis_clients(wallet_id: str, request: HmisClientLookupRequest) -> Dict[str, Any]:
+    def lookup_hmis_clients(wallet_id: str, request: HmisClientLookupRequest) -> dict[str, Any]:
         try:
             return app_service.lookup_hmis_clients(
                 wallet_id,
@@ -32,7 +44,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/hmis/lookup-households")
-    def lookup_hmis_households(wallet_id: str, request: HmisHouseholdLookupRequest) -> Dict[str, Any]:
+    def lookup_hmis_households(wallet_id: str, request: HmisHouseholdLookupRequest) -> dict[str, Any]:
         try:
             return app_service.lookup_hmis_households(
                 wallet_id,
@@ -45,7 +57,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/hmis/program-links")
-    def list_hmis_program_links(wallet_id: str, request: HmisProgramLinkListRequest) -> Dict[str, Any]:
+    def list_hmis_program_links(wallet_id: str, request: HmisProgramLinkListRequest) -> dict[str, Any]:
         try:
             return app_service.list_hmis_program_links(
                 wallet_id,
@@ -58,7 +70,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/hmis/referral-drafts")
-    def list_hmis_referral_drafts(wallet_id: str, status: str | None = None) -> Dict[str, Any]:
+    def list_hmis_referral_drafts(wallet_id: str, status: str | None = None) -> dict[str, Any]:
         try:
             return {
                 "referral_drafts": [
@@ -70,7 +82,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/hmis/referral-drafts")
-    def create_hmis_referral_draft(wallet_id: str, request: HmisReferralDraftRequest) -> Dict[str, Any]:
+    def create_hmis_referral_draft(wallet_id: str, request: HmisReferralDraftRequest) -> dict[str, Any]:
         try:
             return app_service.create_hmis_referral_draft(
                 wallet_id,
@@ -97,7 +109,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         referral_draft_id: str,
         request: HmisReferralDraftUpdateRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return app_service.update_hmis_referral_draft(
                 wallet_id,
@@ -125,7 +137,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         referral_draft_id: str,
         request: HmisReferralDraftValidationRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return app_service.validate_hmis_referral_draft(
                 wallet_id,
@@ -141,7 +153,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         referral_draft_id: str,
         request: HmisReferralDraftSubmitRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return app_service.submit_hmis_referral_draft(
                 wallet_id,

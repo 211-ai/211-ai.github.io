@@ -2,14 +2,41 @@
 
 from __future__ import annotations
 
+import hashlib
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, File, Form, HTTPException, Request, Response, UploadFile
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    File = None  # type: ignore[assignment]
+    Form = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    Request = None  # type: ignore[assignment]
+    Response = None  # type: ignore[assignment]
+    UploadFile = None  # type: ignore[assignment]
+
+from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    FilecoinPinHandoffError,
+    _fetch_filecoin_pin_status,
+    _fetch_ipfs_cid_via_gateway,
+    _filecoin_upload_status_url,
+    _ipfs_proxy_allows_cid,
+    _ipfs_proxy_media_type,
+    _normalize_ipfs_cid,
+    _parse_upload_metadata,
+    _publish_bytes_to_ipfs,
+    _publish_encrypted_record_graph_to_ipfs,
+    _valid_ipfs_cid,
+)
+from ..schemas import (
+    FilecoinRecordUploadRequest,
+    RepairStorageRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -22,7 +49,7 @@ def create_router(service: WalletInterfaceService):
         request: Request,
         file: UploadFile | None = File(default=None),
         metadata: str | None = Form(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             content_type = request.headers.get("content-type", "")
             if "application/json" in content_type:
@@ -84,7 +111,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/filecoin-upload/status/{request_id}")
-    def get_filecoin_upload_status(request_id: str) -> Dict[str, Any]:
+    def get_filecoin_upload_status(request_id: str) -> dict[str, Any]:
         try:
             payload = _fetch_filecoin_pin_status(request_id)
             normalized_request_id = str(
@@ -106,7 +133,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/records/{record_id}/storage")
-    def verify_record_storage(wallet_id: str, record_id: str) -> Dict[str, Any]:
+    def verify_record_storage(wallet_id: str, record_id: str) -> dict[str, Any]:
         try:
             report = app_service.verify_record_storage(wallet_id, record_id)
             return report.to_dict()
@@ -115,7 +142,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/storage")
-    def verify_wallet_storage(wallet_id: str) -> Dict[str, Any]:
+    def verify_wallet_storage(wallet_id: str) -> dict[str, Any]:
         try:
             report = app_service.verify_wallet_storage(wallet_id)
             return report.to_dict()
@@ -124,7 +151,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/storage/repair")
-    def repair_wallet_storage(wallet_id: str, request: RepairStorageRequest) -> Dict[str, Any]:
+    def repair_wallet_storage(wallet_id: str, request: RepairStorageRequest) -> dict[str, Any]:
         try:
             report = app_service.repair_wallet_storage(wallet_id, actor_did=request.actor_did)
             return report.to_dict()
@@ -137,7 +164,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RepairStorageRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             report = app_service.repair_record_storage(
                 wallet_id,

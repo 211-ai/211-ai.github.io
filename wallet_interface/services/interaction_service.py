@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime, timezone
+from typing import Any, Dict, List
 from uuid import uuid4
 
 from .._vendor import ensure_ipfs_datasets_py_path
@@ -14,8 +15,9 @@ from ipfs_datasets_py.wallet.ucan import resource_for_wallet
 
 from ..schemas.app_schemas import SavedServiceRecord, ServiceInteractionRecord, ServicePlanRecord
 
+
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 def _portal_now() -> str:
     return _utc_now()
@@ -23,9 +25,9 @@ def _portal_now() -> str:
 def _portal_id(prefix: str) -> str:
     return f"{prefix}-{uuid4().hex}"
 
-def _unique_strings(values: Sequence[str] | None) -> List[str]:
+def _unique_strings(values: Sequence[str] | None) -> list[str]:
     seen: set[str] = set()
-    result: List[str] = []
+    result: list[str] = []
     for value in values or []:
         item = str(value or "").strip()
         if not item or item in seen:
@@ -169,7 +171,7 @@ class InteractionDomainServiceMixin:
         return record
 
 
-    def list_saved_services(self, wallet_id: str, *, status: str | None = None) -> List[SavedServiceRecord]:
+    def list_saved_services(self, wallet_id: str, *, status: str | None = None) -> list[SavedServiceRecord]:
         self.wallet_service._wallet(wallet_id)
         records = [record for record in self.saved_services.values() if record.wallet_id == wallet_id]
         if status is not None:
@@ -311,7 +313,7 @@ class InteractionDomainServiceMixin:
         *,
         service_doc_id: str | None = None,
         status: str | None = None,
-    ) -> List[ServicePlanRecord]:
+    ) -> list[ServicePlanRecord]:
         self.wallet_service._wallet(wallet_id)
         records = [record for record in self.service_plans.values() if record.wallet_id == wallet_id]
         if service_doc_id is not None:
@@ -480,7 +482,7 @@ class InteractionDomainServiceMixin:
         service_doc_id: str | None = None,
         interaction_type: str | None = None,
         status: str | None = None,
-    ) -> List[ServiceInteractionRecord]:
+    ) -> list[ServiceInteractionRecord]:
         self.wallet_service._wallet(wallet_id)
         records = [record for record in self.service_interactions.values() if record.wallet_id == wallet_id]
         if service_doc_id is not None:

@@ -2,14 +2,30 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+
+from ipfs_datasets_py.wallet.ucan import invocation_to_token
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _key_from_optional_hex,
+)
+from ..schemas import (
+    CoarseLocationGrantRequest,
+    CoarseLocationInvocationRequest,
+    DocumentPrivacyProfileProofRequest,
+    LocationDistanceProofGrantRequest,
+    LocationDistanceProofRequest,
+    LocationRegionProofGrantRequest,
+    LocationRegionProofRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -22,7 +38,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: CoarseLocationGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.create_coarse_location_grant(
                 wallet_id,
@@ -43,7 +59,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: CoarseLocationInvocationRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             invocation = app_service.issue_coarse_location_invocation(
                 wallet_id,
@@ -65,7 +81,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: LocationRegionProofGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.create_location_region_proof_grant(
                 wallet_id,
@@ -84,7 +100,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: LocationRegionProofRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             proof = app_service.create_location_region_proof(
                 wallet_id,
@@ -103,7 +119,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: LocationDistanceProofGrantRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             grant = app_service.create_location_distance_proof_grant(
                 wallet_id,
@@ -124,7 +140,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         location_record_id: str,
         request: LocationDistanceProofRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             proof = app_service.create_location_distance_proof(
                 wallet_id,
@@ -146,7 +162,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: DocumentPrivacyProfileProofRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             proof = app_service.create_document_profile_proof(
                 wallet_id,
@@ -160,7 +176,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/proofs")
-    def list_proof_receipts(wallet_id: str) -> Dict[str, Any]:
+    def list_proof_receipts(wallet_id: str) -> dict[str, Any]:
         try:
             return {"proofs": [proof.to_dict() for proof in app_service.list_proof_receipts(wallet_id)]}
         except Exception as exc:

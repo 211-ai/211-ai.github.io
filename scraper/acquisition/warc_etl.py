@@ -11,12 +11,15 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from bs4 import BeautifulSoup
 
+from ..config import Config
+from ..enrichment.duckdb_etl import DuckDBETLWarehouse
 from ..orchestration.agentic_daemon import (
     AgenticCrawlerDaemon,
     CrawlItem,
@@ -24,8 +27,6 @@ from ..orchestration.agentic_daemon import (
     extract_links,
     utc_now,
 )
-from ..config import Config
-from ..enrichment.duckdb_etl import DuckDBETLWarehouse
 from ..parsing.processor import DataProcessor
 from ..storage import Storage
 from ..utils import clean_text, setup_logging

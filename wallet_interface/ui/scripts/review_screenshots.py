@@ -14,10 +14,9 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
-
 
 # Keep health checks and review runs from triggering package auto-installers.
 os.environ.setdefault("IPFS_DATASETS_AUTO_INSTALL", "0")
@@ -230,7 +229,7 @@ def build_result_entry(target: ReviewTarget, feedback: str) -> dict[str, Any]:
 
 def write_outputs(output_dir: Path, entries: list[dict[str, Any]], *, dry_run: bool) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     payload = {
         "generatedAt": generated_at,
         "dryRun": dry_run,

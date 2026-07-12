@@ -88,7 +88,7 @@ class BrowserScraper:
     # Context manager
     # ------------------------------------------------------------------
 
-    async def __aenter__(self) -> "BrowserScraper":
+    async def __aenter__(self) -> BrowserScraper:
         from playwright.async_api import async_playwright
 
         self._playwright = await async_playwright().start()

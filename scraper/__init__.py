@@ -8,8 +8,8 @@ importable through lazy aliases for backward compatibility.
 
 from __future__ import annotations
 
-from importlib import abc, import_module, util
 import sys
+from importlib import abc, import_module, util
 
 from .config import Config
 from .storage import Storage

@@ -1,1056 +1,39 @@
-"""Helper utilities for the 211-AI wallet interface API.
-
-All private helpers that were previously in api.py live here so that
-``api.py`` can stay as a thin app-factory.
-"""
 # ruff: noqa: E501
+"""IndexTTS / Gradio / Whisper / voice-reply / speech-normalisation helpers."""
 
 from __future__ import annotations
 
 import base64
 import concurrent.futures
-from contextlib import contextmanager
 import hashlib
-import hmac
 import io
 import json
 import math
 import mimetypes
 import os
 import re
-import smtplib
 import struct
 import threading
 import time
 import uuid
 import wave
 import zipfile
-import secrets
-from email.message import EmailMessage
-from email.utils import make_msgid
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from contextlib import contextmanager
+from typing import Any
 from urllib import error as urllib_error
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
-from .app_service import WalletInterfaceService
-
-try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import Body, FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
-    from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel, Field
-except ImportError:  # pragma: no cover
-    FastAPI = None  # type: ignore[assignment]
-    Body = None  # type: ignore[assignment]
-    CORSMiddleware = None  # type: ignore[assignment]
-    File = None  # type: ignore[assignment]
-    Form = None  # type: ignore[assignment]
-    Header = None  # type: ignore[assignment]
-    HTTPException = None  # type: ignore[assignment]
-    Request = object  # type: ignore[assignment,misc]
-    Response = object  # type: ignore[assignment,misc]
-    UploadFile = object  # type: ignore[assignment,misc]
-    BaseModel = object  # type: ignore[assignment,misc]
-
-    def Field(default: Any = None, **_: Any) -> Any:  # type: ignore[no-redef]
-        return default
-
-from ._vendor import ensure_ipfs_datasets_py_path
+from .._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
-from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
 from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
-from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
+
 from ipfs_accelerate_py import HFSpaceClient  # noqa: E402
 
-
-PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
-OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
-_IPFS_CID_PATTERN = re.compile(r"^(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})$")
-_AI_ROUTER_RATE_LIMITS: Dict[str, Dict[str, Any]] = {}
-
-
-class FilecoinPinHandoffError(RuntimeError):
-    """Raised when the optional Filecoin Pin sidecar handoff fails."""
-
-
-def _cors_origins_from_env() -> list[str]:
-    origins = [
-        origin.strip()
-        for origin in os.environ.get("WALLET_API_CORS_ORIGINS", "").split(",")
-        if origin.strip()
-    ]
-    return origins
-
-
-def _prepare_hf_router_environment(kwargs: Dict[str, Any] | None = None) -> Dict[str, Any]:
-    """Make encrypted HF credentials visible to ipfs_datasets_py router helpers."""
-    token = (
-        resolve_secret(
-            "IPFS_DATASETS_PY_HF_API_TOKEN",
-            "HF_TOKEN",
-            "HUGGINGFACEHUB_API_TOKEN",
-            "HUGGINGFACE_API_TOKEN",
-            "HUGGINGFACE_HUB_TOKEN",
-            "HF_API_TOKEN",
-        )
-        or ""
-    ).strip()
-    if token:
-        for key in ("IPFS_DATASETS_PY_HF_API_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN"):
-            if not os.getenv(key, "").strip():
-                os.environ[key] = token
-    bill_to = (
-        os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
-        or os.getenv("HUGGINGFACE_BILL_TO")
-        or os.getenv("HF_BILL_TO")
-        or "publicus"
-    ).strip()
-    if bill_to:
-        os.environ.setdefault("IPFS_DATASETS_PY_HF_BILL_TO", bill_to)
-        os.environ.setdefault("HUGGINGFACE_BILL_TO", bill_to)
-    router_kwargs = dict(kwargs or {})
-    if bill_to:
-        router_kwargs.setdefault("bill_to", bill_to)
-        router_kwargs.setdefault("organization", bill_to)
-    router_kwargs.setdefault("hf_provider", os.getenv("IPFS_DATASETS_PY_HF_PROVIDER", "auto"))
-    return router_kwargs
-
-
-def _normalize_ipfs_cid(value: str) -> str:
-    normalized = str(value or "").strip()
-    normalized = normalized.replace("ipfs://", "")
-    normalized = re.sub(r"^/?ipfs/", "", normalized)
-    normalized = normalized.split("/", 1)[0].strip()
-    return normalized
-
-
-def _valid_ipfs_cid(value: str) -> bool:
-    return bool(_IPFS_CID_PATTERN.match(_normalize_ipfs_cid(value)))
-
-
-def _ipfs_proxy_allowed_cids_from_env() -> set[str]:
-    raw = str(os.getenv("WALLET_IPFS_PROXY_ALLOWED_CIDS") or "")
-    return {
-        normalized
-        for part in re.split(r"[\s,]+", raw)
-        if (normalized := _normalize_ipfs_cid(part))
-    }
-
-
-def _ipfs_proxy_allows_cid(cid: str) -> bool:
-    normalized = _normalize_ipfs_cid(cid)
-    allowed = _ipfs_proxy_allowed_cids_from_env()
-    if not allowed:
-        return True
-    return normalized in allowed
-
-
-def _ipfs_proxy_media_type(data: bytes) -> str:
-    try:
-        decoded = data.decode("utf-8")
-        json.loads(decoded)
-        return "application/json"
-    except Exception:
-        return "application/octet-stream"
-
-
-def _ipfs_proxy_fallback_gateways() -> list[str]:
-    configured = [
-        gateway.strip().rstrip("/")
-        for gateway in os.getenv("WALLET_IPFS_PROXY_FALLBACK_GATEWAYS", "").split(",")
-        if gateway.strip()
-    ]
-    if configured:
-        return configured
-    return [
-        "https://w3s.link/ipfs",
-        "https://ipfs.io/ipfs",
-        "https://dweb.link/ipfs",
-    ]
-
-
-def _fetch_ipfs_cid_via_gateway(cid: str) -> bytes:
-    last_error: Exception | None = None
-    for gateway in _ipfs_proxy_fallback_gateways():
-        url = f"{gateway.rstrip('/')}/{urllib_parse.quote(cid, safe='')}"
-        try:
-            req = urllib_request.Request(url, headers={"Accept": "application/octet-stream,*/*"})
-            with urllib_request.urlopen(req, timeout=30) as response:
-                return response.read()
-        except Exception as exc:
-            last_error = exc
-    raise RuntimeError(f"Unable to fetch CID from fallback gateways: {last_error}") from last_error
-
-
-def _wallet_interface_service_from_env() -> WalletInterfaceService:
-    services_jsonl = str(os.environ.get("WALLET_SERVICES_JSONL") or "").strip()
-    if services_jsonl:
-        return WalletInterfaceService.from_services_jsonl(services_jsonl)
-    return WalletInterfaceService()
-
-
-
-
-def _ops_health_shared_secret() -> str:
-    return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
-
-
-def _extract_bearer_token(authorization: str | None) -> str:
-    raw = str(authorization or "").strip()
-    if not raw:
-        return ""
-    scheme, _, token = raw.partition(" ")
-    if scheme.lower() != "bearer":
-        return ""
-    return token.strip()
-
-
-def _require_portland_police_missing_email(to_email: str) -> str:
-    normalized = str(to_email or "").strip().lower()
-    if normalized != PORTLAND_POLICE_MISSING_EMAIL:
-        raise ValueError(
-            f"missing-person dead drop recipient must be {PORTLAND_POLICE_MISSING_EMAIL}"
-        )
-    return PORTLAND_POLICE_MISSING_EMAIL
-
-
-def _normalize_phone_number(phone: str) -> str:
-    raw = str(phone or "").strip()
-    if not raw:
-        raise ValueError("to_phone is required")
-    digits = re.sub(r"\D", "", raw)
-    if len(digits) < 10:
-        raise ValueError("to_phone must include at least 10 digits")
-    return f"+{digits}" if raw.startswith("+") else digits
-
-
-def _normalize_login_contact(value: str) -> str:
-    normalized = str(value or "").strip()
-    if "@" in normalized:
-        normalized = normalized.lower()
-        _parts = normalized.split("@")
-        if len(_parts) != 2 or not _parts[0] or not _parts[1] or "." not in _parts[1]:
-            raise ValueError("contact must be a valid email address or telephone number")
-        return normalized
-    return _normalize_phone_number(normalized)
-
-
-def _is_email_contact(value: str) -> bool:
-    return "@" in str(value or "")
-
-
-def _sms_inbound_actor_did() -> str:
-    return str(os.getenv("WALLET_SMS_INBOUND_ACTOR_DID") or "did:wallet:sms-bridge").strip()
-
-
-def _require_internal_webhook_auth(
-    *,
-    env_prefix: str,
-    authorization: str | None,
-    headers: Mapping[str, str],
-    error_detail: str,
-) -> None:
-    expected_bearer = str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip()
-    header_name = str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip()
-    header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
-    if header_name and not header_value:
-        raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
-
-    supplied_bearer = _extract_bearer_token(authorization)
-    if expected_bearer and supplied_bearer == expected_bearer:
-        return
-    if header_name and str(headers.get(header_name) or "").strip() == header_value:
-        return
-    if not expected_bearer and not header_name:
-        raise RuntimeError(
-            f"{env_prefix}_BEARER_TOKEN or {env_prefix}_HTTP_HEADER_NAME must be configured for inbound webhook delivery"
-        )
-    raise HTTPException(status_code=401, detail=error_detail)
-
-
-def _send_webhook_notification(
-    *,
-    env_prefix: str,
-    required_key: str,
-    required_value: str,
-    extra_payload: Dict[str, Any] | None = None,
-) -> Dict[str, str]:
-    webhook_url = str(os.getenv(f"{env_prefix}_WEBHOOK_URL") or "").strip()
-    backend = str(os.getenv(f"{env_prefix}_BACKEND") or ("http" if webhook_url else "")).strip().lower()
-    if not backend or not webhook_url:
-        raise RuntimeError(
-            f"{env_prefix}_WEBHOOK_URL environment variable is required for delivery but is not configured"
-        )
-    if backend != "http":
-        raise RuntimeError(f"{env_prefix}_BACKEND must be http when delivery is enabled")
-
-    extra_headers: Dict[str, str] = {}
-    if bearer_token := str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip():
-        extra_headers["authorization"] = f"Bearer {bearer_token}"
-    if header_name := str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip():
-        header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
-        if not header_value:
-            raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
-        extra_headers[header_name] = header_value
-
-    timeout_seconds = float(str(os.getenv(f"{env_prefix}_TIMEOUT_SECONDS") or "15").strip())
-    if timeout_seconds <= 0:
-        raise RuntimeError(f"{env_prefix}_TIMEOUT_SECONDS must be positive")
-
-    payload = {
-        required_key: required_value,
-        **dict(extra_payload or {}),
-    }
-
-    request_headers = {"content-type": "application/json", **extra_headers}
-    body = json.dumps(payload, sort_keys=True).encode("utf-8")
-    req = urllib_request.Request(
-        webhook_url,
-        data=body,
-        headers=request_headers,
-        method="POST",
-    )
-    with urllib_request.urlopen(req, timeout=timeout_seconds) as response:
-        raw = response.read().decode("utf-8")
-        content_type = str(getattr(response, "headers", {}).get("content-type", ""))
-        status = str(getattr(response, "status", getattr(response, "code", 200)))
-
-    response_payload: Dict[str, Any] = {}
-    if raw:
-        if "json" in content_type.lower() or raw.lstrip().startswith("{"):
-            parsed = json.loads(raw)
-            if not isinstance(parsed, dict):
-                raise ValueError("SMS delivery response must be a JSON object")
-            response_payload = parsed
-
-    provider_message_id = str(
-        response_payload.get("provider_message_id")
-        or response_payload.get("provider_call_id")
-        or response_payload.get("message_id")
-        or response_payload.get("call_id")
-        or response_payload.get("email_id")
-        or response_payload.get("id")
-        or ""
-    )
-    result = {
-        "provider": str(response_payload.get("provider") or "http"),
-        "provider_status": str(response_payload.get("status") or status),
-    }
-    if provider_message_id:
-        result["provider_message_id"] = provider_message_id
-    return result
-
-
-def _send_sms_notification(
-    *,
-    to_phone: str,
-    message: str,
-    wallet_id: str = "",
-    external_reference: str = "",
-    metadata: Dict[str, Any] | None = None,
-) -> Dict[str, str]:
-    normalized_phone = _normalize_phone_number(to_phone)
-    normalized_message = str(message or "").strip()
-    if not normalized_message:
-        raise ValueError("message is required")
-    return _send_webhook_notification(
-        env_prefix="WALLET_SMS",
-        required_key="to_phone",
-        required_value=normalized_phone,
-        extra_payload={
-            "message": normalized_message,
-            "wallet_id": str(wallet_id or "").strip(),
-            "external_reference": str(external_reference or "").strip(),
-            "metadata": dict(metadata or {}),
-        },
-    )
-
-
-def _send_auth_email_notification(
-    *,
-    to_email: str,
-    subject: str,
-    body: str,
-    metadata: Dict[str, Any] | None = None,
-) -> Dict[str, str]:
-    normalized_to_email = str(to_email or "").strip().lower()
-    _email_parts = normalized_to_email.split("@")
-    if len(_email_parts) != 2 or not _email_parts[0] or not _email_parts[1] or "." not in _email_parts[1]:
-        raise ValueError("to_email must be a valid email address")
-    return _send_webhook_notification(
-        env_prefix="WALLET_AUTH_EMAIL",
-        required_key="to_email",
-        required_value=normalized_to_email,
-        extra_payload={
-            "subject": str(subject or "").strip(),
-            "body": str(body or ""),
-            "from_email": str(os.getenv("WALLET_AUTH_EMAIL_FROM_EMAIL") or "no-reply@211-ai.com").strip(),
-            "metadata": dict(metadata or {}),
-        },
-    )
-
-
-_MAGIC_LOGIN_CONTEXT = "abby-login-token-v1"
-_MAGIC_LOGIN_PARAM = "abbyLogin"
-_MAGIC_UCAN_CONTEXT = "abby-magic-ucan-v1"
-_MAGIC_UCAN_ISSUER = "did:web:211-ai.com"
-
-
-def _magic_login_secret() -> str:
-    return resolve_secret("WALLET_MAGIC_LOGIN_SECRET", "MAGIC_LOGIN_SECRET").strip()
-
-
-def _base64url_encode_bytes(value: bytes) -> str:
-    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
-
-
-def _base64url_decode_to_bytes(value: str) -> bytes:
-    padded = str(value or "").strip()
-    padded += "=" * (-len(padded) % 4)
-    return base64.urlsafe_b64decode(padded.encode("ascii"))
-
-
-def _hmac_base64url(secret: str, value: str) -> str:
-    return _base64url_encode_bytes(hmac.new(secret.encode("utf-8"), value.encode("utf-8"), hashlib.sha256).digest())
-
-
-def _sign_magic_login_token(payload: Dict[str, Any]) -> str:
-    secret = _magic_login_secret()
-    if not secret:
-        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
-    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    payload_encoded = _base64url_encode_bytes(payload_json)
-    signature = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
-    return f"{payload_encoded}.{signature}"
-
-
-def _verify_magic_login_token(token: str) -> Dict[str, Any]:
-    secret = _magic_login_secret()
-    if not secret:
-        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
-    parts = str(token or "").strip().split(".")
-    if len(parts) != 2 or not parts[0] or not parts[1]:
-        raise ValueError("magic link token is malformed")
-    payload_encoded, signature = parts
-    expected = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
-    if not hmac.compare_digest(signature, expected):
-        raise ValueError("magic link signature is invalid")
-    try:
-        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
-    except Exception as exc:
-        raise ValueError("magic link payload is malformed") from exc
-    if not isinstance(payload, dict):
-        raise ValueError("magic link payload is malformed")
-    if payload.get("v") != 1 or payload.get("portal") not in {"client", "provider"}:
-        raise ValueError("magic link payload is malformed")
-    contact = str(payload.get("contact") or "").strip()
-    nonce = str(payload.get("nonce") or "").strip()
-    issued_at = int(payload.get("issuedAt") or 0)
-    expires_at = int(payload.get("expiresAt") or 0)
-    now_ms = int(time.time() * 1000)
-    if not contact or not nonce or not issued_at or not expires_at:
-        raise ValueError("magic link payload is malformed")
-    if issued_at > now_ms + 5 * 60 * 1000:
-        raise ValueError("magic link was issued in the future")
-    if expires_at <= now_ms:
-        raise ValueError("magic link is expired")
-    return payload
-
-
-def _allowed_magic_login_hosts() -> set[str]:
-    raw = str(os.getenv("WALLET_MAGIC_LOGIN_ALLOWED_HOSTS") or "").strip()
-    values = raw.split(",") if raw else ["211-ai.com", "www.211-ai.com", "211-ai.github.io", "localhost", "127.0.0.1"]
-    return {value.strip().lower() for value in values if value.strip()}
-
-
-def _magic_login_base_url(requested: str) -> str:
-    fallback = str(os.getenv("WALLET_MAGIC_LOGIN_BASE_URL") or "https://211-ai.com/").strip()
-    value = str(requested or fallback).strip()
-    parsed = urllib_parse.urlparse(value)
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise ValueError("base_url must be an absolute http(s) URL")
-    if str(parsed.hostname or "").lower() not in _allowed_magic_login_hosts():
-        raise ValueError("base_url host is not allowed")
-    return value
-
-
-def _build_magic_login_link(*, token: str, base_url: str) -> str:
-    parsed = urllib_parse.urlparse(base_url)
-    query = dict(urllib_parse.parse_qsl(parsed.query, keep_blank_values=True))
-    query[_MAGIC_LOGIN_PARAM] = token
-    return urllib_parse.urlunparse(
-        parsed._replace(
-            query=urllib_parse.urlencode(query),
-            fragment=parsed.fragment or "/",
-        )
-    )
-
-
-def _magic_login_payload_from_request(request: MagicLoginRequest) -> Dict[str, Any]:
-    portal = str(request.portal or "client").strip().lower()
-    if portal not in {"client", "provider"}:
-        raise ValueError("portal must be client or provider")
-    issued_at = int(time.time() * 1000)
-    ttl_seconds = int(str(os.getenv("WALLET_MAGIC_LOGIN_TTL_SECONDS") or "600").strip() or "600")
-    ttl_seconds = max(60, min(ttl_seconds, 3600))
-    return {
-        "v": 1,
-        "portal": portal,
-        "contact": _normalize_login_contact(request.contact),
-        "issuedAt": issued_at,
-        "expiresAt": issued_at + ttl_seconds * 1000,
-        "nonce": secrets.token_urlsafe(18),
-        "walletId": str(request.wallet_id or "").strip(),
-        "walletApiBaseUrl": str(request.wallet_api_base_url or "").strip(),
-        "actorDid": str(request.actor_did or "").strip(),
-    }
-
-
-def _wallet_config_from_magic_payload(payload: Mapping[str, Any]) -> Dict[str, str]:
-    wallet_id = str(payload.get("walletId") or "").strip()
-    api_base_url = str(payload.get("walletApiBaseUrl") or "").strip()
-    actor_did = str(payload.get("actorDid") or "").strip()
-    wallet_config: Dict[str, str] = {}
-    if wallet_id:
-        wallet_config["walletId"] = wallet_id
-    if api_base_url:
-        wallet_config["apiBaseUrl"] = api_base_url
-    if actor_did:
-        wallet_config["actorDid"] = actor_did
-    return wallet_config
-
-
-def _magic_contact_subject_did(contact: str) -> str:
-    digest = hashlib.sha256(str(contact or "").strip().lower().encode("utf-8")).hexdigest()[:32]
-    return f"did:abby:contact:{digest}"
-
-
-def _magic_ucan_capabilities(wallet_id: str) -> List[Dict[str, str]]:
-    wallet = str(wallet_id or "").strip()
-    capabilities = [{"with": "wallet://*", "can": "wallet/login"}]
-    if wallet:
-        resource = f"wallet://{wallet}"
-        capabilities.extend(
-            [
-                {"with": resource, "can": "wallet/recovery/start"},
-                {"with": f"{resource}/recovery-bundles/*", "can": "wallet/recovery/read_encrypted"},
-                {"with": f"{resource}/records/*", "can": "wallet/encrypted/read"},
-            ]
-        )
-    return capabilities
-
-
-def _sign_magic_ucan(payload: Dict[str, Any]) -> str:
-    secret = _magic_login_secret()
-    if not secret:
-        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
-    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    payload_encoded = _base64url_encode_bytes(payload_json)
-    signature = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
-    return f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}.{signature}"
-
-
-def _verify_magic_ucan(token: str) -> Dict[str, Any]:
-    secret = _magic_login_secret()
-    if not secret:
-        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
-    parts = str(token or "").strip().split(".")
-    if len(parts) != 3 or parts[0] != _MAGIC_UCAN_CONTEXT:
-        raise ValueError("UCAN token is malformed")
-    _, payload_encoded, signature = parts
-    expected = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
-    if not hmac.compare_digest(signature, expected):
-        raise ValueError("UCAN signature is invalid")
-    try:
-        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
-    except Exception as exc:
-        raise ValueError("UCAN payload is malformed") from exc
-    if not isinstance(payload, dict) or payload.get("profile") != _MAGIC_UCAN_CONTEXT:
-        raise ValueError("UCAN payload is malformed")
-    expires_at = int(payload.get("expiresAt") or 0)
-    if not expires_at or expires_at <= int(time.time() * 1000):
-        raise ValueError("UCAN token is expired")
-    return payload
-
-
-def _issue_magic_ucan(payload: Mapping[str, Any]) -> Dict[str, Any]:
-    contact = str(payload.get("contact") or "").strip()
-    wallet_id = str(payload.get("walletId") or "").strip()
-    issued_at = int(time.time() * 1000)
-    expires_at = min(int(payload.get("expiresAt") or issued_at), issued_at + 15 * 60 * 1000)
-    ucan_payload = {
-        "profile": _MAGIC_UCAN_CONTEXT,
-        "iss": _MAGIC_UCAN_ISSUER,
-        "aud": _magic_contact_subject_did(contact),
-        "walletId": wallet_id,
-        "contactHash": hashlib.sha256(contact.lower().encode("utf-8")).hexdigest(),
-        "capabilities": _magic_ucan_capabilities(wallet_id),
-        "issuedAt": issued_at,
-        "expiresAt": expires_at,
-        "nonce": secrets.token_urlsafe(18),
-        "caveats": {
-            "no_plaintext_key_access": True,
-            "server_can_decrypt": False,
-            "purpose": "passwordless_wallet_login_and_recovery",
-        },
-    }
-    token = _sign_magic_ucan(ucan_payload)
-    return {
-        "profile": _MAGIC_UCAN_CONTEXT,
-        "issuer": ucan_payload["iss"],
-        "audience": ucan_payload["aud"],
-        "token": token,
-        "capabilities": ucan_payload["capabilities"],
-        "expires_at": expires_at,
-        "caveats": ucan_payload["caveats"],
-    }
-
-
-def _capability_resource_matches(pattern: str, resource: str) -> bool:
-    if pattern == "*" or pattern == resource:
-        return True
-    if pattern.endswith("/*") and resource.startswith(pattern[:-1]):
-        return True
-    return False
-
-
-def _require_magic_ucan(
-    *,
-    authorization: str | None,
-    wallet_id: str,
-    ability: str,
-    resource: str,
-) -> Dict[str, Any]:
-    token = _extract_bearer_token(authorization)
-    if not token:
-        raise HTTPException(status_code=401, detail="recovery UCAN authorization required")
-    try:
-        payload = _verify_magic_ucan(token)
-    except RuntimeError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(status_code=401, detail=str(exc)) from exc
-    if str(payload.get("walletId") or "") != str(wallet_id):
-        raise HTTPException(status_code=403, detail="UCAN wallet scope does not match")
-    capabilities = payload.get("capabilities")
-    if not isinstance(capabilities, list):
-        raise HTTPException(status_code=403, detail="UCAN has no capabilities")
-    for capability in capabilities:
-        if not isinstance(capability, Mapping):
-            continue
-        if str(capability.get("can") or "") != ability:
-            continue
-        if _capability_resource_matches(str(capability.get("with") or ""), resource):
-            return payload
-    raise HTTPException(status_code=403, detail="UCAN does not allow this recovery action")
-
-
-def _send_phone_call_notification(*, to_phone: str, script: str) -> Dict[str, str]:
-    normalized_phone = _normalize_phone_number(to_phone)
-    normalized_script = str(script or "").strip()
-    if not normalized_script:
-        raise ValueError("script is required")
-    return _send_webhook_notification(
-        env_prefix="WALLET_CALL",
-        required_key="to_phone",
-        required_value=normalized_phone,
-        extra_payload={"script": normalized_script},
-    )
-
-
-
-
-def _match_to_dict(match) -> Dict[str, Any]:
-    return {
-        "service": match.service.__dict__,
-        "score": match.score,
-        "reasons": list(match.reasons),
-    }
-
-
-def _analysis_result_to_dict(result: Dict[str, Any]) -> Dict[str, Any]:
-    artifact = result["artifact"]
-    artifact_data = artifact.to_dict() if hasattr(artifact, "to_dict") else dict(artifact)
-    return {
-        "artifact": artifact_data,
-        "output": result["output"],
-    }
-
-
-def _wallet_router_subject(wallet_id: str, wallet_cid: str | None) -> str:
-    normalized_cid = _normalize_ipfs_cid(str(wallet_cid or ""))
-    if normalized_cid and _valid_ipfs_cid(normalized_cid):
-        return normalized_cid
-    if str(wallet_cid or "").strip():
-        return re.sub(r"[^a-zA-Z0-9:._-]+", "-", str(wallet_cid).strip())[:160]
-    return re.sub(r"[^a-zA-Z0-9:._-]+", "-", str(wallet_id or "unknown-wallet").strip())[:160]
-
-
-def _require_wallet_router_actor(
-    app_service: WalletInterfaceService,
-    wallet_id: str,
-    actor_did: str,
-) -> None:
-    wallet = app_service.get_wallet(wallet_id)
-    actor = str(actor_did or "").strip()
-    principals = {
-        str(wallet.owner_did),
-        *[str(item) for item in getattr(wallet, "controller_dids", [])],
-        *[str(item) for item in getattr(wallet, "device_dids", [])],
-    }
-    if not actor:
-        raise ValueError("actor_did is required")
-    if actor not in principals:
-        raise ValueError("actor_did is not authorized for this wallet")
-
-
-def _wallet_router_rate_limit_per_minute() -> int:
-    try:
-        return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_MINUTE", "30")))
-    except Exception:
-        return 30
-
-
-def _wallet_router_rate_limit_per_day() -> int:
-    try:
-        return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_DAY", "500")))
-    except Exception:
-        return 500
-
-
-def _check_wallet_router_rate_limit(wallet_subject: str, *, cost: int = 1) -> Dict[str, Any]:
-    subject = wallet_subject or "unknown-wallet"
-    now = time.time()
-    minute_window = int(now // 60)
-    day_window = int(now // 86400)
-    state = _AI_ROUTER_RATE_LIMITS.setdefault(
-        subject,
-        {"minute_window": minute_window, "minute_count": 0, "day_window": day_window, "day_count": 0},
-    )
-    if state.get("minute_window") != minute_window:
-        state["minute_window"] = minute_window
-        state["minute_count"] = 0
-    if state.get("day_window") != day_window:
-        state["day_window"] = day_window
-        state["day_count"] = 0
-    per_minute = _wallet_router_rate_limit_per_minute()
-    per_day = _wallet_router_rate_limit_per_day()
-    next_minute = int(state.get("minute_count") or 0) + max(1, int(cost or 1))
-    next_day = int(state.get("day_count") or 0) + max(1, int(cost or 1))
-    if next_minute > per_minute:
-        raise ValueError(f"wallet router rate limit exceeded for {subject}: {per_minute} requests per minute")
-    if next_day > per_day:
-        raise ValueError(f"wallet router rate limit exceeded for {subject}: {per_day} requests per day")
-    state["minute_count"] = next_minute
-    state["day_count"] = next_day
-    return {
-        "subject": subject,
-        "cost": max(1, int(cost or 1)),
-        "minuteLimit": per_minute,
-        "minuteRemaining": max(0, per_minute - next_minute),
-        "dayLimit": per_day,
-        "dayRemaining": max(0, per_day - next_day),
-    }
-
-
-def _derived_output(result: Mapping[str, Any]) -> Dict[str, Any]:
-    output = result.get("output")
-    return dict(output) if isinstance(output, Mapping) else {}
-
-
-def _derived_artifact_id(result: Mapping[str, Any]) -> str:
-    artifact = result.get("artifact")
-    if hasattr(artifact, "artifact_id"):
-        return str(getattr(artifact, "artifact_id") or "")
-    if hasattr(artifact, "id"):
-        return str(getattr(artifact, "id") or "")
-    if isinstance(artifact, Mapping):
-        return str(artifact.get("artifact_id") or artifact.get("id") or "")
-    return ""
-
-
-def _record_metadata_value(record: Mapping[str, Any], key: str) -> str:
-    metadata = record.get("metadata")
-    if isinstance(metadata, Mapping):
-        value = metadata.get(key)
-        if isinstance(value, str):
-            return value
-    return ""
-
-
-def _safe_short_text(value: Any, *, limit: int = 240) -> str:
-    text = str(value or "")
-    text = re.sub(r"[^\s@]+@(?:[A-Z0-9\-]{1,63}\.){1,10}[A-Z]{2,10}", "[email]", text, flags=re.IGNORECASE)
-    text = re.sub(r"\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b", "[phone]", text)
-    text = re.sub(r"\b\d{4,}\b", "[number]", text)
-    return text.strip()[:limit]
-
-
-def _safe_organizer_signal(output: Mapping[str, Any]) -> Dict[str, Any]:
-    signal: Dict[str, Any] = {
-        "output_policy": _safe_short_text(output.get("output_policy")),
-        "summary": _safe_short_text(output.get("summary")),
-        "text": _safe_short_text(output.get("text")),
-    }
-    profile = output.get("profile")
-    if isinstance(profile, Mapping):
-        signal["profile"] = {
-            key: profile.get(key)
-            for key in ("profile_type", "chunk_count")
-            if profile.get(key) is not None
-        }
-    graph = output.get("graph")
-    if isinstance(graph, Mapping):
-        signal["graph"] = {
-            key: graph.get(key)
-            for key in ("graph_type", "node_count", "edge_count")
-            if graph.get(key) is not None
-        }
-    return {key: value for key, value in signal.items() if value not in ("", None, {})}
-
-
-def _redacted_file_name(file_name: str) -> str:
-    _, dot, extension = str(file_name or "").rpartition(".")
-    return f"document.{extension.lower()}" if dot and extension else "document"
-
-
-def _generate_wallet_organizer_profile(
-    *,
-    wallet_id: str,
-    wallet_cid: str,
-    file_name: str,
-    mime_type: str,
-    outputs: Sequence[Mapping[str, Any]],
-    provider: str | None,
-    model_name: str | None,
-    kwargs: Mapping[str, Any] | None,
-) -> Dict[str, Any] | None:
-    safe_signals = [_safe_organizer_signal(output) for output in outputs]
-    safe_signals = [signal for signal in safe_signals if signal]
-    if not safe_signals:
-        return None
-    try:
-        _check_wallet_router_rate_limit(wallet_cid or wallet_id)
-        from ipfs_datasets_py import llm_router  # noqa: WPS433
-
-        prompt = "\n".join(
-            [
-                "Create privacy-preserving organizer metadata from redacted wallet document signals.",
-                "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
-                "Use generic non-identifying language only.",
-                json.dumps(
-                    {
-                        "fileName": _redacted_file_name(file_name),
-                        "mimeType": mime_type,
-                        "redactedSignals": safe_signals[:8],
-                    },
-                    sort_keys=True,
-                ),
-            ]
-        )
-        text = llm_router.generate_text(
-            prompt,
-            model_name=model_name,
-            provider=provider or "hf_inference_api",
-            **dict(kwargs or {}),
-        )
-        parsed = _parse_first_json_object(text)
-        if not parsed:
-            return None
-        return {
-            "summary": _safe_short_text(parsed.get("summary")),
-            "labels": _read_string_list(parsed.get("labels"), limit=8),
-            "browseHints": _read_string_list(parsed.get("browseHints"), limit=8),
-            "riskSignals": _read_string_list(parsed.get("riskSignals"), limit=8),
-            "model": model_name or provider or "wallet-router",
-        }
-    except Exception:
-        return None
-
-
-def _parse_first_json_object(text: str) -> Dict[str, Any] | None:
-    trimmed = str(text or "").strip()
-    start = trimmed.find("{")
-    end = trimmed.rfind("}")
-    if start < 0 or end <= start:
-        return None
-    try:
-        parsed = json.loads(trimmed[start : end + 1])
-    except Exception:
-        return None
-    return dict(parsed) if isinstance(parsed, Mapping) else None
-
-
-def _read_string_list(value: Any, *, limit: int = 12) -> List[str]:
-    if not isinstance(value, list):
-        return []
-    return [_safe_short_text(item, limit=80) for item in value if _safe_short_text(item, limit=80)][:limit]
-
-
-def _read_number(record: Mapping[str, Any] | None, key: str) -> int | float | None:
-    if not isinstance(record, Mapping):
-        return None
-    value = record.get(key)
-    return value if isinstance(value, (int, float)) else None
-
-
-def _read_string(record: Mapping[str, Any] | None, key: str) -> str:
-    if not isinstance(record, Mapping):
-        return ""
-    value = record.get(key)
-    return str(value).strip() if isinstance(value, str) else ""
-
-
-def _default_labels_for_mime_type(mime_type: str) -> List[str]:
-    normalized = str(mime_type or "").lower()
-    if normalized == "application/pdf":
-        return ["pdf", "document"]
-    if normalized.startswith("image/"):
-        return ["image", "visual file"]
-    if normalized.startswith("text/"):
-        return ["text", "document"]
-    if "json" in normalized:
-        return ["json", "structured data"]
-    if "spreadsheet" in normalized or "excel" in normalized or "csv" in normalized:
-        return ["spreadsheet", "tabular data"]
-    if "wordprocessing" in normalized or "msword" in normalized:
-        return ["word document", "document"]
-    if normalized.startswith("audio/"):
-        return ["audio"]
-    if normalized.startswith("video/"):
-        return ["video"]
-    return ["wallet file"]
-
-
-def _display_mime_type(mime_type: str) -> str:
-    normalized = str(mime_type or "").strip().lower()
-    if not normalized:
-        return "Unknown file"
-    if normalized == "application/pdf":
-        return "PDF document"
-    if normalized.startswith("image/"):
-        return f"{normalized.split('/', 1)[1].upper()} image"
-    if normalized.startswith("text/"):
-        return "Text document"
-    if "json" in normalized:
-        return "JSON data"
-    if "spreadsheet" in normalized or "excel" in normalized or "csv" in normalized:
-        return "Spreadsheet"
-    if "wordprocessing" in normalized or "msword" in normalized:
-        return "Word document"
-    if normalized.startswith("audio/"):
-        return "Audio file"
-    if normalized.startswith("video/"):
-        return "Video file"
-    if normalized == "application/octet-stream":
-        return "Encrypted/binary file"
-    return normalized
-
-
-def _fallback_document_profile_output(*, file_name: str, mime_type: str) -> Dict[str, Any]:
-    return {
-        "output_policy": "local_metadata_only",
-        "profile": {"chunk_count": 0, "profile_type": "metadata fallback"},
-        "summary": f"{_display_mime_type(mime_type)} wallet file queued for redacted profiling.",
-        "upload_state": {"fileName": _redacted_file_name(file_name), "mimeType": mime_type},
-    }
-
-
-def _build_document_profile_public_inputs(
-    *,
-    artifact_ids: Sequence[str],
-    file_name: str,
-    mime_type: str,
-    outputs: Sequence[Mapping[str, Any]],
-) -> Dict[str, Any]:
-    graphs = [output.get("graph") for output in outputs]
-    graph = next((item for item in graphs if isinstance(item, Mapping)), {})
-    profiles = [output.get("profile") for output in outputs]
-    profile = next((item for item in profiles if isinstance(item, Mapping)), {})
-    organizer_profiles = [output.get("openrouter_organizer_profile") for output in outputs]
-    organizer = next((item for item in organizer_profiles if isinstance(item, Mapping)), {})
-    redaction_count = 0
-    for output in outputs:
-        counts = output.get("redaction_counts")
-        if isinstance(counts, Mapping):
-            redaction_count += sum(value for value in counts.values() if isinstance(value, (int, float)))
-    public_mime_type = mime_type or "application/octet-stream"
-    labels = _read_string_list(organizer.get("labels")) or _default_labels_for_mime_type(public_mime_type)
-    return {
-        "artifact_ids": list(artifact_ids),
-        "chunk_count": _read_number(profile, "chunk_count"),
-        "edge_count": _read_number(graph, "edge_count"),
-        "file_name_profile": _redacted_file_name(file_name),
-        "graph_type": _read_string(graph, "graph_type"),
-        "mime_family": public_mime_type.split("/", 1)[0] or "application",
-        "mime_type": public_mime_type,
-        "node_count": _read_number(graph, "node_count"),
-        "openrouter_model": _read_string(organizer, "model"),
-        "organizer_labels": labels,
-        "organizer_summary": _read_string(organizer, "summary") or _display_mime_type(public_mime_type),
-        "output_policies": sorted({str(output.get("output_policy")) for output in outputs if output.get("output_policy")}),
-        "privacy_policy": "no_plaintext_public_inputs",
-        "profile_methods": sorted({str(output.get("output_policy")) for output in outputs if output.get("output_policy")}),
-        "redaction_count": redaction_count,
-        "size_bucket": "server-side",
-        "summary": "Redacted GraphRAG, vector metadata, and derived descriptors created inside the wallet boundary.",
-    }
-
-
-def _classify_document_profile(public_inputs: Mapping[str, Any]) -> str:
-    summary = _read_string(public_inputs, "organizer_summary")
-    if summary:
-        return summary
-    labels = _read_string_list(public_inputs.get("organizer_labels"), limit=3)
-    if labels:
-        return ", ".join(labels[:3])
-    return _display_mime_type(str(public_inputs.get("mime_type") or ""))
-
-
-def _summarize_document_profile(public_inputs: Mapping[str, Any]) -> str:
-    mime_type = str(public_inputs.get("mime_type") or "document")
-    graph_type = str(public_inputs.get("graph_type") or "redacted graph")
-    nodes = public_inputs.get("node_count")
-    chunks = public_inputs.get("chunk_count")
-    nodes_text = f"{nodes} nodes" if isinstance(nodes, (int, float)) else "safe graph"
-    chunks_text = f"{chunks} chunks" if isinstance(chunks, (int, float)) else "vector metadata"
-    return f"{mime_type} · {graph_type} · {nodes_text} · {chunks_text}"
-
-
-def _build_privacy_search_text(outputs: Sequence[Mapping[str, Any]], public_inputs: Mapping[str, Any]) -> str:
-    parts: List[str] = [
-        _classify_document_profile(public_inputs),
-        _summarize_document_profile(public_inputs),
-        " ".join(_read_string_list(public_inputs.get("organizer_labels"), limit=12)),
-        " ".join(str(policy) for policy in public_inputs.get("output_policies", []) if isinstance(policy, str)),
-    ]
-    for output in outputs:
-        parts.append(_safe_short_text(output.get("summary")))
-        parts.append(_safe_short_text(output.get("text")))
-    return " ".join(part for part in parts if part).strip()
-
-
-def _build_privacy_vector_terms(outputs: Sequence[Mapping[str, Any]], public_inputs: Mapping[str, Any]) -> List[str]:
-    terms: List[str] = []
-    terms.extend(_read_string_list(public_inputs.get("organizer_labels"), limit=12))
-    for key in ("mime_type", "mime_family", "graph_type", "organizer_summary"):
-        value = public_inputs.get(key)
-        if isinstance(value, str) and value.strip():
-            terms.append(value.strip())
-    for output in outputs:
-        policy = output.get("output_policy")
-        if isinstance(policy, str) and policy.strip():
-            terms.append(policy.strip())
-    normalized: List[str] = []
-    seen = set()
-    for term in terms:
-        safe = _safe_short_text(term, limit=80).lower()
-        if safe and safe not in seen:
-            normalized.append(safe)
-            seen.add(safe)
-    return normalized[:24]
+from ._app import _prepare_hf_router_environment  # noqa: E402
 
 
 def _indextts_space_base_url() -> str:
@@ -1064,8 +47,8 @@ def _indextts_fallback_space_base_url() -> str:
     return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
 
 
-def _indextts_space_base_urls() -> List[str]:
-    urls: List[str] = []
+def _indextts_space_base_urls() -> list[str]:
+    urls: list[str] = []
     for candidate in (_indextts_space_base_url(), _indextts_fallback_space_base_url()):
         normalized = str(candidate or "").strip().rstrip("/")
         if normalized and normalized not in urls:
@@ -1880,7 +863,7 @@ def _normalize_indextts_spoken_text(text: str) -> str:
     return spoken.lstrip(".,; ")
 
 
-def _indextts_headers(*, accept: str = "application/json") -> Dict[str, str]:
+def _indextts_headers(*, accept: str = "application/json") -> dict[str, str]:
     headers = {"Accept": accept}
     token = (
         resolve_secret(
@@ -1919,7 +902,7 @@ def _configured_hf_token() -> str:
     ).strip()
 
 
-def _publicus_indextts_credential_warning() -> Dict[str, Any] | None:
+def _publicus_indextts_credential_warning() -> dict[str, Any] | None:
     space_url = _indextts_space_base_url().lower()
     if "publicus-indextts" not in space_url and "publicus/indextts" not in (os.getenv("WALLET_INDEXTTS_MODEL_NAME", "").lower()):
         return None
@@ -1944,15 +927,15 @@ def _publicus_indextts_credential_warning() -> Dict[str, Any] | None:
     }
 
 
-def _voice_proxy_runtime_warnings() -> List[Dict[str, Any]]:
-    warnings: List[Dict[str, Any]] = []
+def _voice_proxy_runtime_warnings() -> list[dict[str, Any]]:
+    warnings: list[dict[str, Any]] = []
     publicus_warning = _publicus_indextts_credential_warning()
     if publicus_warning:
         warnings.append(publicus_warning)
     return warnings
 
 
-def _http_json(method: str, url: str, payload: Mapping[str, Any] | None = None) -> Dict[str, Any]:
+def _http_json(method: str, url: str, payload: Mapping[str, Any] | None = None) -> dict[str, Any]:
     data = None
     headers = _indextts_headers()
     if payload is not None:
@@ -1974,9 +957,9 @@ def _http_bytes(url: str) -> tuple[bytes, str]:
 
 
 _INDEXTTS_CACHE_LOCK = threading.Lock()
-_INDEXTTS_CONFIG_CACHE: Dict[tuple[str, str], Dict[str, Any]] = {}
-_INDEXTTS_FN_INDEX_CACHE: Dict[tuple[str, str], int] = {}
-_INDEXTTS_REFERENCE_CACHE: Dict[tuple[str, str], Dict[str, Any]] = {}
+_INDEXTTS_CONFIG_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
+_INDEXTTS_FN_INDEX_CACHE: dict[tuple[str, str], int] = {}
+_INDEXTTS_REFERENCE_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
 
 
 def _voice_llm_timeout_seconds() -> float:
@@ -2013,8 +996,8 @@ def _generate_indextts_voice_reply_text(
     system_prompt: str | None,
     user_prompt: str | None,
     fallback_text: str | None,
-) -> tuple[str, Dict[str, Any]]:
-    timings: Dict[str, Any] = {}
+) -> tuple[str, dict[str, Any]]:
+    timings: dict[str, Any] = {}
     fallback = str(fallback_text or "").strip()
     prompt = str(text or "").strip()
     if str(mode or "").strip().lower() != "voice-reply":
@@ -2183,7 +1166,7 @@ def _indextts_space_client() -> HFSpaceClient:
     return _INDEXTTS_SPACE_CLIENT
 
 
-def _indextts_config() -> Dict[str, Any]:
+def _indextts_config() -> dict[str, Any]:
     cache_key = (_indextts_space_base_url(), _indextts_api_name())
     now = time.time()
     with _INDEXTTS_CACHE_LOCK:
@@ -2260,7 +1243,7 @@ def _indextts_execute_with_queue_fallback(
     *,
     fn_index: int,
     data: Sequence[Any],
-    timings: Dict[str, Any],
+    timings: dict[str, Any],
     api_name: str,
 ) -> Mapping[str, Any]:
     stage_start = time.perf_counter()
@@ -2344,7 +1327,7 @@ def _indextts_execute_with_queue_fallback(
         raise
 
 
-def _indextts_degraded_error_payload(exc: Exception, operation: str) -> Dict[str, Any]:
+def _indextts_degraded_error_payload(exc: Exception, operation: str) -> dict[str, Any]:
     return {
         "code": "indextts_temporarily_unavailable",
         "message": "IndexTTS is temporarily unavailable across configured spaces.",
@@ -2408,9 +1391,9 @@ def _run_indextts_gradio_tts(
     reference_audio: bytes | None = None,
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     last_error: Exception | None = None
-    errors_by_space: Dict[str, str] = {}
+    errors_by_space: dict[str, str] = {}
     space_urls = _indextts_space_base_urls()
     for index, space_url in enumerate(space_urls):
         with _indextts_use_space_base_url(space_url), _indextts_use_timeout_seconds(
@@ -2441,9 +1424,9 @@ def _run_indextts_gradio_tts_for_space(
     reference_audio: bytes | None = None,
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     total_start = time.perf_counter()
-    timings: Dict[str, Any] = {}
+    timings: dict[str, Any] = {}
     raw_prompt = str(text or "").strip()
     if not raw_prompt:
         raise ValueError("text is required")
@@ -2507,9 +1490,9 @@ def _run_indextts_gradio_batch_tts(
     reference_audio: bytes | None = None,
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     last_error: Exception | None = None
-    errors_by_space: Dict[str, str] = {}
+    errors_by_space: dict[str, str] = {}
     space_urls = _indextts_space_base_urls()
     for index, space_url in enumerate(space_urls):
         with _indextts_use_space_base_url(space_url), _indextts_use_timeout_seconds(
@@ -2540,7 +1523,7 @@ def _run_indextts_gradio_batch_tts_for_space(
     reference_audio: bytes | None = None,
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     total_start = time.perf_counter()
     raw_prompts = [str(text or "").strip() for text in texts if str(text or "").strip()]
     if not raw_prompts:
@@ -2548,7 +1531,7 @@ def _run_indextts_gradio_batch_tts_for_space(
     prompts = [_normalize_indextts_spoken_text(text) for text in raw_prompts]
     config = _indextts_config()
     uploaded_reference = _indextts_upload_reference_audio(reference_audio, reference_audio_name, reference_audio_mime_type)
-    timings: Dict[str, Any] = {}
+    timings: dict[str, Any] = {}
     try:
         stage_start = time.perf_counter()
         fn_index = _indextts_batch_fn_index(config)
@@ -2567,7 +1550,7 @@ def _run_indextts_gradio_batch_tts_for_space(
         audio_refs = _indextts_batch_audio_references(result)
         if len(audio_refs) < len(prompts):
             raise ValueError(f"IndexTTS batch returned {len(audio_refs)} audio files for {len(prompts)} texts")
-        items: List[Dict[str, Any]] = []
+        items: list[dict[str, Any]] = []
         fetch_start = time.perf_counter()
         for index, audio_ref in enumerate(audio_refs[: len(prompts)]):
             audio_bytes, mime_type = _fetch_gradio_file(audio_ref)
@@ -2625,7 +1608,7 @@ def _run_indextts_tts_with_batch_fallback(
     reference_audio: bytes | None = None,
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     try:
         return _run_indextts_gradio_tts(
             text=text,
@@ -2654,7 +1637,7 @@ def _run_indextts_tts_with_batch_fallback(
         if not isinstance(items, list) or not items:
             raise ValueError("IndexTTS batch fallback returned no items") from single_exc
         first_item = items[0] if isinstance(items[0], Mapping) else {}
-        response: Dict[str, Any] = {
+        response: dict[str, Any] = {
             "audioBase64": str(first_item.get("audioBase64") or ""),
             "mimeType": str(first_item.get("mimeType") or "audio/wav"),
             "model": str(batch.get("model") or _indextts_model_name()) if isinstance(batch, Mapping) else _indextts_model_name(),
@@ -2681,7 +1664,7 @@ def _indextts_upload_reference_audio(
     audio: bytes | None,
     file_name: str | None,
     mime_type: str | None = None,
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     if audio:
         guessed_type = mime_type or mimetypes.guess_type(file_name or "")[0] or "audio/wav"
         parsed = _indextts_space_client().upload_file(file_name or "reference.wav", audio, guessed_type)
@@ -2742,16 +1725,16 @@ def _default_indextts_reference_wav() -> bytes:
     return buffer.getvalue()
 
 
-def _gradio_upload_file(data: bytes, file_name: str, mime_type: str) -> Dict[str, Any]:
+def _gradio_upload_file(data: bytes, file_name: str, mime_type: str) -> dict[str, Any]:
     boundary = f"----211AiIndexTts{uuid.uuid4().hex}"
     safe_name = os.path.basename(file_name or "reference.wav")
     body = b"".join(
         [
-            f"--{boundary}\r\n".encode("utf-8"),
-            f'Content-Disposition: form-data; name="files"; filename="{safe_name}"\r\n'.encode("utf-8"),
-            f"Content-Type: {mime_type or 'application/octet-stream'}\r\n\r\n".encode("utf-8"),
+            f"--{boundary}\r\n".encode(),
+            f'Content-Disposition: form-data; name="files"; filename="{safe_name}"\r\n'.encode(),
+            f"Content-Type: {mime_type or 'application/octet-stream'}\r\n\r\n".encode(),
             data,
-            f"\r\n--{boundary}--\r\n".encode("utf-8"),
+            f"\r\n--{boundary}--\r\n".encode(),
         ]
     )
     headers = _indextts_headers()
@@ -2795,7 +1778,7 @@ def _indextts_request_data(
     text: str,
     voice_description: str | None,
     reference_audio: Mapping[str, Any] | None,
-) -> List[Any]:
+) -> list[Any]:
     raw_template = os.getenv("WALLET_INDEXTTS_DATA_TEMPLATE", "").strip()
     if raw_template:
         rendered = (
@@ -2841,7 +1824,7 @@ def _indextts_batch_request_data(
     texts: Sequence[str],
     voice_description: str | None,
     reference_audio: Mapping[str, Any] | None,
-) -> List[Any]:
+) -> list[Any]:
     text_list = [str(text) for text in texts]
     raw_template = os.getenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", "").strip()
     if raw_template:
@@ -2886,7 +1869,7 @@ def _indextts_batch_request_data(
     ]
 
 
-def _indextts_wait_for_result(session_hash: str) -> Dict[str, Any]:
+def _indextts_wait_for_result(session_hash: str) -> dict[str, Any]:
     try:
         return _indextts_space_client().wait_for_queue_result(
             session_hash,
@@ -2931,8 +1914,8 @@ def _find_gradio_audio_reference(value: Any) -> Any:
     return None
 
 
-def _find_gradio_audio_references(value: Any) -> List[Any]:
-    found: List[Any] = []
+def _find_gradio_audio_references(value: Any) -> list[Any]:
+    found: list[Any] = []
     seen: set[str] = set()
 
     def visit(item: Any) -> None:
@@ -2969,7 +1952,7 @@ def _gradio_update_value(value: Any) -> Any:
     return value
 
 
-def _gradio_output_values(result: Mapping[str, Any]) -> List[Any]:
+def _gradio_output_values(result: Mapping[str, Any]) -> list[Any]:
     data = result.get("data")
     if isinstance(data, list):
         return [_gradio_update_value(item) for item in data]
@@ -2982,8 +1965,8 @@ def _gradio_file_key(reference: Any) -> str:
     return str(reference)
 
 
-def _dedupe_gradio_references(references: Sequence[Any]) -> List[Any]:
-    deduped: List[Any] = []
+def _dedupe_gradio_references(references: Sequence[Any]) -> list[Any]:
+    deduped: list[Any] = []
     seen: set[str] = set()
     for reference in references:
         key = _gradio_file_key(reference)
@@ -2993,7 +1976,7 @@ def _dedupe_gradio_references(references: Sequence[Any]) -> List[Any]:
     return deduped
 
 
-def _indextts_batch_audio_references(result: Mapping[str, Any]) -> List[Any]:
+def _indextts_batch_audio_references(result: Mapping[str, Any]) -> list[Any]:
     outputs = _gradio_output_values(result)
     if len(outputs) >= 2:
         generated_files = _find_gradio_audio_references(outputs[1])
@@ -3017,7 +2000,7 @@ def _find_gradio_file_reference(value: Any, *, suffixes: Sequence[str]) -> Any:
     if isinstance(value, Mapping):
         if any(key in value for key in ("path", "url", "name")) and not value.get("is_stream"):
             pathish = str(value.get("path") or value.get("url") or value.get("name") or "").lower()
-            if pathish.endswith(suffix_tuple) or any(f"/file=" in pathish and suffix in pathish for suffix in suffix_tuple):
+            if pathish.endswith(suffix_tuple) or any("/file=" in pathish and suffix in pathish for suffix in suffix_tuple):
                 return value
         for item in value.values():
             found = _find_gradio_file_reference(item, suffixes=suffix_tuple)
@@ -3033,8 +2016,8 @@ def _find_gradio_file_reference(value: Any, *, suffixes: Sequence[str]) -> Any:
     return None
 
 
-def _extract_audio_files_from_zip(data: bytes) -> List[Dict[str, Any]]:
-    extracted: List[Dict[str, Any]] = []
+def _extract_audio_files_from_zip(data: bytes) -> list[dict[str, Any]]:
+    extracted: list[dict[str, Any]] = []
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
         for name in sorted(archive.namelist()):
             if name.endswith("/") or not name.lower().endswith((".wav", ".mp3", ".flac", ".ogg")):
@@ -3064,7 +2047,7 @@ def _run_hf_whisper_stt(
     audio_type: str | None = None,
     language: str | None = None,
     model_name: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     if not audio:
         raise ValueError("audio is required")
     token = (
@@ -3130,7 +2113,7 @@ def _extract_hf_whisper_text(payload: Any) -> str:
                 return extracted
         return ""
     if isinstance(payload, Sequence) and not isinstance(payload, (str, bytes, bytearray)):
-        pieces: List[str] = []
+        pieces: list[str] = []
         for item in payload:
             extracted = _extract_hf_whisper_text(item)
             if extracted:
@@ -3161,582 +2144,3 @@ def _silent_wav_bytes(duration_ms: int = 240, sample_rate: int = 16_000) -> byte
     return buffer.getvalue()
 
 
-def _parse_upload_metadata(metadata: str | None) -> Dict[str, Any]:
-    if not metadata:
-        return {}
-    parsed = json.loads(metadata)
-    if not isinstance(parsed, dict):
-        raise ValueError("upload metadata must decode to an object")
-    return parsed
-
-
-def _publish_bytes_to_ipfs(
-    data: bytes,
-    *,
-    file_name: str | None = None,
-    mime_type: str | None = None,
-    source_record_id: str | None = None,
-    wallet_id: str | None = None,
-) -> Dict[str, Any]:
-    cid = _publish_bytes_via_ipfs_backend(data)
-    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "/ipfs-proxy").rstrip("/")
-    payload: Dict[str, Any] = {
-        "cid": cid,
-        "gatewayUrl": f"{gateway_base_url}/{cid}",
-        "ipfsCid": cid,
-        "message": "Pinned to IPFS through the wallet upload bridge.",
-        "provider": "ipfs-filecoin",
-        "status": "stored",
-    }
-    sidecar_result = _submit_ipfs_cid_to_filecoin_pin(
-        cid,
-        file_name=file_name,
-        mime_type=mime_type,
-        source_record_id=source_record_id,
-        wallet_id=wallet_id,
-    )
-    if sidecar_result is not None:
-        payload["message"] = "Pinned to IPFS and queued for Filecoin persistence through the wallet upload bridge."
-        request_id = str(sidecar_result.get("requestid") or sidecar_result.get("requestId") or "").strip()
-        handoff_status = str(sidecar_result.get("status") or "").strip()
-        if request_id:
-            payload["requestId"] = request_id
-            payload["filecoinPinRequestId"] = request_id
-            payload["statusUrl"] = _filecoin_upload_status_url(request_id)
-        if handoff_status:
-            payload["filecoinPinStatus"] = handoff_status
-        if isinstance(sidecar_result.get("info"), dict):
-            payload["filecoinPinInfo"] = sidecar_result["info"]
-    if file_name:
-        payload["fileName"] = file_name
-    if mime_type:
-        payload["mimeType"] = mime_type
-    if source_record_id:
-        payload["recordId"] = source_record_id
-    if wallet_id:
-        payload["walletId"] = wallet_id
-    return payload
-
-
-def _publish_encrypted_record_graph_to_ipfs(
-    encrypted_record: Mapping[str, Any],
-    *,
-    file_name: str | None = None,
-) -> Dict[str, Any]:
-    record = dict(encrypted_record["record"])
-    version = dict(encrypted_record["version"])
-    wallet_id = str(record.get("wallet_id") or "")
-    record_id = str(record.get("record_id") or "")
-    version_id = str(version.get("version_id") or record.get("current_version_id") or "")
-    payload_result = _publish_bytes_to_ipfs(
-        encrypted_record["encrypted_payload"],
-        file_name=f"{file_name or record_id}.encrypted-payload.json",
-        mime_type="application/vnd.211-ai.wallet.encrypted-payload+json",
-        source_record_id=record_id,
-        wallet_id=wallet_id,
-    )
-    payload_cid = str(payload_result.get("ipfsCid") or payload_result.get("cid") or "")
-    metadata_result = None
-    metadata_cid = ""
-    if encrypted_record.get("encrypted_metadata") is not None:
-        metadata_result = _publish_bytes_to_ipfs(
-            encrypted_record["encrypted_metadata"],
-            file_name=f"{file_name or record_id}.encrypted-metadata.json",
-            mime_type="application/vnd.211-ai.wallet.encrypted-metadata+json",
-            source_record_id=record_id,
-            wallet_id=wallet_id,
-        )
-        metadata_cid = str(metadata_result.get("ipfsCid") or metadata_result.get("cid") or "")
-    encrypted_payload_ref = dict(version.get("encrypted_payload_ref") or {})
-    encrypted_metadata_ref = dict(version.get("encrypted_metadata_ref") or {}) if version.get("encrypted_metadata_ref") else None
-    graph = {
-        "schemaVersion": "211-ai-wallet-encrypted-record-ipld-v1",
-        "walletId": wallet_id,
-        "recordId": record_id,
-        "versionId": version_id,
-        "dataType": record.get("data_type"),
-        "sensitivity": record.get("sensitivity"),
-        "publicDescriptor": record.get("public_descriptor"),
-        "ciphertextHash": version.get("ciphertext_hash"),
-        "encryptionSuite": version.get("encryption_suite"),
-        "encryptedPayload": {
-            "/": payload_cid,
-            "storageRef": encrypted_payload_ref,
-            "filecoin": payload_result,
-        },
-        "encryptedMetadata": (
-            {
-                "/": metadata_cid,
-                "storageRef": encrypted_metadata_ref,
-                "filecoin": metadata_result,
-            }
-            if metadata_result is not None
-            else None
-        ),
-        "walletMetadata": None,
-        "links": [
-            {"name": "encrypted_payload", "/": payload_cid, "mediaType": "application/vnd.211-ai.wallet.encrypted-payload+json"},
-            *(
-                [{"name": "encrypted_metadata", "/": metadata_cid, "mediaType": "application/vnd.211-ai.wallet.encrypted-metadata+json"}]
-                if metadata_result is not None
-                else []
-            ),
-        ],
-    }
-    wallet_metadata_cid = _record_metadata_cid(encrypted_record)
-    if wallet_metadata_cid:
-        graph["walletMetadata"] = {
-            "/": wallet_metadata_cid,
-            "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
-        }
-        graph["links"].append(
-            {
-                "name": "wallet_metadata",
-                "/": wallet_metadata_cid,
-                "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
-            }
-        )
-    graph_result = _publish_bytes_to_ipfs(
-        json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
-        file_name=f"{file_name or record_id}.ipld-wallet-record.json",
-        mime_type="application/vnd.ipld.dag-json",
-        source_record_id=record_id,
-        wallet_id=wallet_id,
-    )
-    graph_cid = str(graph_result.get("ipfsCid") or graph_result.get("cid") or "")
-    return {
-        **graph_result,
-        "message": "Pinned encrypted wallet record graph to IPFS/Filecoin.",
-        "encryptedPayloadCid": payload_cid,
-        "encryptedMetadataCid": metadata_cid or None,
-        "metadataCid": wallet_metadata_cid or None,
-        "metadataIpldCid": wallet_metadata_cid or None,
-        "ipldLinks": graph["links"],
-        "recordId": record_id,
-        "versionId": version_id,
-        "root": {"/": graph_cid},
-        "walletId": wallet_id,
-    }
-
-
-def _record_metadata_cid(encrypted_record: Mapping[str, Any]) -> str:
-    metadata = encrypted_record.get("metadata")
-    if isinstance(metadata, Mapping):
-        for key in ("metadataCid", "metadataIpldCid"):
-            value = str(metadata.get(key) or "").strip()
-            if value:
-                return value
-    record = encrypted_record.get("record")
-    if isinstance(record, Mapping):
-        metadata = record.get("metadata")
-        if isinstance(metadata, Mapping):
-            for key in ("metadataCid", "metadataIpldCid"):
-                value = str(metadata.get(key) or "").strip()
-                if value:
-                    return value
-    return ""
-
-
-def _should_publish_record_metadata_ipld(metadata: Mapping[str, Any]) -> bool:
-    generated_keys = {
-        "decryptedClassification",
-        "decryptedLabels",
-        "decryptedMimeType",
-        "privacyProfileArtifactIds",
-        "privacyProfileClassification",
-        "privacyProfileLabels",
-        "privacyProfileMimeType",
-        "privacyProfileProofId",
-        "privacyProfilePublicInputs",
-        "privacyProfileSearchText",
-        "privacyProfileStatus",
-        "privacyProfileSummary",
-        "privacyProfileVectorTerms",
-    }
-    return any(key in metadata for key in generated_keys)
-
-
-def _publish_record_metadata_ipld(record: Mapping[str, Any]) -> Dict[str, Any]:
-    metadata = record.get("metadata")
-    if not isinstance(metadata, Mapping):
-        return {}
-    generated_metadata = _generated_wallet_metadata(metadata)
-    if not generated_metadata:
-        return {}
-    record_id = str(record.get("record_id") or "")
-    wallet_id = str(record.get("wallet_id") or metadata.get("walletId") or "")
-    graph = {
-        "schemaVersion": "211-ai-wallet-record-metadata-ipld-v1",
-        "walletId": wallet_id,
-        "recordId": record_id,
-        "dataType": record.get("data_type"),
-        "sensitivity": record.get("sensitivity"),
-        "metadata": generated_metadata,
-        "privacyPolicy": "proof_backed_metadata_no_plaintext_payload",
-        "links": [
-            *(
-                [
-                    {
-                        "name": "document_privacy_profile_proof",
-                        "proofId": str(generated_metadata["privacyProfileProofId"]),
-                        "mediaType": "application/vnd.211-ai.wallet.proof-receipt+json",
-                    }
-                ]
-                if generated_metadata.get("privacyProfileProofId")
-                else []
-            ),
-            *(
-                [
-                    {
-                        "name": "derived_artifact",
-                        "artifactId": artifact_id,
-                        "mediaType": "application/vnd.211-ai.wallet.derived-artifact+json",
-                    }
-                    for artifact_id in generated_metadata.get("privacyProfileArtifactIds", [])
-                    if isinstance(artifact_id, str) and artifact_id.strip()
-                ]
-            ),
-        ],
-    }
-    result = _publish_bytes_to_ipfs(
-        json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
-        file_name=f"{record_id or 'wallet-record'}.wallet-metadata.ipld.json",
-        mime_type="application/vnd.211-ai.wallet.record-metadata+json",
-        source_record_id=record_id or None,
-        wallet_id=wallet_id or None,
-    )
-    cid = str(result.get("ipfsCid") or result.get("cid") or "")
-    if not cid:
-        return {}
-    existing_links = metadata.get("ipldLinks") if isinstance(metadata.get("ipldLinks"), list) else []
-    metadata_link = {
-        "name": "wallet_metadata",
-        "/": cid,
-        "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
-    }
-    links = [
-        link
-        for link in existing_links
-        if not (isinstance(link, Mapping) and str(link.get("name") or "") == "wallet_metadata")
-    ]
-    links.append(metadata_link)
-    patch: Dict[str, Any] = {
-        "metadataCid": cid,
-        "metadataGatewayUrl": result.get("gatewayUrl") or result.get("url"),
-        "metadataIpldCid": cid,
-        "metadataIpldLink": metadata_link,
-        "metadataStorageMessage": result.get("message") or "Pinned wallet metadata IPLD to IPFS/Filecoin.",
-        "ipldLinks": links,
-    }
-    for key in ("filecoinPinRequestId", "filecoinPinStatus", "filecoinPinStatusUrl"):
-        value = result.get(key)
-        if value:
-            patch[f"metadata{key[0].upper()}{key[1:]}"] = value
-    return patch
-
-
-def _generated_wallet_metadata(metadata: Mapping[str, Any]) -> Dict[str, Any]:
-    allowed = {
-        "decryptedClassification",
-        "decryptedLabels",
-        "decryptedMimeType",
-        "fileName",
-        "privacyProfileArtifactIds",
-        "privacyProfileClassification",
-        "privacyProfileLabels",
-        "privacyProfileMimeType",
-        "privacyProfileProofId",
-        "privacyProfilePublicInputs",
-        "privacyProfileSearchText",
-        "privacyProfileStatus",
-        "privacyProfileSummary",
-        "privacyProfileVectorTerms",
-    }
-    generated = {key: metadata[key] for key in sorted(allowed) if key in metadata}
-    return _json_safe_metadata(generated)
-
-
-def _json_safe_metadata(value: Any) -> Any:
-    if isinstance(value, Mapping):
-        return {
-            str(key): _json_safe_metadata(item)
-            for key, item in value.items()
-            if item is not None
-        }
-    if isinstance(value, list):
-        return [_json_safe_metadata(item) for item in value if item is not None]
-    if isinstance(value, (str, int, float, bool)) or value is None:
-        return value
-    return str(value)
-
-
-def _publish_bytes_via_ipfs_backend(data: bytes) -> str:
-    backend_mode = str(os.getenv("WALLET_IPFS_UPLOAD_BACKEND") or "").strip().lower()
-    if backend_mode == "mock":
-        return _mock_ipfs_cid_for_bytes(data)
-    backend = get_ipfs_backend()
-    return backend.add_bytes(data, pin=True)
-
-
-def _mock_ipfs_cid_for_bytes(data: bytes) -> str:
-    digest = hashlib.sha256(data).hexdigest()
-    return f"bafybeimock{digest[:24]}"
-
-
-def _submit_ipfs_cid_to_filecoin_pin(
-    cid: str,
-    *,
-    file_name: str | None = None,
-    mime_type: str | None = None,
-    source_record_id: str | None = None,
-    wallet_id: str | None = None,
-) -> Dict[str, Any] | None:
-    if not _filecoin_pin_service_url():
-        return None
-
-    origins = [
-        origin.strip()
-        for origin in str(os.getenv("WALLET_FILECOIN_PIN_ORIGINS") or "").split(",")
-        if origin.strip()
-    ]
-    metadata: Dict[str, str] = {"source": "211-ai-wallet"}
-    if wallet_id:
-        metadata["walletId"] = wallet_id
-    if source_record_id:
-        metadata["recordId"] = source_record_id
-    if file_name:
-        metadata["fileName"] = file_name
-    if mime_type:
-        metadata["mimeType"] = mime_type
-
-    payload: Dict[str, Any] = {
-        "cid": cid,
-        "meta": metadata,
-    }
-    if file_name:
-        payload["name"] = file_name
-    if origins:
-        payload["origins"] = origins
-    return _filecoin_pin_request("POST", "/pins", payload=payload)
-
-
-def _fetch_filecoin_pin_status(request_id: str) -> Dict[str, Any]:
-    if not request_id.strip():
-        raise ValueError("request ID is required")
-    return _filecoin_pin_request("GET", f"/pins/{request_id}")
-
-
-def _filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | None = None) -> Dict[str, Any]:
-    service_url = _filecoin_pin_service_url()
-    if not service_url:
-        raise FilecoinPinHandoffError("WALLET_FILECOIN_PIN_SERVICE_URL is not configured")
-    if service_url == "mock":
-        return _mock_filecoin_pin_request(method, path, payload=payload)
-
-    endpoint = f"{service_url}{path}"
-    body = json.dumps(payload, sort_keys=True).encode("utf-8") if payload is not None else None
-    req = urllib_request.Request(
-        endpoint,
-        data=body,
-        headers=_filecoin_pin_request_headers(include_json_content_type=payload is not None),
-        method=method,
-    )
-    try:
-        with urllib_request.urlopen(req, timeout=_filecoin_pin_timeout_seconds()) as response:
-            raw = response.read().decode("utf-8")
-            content_type = str(getattr(response, "headers", {}).get("content-type", ""))
-    except urllib_error.HTTPError as exc:
-        error_body = exc.read().decode("utf-8", errors="replace")
-        detail = _response_message_from_raw_json(error_body) or f"Filecoin Pin sidecar rejected the request with HTTP {exc.code}"
-        raise FilecoinPinHandoffError(detail) from exc
-    except urllib_error.URLError as exc:
-        raise FilecoinPinHandoffError(f"Unable to reach Filecoin Pin sidecar at {endpoint}: {exc.reason}") from exc
-
-    if not raw:
-        return {}
-    if "json" not in content_type.lower() and not raw.lstrip().startswith("{"):
-        raise FilecoinPinHandoffError("Filecoin Pin sidecar returned a non-JSON response")
-    parsed = json.loads(raw)
-    if not isinstance(parsed, dict):
-        raise FilecoinPinHandoffError("Filecoin Pin sidecar returned a non-object response")
-    return parsed
-
-
-def _filecoin_pin_service_url() -> str:
-    return str(os.getenv("WALLET_FILECOIN_PIN_SERVICE_URL") or "").strip().rstrip("/")
-
-
-def _filecoin_pin_mock_status() -> str:
-    return str(os.getenv("WALLET_FILECOIN_PIN_MOCK_STATUS") or "pinned").strip() or "pinned"
-
-
-def _mock_filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | None = None) -> Dict[str, Any]:
-    normalized_method = str(method or "").strip().upper()
-    normalized_path = str(path or "").strip()
-
-    if normalized_method == "POST" and normalized_path == "/pins":
-        cid = str((payload or {}).get("cid") or "").strip()
-        if not cid:
-            raise FilecoinPinHandoffError("mock Filecoin Pin request requires a cid")
-        request_id = f"mock-pin-{hashlib.sha256(cid.encode('utf-8')).hexdigest()[:12]}"
-        return {
-            "requestid": request_id,
-            "status": "queued",
-            "info": {
-                "provider": "mock-filecoin-pin",
-                "cid": cid,
-                "mock": True,
-            },
-        }
-
-    if normalized_method == "GET" and normalized_path.startswith("/pins/"):
-        request_id = normalized_path.rsplit("/", 1)[-1].strip()
-        if not request_id:
-            raise FilecoinPinHandoffError("mock Filecoin Pin status requires a request ID")
-        return {
-            "requestid": request_id,
-            "status": _filecoin_pin_mock_status(),
-            "info": {
-                "provider": "mock-filecoin-pin",
-                "mock": True,
-                "pieceCid": f"baga6ea4seaq{hashlib.sha256(request_id.encode('utf-8')).hexdigest()[:16]}",
-            },
-        }
-
-    raise FilecoinPinHandoffError(f"mock Filecoin Pin does not support {normalized_method} {normalized_path}")
-
-
-def _filecoin_pin_timeout_seconds() -> float:
-    timeout_seconds = float(str(os.getenv("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS") or "30").strip())
-    if timeout_seconds <= 0:
-        raise FilecoinPinHandoffError("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS must be positive")
-    return timeout_seconds
-
-
-def _filecoin_pin_request_headers(*, include_json_content_type: bool) -> Dict[str, str]:
-    request_headers: Dict[str, str] = {}
-    if include_json_content_type:
-        request_headers["content-type"] = "application/json"
-    if bearer_token := str(os.getenv("WALLET_FILECOIN_PIN_BEARER_TOKEN") or "").strip():
-        request_headers["authorization"] = f"Bearer {bearer_token}"
-    if header_name := str(os.getenv("WALLET_FILECOIN_PIN_HTTP_HEADER_NAME") or "").strip():
-        header_value = str(os.getenv("WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE") or "").strip()
-        if not header_value:
-            raise FilecoinPinHandoffError(
-                "WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE is required when WALLET_FILECOIN_PIN_HTTP_HEADER_NAME is set"
-            )
-        request_headers[header_name] = header_value
-    return request_headers
-
-
-def _response_message_from_raw_json(raw: str) -> str:
-    if not raw.strip():
-        return ""
-    try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError:
-        return raw.strip()
-    if not isinstance(parsed, dict):
-        return raw.strip()
-    return str(parsed.get("error") or parsed.get("message") or "").strip()
-
-
-def _filecoin_pin_status_url(request_id: str) -> str:
-    service_url = _filecoin_pin_service_url()
-    return f"{service_url}/pins/{request_id}" if service_url else ""
-
-
-def _filecoin_upload_status_url(request_id: str) -> str:
-    return f"/filecoin-upload/status/{request_id}"
-
-
-def _key_from_optional_hex(value: str | None) -> bytes | None:
-    if value is None:
-        return None
-    key = bytes.fromhex(value)
-    if len(key) != 32:
-        raise ValueError("wallet key must decode to 32 bytes")
-    return key
-
-
-def _send_dead_drop_email(
-    *,
-    to_email: str,
-    subject: str,
-    body: str,
-    bundle: Dict[str, Any],
-    bundle_filename: str,
-) -> Dict[str, Any]:
-    normalized_to_email = str(to_email or "").strip()
-    normalized_subject = str(subject or "").strip()
-    normalized_body = str(body or "")
-    bundle_json = json.dumps(bundle, indent=2, sort_keys=True)
-    sender = str(os.getenv("WALLET_DEAD_DROP_FROM_EMAIL") or "no-reply@211-ai.org").strip()
-
-    webhook_url = str(os.getenv("WALLET_DEAD_DROP_WEBHOOK_URL") or "").strip()
-    backend = str(os.getenv("WALLET_DEAD_DROP_BACKEND") or ("http" if webhook_url else "")).strip().lower()
-    if backend or webhook_url:
-        if backend != "http" or not webhook_url:
-            raise RuntimeError(
-                "WALLET_DEAD_DROP_WEBHOOK_URL environment variable is required for dead-drop delivery when WALLET_DEAD_DROP_BACKEND is enabled"
-            )
-        delivery = _send_webhook_notification(
-            env_prefix="WALLET_DEAD_DROP",
-            required_key="to_email",
-            required_value=normalized_to_email,
-            extra_payload={
-                "subject": normalized_subject,
-                "body": normalized_body,
-                "from_email": sender,
-                "attachment_base64": base64.b64encode(bundle_json.encode("utf-8")).decode("ascii"),
-                "attachment_filename": str(bundle_filename or "abby-missing-person-wallet-dead-drop.json"),
-                "attachment_mime_type": "application/json",
-            },
-        )
-        return {"message_id": str(delivery.get("provider_message_id") or "")}
-
-    smtp_host = str(os.getenv("WALLET_DEAD_DROP_SMTP_HOST") or "").strip()
-    if not smtp_host:
-        raise RuntimeError(
-            "WALLET_DEAD_DROP_SMTP_HOST environment variable is required for dead-drop email delivery but is not configured"
-        )
-    smtp_port = int(str(os.getenv("WALLET_DEAD_DROP_SMTP_PORT") or "587").strip())
-    smtp_use_ssl = str(os.getenv("WALLET_DEAD_DROP_SMTP_USE_SSL") or "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
-    smtp_starttls = str(os.getenv("WALLET_DEAD_DROP_SMTP_STARTTLS") or "true").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
-    smtp_username = str(os.getenv("WALLET_DEAD_DROP_SMTP_USERNAME") or "").strip()
-    smtp_password = str(os.getenv("WALLET_DEAD_DROP_SMTP_PASSWORD") or "")
-
-    message = EmailMessage()
-    message["From"] = sender
-    message["To"] = normalized_to_email
-    message["Subject"] = normalized_subject
-    sender_domain = sender.rsplit("@", 1)[-1].strip() if "@" in sender else ""
-    message["Message-Id"] = make_msgid(domain=sender_domain or None)
-    message.set_content(normalized_body)
-    message.add_attachment(
-        bundle_json.encode("utf-8"),
-        maintype="application",
-        subtype="json",
-        filename=bundle_filename,
-    )
-
-    smtp_factory = smtplib.SMTP_SSL if smtp_use_ssl else smtplib.SMTP
-    with smtp_factory(smtp_host, smtp_port, timeout=20) as smtp:
-        if not smtp_use_ssl and smtp_starttls:
-            smtp.starttls()
-        if smtp_username:
-            smtp.login(smtp_username, smtp_password)
-        rejected = smtp.send_message(message)
-    if rejected:
-        raise RuntimeError(f"Dead-drop email delivery rejected recipients: {sorted(rejected)}")
-    return {"message_id": str(message.get("Message-Id") or "")}

@@ -7,11 +7,11 @@ import math
 import struct
 import sys
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import pandas as pd
-
 
 DEFAULT_PACKAGE_DIR = Path("data/retrieval_package")
 DEFAULT_OUTPUT_DIR = Path("wallet_interface/ui/public/corpus/211-info/current")

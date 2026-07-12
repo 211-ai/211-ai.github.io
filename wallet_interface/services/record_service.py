@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Sequence
+from typing import Any, Dict, List
 
 from .._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record
+
 
 class RecordDomainServiceMixin:
     def add_document(
@@ -19,7 +21,7 @@ class RecordDomainServiceMixin:
         *,
         actor_did: str,
         actor_secret: bytes | None = None,
-        metadata: Dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         record = self.wallet_service.add_document(
             wallet_id,
@@ -40,7 +42,7 @@ class RecordDomainServiceMixin:
         text: str,
         actor_secret: bytes | None = None,
         filename: str = "document.txt",
-        metadata: Dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         private_metadata = {"filename": filename, **(metadata or {})}
         record = self.wallet_service.add_record(
@@ -66,7 +68,7 @@ class RecordDomainServiceMixin:
         actor_secret: bytes | None = None,
         filename: str = "document.bin",
         content_type: str | None = None,
-        metadata: Dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         private_metadata = {
             "filename": filename,
@@ -156,7 +158,7 @@ class RecordDomainServiceMixin:
         if normalized_abilities == ["record/share"]:
             raise ValueError("record/share must be paired with analyze or decrypt access")
 
-        caveats: Dict[str, Any] = dict(extra_caveats or {})
+        caveats: dict[str, Any] = dict(extra_caveats or {})
         caveats["purpose"] = purpose or caveats.get("purpose") or "service_matching"
         if output_types is not None:
             caveats["output_types"] = list(output_types)
@@ -220,7 +222,7 @@ class RecordDomainServiceMixin:
         grant_id: str | None = None,
         actor_secret: bytes | None = None,
         max_chars: int = 500,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.analyze_document_with_redaction(
             wallet_id,
             record_id,
@@ -242,7 +244,7 @@ class RecordDomainServiceMixin:
         invocation,
         actor_secret: bytes | None = None,
         max_chars: int = 500,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.wallet_service.verify_invocation(
             wallet_id,
             invocation,
@@ -273,7 +275,7 @@ class RecordDomainServiceMixin:
         grant_id: str | None = None,
         actor_secret: bytes | None = None,
         chunk_size_words: int = 80,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.create_document_vector_profile(
             wallet_id,
             record_id,
@@ -295,7 +297,7 @@ class RecordDomainServiceMixin:
         invocation,
         actor_secret: bytes | None = None,
         chunk_size_words: int = 80,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.wallet_service.verify_invocation(
             wallet_id,
             invocation,
@@ -328,7 +330,7 @@ class RecordDomainServiceMixin:
         max_chars: int = 20_000,
         max_bytes: int = 200_000,
         use_ocr: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.extract_document_text_with_redaction(
             wallet_id,
             record_id,
@@ -354,7 +356,7 @@ class RecordDomainServiceMixin:
         max_chars: int = 20_000,
         max_bytes: int = 200_000,
         use_ocr: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.wallet_service.verify_invocation(
             wallet_id,
             invocation,
@@ -388,7 +390,7 @@ class RecordDomainServiceMixin:
         actor_secret: bytes | None = None,
         max_fields: int = 100,
         use_ocr: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.analyze_document_form_with_redaction(
             wallet_id,
             record_id,
@@ -412,7 +414,7 @@ class RecordDomainServiceMixin:
         actor_secret: bytes | None = None,
         max_fields: int = 100,
         use_ocr: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         self.wallet_service.verify_invocation(
             wallet_id,
             invocation,
@@ -443,7 +445,7 @@ class RecordDomainServiceMixin:
         actor_did: str,
         grant_id: str | None = None,
         actor_secret: bytes | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.analyze_documents_with_redaction(
             wallet_id,
             list(record_ids),
@@ -466,7 +468,7 @@ class RecordDomainServiceMixin:
         max_chars_per_record: int = 20_000,
         max_bytes_per_record: int = 200_000,
         use_ocr: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         result = self.wallet_service.create_redacted_graphrag(
             wallet_id,
             list(record_ids),
@@ -492,7 +494,7 @@ class RecordDomainServiceMixin:
         max_chars_per_record: int = 20_000,
         max_bytes_per_record: int = 200_000,
         use_ocr: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         ordered_record_ids = list(dict.fromkeys(record_ids))
         for record_id in ordered_record_ids:
             self.wallet_service.verify_invocation(
@@ -593,9 +595,9 @@ class RecordDomainServiceMixin:
         output_types: Sequence[str] | None = None,
         user_present: bool = False,
         extra: Mapping[str, Any] | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         grant = self.wallet_service.grants.get(grant_id)
-        caveats: Dict[str, Any] = dict(extra or {})
+        caveats: dict[str, Any] = dict(extra or {})
         grant_purpose = grant.caveats.get("purpose") if grant is not None else None
         caveats["purpose"] = purpose or (str(grant_purpose) if grant_purpose else fallback_purpose)
         if output_types:
@@ -675,7 +677,7 @@ class RecordDomainServiceMixin:
         status: str | None = "pending",
         requester_did: str | None = None,
         audience_did: str | None = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self.wallet_service.access_request_review_items(
             wallet_id,
             status=status,
@@ -811,7 +813,7 @@ class RecordDomainServiceMixin:
         approval_id: str | None = None,
         rotate_keys: bool = True,
         reason: str | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         report = self.wallet_service.emergency_revoke(
             wallet_id,
             actor_did=actor_did,
@@ -833,7 +835,7 @@ class RecordDomainServiceMixin:
         audience_did: str,
         resources: Sequence[str],
         abilities: Sequence[str],
-        caveats: Dict[str, Any] | None = None,
+        caveats: dict[str, Any] | None = None,
         expires_at: str | None = None,
         issuer_secret: bytes | None = None,
         audience_secret: bytes | None = None,
@@ -984,7 +986,7 @@ class RecordDomainServiceMixin:
         return bundle
 
 
-    def verify_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def verify_export_bundle(self, bundle: dict[str, Any]) -> dict[str, Any]:
         bundle_hash = self.wallet_service.export_bundle_hash(bundle)
         embedded_hash = bundle.get("bundle_hash")
         hash_valid = isinstance(embedded_hash, str) and embedded_hash == bundle_hash
@@ -1007,7 +1009,7 @@ class RecordDomainServiceMixin:
         }
 
 
-    def import_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def import_export_bundle(self, bundle: dict[str, Any]) -> dict[str, Any]:
         result = self.wallet_service.import_export_bundle(bundle)
         wallet_id = result.get("wallet_id")
         if isinstance(wallet_id, str) and wallet_id:
@@ -1015,7 +1017,7 @@ class RecordDomainServiceMixin:
         return result
 
 
-    def verify_export_bundle_storage(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def verify_export_bundle_storage(self, bundle: dict[str, Any]) -> dict[str, Any]:
         return self.wallet_service.verify_export_bundle_storage(bundle)
 
 
@@ -1119,7 +1121,7 @@ class RecordDomainServiceMixin:
         return report
 
 
-    def audit_timeline(self, wallet_id: str) -> List[Dict[str, Any]]:
+    def audit_timeline(self, wallet_id: str) -> list[dict[str, Any]]:
         return [
             {
                 "created_at": event.created_at,

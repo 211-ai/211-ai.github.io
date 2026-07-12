@@ -2,14 +2,30 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, Header, HTTPException
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    Header = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _key_from_optional_hex,
+    _require_magic_ucan,
+)
+from ..schemas import (
+    AddLocationRequest,
+    CreateWalletRequest,
+    WalletControllerRecoveryRequest,
+    WalletControllerRequest,
+    WalletDeviceRequest,
+    WalletRecoveryBundleRequest,
+    WalletRecoveryPolicyRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +34,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.post("/wallets")
-    def create_wallet(request: CreateWalletRequest) -> Dict[str, Any]:
+    def create_wallet(request: CreateWalletRequest) -> dict[str, Any]:
         wallet = app_service.create_wallet(
             request.owner_did,
             controller_dids=request.controller_dids or None,
@@ -28,7 +44,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}")
-    def get_wallet(wallet_id: str) -> Dict[str, Any]:
+    def get_wallet(wallet_id: str) -> dict[str, Any]:
         try:
             return app_service.get_wallet(wallet_id).to_dict()
         except Exception as exc:
@@ -36,7 +52,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/controllers")
-    def add_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:
+    def add_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> dict[str, Any]:
         try:
             wallet = app_service.add_controller(
                 wallet_id,
@@ -51,7 +67,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/controllers/remove")
-    def remove_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:
+    def remove_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> dict[str, Any]:
         try:
             wallet = app_service.remove_controller(
                 wallet_id,
@@ -65,7 +81,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/devices")
-    def add_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> Dict[str, Any]:
+    def add_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> dict[str, Any]:
         try:
             wallet = app_service.add_device(
                 wallet_id,
@@ -80,7 +96,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/devices/revoke")
-    def revoke_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> Dict[str, Any]:
+    def revoke_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> dict[str, Any]:
         try:
             wallet = app_service.revoke_device(
                 wallet_id,
@@ -94,7 +110,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/recovery-policy")
-    def set_wallet_recovery_policy(wallet_id: str, request: WalletRecoveryPolicyRequest) -> Dict[str, Any]:
+    def set_wallet_recovery_policy(wallet_id: str, request: WalletRecoveryPolicyRequest) -> dict[str, Any]:
         try:
             wallet = app_service.set_recovery_policy(
                 wallet_id,
@@ -109,7 +125,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/recovery-bundles")
-    def store_wallet_recovery_bundle(wallet_id: str, request: WalletRecoveryBundleRequest) -> Dict[str, Any]:
+    def store_wallet_recovery_bundle(wallet_id: str, request: WalletRecoveryBundleRequest) -> dict[str, Any]:
         try:
             bundle = app_service.store_recovery_bundle(
                 wallet_id,
@@ -136,7 +152,7 @@ def create_router(service: WalletInterfaceService):
     def get_latest_wallet_recovery_bundle(
         wallet_id: str,
         authorization: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         resource = f"wallet://{wallet_id}/recovery-bundles/latest"
         ucan = _require_magic_ucan(
             authorization=authorization,
@@ -168,7 +184,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         bundle_id: str,
         authorization: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         resource = f"wallet://{wallet_id}/recovery-bundles/{bundle_id}"
         ucan = _require_magic_ucan(
             authorization=authorization,
@@ -196,7 +212,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/controllers/recover")
-    def recover_wallet_controller(wallet_id: str, request: WalletControllerRecoveryRequest) -> Dict[str, Any]:
+    def recover_wallet_controller(wallet_id: str, request: WalletControllerRecoveryRequest) -> dict[str, Any]:
         try:
             wallet = app_service.recover_controller(
                 wallet_id,
@@ -211,7 +227,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/snapshot")
-    def save_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+    def save_wallet_snapshot(wallet_id: str) -> dict[str, Any]:
         try:
             path = app_service.save_wallet_snapshot(wallet_id)
             return {"wallet_id": wallet_id, "path": str(path)}
@@ -220,7 +236,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/snapshot")
-    def verify_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+    def verify_wallet_snapshot(wallet_id: str) -> dict[str, Any]:
         try:
             return app_service.verify_wallet_snapshot(wallet_id)
         except Exception as exc:
@@ -228,7 +244,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/snapshot/load")
-    def load_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+    def load_wallet_snapshot(wallet_id: str) -> dict[str, Any]:
         try:
             app_service.load_wallet_snapshot(wallet_id)
             return {"wallet_id": wallet_id, "loaded": True}
@@ -237,7 +253,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/locations")
-    def add_location(wallet_id: str, request: AddLocationRequest) -> Dict[str, Any]:
+    def add_location(wallet_id: str, request: AddLocationRequest) -> dict[str, Any]:
         try:
             record = app_service.add_location(
                 wallet_id,

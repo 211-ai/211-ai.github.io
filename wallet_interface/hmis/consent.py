@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Mapping, Sequence
+from datetime import UTC, datetime, timezone
+from typing import Any
 
 from .errors import HmisConsentError, HmisPolicyError
 from .models import HmisConsentRecord
@@ -39,7 +40,7 @@ def evaluate_hmis_consent(
     allowed_bases: Sequence[str] = ("client_consent", "program_operational_authority"),
     require_program_scope: bool = True,
 ) -> HmisConsentDecision:
-    current_time = now or datetime.now(timezone.utc)
+    current_time = now or datetime.now(UTC)
 
     if consent.status != "active":
         raise HmisConsentError(f"HMIS consent {consent.consent_id} is not active")

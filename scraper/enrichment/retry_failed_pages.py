@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from ..orchestration.agentic_daemon import CrawlItem, is_junk_failed_url, is_probably_retryable_error
 from ..duckdb_state import DuckDBCrawlStore
+from ..orchestration.agentic_daemon import CrawlItem, is_junk_failed_url, is_probably_retryable_error
 
 
 def classify_failed_urls(entries: list[dict[str, str | int]]) -> dict[str, list[dict[str, str | int]]]:

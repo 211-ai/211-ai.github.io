@@ -6,10 +6,10 @@ from pathlib import Path
 
 import duckdb
 
-from ..orchestration.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, FetchResult
 from ..config import Config
-from .duckdb_etl import DuckDBETLWarehouse
+from ..orchestration.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, FetchResult
 from ..parsing.processor import DataProcessor
+from .duckdb_etl import DuckDBETLWarehouse
 
 
 def reextract_warehouse(

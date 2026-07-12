@@ -163,7 +163,7 @@ class DuckDBCrawlStore:
                 """
             )
 
-    def migrate_from_state(self, state: "CrawlState") -> None:
+    def migrate_from_state(self, state: CrawlState) -> None:
         if not state.queue and not state.seen_urls and not state.failed_urls:
             return
         if self.queue_count(include_active=True) > 0 or self.seen_count() > 0 or self.failed_count() > 0:
@@ -190,7 +190,7 @@ class DuckDBCrawlStore:
                         [url, int(failures)],
                     )
 
-    def enqueue_items(self, items: list["CrawlItem"]) -> int:
+    def enqueue_items(self, items: list[CrawlItem]) -> int:
         if not items:
             return 0
         inserted = 0
@@ -253,11 +253,11 @@ class DuckDBCrawlStore:
                     ],
                 )
 
-    def claim_batch(self, *, limit: int, blocked_urls: set[str]) -> list["CrawlItem"]:
+    def claim_batch(self, *, limit: int, blocked_urls: set[str]) -> list[CrawlItem]:
         from .orchestration.agentic_daemon import CrawlItem
 
         blocked_urls = {str(url) for url in blocked_urls if str(url).strip()}
-        claimed: list["CrawlItem"] = []
+        claimed: list[CrawlItem] = []
         with self._connect() as conn:
             rows = conn.execute(
                 """
@@ -353,7 +353,7 @@ class DuckDBCrawlStore:
             row = conn.execute("SELECT COUNT(*) FROM failed_urls").fetchone()
         return int(row[0]) if row else 0
 
-    def queue_preview(self, *, limit: int = 50) -> list["CrawlItem"]:
+    def queue_preview(self, *, limit: int = 50) -> list[CrawlItem]:
         from .orchestration.agentic_daemon import CrawlItem
 
         with self._connect(read_only=True) as conn:

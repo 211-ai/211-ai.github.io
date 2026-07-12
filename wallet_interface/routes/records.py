@@ -2,14 +2,62 @@
 
 from __future__ import annotations
 
+import base64
+from typing import Any
+
+from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    status = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _analysis_result_to_dict,
+    _build_document_profile_public_inputs,
+    _build_privacy_search_text,
+    _build_privacy_vector_terms,
+    _check_wallet_router_rate_limit,
+    _classify_document_profile,
+    _default_labels_for_mime_type,
+    _derived_artifact_id,
+    _derived_output,
+    _fallback_document_profile_output,
+    _generate_wallet_organizer_profile,
+    _key_from_optional_hex,
+    _match_to_dict,
+    _publish_record_metadata_ipld,
+    _read_string_list,
+    _record_metadata_value,
+    _should_publish_record_metadata_ipld,
+    _summarize_document_profile,
+    _wallet_router_subject,
+)
+from ..schemas import (
+    AnalyzeRecordRequest,
+    DecryptRecordRequest,
+    DeleteWalletRecordRequest,
+    RedactedAnalyzeRecordRequest,
+    RedactedAnalyzeRecordsRequest,
+    RedactedFormAnalysisRequest,
+    RedactedGraphRAGRequest,
+    RedactedTextExtractionRequest,
+    RotateRecordKeyRequest,
+    SavedServiceRequest,
+    SavedServiceUpdateRequest,
+    ServiceInteractionRequest,
+    ServiceInteractionUpdateRequest,
+    ServicePlanRequest,
+    ServicePlanUpdateRequest,
+    VectorProfileRequest,
+    WalletRecordMetadataGenerationRequest,
+    WalletRecordMetadataRequest,
+    WalletServiceMatchRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +66,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.get("/wallets/{wallet_id}/records")
-    def list_records(wallet_id: str, data_type: str | None = None) -> Dict[str, Any]:
+    def list_records(wallet_id: str, data_type: str | None = None) -> dict[str, Any]:
         try:
             records = app_service.list_records(wallet_id, data_type=data_type)
             return {"records": [app_service.record_to_dict(record) for record in records]}
@@ -31,7 +79,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: WalletRecordMetadataRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             record = app_service.update_record_metadata(
                 wallet_id,
@@ -58,7 +106,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: DeleteWalletRecordRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return app_service.delete_record(
                 wallet_id,
@@ -71,7 +119,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/portal/saved-services")
-    def list_saved_services(wallet_id: str, status: str | None = None) -> Dict[str, Any]:
+    def list_saved_services(wallet_id: str, status: str | None = None) -> dict[str, Any]:
         try:
             return {
                 "saved_services": [
@@ -83,7 +131,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/portal/saved-services")
-    def save_service(wallet_id: str, request: SavedServiceRequest) -> Dict[str, Any]:
+    def save_service(wallet_id: str, request: SavedServiceRequest) -> dict[str, Any]:
         try:
             record = app_service.save_service_for_wallet(
                 wallet_id,
@@ -108,7 +156,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.patch("/wallets/{wallet_id}/portal/saved-services/{saved_service_id}")
-    def update_saved_service(wallet_id: str, saved_service_id: str, request: SavedServiceUpdateRequest) -> Dict[str, Any]:
+    def update_saved_service(wallet_id: str, saved_service_id: str, request: SavedServiceUpdateRequest) -> dict[str, Any]:
         try:
             record = app_service.update_saved_service(
                 wallet_id,
@@ -137,7 +185,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         service_doc_id: str | None = None,
         status: str | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return {
                 "plans": [
@@ -154,7 +202,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/portal/plans")
-    def create_service_plan(wallet_id: str, request: ServicePlanRequest) -> Dict[str, Any]:
+    def create_service_plan(wallet_id: str, request: ServicePlanRequest) -> dict[str, Any]:
         try:
             record = app_service.create_service_plan(
                 wallet_id,
@@ -182,7 +230,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.patch("/wallets/{wallet_id}/portal/plans/{plan_id}")
-    def update_service_plan(wallet_id: str, plan_id: str, request: ServicePlanUpdateRequest) -> Dict[str, Any]:
+    def update_service_plan(wallet_id: str, plan_id: str, request: ServicePlanUpdateRequest) -> dict[str, Any]:
         try:
             record = app_service.update_service_plan(
                 wallet_id,
@@ -215,7 +263,7 @@ def create_router(service: WalletInterfaceService):
         service_doc_id: str | None = None,
         interaction_type: str | None = None,
         status: str | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             return {
                 "interactions": [
@@ -233,7 +281,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/portal/interactions")
-    def create_service_interaction(wallet_id: str, request: ServiceInteractionRequest) -> Dict[str, Any]:
+    def create_service_interaction(wallet_id: str, request: ServiceInteractionRequest) -> dict[str, Any]:
         try:
             record = app_service.create_service_interaction(
                 wallet_id,
@@ -269,7 +317,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         interaction_id: str,
         request: ServiceInteractionUpdateRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             record = app_service.update_service_interaction(
                 wallet_id,
@@ -304,7 +352,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: DecryptRecordRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -337,7 +385,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: AnalyzeRecordRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -368,7 +416,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RedactedAnalyzeRecordRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -399,7 +447,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: VectorProfileRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -430,7 +478,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RedactedTextExtractionRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -465,7 +513,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RedactedFormAnalysisRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             actor_secret = _key_from_optional_hex(request.actor_key_hex)
             if request.invocation_token:
@@ -497,7 +545,7 @@ def create_router(service: WalletInterfaceService):
     def analyze_records_redacted(
         wallet_id: str,
         request: RedactedAnalyzeRecordsRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             if not request.record_ids:
                 raise ValueError("redacted cross-record analysis requires at least one record_id")
@@ -517,7 +565,7 @@ def create_router(service: WalletInterfaceService):
     def create_redacted_graphrag(
         wallet_id: str,
         request: RedactedGraphRAGRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             if not request.record_ids:
                 raise ValueError("redacted GraphRAG creation requires at least one record_id")
@@ -554,7 +602,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: WalletRecordMetadataGenerationRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
             limit = _check_wallet_router_rate_limit(wallet_cid, cost=4)
@@ -571,8 +619,8 @@ def create_router(service: WalletInterfaceService):
                 },
             )
 
-            derived_results: List[Dict[str, Any]] = []
-            result_errors: List[str] = []
+            derived_results: list[dict[str, Any]] = []
+            result_errors: list[str] = []
             for create_result in (
                 lambda: app_service.analyze_record_redacted_with_invocation(
                     wallet_id,
@@ -768,7 +816,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         record_id: str,
         request: RotateRecordKeyRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             version = app_service.rotate_record_key(
                 wallet_id,
@@ -782,7 +830,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/services/match")
-    def match_services_for_wallet(wallet_id: str, request: WalletServiceMatchRequest) -> Dict[str, Any]:
+    def match_services_for_wallet(wallet_id: str, request: WalletServiceMatchRequest) -> dict[str, Any]:
         try:
             if request.invocation_token:
                 matches = app_service.match_services_for_wallet_with_invocation(
@@ -811,7 +859,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/audit")
-    def audit_timeline(wallet_id: str) -> Dict[str, Any]:
+    def audit_timeline(wallet_id: str) -> dict[str, Any]:
         try:
             return {"events": app_service.audit_timeline(wallet_id)}
         except Exception as exc:

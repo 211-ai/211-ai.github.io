@@ -15,11 +15,12 @@ import os
 import re
 import sys
 import time
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 from urllib.parse import unquote, urlparse
 
 import requests
@@ -27,8 +28,8 @@ from bs4 import BeautifulSoup
 from requests import exceptions as requests_exceptions
 
 from ..config import Config
-from ..enrichment.duckdb_etl import DuckDBETLWarehouse
 from ..duckdb_state import DuckDBCrawlStore
+from ..enrichment.duckdb_etl import DuckDBETLWarehouse
 from ..parsing.pdf_text_extraction import extract_pdf_text_from_bytes, is_pdf_document, pdf_title_from_metadata
 from ..parsing.processor import DataProcessor
 from ..storage import Storage
@@ -97,7 +98,7 @@ class CrawlState:
     strategy_generation: int = 0
 
     @classmethod
-    def load(cls, path: Path) -> "CrawlState":
+    def load(cls, path: Path) -> CrawlState:
         if not path.exists():
             return cls()
         text = path.read_text(encoding="utf-8").strip()
@@ -941,7 +942,7 @@ def url_slug_tail(url: str) -> str:
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def external_tools_enabled() -> bool:

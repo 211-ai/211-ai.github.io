@@ -7,10 +7,9 @@ import argparse
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
-
 
 UI_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REVIEW_RESULTS = "artifacts/ui-review/latest/review-results.json"
@@ -189,7 +188,7 @@ def count_tasks(tasks: list[BacklogTask], field_name: str) -> dict[str, int]:
 
 def write_outputs(output_dir: Path, tasks: list[BacklogTask], source_path: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     payload = {
         "generatedAt": generated_at,
         "sourceReviewResults": str(source_path.relative_to(UI_ROOT)),

@@ -43,11 +43,10 @@ import json
 import logging
 from pathlib import Path
 
-
 from ..acquisition.browser_scraper import BrowserScraper
+from ..acquisition.static_scraper import StaticScraper
 from ..config import Config
 from ..parsing.processor import DataProcessor
-from ..acquisition.static_scraper import StaticScraper
 from ..storage import Storage
 from ..utils import setup_logging
 

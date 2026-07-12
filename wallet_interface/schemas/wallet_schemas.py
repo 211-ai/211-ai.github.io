@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any, Dict, List
 
 from .base import BaseModel, Field
 
@@ -10,7 +11,7 @@ PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
 
 class CreateWalletRequest(BaseModel):
     owner_did: str
-    controller_dids: List[str] = Field(default_factory=list)
+    controller_dids: list[str] = Field(default_factory=list)
     approval_threshold: int | None = None
 
 
@@ -30,7 +31,7 @@ class WalletDeviceRequest(BaseModel):
 
 class WalletRecoveryPolicyRequest(BaseModel):
     actor_did: str
-    contact_dids: List[str] = Field(default_factory=list)
+    contact_dids: list[str] = Field(default_factory=list)
     threshold: int = 1
     approval_id: str | None = None
 
@@ -80,7 +81,7 @@ class HmisReferralDraftRequest(BaseModel):
     contact_notes: str = ""
     source_content_cid: str = ""
     source_page_cid: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class HmisReferralDraftUpdateRequest(BaseModel):
@@ -96,7 +97,7 @@ class HmisReferralDraftUpdateRequest(BaseModel):
     contact_notes: str | None = None
     source_content_cid: str | None = None
     source_page_cid: str | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class HmisReferralDraftValidationRequest(BaseModel):
@@ -113,12 +114,12 @@ class WalletRouterBaseRequest(BaseModel):
     wallet_cid: str | None = None
     provider: str | None = "hf_inference_api"
     model_name: str | None = None
-    kwargs: Dict[str, Any] = Field(default_factory=dict)
+    kwargs: dict[str, Any] = Field(default_factory=dict)
 
 
 class WalletEmbeddingsRouterRequest(WalletRouterBaseRequest):
     text: str | None = None
-    texts: List[str] = Field(default_factory=list)
+    texts: list[str] = Field(default_factory=list)
 
 
 class WalletLlmRouterRequest(WalletRouterBaseRequest):
@@ -129,9 +130,9 @@ class WalletLlmRouterRequest(WalletRouterBaseRequest):
 
 class WalletMultimodalRouterRequest(WalletRouterBaseRequest):
     prompt: str
-    image_urls: List[str] = Field(default_factory=list)
-    additional_text_blocks: List[str] = Field(default_factory=list)
-    messages: List[Dict[str, Any]] = Field(default_factory=list)
+    image_urls: list[str] = Field(default_factory=list)
+    additional_text_blocks: list[str] = Field(default_factory=list)
+    messages: list[dict[str, Any]] = Field(default_factory=list)
     image_detail: str | None = "auto"
     max_new_tokens: int | None = 350
 
@@ -141,7 +142,7 @@ class MissingPersonDeadDropEmailRequest(BaseModel):
     to_email: str = PORTLAND_POLICE_MISSING_EMAIL
     subject: str = "Missing person report dead drop bundle"
     body: str
-    bundle: Dict[str, Any]
+    bundle: dict[str, Any]
     bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
 
 
@@ -151,7 +152,7 @@ class MissingPersonDeadDropConfigRequest(BaseModel):
     to_email: str = PORTLAND_POLICE_MISSING_EMAIL
     subject: str = "Missing person report dead drop bundle"
     body: str = ""
-    bundle: Dict[str, Any] = Field(default_factory=dict)
+    bundle: dict[str, Any] = Field(default_factory=dict)
     bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
     due_at: str = ""
     last_check_in_at: str = ""
@@ -167,7 +168,7 @@ class SmsNotificationQueueRequest(BaseModel):
     message: str
     due_at: str = ""
     reason: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class SmsNotificationDispatchRequest(BaseModel):
@@ -185,7 +186,7 @@ class InboundSmsForwardRequest(BaseModel):
     provider_message_id: str = ""
     external_reference: str = ""
     created_at: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class PhoneCallNotificationQueueRequest(BaseModel):
@@ -194,7 +195,7 @@ class PhoneCallNotificationQueueRequest(BaseModel):
     script: str
     due_at: str = ""
     reason: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class PhoneCallNotificationDispatchRequest(BaseModel):
@@ -216,11 +217,11 @@ class MagicLoginVerifyRequest(BaseModel):
 
 class WalletRecoveryBundleRequest(BaseModel):
     actor_did: str
-    encrypted_bundle: Dict[str, Any]
+    encrypted_bundle: dict[str, Any]
     wrapping_method: str = "passphrase"
-    kdf: Dict[str, Any] = Field(default_factory=dict)
+    kdf: dict[str, Any] = Field(default_factory=dict)
     recovery_hint: str = ""
-    public_metadata: Dict[str, Any] = Field(default_factory=dict)
+    public_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 __all__ = [

@@ -2,14 +2,29 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+
+from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _key_from_optional_hex,
+)
+from ..schemas import (
+    ExportBundleImportRequest,
+    ExportBundleRequest,
+    ExportBundleStorageRequest,
+    ExportBundleVerifyRequest,
+    ExportGrantRequest,
+    ExportInvocationRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +33,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.post("/wallets/{wallet_id}/exports/grants")
-    def create_export_grant(wallet_id: str, request: ExportGrantRequest) -> Dict[str, Any]:
+    def create_export_grant(wallet_id: str, request: ExportGrantRequest) -> dict[str, Any]:
         try:
             if not request.record_ids:
                 raise ValueError("export grants require at least one record_id")
@@ -40,7 +55,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/exports/invocations")
-    def issue_export_invocation(wallet_id: str, request: ExportInvocationRequest) -> Dict[str, Any]:
+    def issue_export_invocation(wallet_id: str, request: ExportInvocationRequest) -> dict[str, Any]:
         try:
             invocation = app_service.issue_export_invocation(
                 wallet_id,
@@ -62,7 +77,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/exports")
-    def create_export_bundle(wallet_id: str, request: ExportBundleRequest) -> Dict[str, Any]:
+    def create_export_bundle(wallet_id: str, request: ExportBundleRequest) -> dict[str, Any]:
         try:
             if request.invocation_token:
                 return app_service.create_export_bundle_with_invocation(
@@ -87,7 +102,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/exports/verify")
-    def verify_export_bundle(request: ExportBundleVerifyRequest) -> Dict[str, Any]:
+    def verify_export_bundle(request: ExportBundleVerifyRequest) -> dict[str, Any]:
         try:
             return app_service.verify_export_bundle(request.bundle)
         except Exception as exc:
@@ -95,7 +110,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/exports/import")
-    def import_export_bundle(request: ExportBundleImportRequest) -> Dict[str, Any]:
+    def import_export_bundle(request: ExportBundleImportRequest) -> dict[str, Any]:
         try:
             return app_service.import_export_bundle(request.bundle)
         except Exception as exc:
@@ -103,7 +118,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/exports/storage")
-    def verify_export_bundle_storage(request: ExportBundleStorageRequest) -> Dict[str, Any]:
+    def verify_export_bundle_storage(request: ExportBundleStorageRequest) -> dict[str, Any]:
         try:
             return app_service.verify_export_bundle_storage(request.bundle)
         except Exception as exc:

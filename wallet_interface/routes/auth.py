@@ -2,32 +2,53 @@
 
 from __future__ import annotations
 
+import math
+import time
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, HTTPException
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _build_magic_login_link,
+    _is_email_contact,
+    _issue_magic_ucan,
+    _magic_login_base_url,
+    _magic_login_payload_from_request,
+    _send_auth_email_notification,
+    _send_sms_notification,
+    _sign_magic_login_token,
+    _verify_magic_login_token,
+    _voice_proxy_runtime_warnings,
+    _wallet_config_from_magic_payload,
+)
+from ..schemas import (
+    MagicLoginRequest,
+    MagicLoginVerifyRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
         raise RuntimeError("FastAPI is required to create the wallet interface API")
     router = APIRouter()
-    app_service = service
+    app_service = service  # noqa: F841
 
     @router.get("/health")
-    def health() -> Dict[str, Any]:
+    def health() -> dict[str, Any]:
         warnings = _voice_proxy_runtime_warnings()
-        response: Dict[str, Any] = {"status": "ok"}
+        response: dict[str, Any] = {"status": "ok"}
         if warnings:
             response["warnings"] = warnings
         return response
 
 
     @router.post("/auth/magic-link/request")
-    def request_magic_login_link(request: MagicLoginRequest) -> Dict[str, Any]:
+    def request_magic_login_link(request: MagicLoginRequest) -> dict[str, Any]:
         try:
             payload = _magic_login_payload_from_request(request)
             token = _sign_magic_login_token(payload)
@@ -79,7 +100,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/auth/magic-link/verify")
-    def verify_magic_login_link(request: MagicLoginVerifyRequest) -> Dict[str, Any]:
+    def verify_magic_login_link(request: MagicLoginVerifyRequest) -> dict[str, Any]:
         try:
             payload = _verify_magic_login_token(request.token)
             return {

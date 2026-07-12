@@ -2,14 +2,29 @@
 
 from __future__ import annotations
 
+import os
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, Header, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    Header = None  # type: ignore[assignment]
+    status = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    _configured_hf_token,
+    _extract_bearer_token,
+    _indextts_api_name,
+    _indextts_batch_api_name,
+    _indextts_space_base_url,
+    _ops_health_shared_secret,
+    _publicus_indextts_credential_warning,
+    _voice_proxy_runtime_warnings,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -22,7 +37,7 @@ def create_router(service: WalletInterfaceService):
         verify_storage: bool = False,
         authorization: str | None = Header(default=None),
         x_wallet_ops_shared_secret: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         expected_secret = _ops_health_shared_secret()
         if expected_secret:
             supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
@@ -54,7 +69,7 @@ def create_router(service: WalletInterfaceService):
     def ops_voice_proxy_status(
         authorization: str | None = Header(default=None),
         x_wallet_ops_shared_secret: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         expected_secret = _ops_health_shared_secret()
         if expected_secret:
             supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
@@ -80,12 +95,12 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/snapshots")
-    def list_wallet_snapshots() -> Dict[str, Any]:
+    def list_wallet_snapshots() -> dict[str, Any]:
         return {"wallet_ids": app_service.list_wallet_snapshots()}
 
 
     @router.post("/wallets/snapshots/save-all")
-    def save_all_wallet_snapshots() -> Dict[str, Any]:
+    def save_all_wallet_snapshots() -> dict[str, Any]:
         try:
             paths = app_service.save_all_wallet_snapshots()
             return {"paths": [str(path) for path in paths], "count": len(paths)}
@@ -94,7 +109,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/snapshots/load-all")
-    def load_all_wallet_snapshots() -> Dict[str, Any]:
+    def load_all_wallet_snapshots() -> dict[str, Any]:
         try:
             wallet_ids = app_service.load_all_wallet_snapshots()
             return {"wallet_ids": wallet_ids, "count": len(wallet_ids)}

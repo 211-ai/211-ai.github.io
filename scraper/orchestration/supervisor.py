@@ -15,15 +15,15 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import duckdb
 
-from .agentic_daemon import CrawlState, utc_now
 from ..duckdb_state import pattern_prefix_for_url
 from ..utils import setup_logging
+from .agentic_daemon import CrawlState, utc_now
 
 logger = logging.getLogger("scraper.orchestration.supervisor")
 
@@ -344,7 +344,7 @@ class SelfHealingSupervisor:
         try:
             parsed = datetime.fromisoformat(timestamp)
             if parsed.tzinfo is None:
-                parsed = parsed.replace(tzinfo=timezone.utc)
+                parsed = parsed.replace(tzinfo=UTC)
             return max(0.0, now_ts - parsed.timestamp())
         except ValueError:
             return float("inf")

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from .app_service import WalletInterfaceService
-from .helpers import *  # noqa: F401,F403
+from .helpers._app import _cors_origins_from_env, _wallet_interface_service_from_env
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
     from fastapi import FastAPI

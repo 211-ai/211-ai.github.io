@@ -14,8 +14,9 @@ import json
 import logging
 import os
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -522,10 +523,8 @@ def download_full_warc(filename: str, output_dir: Path, *, max_bytes: int = 0) -
 async def run_cloudflare(args: argparse.Namespace) -> dict[str, Any]:
     ensure_ipfs_datasets_path()
     from ipfs_datasets_py.processors.web_archiving.cloudflare_browser_rendering_engine import (
-        crawl_with_cloudflare_browser_rendering,
-    )
-    from ipfs_datasets_py.processors.web_archiving.cloudflare_browser_rendering_engine import (
         _resolve_credentials,
+        crawl_with_cloudflare_browser_rendering,
     )
 
     records_path = args.output_dir / "raw" / "cloudflare_crawl_records.jsonl"

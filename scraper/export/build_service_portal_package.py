@@ -7,17 +7,17 @@ import logging
 import re
 import sys
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 from urllib.parse import quote_plus
 
 import duckdb
 import pandas as pd
 
 from ..utils import clean_text, setup_logging
-
 
 logger = setup_logging()
 
@@ -55,7 +55,7 @@ LABEL_TO_FIELD = {
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def bootstrap_local_ipfs_datasets() -> None:

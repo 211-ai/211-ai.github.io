@@ -2,14 +2,35 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import APIRouter
+    from fastapi import APIRouter, Header, HTTPException, Request
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    Header = None  # type: ignore[assignment]
+    Request = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..helpers import *  # noqa: F401,F403
-from ..schemas import *  # noqa: F401,F403
+from ..helpers import (
+    OPS_DEAD_DROP_ACTOR_DID,
+    _extract_bearer_token,
+    _normalize_phone_number,
+    _ops_health_shared_secret,
+    _require_internal_webhook_auth,
+    _send_phone_call_notification,
+    _send_sms_notification,
+    _sms_inbound_actor_did,
+)
+from ..schemas import (
+    InboundSmsForwardRequest,
+    PhoneCallNotificationDispatchRequest,
+    PhoneCallNotificationQueueRequest,
+    SmsNotificationDispatchRequest,
+    SmsNotificationQueueRequest,
+)
+
 
 def create_router(service: WalletInterfaceService):
     if APIRouter is None:  # pragma: no cover
@@ -18,7 +39,7 @@ def create_router(service: WalletInterfaceService):
     app_service = service
 
     @router.post("/wallets/{wallet_id}/notifications/sms/queue")
-    def queue_sms_notification(wallet_id: str, request: SmsNotificationQueueRequest) -> Dict[str, Any]:
+    def queue_sms_notification(wallet_id: str, request: SmsNotificationQueueRequest) -> dict[str, Any]:
         try:
             record = app_service.queue_sms_notification(
                 wallet_id,
@@ -35,7 +56,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/notifications/sms")
-    def list_sms_notifications(wallet_id: str) -> Dict[str, Any]:
+    def list_sms_notifications(wallet_id: str) -> dict[str, Any]:
         try:
             notifications = app_service.list_sms_notifications(wallet_id)
             return {
@@ -48,7 +69,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/messages/sms/inbound")
-    def list_inbound_sms_messages(wallet_id: str) -> Dict[str, Any]:
+    def list_inbound_sms_messages(wallet_id: str) -> dict[str, Any]:
         try:
             messages = app_service.list_inbound_sms_messages(wallet_id)
             return {
@@ -61,7 +82,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/messages/sms/inbound")
-    def receive_inbound_sms_message(http_request: Request, payload: InboundSmsForwardRequest) -> Dict[str, Any]:
+    def receive_inbound_sms_message(http_request: Request, payload: InboundSmsForwardRequest) -> dict[str, Any]:
         try:
             _require_internal_webhook_auth(
                 env_prefix="WALLET_SMS_INBOUND",
@@ -95,7 +116,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         notification_id: str,
         request: SmsNotificationDispatchRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             record = app_service.get_sms_notification_for_dispatch(
                 wallet_id,
@@ -158,7 +179,7 @@ def create_router(service: WalletInterfaceService):
     def process_due_sms_notifications(
         authorization: str | None = Header(default=None),
         x_wallet_ops_shared_secret: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         expected_secret = _ops_health_shared_secret()
         if not expected_secret:
             raise HTTPException(
@@ -172,7 +193,7 @@ def create_router(service: WalletInterfaceService):
             due_records = app_service.list_due_sms_notifications()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        results: List[Dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
         sent = 0
         failed = 0
         for record in due_records:
@@ -227,7 +248,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.post("/wallets/{wallet_id}/notifications/calls/queue")
-    def queue_phone_call_notification(wallet_id: str, request: PhoneCallNotificationQueueRequest) -> Dict[str, Any]:
+    def queue_phone_call_notification(wallet_id: str, request: PhoneCallNotificationQueueRequest) -> dict[str, Any]:
         try:
             record = app_service.queue_phone_call_notification(
                 wallet_id,
@@ -244,7 +265,7 @@ def create_router(service: WalletInterfaceService):
 
 
     @router.get("/wallets/{wallet_id}/notifications/calls")
-    def list_phone_call_notifications(wallet_id: str) -> Dict[str, Any]:
+    def list_phone_call_notifications(wallet_id: str) -> dict[str, Any]:
         try:
             notifications = app_service.list_phone_call_notifications(wallet_id)
             return {
@@ -261,7 +282,7 @@ def create_router(service: WalletInterfaceService):
         wallet_id: str,
         notification_id: str,
         request: PhoneCallNotificationDispatchRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             record = app_service.get_phone_call_notification_for_dispatch(
                 wallet_id,
@@ -318,7 +339,7 @@ def create_router(service: WalletInterfaceService):
     def process_due_phone_call_notifications(
         authorization: str | None = Header(default=None),
         x_wallet_ops_shared_secret: str | None = Header(default=None),
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         expected_secret = _ops_health_shared_secret()
         if not expected_secret:
             raise HTTPException(
@@ -332,7 +353,7 @@ def create_router(service: WalletInterfaceService):
             due_records = app_service.list_due_phone_call_notifications()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        results: List[Dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
         sent = 0
         failed = 0
         for record in due_records:

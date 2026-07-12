@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any, Dict, List
 
 from .base import BaseModel, Field
 from .wallet_schemas import WalletRouterBaseRequest
+
 
 class AddTextDocumentRequest(BaseModel):
     actor_did: str
@@ -26,11 +28,11 @@ class AnalysisGrantRequest(BaseModel):
 class RecordGrantRequest(BaseModel):
     issuer_did: str
     audience_did: str
-    abilities: List[str] = Field(default_factory=lambda: ["record/analyze"])
+    abilities: list[str] = Field(default_factory=lambda: ["record/analyze"])
     purpose: str = "service_matching"
-    output_types: List[str] = Field(default_factory=list)
+    output_types: list[str] = Field(default_factory=list)
     user_presence_required: bool = False
-    caveats: Dict[str, Any] = Field(default_factory=dict)
+    caveats: dict[str, Any] = Field(default_factory=dict)
     issuer_key_hex: str | None = None
     audience_key_hex: str | None = None
     approval_id: str | None = None
@@ -44,7 +46,7 @@ class AnalysisInvocationRequest(BaseModel):
     actor_key_hex: str | None = None
     expires_at: str | None = None
     purpose: str | None = None
-    output_types: List[str] = Field(default_factory=list)
+    output_types: list[str] = Field(default_factory=list)
     user_present: bool = False
 
 
@@ -70,8 +72,8 @@ class AccessRequestDecisionRequest(BaseModel):
 class ThresholdApprovalCreateRequest(BaseModel):
     requested_by: str
     operation: str = "grant/create"
-    resources: List[str] = Field(default_factory=list)
-    abilities: List[str] = Field(default_factory=list)
+    resources: list[str] = Field(default_factory=list)
+    abilities: list[str] = Field(default_factory=list)
     expires_at: str | None = None
 
 
@@ -94,9 +96,9 @@ class EmergencyRevokeRequest(BaseModel):
 class DelegateGrantRequest(BaseModel):
     issuer_did: str
     audience_did: str
-    resources: List[str] = Field(default_factory=list)
-    abilities: List[str] = Field(default_factory=list)
-    caveats: Dict[str, Any] = Field(default_factory=dict)
+    resources: list[str] = Field(default_factory=list)
+    abilities: list[str] = Field(default_factory=list)
+    caveats: dict[str, Any] = Field(default_factory=dict)
     expires_at: str | None = None
     issuer_key_hex: str | None = None
     audience_key_hex: str | None = None
@@ -112,7 +114,7 @@ class AnalyzeRecordRequest(BaseModel):
 
 class WalletRecordMetadataRequest(BaseModel):
     actor_did: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class DeleteWalletRecordRequest(BaseModel):
@@ -134,7 +136,7 @@ class SavedServiceRequest(BaseModel):
     priority: str = "normal"
     status: str = "saved"
     private_notes_record_id: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class SavedServiceUpdateRequest(BaseModel):
@@ -150,7 +152,7 @@ class SavedServiceUpdateRequest(BaseModel):
     priority: str | None = None
     status: str | None = None
     private_notes_record_id: str | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class ServicePlanRequest(BaseModel):
@@ -161,15 +163,15 @@ class ServicePlanRequest(BaseModel):
     service_title: str = ""
     provider_name: str = ""
     goal: str = ""
-    steps: List[str] = Field(default_factory=list)
-    documents_needed: List[str] = Field(default_factory=list)
-    questions_to_ask: List[str] = Field(default_factory=list)
+    steps: list[str] = Field(default_factory=list)
+    documents_needed: list[str] = Field(default_factory=list)
+    questions_to_ask: list[str] = Field(default_factory=list)
     appointment_at: str = ""
     reminder_at: str = ""
     travel_target: str = ""
     assigned_worker_recipient_id: str = ""
     status: str = "active"
-    related_interaction_ids: List[str] = Field(default_factory=list)
+    related_interaction_ids: list[str] = Field(default_factory=list)
     private_notes_record_id: str = ""
 
 
@@ -180,15 +182,15 @@ class ServicePlanUpdateRequest(BaseModel):
     service_title: str | None = None
     provider_name: str | None = None
     goal: str | None = None
-    steps: List[str] | None = None
-    documents_needed: List[str] | None = None
-    questions_to_ask: List[str] | None = None
+    steps: list[str] | None = None
+    documents_needed: list[str] | None = None
+    questions_to_ask: list[str] | None = None
     appointment_at: str | None = None
     reminder_at: str | None = None
     travel_target: str | None = None
     assigned_worker_recipient_id: str | None = None
     status: str | None = None
-    related_interaction_ids: List[str] | None = None
+    related_interaction_ids: list[str] | None = None
     private_notes_record_id: str | None = None
 
 
@@ -197,7 +199,7 @@ class ServicePlanShareGrantRequest(BaseModel):
     issuer_did: str = ""
     audience_did: str = ""
     worker_did: str = ""
-    scopes: List[str] = Field(default_factory=lambda: ["service_summary"])
+    scopes: list[str] = Field(default_factory=lambda: ["service_summary"])
     purpose: str = "service_plan_collaboration"
     worker_recipient_id: str = ""
     worker_name: str = ""
@@ -205,7 +207,7 @@ class ServicePlanShareGrantRequest(BaseModel):
     approval_id: str | None = None
     issuer_key_hex: str | None = None
     audience_key_hex: str | None = None
-    caveats: Dict[str, Any] = Field(default_factory=dict)
+    caveats: dict[str, Any] = Field(default_factory=dict)
 
 
 class ServiceInteractionRequest(BaseModel):
@@ -226,10 +228,10 @@ class ServiceInteractionRequest(BaseModel):
     next_action: str = ""
     next_follow_up_at: str = ""
     source_action_url: str = ""
-    related_grant_ids: List[str] = Field(default_factory=list)
-    related_record_ids: List[str] = Field(default_factory=list)
+    related_grant_ids: list[str] = Field(default_factory=list)
+    related_record_ids: list[str] = Field(default_factory=list)
     privacy_level: str = "private"
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ServiceInteractionUpdateRequest(BaseModel):
@@ -248,10 +250,10 @@ class ServiceInteractionUpdateRequest(BaseModel):
     next_action: str | None = None
     next_follow_up_at: str | None = None
     source_action_url: str | None = None
-    related_grant_ids: List[str] | None = None
-    related_record_ids: List[str] | None = None
+    related_grant_ids: list[str] | None = None
+    related_record_ids: list[str] | None = None
     privacy_level: str | None = None
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class RedactedAnalyzeRecordRequest(BaseModel):
@@ -293,7 +295,7 @@ class RedactedAnalyzeRecordsRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
     grant_id: str | None = None
-    record_ids: List[str] = Field(default_factory=list)
+    record_ids: list[str] = Field(default_factory=list)
 
 
 class RedactedGraphRAGRequest(BaseModel):
@@ -301,7 +303,7 @@ class RedactedGraphRAGRequest(BaseModel):
     actor_key_hex: str | None = None
     grant_id: str | None = None
     invocation_token: str | None = None
-    record_ids: List[str] = Field(default_factory=list)
+    record_ids: list[str] = Field(default_factory=list)
     max_chars_per_record: int = 20_000
     max_bytes_per_record: int = 200_000
     use_ocr: bool = True
@@ -356,8 +358,8 @@ class AnalyticsTemplateRequest(BaseModel):
     template_id: str
     title: str
     purpose: str
-    allowed_record_types: List[str] = Field(default_factory=list)
-    allowed_derived_fields: List[str] = Field(default_factory=list)
+    allowed_record_types: list[str] = Field(default_factory=list)
+    allowed_derived_fields: list[str] = Field(default_factory=list)
     min_cohort_size: int = 10
     epsilon_budget: float = 1.0
     created_by: str
@@ -379,7 +381,7 @@ class AnalyticsContributionRequest(BaseModel):
     actor_did: str
     consent_id: str
     template_id: str
-    fields: Dict[str, Any]
+    fields: dict[str, Any]
 
 
 class PrivateAggregateCountRequest(BaseModel):
@@ -391,7 +393,7 @@ class PrivateAggregateCountRequest(BaseModel):
 
 
 class PrivateAggregateCohortCountRequest(BaseModel):
-    group_by: List[str] = Field(default_factory=list)
+    group_by: list[str] = Field(default_factory=list)
     epsilon: float | None = None
     min_cohort_size: int | None = None
     budget_key: str | None = None
@@ -401,7 +403,7 @@ class PrivateAggregateCohortCountRequest(BaseModel):
 
 class DerivedServiceMatchRequest(BaseModel):
     need_terms: Sequence[str] = Field(default_factory=list)
-    location_claim: Dict[str, Any] | None = None
+    location_claim: dict[str, Any] | None = None
     limit: int = 10
 
 

@@ -15,6 +15,7 @@ import pytest
 try:
     from fastapi.testclient import TestClient  # noqa: F401
     from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend  # noqa: F401
+
     from wallet_interface import ServiceRecord, WalletInterfaceService, create_app  # noqa: F401
     _DEPS_AVAILABLE = True
 except ImportError:
@@ -23,8 +24,9 @@ except ImportError:
 pytestmark = pytest.mark.skipif(not _DEPS_AVAILABLE, reason="ipfs_datasets_py or fastapi not installed")
 
 
-def _make_client() -> "TestClient":
+def _make_client() -> TestClient:
     from fastapi.testclient import TestClient
+
     from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
     service = WalletInterfaceService(

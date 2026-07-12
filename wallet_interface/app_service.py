@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
-import hashlib
-from datetime import datetime, timezone
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Sequence
+from typing import Any, Dict, List
 from uuid import uuid4
 
 from ._vendor import ensure_ipfs_datasets_py_path
-from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
 from .schemas.app_schemas import SavedServiceRecord, ServiceInteractionRecord, ServicePlanRecord
+from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
 from .services import InteractionDomainServiceMixin, RecordDomainServiceMixin, WalletDomainServiceMixin
 
 ensure_ipfs_datasets_py_path()
@@ -33,6 +34,7 @@ from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
     resource_for_record,
     resource_for_wallet,
 )
+
 from .proof_backends import HttpLocationRegionProofBackend
 from .world_id import (
     WorldIdConfig,
@@ -49,10 +51,10 @@ PROVIDER_STAFF_WORLD_ID_ACTION = "provider-staff-world-id-v1"
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
-def _storage_config_from_env() -> str | Dict[str, Any] | None:
+def _storage_config_from_env() -> str | dict[str, Any] | None:
     """Read wallet encrypted storage config from environment variables."""
 
     raw_config = os.getenv("WALLET_STORAGE_CONFIG")
@@ -69,7 +71,7 @@ def _storage_config_from_env() -> str | Dict[str, Any] | None:
     if not storage_type:
         return None
 
-    config: Dict[str, Any] = {"type": storage_type}
+    config: dict[str, Any] = {"type": storage_type}
     if root := os.getenv("WALLET_STORAGE_ROOT"):
         config["root"] = root
     if bucket := os.getenv("WALLET_STORAGE_BUCKET"):
@@ -113,7 +115,7 @@ def _proof_backend_from_env() -> ProofBackend | None:
     if backend in {"deterministic-location-distance", "integration-location-distance"}:
         return DeterministicLocationDistanceProofBackend()
     if backend in {"http", "http-location-region", "remote-http", "verifier-http"}:
-        verifier_headers: Dict[str, str] = {}
+        verifier_headers: dict[str, str] = {}
         if header_name := str(os.getenv("WALLET_PROOF_HTTP_HEADER_NAME") or "").strip():
             header_value = str(os.getenv("WALLET_PROOF_HTTP_HEADER_VALUE") or "").strip()
             if not header_value:
@@ -162,9 +164,9 @@ def _portal_id(prefix: str) -> str:
     return f"{prefix}-{uuid4().hex}"
 
 
-def _unique_strings(values: Sequence[str] | None) -> List[str]:
+def _unique_strings(values: Sequence[str] | None) -> list[str]:
     seen: set[str] = set()
-    result: List[str] = []
+    result: list[str] = []
     for value in values or []:
         item = str(value or "").strip()
         if not item or item in seen:
@@ -219,9 +221,9 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         self.wallet_service = wallet_service
         resolved_repository_root = repository_root if repository_root is not None else _repository_root_from_env()
         self.repository = LocalWalletRepository(resolved_repository_root) if resolved_repository_root else None
-        self.saved_services: Dict[str, SavedServiceRecord] = {}
-        self.service_plans: Dict[str, ServicePlanRecord] = {}
-        self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
+        self.saved_services: dict[str, SavedServiceRecord] = {}
+        self.service_plans: dict[str, ServicePlanRecord] = {}
+        self.service_interactions: dict[str, ServiceInteractionRecord] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
             if auto_persist is None
@@ -257,7 +259,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         auto_load_repository: bool | None = None,
         world_id_config: WorldIdConfig | None = None,
         world_id_request_json: WorldIdRequestJson | None = None,
-    ) -> "WalletInterfaceService":
+    ) -> WalletInterfaceService:
         return cls(
             wallet_service=wallet_service,
             storage_config=storage_config,
@@ -288,7 +290,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         self.repository.load(self.wallet_service, wallet_id)
         self._load_portal_state(required=False)
 
-    def verify_wallet_snapshot(self, wallet_id: str) -> Dict[str, Any]:
+    def verify_wallet_snapshot(self, wallet_id: str) -> dict[str, Any]:
         if self.repository is None:
             raise ValueError("Wallet repository is not configured")
         return self.repository.verify(wallet_id)
@@ -312,10 +314,10 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             return []
         return self.repository.list_wallet_ids()
 
-    def ops_health(self, *, verify_storage: bool = False) -> Dict[str, Any]:
+    def ops_health(self, *, verify_storage: bool = False) -> dict[str, Any]:
         """Return actionable deployment health for wallet operations."""
 
-        checks: list[Dict[str, Any]] = []
+        checks: list[dict[str, Any]] = []
 
         def add_check(name: str, status: str, summary: str, **details: Any) -> None:
             checks.append(
@@ -362,7 +364,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             for record in self.wallet_service.records.values()
             if record.status == "active"
         ]
-        storage_failures: list[Dict[str, Any]] = []
+        storage_failures: list[dict[str, Any]] = []
         if verify_storage:
             for record in active_records:
                 try:
@@ -411,7 +413,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             if simulated_enabled
             else "Production proof mode rejects simulated proof receipts."
         )
-        proof_health_details: Dict[str, Any] | None = None
+        proof_health_details: dict[str, Any] | None = None
         if not simulated_enabled and hasattr(self.wallet_service.proof_backend, "healthcheck"):
             try:
                 raw_health = getattr(self.wallet_service.proof_backend, "healthcheck")()
@@ -540,7 +542,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             raise ValueError("Wallet repository is not configured")
         return self.repository.root / PORTAL_STATE_FILENAME
 
-    def _portal_state_payload(self) -> Dict[str, Any]:
+    def _portal_state_payload(self) -> dict[str, Any]:
         return {
             "snapshot_type": PORTAL_STATE_TYPE,
             "saved_services": [
@@ -639,12 +641,12 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             details=dict(details or {}),
         )
 
-    def get_world_id_config(self) -> Dict[str, Any]:
+    def get_world_id_config(self) -> dict[str, Any]:
         """Return browser-safe World ID configuration."""
 
         return dict(self.world_id_config.public_dict())
 
-    def get_world_id_status(self, wallet_id: str, *, actor_did: str | None = None) -> Dict[str, Any]:
+    def get_world_id_status(self, wallet_id: str, *, actor_did: str | None = None) -> dict[str, Any]:
         """Return sanitized World ID binding status for a wallet."""
 
         self.wallet_service._wallet(wallet_id)
@@ -676,7 +678,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         action: str | None = None,
         random_bytes: bytes | None = None,
         created_at: int | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create a fresh relying-party signature for the World ID IDKit client."""
 
         self._require_portal_actor(wallet_id, actor_did)
@@ -708,7 +710,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         provider_staff_id: str,
         random_bytes: bytes | None = None,
         created_at: int | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create a World ID RP signature scoped to provider staff verification."""
 
         normalized_provider_id = str(provider_id or "").strip()
@@ -739,7 +741,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         actor_did: str,
         idkit_payload: Mapping[str, Any],
         request_json: WorldIdRequestJson | None = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify an IDKit result and bind the resulting proof-of-human to a wallet."""
 
         self._require_portal_actor(wallet_id, actor_did)
@@ -834,7 +836,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         need_terms: Sequence[str],
         grant_id: str | None = None,
         limit: int = 10,
-    ) -> List[ServiceMatch]:
+    ) -> list[ServiceMatch]:
         claim = self.wallet_service.create_coarse_location_claim(
             wallet_id,
             location_record_id,
@@ -1009,7 +1011,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         actor_secret: bytes | None = None,
         need_terms: Sequence[str],
         limit: int = 10,
-    ) -> List[ServiceMatch]:
+    ) -> list[ServiceMatch]:
         claim = self.wallet_service.create_coarse_location_claim_with_invocation(
             wallet_id,
             location_record_id,
@@ -1029,9 +1031,9 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
     def match_services_from_derived_facts(
         self,
         *,
-        derived_facts: Dict[str, Any],
+        derived_facts: dict[str, Any],
         limit: int = 10,
-    ) -> List[ServiceMatch]:
+    ) -> list[ServiceMatch]:
         need_terms = derived_facts.get("need_terms") or derived_facts.get("needs") or []
         location_claim = derived_facts.get("location_claim")
         return match_services(
@@ -1151,7 +1153,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         actor_did: str,
         consent_id: str,
         template_id: str,
-        fields: Dict[str, Any],
+        fields: dict[str, Any],
     ):
         self._reject_precise_analytics_fields(fields)
         contribution = self.wallet_service.create_analytics_contribution(
@@ -1208,7 +1210,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
         self._persist_all_wallets_if_configured()
         return result
 
-    def summarize_aggregate_result(self, result) -> Dict[str, Any]:
+    def summarize_aggregate_result(self, result) -> dict[str, Any]:
         return {
             "result_id": result.result_id,
             "template_id": result.template_id,
@@ -1227,7 +1229,7 @@ class WalletInterfaceService(InteractionDomainServiceMixin, RecordDomainServiceM
             "suppressed_cohort_count": result.suppressed_cohort_count,
         }
 
-    def _reject_precise_analytics_fields(self, fields: Dict[str, Any]) -> None:
+    def _reject_precise_analytics_fields(self, fields: dict[str, Any]) -> None:
         for key, value in fields.items():
             normalized_key = key.lower()
             if normalized_key in {"lat", "lon", "latitude", "longitude"}:

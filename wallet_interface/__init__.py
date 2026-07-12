@@ -1,8 +1,8 @@
 """211-AI data wallet interface layer."""
 
-from .app_service import WalletInterfaceService
 from .api import create_app
-from .service_matching import ServiceMatch, ServiceRecord, match_services, load_services_jsonl
+from .app_service import WalletInterfaceService
+from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
 
 __all__ = [
     "ServiceMatch",
