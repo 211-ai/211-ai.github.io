@@ -230,7 +230,8 @@ def _normalize_login_contact(value: str) -> str:
     normalized = str(value or "").strip()
     if "@" in normalized:
         normalized = normalized.lower()
-        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized):
+        _parts = normalized.split("@")
+        if len(_parts) != 2 or not _parts[0] or not _parts[1] or "." not in _parts[1]:
             raise ValueError("contact must be a valid email address or telephone number")
         return normalized
     return _normalize_phone_number(normalized)
@@ -375,7 +376,8 @@ def _send_auth_email_notification(
     metadata: Dict[str, Any] | None = None,
 ) -> Dict[str, str]:
     normalized_to_email = str(to_email or "").strip().lower()
-    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized_to_email):
+    _email_parts = normalized_to_email.split("@")
+    if len(_email_parts) != 2 or not _email_parts[0] or not _email_parts[1] or "." not in _email_parts[1]:
         raise ValueError("to_email must be a valid email address")
     return _send_webhook_notification(
         env_prefix="WALLET_AUTH_EMAIL",
@@ -780,7 +782,7 @@ def _record_metadata_value(record: Mapping[str, Any], key: str) -> str:
 
 def _safe_short_text(value: Any, *, limit: int = 240) -> str:
     text = str(value or "")
-    text = re.sub(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", "[email]", text, flags=re.IGNORECASE)
+    text = re.sub(r"[A-Z0-9._%+\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,}", "[email]", text, flags=re.IGNORECASE)
     text = re.sub(r"\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b", "[phone]", text)
     text = re.sub(r"\b\d{4,}\b", "[number]", text)
     return text.strip()[:limit]
