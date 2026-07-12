@@ -8,7 +8,7 @@ except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
 
 from ..app_service import WalletInterfaceService
-from ..api import *  # noqa: F401,F403
+from ..helpers import *  # noqa: F401,F403
 from ..schemas import *  # noqa: F401,F403
 
 def create_router(service: WalletInterfaceService):
