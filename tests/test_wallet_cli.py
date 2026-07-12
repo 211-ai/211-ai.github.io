@@ -42,7 +42,27 @@ def test_wallet_cli_rejects_invalid_port(monkeypatch) -> None:
 def test_wallet_cli_reports_missing_asgi_app(monkeypatch) -> None:
     uvicorn_run = Mock()
 
-    monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=lambda _: SimpleNamespace()))
+    def import_asgi_module(module_name: str) -> SimpleNamespace:
+        assert module_name == "wallet_interface.asgi"
+        return SimpleNamespace()
+
+    monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=import_asgi_module))
+    monkeypatch.setitem(sys.modules, "uvicorn", SimpleNamespace(run=uvicorn_run))
+
+    with pytest.raises(RuntimeError, match="wallet_interface.asgi:app not found"):
+        cli.main()
+
+    uvicorn_run.assert_not_called()
+
+
+def test_wallet_cli_reports_missing_asgi_module(monkeypatch) -> None:
+    uvicorn_run = Mock()
+
+    def import_asgi_module(module_name: str) -> SimpleNamespace:
+        assert module_name == "wallet_interface.asgi"
+        raise ImportError("missing asgi module")
+
+    monkeypatch.setattr(cli, "importlib", SimpleNamespace(import_module=import_asgi_module))
     monkeypatch.setitem(sys.modules, "uvicorn", SimpleNamespace(run=uvicorn_run))
 
     with pytest.raises(RuntimeError, match="wallet_interface.asgi:app not found"):
