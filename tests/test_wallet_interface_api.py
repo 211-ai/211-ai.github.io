@@ -3,16 +3,16 @@ from __future__ import annotations
 import io
 import json
 import zipfile
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from collections.abc import Sequence
 
 from fastapi.testclient import TestClient
-
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
-from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
-import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
+
+import wallet_interface.api as wallet_api_module
+from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
 
 def _client() -> TestClient:
@@ -2309,7 +2309,7 @@ def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:
-    captured_requests = []
+    _captured_requests = []
 
     class FakeResponse:
         def __init__(self, payload: dict[str, object]) -> None:

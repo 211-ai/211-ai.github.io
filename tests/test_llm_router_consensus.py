@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 from typing import Any
 
 from ipfs_accelerate_py import llm_router
 from ipfs_accelerate_py.llm_consensus import (
     ConsensusReceipt,
+    ConsensusRequest,
     LocalConsensusOperator,
     load_consensus_config,
 )
@@ -20,7 +21,6 @@ from ipfs_accelerate_py.llm_router import (
     _canonicalize_messages,
     chat_completions_create_consensus,
 )
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

@@ -11,9 +11,9 @@ from .._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
-from ipfs_datasets_py.wallet.ucan import resource_for_wallet
+from ipfs_datasets_py.wallet.ucan import resource_for_wallet  # noqa: E402
 
-from ..schemas.app_schemas import SavedServiceRecord, ServiceInteractionRecord, ServicePlanRecord
+from ..schemas.app_schemas import SavedServiceRecord, ServiceInteractionRecord, ServicePlanRecord  # noqa: E402
 
 
 def _utc_now() -> str:

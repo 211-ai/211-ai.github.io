@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from wallet_interface import WalletInterfaceService, create_app
 from wallet_interface.world_id import DEFAULT_WORLD_ID_ACTION, WorldIdVerificationError, load_world_id_config
 
-
 OWNER = "did:key:owner"
 ADVOCATE = "did:key:advocate"
 PROVIDER_STAFF_ACTION = "provider-staff-world-id-v1"

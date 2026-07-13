@@ -272,13 +272,13 @@ class TestBatchProcessor:
     ) -> None:
         mock_session = MagicMock()
         mock_session_class.return_value = mock_session
-        
+
         # First call fails, second succeeds
         mock_response_fail = MagicMock()
         mock_response_fail.raise_for_status.side_effect = RuntimeError("Timeout")
         mock_response_success = MagicMock()
         mock_response_success.json.return_value = {"data": ["ok"]}
-        
+
         mock_session.post.side_effect = [
             mock_response_fail,
             mock_response_success,
@@ -308,7 +308,7 @@ class TestHFBucketBackend:
     def test_put_file(self, mock_run: MagicMock) -> None:
         mock_run.return_value = MagicMock(returncode=0)
         backend = HFBucketBackend("hf://buckets/test/bucket")
-        
+
         with tempfile.TemporaryDirectory() as tmpdir:
             source = Path(tmpdir) / "file.txt"
             source.write_text("content")

@@ -13,7 +13,6 @@ from typing import Any
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PROOF_TOKEN = "proof-token-ci"
 

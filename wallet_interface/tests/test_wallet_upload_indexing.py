@@ -12,8 +12,8 @@ for path in (str(VENDORED_IPFS_DATASETS), str(REPO_ROOT)):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-from wallet_interface.api import create_app
-from wallet_interface.app_service import WalletInterfaceService
+from wallet_interface.api import create_app  # noqa: E402
+from wallet_interface.app_service import WalletInterfaceService  # noqa: E402
 
 
 def test_uploaded_wallet_file_gets_vector_and_graphrag_indexes(tmp_path, monkeypatch):

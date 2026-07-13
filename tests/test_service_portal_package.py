@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pandas as pd
-
 from scraper.build_service_portal_package import (
     build_service_portal_package,
     labeled_sections,

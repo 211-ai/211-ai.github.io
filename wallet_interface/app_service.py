@@ -35,8 +35,8 @@ from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
     resource_for_wallet,
 )
 
-from .proof_backends import HttpLocationRegionProofBackend
-from .world_id import (
+from .proof_backends import HttpLocationRegionProofBackend  # noqa: E402
+from .world_id import (  # noqa: E402
     WorldIdConfig,
     WorldIdRequestJson,
     WorldIdVerificationError,

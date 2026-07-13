@@ -148,7 +148,7 @@ def test_synthesize_batch_split_fallback_salvages_large_batch(monkeypatch) -> No
             raise RuntimeError("ZeroGPU worker error")
         return [
             {
-                "audio": f"RIFF-{text}".encode("utf-8"),
+                "audio": f"RIFF-{text}".encode(),
                 "mimeType": "audio/wav",
                 "latencyMs": 4,
                 "batchLatencyMs": 4,

@@ -5,13 +5,13 @@ from __future__ import annotations
 import pytest
 
 from ipfs_accelerate_py.chainlink_cre import (
+    CRE_VERIFIER_EVENT_VERIFIER_ID,
+    ChainlinkCREBridgeClient,
+    ChainlinkCREBridgeError,
     CREBridgeConfig,
     CREInferenceResult,
     CRESubmission,
     CREVerifierContractEvent,
-    CRE_VERIFIER_EVENT_VERIFIER_ID,
-    ChainlinkCREBridgeClient,
-    ChainlinkCREBridgeError,
 )
 from ipfs_accelerate_py.llm_consensus import (
     ConsensusReceipt,

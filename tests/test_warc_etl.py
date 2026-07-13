@@ -3,10 +3,9 @@ from __future__ import annotations
 from io import BytesIO
 
 import duckdb
+from scraper.warc_etl import etl_warc_paths, iter_warc_documents
 from warcio.statusandheaders import StatusAndHeaders
 from warcio.warcwriter import WARCWriter
-
-from scraper.warc_etl import etl_warc_paths, iter_warc_documents
 
 
 def write_test_warc(path):

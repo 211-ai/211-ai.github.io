@@ -10,9 +10,9 @@ from typing import Any
 import pytest
 
 from ipfs_accelerate_py.chainlink_cre import (
-    CREInferenceResult,
     ChainlinkCREBridgeClient,
     ChainlinkCREBridgeError,
+    CREInferenceResult,
 )
 from ipfs_accelerate_py.llm_consensus import (
     ConsensusReceipt,
@@ -21,7 +21,6 @@ from ipfs_accelerate_py.llm_consensus import (
     receipt_content_hash,
     sha256_digest,
 )
-
 
 RUN_ENV = "IPFS_ACCELERATE_PY_RUN_CHAINLINK_CRE_TESTS"
 WORKFLOW_ENV = "IPFS_ACCELERATE_PY_CHAINLINK_CRE_WORKFLOW_ID"

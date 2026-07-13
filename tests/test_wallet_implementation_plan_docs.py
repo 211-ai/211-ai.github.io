@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-
 PLAN = Path("docs/planning/UCAN_ZK_DATA_WALLET_IMPLEMENTATION_PLAN.md")
 TODO = Path("docs/planning/UCAN_ZK_DATA_WALLET_TODO.md")
 RETENTION_POLICY = Path("docs/specs/WALLET_RETENTION_POLICY.md")

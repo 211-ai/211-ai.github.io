@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-
 DEPLOY_ROOT = Path(__file__).parent.parent / "wallet_interface" / "deploy"
 K8S_ROOT = DEPLOY_ROOT / "kubernetes"
 CLOUDFLARE_ROOT = DEPLOY_ROOT / "cloudflare"

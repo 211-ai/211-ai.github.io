@@ -7,8 +7,8 @@ from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
     WalletOpsHealthWorker,
     main,
-    validate_local_production_readiness_self_check,
     validate_distance_proof_contract,
+    validate_local_production_readiness_self_check,
     validate_production_readiness,
     validate_proof_contract,
     validate_target_signoff_packet,

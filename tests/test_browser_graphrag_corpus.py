@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pandas as pd
-
 from scraper.browser_graphrag_corpus import build_browser_graphrag_corpus
 
 

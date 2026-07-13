@@ -74,13 +74,15 @@ The frontend is organized by feature slice:
 | Slice | Path | Responsibility |
 | --- | --- | --- |
 | App shell | `app/` | `App.tsx`, `AppRouter.tsx`, global hooks, app-level state |
-| Wallet | `features/wallet/` | Wallet screens, wallet API client, proof review |
-| Service navigation | `features/service-navigation/` | Service search, detail, service plan |
-| Agent/chat | `features/agent/` | Agent chat, LLM workers, agent services |
-| Interactions | `features/interactions/` | Interaction history |
+| Wallet | `features/wallet/` | Wallet screens (Proof, Export, Uploads, Analytics, Contacts, Login, Registration, Settings, BenefitsProtection), wallet API client, capabilities, mock service data |
+| Service navigation | `features/service-navigation/` | Home, Shelter, SocialServices, CheckIn, ServiceDetail, ServicePlan; graphrag + service-action services |
+| Agent/chat | `features/agent/` | Agent chat controller, LLM workers, agent services |
+| Interactions | `features/interactions/` | Interaction history, client messages |
 | Calendar | `features/calendar/` | Calendar screen |
 | Shared UI | `shared/components/` | UI primitives with no domain coupling |
 | Shared utilities | `shared/lib/` | Storage adapters, locale helpers, utilities |
+
+Old locations in `app/screens/` and `services/` are backward-compat re-export stubs that delegate to the canonical feature paths.
 
 ## Documentation layout (`docs/`)
 
@@ -96,7 +98,11 @@ The frontend is organized by feature slice:
 
 | Area | Command |
 | --- | --- |
+| Python lint | `ruff check scraper/ wallet_interface/ tests/` |
+| Unit tests | `python -m pytest tests/unit/ -q` |
+| Contract tests | `python -m pytest tests/contract/ -q` |
 | Scraper tests | `python -m pytest tests/test_scraper.py -q` |
 | Packaging/docs checks | `python -m pytest tests/test_wallet_python_dependencies.py -q` |
+| Abby UI type check | `cd wallet_interface/ui && npx tsc --noEmit` |
 | Abby UI build | `cd wallet_interface/ui && npm ci && npm run build` |
 | Abby UI smoke tests | `cd wallet_interface/ui && npm run test:smoke` |
