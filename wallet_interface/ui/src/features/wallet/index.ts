@@ -2,7 +2,7 @@
  * wallet feature slice
  *
  * Owns wallet management screens, the wallet API client, and proof/export UI.
- * Migrate from:
+ * Migrated from:
  *   app/screens/ProofCenterScreen.tsx
  *   app/screens/ExportCenterScreen.tsx
  *   app/screens/RecipientAccessScreen.tsx
@@ -14,15 +14,18 @@
  *   services/walrusStorage.ts
  */
 
-// Types — re-exported from lib once migration is complete
+// Types
 export type { WalletApiConfig, UploadResult } from "./lib/types";
 
-// Components — uncomment as screens are migrated
-// export { ProofCenterScreen } from './components/ProofCenterScreen';
-// export { ExportCenterScreen } from './components/ExportCenterScreen';
-// export { RecipientAccessScreen } from './components/RecipientAccessScreen';
-// export { UploadsScreen } from './components/UploadsScreen';
+// Services (canonical locations)
+export * from "./lib/walletApi";
+export * from "./lib/walletProofReview";
+export * from "./lib/filecoinStorage";
+export * from "./lib/walrusStorage";
 
-// Hooks — uncomment as hooks are migrated
-// export { useWalletSync } from './hooks/useWalletSync';
-// export { useWalletRecords } from './hooks/useWalletRecords';
+// Components
+export { ProofCenterScreen } from "./components/ProofCenterScreen";
+export { ExportCenterScreen } from "./components/ExportCenterScreen";
+export { RecipientAccessScreen } from "./components/RecipientAccessScreen";
+export { UploadsScreen } from "./components/UploadsScreen";
+export { BenefitsProtectionScreen } from "./components/BenefitsProtectionScreen";

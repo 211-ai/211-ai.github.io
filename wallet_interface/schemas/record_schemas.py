@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Dict, List
+from typing import Any
 
 from .base import BaseModel, Field
 from .wallet_schemas import WalletRouterBaseRequest

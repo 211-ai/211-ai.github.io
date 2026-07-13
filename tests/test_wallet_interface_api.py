@@ -4,7 +4,7 @@ import io
 import json
 import zipfile
 from pathlib import Path
-from typing import Mapping, Sequence
+from collections.abc import Sequence
 
 from fastapi.testclient import TestClient
 

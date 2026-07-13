@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from dataclasses import fields
-from typing import Any, Dict
+from typing import Any
 from urllib import request as urllib_request
 
 from ._vendor import ensure_ipfs_datasets_py_path
