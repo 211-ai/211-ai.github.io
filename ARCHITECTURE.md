@@ -82,7 +82,13 @@ The frontend is organized by feature slice:
 | Shared UI | `shared/components/` | UI primitives with no domain coupling |
 | Shared utilities | `shared/lib/` | Storage adapters, locale helpers, utilities |
 
-Old locations in `app/screens/` and `services/` are backward-compat re-export stubs that delegate to the canonical feature paths.
+Old locations in `app/screens/` and `services/` are backward-compat re-export stubs that delegate to the canonical feature paths. Remaining incremental migrations (not yet relocated):
+
+| Source path | Target feature slice | Notes |
+| --- | --- | --- |
+| `agent/` (14 files) | `features/agent/lib/` | Requires coordinated import-path updates across `app/`, `components/agent/`, `features/agent/lib/` |
+| `lib/graphrag/` (8 files) | `features/service-navigation/lib/graphrag/` | Referenced by workers, agent, and components; `features/service-navigation/lib/graphRagService.ts` already imports from canonical graphrag |
+| `workers/` (5 files) | `features/agent/workers/` | Loaded via `new URL(...)` in `lib/*WorkerService.ts`; move requires updating 5 service URL references |
 
 ## Documentation layout (`docs/`)
 

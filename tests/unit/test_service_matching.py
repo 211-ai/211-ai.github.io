@@ -154,3 +154,69 @@ class TestServiceRecordFromDict:
         mod = _import()
         svc = mod.ServiceRecord.from_dict({"id": 99})
         assert svc.id == "99"
+
+
+# ---------------------------------------------------------------------------
+# load_services_jsonl
+# ---------------------------------------------------------------------------
+
+
+class TestLoadServicesJsonl:
+    def test_load_single_record(self, tmp_path):
+        mod = _import()
+        jsonl = tmp_path / "services.jsonl"
+        jsonl.write_text('{"id": "1", "name": "Test Org", "description": "Shelter help"}\n')
+        records = mod.load_services_jsonl(jsonl)
+        assert len(records) == 1
+        assert records[0].id == "1"
+        assert records[0].name == "Test Org"
+
+    def test_load_multiple_records(self, tmp_path):
+        mod = _import()
+        jsonl = tmp_path / "services.jsonl"
+        jsonl.write_text(
+            '{"id": "1", "name": "A", "description": "d1"}\n'
+            '{"id": "2", "name": "B", "description": "d2"}\n'
+        )
+        records = mod.load_services_jsonl(jsonl)
+        assert len(records) == 2
+        assert {r.id for r in records} == {"1", "2"}
+
+    def test_empty_lines_skipped(self, tmp_path):
+        mod = _import()
+        jsonl = tmp_path / "services.jsonl"
+        jsonl.write_text(
+            '\n'
+            '{"id": "1", "name": "A", "description": "d1"}\n'
+            '\n'
+        )
+        records = mod.load_services_jsonl(jsonl)
+        assert len(records) == 1
+
+
+# ---------------------------------------------------------------------------
+# ServiceMatch dataclass
+# ---------------------------------------------------------------------------
+
+
+class TestServiceMatch:
+    def test_service_match_fields(self):
+        mod = _import()
+        svc = _make_service()
+        match = mod.ServiceMatch(service=svc, score=0.75, reasons=["category match"])
+        assert match.service is svc
+        assert match.score == pytest.approx(0.75)
+        assert "category match" in match.reasons
+
+    def test_match_services_returns_service_match_objects(self):
+        mod = _import()
+        svc = _make_service(categories="housing shelter")
+        results = mod.match_services([svc], need_terms=["shelter"])
+        assert all(isinstance(r, mod.ServiceMatch) for r in results)
+
+    def test_match_services_score_positive_for_matching_term(self):
+        mod = _import()
+        svc = _make_service(categories="food pantry")
+        results = mod.match_services([svc], need_terms=["food"])
+        assert results
+        assert results[0].score > 0

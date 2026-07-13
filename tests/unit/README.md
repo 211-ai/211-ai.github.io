@@ -4,17 +4,17 @@ Pure unit tests that run without network access, databases, or external services
 
 ## Test coverage
 
-| Module | Test file | Status |
-| --- | --- | --- |
-| `scraper/config.py` | `test_scraper_config.py` | ✅ |
-| `scraper/acquisition/` | `test_scraper_acquisition.py` | ✅ (skip on missing deps) |
-| `scraper/parsing/` | `test_scraper_parsing.py` | ✅ (skip on missing deps) |
-| `scraper/enrichment/` | `test_scraper_enrichment.py` | ✅ (skip on missing deps) |
-| `scraper/export/` | `test_scraper_export.py` | ✅ (skip on missing deps) |
-| `scraper/orchestration/` | `test_scraper_orchestration.py` | ✅ (skip on missing deps) |
-| `scraper/utils.py` | `test_scraper_utils.py` | ✅ |
-| `wallet_interface/helpers.py` | `test_wallet_helpers.py` | ✅ |
-| `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ |
+| Module | Test file | Status | Tests |
+| --- | --- | --- | --- |
+| `scraper/config.py` | `test_scraper_config.py` | ✅ | 15 |
+| `scraper/acquisition/` | `test_scraper_acquisition.py` | ✅ (skip on missing deps) | 6 |
+| `scraper/parsing/` | `test_scraper_parsing.py` | ✅ (skip on missing deps) | 6 |
+| `scraper/enrichment/` | `test_scraper_enrichment.py` | ✅ (skip on missing deps) | 4 |
+| `scraper/export/` | `test_scraper_export.py` | ✅ (skip on missing deps) | 4 |
+| `scraper/orchestration/` | `test_scraper_orchestration.py` | ✅ (skip on missing deps) | 2 |
+| `scraper/utils.py` | `test_scraper_utils.py` | ✅ | 17 |
+| `wallet_interface/helpers.py` | `test_wallet_helpers.py` | ✅ (skip on missing deps) | 11 |
+| `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 20 |
 
 ## Run unit tests
 
