@@ -3,6 +3,11 @@ import { StatusPanel } from "../../../app/components/StatusPanel";
 import { ProofReceiptView } from "../../../models/abby";
 import { analyticsStudies } from "../../../services/mockAbbyService";
 
+/**
+ * Maps a snake_case analytics field name to a human-readable label.
+ * Falls back to replacing underscores with spaces for any unmapped fields.
+ * Update the `labels` map when new analytics fields are added to the data model.
+ */
 function formatAnalyticsField(field: string): string {
   const labels: Record<string, string> = {
     age_group: "age group",

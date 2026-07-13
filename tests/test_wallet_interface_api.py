@@ -2309,7 +2309,10 @@ def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:
-    _captured_requests = []
+    # TODO: complete this test — it should monkeypatch urllib.request.urlopen, push a
+    # phone-call notification through the /notifications endpoint, then assert that
+    # _captured_requests contains the expected webhook payload.
+    _captured_requests: list[object] = []
 
     class FakeResponse:
         def __init__(self, payload: dict[str, object]) -> None:
