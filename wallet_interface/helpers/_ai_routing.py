@@ -6,10 +6,12 @@ from __future__ import annotations
 import os
 import re
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from ..app_service import WalletInterfaceService
 from ._app import _normalize_ipfs_cid, _valid_ipfs_cid
+
+if TYPE_CHECKING:
+    from ..app_service import WalletInterfaceService
 
 _AI_ROUTER_RATE_LIMITS: dict[str, dict[str, Any]] = {}
 

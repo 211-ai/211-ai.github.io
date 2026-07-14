@@ -63,10 +63,10 @@ The wallet backend is organized by bounded context:
 | `helpers/_tts_normalization.py` | None (stdlib only) | Pure text-normalization for TTS: number-to-words, zip/phone/address/URL normalization |
 | `helpers/_tts_gradio.py` | None (stdlib only) | Pure Gradio response/file parsing, request-payload builders, ZIP audio extraction, Whisper text extraction |
 | `helpers/_auth.py` | None for pure helpers; optional deps for UCAN/SMTP | Auth helpers: bearer extraction, phone/email normalization, magic-login, UCAN |
-| `helpers/_app.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IPFS CID utilities, service factory, shared constants |
-| `helpers/_ai_routing.py` | `ipfs_datasets_py` | LLM router helpers, rate limiting, wallet actor resolution |
-| `helpers/_records.py` | `ipfs_datasets_py` | Document profile classification, privacy vector helpers |
-| `helpers/_storage.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IPFS/Filecoin publish, dead-drop email, encrypted record graph |
+| `helpers/_app.py` | None for pure helpers; optional `ipfs_datasets_py` for `_prepare_hf_router_environment`/`_wallet_interface_service_from_env` | IPFS CID utilities, service factory, shared constants |
+| `helpers/_ai_routing.py` | None for pure helpers; optional `ipfs_datasets_py` for `_require_wallet_router_actor` | LLM router helpers, rate limiting, wallet actor resolution |
+| `helpers/_records.py` | None for pure helpers; optional `ipfs_datasets_py` for `_generate_wallet_organizer_profile` | Document profile classification, privacy vector helpers |
+| `helpers/_storage.py` | None for pure helpers; optional `ipfs_datasets_py` for `_publish_bytes_to_ipfs` | IPFS/Filecoin publish, dead-drop email, encrypted record graph |
 | `helpers/_tts.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IndexTTS Gradio inference orchestration, Whisper STT HTTP call, voice-reply LLM generation |
 
 ## Scraper module layout (`scraper/`)

@@ -16,14 +16,27 @@ from typing import Any
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
-from .._vendor import ensure_ipfs_datasets_py_path
+from ._app import FilecoinPinHandoffError
 
-ensure_ipfs_datasets_py_path()
+try:
+    from .._vendor import ensure_ipfs_datasets_py_path
 
-from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
+    ensure_ipfs_datasets_py_path()
 
-from ._app import FilecoinPinHandoffError, _normalize_ipfs_cid, _valid_ipfs_cid  # noqa: E402
-from ._auth import _send_webhook_notification  # noqa: E402
+    from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
+
+    _IPFS_BACKEND_AVAILABLE = True
+except ImportError:
+    get_ipfs_backend = None  # type: ignore[assignment]
+    _IPFS_BACKEND_AVAILABLE = False
+
+try:
+    from ._auth import _send_webhook_notification  # noqa: E402
+
+    _AUTH_AVAILABLE = True
+except ImportError:
+    _send_webhook_notification = None  # type: ignore[assignment]
+    _AUTH_AVAILABLE = False
 
 
 def _parse_upload_metadata(metadata: str | None) -> dict[str, Any]:
@@ -339,6 +352,8 @@ def _publish_bytes_via_ipfs_backend(data: bytes) -> str:
     backend_mode = str(os.getenv("WALLET_IPFS_UPLOAD_BACKEND") or "").strip().lower()
     if backend_mode == "mock":
         return _mock_ipfs_cid_for_bytes(data)
+    if not _IPFS_BACKEND_AVAILABLE or get_ipfs_backend is None:
+        raise RuntimeError("ipfs_datasets_py is required for IPFS upload")
     backend = get_ipfs_backend()
     return backend.add_bytes(data, pin=True)
 

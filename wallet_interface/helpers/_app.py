@@ -6,16 +6,24 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
-from .._vendor import ensure_ipfs_datasets_py_path
-from ..app_service import WalletInterfaceService
+if TYPE_CHECKING:
+    from ..app_service import WalletInterfaceService
 
-ensure_ipfs_datasets_py_path()
+try:
+    from .._vendor import ensure_ipfs_datasets_py_path
 
-from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
+    ensure_ipfs_datasets_py_path()
+
+    from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
+
+    _APP_OPTIONAL_DEPS_AVAILABLE = True
+except ImportError:
+    resolve_secret = None  # type: ignore[assignment]
+    _APP_OPTIONAL_DEPS_AVAILABLE = False
 
 PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
 OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
@@ -37,6 +45,8 @@ def _cors_origins_from_env() -> list[str]:
 
 def _prepare_hf_router_environment(kwargs: dict[str, Any] | None = None) -> dict[str, Any]:
     """Make encrypted HF credentials visible to ipfs_datasets_py router helpers."""
+    if not _APP_OPTIONAL_DEPS_AVAILABLE or resolve_secret is None:
+        return dict(kwargs or {})
     token = (
         resolve_secret(
             "IPFS_DATASETS_PY_HF_API_TOKEN",
@@ -136,10 +146,12 @@ def _fetch_ipfs_cid_via_gateway(cid: str) -> bytes:
 
 
 def _wallet_interface_service_from_env() -> WalletInterfaceService:
+    from ..app_service import WalletInterfaceService as _WalletInterfaceService  # noqa: PLC0415
+
     services_jsonl = str(os.environ.get("WALLET_SERVICES_JSONL") or "").strip()
     if services_jsonl:
-        return WalletInterfaceService.from_services_jsonl(services_jsonl)
-    return WalletInterfaceService()
+        return _WalletInterfaceService.from_services_jsonl(services_jsonl)
+    return _WalletInterfaceService()
 
 
 
