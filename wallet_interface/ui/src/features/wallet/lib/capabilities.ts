@@ -1,4 +1,4 @@
-import { DisclosureDataScope } from "../../models/abby";
+import { DisclosureDataScope } from "../../../models/abby";
 
 const CAPABILITY_LABELS: Record<string, string> = {
   "analytics/contribute": "analytics contribution",

@@ -485,7 +485,7 @@ export function AnalyticsScreen({
                   <StatusPanel label="Approved fields" value={String(study.fields.length)} tone="teal" />
                 </div>
                 <div className="badge-row">
-                  {study.fields.map((field) => (
+                  {study.fields.map((field: string) => (
                     <Badge key={field}>{formatAnalyticsField(field)}</Badge>
                   ))}
                 </div>

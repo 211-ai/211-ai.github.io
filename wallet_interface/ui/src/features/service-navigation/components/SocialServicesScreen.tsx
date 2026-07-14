@@ -9,7 +9,7 @@ import {
   load211ServiceLocationsSlice,
   resolvePreferred211ServiceClusterIds,
   type SearchResult
-} from "../../../lib/graphrag";
+} from "../graphrag";
 import { t, tFormat, type SupportedLocale } from "../../../lib/localization";
 import { SavedServicesPanel } from "../../../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../../../components/services/ServiceQuickActions";

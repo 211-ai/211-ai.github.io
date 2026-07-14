@@ -35,7 +35,7 @@ export function CheckInScreen({
   const toggleChannel = (channel: CheckInChannel) => {
     update({
       reminderChannels: policy.reminderChannels.includes(channel)
-        ? policy.reminderChannels.filter((item) => item !== channel)
+        ? policy.reminderChannels.filter((item: CheckInChannel) => item !== channel)
         : [...policy.reminderChannels, channel]
     });
     setCheckInMessage(null);

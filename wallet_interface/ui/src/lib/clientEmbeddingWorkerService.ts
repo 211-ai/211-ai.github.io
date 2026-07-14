@@ -56,7 +56,7 @@ class ClientEmbeddingWorkerService {
       return;
     }
     try {
-      this.worker = new Worker(new URL("../workers/embeddingWorker.ts", import.meta.url), { type: "module" });
+      this.worker = new Worker(new URL("../features/agent/workers/embeddingWorker.ts", import.meta.url), { type: "module" });
       this.worker.onmessage = this.handleWorkerMessage.bind(this);
       this.worker.onerror = this.handleWorkerError.bind(this);
     } catch (error) {

@@ -18,10 +18,10 @@ import {
   search211GraphCommunities,
   search211GraphGeoClusters,
   search211Corpus,
-} from "../../../lib/graphrag";
+} from "./graphrag";
 import { backendDetectionWorkerService } from "../../../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../../../lib/clientEmbeddingWorkerService";
-import { resolvePreferred211SearchCoordinates, resolvePreferred211ServiceClusterIds } from "../../../lib/graphrag/serviceGeoPreference";
+import { resolvePreferred211SearchCoordinates, resolvePreferred211ServiceClusterIds } from "./graphrag/serviceGeoPreference";
 import type {
   CorpusDocument,
   GraphCommunitySearchResult,
@@ -31,7 +31,7 @@ import type {
   SearchFilters,
   SearchResult,
   SlottedResponseMatch,
-} from "../../../lib/graphrag";
+} from "./graphrag";
 import type { BackendDetectionStatus } from "../../../lib/backendDetectionWorkerService";
 import { generateWalletRouterEmbeddings, generateWalletRouterText, type WalletApiConfig } from "../../wallet/lib/walletApi";
 
@@ -609,7 +609,7 @@ export async function answer211InfoQuestion(
   }
 
   try {
-    const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
+    const { clientLLMWorkerService } = await import("../../../lib/clientLLMWorkerService");
     const rawAnswer = await clientLLMWorkerService.generateText(prompt, maxTokens);
     const answer = clean211GraphRagModelAnswer(rawAnswer);
     const grounded = isGrounded211GraphRagAnswer(answer);
@@ -829,7 +829,7 @@ async function getBackendStatus(): Promise<GraphRagRuntimeStatus["backend"]> {
 
 async function getLlmStatus(): Promise<GraphRagRuntimeStatus["llm"]> {
   try {
-    const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
+    const { clientLLMWorkerService } = await import("../../../lib/clientLLMWorkerService");
     return clientLLMWorkerService.getStatus();
   } catch (error) {
     return {

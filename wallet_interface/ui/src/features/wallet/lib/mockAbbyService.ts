@@ -12,7 +12,7 @@ import {
   UploadItem,
   WalletAccessRequest,
   WalletGrantReceipt
-} from "../../models/abby";
+} from "../../../models/abby";
 
 export const defaultDisclosureScopes: DisclosureDataScope[] = [
   "identity_minimum",

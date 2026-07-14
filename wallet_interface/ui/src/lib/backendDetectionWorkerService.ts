@@ -106,7 +106,7 @@ class BackendDetectionWorkerService {
       return;
     }
     try {
-      this.worker = new Worker(new URL("../workers/backendDetectionWorker.ts", import.meta.url), { type: "module" });
+      this.worker = new Worker(new URL("../features/agent/workers/backendDetectionWorker.ts", import.meta.url), { type: "module" });
       this.worker.onmessage = this.handleWorkerMessage.bind(this);
       this.worker.onerror = this.handleWorkerError.bind(this);
     } catch (error) {

@@ -13,7 +13,9 @@ Pure unit tests that run without network access, databases, or external services
 | `scraper/export/` | `test_scraper_export.py` | ✅ (skip on missing deps) | 4 |
 | `scraper/orchestration/` | `test_scraper_orchestration.py` | ✅ (skip on missing deps) | 2 |
 | `scraper/utils.py` | `test_scraper_utils.py` | ✅ | 17 |
-| `wallet_interface/helpers.py` | `test_wallet_helpers.py` | ✅ (skip on missing deps) | 11 |
+| `wallet_interface/helpers/_auth.py` | `test_wallet_auth_helpers.py` | ✅ (skip on missing deps) | 20 |
+| `wallet_interface/helpers/` | `test_wallet_helpers.py` | ✅ (skip on missing deps) | 11 |
+| `wallet_interface/ops.py` | `test_wallet_ops_helpers.py` | ✅ (skip on missing deps) | 27 |
 | `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 20 |
 
 ## Run unit tests

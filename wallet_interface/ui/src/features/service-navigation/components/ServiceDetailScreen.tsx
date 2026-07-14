@@ -19,7 +19,7 @@ import {
   load211ServiceLocationsSlice,
   type CorpusDocument,
   type ServiceLocationRecord,
-} from "../../../lib/graphrag";
+} from "../graphrag";
 import { build211InfoServiceProvenance } from "../../../services/graphRagService";
 
 type ServiceDetailMetadata = {

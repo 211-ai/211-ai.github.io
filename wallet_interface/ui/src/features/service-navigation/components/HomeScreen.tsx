@@ -18,7 +18,7 @@ import {
   load211ServiceLocationsSlice,
   resolvePreferred211ServiceClusterIds,
   type SearchResult
-} from "../../../lib/graphrag";
+} from "../graphrag";
 import { formatShelterDate } from "../../../app/utils/providerHelpers";
 import {
   buildHomeCalendarItems,

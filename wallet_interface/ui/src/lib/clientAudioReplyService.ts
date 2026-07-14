@@ -747,7 +747,7 @@ export class ClientAudioReplyService {
 }
 
 function defaultCreateWorker(): Worker {
-  return new Worker(new URL("../workers/clientAudioWorker.ts", import.meta.url), { type: "module" });
+  return new Worker(new URL("../features/agent/workers/clientAudioWorker.ts", import.meta.url), { type: "module" });
 }
 
 function defaultHasWebGPU(): boolean {
