@@ -21,6 +21,8 @@ import {
   type ServiceLocationRecord,
 } from "../graphrag";
 import { build211InfoServiceProvenance } from "../../../services/graphRagService";
+import type { WalletApiConfig } from "../../../features/wallet/lib/walletApi";
+import type { ServiceInteractionEvent } from "../../../models/abby";
 
 type ServiceDetailMetadata = {
   buildManifestCid: string;
@@ -35,7 +37,19 @@ type ServiceDetailState =
   | { status: "not-found"; document: null; metadata: ServiceDetailMetadata | null; locations: ServiceLocationRecord[]; error: "" }
   | { status: "error"; document: null; metadata: null; locations: ServiceLocationRecord[]; error: string };
 
-export function ServiceDetailScreen({ docId, onBack, siteLocale }: { docId: string; onBack: () => void; siteLocale: SupportedLocale }) {
+export function ServiceDetailScreen({
+  apiConfig,
+  docId,
+  onBack,
+  onInteract,
+  siteLocale,
+}: {
+  apiConfig?: WalletApiConfig;
+  docId: string;
+  onBack: () => void;
+  onInteract?: (event: ServiceInteractionEvent) => void;
+  siteLocale: SupportedLocale;
+}) {
   const [state, setState] = useState<ServiceDetailState>({
     status: "loading",
     document: null,
@@ -203,7 +217,12 @@ export function ServiceDetailScreen({ docId, onBack, siteLocale }: { docId: stri
       </Section>
 
       <Section title={t(siteLocale, "services.detail.actions")}>
-        <ServiceQuickActions document={document} siteLocale={siteLocale} />
+        <ServiceQuickActions
+          apiConfig={apiConfig}
+          document={document}
+          onInteract={onInteract}
+          siteLocale={siteLocale}
+        />
       </Section>
 
       <Section title={t(siteLocale, "services.detail.contactLocation")}>

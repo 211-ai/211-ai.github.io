@@ -104,6 +104,7 @@ export interface AppRouterProps {
   savedServices: SavedService[];
   setSavedServices: Dispatch<SetStateAction<SavedService[]>>;
   serviceInteractions: ServiceInteractionEvent[];
+  setServiceInteractions: Dispatch<SetStateAction<ServiceInteractionEvent[]>>;
   servicePlans: ServicePlan[];
   setServicePlans: Dispatch<SetStateAction<ServicePlan[]>>;
 
@@ -184,6 +185,7 @@ export function AppRouter({
   setShelterProviderMessages,
   setShelterStaffAccounts,
   setShelterUserAccounts,
+  setServiceInteractions,
   setServicePlans,
   setSiteLocale,
   setUploads,
@@ -334,8 +336,10 @@ export function AppRouter({
       ) : null}
       {serviceDetailDocId && !servicePlanDocId ? (
         <ServiceDetailScreen
+          apiConfig={walletApiConfig}
           docId={serviceDetailDocId}
           onBack={() => navigate("social-services")}
+          onInteract={(event) => setServiceInteractions((prev) => [event, ...prev])}
           siteLocale={siteLocale}
         />
       ) : null}

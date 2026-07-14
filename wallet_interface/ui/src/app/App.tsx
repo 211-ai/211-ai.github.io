@@ -612,6 +612,7 @@ export function App() {
           setShelterProviderMessages={setShelterProviderMessages}
           setShelterStaffAccounts={setShelterStaffAccounts}
           setShelterUserAccounts={setShelterUserAccounts}
+          setServiceInteractions={setServiceInteractions}
           setServicePlans={setServicePlans}
           setSiteLocale={setSiteLocale}
           setUploads={setUploads}

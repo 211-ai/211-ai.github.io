@@ -13,7 +13,7 @@ Priority guide:
 - `P2`: adjacent capability or hardening work
 
 ## PORTAL-000 Portal Control Plane
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: platform
@@ -23,7 +23,7 @@ Priority guide:
 - Acceptance: The backlog can be parsed, durable state is written, a next task is selected, and the supervisor can rewrite strategy without mutating source code.
 
 ## PORTAL-010 Portal Package Builder
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: data
@@ -33,7 +33,7 @@ Priority guide:
 - Acceptance: A deterministic portal package is built from the existing retrieval corpus with normalized service fields and CID provenance.
 
 ## PORTAL-011 Portal Extraction Coverage
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: data
@@ -61,7 +61,7 @@ Priority guide:
 - Acceptance: Search results can open a dedicated service detail route that renders provider, program, source URL, CID, and timestamps.
 
 ## PORTAL-021 Provenance Panel And Search Navigation
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: ui
 - Depends on: PORTAL-020
@@ -70,7 +70,7 @@ Priority guide:
 - Acceptance: The detail screen exposes source spans, extraction confidence, and a reliable navigation path from the current Services experience.
 
 ## PORTAL-030 Mobile Action Service
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: mobile
 - Depends on: PORTAL-020
@@ -79,7 +79,7 @@ Priority guide:
 - Acceptance: Call, text, email, map, share, and calendar URLs are standards-compliant and generated only when backing data exists.
 
 ## PORTAL-031 Interaction Intent Capture
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: mobile
 - Depends on: PORTAL-030, PORTAL-041
@@ -106,7 +106,7 @@ Priority guide:
 - Acceptance: API endpoints support create, read, update, and revoke flows for saved services, plans, reminders, and interactions.
 
 ## PORTAL-042 Saved Services And Plans UI
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: wallet
 - Depends on: PORTAL-020, PORTAL-041
@@ -115,7 +115,7 @@ Priority guide:
 - Acceptance: Users can save a service, create a plan, maintain a checklist, and persist encrypted notes across refreshes.
 
 ## PORTAL-050 Interaction Timeline
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: wallet
 - Depends on: PORTAL-031, PORTAL-041
