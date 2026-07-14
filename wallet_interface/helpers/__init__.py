@@ -3,17 +3,33 @@
 
 Import hierarchy (acyclic):
   _tts_normalization  →  (stdlib only, always importable)
+  _tts_gradio         →  (stdlib only, always importable)
   _auth               →  (stdlib only after guards, always importable)
   _app  →  (vendor only)
   _ai_routing  →  _app
   _records  →  _ai_routing
-  _tts  →  _tts_normalization, (vendor)
+  _tts  →  _tts_normalization, _tts_gradio, (vendor)
   _storage  →  _app, _auth
 """
 
 from __future__ import annotations
 
 # ── stdlib-only, always importable ──────────────────────────────────────────
+from ._tts_gradio import (  # noqa: F401
+    _dedupe_gradio_references,
+    _extract_audio_files_from_zip,
+    _extract_hf_whisper_text,
+    _find_gradio_audio_reference,
+    _find_gradio_audio_references,
+    _find_gradio_file_reference,
+    _first_upload_path,
+    _gradio_file_key,
+    _gradio_output_values,
+    _gradio_update_value,
+    _indextts_batch_request_data,
+    _indextts_request_data,
+    _normalize_indextts_queue_failure,
+)
 from ._tts_normalization import *  # noqa: F401,F403
 from ._tts_normalization import (  # noqa: F401
     _normalize_indextts_spoken_text,

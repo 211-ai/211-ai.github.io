@@ -5,12 +5,9 @@
  * Migrate from ../lib/, ../services/filecoinStorage.ts, etc.
  */
 
-// Re-export shared utilities here as they are migrated.
-// Example:
-//   export { runtimeConfig } from './runtimeConfig';
-//   export { createFilecoinStorageAdapter } from './filecoinStorage';
-//   export { createWalrusStorageAdapter } from './walrusStorage';
-//   export { formatDate, formatRelativeTime } from './dateUtils';
+// Migrated canonical utilities
+export * from "./runtimeConfig";
+export * from "./localization";
 
 /** Placeholder export so this barrel resolves as a valid module. */
 export const _sharedLibPlaceholder = true;
