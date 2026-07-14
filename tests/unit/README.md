@@ -18,6 +18,7 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/helpers/_tts_normalization.py` | `test_tts_normalization.py` | ✅ | 48 |
 | `wallet_interface/ops.py` | `test_wallet_ops_helpers.py` | ✅ | 27 |
 | `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 20 |
+| `wallet_interface/schemas/` | `test_wallet_schemas.py` | ✅ (Pydantic tests skip when not installed) | 22 |
 
 ## Run unit tests
 

@@ -2,16 +2,17 @@
  * shared/components — domain-agnostic UI primitives
  *
  * These components must not import from any feature slice in ../features/.
- * Migrate from ../components/ui.tsx and individual components/ui/* as needed.
+ * Canonical home for ui.tsx primitives and cross-feature service panels.
  */
 
-// Re-export shared components here as they are migrated.
-// Example:
-//   export { Button } from './Button';
-//   export { Modal } from './Modal';
-//   export { Spinner } from './Spinner';
-//   export { ErrorBoundary } from './ErrorBoundary';
-//   export { BottomNav } from './BottomNav';
+// Core UI primitives
+export * from "./ui";
 
-/** Placeholder export so this barrel resolves as a valid module. */
-export const _sharedComponentsPlaceholder = true;
+// Cross-feature service panels
+export { InteractionTimeline } from "./InteractionTimeline";
+export { SavedServicesPanel } from "./SavedServicesPanel";
+export { ServicePlanSharingPanel } from "./ServicePlanSharingPanel";
+export { ServiceProvenancePanel } from "./ServiceProvenancePanel";
+export { ServiceQuickActions } from "./ServiceQuickActions";
+export { WorkerServicePlanView } from "./WorkerServicePlanView";
+export { WorldIdVerificationPanel } from "./WorldIdVerificationPanel";

@@ -7,6 +7,10 @@ These tests run against the wallet API (either live or via `TestClient`) and val
 ## Target content
 
 - Wallet CRUD contract
+- Portal saved-services create/list
+- Portal service-plan create/list
+- Portal interactions create/list
+- Wallet snapshot get
 - Record grant/revoke lifecycle
 - Export bundle create/verify/import round-trip
 - Proof grant/invocation contract
