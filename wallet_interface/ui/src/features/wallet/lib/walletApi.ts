@@ -1732,6 +1732,21 @@ export async function createWalletServicePlanShareGrant(
   return toServicePlanShareGrantResponse(payload, input);
 }
 
+export async function revokeWalletGrant(
+  config: WalletApiConfig,
+  grantId: string,
+  reason = "Revoked by wallet owner"
+): Promise<{ grant_id: string; status: string }> {
+  const url = new URL(
+    `/wallets/${config.walletId}/grants/${grantId}/revoke`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  return postJson<{ grant_id: string; status: string }>(url, "Grant revoke", {
+    actor_did: requiredActorDid(config),
+    reason
+  });
+}
+
 export async function listWalletServiceInteractions(
   config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
   filters: { serviceDocId?: string; interactionType?: string; status?: string } = {}

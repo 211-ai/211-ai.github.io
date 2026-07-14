@@ -18,6 +18,7 @@ def _unique_strings(values: Sequence[str] | None) -> list[str]:
         result.append(item)
     return result
 
+@dataclass
 class SavedServiceRecord:
     saved_service_id: str
     wallet_id: str
@@ -81,6 +82,7 @@ class SavedServiceRecord:
         )
 
 
+@dataclass
 class ServicePlanRecord:
     plan_id: str
     wallet_id: str
@@ -153,6 +155,7 @@ class ServicePlanRecord:
         )
 
 
+@dataclass
 class ServiceInteractionRecord:
     interaction_id: str
     wallet_id: str

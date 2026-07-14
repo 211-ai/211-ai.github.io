@@ -2936,3 +2936,136 @@ def test_wallet_api_export_grant_respects_threshold_approval() -> None:
 
     assert response.status_code == 200
     assert response.json()["abilities"] == ["export/create"]
+
+
+def test_wallet_api_service_plan_share_grant_creates_scoped_worker_access() -> None:
+    """PORTAL-060: service plan share grants support scoped worker collaboration."""
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    # Create a service plan first.
+    plan_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:energy-help",
+            "source_content_cid": "bafk-service-energy",
+            "source_page_cid": "bafk-page-energy",
+            "service_title": "Energy Assistance",
+            "provider_name": "Community Action",
+            "goal": "Avoid utility disconnection",
+            "steps": ["Call provider", "Gather bill"],
+            "documents_needed": ["Photo ID", "Utility bill"],
+            "status": "active",
+        },
+    )
+    assert plan_response.status_code == 200
+    plan = plan_response.json()
+    assert plan["plan_id"].startswith("service-plan-")
+
+    # Create a scoped share grant for a case worker.
+    share_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:worker",
+            "scopes": ["service_summary", "checklist"],
+            "worker_name": "Jane Worker",
+            "worker_recipient_id": "worker-ref-001",
+        },
+    )
+    assert share_response.status_code == 200
+    share = share_response.json()
+    assert share["grant_id"].startswith("grant-")
+    assert share["plan_id"] == plan["plan_id"]
+    assert share["interaction_id"].startswith("interaction-")
+
+    # Confirm the grant has the expected service_plan/read ability.
+    grant = share["grant"]
+    assert "service_plan/read" in grant["abilities"]
+    assert grant["audience_did"] == "did:key:worker"
+    assert grant["status"] == "active"
+
+    # Confirm scoped caveats are present.
+    caveats = grant["caveats"]
+    assert caveats["service_plan_id"] == plan["plan_id"]
+    assert set(caveats["service_plan_scopes"]) == {"service_summary", "checklist"}
+    assert caveats["redacted_by_default"] is True
+
+    # Confirm an interaction was recorded for the share event.
+    interactions_response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        params={"interaction_type": "shared_service_plan"},
+    )
+    assert interactions_response.status_code == 200
+    interactions = interactions_response.json()["interactions"]
+    share_interaction = next(
+        (item for item in interactions if item["interaction_id"] == share["interaction_id"]),
+        None,
+    )
+    assert share_interaction is not None
+    assert share_interaction["channel"] == "wallet_grant"
+    assert share["grant_id"] in share_interaction["related_grant_ids"]
+
+    # Confirm the plan is now linked to the worker.
+    plan_response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        params={"service_doc_id": "service:energy-help"},
+    )
+    assert plan_response.status_code == 200
+    updated_plan = plan_response.json()["plans"][0]
+    assert share["interaction_id"] in updated_plan["related_interaction_ids"]
+
+    # Confirm the share action is in the audit log.
+    audit = client.get(f"/wallets/{wallet['wallet_id']}/audit").json()
+    actions = [event["action"] for event in audit["events"]]
+    assert "service_plan/share" in actions
+
+
+def test_wallet_api_service_plan_share_grant_revocation_removes_active_access() -> None:
+    """PORTAL-061: revoking a service plan share grant removes active access while preserving audit history."""
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    # Create a plan.
+    plan = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:housing-help",
+            "source_content_cid": "bafk-housing",
+            "source_page_cid": "bafk-housing-page",
+            "service_title": "Emergency Housing",
+            "provider_name": "Portland Housing",
+            "goal": "Secure temporary shelter",
+            "status": "active",
+        },
+    ).json()
+
+    # Share the plan with a worker.
+    share = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:shelter-worker",
+            "scopes": ["service_summary"],
+            "worker_name": "Shelter Advocate",
+        },
+    ).json()
+    assert share["grant"]["status"] == "active"
+
+    # Revoke the grant.
+    revoke_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{share['grant_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert revoke_response.status_code == 200
+    revoked = revoke_response.json()
+    assert revoked["status"] == "revoked"
+    assert revoked["grant_id"] == share["grant_id"]
+
+    # Confirm audit log shows the revocation.
+    audit = client.get(f"/wallets/{wallet['wallet_id']}/audit").json()
+    actions = [event["action"] for event in audit["events"]]
+    assert "grant/revoke" in actions
+    assert "service_plan/share" in actions

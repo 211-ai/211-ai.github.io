@@ -2,12 +2,14 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CalendarClock, ExternalLink, Plus, Save, Trash2 } from "lucide-react";
 import { Badge, Button, Field, Section, StatusBanner } from "../../../components/ui";
 import { ServicePlanSharingPanel } from "../../../components/services/ServicePlanSharingPanel";
+import { WorkerServicePlanView } from "../../../components/services/WorkerServicePlanView";
 import { load211DocumentsByReference, type CorpusDocument } from "../graphrag";
 import type { DisclosureRecipientDraft, SavedService, ServicePlan, WalletGrantReceipt } from "../../../models/abby";
 import {
   addTextDocument,
   createWalletServicePlan,
   decryptRecordWithGrant,
+  revokeWalletGrant,
   saveWalletService,
   updateWalletServicePlan,
   type WalletApiConfig
@@ -142,6 +144,7 @@ export function ServicePlanScreen({
   const [noteRecordId, setNoteRecordId] = useState("");
   const [busyAction, setBusyAction] = useState<"plan" | "service" | "notes" | "">("");
   const [message, setMessage] = useState<{ tone: "success" | "warning" | "info"; text: string } | null>(null);
+  const [revokingGrantId, setRevokingGrantId] = useState("");
 
   useEffect(() => {
     let canceled = false;
@@ -557,6 +560,38 @@ export function ServicePlanScreen({
         }}
         plan={currentPlan}
         recipients={recipients}
+      />
+
+      <WorkerServicePlanView
+        grantReceipts={grantReceipts}
+        onRevokeGrant={async (grantId) => {
+          if (!apiConfig?.actorDid) {
+            setMessage({ tone: "warning", text: "Connect a wallet API session to revoke a grant." });
+            return;
+          }
+          setRevokingGrantId(grantId);
+          try {
+            await revokeWalletGrant(apiConfig, grantId);
+            if (setGrantReceipts) {
+              setGrantReceipts(
+                (grantReceipts || []).map((receipt) =>
+                  receipt.id === grantId ? { ...receipt, status: "revoked" } : receipt
+                )
+              );
+            }
+            setMessage({ tone: "success", text: `Grant ${grantId} revoked.` });
+            void refreshWalletPortalState?.().catch(() => undefined);
+          } catch (error) {
+            setMessage({
+              tone: "warning",
+              text: error instanceof Error ? error.message : "Grant could not be revoked."
+            });
+          } finally {
+            setRevokingGrantId("");
+          }
+        }}
+        plan={currentPlan}
+        revokingGrantId={revokingGrantId}
       />
     </div>
   );

@@ -124,7 +124,8 @@ Priority guide:
 - Acceptance: Service interactions can be filtered by service, worker, status, and time while preserving safe audit metadata boundaries.
 
 ## PORTAL-060 Worker Collaboration Grants
-- Status: todo
+- Status: completed
+- Completion: artifact
 - Priority: P1
 - Track: collab
 - Depends on: PORTAL-042, PORTAL-041
@@ -133,7 +134,8 @@ Priority guide:
 - Acceptance: Users can share a service plan with a worker under explicit scoped grants and the action is auditable.
 
 ## PORTAL-061 Worker Redaction And Revocation
-- Status: todo
+- Status: completed
+- Completion: artifact
 - Priority: P1
 - Track: collab
 - Depends on: PORTAL-060
@@ -142,7 +144,8 @@ Priority guide:
 - Acceptance: Worker views expose only granted fields and revocation removes future access while preserving audit history.
 
 ## PORTAL-070 PWA Offline Shell
-- Status: todo
+- Status: completed
+- Completion: artifact
 - Priority: P2
 - Track: pwa
 - Depends on: PORTAL-020, PORTAL-042
@@ -151,7 +154,8 @@ Priority guide:
 - Acceptance: Public service detail pages and saved-service shells can render offline without leaking private wallet plaintext into browser caches.
 
 ## PORTAL-071 Offline Sync Queue
-- Status: todo
+- Status: completed
+- Completion: artifact
 - Priority: P2
 - Track: pwa
 - Depends on: PORTAL-070, PORTAL-050
@@ -160,7 +164,8 @@ Priority guide:
 - Acceptance: Pending offline interactions are visible, replayable, and auditable after reconnection.
 
 ## PORTAL-080 Production Readiness
-- Status: todo
+- Status: completed
+- Completion: artifact
 - Priority: P1
 - Track: ops
 - Depends on: PORTAL-012, PORTAL-050, PORTAL-061, PORTAL-070
