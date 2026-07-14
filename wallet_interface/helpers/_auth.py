@@ -23,18 +23,24 @@ from urllib import request as urllib_request
 if TYPE_CHECKING:
     from ..schemas.wallet_schemas import MagicLoginRequest
 
-from .._vendor import ensure_ipfs_datasets_py_path
+try:
+    from .._vendor import ensure_ipfs_datasets_py_path
 
-ensure_ipfs_datasets_py_path()
+    ensure_ipfs_datasets_py_path()
 
-from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
+    from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
+
+    from ._app import PORTLAND_POLICE_MISSING_EMAIL  # noqa: E402
+    _OPTIONAL_DEPS_AVAILABLE = True
+except ImportError:
+    resolve_secret = None  # type: ignore[assignment]
+    PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
+    _OPTIONAL_DEPS_AVAILABLE = False
 
 try:  # pragma: no cover
     from fastapi import HTTPException
 except ImportError:  # pragma: no cover
     HTTPException = None  # type: ignore[assignment]
-
-from ._app import PORTLAND_POLICE_MISSING_EMAIL  # noqa: E402
 
 
 def _extract_bearer_token(authorization: str | None) -> str:

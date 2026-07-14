@@ -15,7 +15,10 @@ from pathlib import Path
 from typing import IO, Any
 from urllib import request as urllib_request
 
-from .app_service import WalletInterfaceService
+try:
+    from .app_service import WalletInterfaceService
+except ImportError:
+    WalletInterfaceService = None  # type: ignore[assignment,misc]
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _TARGET_SIGNOFF_PACKET_TEMPLATE = _REPO_ROOT / "docs" / "WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json"

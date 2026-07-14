@@ -46,6 +46,7 @@ The wallet backend is organized by bounded context:
 | `routes/` | Feature-grouped route modules (wallets, records, proofs, exports, etc.) |
 | `services/` | Domain service classes extracted from the application service |
 | `schemas/` | Pydantic request/response models grouped by domain |
+| `helpers/` | Internal helpers package with 7 domain submodules (see table below) |
 | `app_service.py` | `WalletInterfaceService` orchestrator |
 | `proof_backends.py` | Proof backend implementations |
 | `service_matching.py` | Service match logic |
@@ -54,6 +55,18 @@ The wallet backend is organized by bounded context:
 | `cli.py` | CLI entry point |
 | `deploy/` | Kubernetes, Docker, and storage configuration |
 | `ui/` | Abby React/Vite frontend package |
+
+### Helpers submodule layout
+
+| Submodule | Optional deps required | Responsibility |
+| --- | --- | --- |
+| `helpers/_tts_normalization.py` | None (stdlib only) | Pure text-normalization for TTS: number-to-words, zip/phone/address/URL normalization |
+| `helpers/_auth.py` | None for pure helpers; optional deps for UCAN/SMTP | Auth helpers: bearer extraction, phone/email normalization, magic-login, UCAN |
+| `helpers/_app.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IPFS CID utilities, service factory, shared constants |
+| `helpers/_ai_routing.py` | `ipfs_datasets_py` | LLM router helpers, rate limiting, wallet actor resolution |
+| `helpers/_records.py` | `ipfs_datasets_py` | Document profile classification, privacy vector helpers |
+| `helpers/_storage.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IPFS/Filecoin publish, dead-drop email, encrypted record graph |
+| `helpers/_tts.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IndexTTS Gradio inference, Whisper STT, voice-reply generation |
 
 ## Scraper module layout (`scraper/`)
 
