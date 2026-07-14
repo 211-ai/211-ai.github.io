@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Bot, MessageSquare, Mic, X } from "lucide-react";
 import type {
   AgentConfirmationRequest,
@@ -74,6 +75,35 @@ export function AgentChatDrawer({
   onSend: (message: string) => void;
   onAudioReply?: (messageId: string, record: AgentMessageAudioRecord) => void;
 }) {
+  const drawerRef = useRef<HTMLElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, open]);
+
+  useEffect(() => {
+    if (open) {
+      previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const timeoutId = window.setTimeout(() => {
+        const composer = drawerRef.current?.querySelector<HTMLTextAreaElement>(".agent-composer textarea, .agent-composer-input");
+        composer?.focus();
+      }, 0);
+      return () => window.clearTimeout(timeoutId);
+    }
+
+    previousFocusRef.current?.focus();
+    previousFocusRef.current = null;
+    return undefined;
+  }, [open]);
+
   return (
     <>
       <AgentChatBottomSheet
@@ -132,7 +162,7 @@ export function AgentChatDrawer({
         ) : null}
 
         {open && mode === "text" ? (
-          <aside aria-label="Abby text assistant" className="agent-chat-drawer" id="agent-chat-drawer">
+          <aside aria-label="Abby text assistant" className="agent-chat-drawer" id="agent-chat-drawer" ref={drawerRef}>
             <header className="agent-chat-header">
               <div className="agent-chat-title">
                 <span className="agent-chat-mark" aria-hidden="true">
@@ -180,7 +210,12 @@ export function AgentChatDrawer({
         ) : null}
 
         {open && mode === "audio" ? (
-          <aside aria-label="Abby voice assistant" className="agent-chat-drawer agent-audio-chat-drawer" id="agent-chat-drawer">
+          <aside
+            aria-label="Abby voice assistant"
+            className="agent-chat-drawer agent-audio-chat-drawer"
+            id="agent-chat-drawer"
+            ref={drawerRef}
+          >
             <header className="agent-chat-header">
               <div className="agent-chat-title">
                 <span className="agent-chat-mark" aria-hidden="true">

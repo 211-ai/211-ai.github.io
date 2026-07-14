@@ -80,6 +80,22 @@ export function AgentChatBottomSheet({
     if (!open) setExpanded(false);
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (expanded) {
+        setExpanded(false);
+        return;
+      }
+      onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [expanded, onClose, open]);
+
   return (
     <div className="agent-chat-bottom-sheet-shell">
       {!open ? (

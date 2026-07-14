@@ -46,7 +46,13 @@ export function AgentMessageList({
   }, [confirmations, messages, toolResults]);
 
   return (
-    <div aria-label="Assistant conversation" className="agent-message-list" role="log">
+    <div
+      aria-label="Assistant conversation"
+      aria-live="polite"
+      aria-relevant="additions text"
+      className="agent-message-list"
+      role="log"
+    >
       {messages.map((message) => (
         <article className={`agent-message agent-message-${message.role}`} key={message.id}>
           <div className="agent-message-icon" aria-hidden="true">

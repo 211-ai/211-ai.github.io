@@ -24,7 +24,7 @@ export function AgentConfirmationCard({
 
   return (
     <section
-      aria-label={`Confirmation required: ${confirmation.title}`}
+      aria-label={`${confirmationStatusLabel(confirmation.status)}: ${confirmation.title}`}
       className={`agent-confirmation-card agent-confirmation-risk-${confirmation.risk}`}
     >
       <header className="agent-card-header">
@@ -384,6 +384,14 @@ function riskLabel(risk: AgentConfirmationRequest["risk"]): string {
   if (risk === "high") return "High-risk";
   if (risk === "moderate") return "Moderate-risk";
   return "Low-risk";
+}
+
+function confirmationStatusLabel(status: AgentConfirmationRequest["status"]): string {
+  if (status === "approved") return "Confirmation approved";
+  if (status === "denied") return "Confirmation denied";
+  if (status === "expired") return "Confirmation expired";
+  if (status === "canceled") return "Confirmation canceled";
+  return "Confirmation required";
 }
 
 function formatDateTime(value: string): string {

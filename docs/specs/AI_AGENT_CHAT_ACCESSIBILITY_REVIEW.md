@@ -1,6 +1,6 @@
 # AI Agent Chat Accessibility And Mobile Review
 
-Last updated: 2026-05-05
+Last updated: 2026-07-14
 
 ## Scope Reviewed
 
@@ -71,16 +71,23 @@ The main gaps are not blocking for this documentation task, but should be covere
 - Pass: disabled state follows confirmation status, preventing duplicate confirm/cancel interaction after resolution.
 - Pass: details and expiry are textual and remain visible in the card body.
 - Risk: resolved cards keep an `aria-label` that says "Confirmation required" even after `status` is approved, denied, expired, or failed if the card remains rendered through message history. Consider deriving the label from status in a follow-up.
+  **Resolved (2026-07-14):** `AgentConfirmationCard` now derives its `aria-label` from the confirmation `status` prop (`required/approved/denied/expired/canceled`).
 - Risk: current app wiring in `App.tsx` passes messages/responding to `AgentChatDrawer` but does not pass pending confirmations, confirm, or cancel handlers yet. The card component is ready, but the app shell needs full controller integration before end-to-end confirmation-card accessibility can be validated in browser smoke tests.
+  **Resolved (2026-07-14):** `App.tsx` now passes `confirmations={agentChat.pendingConfirmations}`, `onConfirmConfirmation`, and `onCancelConfirmation` to `AgentChatDrawer`.
 
 ## Recommended Follow-Ups
 
-- Move focus into the assistant on open, ideally to the composer when no confirmation is pending and to the first pending confirmation card when confirmation is required.
-- Return focus to the assistant launcher after close.
-- Add `aria-live="polite"` and `aria-relevant="additions text"` to the conversation log, or add a separate polite live region for new assistant messages and confirmation requests.
-- Add Escape-key close behavior for both drawer and bottom sheet if product behavior remains non-destructive.
+- ~~Move focus into the assistant on open, ideally to the composer when no confirmation is pending and to the first pending confirmation card when confirmation is required.~~
+  **Implemented (2026-07-14):** `AgentChatDrawer` captures prior focus on open, moves focus to the composer textarea, and restores prior focus on close.
+- ~~Return focus to the assistant launcher after close.~~
+  **Implemented (2026-07-14):** Covered by the focus-restore path above.
+- ~~Add `aria-live="polite"` and `aria-relevant="additions text"` to the conversation log, or add a separate polite live region for new assistant messages and confirmation requests.~~
+  **Implemented (2026-07-14):** `AgentMessageList` conversation log now has `aria-live="polite"` and `aria-relevant="additions text"`.
+- ~~Add Escape-key close behavior for both drawer and bottom sheet if product behavior remains non-destructive.~~
+  **Implemented (2026-07-14):** `AgentChatDrawer` and `AgentChatBottomSheet` both handle Escape to close/collapse.
 - Add Playwright coverage for keyboard open, send, close, mobile expand/collapse, reduced-motion rendering, and a pending confirmation card with Confirm/Cancel actions.
-- Update confirmation-card accessible labels to reflect resolved statuses after confirmation history is retained in the log.
+- ~~Update confirmation-card accessible labels to reflect resolved statuses after confirmation history is retained in the log.~~
+  **Implemented (2026-07-14):** See resolved card `aria-label` fix above.
 
 ## Validation Notes
 
