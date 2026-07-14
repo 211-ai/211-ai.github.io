@@ -92,11 +92,13 @@ export function AgentChatDrawer({
   useEffect(() => {
     if (open) {
       previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-      const timeoutId = window.setTimeout(() => {
-        const composer = drawerRef.current?.querySelector<HTMLTextAreaElement>(".agent-composer textarea, .agent-composer-input");
+      // requestAnimationFrame defers focus until after the DOM has painted,
+      // which is more reliable than setTimeout(0) for newly mounted elements.
+      const rafId = requestAnimationFrame(() => {
+        const composer = drawerRef.current?.querySelector<HTMLTextAreaElement>("[data-agent-composer-input]");
         composer?.focus();
-      }, 0);
-      return () => window.clearTimeout(timeoutId);
+      });
+      return () => cancelAnimationFrame(rafId);
     }
 
     previousFocusRef.current?.focus();

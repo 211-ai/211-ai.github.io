@@ -37,6 +37,7 @@ export function AgentComposer({
         {label}
       </label>
       <textarea
+        data-agent-composer-input
         disabled={disabled}
         id={composerId}
         onChange={(event) => setDraft(event.target.value)}
