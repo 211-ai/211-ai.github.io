@@ -36,6 +36,15 @@ def _unique_strings(values: Sequence[str] | None) -> list[str]:
         result.append(item)
     return result
 
+_SERVICE_PLAN_SHARE_SCOPE_FIELDS: dict[str, list[str]] = {
+    "service_summary": ["service_doc_id", "source_content_cid", "source_page_cid", "service_title", "provider_name", "goal", "status"],
+    "checklist": ["steps", "documents_needed", "questions_to_ask"],
+    "schedule": ["appointment_at", "reminder_at", "travel_target"],
+    "worker_assignment": ["assigned_worker_recipient_id"],
+    "interaction_history": ["related_interaction_ids"],
+}
+
+
 def _portal_resource(wallet_id: str, collection: str, entry_id: str) -> str:
     return f"{resource_for_wallet(wallet_id)}/portal/{collection}/{entry_id}"
 
@@ -510,13 +519,6 @@ class InteractionDomainServiceMixin:
         audience_secret: bytes | None = None,
         extra_caveats: Mapping[str, Any] | None = None,
     ):
-        _SERVICE_PLAN_SHARE_SCOPE_FIELDS: dict[str, list[str]] = {
-            "service_summary": ["service_doc_id", "source_content_cid", "source_page_cid", "service_title", "provider_name", "goal", "status"],
-            "checklist": ["steps", "documents_needed", "questions_to_ask"],
-            "schedule": ["appointment_at", "reminder_at", "travel_target"],
-            "worker_assignment": ["assigned_worker_recipient_id"],
-            "interaction_history": ["related_interaction_ids"],
-        }
         issuer = str(issuer_did or "").strip()
         if not issuer:
             raise ValueError("issuer_did is required")
@@ -633,7 +635,7 @@ class InteractionDomainServiceMixin:
         self._persist_wallet_if_configured(wallet_id)
 
         class _ShareGrantResult:
-            def to_dict(self_inner) -> dict[str, Any]:
+            def to_dict(self) -> dict[str, Any]:
                 payload: dict[str, Any] = {
                     "grant_id": grant.grant_id,
                     "plan_id": plan.plan_id,
