@@ -4,15 +4,49 @@
 Import hierarchy (acyclic):
   _tts_normalization  →  (stdlib only, always importable)
   _tts_gradio         →  (stdlib only, always importable)
+  _tts_config         →  (stdlib only, always importable)
   _auth               →  (stdlib only after guards, always importable)
   _app  →  (vendor only)
   _ai_routing  →  _app
   _records  →  _ai_routing
-  _tts  →  _tts_normalization, _tts_gradio, (vendor)
+  _tts  →  _tts_normalization, _tts_gradio, _tts_config, (vendor)
   _storage  →  _app, _auth
 """
 
 from __future__ import annotations
+
+from ._tts_config import (  # noqa: F401
+    _INDEXTTS_ACTIVE_SPACE_URL,
+    _INDEXTTS_ACTIVE_TIMEOUT_SECONDS,
+    _INDEXTTS_FAST_FAIL_MODE,
+    _INDEXTTS_FORCE_REQUIRE_BATCH,
+    _clean_voice_reply_text,
+    _hf_whisper_model_name,
+    _hf_whisper_timeout_seconds,
+    _indextts_allow_direct_predict_fallback,
+    _indextts_api_name,
+    _indextts_attempt_timeout_seconds,
+    _indextts_batch_api_name,
+    _indextts_cache_ttl_seconds,
+    _indextts_degraded_fast_fail_enabled,
+    _indextts_endpoint_retry_count,
+    _indextts_endpoint_timeout_seconds,
+    _indextts_fallback_space_base_url,
+    _indextts_fast_fail_mode,
+    _indextts_force_require_batch,
+    _indextts_is_fast_fail_mode,
+    _indextts_model_name,
+    _indextts_require_batch_mode,
+    _indextts_single_batch_fallback_enabled,
+    _indextts_space_base_url,
+    _indextts_space_base_urls,
+    _indextts_timeout_seconds,
+    _indextts_use_space_base_url,
+    _indextts_use_timeout_seconds,
+    _is_opaque_indextts_queue_failure,
+    _silent_wav_bytes,
+    _voice_llm_timeout_seconds,
+)
 
 # ── stdlib-only, always importable ──────────────────────────────────────────
 from ._tts_gradio import (  # noqa: F401

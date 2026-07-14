@@ -46,7 +46,7 @@ The wallet backend is organized by bounded context:
 | `routes/` | Feature-grouped route modules (wallets, records, proofs, exports, etc.) |
 | `services/` | Domain service classes extracted from the application service |
 | `schemas/` | Pydantic request/response models grouped by domain |
-| `helpers/` | Internal helpers package with 7 domain submodules (see table below) |
+| `helpers/` | Internal helpers package with 8 domain submodules (see table below) |
 | `app_service.py` | `WalletInterfaceService` orchestrator |
 | `proof_backends.py` | Proof backend implementations |
 | `service_matching.py` | Service match logic |
@@ -62,6 +62,7 @@ The wallet backend is organized by bounded context:
 | --- | --- | --- |
 | `helpers/_tts_normalization.py` | None (stdlib only) | Pure text-normalization for TTS: number-to-words, zip/phone/address/URL normalization |
 | `helpers/_tts_gradio.py` | None (stdlib only) | Pure Gradio response/file parsing, request-payload builders, ZIP audio extraction, Whisper text extraction |
+| `helpers/_tts_config.py` | None (stdlib only) | IndexTTS/Whisper env config readers, feature flags, threading.local overrides, `_clean_voice_reply_text`, `_silent_wav_bytes` |
 | `helpers/_auth.py` | None for pure helpers; optional deps for UCAN/SMTP | Auth helpers: bearer extraction, phone/email normalization, magic-login, UCAN |
 | `helpers/_app.py` | None for pure helpers; optional `ipfs_datasets_py` for `_prepare_hf_router_environment`/`_wallet_interface_service_from_env` | IPFS CID utilities, service factory, shared constants |
 | `helpers/_ai_routing.py` | None for pure helpers; optional `ipfs_datasets_py` for `_require_wallet_router_actor` | LLM router helpers, rate limiting, wallet actor resolution |
