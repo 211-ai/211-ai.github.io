@@ -324,13 +324,15 @@ def _default_indextts_reference_wav() -> bytes:
     sample_rate = 24_000
     duration_seconds = 1.5
     frames = int(sample_rate * duration_seconds)
+    # 100 ms (0.1 s × 24000 samples/s) fade-in / fade-out to avoid click artifacts
+    _ENVELOPE_FADE_SAMPLES = int(0.1 * sample_rate)
     buffer = io.BytesIO()
     with wave.open(buffer, "wb") as wav:
         wav.setnchannels(1)
         wav.setsampwidth(2)
         wav.setframerate(sample_rate)
         for index in range(frames):
-            envelope = min(1.0, index / 2_400, (frames - index) / 2_400)
+            envelope = min(1.0, index / _ENVELOPE_FADE_SAMPLES, (frames - index) / _ENVELOPE_FADE_SAMPLES)
             value = int(10_000 * envelope * math.sin(2.0 * math.pi * 220.0 * index / sample_rate))
             wav.writeframesraw(struct.pack("<h", value))
     return buffer.getvalue()

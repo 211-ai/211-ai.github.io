@@ -131,7 +131,9 @@ class TestHmacBase64url:
 
     def test_known_vector(self):
         """Verify against known HMAC-SHA256 base64url value."""
-        import base64, hashlib, hmac as stdlib_hmac
+        import base64
+        import hashlib
+        import hmac as stdlib_hmac
         fn = self._fn()
         secret = "test-secret"
         message = "payload"
@@ -249,21 +251,19 @@ class TestAllowedMagicLoginHosts:
         fn = self._fn()
         with patch.dict(os.environ, {"WALLET_MAGIC_LOGIN_ALLOWED_HOSTS": ""}):
             hosts = fn()
-        assert "211-ai.com" in hosts
-        assert "localhost" in hosts
+        assert hosts.issuperset({"211-ai.com", "localhost"})
 
     def test_custom_hosts_from_env(self):
         fn = self._fn()
         with patch.dict(os.environ, {"WALLET_MAGIC_LOGIN_ALLOWED_HOSTS": "myapp.com,staging.myapp.com"}):
             hosts = fn()
-        assert "myapp.com" in hosts
-        assert "staging.myapp.com" in hosts
+        assert hosts.issuperset({"myapp.com", "staging.myapp.com"})
 
     def test_hosts_are_lowercase(self):
         fn = self._fn()
         with patch.dict(os.environ, {"WALLET_MAGIC_LOGIN_ALLOWED_HOSTS": "MyApp.COM"}):
             hosts = fn()
-        assert "myapp.com" in hosts
+        assert hosts.issuperset({"myapp.com"})
 
     def test_returns_set(self):
         fn = self._fn()
@@ -307,7 +307,8 @@ class TestMagicLoginBaseUrl:
             "WALLET_MAGIC_LOGIN_ALLOWED_HOSTS": "",
         }):
             result = fn("")
-        assert "211-ai.com" in result
+        from urllib.parse import urlparse
+        assert urlparse(result).netloc == "211-ai.com"
 
 
 # ---------------------------------------------------------------------------

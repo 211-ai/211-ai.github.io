@@ -404,7 +404,8 @@ class TestDefaultIndexttsReferenceWav:
         assert result[:4] == b"RIFF"
 
     def test_is_wave_format(self):
-        import io, wave
+        import io
+        import wave
         result = _default_indextts_reference_wav()
         with wave.open(io.BytesIO(result), "rb") as wav:
             assert wav.getnchannels() == 1

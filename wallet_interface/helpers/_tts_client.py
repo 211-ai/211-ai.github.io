@@ -30,8 +30,6 @@ _INDEXTTS_FN_INDEX_CACHE: dict[tuple[str, str], int] = {}
 _INDEXTTS_REFERENCE_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
 
 
-
-
 _INDEXTTS_SPACE_CLIENT: HFSpaceClient | None = None
 _INDEXTTS_SPACE_CLIENT_KEY = ""
 

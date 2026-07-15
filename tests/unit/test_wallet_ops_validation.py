@@ -117,7 +117,7 @@ class TestOpsConstants:
         from wallet_interface.ops import _PRODUCTION_PLACEHOLDER_MARKERS
 
         assert len(_PRODUCTION_PLACEHOLDER_MARKERS) > 0
-        assert "example.com" in _PRODUCTION_PLACEHOLDER_MARKERS
+        assert any(m == "example.com" for m in _PRODUCTION_PLACEHOLDER_MARKERS)
 
     def test_false_values_set(self):
         from wallet_interface.ops import _FALSE_VALUES

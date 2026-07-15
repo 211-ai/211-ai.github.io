@@ -79,11 +79,14 @@ class TestIpfsProxyFallbackGateways:
         return _import()._ipfs_proxy_fallback_gateways
 
     def test_default_gateways(self):
+        from urllib.parse import urlparse
+
         fn = self._fn()
         with patch.dict(os.environ, {"WALLET_IPFS_PROXY_FALLBACK_GATEWAYS": ""}):
             gateways = fn()
-        assert any("w3s.link" in g for g in gateways)
-        assert any("ipfs.io" in g for g in gateways)
+        gateway_hosts = {urlparse(g).netloc for g in gateways}
+        assert any(h == "w3s.link" for h in gateway_hosts)
+        assert any(h == "ipfs.io" for h in gateway_hosts)
 
     def test_custom_gateways(self):
         fn = self._fn()

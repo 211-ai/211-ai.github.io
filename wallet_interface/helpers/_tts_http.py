@@ -89,7 +89,9 @@ def _indextts_headers(*, accept: str = "application/json") -> dict[str, str]:
 
 def _publicus_indextts_credential_warning() -> dict[str, Any] | None:
     space_url = _indextts_space_base_url().lower()
-    if "publicus-indextts" not in space_url and "publicus/indextts" not in (os.getenv("WALLET_INDEXTTS_MODEL_NAME", "").lower()):
+    is_publicus_space = "publicus-indextts" in space_url
+    is_publicus_model = "publicus/indextts" in os.getenv("WALLET_INDEXTTS_MODEL_NAME", "").lower()
+    if not is_publicus_space and not is_publicus_model:
         return None
     token_present = bool(_configured_hf_token())
     if token_present:
