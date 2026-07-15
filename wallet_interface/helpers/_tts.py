@@ -4,17 +4,13 @@
 from __future__ import annotations
 
 import base64
-import concurrent.futures
 import io
 import json
-import math
 import mimetypes
 import os
 import re
-import struct
 import threading
 import time
-import wave
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -32,6 +28,7 @@ from ._tts_gradio import (  # noqa: E402
     _gradio_update_value,
     _indextts_batch_request_data,
     _indextts_request_data,
+    _default_indextts_reference_wav,
     _normalize_indextts_queue_failure,
 )
 
@@ -70,6 +67,9 @@ from ._tts_config import (  # noqa: E402
     _indextts_use_timeout_seconds,
     _is_opaque_indextts_queue_failure,
     _silent_wav_bytes,
+    _indextts_degraded_error_payload,
+    _run_indextts_with_endpoint_retry,
+    _run_indextts_with_endpoint_timeout,
     _voice_llm_timeout_seconds,
 )
 
@@ -308,49 +308,6 @@ def _indextts_execute_with_queue_fallback(
             raise queue_error
         raise
 
-
-def _indextts_degraded_error_payload(exc: Exception, operation: str) -> dict[str, Any]:
-    return {
-        "code": "indextts_temporarily_unavailable",
-        "message": "IndexTTS is temporarily unavailable across configured spaces.",
-        "operation": operation,
-        "retryable": True,
-        "degraded": True,
-        "fallbackRecommended": "local-audio",
-        "detail": str(exc),
-        "spaceUrls": _indextts_space_base_urls(),
-    }
-
-
-
-def _run_indextts_with_endpoint_timeout(operation: str, fn):
-    timeout_seconds = _indextts_endpoint_timeout_seconds()
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    future = executor.submit(fn)
-    try:
-        return future.result(timeout=timeout_seconds)
-    except concurrent.futures.TimeoutError as exc:
-        future.cancel()
-        raise TimeoutError(f"IndexTTS {operation} exceeded endpoint timeout ({timeout_seconds:.0f}s)") from exc
-    finally:
-        executor.shutdown(wait=False, cancel_futures=True)
-
-
-def _run_indextts_with_endpoint_retry(operation: str, fn):
-    retries = _indextts_endpoint_retry_count()
-    last_exc: Exception | None = None
-    for attempt in range(retries + 1):
-        try:
-            return _run_indextts_with_endpoint_timeout(operation, fn)
-        except Exception as exc:
-            last_exc = exc
-            if attempt >= retries:
-                raise
-            # Short pause before retrying to avoid immediately re-hitting a transient failure.
-            time.sleep(0.2)
-    if last_exc is not None:
-        raise last_exc
-    raise RuntimeError(f"IndexTTS {operation} failed without an explicit error")
 
 
 def _run_indextts_gradio_tts(
@@ -673,21 +630,6 @@ def _indextts_upload_reference_audio(
         _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
     return uploaded
 
-
-def _default_indextts_reference_wav() -> bytes:
-    sample_rate = 24_000
-    duration_seconds = 1.5
-    frames = int(sample_rate * duration_seconds)
-    buffer = io.BytesIO()
-    with wave.open(buffer, "wb") as wav:
-        wav.setnchannels(1)
-        wav.setsampwidth(2)
-        wav.setframerate(sample_rate)
-        for index in range(frames):
-            envelope = min(1.0, index / 2_400, (frames - index) / 2_400)
-            value = int(10_000 * envelope * math.sin(2.0 * math.pi * 220.0 * index / sample_rate))
-            wav.writeframesraw(struct.pack("<h", value))
-    return buffer.getvalue()
 
 
 

@@ -386,3 +386,54 @@ class TestExtractHfWhisperText:
 
     def test_none_returns_empty(self):
         assert _extract_hf_whisper_text(None) == ""  # type: ignore[arg-type]
+from wallet_interface.helpers._tts_gradio import _default_indextts_reference_wav
+
+
+# ---------------------------------------------------------------------------
+# _default_indextts_reference_wav
+# ---------------------------------------------------------------------------
+
+
+class TestDefaultIndexttsReferenceWav:
+    def test_returns_bytes(self):
+        result = _default_indextts_reference_wav()
+        assert isinstance(result, bytes)
+
+    def test_starts_with_riff_header(self):
+        result = _default_indextts_reference_wav()
+        assert result[:4] == b"RIFF"
+
+    def test_is_wave_format(self):
+        import io, wave
+        result = _default_indextts_reference_wav()
+        with wave.open(io.BytesIO(result), "rb") as wav:
+            assert wav.getnchannels() == 1
+            assert wav.getsampwidth() == 2
+            assert wav.getframerate() == 24_000
+
+    def test_duration_is_approximately_1_5_seconds(self):
+        import io, wave
+        result = _default_indextts_reference_wav()
+        with wave.open(io.BytesIO(result), "rb") as wav:
+            frames = wav.getnframes()
+            rate = wav.getframerate()
+            duration = frames / rate
+        assert abs(duration - 1.5) < 0.01
+
+    def test_non_empty_audio_content(self):
+        result = _default_indextts_reference_wav()
+        # Should have non-silent audio (not all zeros)
+        audio_bytes = result[44:]  # skip WAV header
+        assert any(b != 0 for b in audio_bytes)
+
+    def test_consistent_output(self):
+        # Should produce identical bytes on repeated calls
+        result1 = _default_indextts_reference_wav()
+        result2 = _default_indextts_reference_wav()
+        assert result1 == result2
+
+    def test_minimum_size(self):
+        result = _default_indextts_reference_wav()
+        # 1.5s * 24000 Hz * 2 bytes + 44-byte header
+        expected_min = 1 * 24000 * 2  # at least 1 second worth
+        assert len(result) >= expected_min

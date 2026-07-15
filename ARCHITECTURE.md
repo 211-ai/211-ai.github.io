@@ -61,8 +61,8 @@ The wallet backend is organized by bounded context:
 | Submodule | Optional deps required | Responsibility |
 | --- | --- | --- |
 | `helpers/_tts_normalization.py` | None (stdlib only) | Pure text-normalization for TTS: number-to-words, zip/phone/address/URL normalization |
-| `helpers/_tts_gradio.py` | None (stdlib only) | Pure Gradio response/file parsing, request-payload builders, ZIP audio extraction, Whisper text extraction |
-| `helpers/_tts_config.py` | None (stdlib only) | IndexTTS/Whisper env config readers, feature flags, threading.local overrides, `_clean_voice_reply_text`, `_silent_wav_bytes` |
+| `helpers/_tts_gradio.py` | None (stdlib only) | Pure Gradio response/file parsing, request-payload builders, ZIP audio extraction, Whisper text extraction, `_default_indextts_reference_wav` |
+| `helpers/_tts_config.py` | None (stdlib only) | IndexTTS/Whisper env config readers, feature flags, threading.local overrides, `_clean_voice_reply_text`, `_silent_wav_bytes`, `_indextts_degraded_error_payload`, endpoint timeout/retry wrappers |
 | `helpers/_auth.py` | None for pure helpers; optional deps for UCAN/SMTP | Auth helpers: bearer extraction, phone/email normalization, magic-login, UCAN |
 | `helpers/_app.py` | None for pure helpers; optional `ipfs_datasets_py` for `_prepare_hf_router_environment`/`_wallet_interface_service_from_env` | IPFS CID utilities, service factory, shared constants |
 | `helpers/_ai_routing.py` | None for pure helpers; optional `ipfs_datasets_py` for `_require_wallet_router_actor` | LLM router helpers, rate limiting, wallet actor resolution |

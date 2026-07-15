@@ -29,6 +29,7 @@ from ._tts_config import (  # noqa: F401
     _indextts_attempt_timeout_seconds,
     _indextts_batch_api_name,
     _indextts_cache_ttl_seconds,
+    _indextts_degraded_error_payload,
     _indextts_degraded_fast_fail_enabled,
     _indextts_endpoint_retry_count,
     _indextts_endpoint_timeout_seconds,
@@ -45,6 +46,8 @@ from ._tts_config import (  # noqa: F401
     _indextts_use_space_base_url,
     _indextts_use_timeout_seconds,
     _is_opaque_indextts_queue_failure,
+    _run_indextts_with_endpoint_retry,
+    _run_indextts_with_endpoint_timeout,
     _silent_wav_bytes,
     _voice_llm_timeout_seconds,
 )
@@ -52,6 +55,7 @@ from ._tts_config import (  # noqa: F401
 # ── stdlib-only, always importable ──────────────────────────────────────────
 from ._tts_gradio import (  # noqa: F401
     _dedupe_gradio_references,
+    _default_indextts_reference_wav,
     _extract_audio_files_from_zip,
     _extract_hf_whisper_text,
     _find_gradio_audio_reference,
@@ -154,11 +158,9 @@ try:
     from ._tts import (  # noqa: F401
         _indextts_api_name,
         _indextts_batch_api_name,
-        _indextts_degraded_error_payload,
         _indextts_space_base_url,
         _run_indextts_gradio_batch_tts,
         _run_indextts_tts_with_batch_fallback,
-        _run_indextts_with_endpoint_retry,
         _silent_wav_bytes,
     )
     from ._tts_http import *  # noqa: F401,F403

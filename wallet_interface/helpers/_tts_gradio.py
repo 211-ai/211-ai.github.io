@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import io
 import json
+import math
 import os
+import struct
+import wave
 import zipfile
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -309,3 +312,25 @@ def _extract_hf_whisper_text(payload: Any) -> str:
     if isinstance(payload, str):
         return payload.strip()
     return ""
+
+
+# ---------------------------------------------------------------------------
+# Reference audio generation
+# ---------------------------------------------------------------------------
+
+
+def _default_indextts_reference_wav() -> bytes:
+    """Generate a 1.5-second 220 Hz sine wave WAV at 24 kHz as default reference audio."""
+    sample_rate = 24_000
+    duration_seconds = 1.5
+    frames = int(sample_rate * duration_seconds)
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(sample_rate)
+        for index in range(frames):
+            envelope = min(1.0, index / 2_400, (frames - index) / 2_400)
+            value = int(10_000 * envelope * math.sin(2.0 * math.pi * 220.0 * index / sample_rate))
+            wav.writeframesraw(struct.pack("<h", value))
+    return buffer.getvalue()

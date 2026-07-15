@@ -397,3 +397,139 @@ class TestSilentWavBytes:
         buf = io.BytesIO(data)
         with wave.open(buf) as w:
             assert w.getframerate() == 8_000
+
+
+# ---------------------------------------------------------------------------
+# _indextts_degraded_error_payload
+# ---------------------------------------------------------------------------
+
+
+class TestIndexttsDegradedErrorPayload:
+    def _fn(self):
+        return _import()._indextts_degraded_error_payload
+
+    def test_returns_dict(self):
+        fn = self._fn()
+        result = fn(ValueError("test"), "tts")
+        assert isinstance(result, dict)
+
+    def test_code_field(self):
+        fn = self._fn()
+        result = fn(ValueError("oops"), "batch-tts")
+        assert result["code"] == "indextts_temporarily_unavailable"
+
+    def test_operation_field(self):
+        fn = self._fn()
+        result = fn(RuntimeError("net error"), "upload")
+        assert result["operation"] == "upload"
+
+    def test_detail_contains_exception_str(self):
+        fn = self._fn()
+        result = fn(ValueError("specific failure"), "tts")
+        assert "specific failure" in result["detail"]
+
+    def test_retryable_flag(self):
+        fn = self._fn()
+        result = fn(Exception("x"), "op")
+        assert result["retryable"] is True
+
+    def test_degraded_flag(self):
+        fn = self._fn()
+        result = fn(Exception("x"), "op")
+        assert result["degraded"] is True
+
+    def test_fallback_recommended(self):
+        fn = self._fn()
+        result = fn(Exception("x"), "op")
+        assert result["fallbackRecommended"] == "local-audio"
+
+    def test_space_urls_is_list(self):
+        fn = self._fn()
+        result = fn(Exception("x"), "op")
+        assert isinstance(result["spaceUrls"], list)
+
+
+# ---------------------------------------------------------------------------
+# _run_indextts_with_endpoint_timeout
+# ---------------------------------------------------------------------------
+
+
+class TestRunIndexttsWithEndpointTimeout:
+    def _fn(self):
+        return _import()._run_indextts_with_endpoint_timeout
+
+    def test_returns_fn_result(self):
+        fn = self._fn()
+        result = fn("test-op", lambda: 42)
+        assert result == 42
+
+    def test_returns_string_result(self):
+        fn = self._fn()
+        result = fn("test-op", lambda: "hello")
+        assert result == "hello"
+
+    def test_propagates_exception(self):
+        import pytest
+        fn = self._fn()
+        with pytest.raises(RuntimeError, match="inner error"):
+            fn("test-op", lambda: (_ for _ in ()).throw(RuntimeError("inner error")))
+
+    def test_timeout_raises_timeout_error(self):
+        import pytest, time
+        from unittest.mock import patch
+        fn = self._fn()
+        m = _import()
+        with pytest.raises(TimeoutError, match="exceeded endpoint timeout"):
+            # Patch the timeout function directly to bypass the 5-second minimum
+            with patch.object(m, "_indextts_endpoint_timeout_seconds", return_value=0.001):
+                fn("test-op", lambda: time.sleep(10))
+
+    def test_returns_none_when_fn_returns_none(self):
+        fn = self._fn()
+        result = fn("test-op", lambda: None)
+        assert result is None
+
+
+class TestRunIndexttsWithEndpointRetry:
+    def _fn(self):
+        return _import()._run_indextts_with_endpoint_retry
+
+    def test_returns_result_on_first_try(self):
+        fn = self._fn()
+        result = fn("test-op", lambda: "success")
+        assert result == "success"
+
+    def test_reraises_when_retries_exhausted(self):
+        import pytest
+        call_count = [0]
+
+        def failing_fn():
+            call_count[0] += 1
+            raise ValueError("always fails")
+
+        fn = self._fn()
+        with pytest.raises(ValueError, match="always fails"):
+            with patch_env("WALLET_INDEXTTS_ENDPOINT_RETRIES", "0"):
+                fn("test-op", failing_fn)
+        assert call_count[0] == 1
+
+    def test_retries_correct_number_of_times(self):
+        import pytest
+        call_count = [0]
+
+        def failing_fn():
+            call_count[0] += 1
+            raise ValueError("fail")
+
+        fn = self._fn()
+        with pytest.raises(ValueError):
+            with patch_env("WALLET_INDEXTTS_ENDPOINT_RETRIES", "2"):
+                with patch_env("WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS", "10"):
+                    fn("test-op", failing_fn)
+        assert call_count[0] == 3  # 1 initial + 2 retries
+
+
+def patch_env(key: str, value: str):
+    from unittest.mock import patch
+    import os
+    return patch.dict(os.environ, {key: value})

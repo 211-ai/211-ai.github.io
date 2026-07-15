@@ -13,12 +13,16 @@ All functions in this module are importable without any optional dependencies
 
 from __future__ import annotations
 
+import concurrent.futures
 import io
 import os
 import re
 import threading
+import time
 import wave
+from collections.abc import Sequence
 from contextlib import contextmanager
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Thread-local override state
@@ -276,3 +280,58 @@ def _silent_wav_bytes(duration_ms: int = 240, sample_rate: int = 16_000) -> byte
         wav.setframerate(sample_rate)
         wav.writeframes(b"\x00\x00" * sample_count)
     return buffer.getvalue()
+
+
+# ---------------------------------------------------------------------------
+# Degraded error payload (stdlib, uses config functions above)
+# ---------------------------------------------------------------------------
+
+
+def _indextts_degraded_error_payload(exc: Exception, operation: str) -> dict[str, Any]:
+    """Build a standardised degraded-error response when IndexTTS is unavailable."""
+    return {
+        "code": "indextts_temporarily_unavailable",
+        "message": "IndexTTS is temporarily unavailable across configured spaces.",
+        "operation": operation,
+        "retryable": True,
+        "degraded": True,
+        "fallbackRecommended": "local-audio",
+        "detail": str(exc),
+        "spaceUrls": _indextts_space_base_urls(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Endpoint timeout / retry wrappers (stdlib concurrent.futures)
+# ---------------------------------------------------------------------------
+
+
+def _run_indextts_with_endpoint_timeout(operation: str, fn):
+    """Run *fn* with a timeout; raises TimeoutError on expiry."""
+    timeout_seconds = _indextts_endpoint_timeout_seconds()
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(fn)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except concurrent.futures.TimeoutError as exc:
+        future.cancel()
+        raise TimeoutError(f"IndexTTS {operation} exceeded endpoint timeout ({timeout_seconds:.0f}s)") from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _run_indextts_with_endpoint_retry(operation: str, fn):
+    """Retry *fn* up to `_indextts_endpoint_retry_count()` additional times."""
+    retries = _indextts_endpoint_retry_count()
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            return _run_indextts_with_endpoint_timeout(operation, fn)
+        except Exception as exc:
+            last_exc = exc
+            if attempt >= retries:
+                raise
+            time.sleep(0.2)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"IndexTTS {operation} failed without an explicit error")
