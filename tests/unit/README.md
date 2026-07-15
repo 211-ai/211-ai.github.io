@@ -18,7 +18,8 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/helpers/_auth.py` (crypto) | `test_wallet_auth_crypto.py` | ✅ | 33 |
 | `wallet_interface/helpers/_app.py` | `test_wallet_app_helpers.py` | ✅ | 17 |
 | `wallet_interface/helpers/` | `test_wallet_helpers.py` | ✅ (CID helpers skip on missing deps) | 14 |
-| `wallet_interface/helpers/_records.py` | `test_wallet_records_helpers.py` | ✅ | 75 |
+| `wallet_interface/helpers/_records.py` | `test_wallet_records_helpers.py` | ✅ | 83 |
+| `wallet_interface/hmis/models.py` + `errors.py` | `test_hmis_models.py` | ✅ | 27 |
 | `wallet_interface/helpers/_storage.py` | `test_wallet_storage_helpers.py` | ✅ | 36 |
 | `wallet_interface/helpers/_tts_config.py` | `test_tts_config.py` | ✅ | 88 |
 | `wallet_interface/helpers/_tts_gradio.py` | `test_tts_gradio.py` | ✅ | 74 |

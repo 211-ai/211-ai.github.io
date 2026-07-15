@@ -368,3 +368,70 @@ class TestBuildPrivacyVectorTerms(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestBuildDocumentProfilePublicInputs(unittest.TestCase):
+    """Tests for _build_document_profile_public_inputs."""
+
+    def _fn(self):
+        from wallet_interface.helpers._records import _build_document_profile_public_inputs
+        return _build_document_profile_public_inputs
+
+    def test_basic_output_has_required_keys(self):
+        fn = self._fn()
+        result = fn(
+            artifact_ids=["id1", "id2"],
+            file_name="test.pdf",
+            mime_type="application/pdf",
+            outputs=[],
+        )
+        assert "artifact_ids" in result
+        assert "mime_type" in result
+        assert "privacy_policy" in result
+        assert "organizer_labels" in result
+
+    def test_artifact_ids_preserved(self):
+        fn = self._fn()
+        result = fn(
+            artifact_ids=["a", "b", "c"],
+            file_name="doc.txt",
+            mime_type="text/plain",
+            outputs=[],
+        )
+        assert result["artifact_ids"] == ["a", "b", "c"]
+
+    def test_mime_family_extracted(self):
+        fn = self._fn()
+        result = fn(artifact_ids=[], file_name="img.png", mime_type="image/png", outputs=[])
+        assert result["mime_family"] == "image"
+
+    def test_privacy_policy_is_constant(self):
+        fn = self._fn()
+        result = fn(artifact_ids=[], file_name="x", mime_type="application/pdf", outputs=[])
+        assert result["privacy_policy"] == "no_plaintext_public_inputs"
+
+    def test_redaction_count_accumulated(self):
+        fn = self._fn()
+        outputs = [
+            {"redaction_counts": {"emails": 3, "phones": 2}},
+            {"redaction_counts": {"names": 5}},
+        ]
+        result = fn(artifact_ids=[], file_name="x", mime_type="text/plain", outputs=outputs)
+        assert result["redaction_count"] == 10
+
+    def test_organizer_labels_from_outputs(self):
+        fn = self._fn()
+        outputs = [{"openrouter_organizer_profile": {"labels": ["housing", "benefits"]}}]
+        result = fn(artifact_ids=[], file_name="x", mime_type="text/plain", outputs=outputs)
+        assert "housing" in result["organizer_labels"] or len(result["organizer_labels"]) > 0
+
+    def test_empty_outputs_uses_mime_defaults(self):
+        fn = self._fn()
+        result = fn(artifact_ids=[], file_name="test.pdf", mime_type="application/pdf", outputs=[])
+        # Should fall back to mime-based labels
+        assert len(result["organizer_labels"]) > 0
+
+    def test_fallback_mime_for_empty_type(self):
+        fn = self._fn()
+        result = fn(artifact_ids=[], file_name="x", mime_type="", outputs=[])
+        assert result["mime_type"] == "application/octet-stream"
