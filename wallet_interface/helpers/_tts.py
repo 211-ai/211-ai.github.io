@@ -6,7 +6,6 @@ from __future__ import annotations
 import base64
 import io
 import json
-
 import os
 import re
 import threading
@@ -29,6 +28,20 @@ ensure_ipfs_datasets_py_path()
 
 from ipfs_accelerate_py import HFSpaceClient  # noqa: E402
 
+from ._tts_client import (  # noqa: E402
+    _INDEXTTS_CACHE_LOCK,
+    _INDEXTTS_CONFIG_CACHE,
+    _INDEXTTS_FN_INDEX_CACHE,
+    _fetch_gradio_file,
+    _indextts_batch_audio_references,
+    _indextts_batch_fn_index,
+    _indextts_config,
+    _indextts_fn_index,
+    _indextts_queue_join,
+    _indextts_space_client,
+    _indextts_upload_reference_audio,
+    _indextts_wait_for_result,
+)
 from ._tts_config import (  # noqa: E402
     _INDEXTTS_ACTIVE_SPACE_URL,
     _INDEXTTS_ACTIVE_TIMEOUT_SECONDS,
@@ -42,6 +55,7 @@ from ._tts_config import (  # noqa: E402
     _indextts_attempt_timeout_seconds,
     _indextts_batch_api_name,
     _indextts_cache_ttl_seconds,
+    _indextts_degraded_error_payload,
     _indextts_degraded_fast_fail_enabled,
     _indextts_endpoint_retry_count,
     _indextts_endpoint_timeout_seconds,
@@ -58,13 +72,11 @@ from ._tts_config import (  # noqa: E402
     _indextts_use_space_base_url,
     _indextts_use_timeout_seconds,
     _is_opaque_indextts_queue_failure,
-    _silent_wav_bytes,
-    _indextts_degraded_error_payload,
     _run_indextts_with_endpoint_retry,
     _run_indextts_with_endpoint_timeout,
+    _silent_wav_bytes,
     _voice_llm_timeout_seconds,
 )
-
 from ._tts_http import (  # noqa: E402
     _configured_hf_token,
     _generate_indextts_voice_reply_text,
@@ -108,22 +120,6 @@ from ._tts_normalization import (  # noqa: E402,F401
     _strip_scraped_page_chrome,
     _strip_unspoken_fields,
     _title_case_program_name,
-)
-
-
-from ._tts_client import (  # noqa: E402
-    _INDEXTTS_CACHE_LOCK,
-    _INDEXTTS_CONFIG_CACHE,
-    _INDEXTTS_FN_INDEX_CACHE,
-    _fetch_gradio_file,
-    _indextts_batch_audio_references,
-    _indextts_batch_fn_index,
-    _indextts_config,
-    _indextts_fn_index,
-    _indextts_queue_join,
-    _indextts_space_client,
-    _indextts_upload_reference_audio,
-    _indextts_wait_for_result,
 )
 
 

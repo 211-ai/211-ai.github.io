@@ -155,6 +155,15 @@ try:
         _send_dead_drop_email,
         _should_publish_record_metadata_ipld,
     )
+    from ._tts import *  # noqa: F401,F403
+    from ._tts import (  # noqa: F401
+        _indextts_api_name,
+        _indextts_batch_api_name,
+        _indextts_space_base_url,
+        _run_indextts_gradio_batch_tts,
+        _run_indextts_tts_with_batch_fallback,
+        _silent_wav_bytes,
+    )
     from ._tts_client import *  # noqa: F401,F403
     from ._tts_client import (  # noqa: F401
         _INDEXTTS_CACHE_LOCK,
@@ -170,15 +179,6 @@ try:
         _indextts_space_client,
         _indextts_upload_reference_audio,
         _indextts_wait_for_result,
-    )
-    from ._tts import *  # noqa: F401,F403
-    from ._tts import (  # noqa: F401
-        _indextts_api_name,
-        _indextts_batch_api_name,
-        _indextts_space_base_url,
-        _run_indextts_gradio_batch_tts,
-        _run_indextts_tts_with_batch_fallback,
-        _silent_wav_bytes,
     )
     from ._tts_http import *  # noqa: F401,F403
     from ._tts_http import (  # noqa: F401
