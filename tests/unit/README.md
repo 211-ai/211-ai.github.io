@@ -20,7 +20,7 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/helpers/_app.py` | `test_wallet_app_helpers.py` | ✅ | 17 |
 | `wallet_interface/helpers/` | `test_wallet_helpers.py` | ✅ (CID helpers skip on missing deps) | 14 |
 | `wallet_interface/helpers/_records.py` | `test_wallet_records_helpers.py` | ✅ | 83 |
-| `wallet_interface/hmis/models.py` + `errors.py` + adapters | `test_hmis_models.py` | ✅ | 46 |
+| `wallet_interface/hmis/models.py` + `errors.py` + adapters + service | `test_hmis_models.py` | ✅ | 57 |
 | `wallet_interface/hmis/mapper.py` + `consent.py` | `test_hmis_mapping_consent.py` | ✅ | 29 |
 | `wallet_interface/helpers/_storage.py` | `test_wallet_storage_helpers.py` | ✅ | 36 |
 | `wallet_interface/helpers/_tts_config.py` | `test_tts_config.py` | ✅ | 88 |
@@ -29,7 +29,7 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/helpers/_tts_normalization.py` | `test_tts_normalization.py` | ✅ | 48 |
 | `wallet_interface/ops.py` (helpers) | `test_wallet_ops_helpers.py` | ✅ | 27 |
 | `wallet_interface/ops.py` (validation) | `test_wallet_ops_validation.py` | ✅ | 21 |
-| `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 20 |
+| `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 30 |
 | `wallet_interface/schemas/` | `test_wallet_schemas.py` | ✅ (Pydantic tests skip when not installed) | 22 |
 | `wallet_interface/schemas/app_schemas.py` | `test_portal_schemas.py` | ✅ | 15 |
 

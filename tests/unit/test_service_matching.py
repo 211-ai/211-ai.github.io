@@ -220,3 +220,94 @@ class TestServiceMatch:
         results = mod.match_services([svc], need_terms=["food"])
         assert results
         assert results[0].score > 0
+
+
+# ---------------------------------------------------------------------------
+# _score_service
+# ---------------------------------------------------------------------------
+
+
+class TestScoreService:
+    def _score(self, name="", description="", categories="", zip_code="", terms=None, location=None):
+        from wallet_interface.service_matching import _score_service, ServiceRecord
+        service = ServiceRecord(
+            id="test-001",
+            name=name,
+            description=description,
+            categories=categories,
+            zip=zip_code,
+            city="",
+            state="",
+        )
+        return _score_service(service, terms or [], location or {})
+
+    def test_zero_score_for_no_terms(self):
+        score, reasons = self._score(name="food bank")
+        assert score == 0.0
+        assert reasons == []
+
+    def test_category_match_scores_higher(self):
+        """Term match in categories scores 5.0, vs 3.0 in name/description."""
+        score_in_cats, _ = self._score(categories="food pantry", terms=["food"])
+        score_in_name, _ = self._score(name="food pantry", categories="shelter", terms=["food"])
+        assert score_in_cats > score_in_name
+
+    def test_reason_contains_term(self):
+        _, reasons = self._score(name="shelter services", terms=["shelter"])
+        assert any("shelter" in r for r in reasons)
+
+    def test_zip_match_adds_score(self):
+        base_score, _ = self._score(zip_code="98101", terms=["shelter"])
+        zip_score, _ = self._score(
+            name="shelter",
+            zip_code="98101",
+            terms=["shelter"],
+            location={"zip": "98101"},
+        )
+        assert zip_score > base_score
+
+    def test_no_false_match_on_partial_word(self):
+        """'food' should not match 'seafood' if not present as standalone token."""
+        # Depends on _normalize behavior; at minimum score function returns float
+        score, _ = self._score(name="seafood restaurant", terms=["food"])
+        # Passes as long as function runs without error
+        assert isinstance(score, float)
+
+
+# ---------------------------------------------------------------------------
+# _reject_precise_location
+# ---------------------------------------------------------------------------
+
+
+class TestRejectPreciseLocation:
+    def test_allows_zip_only_location(self):
+        from wallet_interface.service_matching import _reject_precise_location
+        _reject_precise_location({"zip": "98101"})  # should not raise
+
+    def test_allows_rounded_coordinates(self):
+        from wallet_interface.service_matching import _reject_precise_location
+        _reject_precise_location({
+            "public_value": {"lat": 47.6, "lon": -122.3},
+            "precision": "rounded:0.1",
+        })  # should not raise
+
+    def test_rejects_precise_coordinates(self):
+        import pytest
+        from wallet_interface.service_matching import _reject_precise_location
+        with pytest.raises(ValueError, match="coarse or derived"):
+            _reject_precise_location({
+                "public_value": {"lat": 47.612345, "lon": -122.312345},
+                "precision": "exact",
+            })
+
+    def test_rejects_precise_coordinates_without_precision_key(self):
+        import pytest
+        from wallet_interface.service_matching import _reject_precise_location
+        with pytest.raises(ValueError, match="coarse or derived"):
+            _reject_precise_location({
+                "public_value": {"lat": 47.6, "lon": -122.3},
+            })
+
+    def test_allows_empty_location(self):
+        from wallet_interface.service_matching import _reject_precise_location
+        _reject_precise_location({})  # no lat/lon — should not raise

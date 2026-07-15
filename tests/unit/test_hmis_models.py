@@ -326,3 +326,87 @@ class TestManualReviewAdapter:
         adapter = cls()
         caps = adapter.capabilities()
         assert caps.supports_referral_submit is False
+
+
+# ---------------------------------------------------------------------------
+# HMIS service helpers
+# ---------------------------------------------------------------------------
+
+
+class TestPayloadHash:
+    def test_returns_64_char_hex(self):
+        from wallet_interface.hmis.service import _payload_hash
+        result = _payload_hash({"foo": "bar"})
+        assert len(result) == 64
+        int(result, 16)  # valid hex
+
+    def test_deterministic(self):
+        from wallet_interface.hmis.service import _payload_hash
+        assert _payload_hash({"a": 1}) == _payload_hash({"a": 1})
+
+    def test_key_order_independent(self):
+        from wallet_interface.hmis.service import _payload_hash
+        assert _payload_hash({"a": 1, "b": 2}) == _payload_hash({"b": 2, "a": 1})
+
+    def test_different_payloads_differ(self):
+        from wallet_interface.hmis.service import _payload_hash
+        assert _payload_hash({"a": 1}) != _payload_hash({"a": 2})
+
+
+class TestActionSupported:
+    def _adapter(self, **caps):
+        from wallet_interface.hmis.models import HmisAdapterCapabilities
+        from wallet_interface.hmis.adapters.base import HmisAdapter
+
+        class _StubAdapter(HmisAdapter):
+            def capabilities(self):
+                return HmisAdapterCapabilities(**caps)
+            def execute(self, *, action_type, payload):
+                raise NotImplementedError
+
+        return _StubAdapter()
+
+    def test_lookup_requires_supports_lookup(self):
+        from wallet_interface.hmis.service import _action_supported
+        assert _action_supported(self._adapter(supports_lookup=True), "lookup_client")
+        assert not _action_supported(self._adapter(supports_lookup=False), "lookup_client")
+
+    def test_submit_referral_requires_referral_submit(self):
+        from wallet_interface.hmis.service import _action_supported
+        assert _action_supported(self._adapter(supports_referral_submit=True), "submit_referral")
+        assert not _action_supported(self._adapter(), "submit_referral")
+
+    def test_create_referral_draft_via_manual_review(self):
+        from wallet_interface.hmis.service import _action_supported
+        assert _action_supported(self._adapter(supports_manual_review_packets=True), "create_referral_draft")
+
+    def test_unknown_action_returns_false(self):
+        from wallet_interface.hmis.service import _action_supported
+        assert not _action_supported(self._adapter(supports_lookup=True), "unknown_action")
+
+
+class TestHmisExecutionResult:
+    def test_is_dataclass(self):
+        from wallet_interface.hmis.service import HmisExecutionResult
+        import dataclasses
+        assert dataclasses.is_dataclass(HmisExecutionResult)
+
+    def test_consent_decision_defaults_none(self):
+        from wallet_interface.hmis.service import HmisExecutionResult
+        from wallet_interface.hmis.models import HmisAdapterResult, HmisSyncEvent, HmisSyncStatus, HmisActionType
+
+        result = HmisExecutionResult(
+            adapter_result=HmisAdapterResult(
+                ok=True,
+                action_type="lookup_client",
+                adapter_name="test",
+                status="success",
+                summary="ok",
+            ),
+            sync_event=HmisSyncEvent(
+                event_id="evt-001",
+                action_type="lookup_client",
+                actor_id="actor-001",
+            ),
+        )
+        assert result.consent_decision is None
