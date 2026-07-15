@@ -10,7 +10,8 @@ Import hierarchy (acyclic):
   _ai_routing  →  _app
   _records  →  _ai_routing
   _tts_http  →  _tts_config, _tts_gradio, resolve_secret (optional dep)
-  _tts  →  _tts_normalization, _tts_gradio, _tts_config, _tts_http, (vendor)
+  _tts_client  →  _tts_config, _tts_http, HFSpaceClient (optional dep)
+  _tts  →  _tts_normalization, _tts_gradio, _tts_config, _tts_http, _tts_client, (vendor)
   _storage  →  _app, _auth
 """
 
@@ -153,6 +154,18 @@ try:
         _publish_record_metadata_ipld,
         _send_dead_drop_email,
         _should_publish_record_metadata_ipld,
+    )
+    from ._tts_client import *  # noqa: F401,F403
+    from ._tts_client import (  # noqa: F401
+        _INDEXTTS_CACHE_LOCK,
+        _INDEXTTS_CONFIG_CACHE,
+        _INDEXTTS_FN_INDEX_CACHE,
+        _INDEXTTS_REFERENCE_CACHE,
+        _indextts_batch_fn_index,
+        _indextts_config,
+        _indextts_fn_index,
+        _indextts_queue_join,
+        _indextts_space_client,
     )
     from ._tts import *  # noqa: F401,F403
     from ._tts import (  # noqa: F401

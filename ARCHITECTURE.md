@@ -68,8 +68,9 @@ The wallet backend is organized by bounded context:
 | `helpers/_ai_routing.py` | None for pure helpers; optional `ipfs_datasets_py` for `_require_wallet_router_actor` | LLM router helpers, rate limiting, wallet actor resolution |
 | `helpers/_records.py` | None for pure helpers; optional `ipfs_datasets_py` for `_generate_wallet_organizer_profile` | Document profile classification, privacy vector helpers |
 | `helpers/_storage.py` | None for pure helpers; optional `ipfs_datasets_py` for `_publish_bytes_to_ipfs` | IPFS/Filecoin publish, dead-drop email, encrypted record graph |
-| `helpers/_tts.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IndexTTS Gradio inference orchestration via `HFSpaceClient`; execution pipeline with retry/timeout |
 | `helpers/_tts_http.py` | `ipfs_datasets_py` (resolve_secret) | HTTP credential helpers, `_indextts_headers`, `_http_json`/`_http_bytes`, multipart upload, Whisper STT, voice-reply LLM |
+| `helpers/_tts_client.py` | `ipfs_accelerate_py` (`HFSpaceClient`) | HF Space client singleton with config/fn-index cache: `_indextts_space_client`, `_indextts_config`, `_indextts_fn_index`, `_indextts_batch_fn_index`, `_indextts_queue_join` |
+| `helpers/_tts.py` | `ipfs_datasets_py`, `ipfs_accelerate_py` | IndexTTS Gradio inference orchestration: `_indextts_execute_with_queue_fallback`, `_run_indextts_gradio_tts*`, `_run_indextts_tts_with_batch_fallback`, `_fetch_gradio_file` |
 
 ## Scraper module layout (`scraper/`)
 

@@ -68,3 +68,65 @@ def test_data_processor_instantiable():
     cfg = Config()
     processor = DataProcessor(cfg)
     assert processor is not None
+
+
+# ---------------------------------------------------------------------------
+# DataProcessor static helpers (no deps)
+# ---------------------------------------------------------------------------
+
+
+class TestDataProcessorStableId:
+    def _fn(self):
+        from scraper.parsing.processor import DataProcessor
+        return DataProcessor._stable_id
+
+    def test_returns_16_char_hex_string(self):
+        fn = self._fn()
+        result = fn("Test Service", "Seattle")
+        assert len(result) == 16
+        int(result, 16)  # valid hex
+
+    def test_deterministic(self):
+        fn = self._fn()
+        a = fn("Alpha", "Beta", "Gamma")
+        b = fn("Alpha", "Beta", "Gamma")
+        assert a == b
+
+    def test_order_matters(self):
+        fn = self._fn()
+        assert fn("A", "B") != fn("B", "A")
+
+    def test_empty_parts_skipped(self):
+        fn = self._fn()
+        a = fn("A", "", "B")
+        b = fn("A", "B")
+        assert a == b
+
+    def test_case_insensitive(self):
+        fn = self._fn()
+        assert fn("Seattle") == fn("SEATTLE") == fn("seattle")
+
+
+class TestDataProcessorNormalise:
+    def _normalise(self, rec):
+        from scraper.parsing.processor import DataProcessor
+        dp = DataProcessor.__new__(DataProcessor)
+        return dp._normalise(rec)
+
+    def test_name_preserved(self):
+        result = self._normalise({"name": "Community Center"})
+        assert result["name"] == "Community Center"
+
+    def test_phone_preserved(self):
+        result = self._normalise({"name": "X", "phone": "206-555-0001"})
+        assert result["phone"] == "206-555-0001"
+
+    def test_missing_fields_default_to_empty_string(self):
+        result = self._normalise({"name": "X"})
+        for key in ("description", "email", "website"):
+            assert result.get(key, "") == ""
+
+    def test_id_generated(self):
+        result = self._normalise({"name": "Service X"})
+        assert "id" in result
+        assert len(result["id"]) == 16
