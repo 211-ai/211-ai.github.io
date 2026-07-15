@@ -6,6 +6,7 @@ All functions in this module require ``ipfs_accelerate_py`` (``HFSpaceClient``).
 
 from __future__ import annotations
 
+import mimetypes
 import os
 import threading
 import time
@@ -21,11 +22,6 @@ from ._tts_config import (
     _indextts_space_base_url,
     _indextts_timeout_seconds,
 )
-from ._tts_http import _indextts_headers
-
-
-import mimetypes
-
 from ._tts_gradio import (  # noqa: E402
     _dedupe_gradio_references,
     _default_indextts_reference_wav,
@@ -36,6 +32,7 @@ from ._tts_gradio import (  # noqa: E402
     _gradio_output_values,
     _normalize_indextts_queue_failure,
 )
+from ._tts_http import _indextts_headers  # noqa: E402
 
 _INDEXTTS_CACHE_LOCK = threading.Lock()
 _INDEXTTS_CONFIG_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
