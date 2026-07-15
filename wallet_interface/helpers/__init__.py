@@ -9,7 +9,8 @@ Import hierarchy (acyclic):
   _app  →  (vendor only)
   _ai_routing  →  _app
   _records  →  _ai_routing
-  _tts  →  _tts_normalization, _tts_gradio, _tts_config, (vendor)
+  _tts_http  →  _tts_config, _tts_gradio, resolve_secret (optional dep)
+  _tts  →  _tts_normalization, _tts_gradio, _tts_config, _tts_http, (vendor)
   _storage  →  _app, _auth
 """
 
@@ -151,18 +152,25 @@ try:
     )
     from ._tts import *  # noqa: F401,F403
     from ._tts import (  # noqa: F401
-        _configured_hf_token,
-        _generate_indextts_voice_reply_text,
         _indextts_api_name,
         _indextts_batch_api_name,
         _indextts_degraded_error_payload,
         _indextts_space_base_url,
-        _publicus_indextts_credential_warning,
-        _run_hf_whisper_stt,
         _run_indextts_gradio_batch_tts,
         _run_indextts_tts_with_batch_fallback,
         _run_indextts_with_endpoint_retry,
         _silent_wav_bytes,
+    )
+    from ._tts_http import *  # noqa: F401,F403
+    from ._tts_http import (  # noqa: F401
+        _configured_hf_token,
+        _generate_indextts_voice_reply_text,
+        _gradio_upload_file,
+        _http_bytes,
+        _http_json,
+        _indextts_headers,
+        _publicus_indextts_credential_warning,
+        _run_hf_whisper_stt,
         _voice_proxy_runtime_warnings,
     )
 except ImportError:
