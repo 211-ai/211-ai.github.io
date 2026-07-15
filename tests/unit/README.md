@@ -12,7 +12,7 @@ Pure unit tests that run without network access, databases, or external services
 | `scraper/enrichment/` | `test_scraper_enrichment.py` | ✅ (skip on missing deps) | 4 |
 | `scraper/export/` | `test_scraper_export.py` | ✅ (skip on missing deps) | 4 |
 | `scraper/orchestration/` | `test_scraper_orchestration.py` | ✅ (skip on missing deps) | 2 |
-| `scraper/utils.py` | `test_scraper_utils.py` | ✅ | 17 |
+| `scraper/utils.py` | `test_scraper_utils.py` | ✅ | 26 |
 | `scraper/parsing/processor.py` | `test_scraper_parsing.py` | ✅ | 16 |
 | `wallet_interface/helpers/_ai_routing.py` | `test_wallet_ai_routing_helpers.py` | ✅ | 15 |
 | `wallet_interface/helpers/_auth.py` | `test_wallet_auth_helpers.py` | ✅ | 20 |

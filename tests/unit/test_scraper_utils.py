@@ -134,3 +134,75 @@ def test_same_domain_different_domain_rejected():
     from scraper.utils import same_domain  # noqa: PLC0415
 
     assert same_domain("https://example.com/page", "https://www.211info.org") is False
+
+
+# ---------------------------------------------------------------------------
+# setup_logging
+# ---------------------------------------------------------------------------
+
+
+class TestSetupLogging:
+    def test_returns_logger(self):
+        from scraper.utils import setup_logging
+        import logging
+        logger = setup_logging()
+        assert isinstance(logger, logging.Logger)
+
+    def test_logger_name_is_scraper(self):
+        from scraper.utils import setup_logging
+        logger = setup_logging()
+        assert logger.name == "scraper"
+
+    def test_idempotent_second_call(self):
+        from scraper.utils import setup_logging
+        logger1 = setup_logging()
+        logger2 = setup_logging()
+        assert logger1 is logger2
+
+
+# ---------------------------------------------------------------------------
+# with_retry decorator
+# ---------------------------------------------------------------------------
+
+
+class TestWithRetry:
+    def test_returns_callable(self):
+        from scraper.utils import with_retry
+        decorator = with_retry(max_attempts=2, base_wait=0.0)
+        assert callable(decorator)
+
+    def test_wraps_function(self):
+        from scraper.utils import with_retry
+
+        @with_retry(max_attempts=1, base_wait=0.0)
+        def my_func():
+            return 42
+
+        assert my_func() == 42
+
+    def test_retries_on_exception(self):
+        from scraper.utils import with_retry
+
+        attempts = []
+
+        @with_retry(max_attempts=3, base_wait=0.0)
+        def sometimes_fails():
+            attempts.append(1)
+            if len(attempts) < 3:
+                raise ValueError("not ready yet")
+            return "done"
+
+        result = sometimes_fails()
+        assert result == "done"
+        assert len(attempts) == 3
+
+    def test_raises_after_max_attempts(self):
+        import pytest
+        from scraper.utils import with_retry
+
+        @with_retry(max_attempts=2, base_wait=0.0)
+        def always_fails():
+            raise RuntimeError("always fails")
+
+        with pytest.raises(RuntimeError, match="always fails"):
+            always_fails()
