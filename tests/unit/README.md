@@ -15,6 +15,8 @@ Pure unit tests that run without network access, databases, or external services
 | `scraper/utils.py` | `test_scraper_utils.py` | ✅ | 17 |
 | `wallet_interface/helpers/_ai_routing.py` | `test_wallet_ai_routing_helpers.py` | ✅ | 15 |
 | `wallet_interface/helpers/_auth.py` | `test_wallet_auth_helpers.py` | ✅ | 20 |
+| `wallet_interface/helpers/_auth.py` (crypto) | `test_wallet_auth_crypto.py` | ✅ | 33 |
+| `wallet_interface/helpers/_app.py` | `test_wallet_app_helpers.py` | ✅ | 17 |
 | `wallet_interface/helpers/` | `test_wallet_helpers.py` | ✅ (CID helpers skip on missing deps) | 14 |
 | `wallet_interface/helpers/_records.py` | `test_wallet_records_helpers.py` | ✅ | 75 |
 | `wallet_interface/helpers/_storage.py` | `test_wallet_storage_helpers.py` | ✅ | 36 |
