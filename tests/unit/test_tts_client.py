@@ -164,7 +164,7 @@ class TestIndexttssFnIndex(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestIndeX_ttsBatchFnIndex(unittest.TestCase):
+class TestIndexttsBatchFnIndex(unittest.TestCase):
     def tearDown(self):
         _reset_client_globals()
         os.environ.pop("WALLET_INDEXTTS_BATCH_FN_INDEX", None)
@@ -319,7 +319,7 @@ class TestIndexttsWaitForResult(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestIndeXttsBatchAudioReferences(unittest.TestCase):
+class TestIndexttsBatchAudioReferences(unittest.TestCase):
     def test_extracts_from_second_output_slot(self):
         result = {
             "data": [
