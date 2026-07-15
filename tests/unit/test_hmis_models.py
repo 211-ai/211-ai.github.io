@@ -29,8 +29,8 @@ def _import_errors():
         HmisConfigError,
         HmisConsentError,
         HmisIntegrationError,
-        HmisMatchError,
         HmisMappingError,
+        HmisMatchError,
         HmisPolicyError,
     )
     return (
@@ -355,8 +355,8 @@ class TestPayloadHash:
 
 class TestActionSupported:
     def _adapter(self, **caps):
-        from wallet_interface.hmis.models import HmisAdapterCapabilities
         from wallet_interface.hmis.adapters.base import HmisAdapter
+        from wallet_interface.hmis.models import HmisAdapterCapabilities
 
         class _StubAdapter(HmisAdapter):
             def capabilities(self):
@@ -387,13 +387,14 @@ class TestActionSupported:
 
 class TestHmisExecutionResult:
     def test_is_dataclass(self):
-        from wallet_interface.hmis.service import HmisExecutionResult
         import dataclasses
+
+        from wallet_interface.hmis.service import HmisExecutionResult
         assert dataclasses.is_dataclass(HmisExecutionResult)
 
     def test_consent_decision_defaults_none(self):
+        from wallet_interface.hmis.models import HmisActionType, HmisAdapterResult, HmisSyncEvent, HmisSyncStatus
         from wallet_interface.hmis.service import HmisExecutionResult
-        from wallet_interface.hmis.models import HmisAdapterResult, HmisSyncEvent, HmisSyncStatus, HmisActionType
 
         result = HmisExecutionResult(
             adapter_result=HmisAdapterResult(

@@ -1,6 +1,7 @@
 """Unit tests for wallet_interface portal schemas (app, wallet, record)."""
 
 import dataclasses
+
 import pytest
 
 
@@ -142,8 +143,8 @@ class TestRecordSchemas:
 class TestExportSchemas:
     def test_export_schemas_importable(self):
         from wallet_interface.schemas.export_schemas import (
-            ExportGrantRequest,
             ExportBundleRequest,
+            ExportGrantRequest,
         )
         assert ExportGrantRequest is not None
         assert ExportBundleRequest is not None

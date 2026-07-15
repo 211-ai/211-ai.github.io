@@ -11,7 +11,8 @@ Import hierarchy (acyclic):
   _records  →  _ai_routing
   _tts_http  →  _tts_config, _tts_gradio, resolve_secret (optional dep)
   _tts_client  →  _tts_config, _tts_http, HFSpaceClient (optional dep)
-  _tts  →  _tts_normalization, _tts_gradio, _tts_config, _tts_http, _tts_client, (vendor)
+  _tts_pipeline  →  _tts_client, _tts_config, _tts_gradio, _tts_normalization (optional dep)
+  _tts  →  _tts_pipeline, _tts_normalization, _tts_gradio, _tts_config, _tts_http, _tts_client, (vendor)
   _storage  →  _app, _auth
 """
 
@@ -191,6 +192,12 @@ try:
         _publicus_indextts_credential_warning,
         _run_hf_whisper_stt,
         _voice_proxy_runtime_warnings,
+    )
+    from ._tts_pipeline import *  # noqa: F401,F403
+    from ._tts_pipeline import (  # noqa: F401
+        _indextts_execute_with_queue_fallback,
+        _run_indextts_gradio_batch_tts_for_space,
+        _run_indextts_gradio_tts_for_space,
     )
 except ImportError:
     pass

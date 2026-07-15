@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 import pytest
 
@@ -13,7 +13,7 @@ def _import_mapper():
 
 
 def _import_consent():
-    from wallet_interface.hmis.consent import HmisConsentDecision, evaluate_hmis_consent, _parse_utc
+    from wallet_interface.hmis.consent import HmisConsentDecision, _parse_utc, evaluate_hmis_consent
     from wallet_interface.hmis.models import HmisConsentRecord
     return HmisConsentDecision, evaluate_hmis_consent, _parse_utc, HmisConsentRecord
 
@@ -212,7 +212,7 @@ class TestEvaluateHmisConsent:
     def test_expired_consent_raises(self):
         fn = self._fn()
         from wallet_interface.hmis.errors import HmisConsentError
-        now = datetime(2024, 1, 15, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 15, tzinfo=UTC)
         consent = _make_consent(expires_at="2024-01-10T00:00:00Z")
         with pytest.raises(HmisConsentError, match="expired"):
             fn(consent, required_scope="referral", now=now)
@@ -220,7 +220,7 @@ class TestEvaluateHmisConsent:
     def test_not_yet_effective_raises(self):
         fn = self._fn()
         from wallet_interface.hmis.errors import HmisConsentError
-        now = datetime(2024, 1, 5, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 5, tzinfo=UTC)
         consent = _make_consent(effective_at="2024-01-10T00:00:00Z")
         with pytest.raises(HmisConsentError, match="not effective"):
             fn(consent, required_scope="referral", now=now)
@@ -228,7 +228,7 @@ class TestEvaluateHmisConsent:
     def test_revoked_consent_raises(self):
         fn = self._fn()
         from wallet_interface.hmis.errors import HmisConsentError
-        now = datetime(2024, 1, 15, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 15, tzinfo=UTC)
         consent = _make_consent(revoked_at="2024-01-12T00:00:00Z")
         with pytest.raises(HmisConsentError, match="revoked"):
             fn(consent, required_scope="referral", now=now)

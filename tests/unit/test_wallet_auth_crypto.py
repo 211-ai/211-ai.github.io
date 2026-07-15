@@ -266,7 +266,6 @@ class TestAllowedMagicLoginHosts:
         assert hosts.issuperset({"myapp.com"})
 
     def test_returns_set(self):
-        fn = self._fn()
         result = self._fn()()
         assert isinstance(result, set)
 

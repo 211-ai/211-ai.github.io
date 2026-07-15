@@ -475,8 +475,10 @@ class TestRunIndexttsWithEndpointTimeout:
             fn("test-op", lambda: (_ for _ in ()).throw(RuntimeError("inner error")))
 
     def test_timeout_raises_timeout_error(self):
-        import pytest, time
+        import time
         from unittest.mock import patch
+
+        import pytest
         fn = self._fn()
         m = _import()
         with pytest.raises(TimeoutError, match="exceeded endpoint timeout"):
@@ -531,15 +533,14 @@ class TestRunIndexttsWithEndpointRetry:
 
 def patch_env(key: str, value: str):
     from unittest.mock import patch
-    import os
     return patch.dict(os.environ, {key: value})
 
 
 class TestIndexttsSpaceFallbackUrl:
     def test_default_fallback_url(self):
-        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
-        import os
         from unittest.mock import patch
+
+        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
         with patch.dict(os.environ, {}, clear=False):
             env_backup = os.environ.pop("WALLET_INDEXTTS_FALLBACK_SPACE_URL", None)
             try:
@@ -551,9 +552,9 @@ class TestIndexttsSpaceFallbackUrl:
         assert not result.endswith("/")
 
     def test_custom_fallback_url(self):
-        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
-        import os
         from unittest.mock import patch
+
+        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
         with patch.dict(os.environ, {"WALLET_INDEXTTS_FALLBACK_SPACE_URL": "https://custom.hf.space/"}):
             result = _indextts_fallback_space_base_url()
         assert result == "https://custom.hf.space"

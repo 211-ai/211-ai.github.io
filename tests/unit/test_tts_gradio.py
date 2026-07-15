@@ -12,6 +12,7 @@ import pytest
 
 from wallet_interface.helpers._tts_gradio import (
     _dedupe_gradio_references,
+    _default_indextts_reference_wav,
     _extract_audio_files_from_zip,
     _extract_hf_whisper_text,
     _find_gradio_audio_reference,
@@ -386,8 +387,6 @@ class TestExtractHfWhisperText:
 
     def test_none_returns_empty(self):
         assert _extract_hf_whisper_text(None) == ""  # type: ignore[arg-type]
-from wallet_interface.helpers._tts_gradio import _default_indextts_reference_wav
-
 
 # ---------------------------------------------------------------------------
 # _default_indextts_reference_wav

@@ -229,7 +229,7 @@ class TestServiceMatch:
 
 class TestScoreService:
     def _score(self, name="", description="", categories="", zip_code="", terms=None, location=None):
-        from wallet_interface.service_matching import _score_service, ServiceRecord
+        from wallet_interface.service_matching import ServiceRecord, _score_service
         service = ServiceRecord(
             id="test-001",
             name=name,
@@ -293,6 +293,7 @@ class TestRejectPreciseLocation:
 
     def test_rejects_precise_coordinates(self):
         import pytest
+
         from wallet_interface.service_matching import _reject_precise_location
         with pytest.raises(ValueError, match="coarse or derived"):
             _reject_precise_location({
@@ -302,6 +303,7 @@ class TestRejectPreciseLocation:
 
     def test_rejects_precise_coordinates_without_precision_key(self):
         import pytest
+
         from wallet_interface.service_matching import _reject_precise_location
         with pytest.raises(ValueError, match="coarse or derived"):
             _reject_precise_location({

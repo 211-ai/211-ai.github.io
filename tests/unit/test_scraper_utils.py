@@ -143,8 +143,9 @@ def test_same_domain_different_domain_rejected():
 
 class TestSetupLogging:
     def test_returns_logger(self):
-        from scraper.utils import setup_logging
         import logging
+
+        from scraper.utils import setup_logging
         logger = setup_logging()
         assert isinstance(logger, logging.Logger)
 
@@ -197,7 +198,6 @@ class TestWithRetry:
         assert len(attempts) == 3
 
     def test_raises_after_max_attempts(self):
-        import pytest
         from scraper.utils import with_retry
 
         @with_retry(max_attempts=2, base_wait=0.0)
