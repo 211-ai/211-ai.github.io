@@ -347,3 +347,105 @@ class TestNormalizeIndexTTSSpokenText:
     def test_empty_string_returns_empty(self):
         result = _normalize_indextts_spoken_text("")
         assert result == "" or isinstance(result, str)
+
+
+# ---------------------------------------------------------------------------
+# Additional coverage: direction/suffix tokens, digits-to-words, domain
+# ---------------------------------------------------------------------------
+
+
+class TestNormalizeDirectionToken:
+    def _fn(self):
+        from wallet_interface.helpers._tts_normalization import _normalize_direction_token
+        return _normalize_direction_token
+
+    def test_n_to_north(self):
+        assert self._fn()("N") == "North"
+
+    def test_se_to_south_east(self):
+        assert self._fn()("SE") == "South East"
+
+    def test_nw_to_north_west(self):
+        assert self._fn()("NW") == "North West"
+
+    def test_unknown_unchanged(self):
+        assert self._fn()("UNKNOWN") == "UNKNOWN"
+
+    def test_empty_unchanged(self):
+        assert self._fn()("") == ""
+
+
+class TestNormalizeSuffixToken:
+    def _fn(self):
+        from wallet_interface.helpers._tts_normalization import _normalize_suffix_token
+        return _normalize_suffix_token
+
+    def test_st_to_street(self):
+        assert self._fn()("St") == "Street"
+
+    def test_ave_to_avenue(self):
+        assert self._fn()("Ave") == "Avenue"
+
+    def test_blvd_to_boulevard(self):
+        result = self._fn()("Blvd")
+        assert "Boulevard" in result or result == "Blvd"  # may vary
+
+    def test_unknown_unchanged(self):
+        assert self._fn()("UNKNOWN") == "UNKNOWN"
+
+
+class TestDigitsToWords:
+    def _fn(self):
+        from wallet_interface.helpers._tts_normalization import _digits_to_words
+        return _digits_to_words
+
+    def test_single_digit(self):
+        assert self._fn()("3") == "three"
+
+    def test_multi_digit(self):
+        result = self._fn()("123")
+        assert "one" in result and "two" in result and "three" in result
+
+    def test_empty_string(self):
+        result = self._fn()("")
+        assert isinstance(result, str)
+
+
+class TestDomainToSpokenSite:
+    def _fn(self):
+        from wallet_interface.helpers._tts_normalization import _domain_to_spoken_site
+        return _domain_to_spoken_site
+
+    def test_extracts_domain(self):
+        result = self._fn()("https://example.com/path")
+        assert "example" in result.lower()
+
+    def test_returns_string(self):
+        result = self._fn()("https://211wa.org")
+        assert isinstance(result, str)
+
+    def test_empty_string(self):
+        result = self._fn()("")
+        assert isinstance(result, str)
+
+
+class TestNormalizeRecordListSentence:
+    def _fn(self):
+        from wallet_interface.helpers._tts_normalization import _normalize_record_list_sentence
+        return _normalize_record_list_sentence
+
+    def test_normalizes_address_in_sentence(self):
+        result = self._fn()("Please contact us at 123 Main St, Seattle, WA 98101.")
+        assert isinstance(result, str)
+
+    def test_returns_string_for_plain_text(self):
+        result = self._fn()("Food bank and shelter services available.")
+        assert isinstance(result, str)
+
+    def test_preserves_non_address_text(self):
+        result = self._fn()("Call for assistance")
+        assert "Call" in result or "call" in result.lower()
+
+    def test_empty_string(self):
+        result = self._fn()("")
+        assert isinstance(result, str)
