@@ -46,7 +46,7 @@ The wallet backend is organized by bounded context:
 | `routes/` | Feature-grouped route modules (wallets, records, proofs, exports, etc.) |
 | `services/` | Domain service classes extracted from the application service |
 | `schemas/` | Pydantic request/response models grouped by domain |
-| `helpers/` | Internal helpers package with 8 domain submodules (see table below) |
+| `helpers/` | Internal helpers package with 11 domain submodules (see table below) |
 | `app_service.py` | `WalletInterfaceService` orchestrator |
 | `proof_backends.py` | Proof backend implementations |
 | `service_matching.py` | Service match logic |
@@ -67,7 +67,8 @@ The wallet backend is organized by bounded context:
 | `helpers/_app.py` | None for pure helpers; optional `ipfs_datasets_py` for `_prepare_hf_router_environment`/`_wallet_interface_service_from_env` | IPFS CID utilities, service factory, shared constants |
 | `helpers/_ai_routing.py` | None for pure helpers; optional `ipfs_datasets_py` for `_require_wallet_router_actor` | LLM router helpers, rate limiting, wallet actor resolution |
 | `helpers/_records.py` | None for pure helpers; optional `ipfs_datasets_py` for `_generate_wallet_organizer_profile` | Document profile classification, privacy vector helpers |
-| `helpers/_storage.py` | None for pure helpers; optional `ipfs_datasets_py` for `_publish_bytes_to_ipfs` | IPFS/Filecoin publish, dead-drop email, encrypted record graph |
+| `helpers/_storage_filecoin.py` | None (stdlib only) | Filecoin pin sidecar: `_filecoin_pin_request`, `_mock_filecoin_pin_request`, `_submit_ipfs_cid_to_filecoin_pin`, `_fetch_filecoin_pin_status`, request headers, status URLs |
+| `helpers/_storage.py` | None for pure helpers; optional `ipfs_datasets_py` for `_publish_bytes_to_ipfs` | IPFS publish, encryption-key helpers, dead-drop email, encrypted record graph; re-exports from `_storage_filecoin` |
 | `helpers/_tts_http.py` | `ipfs_datasets_py` (resolve_secret) | HTTP credential helpers, `_indextts_headers`, `_http_json`/`_http_bytes`, multipart upload, Whisper STT, voice-reply LLM |
 | `helpers/_tts_client.py` | `ipfs_accelerate_py` (`HFSpaceClient`) | HF Space client singleton with config/fn-index cache: `_indextts_space_client`, `_indextts_config`, `_indextts_fn_index`, `_indextts_queue_join`; file upload/wait/download: `_indextts_upload_reference_audio`, `_indextts_wait_for_result`, `_indextts_batch_audio_references`, `_fetch_gradio_file` |
 | `helpers/_tts_pipeline.py` | `ipfs_accelerate_py` (via `_tts_client`) | Per-space TTS pipeline: `_indextts_execute_with_queue_fallback` (queue→retry→api_name→direct predict), `_run_indextts_gradio_tts_for_space`, `_run_indextts_gradio_batch_tts_for_space` |

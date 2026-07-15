@@ -13,7 +13,8 @@ Import hierarchy (acyclic):
   _tts_client  →  _tts_config, _tts_http, HFSpaceClient (optional dep)
   _tts_pipeline  →  _tts_client, _tts_config, _tts_gradio, _tts_normalization (optional dep)
   _tts  →  _tts_pipeline, _tts_normalization, _tts_gradio, _tts_config, _tts_http, _tts_client, (vendor)
-  _storage  →  _app, _auth
+  _storage_filecoin  →  _app (stdlib only after guards)
+  _storage  →  _storage_filecoin, _app, _auth
 """
 
 from __future__ import annotations

@@ -236,5 +236,247 @@ class TestPublishBytesViaIpfsBackendMock(unittest.TestCase):
                 self._fn(b"data")
 
 
+class TestJsonSafeMetadata(unittest.TestCase):
+    """Tests _json_safe_metadata pure sanitization."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage import _json_safe_metadata
+
+        self._fn = _json_safe_metadata
+
+    def test_passthrough_string(self):
+        self.assertEqual(self._fn("hello"), "hello")
+
+    def test_passthrough_int(self):
+        self.assertEqual(self._fn(42), 42)
+
+    def test_passthrough_float(self):
+        self.assertAlmostEqual(self._fn(3.14), 3.14)
+
+    def test_passthrough_bool(self):
+        self.assertIs(self._fn(True), True)
+
+    def test_passthrough_none(self):
+        self.assertIsNone(self._fn(None))
+
+    def test_dict_removes_none_values(self):
+        result = self._fn({"a": "x", "b": None, "c": 1})
+        self.assertEqual(result, {"a": "x", "c": 1})
+
+    def test_list_removes_none_items(self):
+        result = self._fn(["a", None, "b"])
+        self.assertEqual(result, ["a", "b"])
+
+    def test_nested_dict(self):
+        result = self._fn({"outer": {"inner": None, "keep": "v"}})
+        self.assertEqual(result, {"outer": {"keep": "v"}})
+
+    def test_non_primitive_coerced_to_str(self):
+        class Obj:
+            def __str__(self):
+                return "obj-str"
+
+        result = self._fn(Obj())
+        self.assertEqual(result, "obj-str")
+
+    def test_empty_dict(self):
+        self.assertEqual(self._fn({}), {})
+
+    def test_empty_list(self):
+        self.assertEqual(self._fn([]), [])
+
+
+class TestGeneratedWalletMetadata(unittest.TestCase):
+    """Tests _generated_wallet_metadata key allowlist and sanitization."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage import _generated_wallet_metadata
+
+        self._fn = _generated_wallet_metadata
+
+    def test_allowed_key_passes_through(self):
+        result = self._fn({"privacyProfileStatus": "approved", "unwanted": "nope"})
+        self.assertIn("privacyProfileStatus", result)
+        self.assertNotIn("unwanted", result)
+
+    def test_all_allowed_keys(self):
+        allowed = {
+            "decryptedClassification",
+            "decryptedLabels",
+            "decryptedMimeType",
+            "fileName",
+            "privacyProfileArtifactIds",
+            "privacyProfileClassification",
+            "privacyProfileLabels",
+            "privacyProfileMimeType",
+            "privacyProfileProofId",
+            "privacyProfilePublicInputs",
+            "privacyProfileSearchText",
+            "privacyProfileStatus",
+            "privacyProfileSummary",
+            "privacyProfileVectorTerms",
+        }
+        data = {key: f"v-{key}" for key in allowed}
+        data["shouldBeStripped"] = "yes"
+        result = self._fn(data)
+        self.assertEqual(set(result.keys()), allowed)
+
+    def test_empty_metadata(self):
+        self.assertEqual(self._fn({}), {})
+
+    def test_none_values_stripped(self):
+        result = self._fn({"privacyProfileStatus": None, "fileName": "f.pdf"})
+        self.assertNotIn("privacyProfileStatus", result)
+        self.assertIn("fileName", result)
+
+    def test_output_is_sorted(self):
+        result = self._fn({"privacyProfileSummary": "s", "fileName": "f"})
+        self.assertEqual(list(result.keys()), sorted(result.keys()))
+
+
+class TestRecordMetadataCid(unittest.TestCase):
+    """Tests _record_metadata_cid CID extraction paths."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage import _record_metadata_cid
+
+        self._fn = _record_metadata_cid
+
+    def test_returns_metadataCid_from_top_level(self):
+        record = {"metadata": {"metadataCid": "bafy123"}}
+        self.assertEqual(self._fn(record), "bafy123")
+
+    def test_returns_metadataIpldCid_when_metadataCid_absent(self):
+        record = {"metadata": {"metadataIpldCid": "bafy456"}}
+        self.assertEqual(self._fn(record), "bafy456")
+
+    def test_prefers_metadataCid_over_ipldCid(self):
+        record = {"metadata": {"metadataCid": "bafy123", "metadataIpldCid": "bafy456"}}
+        self.assertEqual(self._fn(record), "bafy123")
+
+    def test_falls_through_to_nested_record(self):
+        record = {"record": {"metadata": {"metadataCid": "bafy789"}}}
+        self.assertEqual(self._fn(record), "bafy789")
+
+    def test_returns_empty_when_no_cid(self):
+        self.assertEqual(self._fn({}), "")
+        self.assertEqual(self._fn({"metadata": {}}), "")
+
+    def test_ignores_empty_cid_string(self):
+        record = {"metadata": {"metadataCid": "  "}}
+        self.assertEqual(self._fn(record), "")
+
+
+class TestShouldPublishRecordMetadataIpld(unittest.TestCase):
+    """Tests _should_publish_record_metadata_ipld key-presence check."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage import _should_publish_record_metadata_ipld
+
+        self._fn = _should_publish_record_metadata_ipld
+
+    def test_true_when_privacy_key_present(self):
+        self.assertTrue(self._fn({"privacyProfileStatus": "approved"}))
+
+    def test_true_when_decrypted_key_present(self):
+        self.assertTrue(self._fn({"decryptedClassification": "public"}))
+
+    def test_false_when_no_generated_keys(self):
+        self.assertFalse(self._fn({"fileName": "doc.pdf", "size": 1234}))
+
+    def test_false_for_empty_metadata(self):
+        self.assertFalse(self._fn({}))
+
+    def test_all_generated_keys_trigger_true(self):
+        generated_keys = [
+            "decryptedClassification",
+            "decryptedLabels",
+            "decryptedMimeType",
+            "privacyProfileArtifactIds",
+            "privacyProfileClassification",
+            "privacyProfileLabels",
+            "privacyProfileMimeType",
+            "privacyProfileProofId",
+            "privacyProfilePublicInputs",
+            "privacyProfileSearchText",
+            "privacyProfileStatus",
+            "privacyProfileSummary",
+            "privacyProfileVectorTerms",
+        ]
+        for key in generated_keys:
+            self.assertTrue(self._fn({key: "val"}), f"Expected True for key {key!r}")
+
+
+class TestFilecoinPinRequestHeaders(unittest.TestCase):
+    """Tests _filecoin_pin_request_headers env-driven header construction."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage_filecoin import _filecoin_pin_request_headers
+
+        self._fn = _filecoin_pin_request_headers
+        # Clear relevant env vars before each test
+        for key in (
+            "WALLET_FILECOIN_PIN_BEARER_TOKEN",
+            "WALLET_FILECOIN_PIN_HTTP_HEADER_NAME",
+            "WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE",
+        ):
+            os.environ.pop(key, None)
+
+    def tearDown(self):
+        for key in (
+            "WALLET_FILECOIN_PIN_BEARER_TOKEN",
+            "WALLET_FILECOIN_PIN_HTTP_HEADER_NAME",
+            "WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE",
+        ):
+            os.environ.pop(key, None)
+
+    def test_no_headers_when_no_env(self):
+        result = self._fn(include_json_content_type=False)
+        self.assertEqual(result, {})
+
+    def test_content_type_when_flag_true(self):
+        result = self._fn(include_json_content_type=True)
+        self.assertEqual(result["content-type"], "application/json")
+
+    def test_bearer_token_added(self):
+        os.environ["WALLET_FILECOIN_PIN_BEARER_TOKEN"] = "mytoken"
+        result = self._fn(include_json_content_type=False)
+        self.assertIn("authorization", result)
+        self.assertIn("mytoken", result["authorization"])
+
+    def test_custom_header_added(self):
+        os.environ["WALLET_FILECOIN_PIN_HTTP_HEADER_NAME"] = "x-api-key"
+        os.environ["WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE"] = "secret"
+        result = self._fn(include_json_content_type=False)
+        self.assertEqual(result["x-api-key"], "secret")
+
+    def test_raises_when_header_name_set_but_value_missing(self):
+        from wallet_interface.helpers._app import FilecoinPinHandoffError
+
+        os.environ["WALLET_FILECOIN_PIN_HTTP_HEADER_NAME"] = "x-api-key"
+        with self.assertRaises(FilecoinPinHandoffError):
+            self._fn(include_json_content_type=False)
+
+
+class TestFilecoinPinStatusUrl(unittest.TestCase):
+    """Tests _filecoin_pin_status_url URL construction."""
+
+    def setUp(self):
+        from wallet_interface.helpers._storage_filecoin import _filecoin_pin_status_url
+
+        self._fn = _filecoin_pin_status_url
+
+    def tearDown(self):
+        os.environ.pop("WALLET_FILECOIN_PIN_SERVICE_URL", None)
+
+    def test_returns_empty_when_no_service_url(self):
+        os.environ.pop("WALLET_FILECOIN_PIN_SERVICE_URL", None)
+        self.assertEqual(self._fn("req-1"), "")
+
+    def test_returns_full_url_when_configured(self):
+        os.environ["WALLET_FILECOIN_PIN_SERVICE_URL"] = "https://pin.example.com"
+        self.assertEqual(self._fn("req-abc"), "https://pin.example.com/pins/req-abc")
+
+
 if __name__ == "__main__":
     unittest.main()
