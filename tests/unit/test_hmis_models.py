@@ -260,3 +260,69 @@ class TestHmisSyncEvent:
         cls = self._cls()
         event = cls(event_id="evt1", action_type="lookup_client", actor_id="actor1", status="success")
         assert event.status == "success"
+
+
+# ---------------------------------------------------------------------------
+# HmisAdapterCapabilities
+# ---------------------------------------------------------------------------
+
+
+class TestHmisAdapterCapabilities:
+    def _cls(self):
+        from wallet_interface.hmis.models import HmisAdapterCapabilities
+        return HmisAdapterCapabilities
+
+    def test_all_defaults_false(self):
+        cls = self._cls()
+        caps = cls()
+        assert caps.supports_lookup is False
+        assert caps.supports_referral_submit is False
+        assert caps.supports_enrollment_submit is False
+        assert caps.supports_status_sync is False
+        assert caps.supports_reconciliation is False
+        assert caps.supports_manual_review_packets is False
+
+    def test_custom_capabilities(self):
+        cls = self._cls()
+        caps = cls(supports_lookup=True, supports_referral_submit=True)
+        assert caps.supports_lookup is True
+        assert caps.supports_referral_submit is True
+        assert caps.supports_enrollment_submit is False
+
+
+# ---------------------------------------------------------------------------
+# ManualReviewHmisAdapter (pure functions)
+# ---------------------------------------------------------------------------
+
+
+class TestManualReviewAdapter:
+    def _import(self):
+        from wallet_interface.hmis.adapters.manual_review import (
+            ManualReviewHmisAdapter,
+            _normalized_text,
+        )
+        return ManualReviewHmisAdapter, _normalized_text
+
+    def test_normalized_text_lowercases(self):
+        _, fn = self._import()
+        assert fn("HELLO") == "hello"
+
+    def test_normalized_text_strips_whitespace(self):
+        _, fn = self._import()
+        assert fn("  hello  ") == "hello"
+
+    def test_normalized_text_collapses_spaces(self):
+        _, fn = self._import()
+        assert fn("hello  world") == "hello  world"
+
+    def test_adapter_capabilities(self):
+        cls, _ = self._import()
+        adapter = cls()
+        caps = adapter.capabilities()
+        assert caps.supports_manual_review_packets is True
+
+    def test_adapter_capabilities_no_referral_submit_by_default(self):
+        cls, _ = self._import()
+        adapter = cls()
+        caps = adapter.capabilities()
+        assert caps.supports_referral_submit is False
