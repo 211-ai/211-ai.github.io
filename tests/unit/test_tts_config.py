@@ -533,3 +533,27 @@ def patch_env(key: str, value: str):
     from unittest.mock import patch
     import os
     return patch.dict(os.environ, {key: value})
+
+
+class TestIndexttsSpaceFallbackUrl:
+    def test_default_fallback_url(self):
+        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
+        import os
+        from unittest.mock import patch
+        with patch.dict(os.environ, {}, clear=False):
+            env_backup = os.environ.pop("WALLET_INDEXTTS_FALLBACK_SPACE_URL", None)
+            try:
+                result = _indextts_fallback_space_base_url()
+            finally:
+                if env_backup is not None:
+                    os.environ["WALLET_INDEXTTS_FALLBACK_SPACE_URL"] = env_backup
+        assert "hf.space" in result
+        assert not result.endswith("/")
+
+    def test_custom_fallback_url(self):
+        from wallet_interface.helpers._tts_config import _indextts_fallback_space_base_url
+        import os
+        from unittest.mock import patch
+        with patch.dict(os.environ, {"WALLET_INDEXTTS_FALLBACK_SPACE_URL": "https://custom.hf.space/"}):
+            result = _indextts_fallback_space_base_url()
+        assert result == "https://custom.hf.space"

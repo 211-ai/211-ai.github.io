@@ -413,7 +413,8 @@ class TestDefaultIndexttsReferenceWav:
             assert wav.getframerate() == 24_000
 
     def test_duration_is_approximately_1_5_seconds(self):
-        import io, wave
+        import io
+        import wave
         result = _default_indextts_reference_wav()
         with wave.open(io.BytesIO(result), "rb") as wav:
             frames = wav.getnframes()

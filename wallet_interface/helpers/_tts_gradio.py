@@ -318,14 +318,15 @@ def _extract_hf_whisper_text(payload: Any) -> str:
 # Reference audio generation
 # ---------------------------------------------------------------------------
 
+# 100 ms (0.1 s × 24000 samples/s) fade-in / fade-out to avoid click artifacts
+_ENVELOPE_FADE_SAMPLES: int = int(0.1 * 24_000)
+
 
 def _default_indextts_reference_wav() -> bytes:
     """Generate a 1.5-second 220 Hz sine wave WAV at 24 kHz as default reference audio."""
     sample_rate = 24_000
     duration_seconds = 1.5
     frames = int(sample_rate * duration_seconds)
-    # 100 ms (0.1 s × 24000 samples/s) fade-in / fade-out to avoid click artifacts
-    _ENVELOPE_FADE_SAMPLES = int(0.1 * sample_rate)
     buffer = io.BytesIO()
     with wave.open(buffer, "wb") as wav:
         wav.setnchannels(1)
