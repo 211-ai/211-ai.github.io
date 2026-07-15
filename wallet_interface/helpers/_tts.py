@@ -6,7 +6,7 @@ from __future__ import annotations
 import base64
 import io
 import json
-import mimetypes
+
 import os
 import re
 import threading
@@ -16,20 +16,12 @@ from typing import Any
 
 from .._vendor import ensure_ipfs_datasets_py_path
 from ._tts_gradio import (  # noqa: E402
-    _dedupe_gradio_references,
-    _extract_audio_files_from_zip,
     _extract_hf_whisper_text,
     _find_gradio_audio_reference,
-    _find_gradio_audio_references,
-    _find_gradio_file_reference,
-    _first_upload_path,
     _gradio_file_key,
-    _gradio_output_values,
     _gradio_update_value,
     _indextts_batch_request_data,
     _indextts_request_data,
-    _default_indextts_reference_wav,
-    _normalize_indextts_queue_failure,
 )
 
 ensure_ipfs_datasets_py_path()
@@ -123,15 +115,18 @@ from ._tts_client import (  # noqa: E402
     _INDEXTTS_CACHE_LOCK,
     _INDEXTTS_CONFIG_CACHE,
     _INDEXTTS_FN_INDEX_CACHE,
-    _INDEXTTS_REFERENCE_CACHE,
-    _INDEXTTS_SPACE_CLIENT,
-    _INDEXTTS_SPACE_CLIENT_KEY,
+    _fetch_gradio_file,
+    _indextts_batch_audio_references,
     _indextts_batch_fn_index,
     _indextts_config,
     _indextts_fn_index,
     _indextts_queue_join,
     _indextts_space_client,
+    _indextts_upload_reference_audio,
+    _indextts_wait_for_result,
 )
+
+
 def _indextts_execute_with_queue_fallback(
     *,
     fn_index: int,
@@ -492,96 +487,5 @@ def _run_indextts_tts_with_batch_fallback(
             raise ValueError("IndexTTS batch fallback did not return audioBase64") from single_exc
         return response
 
-
-def _indextts_upload_reference_audio(
-    audio: bytes | None,
-    file_name: str | None,
-    mime_type: str | None = None,
-) -> dict[str, Any] | None:
-    if audio:
-        guessed_type = mime_type or mimetypes.guess_type(file_name or "")[0] or "audio/wav"
-        parsed = _indextts_space_client().upload_file(file_name or "reference.wav", audio, guessed_type)
-        upload_path = _first_upload_path(parsed)
-        if not upload_path:
-            raise RuntimeError("IndexTTS upload did not return a reference path")
-        return {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(file_name or "reference.wav")}
-    path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_PATH", "").strip()
-    if path and os.path.exists(path):
-        stat = os.stat(path)
-        cache_key = (os.path.abspath(path), f"{stat.st_mtime_ns}:{stat.st_size}")
-        with _INDEXTTS_CACHE_LOCK:
-            cached = _INDEXTTS_REFERENCE_CACHE.get(cache_key)
-            if cached:
-                return dict(cached)
-        with open(path, "rb") as handle:
-            data = handle.read()
-        mime_type = mimetypes.guess_type(path)[0] or "audio/wav"
-        parsed = _indextts_space_client().upload_file(os.path.basename(path), data, mime_type)
-        upload_path = _first_upload_path(parsed)
-        if not upload_path:
-            raise RuntimeError("IndexTTS upload did not return a reference path")
-        uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(path)}
-        with _INDEXTTS_CACHE_LOCK:
-            _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
-        return uploaded
-    remote_path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH", "").strip()
-    if remote_path:
-        return {"path": remote_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(remote_path) or "reference.wav"}
-    cache_key = ("default-abby-reference", "v1")
-    with _INDEXTTS_CACHE_LOCK:
-        cached = _INDEXTTS_REFERENCE_CACHE.get(cache_key)
-        if cached:
-            return dict(cached)
-    parsed = _indextts_space_client().upload_file("abby-reference.wav", _default_indextts_reference_wav(), "audio/wav")
-    upload_path = _first_upload_path(parsed)
-    if not upload_path:
-        raise RuntimeError("IndexTTS upload did not return a reference path")
-    uploaded = {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": "abby-reference.wav"}
-    with _INDEXTTS_CACHE_LOCK:
-        _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
-    return uploaded
-
-
-
-
-def _indextts_wait_for_result(session_hash: str) -> dict[str, Any]:
-    try:
-        return _indextts_space_client().wait_for_queue_result(
-            session_hash,
-            timeout_seconds=_indextts_timeout_seconds(),
-            poll_interval_seconds=0.5,
-        )
-    except Exception as exc:
-        detail = _normalize_indextts_queue_failure(exc)
-        raise ValueError(f"IndexTTS Gradio queue failed: {detail}") from exc
-
-
-def _indextts_batch_audio_references(result: Mapping[str, Any]) -> list[Any]:
-    outputs = _gradio_output_values(result)
-    if len(outputs) >= 2:
-        generated_files = _find_gradio_audio_references(outputs[1])
-        if generated_files:
-            return _dedupe_gradio_references(generated_files)
-    if len(outputs) >= 3:
-        zip_ref = _find_gradio_file_reference(outputs[2], suffixes=(".zip",))
-        if zip_ref:
-            try:
-                archive, _mime_type = _fetch_gradio_file(zip_ref)
-                extracted = _extract_audio_files_from_zip(archive)
-                if extracted:
-                    return extracted
-            except Exception:
-                pass
-    return _dedupe_gradio_references(_find_gradio_audio_references(result))
-
-
-def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
-    if isinstance(reference, Mapping) and isinstance(reference.get("_inline_bytes"), (bytes, bytearray)):
-        name = str(reference.get("name") or reference.get("path") or "")
-        return bytes(reference["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
-    data, detected_type = _indextts_space_client().fetch_file(reference)
-    path = str(reference.get("path") or reference.get("name") or "") if isinstance(reference, Mapping) else str(reference or "")
-    mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "") if isinstance(reference, Mapping) else ""
-    return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
 
 

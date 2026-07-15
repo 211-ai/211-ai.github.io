@@ -161,11 +161,15 @@ try:
         _INDEXTTS_CONFIG_CACHE,
         _INDEXTTS_FN_INDEX_CACHE,
         _INDEXTTS_REFERENCE_CACHE,
+        _fetch_gradio_file,
+        _indextts_batch_audio_references,
         _indextts_batch_fn_index,
         _indextts_config,
         _indextts_fn_index,
         _indextts_queue_join,
         _indextts_space_client,
+        _indextts_upload_reference_audio,
+        _indextts_wait_for_result,
     )
     from ._tts import *  # noqa: F401,F403
     from ._tts import (  # noqa: F401
