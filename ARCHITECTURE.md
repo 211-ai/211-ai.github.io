@@ -46,7 +46,7 @@ The wallet backend is organized by bounded context:
 | `routes/` | Feature-grouped route modules (wallets, records, proofs, exports, etc.) |
 | `services/` | Domain service classes extracted from the application service |
 | `schemas/` | Pydantic request/response models grouped by domain |
-| `helpers/` | Internal helpers package with 11 domain submodules (see table below) |
+| `helpers/` | Internal helpers package with 13 domain submodules (see table below) |
 | `app_service.py` | `WalletInterfaceService` orchestrator |
 | `proof_backends.py` | Proof backend implementations |
 | `service_matching.py` | Service match logic |
