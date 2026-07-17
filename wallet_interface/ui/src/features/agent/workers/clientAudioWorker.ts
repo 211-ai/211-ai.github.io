@@ -1,14 +1,14 @@
 import ortWebGpuModuleUrl from "../../../../node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs?url";
 import ortWasmAsyncifyWasmUrl from "../../../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
-import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../../../lib/audioChatConfig";
+import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../lib/audioChatConfig";
 import {
   clampAudioProgress,
   formatLiquidAudioLoadProgress,
   patchAudioModelSource,
   patchTransformersWebSource,
   type LiquidAudioWorkerProgress as AudioWorkerProgress,
-} from "../../../lib/liquidAudioRuntimePatch";
-import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../../../lib/warningSuppressionUtils";
+} from "../lib/liquidAudioRuntimePatch";
+import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../../../shared/lib/warningSuppressionUtils";
 
 installWarningSuppression();
 

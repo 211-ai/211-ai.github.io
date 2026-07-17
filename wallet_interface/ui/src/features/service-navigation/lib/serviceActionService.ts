@@ -3,7 +3,7 @@ import {
   createIcsFileName,
   type IcsAlarmInput,
   type IcsEventInput,
-} from "../../../lib/calendar/ics";
+} from "../../calendar/lib/ics";
 
 export type ServiceActionKind = "call" | "text" | "email" | "map" | "share" | "calendar";
 export type ServiceMapProvider = "google" | "apple" | "geo" | "source";

@@ -1,4 +1,4 @@
-import type { ClientLlmStructuredTextResult } from "../../../lib/clientLLMWorkerService";
+import type { ClientLlmStructuredTextResult } from "./clientLLMWorkerService";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName, isCommandInput } from "./commandSchemas";
 import type { AgentPlannedTool, AgentPlannedTurn } from "./agentPlanner";

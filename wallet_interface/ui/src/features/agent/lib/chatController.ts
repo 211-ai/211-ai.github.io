@@ -1,5 +1,5 @@
 import type { AppActionResult } from "../../../app/appActions";
-import type { ClientLlmRuntimeService } from "../../../lib/clientLLMWorkerService";
+import type { ClientLlmRuntimeService } from "./clientLLMWorkerService";
 import { findSlottedResponseMatch } from "../../../lib/graphrag";
 import { readRuntimeAgentConfig } from "../../../lib/runtimeConfig";
 import type { RouteId } from "../../../models/abby";

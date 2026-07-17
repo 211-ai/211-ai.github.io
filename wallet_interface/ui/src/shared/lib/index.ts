@@ -8,6 +8,5 @@
 // Migrated canonical utilities
 export * from "./runtimeConfig";
 export * from "./localization";
-
-/** Placeholder export so this barrel resolves as a valid module. */
-export const _sharedLibPlaceholder = true;
+export * from "./backendDetection";
+export * from "./warningSuppressionUtils";

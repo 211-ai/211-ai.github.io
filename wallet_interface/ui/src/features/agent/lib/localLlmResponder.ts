@@ -1,4 +1,4 @@
-import type { ClientLlmRuntimeService } from "../../../lib/clientLLMWorkerService";
+import type { ClientLlmRuntimeService } from "./clientLLMWorkerService";
 import {
   buildSafeSurfaceContext,
   compactAgentConversationHistory,

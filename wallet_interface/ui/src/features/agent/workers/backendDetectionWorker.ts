@@ -1,6 +1,6 @@
-import { detectBrowserMlBackends } from "../../../lib/backendDetection";
-import type { BackendDetectionOptions, BackendDetectionResult } from "../../../lib/backendDetection";
-import { installWarningSuppression } from "../../../lib/warningSuppressionUtils";
+import { detectBrowserMlBackends } from "../../../shared/lib/backendDetection";
+import type { BackendDetectionOptions, BackendDetectionResult } from "../../../shared/lib/backendDetection";
+import { installWarningSuppression } from "../../../shared/lib/warningSuppressionUtils";
 
 installWarningSuppression();
 

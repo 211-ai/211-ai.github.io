@@ -2,18 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../lib/types";
 import type { AgentMessageAudioRecord } from "../lib/chatController";
-import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../../lib/clientAudioReplyService";
-import { clientAudioReplyService } from "../../../lib/clientAudioReplyService";
-import { clientLLMWorkerService } from "../../../lib/clientLLMWorkerService";
-import { findPrecomputedAudioReply } from "../../../lib/precomputedAudioReplyService";
+import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../lib/clientAudioReplyService";
+import { clientAudioReplyService } from "../lib/clientAudioReplyService";
+import { clientLLMWorkerService } from "../lib/clientLLMWorkerService";
+import { findPrecomputedAudioReply } from "../lib/precomputedAudioReplyService";
 import { AgentCitationLink } from "./AgentCitationLink";
 import {
   buildVoiceFallbackText,
   buildVoiceGraphRagPromptParts,
   selectEvidenceBundlesForMessage,
-} from "../../../lib/voiceGraphRagPrompt";
-import { createWavBlobFromFloat32Chunks } from "../../../lib/voiceProxyPayload";
-import { preflightRemoteSpeechToTextProxy, transcribeRemoteSpeech } from "../../../lib/remoteAudioClient";
+} from "../lib/voiceGraphRagPrompt";
+import { createWavBlobFromFloat32Chunks } from "../lib/voiceProxyPayload";
+import { preflightRemoteSpeechToTextProxy, transcribeRemoteSpeech } from "../lib/remoteAudioClient";
 import { Button } from "../../../shared/components/ui";
 
 type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "speaking" | "unavailable";

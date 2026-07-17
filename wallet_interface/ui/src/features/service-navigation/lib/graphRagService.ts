@@ -19,8 +19,8 @@ import {
   search211GraphGeoClusters,
   search211Corpus,
 } from "./graphrag";
-import { backendDetectionWorkerService } from "../../../lib/backendDetectionWorkerService";
-import { clientEmbeddingWorkerService } from "../../../lib/clientEmbeddingWorkerService";
+import { backendDetectionWorkerService } from "./backendDetectionWorkerService";
+import { clientEmbeddingWorkerService } from "./clientEmbeddingWorkerService";
 import { resolvePreferred211SearchCoordinates, resolvePreferred211ServiceClusterIds } from "./graphrag/serviceGeoPreference";
 import type {
   CorpusDocument,
@@ -32,7 +32,7 @@ import type {
   SearchResult,
   SlottedResponseMatch,
 } from "./graphrag";
-import type { BackendDetectionStatus } from "../../../lib/backendDetectionWorkerService";
+import type { BackendDetectionStatus } from "./backendDetectionWorkerService";
 import { generateWalletRouterEmbeddings, generateWalletRouterText, type WalletApiConfig } from "../../wallet/lib/walletApi";
 
 interface GraphRagRetrievalOptions {

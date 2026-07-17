@@ -3,7 +3,8 @@
  *
  * Owns the Abby chat/agent flows, LLM worker wrappers, and audio chat.
  * Canonical locations:
- *   lib/  — agent core (conversation, memory, planner, tools, etc.)
+ *   lib/  — agent core (conversation, memory, planner, tools, etc.),
+ *           LLM/audio config, worker services, remote clients
  *   components/ — agent UI (chat drawer, confirmation cards, etc.)
  *   workers/ — LLM and audio web workers
  */
@@ -29,6 +30,22 @@ export * from "./lib/serviceNavigationAgent";
 export * from "./lib/surfaceApi";
 export * from "./lib/surfaceRegistry";
 export * from "./lib/toolExecutor";
+
+// LLM runtime (canonical location)
+export * from "./lib/llmConfig";
+export * from "./lib/clientLlmPrompting";
+export * from "./lib/clientLLMWorkerService";
+export * from "./lib/openRouterClient";
+export * from "./lib/huggingFaceWalletRouterClient";
+
+// Audio runtime (canonical location)
+export * from "./lib/audioChatConfig";
+export * from "./lib/clientAudioReplyService";
+export * from "./lib/precomputedAudioReplyService";
+export * from "./lib/remoteAudioClient";
+export * from "./lib/voiceGraphRagPrompt";
+export * from "./lib/voiceProxyPayload";
+export * from "./lib/liquidAudioRuntimePatch";
 
 // Components
 export { AgentAudioChatSurface, primeVoiceChatActivation } from "./components/AgentAudioChatSurface";

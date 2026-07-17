@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, Cloud, Cpu, Gauge, KeyRound, RefreshCw, Trash2, Zap } from "lucide-react";
-import { SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../../../lib/llmConfig";
+import { SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../lib/llmConfig";
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 
@@ -92,7 +92,7 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
     setLoading(true);
     try {
       const { clientLLMWorkerService } = await import("../../../lib/clientLLMWorkerService");
-      const { clientAudioReplyService } = await import("../../../lib/clientAudioReplyService");
+      const { clientAudioReplyService } = await import("../lib/clientAudioReplyService");
       const [workerCapabilities, serviceStatus] = await Promise.all([
         clientLLMWorkerService.getCapabilities(),
         Promise.resolve(clientLLMWorkerService.getStatus()),
