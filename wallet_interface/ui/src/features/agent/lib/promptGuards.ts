@@ -87,6 +87,7 @@ const DEFAULT_MAX_TOOLS = 20;
 const DEFAULT_MAX_TEXT_LENGTH = 1200;
 const DEFAULT_MAX_METADATA_STRING_LENGTH = 180;
 const DEFAULT_MAX_ID_LIST_ITEMS = 12;
+// Role identifiers mirror backend policy slugs used in HMIS audit events.
 const HMIS_ALLOWED_PROMPT_ROLES = new Set(["case_manager", "supervisor", "hmis_operator"]);
 
 const privateRouteSummaryRoutes = new Set<SurfaceContext["route"]>([

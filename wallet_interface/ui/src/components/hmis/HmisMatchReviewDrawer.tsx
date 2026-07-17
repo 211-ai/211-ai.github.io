@@ -72,7 +72,7 @@ export function HmisMatchReviewDrawer({
     <Dialog
       actions={
         <>
-          <Button onClick={handleReject} variant="secondary">
+          <Button loading={saving} onClick={handleReject} variant="secondary">
             Reject candidate
           </Button>
           <Button loading={saving} onClick={handleVerify}>

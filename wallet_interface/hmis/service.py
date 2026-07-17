@@ -24,7 +24,11 @@ def _utc_now() -> str:
 
 
 def _payload_hash(payload: Mapping[str, Any]) -> str:
-    encoded = json.dumps(dict(payload), sort_keys=True, separators=(",", ":")).encode("utf-8")
+    try:
+        normalized = json.loads(json.dumps(dict(payload), sort_keys=True, default=str))
+    except TypeError:
+        normalized = {key: str(value) for key, value in dict(payload).items()}
+    encoded = json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return sha256(encoded).hexdigest()
 
 

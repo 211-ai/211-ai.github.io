@@ -44,6 +44,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     setup_logging(getattr(logging, args.log_level))
+    args.repository_root.mkdir(parents=True, exist_ok=True)
     service = WalletInterfaceService(repository_root=args.repository_root)
     result = service.run_hmis_reconciliation_job(dry_run=args.dry_run)
     logger.info("HMIS reconciliation job complete: %s", result)
