@@ -8,6 +8,9 @@ from typing import Any, Literal
 
 
 MatchDecision = Literal["no_match", "single_match", "ambiguous", "rejected_only"]
+MAX_MATCH_SCORE = 0.99
+SCORE_PRECISION = 3
+AUTO_VERIFY_THRESHOLD = 0.85
 
 
 def _normalized(value: Any) -> str:
@@ -76,7 +79,7 @@ def _score_client_candidate(query: Mapping[str, Any], candidate: Mapping[str, An
     external_id = str(candidate.get("external_client_id") or candidate.get("external_id") or candidate.get("id") or "")
     return HmisMatchCandidate(
         external_id=external_id,
-        score=round(min(score, 0.99), 3),
+        score=round(min(score, MAX_MATCH_SCORE), SCORE_PRECISION),
         matched_fields=tuple(matched_fields),
         record=dict(candidate),
         reasons=tuple(reasons),
@@ -120,7 +123,7 @@ def _score_household_candidate(query: Mapping[str, Any], candidate: Mapping[str,
     external_id = str(candidate.get("external_household_id") or candidate.get("external_id") or candidate.get("id") or "")
     return HmisMatchCandidate(
         external_id=external_id,
-        score=round(min(score, 0.99), 3),
+        score=round(min(score, MAX_MATCH_SCORE), SCORE_PRECISION),
         matched_fields=tuple(matched_fields),
         record=dict(candidate),
         reasons=tuple(reasons),
@@ -165,7 +168,7 @@ def _finalize_match_result(
             candidates=tuple(active),
             rejected_candidates=tuple(rejected),
         )
-    if len(active) == 1 and top.score >= 0.85:
+    if len(active) == 1 and top.score >= AUTO_VERIFY_THRESHOLD:
         return HmisMatchResult(
             decision="single_match",
             candidates=tuple(active),
@@ -178,7 +181,7 @@ def _finalize_match_result(
             candidates=tuple(active),
             rejected_candidates=tuple(rejected),
         )
-    if top.score < 0.85:
+    if top.score < AUTO_VERIFY_THRESHOLD:
         return HmisMatchResult(
             decision="ambiguous",
             candidates=tuple(active),
