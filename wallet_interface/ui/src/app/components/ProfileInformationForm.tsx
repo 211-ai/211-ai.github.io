@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { Field } from "../../components/ui";
+import { Field } from "../../shared/components/ui";
 import type { RegistrationProfileDraft } from "../../models/abby";
 import { serviceNeeds } from "../appState";
 import { t, translateServiceNeed, type SupportedLocale } from "../../shared/lib/localization";

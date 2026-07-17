@@ -1,5 +1,5 @@
 import { MessageSquare } from "lucide-react";
-import { Badge, Button, Section } from "../../components/ui";
+import { Badge, Button, Section } from "../../shared/components/ui";
 import { t, type SupportedLocale } from "../../shared/lib/localization";
 import { formatRequestTimestamp } from "../utils/formatHelpers";
 
