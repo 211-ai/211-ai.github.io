@@ -1,5 +1,5 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
-import { resolvePublicHttpsUrl } from "../../../lib/publicEndpointPolicy";
+import { resolvePublicHttpsUrl } from "../../../shared/lib/publicEndpointPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {

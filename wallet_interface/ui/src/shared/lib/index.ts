@@ -10,3 +10,4 @@ export * from "./runtimeConfig";
 export * from "./localization";
 export * from "./backendDetection";
 export * from "./warningSuppressionUtils";
+export * from "./publicEndpointPolicy";

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bot, UserRound } from "lucide-react";
 import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult, EvidenceBundle } from "../lib/types";
 import { generateOpenRouterTranslation } from "../lib/openRouterClient";
-import { getLocaleOptionLabel, type SupportedLocale, t } from "../../../lib/localization";
+import { getLocaleOptionLabel, type SupportedLocale, t } from "../../../shared/lib/localization";
 import { Button } from "../../../shared/components/ui";
 import { AgentConfirmationCard } from "./AgentConfirmationCard";
 import { AgentEvidencePanel } from "./AgentEvidencePanel";

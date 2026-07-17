@@ -1,7 +1,7 @@
 import type { AppActionResult } from "../../../app/appActions";
 import type { ClientLlmRuntimeService } from "./clientLLMWorkerService";
-import { findSlottedResponseMatch } from "../../../lib/graphrag";
-import { readRuntimeAgentConfig } from "../../../lib/runtimeConfig";
+import { findSlottedResponseMatch } from "../../service-navigation/lib/graphrag";
+import { readRuntimeAgentConfig } from "../../../shared/lib/runtimeConfig";
 import type { RouteId } from "../../../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";

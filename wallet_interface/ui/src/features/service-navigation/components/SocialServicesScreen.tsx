@@ -10,7 +10,7 @@ import {
   resolvePreferred211ServiceClusterIds,
   type SearchResult
 } from "../graphrag";
-import { t, tFormat, type SupportedLocale } from "../../../lib/localization";
+import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import { SavedServicesPanel } from "../../../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../../../components/services/ServiceQuickActions";
 import { search211Info } from "../../../services/graphRagService";

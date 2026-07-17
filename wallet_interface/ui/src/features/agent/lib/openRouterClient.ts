@@ -1,6 +1,6 @@
 import { buildClientLlmChatMessages, getClientLlmGenerationParameters, type ClientLlmPromptInput } from "./clientLlmPrompting";
 import { LLM_CONFIG } from "./llmConfig";
-import { resolvePublicHttpsUrl } from "../../../lib/publicEndpointPolicy";
+import { resolvePublicHttpsUrl } from "../../../shared/lib/publicEndpointPolicy";
 
 export const OPENROUTER_API_KEY_STORAGE_KEY = "abby-openrouter-api-key";
 

@@ -11,7 +11,7 @@ import type {
   UploadItem
 } from "../../../models/abby";
 import type { ShelterProviderMessage } from "../../../app/appState";
-import { t, translateServiceNeed, type SupportedLocale } from "../../../lib/localization";
+import { t, translateServiceNeed, type SupportedLocale } from "../../../shared/lib/localization";
 import { search211Info } from "../../../services/graphRagService";
 import {
   getServiceLocationLabel,

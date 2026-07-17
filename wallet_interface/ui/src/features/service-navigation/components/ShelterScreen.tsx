@@ -21,7 +21,7 @@ import {
   type RouteId,
   type ShelterContactRequest
 } from "../../../models/abby";
-import { t, tFormat, translateServiceNeed, type SupportedLocale } from "../../../lib/localization";
+import { t, tFormat, translateServiceNeed, type SupportedLocale } from "../../../shared/lib/localization";
 import { StatusPanel } from "../../../app/components/StatusPanel";
 import {
   defaultManagedUserDraft,

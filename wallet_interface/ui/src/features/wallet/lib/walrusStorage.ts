@@ -1,5 +1,5 @@
 import type { UploadItem } from "../../../models/abby";
-import { readRuntimeWalrusStorageConfig } from "../../../lib/runtimeConfig";
+import { readRuntimeWalrusStorageConfig } from "../../../shared/lib/runtimeConfig";
 import type { WalletApiConfig } from "./walletApi";
 
 const WALRUS_STORAGE_CONFIG_KEY = "abby-walrus-storage-config";

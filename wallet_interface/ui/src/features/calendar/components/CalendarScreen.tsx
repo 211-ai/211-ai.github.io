@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Bell, CalendarClock, Clock, Download, ExternalLink, MapPin } from "lucide-react";
 import { Badge, Button, Section, StatusBanner } from "../../../components/ui";
-import { t, tFormat, type SupportedLocale } from "../../../lib/localization";
+import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import type { CheckInPolicyDraft, ServiceInteractionEvent, ServicePlan } from "../../../models/abby";
 import { downloadCalendarAction } from "../../../services/serviceActionService";
 

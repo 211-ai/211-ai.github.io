@@ -3,8 +3,8 @@ import type {
   Search211ServicesCommandInput,
 } from "./commandSchemas";
 import type { EvidenceBundle, EvidenceItem } from "./types";
-import type { GraphRagAnswer, GraphRagEvidence, SearchResult } from "../../../lib/graphrag";
-import { build211ServiceEvidenceExcerpt } from "../../../lib/graphrag";
+import type { GraphRagAnswer, GraphRagEvidence, SearchResult } from "../../service-navigation/lib/graphrag";
+import { build211ServiceEvidenceExcerpt } from "../../service-navigation/lib/graphrag";
 import {
   answer211InfoQuestion,
   build211InfoCitations,

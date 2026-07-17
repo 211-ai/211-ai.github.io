@@ -5,7 +5,7 @@ import type {
   SaveServiceCommandInput,
 } from "./commandSchemas";
 import type { AgentPermissionLevel } from "./types";
-import type { CorpusDocument, GraphRagEvidence, SearchResult } from "../../../lib/graphrag";
+import type { CorpusDocument, GraphRagEvidence, SearchResult } from "../../service-navigation/lib/graphrag";
 
 export const EVIDENCE_ACTION_KINDS = [
   "open_detail",

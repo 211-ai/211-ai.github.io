@@ -3,7 +3,7 @@ import { Badge, Button, Field, Section } from "../../../components/ui";
 import type { RegistrationProfileDraft } from "../../../models/abby";
 import type { ShelterProviderMessage } from "../../../app/appState";
 import { StatusPanel } from "../../../app/components/StatusPanel";
-import { t, tFormat, type SupportedLocale } from "../../../lib/localization";
+import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import { formatProviderMessageChannel, messageMatchesClient } from "../../../app/utils/formatHelpers";
 import { formatShelterDate } from "../../../app/utils/providerHelpers";
 

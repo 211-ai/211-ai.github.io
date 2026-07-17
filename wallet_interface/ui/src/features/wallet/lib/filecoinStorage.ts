@@ -1,5 +1,5 @@
 import type { UploadItem } from "../../../models/abby";
-import { readRuntimeFilecoinStorageConfig } from "../../../lib/runtimeConfig";
+import { readRuntimeFilecoinStorageConfig } from "../../../shared/lib/runtimeConfig";
 import type { WalletApiConfig } from "./walletApi";
 
 const FILECOIN_STORAGE_CONFIG_KEY = "abby-filecoin-storage-config";

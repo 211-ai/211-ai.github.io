@@ -3,7 +3,7 @@ import { Bell, CalendarCheck } from "lucide-react";
 import { Button, Field, Section, StatusBanner } from "../../../components/ui";
 import type { CheckInChannel, RegistrationProfileDraft } from "../../../models/abby";
 import { defaultCheckInPolicy } from "../../../app/appState";
-import { t, tFormat, type SupportedLocale } from "../../../lib/localization";
+import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import { formatCheckInChannel } from "../../../app/utils/formatHelpers";
 
 export function CheckInScreen({

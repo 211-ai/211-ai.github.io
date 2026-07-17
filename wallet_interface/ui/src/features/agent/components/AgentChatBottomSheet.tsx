@@ -8,7 +8,7 @@ import type {
   EvidenceBundle
 } from "../lib/types";
 import type { AgentMessageAudioRecord } from "../lib/chatController";
-import type { SupportedLocale } from "../../../lib/localization";
+import type { SupportedLocale } from "../../../shared/lib/localization";
 import { Button } from "../../../shared/components/ui";
 import type { AgentChatMode } from "./AgentChatDrawer";
 import { AgentAudioChatSurface } from "./AgentAudioChatSurface";

@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Home, KeyRound, MessageSquare, UsersRound } from "lucide-react";
 import { Button, Field, StatusBanner } from "../../../components/ui";
-import { t, type SupportedLocale } from "../../../lib/localization";
+import { t, type SupportedLocale } from "../../../shared/lib/localization";
 import {
   MAGIC_LOGIN_PARAM,
   MAGIC_LOGIN_TTL_MS,
