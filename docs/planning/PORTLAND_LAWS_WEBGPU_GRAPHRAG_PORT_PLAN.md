@@ -285,3 +285,73 @@ This port lane is complete when all of the following are true:
 - Browser build, smoke, retrieval benchmark, and compatibility checks pass.
 - The remaining parity work is tracked and executable through the shared todo
   daemon/supervisor stack.
+
+## Completion Summary
+
+All backlog tasks (GRAPHRAG-000 through GRAPHRAG-070) are now complete.
+
+### Completed deliverables
+
+**Runtime parity (GRAPHRAG-020 through GRAPHRAG-022)**
+
+- `wallet_interface/ui/src/lib/backendDetection.ts` — typed `BackendCapabilities`,
+  `BackendDetectionResult`, benchmark, device info; main-thread fallback path.
+- `wallet_interface/ui/src/lib/backendDetectionWorkerService.ts` — off-main-thread
+  service wrapper with timeout and main-thread fallback.
+- `wallet_interface/ui/src/lib/warningSuppressionUtils.ts` — regex-based suppression
+  for known-noisy WebGPU and ONNX Runtime warnings without hiding real errors.
+- `wallet_interface/ui/src/lib/llmConfig.ts` — device-gated model defaults; local
+  generation is an explicit opt-in, not mandatory.
+- `wallet_interface/ui/src/lib/clientLLMWorkerService.ts` — worker pool wiring with
+  backend-capability gating.
+- `wallet_interface/ui/src/features/agent/workers/backendDetectionWorker.ts` —
+  canonical off-main-thread worker; `src/workers/backendDetectionWorker.ts` is a
+  backward-compat deprecation stub.
+
+**Derived service-constraint export (GRAPHRAG-030)**
+
+- `scraper/export/browser_graphrag_corpus.py` — corpus builder with optional
+  derived service-constraint metadata (eligibility, intake, hours, documents,
+  service area). Backward-compat alias at `scraper/browser_graphrag_corpus.py`.
+- `scripts/build_browser_graphrag_corpus.py` — CLI orchestrator.
+- `wallet_interface/ui/src/lib/graphrag/types.ts` — re-exports from canonical
+  feature path; full typed corpus manifest and constraint types.
+- Validated by: `python -m pytest tests/test_browser_graphrag_corpus.py -q` ✅
+
+**Logic-aware answer builder (GRAPHRAG-031)**
+
+- `wallet_interface/ui/src/lib/graphrag/graphRag.ts` — answer builder uses optional
+  derived service-constraint evidence when present; grounded deterministic summaries
+  when absent.
+- `wallet_interface/ui/src/services/graphRagService.ts` — search, retrieval,
+  community summaries, and evidence wiring.
+
+**Services-screen diagnostics (GRAPHRAG-040)**
+
+- `wallet_interface/ui/src/app/App.tsx` — GraphRAG runtime status integrated.
+- Corpus readiness, retrieval worker, embedding worker, local-generation, and
+  backend capability status exposed without cluttering the default experience.
+
+**Quality and compatibility suite (GRAPHRAG-050)**
+
+- `scripts/benchmark_211_retrieval.py` — retrieval quality benchmark.
+- `wallet_interface/ui/tests/smoke.spec.ts` — worker startup and fallback checks.
+- `wallet_interface/ui/tests/agent-action-convergence.spec.ts` — local-model gating.
+
+**Optional browser transport experiments (GRAPHRAG-060)**
+
+- `wallet_interface/ui/src/lib/graphrag/corpus.ts` — DuckDB-WASM, Parquet-WASM, and
+  HNSW-WASM experiments gated behind an explicit optional flag; JSON+F32 corpus
+  remains the default.
+
+### Intentionally unported upstream subsystems
+
+The following Portland Laws subsystems were reviewed and deliberately not ported to
+211-AI as they are out of scope:
+
+- Portland Laws game engine and NPC subsystem.
+- Full TDFOL legal-theorem prover (backend lives in `ipfs_datasets_py` for
+  wallet proofs; the browser UI does not depend on it).
+- Broad EVM/on-chain contract execution from the Portland Laws UI layer.
+- WebNN execution providers (treated as capability signals only until a real
+  provider is validated for 211 use cases).

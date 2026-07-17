@@ -208,7 +208,7 @@ Track guide:
 - Acceptance: Proof cache keys include ProveKit backend ID, circuit ref, hash backend, verifier-key digest, ProveKit commit, and ruleset; IPFS/cache payloads contain only public proof envelopes and artifact references.
 
 ## PROVEKIT-160 Optional Dependency Packaging And Build Script
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops
@@ -228,7 +228,7 @@ Track guide:
 - Acceptance: Operators can check ProveKit binary availability, artifact integrity, circuit manifests, backend enablement, and fail-closed readiness from documented commands without exposing witness material.
 
 ## PROVEKIT-180 Golden Vector And Property Test Suite
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: quality

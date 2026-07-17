@@ -43,7 +43,7 @@ Track guide:
 - Acceptance: The plan reflects the current upstream Portland Laws commit, distinguishes already-ported functionality from remaining parity work, and defines a 211-specific scope boundary.
 
 ## GRAPHRAG-020 Backend Detection Worker Parity
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: runtime
@@ -53,7 +53,7 @@ Track guide:
 - Acceptance: Backend capability detection and optional benchmarking can run off the main thread, return a stable typed status object, and fall back safely to the main thread when worker startup fails.
 
 ## GRAPHRAG-021 Warning Suppression And ONNX Hygiene
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: runtime
@@ -63,7 +63,7 @@ Track guide:
 - Acceptance: Known noisy WebGPU and ONNX Runtime warnings are filtered from normal browser use and tests without suppressing real inference or worker failures.
 
 ## GRAPHRAG-022 Conservative Model Policy And Selection
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: runtime
@@ -73,7 +73,7 @@ Track guide:
 - Acceptance: The 211 browser runtime recommends models based on device capability, keeps safe WASM fallbacks first-class, and exposes local generation as an explicit opt-in rather than a mandatory download.
 
 ## GRAPHRAG-030 Derived Service-Constraint Export
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: data
@@ -83,7 +83,7 @@ Track guide:
 - Acceptance: The browser corpus builder can optionally export lightweight derived service-constraint metadata for eligibility, intake, hours, documents, and service area without requiring the full Portland legal-logic stack.
 
 ## GRAPHRAG-031 Logic-Aware Answer Builder
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: runtime
@@ -93,7 +93,7 @@ Track guide:
 - Acceptance: The answer builder can include optional derived service-constraint evidence when present, but still produces grounded deterministic summaries when that metadata is absent or local generation is unavailable.
 
 ## GRAPHRAG-040 Services-Screen GraphRAG Diagnostics
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ui
@@ -103,7 +103,7 @@ Track guide:
 - Acceptance: The Services screen exposes meaningful runtime status for corpus readiness, retrieval worker, embedding worker, local generation, and browser backend capability without cluttering the default experience.
 
 ## GRAPHRAG-050 Quality And Compatibility Suite
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: quality
@@ -113,7 +113,7 @@ Track guide:
 - Acceptance: Retrieval quality, worker startup, browser fallback behavior, and local-model gating are covered by executable checks that fail clearly when parity regresses.
 
 ## GRAPHRAG-060 Optional Browser Transport Experiments
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P2
 - Track: data
@@ -123,7 +123,7 @@ Track guide:
 - Acceptance: DuckDB-WASM, Parquet-WASM, or HNSW-WASM experiments are evaluated behind an explicit optional path, with the current JSON-plus-F32 corpus remaining the default unless a measured improvement justifies promotion.
 
 ## GRAPHRAG-070 Final Parity Audit
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops
