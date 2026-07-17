@@ -11,8 +11,8 @@ import {
   type SearchResult
 } from "../graphrag";
 import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
-import { SavedServicesPanel } from "../../../components/services/SavedServicesPanel";
-import { ServiceQuickActions } from "../../../components/services/ServiceQuickActions";
+import { SavedServicesPanel } from "../../../shared/components/SavedServicesPanel";
+import { ServiceQuickActions } from "../../../shared/components/ServiceQuickActions";
 import { search211Info } from "../../../services/graphRagService";
 import { serviceMatches } from "../../../services/mockAbbyService";
 import { saveWalletService, type WalletApiConfig } from "../../../services/walletApi";

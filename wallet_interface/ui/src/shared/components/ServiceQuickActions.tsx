@@ -1,13 +1,13 @@
 import { ExternalLink, MapPinned, Phone } from "lucide-react";
-import type { CorpusDocument } from "../../lib/graphrag";
-import { t, type SupportedLocale } from "../../lib/localization";
+import type { CorpusDocument } from "../../features/service-navigation/lib/graphrag";
+import { t, type SupportedLocale } from "../lib/localization";
 import {
   getPrimaryAddress,
   getPrimaryIntakeText,
   getPrimaryMapQuery,
   getPrimaryPhone,
   getPrimaryWebsite,
-} from "../../lib/graphrag";
+} from "../../features/service-navigation/lib/graphrag";
 import { buildCallAction, buildMapAction } from "../../services/serviceActionService";
 import {
   buildManualServiceInteractionIntent,

@@ -9,7 +9,7 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt
 } from "../../../models/abby";
-import { InteractionTimeline } from "../../../components/services/InteractionTimeline";
+import { InteractionTimeline } from "../../../shared/components/InteractionTimeline";
 import { Badge, Section, StatusBanner } from "../../../components/ui";
 import type { WalletApiConfig } from "../../../services/walletApi";
 

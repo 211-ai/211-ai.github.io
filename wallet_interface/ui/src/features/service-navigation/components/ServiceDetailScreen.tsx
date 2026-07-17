@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { ServiceQuickActions } from "../../../components/services/ServiceQuickActions";
-import { ServiceProvenancePanel } from "../../../components/services/ServiceProvenancePanel";
+import { ServiceQuickActions } from "../../../shared/components/ServiceQuickActions";
+import { ServiceProvenancePanel } from "../../../shared/components/ServiceProvenancePanel";
 import { Badge, Button, Section, StatusBanner } from "../../../components/ui";
 import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import {

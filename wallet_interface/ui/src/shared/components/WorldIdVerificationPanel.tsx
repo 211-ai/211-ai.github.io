@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RefreshCw, ShieldCheck, UserCheck } from "lucide-react";
 import { IDKitRequestWidget, proofOfHuman, type IDKitResult } from "@worldcoin/idkit";
 import { Badge, Button, StatusBanner } from "./ui";
-import { readRuntimeWorldIdConfig } from "../../lib/runtimeConfig";
+import { readRuntimeWorldIdConfig } from "../lib/runtimeConfig";
 import type { WalletApiConfig } from "../../services/walletApi";
 
 const IDKitErrorCodes = {

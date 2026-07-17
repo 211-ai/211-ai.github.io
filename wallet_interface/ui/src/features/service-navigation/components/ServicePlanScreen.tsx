@@ -1,8 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CalendarClock, ExternalLink, Plus, Save, Trash2 } from "lucide-react";
 import { Badge, Button, Field, Section, StatusBanner } from "../../../components/ui";
-import { ServicePlanSharingPanel } from "../../../components/services/ServicePlanSharingPanel";
-import { WorkerServicePlanView } from "../../../components/services/WorkerServicePlanView";
+import { ServicePlanSharingPanel } from "../../../shared/components/ServicePlanSharingPanel";
+import { WorkerServicePlanView } from "../../../shared/components/WorkerServicePlanView";
 import { load211DocumentsByReference, type CorpusDocument } from "../graphrag";
 import type { DisclosureRecipientDraft, SavedService, ServicePlan, WalletGrantReceipt } from "../../../models/abby";
 import {

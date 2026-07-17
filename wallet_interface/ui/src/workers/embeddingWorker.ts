@@ -5,7 +5,7 @@
 import { LogLevel, env, pipeline } from "@huggingface/transformers";
 import ortWasmAsyncifyMjsUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
 import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
-import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
+import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../shared/lib/warningSuppressionUtils";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;

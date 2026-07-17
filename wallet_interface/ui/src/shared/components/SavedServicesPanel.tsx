@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, ExternalLink, RefreshCw } from "lucide-react";
-import { getServiceLocationLabel, load211DocumentsByReference, type CorpusDocument } from "../../lib/graphrag";
-import { t, tFormat, type SupportedLocale } from "../../lib/localization";
+import { getServiceLocationLabel, load211DocumentsByReference, type CorpusDocument } from "../../features/service-navigation/lib/graphrag";
+import { t, tFormat, type SupportedLocale } from "../lib/localization";
 import type { SavedService, ServicePlan } from "../../models/abby";
 import { Badge, Button, Section, StatusBanner } from "./ui";
 import { ServiceQuickActions } from "./ServiceQuickActions";
