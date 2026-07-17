@@ -8,7 +8,7 @@ import {
   verifyWalletSnapshot,
   type WalletApiConfig,
   type WalletSnapshotVerification
-} from "../../services/walletApi";
+} from "../../features/wallet/lib/walletApi";
 
 function shortHash(value?: string): string {
   if (!value) return "Unavailable";

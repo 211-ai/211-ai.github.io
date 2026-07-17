@@ -10,14 +10,14 @@ import {
   loadWalletAccessState,
   loadWalletDetails,
   type WalletApiConfig,
-} from "../../services/walletApi";
+} from "../../features/wallet/lib/walletApi";
 import {
   auditEvents,
   initialAccessRequests,
   initialGrantReceipts,
   initialUploads,
   proofReceipts,
-} from "../../services/mockAbbyService";
+} from "../../features/wallet/lib/mockAbbyService";
 import type {
   AuditEvent,
   ExportBundleView,

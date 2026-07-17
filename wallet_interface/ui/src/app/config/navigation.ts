@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import type { RouteId } from "../../models/abby";
 import { primaryRoutes, secondaryRoutes } from "../appState";
-import type { WalletApiConfig } from "../../services/walletApi";
+import type { WalletApiConfig } from "../../features/wallet/lib/walletApi";
 import { readWalletApiConfig } from "../services/walletConfig";
 
 export const routeIcons: Record<RouteId, typeof Home> = {

@@ -16,7 +16,7 @@ import type {
   WalletGrantReceipt,
 } from "../../models/abby";
 import type { WalletApiConfig } from "../../features/wallet/lib/walletApi";
-import type { SupportedLocale } from "../../lib/localization";
+import type { SupportedLocale } from "../../shared/lib/localization";
 import type {
   ShelterCaseRecord,
   ShelterProviderMessage,

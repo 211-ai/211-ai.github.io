@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
-import { dispatchMissingPersonDeadDrop, saveMissingPersonDeadDrop } from "../../services/walletApi";
+import { dispatchMissingPersonDeadDrop, saveMissingPersonDeadDrop } from "../../features/wallet/lib/walletApi";
 import { isMissingPersonDeadDropDue } from "../utils/deadDropHelpers";
 import { buildMissingPersonDeadDropSyncPayload } from "../utils/deadDropHelpers";
 import type { CheckInPolicyDraft, DisclosureRecipientDraft, UploadItem, RegistrationProfileDraft } from "../../models/abby";
-import type { WalletApiConfig } from "../../services/walletApi";
+import type { WalletApiConfig } from "../../features/wallet/lib/walletApi";
 
 interface DeadDropSyncDeps {
   missingPersonDeadDropEnabled: boolean;

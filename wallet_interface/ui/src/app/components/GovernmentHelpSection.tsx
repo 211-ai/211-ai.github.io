@@ -1,6 +1,6 @@
 import { MessageSquare } from "lucide-react";
 import { Badge, Button, Section } from "../../components/ui";
-import { t, type SupportedLocale } from "../../lib/localization";
+import { t, type SupportedLocale } from "../../shared/lib/localization";
 import { formatRequestTimestamp } from "../utils/formatHelpers";
 
 export function GovernmentHelpSection({

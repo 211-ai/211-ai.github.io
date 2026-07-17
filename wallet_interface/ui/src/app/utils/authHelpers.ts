@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-import type { WalletApiConfig, WalletMagicUcan } from "../../services/walletApi";
-import { loadLatestWalletRecoveryBundle } from "../../services/walletApi";
+import type { WalletApiConfig, WalletMagicUcan } from "../../features/wallet/lib/walletApi";
+import { loadLatestWalletRecoveryBundle } from "../../features/wallet/lib/walletApi";
 import { readUrlWalletApiConfig, readWalletApiConfig, readWalletApiBaseUrl } from "../services/walletConfig";
 import { getRouteFromHash } from "../appState";
 import { normalizeAppRoute } from "../config/navigation";

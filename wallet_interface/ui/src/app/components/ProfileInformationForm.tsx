@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { Field } from "../../components/ui";
 import type { RegistrationProfileDraft } from "../../models/abby";
 import { serviceNeeds } from "../appState";
-import { t, translateServiceNeed, type SupportedLocale } from "../../lib/localization";
+import { t, translateServiceNeed, type SupportedLocale } from "../../shared/lib/localization";
 import { ID_DOCUMENT_ACCEPT_ATTR, isAcceptedIdentityDocument, getIdentityDocumentFileDetail } from "../utils/formatHelpers";
 
 export function ProfileInformationForm({

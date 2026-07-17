@@ -1,5 +1,5 @@
 import type { CheckInPolicyDraft, SavedService, ServiceInteractionEvent, ServicePlan } from "../../models/abby";
-import type { SearchResult, ServiceLocationRecord } from "../../lib/graphrag";
+import type { SearchResult, ServiceLocationRecord } from "../../features/service-navigation/lib/graphrag";
 import { formatShelterDate } from "./providerHelpers";
 
 // ─── Service persistence helpers ──────────────────────────────────────────────

@@ -1,7 +1,7 @@
 import type {
   ProofReceiptView
 } from "../../models/abby";
-import { t, type SupportedLocale } from "../../lib/localization";
+import { t, type SupportedLocale } from "../../shared/lib/localization";
 import {
   providerEligibilityCriteria,
   type ShelterCasePriority,
