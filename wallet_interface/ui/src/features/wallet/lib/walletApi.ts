@@ -718,9 +718,15 @@ export interface WalletHmisOperationResult {
   status?: string;
   summary?: string;
   clients?: Array<Record<string, unknown>>;
+  households?: Array<Record<string, unknown>>;
   programs?: Array<Record<string, unknown>>;
+  rejectedCandidates?: Array<Record<string, unknown>>;
   referralDraft?: Record<string, unknown>;
+  referralDrafts?: Array<Record<string, unknown>>;
   eligibility?: Record<string, unknown>;
+  events?: Array<Record<string, unknown>>;
+  items?: Array<Record<string, unknown>>;
+  externalRefs?: Record<string, unknown>;
   raw: Record<string, unknown>;
   consensus?: WalletConsensusMetadata;
 }
@@ -1148,6 +1154,9 @@ export async function lookupHmisClients(
   config: WalletApiConfig,
   input: {
     query?: Record<string, unknown>;
+    name?: string;
+    dateOfBirth?: string;
+    programRef?: string;
     localSubjectRef?: string;
     consentGrantId?: string;
     consensus?: WalletConsensusRequestPolicy;
@@ -1157,10 +1166,28 @@ export async function lookupHmisClients(
   const url = new URL(`/wallets/${config.walletId}/hmis/lookup-clients`, normalizedBaseUrl(config.apiBaseUrl));
   const payload = await postJson<Record<string, unknown>>(url, "HMIS client lookup", {
     actor_did: requiredActorDid(config),
-    consent_grant_id: input.consentGrantId,
-    local_subject_ref: input.localSubjectRef,
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
-    query: input.query || {},
+    name: stringValue(input.query?.name) || input.name || "",
+    date_of_birth: stringValue(input.query?.date_of_birth ?? input.query?.dateOfBirth) || input.dateOfBirth || "",
+    program_ref: stringValue(input.query?.program_ref ?? input.query?.programRef) || input.programRef || "",
+    ...toConsensusRequestPayload(input.consensus)
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function lookupHmisHouseholds(
+  config: WalletApiConfig,
+  input: {
+    query?: Record<string, unknown>;
+    name?: string;
+    programRef?: string;
+    consensus?: WalletConsensusRequestPolicy;
+  } = {}
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(`/wallets/${config.walletId}/hmis/lookup-households`, normalizedBaseUrl(config.apiBaseUrl));
+  const payload = await postJson<Record<string, unknown>>(url, "HMIS household lookup", {
+    actor_did: requiredActorDid(config),
+    name: stringValue(input.query?.name) || input.name || "",
+    program_ref: stringValue(input.query?.program_ref ?? input.query?.programRef) || input.programRef || "",
     ...toConsensusRequestPayload(input.consensus)
   });
   return toWalletHmisOperationResult(payload);
@@ -1169,20 +1196,16 @@ export async function lookupHmisClients(
 export async function listHmisProgramLinks(
   config: WalletApiConfig,
   input: {
-    clientRef?: string;
-    programId?: string;
-    consentGrantId?: string;
+    name?: string;
+    programRef?: string;
     consensus?: WalletConsensusRequestPolicy;
-    proofPolicy?: WalletProofPolicy;
   } = {}
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(`/wallets/${config.walletId}/hmis/program-links`, normalizedBaseUrl(config.apiBaseUrl));
   const payload = await postJson<Record<string, unknown>>(url, "HMIS program links", {
     actor_did: requiredActorDid(config),
-    client_ref: input.clientRef,
-    consent_grant_id: input.consentGrantId,
-    program_id: input.programId,
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
+    name: input.name || "",
+    program_ref: input.programRef || "",
     ...toConsensusRequestPayload(input.consensus)
   });
   return toWalletHmisOperationResult(payload);
@@ -1191,22 +1214,32 @@ export async function listHmisProgramLinks(
 export async function createHmisReferralDraft(
   config: WalletApiConfig,
   input: {
-    clientRef: string;
-    programId: string;
-    fields?: Record<string, unknown>;
-    consentGrantId?: string;
+    localSubjectRef?: string;
+    destinationProgramRef?: string;
+    servicePlanId?: string;
+    serviceDocId?: string;
+    providerName?: string;
+    programName?: string;
+    summary?: string;
+    eligibilityNotes?: string;
+    contactNotes?: string;
+    metadata?: Record<string, unknown>;
     consensus?: WalletConsensusRequestPolicy;
-    proofPolicy?: WalletProofPolicy;
   }
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(`/wallets/${config.walletId}/hmis/referral-drafts`, normalizedBaseUrl(config.apiBaseUrl));
   const payload = await postJson<Record<string, unknown>>(url, "HMIS referral draft", {
     actor_did: requiredActorDid(config),
-    client_ref: input.clientRef,
-    consent_grant_id: input.consentGrantId,
-    fields: input.fields || {},
-    program_id: input.programId,
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
+    local_subject_ref: input.localSubjectRef || "",
+    destination_program_ref: input.destinationProgramRef || "",
+    service_plan_id: input.servicePlanId || "",
+    service_doc_id: input.serviceDocId || "",
+    provider_name: input.providerName || "",
+    program_name: input.programName || "",
+    summary: input.summary || "",
+    eligibility_notes: input.eligibilityNotes || "",
+    contact_notes: input.contactNotes || "",
+    metadata: input.metadata || {},
     ...toConsensusRequestPayload(input.consensus)
   });
   return toWalletHmisOperationResult(payload);
@@ -1216,10 +1249,17 @@ export async function updateHmisReferralDraft(
   config: WalletApiConfig,
   referralDraftId: string,
   input: {
-    fields?: Record<string, unknown>;
-    status?: string;
+    localSubjectRef?: string;
+    destinationProgramRef?: string;
+    servicePlanId?: string;
+    serviceDocId?: string;
+    providerName?: string;
+    programName?: string;
+    summary?: string;
+    eligibilityNotes?: string;
+    contactNotes?: string;
+    metadata?: Record<string, unknown>;
     consensus?: WalletConsensusRequestPolicy;
-    proofPolicy?: WalletProofPolicy;
   }
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(
@@ -1228,9 +1268,16 @@ export async function updateHmisReferralDraft(
   );
   const payload = await patchJson<Record<string, unknown>>(url, "HMIS referral draft update", {
     actor_did: requiredActorDid(config),
-    fields: input.fields || {},
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
-    status: input.status,
+    local_subject_ref: input.localSubjectRef,
+    destination_program_ref: input.destinationProgramRef,
+    service_plan_id: input.servicePlanId,
+    service_doc_id: input.serviceDocId,
+    provider_name: input.providerName,
+    program_name: input.programName,
+    summary: input.summary,
+    eligibility_notes: input.eligibilityNotes,
+    contact_notes: input.contactNotes,
+    metadata: input.metadata,
     ...toConsensusRequestPayload(input.consensus)
   });
   return toWalletHmisOperationResult(payload);
@@ -1241,7 +1288,6 @@ export async function validateHmisReferralDraft(
   referralDraftId: string,
   input: {
     consensus?: WalletConsensusRequestPolicy;
-    proofPolicy?: WalletProofPolicy;
   } = {}
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(
@@ -1250,7 +1296,6 @@ export async function validateHmisReferralDraft(
   );
   const payload = await postJson<Record<string, unknown>>(url, "HMIS referral draft validation", {
     actor_did: requiredActorDid(config),
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
     ...toConsensusRequestPayload(input.consensus)
   });
   return toWalletHmisOperationResult(payload);
@@ -1261,7 +1306,6 @@ export async function submitHmisReferralDraft(
   referralDraftId: string,
   input: {
     consensus?: WalletConsensusRequestPolicy;
-    proofPolicy?: WalletProofPolicy;
   } = {}
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(
@@ -1270,8 +1314,85 @@ export async function submitHmisReferralDraft(
   );
   const payload = await postJson<Record<string, unknown>>(url, "HMIS referral draft submit", {
     actor_did: requiredActorDid(config),
-    proof_policy: toProofPolicyPayload(input.proofPolicy),
     ...toConsensusRequestPayload(input.consensus)
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function verifyHmisMatch(
+  config: WalletApiConfig,
+  input: {
+    entityType: string;
+    localRef: string;
+    externalId: string;
+    confidence: number;
+  }
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(`/wallets/${config.walletId}/hmis/matches/verify`, normalizedBaseUrl(config.apiBaseUrl));
+  const payload = await postJson<Record<string, unknown>>(url, "HMIS match verify", {
+    actor_did: requiredActorDid(config),
+    entity_type: input.entityType,
+    local_ref: input.localRef,
+    external_id: input.externalId,
+    confidence: input.confidence
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function rejectHmisMatch(
+  config: WalletApiConfig,
+  input: {
+    entityType: string;
+    localRef: string;
+    externalId: string;
+    reason: string;
+  }
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(`/wallets/${config.walletId}/hmis/matches/reject`, normalizedBaseUrl(config.apiBaseUrl));
+  const payload = await postJson<Record<string, unknown>>(url, "HMIS match reject", {
+    actor_did: requiredActorDid(config),
+    entity_type: input.entityType,
+    local_ref: input.localRef,
+    external_id: input.externalId,
+    reason: input.reason
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function listHmisSyncTimeline(
+  config: WalletApiConfig,
+  input: { localRef?: string } = {}
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(`/wallets/${config.walletId}/hmis/timeline`, normalizedBaseUrl(config.apiBaseUrl));
+  if (input.localRef) {
+    url.searchParams.set("local_ref", input.localRef);
+  }
+  const payload = await fetchJson<Record<string, unknown>>(url, "HMIS sync timeline");
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function listHmisReconciliationQueue(
+  config: WalletApiConfig,
+  input: { status?: string } = {}
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(`/wallets/${config.walletId}/hmis/reconciliation-queue`, normalizedBaseUrl(config.apiBaseUrl));
+  if (input.status) {
+    url.searchParams.set("status", input.status);
+  }
+  const payload = await fetchJson<Record<string, unknown>>(url, "HMIS reconciliation queue");
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function retryHmisReconciliationItem(
+  config: WalletApiConfig,
+  itemId: string
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(
+    `/wallets/${config.walletId}/hmis/reconciliation-queue/${itemId}/retry`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const payload = await postJson<Record<string, unknown>>(url, "HMIS reconciliation retry", {
+    actor_did: requiredActorDid(config)
   });
   return toWalletHmisOperationResult(payload);
 }
@@ -3255,9 +3376,15 @@ function toWalletHmisOperationResult(payload: Record<string, unknown>): WalletHm
     status: sanitizeConsensusString(payload.status) || undefined,
     summary: sanitizeConsensusString(payload.summary) || undefined,
     clients: arrayOfRecords(payload.clients),
+    households: arrayOfRecords(payload.households),
     programs: arrayOfRecords(payload.programs ?? payload.program_links),
+    rejectedCandidates: arrayOfRecords(payload.rejected_candidates),
     referralDraft: isRecord(payload.referral_draft) ? sanitizePublicRecord(payload.referral_draft) : undefined,
+    referralDrafts: arrayOfRecords(payload.referral_drafts),
     eligibility: isRecord(payload.eligibility) ? sanitizePublicRecord(payload.eligibility) : undefined,
+    events: arrayOfRecords(payload.events),
+    items: arrayOfRecords(payload.items),
+    externalRefs: isRecord(payload.external_refs) ? sanitizePublicRecord(payload.external_refs) : undefined,
     raw: sanitizePublicRecord(payload),
     consensus: sanitizeConsensusMetadata(payload.consensus)
   };

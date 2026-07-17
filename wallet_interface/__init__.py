@@ -6,7 +6,8 @@ try:
     from .api import create_app
     from .app_service import WalletInterfaceService
 except ImportError:
-    pass
+    from .hmis.workflow import HmisWorkflowService as WalletInterfaceService
+    from .hmis.workflow import create_app
 
 __all__ = [
     "ServiceMatch",

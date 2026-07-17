@@ -24,7 +24,7 @@ Track guide:
 - `ops`: environment setup, release gates, monitoring, incident response
 
 ## HMIS-000 HMIS Control Plane
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: platform
@@ -34,7 +34,7 @@ Track guide:
 - Acceptance: The HMIS backlog can be parsed, durable task state is written, the next HMIS task is selected, and the supervisor can revise sequence without mutating source code.
 
 ## HMIS-010 Governance And Access Matrix
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: governance
@@ -44,7 +44,7 @@ Track guide:
 - Acceptance: Named actors, read/write scopes, approval owners, environment boundaries, and launch workflow permissions are documented for the first deployment.
 
 ## HMIS-011 Consent And Disclosure Contract
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: privacy
@@ -54,7 +54,7 @@ Track guide:
 - Acceptance: HMIS reads and writes can be evaluated against explicit consent scope, operational authority, expiry, revocation, and audit evidence rules.
 
 ## HMIS-020 Canonical HMIS Models And Adapter Interface
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: platform
@@ -64,7 +64,7 @@ Track guide:
 - Acceptance: Canonical client, household, program link, referral, enrollment, consent, sync event, and adapter result contracts are stable and independently testable.
 
 ## HMIS-021 Environment Config And Feature Flags
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: platform
@@ -74,7 +74,7 @@ Track guide:
 - Acceptance: The app can distinguish disabled, sandbox, UAT, and production HMIS modes and can scope settings per deployment or CoC.
 
 ## HMIS-030 Field Mapping Registry
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: data
@@ -84,7 +84,7 @@ Track guide:
 - Acceptance: Local-to-canonical and canonical-to-adapter mappings are versioned, validated, and reject missing required fields or stale code values.
 
 ## HMIS-031 Program And Provider Link Registry
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: data
@@ -94,7 +94,7 @@ Track guide:
 - Acceptance: 211 provider/service records can be mapped to HMIS project or program identifiers with confidence, status, and review metadata.
 
 ## HMIS-032 Client And Household Matching Engine
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: data
@@ -104,7 +104,7 @@ Track guide:
 - Acceptance: Matching returns scored candidates, preserves rejected candidates, and never auto-verifies ambiguous matches.
 
 ## HMIS-040 Audit Event Schema And Storage
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: api
@@ -114,7 +114,7 @@ Track guide:
 - Acceptance: Every lookup, draft, submit, sync, reject, retry, and reconciliation action emits durable audit events with local and external references.
 
 ## HMIS-041 HMIS Service Orchestrator
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: api
@@ -124,7 +124,7 @@ Track guide:
 - Acceptance: The service layer enforces policy gates, runs adapter calls, returns normalized results, and records retry and reconciliation state.
 
 ## HMIS-042 Manual Review Adapter
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: api
@@ -134,7 +134,7 @@ Track guide:
 - Acceptance: Staff can create structured HMIS drafts and review packets without requiring a live vendor connection.
 
 ## HMIS-043 Vendor API Adapter Skeleton
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: api
@@ -144,7 +144,7 @@ Track guide:
 - Acceptance: The adapter translates canonical payloads to vendor transport contracts, handles auth, normalizes errors, and can run entirely against fixtures.
 
 ## HMIS-044 File Exchange Adapter Skeleton
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: api
@@ -154,7 +154,7 @@ Track guide:
 - Acceptance: The adapter produces deterministic outbound batches, records staging metadata, and supports import reconciliation from fixture files.
 
 ## HMIS-050 Read-Only Lookup API
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: api
@@ -164,7 +164,7 @@ Track guide:
 - Acceptance: Authorized staff can search for clients, households, and linked programs through a stable API that masks or limits fields by policy.
 
 ## HMIS-051 Referral Draft And Validation API
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: api
@@ -174,7 +174,7 @@ Track guide:
 - Acceptance: The API can create, validate, and persist referral drafts with mapping, consent, and required-field checks.
 
 ## HMIS-052 Submission, Retry, And Reconciliation Jobs
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: api
@@ -184,7 +184,7 @@ Track guide:
 - Acceptance: The system prevents duplicate submissions, retries transient failures, and produces a reviewable reconciliation queue.
 
 ## HMIS-060 Abby Lookup Panel
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ui
@@ -194,7 +194,7 @@ Track guide:
 - Acceptance: Staff can run HMIS lookup from relevant Abby screens and see masked candidate results, link status, and last-sync metadata.
 
 ## HMIS-061 Match Review And Link Workflow
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ui
@@ -204,7 +204,7 @@ Track guide:
 - Acceptance: Staff can review candidate confidence drivers, verify a link, reject a candidate, and preserve rejection history.
 
 ## HMIS-062 Referral Draft UI
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ui
@@ -214,7 +214,7 @@ Track guide:
 - Acceptance: Staff can prepare a referral draft from an Abby service plan, resolve validation errors, and submit or stage it for review.
 
 ## HMIS-063 Sync Timeline And Reconciliation Queue
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ui
@@ -224,7 +224,7 @@ Track guide:
 - Acceptance: Abby shows submission history, sync outcome, retry state, and unresolved reconciliation items without exposing raw transport payloads.
 
 ## HMIS-070 Prompt And Disclosure Guards
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: privacy
@@ -234,7 +234,7 @@ Track guide:
 - Acceptance: HMIS-linked data is only exposed to chat and summaries when the actor, scope, and purpose are authorized and auditable.
 
 ## HMIS-071 Threat Model And Retention Review
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: privacy
@@ -244,7 +244,7 @@ Track guide:
 - Acceptance: HMIS trust boundaries, incident classes, retention rules, and logging constraints are documented and tied to release gates.
 
 ## HMIS-080 Sandbox Fixtures And End-To-End Test Harness
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops
@@ -254,7 +254,7 @@ Track guide:
 - Acceptance: Synthetic HMIS fixtures cover lookup, match review, referral draft, submit, rejection, retry, and reconciliation flows.
 
 ## HMIS-081 Runbook And Launch Checklist
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops
@@ -264,7 +264,7 @@ Track guide:
 - Acceptance: Operators have environment setup, credential rotation, outage handling, reconciliation, monitoring, and launch gates documented.
 
 ## HMIS-090 Production Readiness Gate
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops

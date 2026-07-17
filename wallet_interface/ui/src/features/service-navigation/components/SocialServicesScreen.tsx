@@ -13,6 +13,11 @@ import {
 import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import { SavedServicesPanel } from "../../../shared/components/SavedServicesPanel";
 import { ServiceQuickActions } from "../../../shared/components/ServiceQuickActions";
+import { HmisLookupPanel } from "../../../components/hmis/HmisLookupPanel";
+import { HmisMatchReviewDrawer } from "../../../components/hmis/HmisMatchReviewDrawer";
+import { HmisReferralDraftPanel } from "../../../components/hmis/HmisReferralDraftPanel";
+import { HmisReconciliationQueue } from "../../../components/hmis/HmisReconciliationQueue";
+import { HmisSyncTimeline } from "../../../components/hmis/HmisSyncTimeline";
 import { search211Info } from "../../../services/graphRagService";
 import { serviceMatches } from "../../../services/mockAbbyService";
 import { saveWalletService, type WalletApiConfig } from "../../../services/walletApi";
@@ -68,6 +73,8 @@ export function SocialServicesScreen({
   const [searchError, setSearchError] = useState("");
   const [savingDocIds, setSavingDocIds] = useState<string[]>([]);
   const [saveError, setSaveError] = useState("");
+  const [selectedHmisCandidates, setSelectedHmisCandidates] = useState<Array<Record<string, unknown>>>([]);
+  const [hmisDrawerOpen, setHmisDrawerOpen] = useState(false);
   const [catalogCounts, setCatalogCounts] = useState({
     serviceCount: 0,
     phoneCount: 0,
@@ -250,6 +257,32 @@ export function SocialServicesScreen({
         siteLocale={siteLocale}
         servicePlans={servicePlans}
       />
+      {apiConfig?.walletId && apiConfig?.actorDid ? (
+        <>
+          <HmisLookupPanel
+            apiConfig={apiConfig}
+            onSelectCandidate={(candidate) => {
+              setSelectedHmisCandidates([candidate]);
+              setHmisDrawerOpen(true);
+            }}
+          />
+          <HmisReferralDraftPanel
+            apiConfig={apiConfig}
+            destinationProgramRef="shelter-a"
+            localSubjectRef={`wallet:${apiConfig.walletId}`}
+          />
+          <HmisSyncTimeline apiConfig={apiConfig} />
+          <HmisReconciliationQueue apiConfig={apiConfig} />
+          <HmisMatchReviewDrawer
+            apiConfig={apiConfig}
+            candidates={selectedHmisCandidates}
+            entityType="client"
+            localRef={`wallet:${apiConfig.walletId}`}
+            onClose={() => setHmisDrawerOpen(false)}
+            open={hmisDrawerOpen}
+          />
+        </>
+      ) : null}
       <div className="category-grid">
         {categories.map((category) => (
           <button className="category-tile" key={category.query} onClick={() => void runSearch(category.query)} type="button">

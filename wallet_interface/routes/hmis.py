@@ -163,5 +163,62 @@ def create_router(service: WalletInterfaceService):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @router.post("/wallets/{wallet_id}/hmis/matches/verify")
+    def verify_hmis_match(wallet_id: str, request: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return app_service.verify_hmis_match(
+                wallet_id,
+                actor_did=str(request.get("actor_did") or ""),
+                entity_type=str(request.get("entity_type") or "client"),
+                local_ref=str(request.get("local_ref") or ""),
+                external_id=str(request.get("external_id") or ""),
+                confidence=float(request.get("confidence") or 0.0),
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/wallets/{wallet_id}/hmis/matches/reject")
+    def reject_hmis_match(wallet_id: str, request: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return app_service.reject_hmis_match(
+                wallet_id,
+                actor_did=str(request.get("actor_did") or ""),
+                entity_type=str(request.get("entity_type") or "client"),
+                local_ref=str(request.get("local_ref") or ""),
+                external_id=str(request.get("external_id") or ""),
+                reason=str(request.get("reason") or "staff_rejected"),
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.get("/wallets/{wallet_id}/hmis/timeline")
+    def list_hmis_timeline(wallet_id: str, local_ref: str | None = None) -> dict[str, Any]:
+        try:
+            return app_service.list_hmis_sync_timeline(wallet_id, local_ref=local_ref)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.get("/wallets/{wallet_id}/hmis/reconciliation-queue")
+    def list_hmis_reconciliation_queue(wallet_id: str, status: str | None = None) -> dict[str, Any]:
+        try:
+            return app_service.list_hmis_reconciliation_queue(wallet_id, status=status)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/wallets/{wallet_id}/hmis/reconciliation-queue/{item_id}/retry")
+    def retry_hmis_reconciliation_queue_item(
+        wallet_id: str,
+        item_id: str,
+        request: dict[str, Any],
+    ) -> dict[str, Any]:
+        try:
+            return app_service.retry_hmis_reconciliation_item(
+                wallet_id,
+                item_id,
+                actor_did=str(request.get("actor_did") or ""),
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
 
     return router

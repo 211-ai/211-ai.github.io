@@ -15,6 +15,7 @@ export type PromptRedactionCategory =
   | "document_contents"
   | "provider_conversations"
   | "raw_query_history"
+  | "hmis_linked_record"
   | "unsupported_value";
 
 export interface PromptRedaction {
@@ -107,6 +108,10 @@ const safeMetadataKeyPattern = /(count|enabled|status|selected|visible|unlocked|
 
 const categoryKeyPatterns: Array<{ category: PromptRedactionCategory; pattern: RegExp }> = [
   {
+    category: "hmis_linked_record",
+    pattern: /(hmis|referral|enrollment|external.(client|household|program|project|referral)|household|clientlink|programlink|sync)/i
+  },
+  {
     category: "precise_location",
     pattern: /(address|coordinates?|currentlocation|geo|gps|lat|latitude|lng|lon|longitude|preciselocation|street|zip|postal)/i
   },
@@ -174,6 +179,44 @@ export function canIncludePrivateWalletContext(context: SurfaceContext, options:
       context.privateContextAllowed &&
       hasPermissionLevel(context.permissionLevel, "wallet_private")
   );
+}
+
+export interface HmisPromptExposureContext {
+  actorRole: string;
+  purpose: string;
+  scope: string[];
+}
+
+export function isHmisPromptExposureAllowed(context: HmisPromptExposureContext): boolean {
+  const role = context.actorRole.trim().toLowerCase();
+  const purpose = context.purpose.trim().toLowerCase();
+  const scope = new Set(context.scope.map((item) => item.trim().toLowerCase()).filter(Boolean));
+  if (!role || !purpose || scope.size === 0) {
+    return false;
+  }
+  if (!scope.has("hmis") && !scope.has("hmis_read") && !scope.has("hmis_write")) {
+    return false;
+  }
+  return ["case_manager", "supervisor", "hmis_operator"].includes(role) && !purpose.includes("general_chat");
+}
+
+export function redactHmisPromptContext(
+  payload: Record<string, unknown>,
+  context: HmisPromptExposureContext
+): Record<string, unknown> {
+  if (isHmisPromptExposureAllowed(context)) {
+    return payload;
+  }
+  const redacted: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(payload)) {
+    if (/(hmis|external_|referral|enrollment|household|program_link)/i.test(key)) {
+      redacted[key] = "[redacted hmis linked record]";
+    } else {
+      redacted[key] = value;
+    }
+  }
+  redacted.hmisRedacted = true;
+  return redacted;
 }
 
 export function buildPromptSafeSurfaceContext(
