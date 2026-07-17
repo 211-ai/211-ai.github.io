@@ -7,7 +7,6 @@ from pathlib import Path
 import duckdb
 
 from ..config import Config
-from ..orchestration.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, FetchResult
 from ..parsing.processor import DataProcessor
 from .duckdb_etl import DuckDBETLWarehouse
 
@@ -19,6 +18,11 @@ def reextract_warehouse(
     source_run_filter: str = "",
     limit: int = 0,
 ) -> dict[str, object]:
+    # Deferred import: agentic_daemon imports enrichment.duckdb_etl; importing
+    # it at module level would create a circular import through the enrichment
+    # package __init__.py.
+    from ..orchestration.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, FetchResult  # noqa: PLC0415
+
     cfg = Config(raw_dir=Path("data/reextract/raw"), processed_dir=Path("data/reextract/processed"), request_delay=0)
     extractor = AgenticCrawlerDaemon(
         cfg,

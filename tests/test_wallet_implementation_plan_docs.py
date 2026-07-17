@@ -9,7 +9,7 @@ RETENTION_POLICY = Path("docs/specs/WALLET_RETENTION_POLICY.md")
 TARGET_SIGNOFF = Path("docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF.md")
 TARGET_SIGNOFF_PACKET = Path("docs/planning/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json")
 UI_APP = Path("wallet_interface/ui/src/app/App.tsx")
-UI_API = Path("wallet_interface/ui/src/services/walletApi.ts")
+UI_API = Path("wallet_interface/ui/src/features/wallet/lib/walletApi.ts")
 
 
 def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:

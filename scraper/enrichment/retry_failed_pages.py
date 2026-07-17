@@ -5,10 +5,14 @@ import json
 from pathlib import Path
 
 from ..duckdb_state import DuckDBCrawlStore
-from ..orchestration.agentic_daemon import CrawlItem, is_junk_failed_url, is_probably_retryable_error
 
 
 def classify_failed_urls(entries: list[dict[str, str | int]]) -> dict[str, list[dict[str, str | int]]]:
+    # Deferred import: agentic_daemon imports enrichment.duckdb_etl; importing
+    # it at module level would create a circular import through the enrichment
+    # package __init__.py.
+    from ..orchestration.agentic_daemon import is_junk_failed_url, is_probably_retryable_error  # noqa: PLC0415
+
     retryable: list[dict[str, str | int]] = []
     permanent: list[dict[str, str | int]] = []
     for entry in entries:
@@ -30,6 +34,8 @@ def enqueue_retryable_failed_urls(
     limit: int = 50,
     max_failures: int = 3,
 ) -> dict[str, int]:
+    from ..orchestration.agentic_daemon import CrawlItem  # noqa: PLC0415
+
     store = DuckDBCrawlStore(state_db_path)
     classified = classify_failed_urls(store.failed_entries())
     retryable = [
