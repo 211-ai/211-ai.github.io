@@ -8,7 +8,7 @@ Pure unit tests that run without network access, databases, or external services
 | --- | --- | --- | --- |
 | `scraper/config.py` | `test_scraper_config.py` | ✅ | 15 |
 | `scraper/acquisition/` | `test_scraper_acquisition.py` | ✅ (skip on missing deps) | 6 |
-| `scraper/parsing/` + `processor.py` | `test_scraper_parsing.py` | ✅ (skip on missing deps) | 16 |
+| `scraper/parsing/` + `parsing/processor.py` | `test_scraper_parsing.py` | ✅ (skip on missing deps) | 16 |
 | `scraper/enrichment/` | `test_scraper_enrichment.py` | ✅ (skip on missing deps) | 8 |
 | `scraper/export/` | `test_scraper_export.py` | ✅ (skip on missing deps) | 6 |
 | `scraper/orchestration/` | `test_scraper_orchestration.py` | ✅ (skip on missing deps) | 7 |
