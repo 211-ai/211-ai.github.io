@@ -38,6 +38,8 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 30 |
 | `wallet_interface/schemas/` | `test_wallet_schemas.py` | ✅ (Pydantic tests skip when not installed) | 22 |
 | `wallet_interface/schemas/app_schemas.py` | `test_portal_schemas.py` | ✅ | 15 |
+| `wallet_interface/helpers/_auth.py` (magic UCAN) | `test_wallet_auth_magic_ucan.py` | ✅ | 44 |
+| `wallet_interface/schemas/proof_schemas.py` + `record_schemas.py` + `export_schemas.py` | `test_wallet_proof_record_export_schemas.py` | ✅ | 31 |
 
 ## Run unit tests
 
