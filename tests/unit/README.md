@@ -27,6 +27,12 @@ Pure unit tests that run without network access, databases, or external services
 | `wallet_interface/helpers/_tts_gradio.py` | `test_tts_gradio.py` | ✅ | 74 |
 | `wallet_interface/helpers/_tts_http.py` | `test_tts_http.py` | ✅ | 33 |
 | `wallet_interface/helpers/_tts_normalization.py` | `test_tts_normalization.py` | ✅ | 67 |
+| `wallet_interface/helpers/_tts_normalization.py` (extended) | `test_tts_normalization_extended.py` | ✅ | 51 |
+| `wallet_interface/helpers/_tts_pipeline.py` | `test_tts_pipeline.py` | ✅ | 11 |
+| `wallet_interface/helpers/_tts_client.py` | `test_tts_client.py` | ✅ | 27 |
+| `wallet_interface/helpers/_tts.py` (routing) | `test_tts_routing.py` | ✅ | 16 |
+| `wallet_interface/helpers/_auth.py` (notify) | `test_wallet_auth_notify.py` | ✅ | 17 |
+| `wallet_interface/helpers/_auth.py` (UCAN) | `test_wallet_auth_ucan.py` | ✅ | 18 |
 | `wallet_interface/ops.py` (helpers) | `test_wallet_ops_helpers.py` | ✅ | 27 |
 | `wallet_interface/ops.py` (validation) | `test_wallet_ops_validation.py` | ✅ | 21 |
 | `wallet_interface/service_matching.py` | `test_service_matching.py` | ✅ | 30 |
