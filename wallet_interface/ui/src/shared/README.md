@@ -4,18 +4,25 @@ This directory contains domain-agnostic UI primitives and utility modules that c
 
 ## `components/`
 
-UI primitives with no domain coupling: buttons, inputs, modals, layout components, error boundaries. These components must not import from any feature slice in `../features/`.
+UI primitives and cross-feature panels with no domain coupling. Components here must not import from any feature slice in `../features/`.
+
+**Contents:** `ui.tsx` (design-system primitives), `InteractionTimeline`, `SavedServicesPanel`, `ServicePlanSharingPanel`, `ServiceProvenancePanel`, `ServiceQuickActions`, `WorkerServicePlanView`, `WorldIdVerificationPanel`.
+
+Old paths under `../components/agent/`, `../components/services/`, and `../components/ui.tsx` are backward-compatibility re-export stubs.
 
 ## `lib/`
 
-Cross-cutting utilities, storage adapters, and infrastructure helpers:
+Cross-cutting utilities and infrastructure helpers shared across feature slices.
 
-- Storage adapters (Filecoin, Walrus) — `../services/filecoinStorage.ts`, `../services/walrusStorage.ts`
-- Locale and localization helpers — `../lib/localization.ts`
-- Runtime config — `../lib/runtimeConfig.ts`
-- Backend detection — `../lib/backendDetection.ts`
-- Worker service wrappers — `../lib/clientAudioReplyService.ts`, `../lib/clientLLMWorkerService.ts`, etc.
+**Contents:**
+- `runtimeConfig.ts` — runtime API endpoint and feature-flag config
+- `localization.ts` — locale detection and i18n helpers
+- `backendDetection.ts` — backend availability detection
+- `publicEndpointPolicy.ts` — public vs. authenticated endpoint policy
+- `warningSuppressionUtils.ts` — dev-mode console warning suppression
 
-## Migration approach
+Old paths under `../lib/runtimeConfig.ts`, `../lib/localization.ts`, `../lib/backendDetection.ts`, `../lib/publicEndpointPolicy.ts`, and `../lib/warningSuppressionUtils.ts` are backward-compatibility re-export stubs.
 
-Shared utilities are being migrated incrementally from `../lib/`, `../services/`, and `../components/`. During migration, existing files remain in their current locations. New shared utilities should be added here.
+## Migration status
+
+Shared utilities and components have been migrated from `../lib/`, `../services/`, and `../components/`. All original paths are backward-compatibility re-export stubs. New shared utilities should be added here.

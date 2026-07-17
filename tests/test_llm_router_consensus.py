@@ -9,18 +9,26 @@ import textwrap
 from pathlib import Path
 from typing import Any
 
-from ipfs_accelerate_py import llm_router
-from ipfs_accelerate_py.llm_consensus import (
-    ConsensusReceipt,
-    ConsensusRequest,
-    LocalConsensusOperator,
-    load_consensus_config,
-)
-from ipfs_accelerate_py.llm_router import (
-    ChatCompletionResponse,
-    _canonicalize_messages,
-    chat_completions_create_consensus,
-)
+import pytest
+
+# ipfs_accelerate_py.llm_router is a lazy-load proxy that resolves symbols from
+# ipfs_datasets_py.llm_router at attribute-access time. Guard symbol access so
+# the whole file is skipped when that backend module is absent.
+try:
+    from ipfs_accelerate_py import llm_router
+    from ipfs_accelerate_py.llm_consensus import (
+        ConsensusReceipt,
+        ConsensusRequest,
+        LocalConsensusOperator,
+        load_consensus_config,
+    )
+    from ipfs_accelerate_py.llm_router import (
+        ChatCompletionResponse,
+        _canonicalize_messages,
+        chat_completions_create_consensus,
+    )
+except (ImportError, ModuleNotFoundError):
+    pytest.skip("ipfs_accelerate_py.llm_router backend not available in this environment", allow_module_level=True)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

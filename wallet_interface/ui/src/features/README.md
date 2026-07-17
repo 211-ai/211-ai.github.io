@@ -2,18 +2,20 @@
 
 This directory contains the feature-slice modules for the Abby UI. Each slice owns its screens, domain-specific services, and client-side state without coupling to other slices.
 
-## Planned layout
+## Completed layout
 
-| Slice | Current source (to migrate) | Responsibility |
+| Slice | Canonical contents | Responsibility |
 | --- | --- | --- |
-| `wallet/` | `app/screens/ProofCenterScreen.tsx`, `app/screens/ExportCenterScreen.tsx`, `app/screens/RecipientAccessScreen.tsx`, `services/walletApi.ts`, `services/walletProofReview.ts` | Wallet screens, wallet API client, proof review UI |
-| `service-navigation/` | `app/screens/HomeScreen.tsx`, `app/screens/SocialServicesScreen.tsx`, `app/screens/ShelterScreen.tsx`, `app/screens/BenefitsProtectionScreen.tsx`, `app/screens/CheckInScreen.tsx`, `app/screens/ServicePlanScreen.tsx`, `app/screens/ServiceDetailScreen.tsx`, `services/serviceActionService.ts`, `services/serviceInteractionService.ts`, `services/graphRagService.ts` | Service search, service detail, service plan, interactions |
-| `agent/` | `agent/`, `services/agentChatService.ts`, `lib/graphrag/`, workers for LLM and audio | Agent/chat flows, LLM workers, audio chat |
-| `interactions/` | `app/InteractionsScreen.tsx`, `services/serviceInteractionService.ts` | Interaction history screen and service |
-| `calendar/` | `app/CalendarScreen.tsx`, `lib/calendar/` | Calendar screen |
+| `wallet/` | `components/` (10 screens), `lib/` (walletApi, walletProofReview, filecoinStorage, walrusStorage, capabilities, mockAbbyService, types) | Wallet screens, wallet API client, proof review UI, storage adapters |
+| `service-navigation/` | `components/` (6 screens), `lib/` (graphRagService, serviceActionService, serviceInteractionService, backendDetectionWorkerService, clientEmbeddingWorkerService, graphrag/), `graphrag.ts` | Service search, service detail, service plan, check-in, graphRAG |
+| `agent/` | `components/` (11 components), `lib/` (chatController, agentChatService, LLM/audio clients, tools/, etc.), `workers/` (5 workers) | Agent/chat flows, LLM workers, audio chat |
+| `interactions/` | `components/` (InteractionsScreen, ClientMessagesScreen), `lib/types.ts` | Interaction history screen and service |
+| `calendar/` | `components/CalendarScreen.tsx`, `lib/ics.ts`, `lib/types.ts` | Calendar screen and ICS export |
 
-## Migration approach
+## Migration status
 
-Files in `../app/`, `../components/`, `../lib/`, `../services/`, `../agent/`, and `../workers/` are being migrated incrementally into this structure. During migration, existing files remain in their current locations and continue to function. New feature development should target the feature-slice structure.
+Migration from the flat `../app/screens/`, `../services/`, `../agent/`, `../workers/`, and `../lib/` directories into this feature-slice structure is **complete**. All original paths remain as backward-compatibility re-export stubs so that any remaining references continue to compile without modification.
 
-See `ARCHITECTURE.md` at the repository root for the target layout.
+New feature development should target this feature-slice structure directly.
+
+See `ARCHITECTURE.md` at the repository root for the full migration record.
