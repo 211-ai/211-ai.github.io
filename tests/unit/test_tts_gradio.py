@@ -8,8 +8,6 @@ from __future__ import annotations
 import io
 import zipfile
 
-import pytest
-
 from wallet_interface.helpers._tts_gradio import (
     _dedupe_gradio_references,
     _default_indextts_reference_wav,
@@ -106,7 +104,6 @@ class TestIndeXttsBatchRequestData:
     def test_single_text_batch_count_zero(self):
         result = _indextts_batch_request_data(texts=["only"], voice_description=None, reference_audio=None)
         # len(text_list) if len > 1 else 0 → 0 for single item
-        import json
         assert result[16] == 0
 
     def test_multi_text_batch_count(self):

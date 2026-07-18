@@ -20,7 +20,6 @@ import re
 import threading
 import time
 import wave
-from collections.abc import Sequence
 from contextlib import contextmanager
 from typing import Any
 

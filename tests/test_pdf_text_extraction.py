@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+
 from scraper.pdf_text_extraction import extract_pdf_text_from_bytes, is_pdf_document
 
 

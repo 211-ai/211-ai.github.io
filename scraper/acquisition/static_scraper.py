@@ -8,9 +8,8 @@ Uses requests + BeautifulSoup.
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from wallet_interface.helpers._tts_normalization import (
     _digits_to_words,
     _domain_to_spoken_site,

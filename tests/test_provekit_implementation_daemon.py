@@ -6,7 +6,6 @@ from pathlib import Path
 
 from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import TodoImplementationDaemon, TodoTaskState
 from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import TodoImplementationSupervisor
-
 from scripts.portal_implementation_daemon import PortalImplementationDaemon
 from scripts.portal_implementation_supervisor import PortalImplementationSupervisor
 from scripts.provekit_implementation_daemon import (

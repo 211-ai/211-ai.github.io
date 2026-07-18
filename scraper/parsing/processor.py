@@ -7,10 +7,8 @@ Run after BrowserScraper / StaticScraper have saved raw data.
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import re
-from pathlib import Path
 from typing import Any
 
 from ..config import Config

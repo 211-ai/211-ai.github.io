@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 

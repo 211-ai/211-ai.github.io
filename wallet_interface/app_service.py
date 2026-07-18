@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -34,9 +34,7 @@ from ipfs_datasets_py.wallet import (  # noqa: E402
 )
 from ipfs_datasets_py.wallet.audit import append_audit_event  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
-    resource_for_export,
     resource_for_location,
-    resource_for_record,
     resource_for_wallet,
 )
 

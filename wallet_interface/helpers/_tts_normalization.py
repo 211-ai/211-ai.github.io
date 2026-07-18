@@ -8,7 +8,6 @@ or ``ipfs_accelerate_py``.
 
 from __future__ import annotations
 
-import math
 import re
 from urllib import parse as urllib_parse
 

@@ -7,7 +7,6 @@ or optional deps are required.
 
 from __future__ import annotations
 
-import os
 import unittest
 from unittest.mock import MagicMock, patch
 

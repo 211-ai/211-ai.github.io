@@ -8,7 +8,11 @@ try:  # pragma: no cover - exercised when optional dependency is installed.
     from fastapi import APIRouter, HTTPException, status
 except ImportError:  # pragma: no cover
     APIRouter = None  # type: ignore[assignment]
-    HTTPException = None  # type: ignore[assignment]
+    class HTTPException(Exception):  # type: ignore[assignment]
+        def __init__(self, status_code: int = 500, detail: str = "") -> None:
+            super().__init__(detail)
+            self.status_code = status_code
+            self.detail = detail
     status = None  # type: ignore[assignment]
 
 from ipfs_datasets_py.wallet.ucan import invocation_to_token

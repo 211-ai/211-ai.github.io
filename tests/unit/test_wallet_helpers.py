@@ -6,8 +6,6 @@ or optional dependencies such as FastAPI or ipfs_datasets_py.
 
 from __future__ import annotations
 
-import base64
-
 import pytest
 
 # ---------------------------------------------------------------------------

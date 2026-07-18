@@ -6,7 +6,6 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..errors import HmisAdapterError
 from ..models import HmisActionType, HmisAdapterCapabilities, HmisAdapterResult
 
 TransportCallable = Callable[[str, Mapping[str, Any], Mapping[str, str]], Mapping[str, Any]]

@@ -8,8 +8,7 @@ logic — all without network access or optional dependencies.
 from __future__ import annotations
 
 import os
-import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 
 def _import_tts_http():

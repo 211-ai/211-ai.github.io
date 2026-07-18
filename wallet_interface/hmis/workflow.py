@@ -13,7 +13,11 @@ try:  # pragma: no cover
     from fastapi import FastAPI, HTTPException
 except Exception:  # pragma: no cover
     FastAPI = None  # type: ignore[assignment]
-    HTTPException = None  # type: ignore[assignment]
+    class HTTPException(Exception):  # type: ignore[assignment]
+        def __init__(self, status_code: int = 500, detail: str = "") -> None:
+            super().__init__(detail)
+            self.status_code = status_code
+            self.detail = detail
 
 from .adapters.file_exchange import FileExchangeHmisAdapter
 from .adapters.manual_review import ManualReviewHmisAdapter

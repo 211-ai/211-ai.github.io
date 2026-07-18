@@ -10,13 +10,9 @@ import json
 import os
 import re
 import secrets
-import smtplib
 import time
 from collections.abc import Mapping
-from email.message import EmailMessage
-from email.utils import make_msgid
 from typing import TYPE_CHECKING, Any
-from urllib import error as urllib_error
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
@@ -39,8 +35,12 @@ except ImportError:
 
 try:  # pragma: no cover
     from fastapi import HTTPException
-except ImportError:  # pragma: no cover
-    HTTPException = None  # type: ignore[assignment]
+except Exception:  # pragma: no cover
+    class HTTPException(Exception):  # type: ignore[assignment]
+        def __init__(self, status_code: int = 500, detail: str = "") -> None:
+            super().__init__(detail)
+            self.status_code = status_code
+            self.detail = detail
 
 
 def _extract_bearer_token(authorization: str | None) -> str:

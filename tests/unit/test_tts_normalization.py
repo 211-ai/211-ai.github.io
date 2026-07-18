@@ -6,8 +6,6 @@ standard library, so all tests run without optional dependencies.
 
 from __future__ import annotations
 
-import pytest
-
 from wallet_interface.helpers._tts_normalization import (
     _normalize_address_directions_and_highways,
     _normalize_address_prosody,

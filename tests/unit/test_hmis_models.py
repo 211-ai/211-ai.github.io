@@ -393,7 +393,7 @@ class TestHmisExecutionResult:
         assert dataclasses.is_dataclass(HmisExecutionResult)
 
     def test_consent_decision_defaults_none(self):
-        from wallet_interface.hmis.models import HmisActionType, HmisAdapterResult, HmisSyncEvent, HmisSyncStatus
+        from wallet_interface.hmis.models import HmisAdapterResult, HmisSyncEvent
         from wallet_interface.hmis.service import HmisExecutionResult
 
         result = HmisExecutionResult(

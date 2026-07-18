@@ -14,8 +14,8 @@ import pytest
 # Skip the entire module if the required dependencies are not installed
 try:
     from fastapi.testclient import TestClient  # noqa: F401
-    from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend  # noqa: F401
 
+    from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend  # noqa: F401
     from wallet_interface import ServiceRecord, WalletInterfaceService, create_app  # noqa: F401
     _DEPS_AVAILABLE = True
 except ImportError:

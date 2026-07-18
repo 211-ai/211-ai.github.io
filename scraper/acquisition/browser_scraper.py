@@ -18,13 +18,11 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
-import time
 from typing import Any
 from urllib.parse import urljoin
 
 from ..config import Config
-from ..utils import clean_text, rate_limit
+from ..utils import clean_text
 
 logger = logging.getLogger("scraper.browser")
 
