@@ -31,6 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 wallet = [
+  "anyio>=4.4,<5.0",
   "fastapi>=0.110,<1.0",
   "uvicorn[standard]>=0.29,<1.0",
   "pydantic>=2.7,<3.0",
@@ -38,6 +39,7 @@ wallet = [
 ]
 test = [
   "pytest>=8.2,<9.0",
+  "httpx>=0.27,<1.0",
 ]
 lint = [
   "ruff>=0.4.0",
