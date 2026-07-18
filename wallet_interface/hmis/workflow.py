@@ -71,6 +71,7 @@ class HmisWorkflowService:
                 "verified_links": [],
                 "rejected_matches": [],
                 "reconciliation_items": [],
+                "enrollment_drafts": [],
             }
         payload = json.loads(path.read_text(encoding="utf-8"))
         for item in payload.get("wallets", []):
@@ -359,6 +360,136 @@ class HmisWorkflowService:
             "needs_review_count": sum(1 for item in queue_items if item.status == "needs_review") if dry_run else reviewed,
         }
 
+    # Phase 5: Enrollment draft flows
+
+    def list_hmis_enrollment_drafts(
+        self, wallet_id: str, *, status: str | None = None
+    ) -> list[dict[str, Any]]:
+        self._wallet(wallet_id)  # ensure wallet exists
+        drafts = [
+            item
+            for item in self._state.get("enrollment_drafts", [])
+            if isinstance(item, Mapping) and item.get("wallet_id") == wallet_id
+        ]
+        if status is not None:
+            drafts = [d for d in drafts if d.get("status") == status]
+        return sorted(
+            drafts,
+            key=lambda d: (d.get("updated_at") or d.get("created_at") or "", d.get("enrollment_draft_id") or ""),
+        )
+
+    def create_hmis_enrollment_draft(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str,
+        destination_program_ref: str,
+        entry_date: str = "",
+        household_ref: str = "",
+        summary: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        now = _now()
+        draft: dict[str, Any] = {
+            "enrollment_draft_id": f"hmis-enrollment-draft-{uuid4().hex}",
+            "wallet_id": wallet_id,
+            "actor_id": actor_did,
+            "local_subject_ref": str(local_subject_ref or "").strip(),
+            "destination_program_ref": str(destination_program_ref or "").strip(),
+            "entry_date": str(entry_date or ""),
+            "household_ref": str(household_ref or ""),
+            "summary": str(summary or ""),
+            "status": "draft",
+            "external_enrollment_id": None,
+            "created_at": now,
+            "updated_at": now,
+            "metadata": dict(metadata or {}),
+        }
+        errors: list[str] = []
+        if not draft["local_subject_ref"]:
+            errors.append("missing local_subject_ref")
+        if not draft["destination_program_ref"]:
+            errors.append("missing destination_program_ref")
+        draft["validation_errors"] = errors
+        if not errors:
+            draft["status"] = "ready"
+        self._state.setdefault("enrollment_drafts", []).append(draft)
+        self._save_state()
+        return draft
+
+    def submit_hmis_enrollment_draft(
+        self,
+        wallet_id: str,
+        enrollment_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = next(
+            (
+                d
+                for d in self._state.get("enrollment_drafts", [])
+                if isinstance(d, Mapping)
+                and d.get("enrollment_draft_id") == enrollment_draft_id
+                and d.get("wallet_id") == wallet_id
+            ),
+            None,
+        )
+        if draft is None:
+            raise ValueError("HMIS enrollment draft not found")
+        errors = list(draft.get("validation_errors") or [])
+        if errors:
+            raise ValueError("HMIS enrollment draft has validation errors")
+        from .models import HmisConsentRecord
+        consent = HmisConsentRecord(
+            consent_id=f"consent-enroll-{wallet_id}",
+            subject_ref=str(draft.get("local_subject_ref") or ""),
+            status="active",
+            basis="client_consent",
+            purpose="HMIS enrollment submission",
+            authorized_scopes=("hmis_submit_enrollment",),
+            authorized_program_refs=(str(draft.get("destination_program_ref") or ""),),
+            effective_at="2026-01-01T00:00:00+00:00",
+        )
+        result = self.submission_service.execute(
+            action_type="submit_enrollment",
+            payload={
+                "local_ref": enrollment_draft_id,
+                "local_subject_ref": draft.get("local_subject_ref"),
+                "destination_program_ref": draft.get("destination_program_ref"),
+                "entry_date": draft.get("entry_date"),
+                "household_ref": draft.get("household_ref"),
+                "summary": draft.get("summary"),
+            },
+            actor_id=actor_did,
+            consent=consent,
+            required_scope="hmis_submit_enrollment",
+        )
+        now = _now()
+        draft["updated_at"] = now
+        if result.adapter_result.ok:
+            draft["status"] = "submitted"
+            draft["external_enrollment_id"] = (
+                result.adapter_result.external_refs.get("enrollment_id")
+                or result.adapter_result.external_refs.get("external_id")
+                or ""
+            )
+        else:
+            draft["status"] = "retryable" if result.adapter_result.retryable else "needs_review"
+        self._state["enrollment_drafts"] = [
+            draft if d.get("enrollment_draft_id") == enrollment_draft_id else d
+            for d in self._state.get("enrollment_drafts", [])
+        ]
+        self._save_state()
+        return {
+            "status": draft["status"],
+            "summary": result.adapter_result.summary,
+            "enrollment_draft": dict(draft),
+            "external_refs": dict(result.adapter_result.external_refs),
+        }
+
 
 def create_app(*, service: HmisWorkflowService | None = None):
     if FastAPI is None:  # pragma: no cover
@@ -424,6 +555,38 @@ def create_app(*, service: HmisWorkflowService | None = None):
     def submit_referral_draft(wallet_id: str, referral_draft_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         try:
             return app_service.submit_hmis_referral_draft(wallet_id, referral_draft_id, actor_did=str(payload.get("actor_did") or ""))
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Phase 5: Enrollment draft endpoints
+
+    @app.get("/wallets/{wallet_id}/hmis/enrollment-drafts")
+    def list_enrollment_drafts(wallet_id: str, status: str | None = None) -> dict[str, Any]:
+        try:
+            return {"enrollment_drafts": app_service.list_hmis_enrollment_drafts(wallet_id, status=status)}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/enrollment-drafts")
+    def create_enrollment_draft(wallet_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return app_service.create_hmis_enrollment_draft(
+                wallet_id,
+                actor_did=str(payload.get("actor_did") or ""),
+                local_subject_ref=str(payload.get("local_subject_ref") or ""),
+                destination_program_ref=str(payload.get("destination_program_ref") or ""),
+                entry_date=str(payload.get("entry_date") or ""),
+                household_ref=str(payload.get("household_ref") or ""),
+                summary=str(payload.get("summary") or ""),
+                metadata=dict(payload.get("metadata") or {}),
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/enrollment-drafts/{enrollment_draft_id}/submit")
+    def submit_enrollment_draft(wallet_id: str, enrollment_draft_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return app_service.submit_hmis_enrollment_draft(wallet_id, enrollment_draft_id, actor_did=str(payload.get("actor_did") or ""))
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

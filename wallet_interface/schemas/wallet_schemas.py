@@ -108,6 +108,20 @@ class HmisReferralDraftSubmitRequest(BaseModel):
     actor_did: str
 
 
+class HmisEnrollmentDraftRequest(BaseModel):
+    actor_did: str
+    local_subject_ref: str
+    destination_program_ref: str
+    entry_date: str | None = None
+    household_ref: str | None = None
+    summary: str | None = None
+    metadata: dict[str, Any] | None = None
+
+
+class HmisEnrollmentDraftSubmitRequest(BaseModel):
+    actor_did: str
+
+
 class WalletRouterBaseRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -238,6 +252,8 @@ __all__ = [
     "HmisReferralDraftUpdateRequest",
     "HmisReferralDraftValidationRequest",
     "HmisReferralDraftSubmitRequest",
+    "HmisEnrollmentDraftRequest",
+    "HmisEnrollmentDraftSubmitRequest",
     "WalletRouterBaseRequest",
     "WalletEmbeddingsRouterRequest",
     "WalletLlmRouterRequest",

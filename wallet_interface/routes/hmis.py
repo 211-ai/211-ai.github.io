@@ -14,6 +14,8 @@ except ImportError:  # pragma: no cover
 from ..app_service import WalletInterfaceService
 from ..schemas import (
     HmisClientLookupRequest,
+    HmisEnrollmentDraftRequest,
+    HmisEnrollmentDraftSubmitRequest,
     HmisHouseholdLookupRequest,
     HmisProgramLinkListRequest,
     HmisReferralDraftRequest,
@@ -220,5 +222,49 @@ def create_router(service: WalletInterfaceService):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    # Phase 5: Enrollment draft endpoints
+
+    @router.get("/wallets/{wallet_id}/hmis/enrollment-drafts")
+    def list_hmis_enrollment_drafts(wallet_id: str, status: str | None = None) -> dict[str, Any]:
+        try:
+            return {
+                "enrollment_drafts": app_service.list_hmis_enrollment_drafts(wallet_id, status=status)
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/wallets/{wallet_id}/hmis/enrollment-drafts")
+    def create_hmis_enrollment_draft(
+        wallet_id: str,
+        request: HmisEnrollmentDraftRequest,
+    ) -> dict[str, Any]:
+        try:
+            return app_service.create_hmis_enrollment_draft(
+                wallet_id,
+                actor_did=request.actor_did,
+                local_subject_ref=request.local_subject_ref,
+                destination_program_ref=request.destination_program_ref,
+                entry_date=request.entry_date or "",
+                household_ref=request.household_ref or "",
+                summary=request.summary or "",
+                metadata=request.metadata,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/wallets/{wallet_id}/hmis/enrollment-drafts/{enrollment_draft_id}/submit")
+    def submit_hmis_enrollment_draft(
+        wallet_id: str,
+        enrollment_draft_id: str,
+        request: HmisEnrollmentDraftSubmitRequest,
+    ) -> dict[str, Any]:
+        try:
+            return app_service.submit_hmis_enrollment_draft(
+                wallet_id,
+                enrollment_draft_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return router

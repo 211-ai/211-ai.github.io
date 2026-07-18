@@ -723,6 +723,8 @@ export interface WalletHmisOperationResult {
   rejectedCandidates?: Array<Record<string, unknown>>;
   referralDraft?: Record<string, unknown>;
   referralDrafts?: Array<Record<string, unknown>>;
+  enrollmentDraft?: Record<string, unknown>;
+  enrollmentDrafts?: Array<Record<string, unknown>>;
   eligibility?: Record<string, unknown>;
   events?: Array<Record<string, unknown>>;
   items?: Array<Record<string, unknown>>;
@@ -1392,6 +1394,62 @@ export async function retryHmisReconciliationItem(
     normalizedBaseUrl(config.apiBaseUrl)
   );
   const payload = await postJson<Record<string, unknown>>(url, "HMIS reconciliation retry", {
+    actor_did: requiredActorDid(config)
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function listHmisEnrollmentDrafts(
+  config: WalletApiConfig,
+  params?: { status?: string }
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(
+    `/wallets/${config.walletId}/hmis/enrollment-drafts`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  if (params?.status) {
+    url.searchParams.set("status", params.status);
+  }
+  const payload = await fetchJson<Record<string, unknown>>(url, "List HMIS enrollment drafts");
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function createHmisEnrollmentDraft(
+  config: WalletApiConfig,
+  input: {
+    localSubjectRef: string;
+    destinationProgramRef: string;
+    entryDate?: string;
+    householdRef?: string;
+    summary?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(
+    `/wallets/${config.walletId}/hmis/enrollment-drafts`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const payload = await postJson<Record<string, unknown>>(url, "Create HMIS enrollment draft", {
+    actor_did: requiredActorDid(config),
+    local_subject_ref: input.localSubjectRef,
+    destination_program_ref: input.destinationProgramRef,
+    entry_date: input.entryDate,
+    household_ref: input.householdRef,
+    summary: input.summary,
+    metadata: input.metadata
+  });
+  return toWalletHmisOperationResult(payload);
+}
+
+export async function submitHmisEnrollmentDraft(
+  config: WalletApiConfig,
+  enrollmentDraftId: string
+): Promise<WalletHmisOperationResult> {
+  const url = new URL(
+    `/wallets/${config.walletId}/hmis/enrollment-drafts/${enrollmentDraftId}/submit`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const payload = await postJson<Record<string, unknown>>(url, "Submit HMIS enrollment draft", {
     actor_did: requiredActorDid(config)
   });
   return toWalletHmisOperationResult(payload);
@@ -3381,6 +3439,8 @@ function toWalletHmisOperationResult(payload: Record<string, unknown>): WalletHm
     rejectedCandidates: arrayOfRecords(payload.rejected_candidates),
     referralDraft: isRecord(payload.referral_draft) ? sanitizePublicRecord(payload.referral_draft) : undefined,
     referralDrafts: arrayOfRecords(payload.referral_drafts),
+    enrollmentDraft: isRecord(payload.enrollment_draft) ? sanitizePublicRecord(payload.enrollment_draft) : undefined,
+    enrollmentDrafts: arrayOfRecords(payload.enrollment_drafts),
     eligibility: isRecord(payload.eligibility) ? sanitizePublicRecord(payload.eligibility) : undefined,
     events: arrayOfRecords(payload.events),
     items: arrayOfRecords(payload.items),
