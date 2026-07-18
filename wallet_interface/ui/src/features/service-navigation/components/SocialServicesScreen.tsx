@@ -13,11 +13,11 @@ import {
 import { t, tFormat, type SupportedLocale } from "../../../shared/lib/localization";
 import { SavedServicesPanel } from "../../../shared/components/SavedServicesPanel";
 import { ServiceQuickActions } from "../../../shared/components/ServiceQuickActions";
-import { HmisLookupPanel } from "../../../components/hmis/HmisLookupPanel";
-import { HmisMatchReviewDrawer } from "../../../components/hmis/HmisMatchReviewDrawer";
-import { HmisReferralDraftPanel } from "../../../components/hmis/HmisReferralDraftPanel";
-import { HmisReconciliationQueue } from "../../../components/hmis/HmisReconciliationQueue";
-import { HmisSyncTimeline } from "../../../components/hmis/HmisSyncTimeline";
+import { HmisLookupPanel } from "../../hmis/components/HmisLookupPanel";
+import { HmisMatchReviewDrawer } from "../../hmis/components/HmisMatchReviewDrawer";
+import { HmisReferralDraftPanel } from "../../hmis/components/HmisReferralDraftPanel";
+import { HmisReconciliationQueue } from "../../hmis/components/HmisReconciliationQueue";
+import { HmisSyncTimeline } from "../../hmis/components/HmisSyncTimeline";
 import { search211Info } from "../../../services/graphRagService";
 import { serviceMatches } from "../../../services/mockAbbyService";
 import { saveWalletService, type WalletApiConfig } from "../../../services/walletApi";

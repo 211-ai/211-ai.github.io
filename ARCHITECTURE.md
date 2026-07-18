@@ -98,16 +98,18 @@ The frontend is organized by feature slice:
 | Agent/chat | `features/agent/` | Agent chat controller, LLM workers, agent services |
 | Interactions | `features/interactions/` | Interaction history, client messages |
 | Calendar | `features/calendar/` | Calendar screen |
+| HMIS | `features/hmis/` | HMIS integration UI: lookup, match review, referral/enrollment drafting, reconciliation queue, sync timeline |
 | Shared UI | `shared/components/` | UI primitives with no domain coupling |
 | Shared utilities | `shared/lib/` | Storage adapters, locale helpers, utilities |
 
-Old locations in `app/screens/` and `services/` are backward-compat re-export stubs that delegate to the canonical feature paths. All major migrations are complete:
+Old locations in `app/screens/`, `services/`, and `components/hmis/` are backward-compat re-export stubs that delegate to the canonical feature paths. All major migrations are complete:
 
 | Former source path | Canonical target | Migration status |
 | --- | --- | --- |
 | `agent/` (14 files + `tools/`) | `features/agent/lib/` | ✅ Migrated — stubs left at `agent/` |
 | `lib/graphrag/` (10 files) | `features/service-navigation/lib/graphrag/` | ✅ Migrated — re-export barrel left at `lib/graphrag/` |
 | `workers/` (5 files) | `features/agent/workers/` | ✅ Migrated — `new URL(...)` service references updated |
+| `components/hmis/` (7 files) | `features/hmis/components/` | ✅ Migrated — stubs left at `components/hmis/` |
 
 ## Documentation layout (`docs/`)
 
