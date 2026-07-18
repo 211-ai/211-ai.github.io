@@ -100,6 +100,12 @@ class RecordDomainServiceMixin:
             records = [record for record in records if record.data_type == data_type]
         return sorted(records, key=lambda item: item.created_at)
 
+    def record_to_dict(self, record: Any) -> dict[str, Any]:
+        """Serialize a DataRecord to a plain dict."""
+        if hasattr(record, "to_dict"):
+            return record.to_dict()
+        return {k: v for k, v in vars(record).items() if not k.startswith("_")}
+
 
     def create_record_analysis_grant(
         self,

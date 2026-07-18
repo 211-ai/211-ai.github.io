@@ -434,7 +434,7 @@ class HttpLocationRegionProofBackend:
             return False
         if isinstance(value, list):
             return any(cls._contains_private_witness_data(item, sensitive_values) for item in value)
-        if isinstance(value, (str, int, float)):
+        if isinstance(value, str | int | float):
             rendered = str(value)
             return any(secret and secret in rendered for secret in sensitive_values)
         return False

@@ -300,7 +300,7 @@ def _extract_hf_whisper_text(payload: Any) -> str:
             if extracted:
                 return extracted
         return ""
-    if isinstance(payload, Sequence) and not isinstance(payload, (str, bytes, bytearray)):
+    if isinstance(payload, Sequence) and not isinstance(payload, str | bytes | bytearray):
         pieces: list[str] = []
         for item in payload:
             extracted = _extract_hf_whisper_text(item)

@@ -217,7 +217,7 @@ def _indextts_batch_audio_references(result: Mapping[str, Any]) -> list[Any]:
 
 
 def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
-    if isinstance(reference, Mapping) and isinstance(reference.get("_inline_bytes"), (bytes, bytearray)):
+    if isinstance(reference, Mapping) and isinstance(reference.get("_inline_bytes"), bytes | bytearray):
         name = str(reference.get("name") or reference.get("path") or "")
         return bytes(reference["_inline_bytes"]), mimetypes.guess_type(name)[0] or "audio/wav"
     data, detected_type = _indextts_space_client().fetch_file(reference)

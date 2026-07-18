@@ -66,7 +66,7 @@ def _storage_config_from_env() -> str | dict[str, Any] | None:
             parsed = json.loads(raw_config)
         except json.JSONDecodeError as exc:
             raise ValueError("WALLET_STORAGE_CONFIG must be valid JSON") from exc
-        if not isinstance(parsed, (str, dict)):
+        if not isinstance(parsed, str | dict):
             raise ValueError("WALLET_STORAGE_CONFIG must decode to a string or object")
         return parsed
 

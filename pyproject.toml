@@ -27,6 +27,7 @@ dependencies = [
   "huggingface-hub>=0.34.0",
   "python-dotenv>=1.0.0",
   "fake-useragent>=1.4.0",
+  "warcio>=1.7.4",
 ]
 
 [project.optional-dependencies]
@@ -75,6 +76,8 @@ exclude = ["wallet_interface.ui*", "tests*", "artifacts*", "docs*", "data*", "st
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "wallet_interface/tests"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
   "integration: marks tests as requiring live external services (deselect with '-m \"not integration\"')",
   "experimental: marks tests as speculative, adversarial, or requiring non-deterministic deps (deselect with '-m \"not experimental\"')",

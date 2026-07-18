@@ -9,6 +9,11 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 import wallet_interface.api as wallet_api_module
+import wallet_interface.helpers._tts_client as _tts_client_module
+import wallet_interface.helpers._tts_http as _tts_http_module
+import wallet_interface.helpers._tts_pipeline as _tts_pipeline_module
+import wallet_interface.routes.ai_router as _ai_router_module
+import wallet_interface.routes.auth as _auth_route_module
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
@@ -65,7 +70,7 @@ def test_health_warns_when_publicus_indextts_has_no_hf_token(monkeypatch) -> Non
         "HUGGINGFACE_HUB_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     client = _client()
 
     response = client.get("/health")
@@ -88,7 +93,7 @@ def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monk
         "HUGGINGFACE_HUB_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     client = _client_with_service(service)
 
@@ -105,7 +110,7 @@ def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monk
 def test_ops_voice_proxy_status_reports_publicus_warning(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
     monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     client = _client()
 
     response = client.get("/ops/voice-proxy/status")
@@ -141,7 +146,7 @@ def test_magic_login_request_sends_signed_sms_and_verify_connects_wallet(monkeyp
         deliveries.append(kwargs)
         return {"provider": "mock", "provider_status": "queued", "provider_message_id": "SM-login"}
 
-    monkeypatch.setattr(wallet_api_module, "_send_sms_notification", fake_sms_delivery)
+    monkeypatch.setattr(_auth_route_module, "_send_sms_notification", fake_sms_delivery)
     client = _client()
     wallet_ids = []
     for owner in ["did:key:owner1", "did:key:owner2"]:
@@ -1896,7 +1901,7 @@ def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     first = wallet_api_module._run_indextts_gradio_tts(text="hello")
     second = wallet_api_module._run_indextts_gradio_tts(text="again")
@@ -2035,7 +2040,7 @@ def test_indextts_proxy_sends_normalized_speech_text(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Visit SE 32nd ave or call 211.")
 
@@ -2081,7 +2086,7 @@ def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "gen_batch")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_batch_tts(texts=["Call 211.", "Meet at SE 32nd ave."])
 
@@ -2119,7 +2124,7 @@ def test_indextts_batch_extracts_audio_from_zip_output(monkeypatch) -> None:
     with zipfile.ZipFile(buffer, "w") as archive:
         archive.writestr("spk-item-1.wav", b"RIFFoneWAVE")
         archive.writestr("spk-item-2.wav", b"RIFFtwoWAVE")
-    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (buffer.getvalue(), "application/zip"))
+    monkeypatch.setattr(_tts_client_module, "_fetch_gradio_file", lambda ref: (buffer.getvalue(), "application/zip"))
     result = {
         "data": [
             {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
@@ -2166,7 +2171,7 @@ def test_indextts_single_tts_accepts_batch_shaped_result(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
 
@@ -2180,7 +2185,7 @@ def test_indextts_wait_for_result_expands_empty_space_queue_error(monkeypatch) -
         def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5):
             raise RuntimeError("Space queue failed: {'error': None}")
 
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     try:
         wallet_api_module._indextts_wait_for_result("session-opaque-error")
@@ -2232,9 +2237,12 @@ def test_indextts_tts_falls_back_to_api_name_call_after_opaque_queue_failures(mo
             return b"RIFFstubWAVE", "audio/wav"
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
     monkeypatch.setenv("WALLET_INDEXTTS_ALLOW_DIRECT_PREDICT_FALLBACK", "true")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "false")
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_pipeline_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
 
@@ -2259,7 +2267,7 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
         return {"audioBase64": "UklGRnN0dWJXQVZF", "mimeType": "audio/wav", "latency": {"tts_request_ms": 1}}
 
     monkeypatch.setattr(llm_router, "generate_text", fake_generate_text)
-    monkeypatch.setattr(wallet_api_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
+    monkeypatch.setattr(_ai_router_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
     monkeypatch.setenv("WALLET_VOICE_LLM_MODEL", "Qwen/Qwen3.5-2B")
 
     client = _client()

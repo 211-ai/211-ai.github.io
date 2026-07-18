@@ -355,7 +355,7 @@ def _json_safe_metadata(value: Any) -> Any:
         }
     if isinstance(value, list):
         return [_json_safe_metadata(item) for item in value if item is not None]
-    if isinstance(value, (str, int, float, bool)) or value is None:
+    if isinstance(value, str | int | float | bool) or value is None:
         return value
     return str(value)
 

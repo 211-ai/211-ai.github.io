@@ -694,7 +694,7 @@ def build_geocode_miss_diagnostics_report(
 def parse_json_value(value: Any, default: Any) -> Any:
     if value in ("", None):
         return default
-    if isinstance(value, (list, dict)):
+    if isinstance(value, list | dict):
         return value
     try:
         parsed = json.loads(str(value))

@@ -6,6 +6,34 @@ from __future__ import annotations
 from .app_service import WalletInterfaceService
 from .helpers._app import _cors_origins_from_env, _wallet_interface_service_from_env
 
+# ---------------------------------------------------------------------------
+# Backward-compatible re-exports
+# Tests and scripts that were written against the old monolithic api.py access
+# these helpers as `wallet_interface.api.<name>`.  Importing them here keeps
+# those call-sites (and monkeypatches) working without requiring test changes.
+# ---------------------------------------------------------------------------
+from .helpers._auth import _send_sms_notification  # noqa: F401
+from .helpers._tts import _run_indextts_gradio_batch_tts, _run_indextts_gradio_tts, _run_indextts_tts_with_batch_fallback  # noqa: F401
+from .helpers._tts_client import (  # noqa: F401
+    _INDEXTTS_CONFIG_CACHE,
+    _INDEXTTS_FN_INDEX_CACHE,
+    _INDEXTTS_REFERENCE_CACHE,
+    _fetch_gradio_file,
+    _indextts_batch_audio_references,
+    _indextts_space_client,
+    _indextts_wait_for_result,
+)
+from .helpers._tts_http import _run_hf_whisper_stt  # noqa: F401
+from .helpers._tts_normalization import _normalize_indextts_spoken_text  # noqa: F401
+
+try:  # resolve_secret is an optional dep; guard it the same way the helpers do.
+    from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: F401
+except Exception:  # pragma: no cover
+    resolve_secret = None  # type: ignore[assignment]
+
+# urllib_request re-exported so legacy patches on wallet_interface.api.urllib_request work.
+from urllib import request as urllib_request  # noqa: F401
+
 try:  # pragma: no cover - exercised when optional dependency is installed.
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +78,9 @@ def create_app(*, service: WalletInterfaceService | None = None):
         )
 
     for create_router in (
+        # ops first: its literal /wallets/snapshots paths must not be shadowed
+        # by create_wallets_router's /wallets/{wallet_id} wildcard.
+        create_ops_router,
         create_auth_router,
         create_wallets_router,
         create_dead_drops_router,
@@ -62,7 +93,6 @@ def create_app(*, service: WalletInterfaceService | None = None):
         create_grants_router,
         create_exports_router,
         create_analytics_router,
-        create_ops_router,
     ):
         app.include_router(create_router(app_service))
     return app

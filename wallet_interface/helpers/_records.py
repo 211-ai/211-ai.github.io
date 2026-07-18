@@ -149,7 +149,7 @@ def _read_number(record: Mapping[str, Any] | None, key: str) -> int | float | No
     if not isinstance(record, Mapping):
         return None
     value = record.get(key)
-    return value if isinstance(value, (int, float)) else None
+    return value if isinstance(value, int | float) else None
 
 
 def _read_string(record: Mapping[str, Any] | None, key: str) -> str:
@@ -231,7 +231,7 @@ def _build_document_profile_public_inputs(
     for output in outputs:
         counts = output.get("redaction_counts")
         if isinstance(counts, Mapping):
-            redaction_count += sum(value for value in counts.values() if isinstance(value, (int, float)))
+            redaction_count += sum(value for value in counts.values() if isinstance(value, int | float))
     public_mime_type = mime_type or "application/octet-stream"
     labels = _read_string_list(organizer.get("labels")) or _default_labels_for_mime_type(public_mime_type)
     return {
@@ -270,8 +270,8 @@ def _summarize_document_profile(public_inputs: Mapping[str, Any]) -> str:
     graph_type = str(public_inputs.get("graph_type") or "redacted graph")
     nodes = public_inputs.get("node_count")
     chunks = public_inputs.get("chunk_count")
-    nodes_text = f"{nodes} nodes" if isinstance(nodes, (int, float)) else "safe graph"
-    chunks_text = f"{chunks} chunks" if isinstance(chunks, (int, float)) else "vector metadata"
+    nodes_text = f"{nodes} nodes" if isinstance(nodes, int | float) else "safe graph"
+    chunks_text = f"{chunks} chunks" if isinstance(chunks, int | float) else "vector metadata"
     return f"{mime_type} · {graph_type} · {nodes_text} · {chunks_text}"
 
 
