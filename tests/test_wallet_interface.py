@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import (
     resource_for_export,
@@ -12,6 +11,7 @@ from ipfs_datasets_py.wallet.ucan import (
     resource_for_record,
     resource_for_wallet,
 )
+
 from wallet_interface import ServiceRecord, WalletInterfaceService, match_services
 from wallet_interface.proof_backends import HttpLocationRegionProofBackend
 

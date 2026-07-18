@@ -12,8 +12,6 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon as implementation_daemon_module  # noqa: E402
-import scripts.agent_chat_implementation_daemon as agent_daemon_module  # noqa: E402
-import scripts.portal_implementation_supervisor as supervisor_module  # noqa: E402
 from ipfs_datasets_py.optimizers.todo_daemon import (  # noqa: E402
     ManagedDaemonSpec,
     SupervisorLoop,
@@ -28,6 +26,9 @@ from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import ( 
     TodoImplementationSupervisor,
     TodoSupervisorConfig,
 )
+
+import scripts.agent_chat_implementation_daemon as agent_daemon_module  # noqa: E402
+import scripts.portal_implementation_supervisor as supervisor_module  # noqa: E402
 from scripts.portal_implementation_daemon import (  # noqa: E402
     PortalImplementationDaemon,
     PortalTaskState,

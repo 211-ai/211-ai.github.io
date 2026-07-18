@@ -5,7 +5,6 @@ from datetime import UTC, datetime, timedelta
 
 import duckdb
 from requests import exceptions as requests_exceptions
-
 from scraper.agentic_daemon import (
     AgenticCrawlerDaemon,
     CrawlItem,
@@ -21,13 +20,14 @@ from scraper.agentic_daemon import (
     split_provider_program_names,
 )
 from scraper.backfill_pattern_stats import backfill_pattern_stats
-from scraper.config import Config
 from scraper.duckdb_etl import DuckDBETLWarehouse
-from scraper.duckdb_state import DuckDBCrawlStore, pattern_prefix_for_url, score_queue_item
 from scraper.export_canonical_services import export_canonical_services
 from scraper.reextract_warehouse import reextract_warehouse
 from scraper.retry_failed_pages import classify_failed_urls, enqueue_retryable_failed_urls
 from scraper.supervisor import SelfHealingSupervisor, SupervisorConfig
+
+from scraper.config import Config
+from scraper.duckdb_state import DuckDBCrawlStore, pattern_prefix_for_url, score_queue_item
 
 
 class StubFetcher:

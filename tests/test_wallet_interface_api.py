@@ -7,6 +7,9 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
+from ipfs_datasets_py.wallet.crypto import random_key
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 
 import wallet_interface.api as wallet_api_module
 import wallet_interface.helpers._tts_client as _tts_client_module
@@ -14,9 +17,6 @@ import wallet_interface.helpers._tts_http as _tts_http_module
 import wallet_interface.helpers._tts_pipeline as _tts_pipeline_module
 import wallet_interface.routes.ai_router as _ai_router_module
 import wallet_interface.routes.auth as _auth_route_module
-from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
-from ipfs_datasets_py.wallet.crypto import random_key
-from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
 
