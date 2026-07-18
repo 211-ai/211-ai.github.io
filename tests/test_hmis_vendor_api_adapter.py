@@ -3,7 +3,6 @@ from __future__ import annotations
 from wallet_interface.hmis.adapters.vendor_api import VendorApiHmisAdapter
 
 
-
 def test_vendor_api_adapter_uses_fixture_responses() -> None:
     adapter = VendorApiHmisAdapter(
         auth_token="secret",

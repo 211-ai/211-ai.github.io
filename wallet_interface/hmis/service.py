@@ -17,7 +17,6 @@ from .errors import HmisPolicyError
 from .models import HmisActionType, HmisAdapterResult, HmisConsentRecord, HmisSyncEvent
 
 
-
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat()
 

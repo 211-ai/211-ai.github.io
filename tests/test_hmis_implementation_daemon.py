@@ -17,7 +17,6 @@ from scripts.hmis_implementation_supervisor import (
 from scripts.hmis_implementation_supervisor import parse_args as parse_supervisor_args
 
 
-
 def write_todo(path: Path) -> None:
     path.write_text(
         """

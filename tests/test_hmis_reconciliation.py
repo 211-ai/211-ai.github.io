@@ -3,7 +3,6 @@ from __future__ import annotations
 from wallet_interface import WalletInterfaceService
 
 
-
 def test_hmis_reconciliation_job_resolves_fixture_backed_queue_item(tmp_path) -> None:
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     wallet = service.create_wallet("did:key:worker")

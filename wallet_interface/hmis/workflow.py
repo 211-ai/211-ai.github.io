@@ -20,7 +20,7 @@ from .adapters.manual_review import ManualReviewHmisAdapter
 from .audit import HmisAuditStore
 from .matching import match_hmis_clients, match_hmis_households
 from .models import HmisConsentRecord
-from .service import HmisReferralDraftRecord, HmisReconciliationItem, HmisService
+from .service import HmisReconciliationItem, HmisReferralDraftRecord, HmisService
 
 
 def _now() -> str:

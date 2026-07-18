@@ -5,7 +5,6 @@ import json
 from wallet_interface.hmis.adapters.file_exchange import FileExchangeHmisAdapter
 
 
-
 def test_file_exchange_adapter_writes_deterministic_batch(tmp_path) -> None:
     adapter = FileExchangeHmisAdapter(staging_dir=tmp_path)
     payload = {"local_ref": "ref-1", "client_id": "client-1", "program_id": "program-1"}

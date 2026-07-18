@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 
-
 def test_hmis_program_links_registry_has_expected_domains() -> None:
     path = Path("state/hmis/program_links.json")
     payload = json.loads(path.read_text(encoding="utf-8"))

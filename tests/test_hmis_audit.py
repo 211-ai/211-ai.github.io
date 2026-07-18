@@ -4,7 +4,6 @@ from wallet_interface.hmis.audit import HmisAuditStore
 from wallet_interface.hmis.models import HmisSyncEvent
 
 
-
 def test_hmis_audit_store_persists_and_reload_events(tmp_path) -> None:
     path = tmp_path / "audit.jsonl"
     store = HmisAuditStore(path=path)

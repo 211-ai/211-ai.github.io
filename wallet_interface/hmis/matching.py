@@ -6,7 +6,6 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-
 MatchDecision = Literal["no_match", "single_match", "ambiguous", "rejected_only"]
 MAX_MATCH_SCORE = 0.99
 SCORE_PRECISION = 3

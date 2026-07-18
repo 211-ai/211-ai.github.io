@@ -3,7 +3,6 @@ from __future__ import annotations
 from wallet_interface import WalletInterfaceService
 
 
-
 def test_hmis_end_to_end_lookup_match_draft_submit_and_reconcile(tmp_path) -> None:
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     wallet = service.create_wallet("did:key:worker")

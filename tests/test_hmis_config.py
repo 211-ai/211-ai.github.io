@@ -6,7 +6,6 @@ from wallet_interface.hmis.config import load_hmis_config_from_env
 from wallet_interface.hmis.errors import HmisConfigError
 
 
-
 def test_hmis_config_defaults_to_disabled(monkeypatch) -> None:
     monkeypatch.delenv("HMIS_MODE", raising=False)
 

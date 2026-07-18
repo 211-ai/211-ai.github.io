@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from wallet_interface.hmis.adapters.manual_review import ManualReviewHmisAdapter
 
-
 FIXTURES = [
     {
         "entity_type": "client",

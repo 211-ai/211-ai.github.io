@@ -3,7 +3,6 @@ from __future__ import annotations
 from wallet_interface.hmis.matching import match_hmis_clients, match_hmis_households
 
 
-
 def test_client_matching_auto_verifies_single_high_confidence_match() -> None:
     result = match_hmis_clients(
         {"name": "Jane Doe", "date_of_birth": "1990-04-05", "program_ref": "shelter-a"},

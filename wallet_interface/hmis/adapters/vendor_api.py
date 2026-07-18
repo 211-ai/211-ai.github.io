@@ -31,7 +31,7 @@ class VendorApiHmisAdapter:
     def build_auth_headers(self) -> dict[str, str]:
         if not self.auth_token:
             return {}
-        return {"authorization": f"******"}
+        return {"authorization": "******"}
 
     def translate_payload(self, action_type: HmisActionType, payload: Mapping[str, Any]) -> dict[str, Any]:
         return {

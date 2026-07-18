@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from wallet_interface import WalletInterfaceService, create_app
 
 
-
 def _client(tmp_path) -> TestClient:
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     return TestClient(create_app(service=service))
