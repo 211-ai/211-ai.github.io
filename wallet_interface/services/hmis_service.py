@@ -120,6 +120,7 @@ def _empty_hmis_state() -> dict[str, Any]:
     return {
         "snapshot_type": HMIS_STATE_TYPE,
         "referral_drafts": [],
+        "enrollment_drafts": [],
         "verified_links": [],
         "rejected_matches": [],
         "reconciliation_items": [],
@@ -795,4 +796,146 @@ class HmisDomainServiceMixin:
             "open_count": sum(1 for item in queue_items if item.status == "open"),
             "resolved_count": sum(1 for item in queue_items if item.status == "resolved") if dry_run else resolved,
             "needs_review_count": sum(1 for item in queue_items if item.status == "needs_review") if dry_run else reviewed,
+        }
+
+    # ------------------------------------------------------------------
+    # Phase 5: Enrollment draft flows
+    # ------------------------------------------------------------------
+
+    def list_hmis_enrollment_drafts(
+        self,
+        wallet_id: str,
+        *,
+        status: str | None = None,
+    ) -> list[dict[str, Any]]:
+        self.wallet_service._wallet(wallet_id)  # type: ignore[attr-defined]
+        drafts = [
+            item
+            for item in self._ensure_hmis_state().get("enrollment_drafts", [])
+            if isinstance(item, Mapping) and str(item.get("wallet_id") or "") == wallet_id
+        ]
+        if status is not None:
+            drafts = [item for item in drafts if item.get("status") == status]
+        return sorted(drafts, key=lambda item: (item.get("updated_at") or item.get("created_at") or "", item.get("enrollment_draft_id") or ""))
+
+    def create_hmis_enrollment_draft(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str,
+        destination_program_ref: str,
+        entry_date: str = "",
+        household_ref: str = "",
+        summary: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)  # type: ignore[attr-defined]
+        now = _hmis_now()
+        draft: dict[str, Any] = {
+            "enrollment_draft_id": f"hmis-enrollment-draft-{uuid4().hex}",
+            "wallet_id": wallet_id,
+            "actor_id": actor_did,
+            "local_subject_ref": str(local_subject_ref or "").strip(),
+            "destination_program_ref": str(destination_program_ref or "").strip(),
+            "entry_date": str(entry_date or ""),
+            "household_ref": str(household_ref or ""),
+            "summary": str(summary or ""),
+            "status": "draft",
+            "external_enrollment_id": None,
+            "created_at": now,
+            "updated_at": now,
+            "metadata": dict(metadata or {}),
+        }
+        errors: list[str] = []
+        if not draft["local_subject_ref"]:
+            errors.append("missing local_subject_ref")
+        if not draft["destination_program_ref"]:
+            errors.append("missing destination_program_ref")
+        draft["validation_errors"] = errors
+        if not errors:
+            draft["status"] = "ready"
+        state = self._ensure_hmis_state()
+        state.setdefault("enrollment_drafts", []).append(draft)
+        self._save_hmis_state()
+        self._hmis_audit_store().record(
+            action_type="create_enrollment_draft",
+            actor_id=actor_did,
+            local_ref=draft["enrollment_draft_id"],
+            adapter_name="manual-review",
+            status="success",
+            response_summary="created HMIS enrollment draft",
+            metadata={"wallet_id": wallet_id, "status": draft["status"]},
+        )
+        return draft
+
+    def submit_hmis_enrollment_draft(
+        self,
+        wallet_id: str,
+        enrollment_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> dict[str, Any]:
+        from ..hmis.models import HmisConsentRecord
+
+        self._require_portal_actor(wallet_id, actor_did)  # type: ignore[attr-defined]
+        state = self._ensure_hmis_state()
+        draft = next(
+            (
+                item
+                for item in state.get("enrollment_drafts", [])
+                if isinstance(item, Mapping) and item.get("enrollment_draft_id") == enrollment_draft_id and item.get("wallet_id") == wallet_id
+            ),
+            None,
+        )
+        if draft is None:
+            raise ValueError("HMIS enrollment draft not found")
+        errors = list(draft.get("validation_errors") or [])
+        if errors:
+            raise ValueError("HMIS enrollment draft has validation errors")
+        consent = HmisConsentRecord(
+            consent_id=f"consent-enroll-{wallet_id}",
+            subject_ref=str(draft.get("local_subject_ref") or ""),
+            status="active",
+            basis="client_consent",
+            purpose="HMIS enrollment submission",
+            authorized_scopes=("hmis_submit_enrollment",),
+            authorized_program_refs=(str(draft.get("destination_program_ref") or ""),),
+            effective_at="2026-01-01T00:00:00+00:00",
+        )
+        result = self._hmis_submission_service().execute(
+            action_type="submit_enrollment",
+            payload={
+                "local_ref": enrollment_draft_id,
+                "local_subject_ref": draft.get("local_subject_ref"),
+                "destination_program_ref": draft.get("destination_program_ref"),
+                "entry_date": draft.get("entry_date"),
+                "household_ref": draft.get("household_ref"),
+                "summary": draft.get("summary"),
+            },
+            actor_id=actor_did,
+            consent=consent,
+            required_scope="hmis_submit_enrollment",
+        )
+        now = _hmis_now()
+        draft["updated_at"] = now
+        if result.adapter_result.ok:
+            draft["status"] = "submitted"
+            draft["external_enrollment_id"] = (
+                result.adapter_result.external_refs.get("enrollment_id")
+                or result.adapter_result.external_refs.get("external_id")
+                or ""
+            )
+        else:
+            draft["status"] = "retryable" if result.adapter_result.retryable else "needs_review"
+        state["enrollment_drafts"] = [
+            draft if item.get("enrollment_draft_id") == enrollment_draft_id else item
+            for item in state.get("enrollment_drafts", [])
+        ]
+        self._save_hmis_state()
+        return {
+            "status": draft["status"],
+            "summary": result.adapter_result.summary,
+            "enrollment_draft": dict(draft),
+            "external_refs": dict(result.adapter_result.external_refs),
         }

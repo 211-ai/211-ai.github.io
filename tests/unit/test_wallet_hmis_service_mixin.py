@@ -400,3 +400,571 @@ class TestReconciliationQueue:
         svc = _make_stub_service(tmp_path)
         result = svc.run_hmis_reconciliation_job(dry_run=False)
         assert result["status"] == "ok"
+
+
+# ---------------------------------------------------------------------------
+# Phase 2: Lookup tests
+# ---------------------------------------------------------------------------
+
+
+class TestLookupHmisClients:
+    def test_returns_ok_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane")
+        assert result["status"] == "ok"
+
+    def test_returns_clients_list(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane")
+        assert "clients" in result
+
+    def test_clients_are_masked(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane Doe")
+        for client in result["clients"]:
+            if "name" in client:
+                assert "***" in client["name"]
+
+    def test_returns_decision_field(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff")
+        assert "decision" in result
+
+    def test_empty_query_returns_candidates(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff")
+        assert isinstance(result["clients"], list)
+
+    def test_rejected_candidates_excluded(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        # First reject a match, then lookup should exclude it from main candidates
+        svc.reject_hmis_match(
+            "wallet-1",
+            actor_did="did:test:staff",
+            entity_type="client",
+            local_ref="wallet-1",
+            external_id="client-100",
+            reason="wrong_person",
+        )
+        result = svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane")
+        main_ids = [c.get("external_id") for c in result["clients"]]
+        assert "client-100" not in main_ids
+
+
+class TestLookupHmisHouseholds:
+    def test_returns_ok_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_households("wallet-1", actor_did="did:test:staff", name="Doe")
+        assert result["status"] == "ok"
+
+    def test_returns_households_list(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_households("wallet-1", actor_did="did:test:staff")
+        assert "households" in result
+
+    def test_households_are_masked(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_households("wallet-1", actor_did="did:test:staff", name="Doe Household")
+        for household in result["households"]:
+            if "household_name" in household:
+                assert "***" in household["household_name"]
+
+    def test_returns_decision_field(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.lookup_hmis_households("wallet-1", actor_did="did:test:staff")
+        assert "decision" in result
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: Referral draft create / update / validate tests
+# ---------------------------------------------------------------------------
+
+
+class TestCreateHmisReferralDraft:
+    def test_creates_draft_successfully(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        assert draft.referral_draft_id.startswith("hmis-referral-draft-")
+        assert draft.wallet_id == "wallet-1"
+
+    def test_draft_with_required_fields_is_ready(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        assert draft.status == "ready"
+        assert draft.validation_errors == []
+
+    def test_draft_missing_subject_has_error(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        assert draft.status == "draft"
+        assert any("local_subject_ref" in e for e in draft.validation_errors)
+
+    def test_draft_persisted_in_state(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        drafts = svc.list_hmis_referral_drafts("wallet-1")
+        assert any(d.referral_draft_id == draft.referral_draft_id for d in drafts)
+
+    def test_draft_metadata_stored(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+            metadata={"case_worker": "Alice"},
+        )
+        assert draft.metadata.get("case_worker") == "Alice"
+
+
+class TestUpdateHmisReferralDraft:
+    def _create_draft(self, svc):
+        return svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Initial summary",
+        )
+
+    def test_update_summary_field(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = self._create_draft(svc)
+        updated = svc.update_hmis_referral_draft(
+            "wallet-1",
+            draft.referral_draft_id,
+            actor_did="did:test:staff",
+            summary="Updated summary",
+        )
+        assert updated.summary == "Updated summary"
+
+    def test_update_program_ref(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = self._create_draft(svc)
+        updated = svc.update_hmis_referral_draft(
+            "wallet-1",
+            draft.referral_draft_id,
+            actor_did="did:test:staff",
+            destination_program_ref="rapid-rehousing",
+        )
+        assert updated.destination_program_ref == "rapid-rehousing"
+
+    def test_update_nonexistent_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        with pytest.raises(ValueError, match="not found"):
+            svc.update_hmis_referral_draft(
+                "wallet-1",
+                "nonexistent-draft-id",
+                actor_did="did:test:staff",
+                summary="New summary",
+            )
+
+    def test_update_merges_metadata(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test",
+            metadata={"key_a": "val_a"},
+        )
+        updated = svc.update_hmis_referral_draft(
+            "wallet-1",
+            draft.referral_draft_id,
+            actor_did="did:test:staff",
+            metadata={"key_b": "val_b"},
+        )
+        assert updated.metadata.get("key_a") == "val_a"
+        assert updated.metadata.get("key_b") == "val_b"
+
+
+class TestValidateHmisReferralDraft:
+    def test_valid_draft_has_no_errors(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        result = svc.validate_hmis_referral_draft(
+            "wallet-1",
+            draft.referral_draft_id,
+            actor_did="did:test:staff",
+        )
+        assert result["errors"] == []
+        assert result["status"] == "ready"
+
+    def test_nonexistent_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        with pytest.raises(ValueError, match="not found"):
+            svc.validate_hmis_referral_draft("wallet-1", "no-such-id", actor_did="did:test:staff")
+
+    def test_returns_referral_draft_in_result(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test referral",
+        )
+        result = svc.validate_hmis_referral_draft(
+            "wallet-1",
+            draft.referral_draft_id,
+            actor_did="did:test:staff",
+        )
+        assert "referral_draft" in result
+        assert result["referral_draft"]["referral_draft_id"] == draft.referral_draft_id
+
+
+# ---------------------------------------------------------------------------
+# Phase 4: Submission and sync tests
+# ---------------------------------------------------------------------------
+
+
+class TestSubmitHmisReferralDraft:
+    def _ready_draft(self, svc):
+        return svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Complete referral with all fields",
+            provider_name="Safe Harbor",
+            program_name="Emergency Shelter",
+        )
+
+    def test_submit_ready_draft_returns_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = self._ready_draft(svc)
+        result = svc.submit_hmis_referral_draft("wallet-1", draft.referral_draft_id, actor_did="did:test:staff")
+        assert result["status"] in {"submitted", "retryable", "needs_review"}
+
+    def test_submit_nonexistent_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        with pytest.raises(ValueError, match="not found"):
+            svc.submit_hmis_referral_draft("wallet-1", "no-such-id", actor_did="did:test:staff")
+
+    def test_submit_invalid_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        # Create draft with missing required field (no summary)
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="",  # empty summary will cause validation error
+        )
+        with pytest.raises(ValueError, match="validation errors"):
+            svc.submit_hmis_referral_draft("wallet-1", draft.referral_draft_id, actor_did="did:test:staff")
+
+    def test_submit_returns_referral_draft(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = self._ready_draft(svc)
+        result = svc.submit_hmis_referral_draft("wallet-1", draft.referral_draft_id, actor_did="did:test:staff")
+        assert "referral_draft" in result
+        assert result["referral_draft"]["referral_draft_id"] == draft.referral_draft_id
+
+
+class TestListHmisSyncTimeline:
+    def test_returns_ok_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.list_hmis_sync_timeline("wallet-1")
+        assert result["status"] == "ok"
+
+    def test_returns_events_list(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.list_hmis_sync_timeline("wallet-1")
+        assert "events" in result
+        assert isinstance(result["events"], list)
+
+    def test_events_contain_required_fields(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        # Perform a lookup to create an audit event
+        svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane")
+        result = svc.list_hmis_sync_timeline("wallet-1")
+        for event in result["events"]:
+            assert "event_id" in event
+            assert "action_type" in event
+            assert "status" in event
+
+    def test_filter_by_local_ref(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff")
+        result = svc.list_hmis_sync_timeline("wallet-1", local_ref="wallet-1")
+        assert result["status"] == "ok"
+
+
+class TestRetryHmisReconciliationItem:
+    def test_retry_nonexistent_item_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        with pytest.raises(ValueError, match="not found"):
+            svc.retry_hmis_reconciliation_item("wallet-1", "no-such-item", actor_did="did:test:staff")
+
+    def test_retry_item_returns_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        # Submit a referral to create a reconciliation item via error path
+        # Build ready draft first
+        draft = svc.create_hmis_referral_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            summary="Test",
+            provider_name="Safe Harbor",
+            program_name="Emergency Shelter",
+        )
+        # Manually inject a reconciliation item
+        from wallet_interface.hmis.service import HmisReconciliationItem
+
+        state = svc._ensure_hmis_state()
+        item = HmisReconciliationItem(
+            item_id="recon-test-001",
+            wallet_id="wallet-1",
+            referral_draft_id=draft.referral_draft_id,
+            local_ref=draft.referral_draft_id,
+            reason="test_retry",
+            status="open",
+            created_at="2026-01-01T00:00:00+00:00",
+            updated_at="2026-01-01T00:00:00+00:00",
+        )
+        state.setdefault("reconciliation_items", []).append(item.to_dict())
+        # Invalidate cache so the service reloads
+        svc._hmis_submission_service_cache = None  # type: ignore[attr-defined]
+        result = svc.retry_hmis_reconciliation_item("wallet-1", "recon-test-001", actor_did="did:test:staff")
+        assert "status" in result
+
+
+# ---------------------------------------------------------------------------
+# Phase 5: Enrollment draft tests
+# ---------------------------------------------------------------------------
+
+
+class TestEmptyHmisStateHasEnrollmentDrafts:
+    def test_enrollment_drafts_in_empty_state(self):
+        from wallet_interface.services.hmis_service import _empty_hmis_state
+
+        state = _empty_hmis_state()
+        assert "enrollment_drafts" in state
+        assert state["enrollment_drafts"] == []
+
+
+class TestListHmisEnrollmentDrafts:
+    def test_returns_empty_for_new_wallet(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        result = svc.list_hmis_enrollment_drafts("wallet-1")
+        assert result == []
+
+    def test_filters_by_wallet_id(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        svc.create_hmis_enrollment_draft(
+            "wallet-2",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-2",
+            destination_program_ref="shelter-b",
+        )
+        wallet1_drafts = svc.list_hmis_enrollment_drafts("wallet-1")
+        assert all(d.get("wallet_id") == "wallet-1" for d in wallet1_drafts)
+        assert len(wallet1_drafts) == 1
+
+    def test_filters_by_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        ready_drafts = svc.list_hmis_enrollment_drafts("wallet-1", status="ready")
+        draft_drafts = svc.list_hmis_enrollment_drafts("wallet-1", status="draft")
+        assert len(ready_drafts) + len(draft_drafts) >= 1
+
+
+class TestCreateHmisEnrollmentDraft:
+    def test_creates_draft_successfully(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        assert draft["enrollment_draft_id"].startswith("hmis-enrollment-draft-")
+        assert draft["wallet_id"] == "wallet-1"
+
+    def test_draft_with_required_fields_is_ready(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        assert draft["status"] == "ready"
+        assert draft["validation_errors"] == []
+
+    def test_draft_missing_subject_has_error(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="",
+            destination_program_ref="shelter-a",
+        )
+        assert draft["status"] == "draft"
+        assert any("local_subject_ref" in e for e in draft["validation_errors"])
+
+    def test_draft_missing_program_ref_has_error(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="",
+        )
+        assert draft["status"] == "draft"
+        assert any("destination_program_ref" in e for e in draft["validation_errors"])
+
+    def test_draft_persisted_in_state(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        all_drafts = svc.list_hmis_enrollment_drafts("wallet-1")
+        assert any(d.get("enrollment_draft_id") == draft["enrollment_draft_id"] for d in all_drafts)
+
+    def test_optional_fields_stored(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+            entry_date="2026-07-01",
+            household_ref="household-100",
+            summary="New enrollment for shelter",
+            metadata={"priority": "high"},
+        )
+        assert draft["entry_date"] == "2026-07-01"
+        assert draft["household_ref"] == "household-100"
+        assert draft["summary"] == "New enrollment for shelter"
+        assert draft["metadata"]["priority"] == "high"
+
+    def test_creates_audit_record(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        timeline = svc.list_hmis_sync_timeline("wallet-1")
+        action_types = [e["action_type"] for e in timeline["events"]]
+        assert "create_enrollment_draft" in action_types
+
+
+class TestSubmitHmisEnrollmentDraft:
+    def test_submit_ready_draft_returns_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        result = svc.submit_hmis_enrollment_draft(
+            "wallet-1",
+            draft["enrollment_draft_id"],
+            actor_did="did:test:staff",
+        )
+        assert result["status"] in {"submitted", "retryable", "needs_review"}
+
+    def test_submit_nonexistent_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        with pytest.raises(ValueError, match="not found"):
+            svc.submit_hmis_enrollment_draft("wallet-1", "no-such-id", actor_did="did:test:staff")
+
+    def test_submit_invalid_draft_raises(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="",
+            destination_program_ref="shelter-a",
+        )
+        with pytest.raises(ValueError, match="validation errors"):
+            svc.submit_hmis_enrollment_draft(
+                "wallet-1",
+                draft["enrollment_draft_id"],
+                actor_did="did:test:staff",
+            )
+
+    def test_submit_returns_enrollment_draft(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        result = svc.submit_hmis_enrollment_draft(
+            "wallet-1",
+            draft["enrollment_draft_id"],
+            actor_did="did:test:staff",
+        )
+        assert "enrollment_draft" in result
+        assert result["enrollment_draft"]["enrollment_draft_id"] == draft["enrollment_draft_id"]
+
+    def test_submit_updates_draft_status(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        draft = svc.create_hmis_enrollment_draft(
+            "wallet-1",
+            actor_did="did:test:staff",
+            local_subject_ref="subject-1",
+            destination_program_ref="shelter-a",
+        )
+        svc.submit_hmis_enrollment_draft(
+            "wallet-1",
+            draft["enrollment_draft_id"],
+            actor_did="did:test:staff",
+        )
+        drafts = svc.list_hmis_enrollment_drafts("wallet-1")
+        updated = next(d for d in drafts if d["enrollment_draft_id"] == draft["enrollment_draft_id"])
+        assert updated["status"] != "ready"

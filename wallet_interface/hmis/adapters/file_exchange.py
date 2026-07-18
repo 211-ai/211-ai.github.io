@@ -24,6 +24,7 @@ class FileExchangeHmisAdapter:
             supports_referral_submit=True,
             supports_status_sync=True,
             supports_reconciliation=True,
+            supports_enrollment_submit=True,
         )
 
     def _payload_hash(self, payload: Mapping[str, Any]) -> str:
@@ -48,6 +49,8 @@ class FileExchangeHmisAdapter:
     ) -> HmisAdapterResult:
         if action_type == "submit_referral":
             return self._submit_referral(payload)
+        if action_type == "submit_enrollment":
+            return self._submit_enrollment(payload)
         if action_type in {"sync_referral_status", "resolve_reconciliation_item"}:
             return self._reconcile(payload, context=context)
         return HmisAdapterResult.failure(
@@ -79,6 +82,31 @@ class FileExchangeHmisAdapter:
             adapter_name=self.name,
             summary="staged outbound HMIS referral batch",
             external_refs={"batch_id": batch_id, "referral_id": batch_id},
+            normalized_payload={"staging": metadata, "records": [dict(payload)]},
+        )
+
+    def _submit_enrollment(self, payload: Mapping[str, Any]) -> HmisAdapterResult:
+        batch_id = self._batch_id(payload)
+        path = self.staging_dir / "outbound" / f"enroll-{batch_id}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        batch_payload = {
+            "batch_id": batch_id,
+            "type": "enrollment",
+            "records": [dict(payload)],
+        }
+        path.write_text(json.dumps(batch_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        metadata = {
+            "batch_id": batch_id,
+            "path": str(path),
+            "record_count": 1,
+            "payload_hash": self._payload_hash(payload),
+        }
+        self._staged_metadata[batch_id] = metadata
+        return HmisAdapterResult.success(
+            action_type="submit_enrollment",
+            adapter_name=self.name,
+            summary="staged outbound HMIS enrollment batch",
+            external_refs={"batch_id": batch_id, "enrollment_id": batch_id},
             normalized_payload={"staging": metadata, "records": [dict(payload)]},
         )
 
