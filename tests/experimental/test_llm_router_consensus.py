@@ -32,7 +32,7 @@ except (ImportError, ModuleNotFoundError):
 
 pytestmark = pytest.mark.experimental
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _run_import_probe(script: str) -> None:

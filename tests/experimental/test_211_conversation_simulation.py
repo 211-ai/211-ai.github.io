@@ -9,7 +9,7 @@ import pytest
 pytestmark = pytest.mark.experimental
 
 def _load_simulation_module():
-    module_path = Path(__file__).parents[1] / "scripts" / "simulate_211_conversations.py"
+    module_path = Path(__file__).parents[2] / "scripts" / "simulate_211_conversations.py"
     spec = importlib.util.spec_from_file_location("simulate_211_conversations", module_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
