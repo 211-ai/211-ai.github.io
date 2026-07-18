@@ -196,7 +196,9 @@ class HmisDomainServiceMixin:
         return [dict(item) for item in DEFAULT_HMIS_FIXTURES[name]]
 
     def _load_program_links(self) -> list[dict[str, Any]]:
-        path = Path("state/hmis/program_links.json")
+        path = self._hmis_repository_root() / "state" / "hmis" / "program_links.json"
+        if not path.exists():
+            path = Path(__file__).resolve().parents[2] / "state" / "hmis" / "program_links.json"
         if not path.exists():
             return []
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -281,7 +283,7 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary=adapter_result.summary,
-            metadata={"candidate_count": len(match_result.candidates), "decision": match_result.decision},
+            metadata={"wallet_id": wallet_id, "candidate_count": len(match_result.candidates), "decision": match_result.decision},
         )
         return {
             "status": "ok",
@@ -337,7 +339,7 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary=adapter_result.summary,
-            metadata={"candidate_count": len(match_result.candidates), "decision": match_result.decision},
+            metadata={"wallet_id": wallet_id, "candidate_count": len(match_result.candidates), "decision": match_result.decision},
         )
         return {
             "status": "ok",
@@ -385,6 +387,7 @@ class HmisDomainServiceMixin:
             adapter_name="registry",
             status="success",
             response_summary=f"returned {len(results)} HMIS program link(s)",
+            metadata={"wallet_id": wallet_id},
         )
         return {
             "status": "ok",
@@ -527,7 +530,7 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary="updated HMIS referral draft",
-            metadata={"status": draft.status},
+            metadata={"wallet_id": wallet_id, "status": draft.status},
         )
         return draft
 
@@ -562,7 +565,7 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary="validated HMIS referral draft",
-            metadata={"validation_errors": list(errors), "warnings": list(warnings)},
+            metadata={"wallet_id": wallet_id, "validation_errors": list(errors), "warnings": list(warnings)},
         )
         return {"status": draft.status, "errors": errors, "warnings": warnings, "referral_draft": draft.to_dict()}
 
@@ -672,6 +675,7 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary="verified HMIS record link",
+            metadata={"wallet_id": wallet_id},
         )
         return link
 
@@ -706,13 +710,26 @@ class HmisDomainServiceMixin:
             adapter_name="manual-review",
             status="success",
             response_summary="rejected HMIS match candidate",
-            metadata={"reason": reason},
+            metadata={"wallet_id": wallet_id, "reason": reason},
         )
         return record
 
-    def list_hmis_sync_timeline(self, wallet_id: str, *, local_ref: str | None = None) -> dict[str, Any]:
-        self.wallet_service._wallet(wallet_id)  # type: ignore[attr-defined]
-        events = self._hmis_audit_store().list_events(local_ref=local_ref or None)
+    def list_hmis_sync_timeline(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str | None = None,
+        local_ref: str | None = None,
+    ) -> dict[str, Any]:
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)  # type: ignore[attr-defined]
+        else:
+            self.wallet_service._wallet(wallet_id)  # type: ignore[attr-defined]
+        events = [
+            event
+            for event in self._hmis_audit_store().list_events(local_ref=local_ref or None)
+            if event.metadata.get("wallet_id") == wallet_id or event.local_ref == wallet_id
+        ]
         return {
             "status": "ok",
             "events": [
@@ -916,6 +933,7 @@ class HmisDomainServiceMixin:
         result = self._hmis_submission_service().execute(
             action_type="submit_enrollment",
             payload={
+                "wallet_id": wallet_id,
                 "local_ref": enrollment_draft_id,
                 "local_subject_ref": draft.get("local_subject_ref"),
                 "destination_program_ref": draft.get("destination_program_ref"),

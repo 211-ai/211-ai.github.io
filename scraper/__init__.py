@@ -95,6 +95,25 @@ class _LegacyModuleAliasLoader(abc.Loader):
     def create_module(self, spec):
         return None
 
+    def get_filename(self, fullname: str) -> str:
+        target_spec = util.find_spec(self.target_name)
+        if target_spec is None or target_spec.origin is None:
+            raise ImportError(f"Cannot resolve legacy scraper module target {self.target_name!r}")
+        return target_spec.origin
+
+    def get_code(self, fullname: str):
+        source = (
+            "from importlib import import_module as _import_module\n"
+            f"_alias_name = __name__\n"
+            f"_target = _import_module({self.target_name!r})\n"
+            "globals().update(_target.__dict__)\n"
+            "globals()['__name__'] = _alias_name\n"
+            "globals()['__package__'] = _alias_name.rpartition('.')[0]\n"
+            "if _alias_name == '__main__' and callable(getattr(_target, 'main', None)):\n"
+            "    _target.main()\n"
+        )
+        return compile(source, self.get_filename(fullname), "exec")
+
     def exec_module(self, module) -> None:
         alias_spec = module.__spec__
         target_module = import_module(self.target_name)

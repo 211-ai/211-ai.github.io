@@ -722,6 +722,36 @@ class TestListHmisSyncTimeline:
         result = svc.list_hmis_sync_timeline("wallet-1", local_ref="wallet-1")
         assert result["status"] == "ok"
 
+    def test_filters_out_events_from_other_wallets(self, tmp_path):
+        svc = _make_stub_service(tmp_path)
+        svc.lookup_hmis_clients("wallet-1", actor_did="did:test:staff", name="Jane")
+        svc.lookup_hmis_clients("wallet-2", actor_did="did:test:staff", name="John")
+
+        result = svc.list_hmis_sync_timeline("wallet-1")
+
+        assert result["events"]
+        assert {event["metadata"].get("wallet_id") for event in result["events"]} == {"wallet-1"}
+
+
+class TestHmisProgramLinksLoading:
+    def test_uses_configured_repository_root(self, tmp_path, monkeypatch):
+        svc = _make_stub_service(tmp_path)
+        links = {
+            "program_links": [
+                {
+                    "local_program_ref": "shelter-a",
+                    "external_project_id": "HMIS-PROJECT-100",
+                    "program_name": "Emergency Shelter",
+                }
+            ]
+        }
+        path = tmp_path / "state" / "hmis" / "program_links.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(links), encoding="utf-8")
+        monkeypatch.chdir(tmp_path / "state")
+
+        assert svc._load_program_links() == links["program_links"]
+
 
 class TestRetryHmisReconciliationItem:
     def test_retry_nonexistent_item_raises(self, tmp_path):

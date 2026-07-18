@@ -223,7 +223,11 @@ class HmisService:
             request_payload_hash=_payload_hash(payload),
             response_summary=adapter_result.summary,
             occurred_at=_utc_now(),
-            metadata={"retryable": adapter_result.retryable, "warnings": list(adapter_result.warnings)},
+            metadata={
+                "retryable": adapter_result.retryable,
+                "warnings": list(adapter_result.warnings),
+                **({"wallet_id": str(payload["wallet_id"])} if payload.get("wallet_id") else {}),
+            },
         )
         if self.audit_store is not None:
             self.audit_store.emit(sync_event)
@@ -261,6 +265,7 @@ class HmisService:
         context: Mapping[str, Any] | None = None,
     ) -> HmisExecutionResult:
         payload = {
+            "wallet_id": draft.wallet_id,
             "local_ref": draft.referral_draft_id,
             "local_subject_ref": draft.local_subject_ref,
             "destination_program_ref": draft.destination_program_ref,

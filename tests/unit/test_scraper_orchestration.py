@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import importlib
+import subprocess
+import sys
 
 import pytest
 
@@ -73,3 +75,27 @@ def test_orchestration_exposes_parse_args():
     from scraper.orchestration import parse_args  # noqa: PLC0415
 
     assert callable(parse_args)
+
+
+def test_legacy_main_module_executes_with_python_m():
+    result = subprocess.run(
+        [sys.executable, "-m", "scraper.main", "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "Comprehensive scraper" in result.stdout
+
+
+def test_legacy_agentic_daemon_module_executes_with_python_m():
+    result = subprocess.run(
+        [sys.executable, "-m", "scraper.agentic_daemon", "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "agentic" in result.stdout.lower()

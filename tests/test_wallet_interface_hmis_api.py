@@ -194,3 +194,31 @@ def test_hmis_enrollment_draft_submit_not_found_raises(tmp_path) -> None:
         json={"actor_did": "did:key:worker"},
     )
     assert submitted.status_code == 400
+
+
+def test_hmis_timeline_requires_actor_and_filters_by_wallet(tmp_path) -> None:
+    client = _client(tmp_path)
+    wallet_one = _wallet_id(client)
+    wallet_two = _wallet_id(client)
+
+    for wallet_id, name in (
+        (wallet_one, "Jane Doe"),
+        (wallet_two, "Alex Smith"),
+    ):
+        lookup = client.post(
+            f"/wallets/{wallet_id}/hmis/lookup-clients",
+            json={"actor_did": "did:key:worker", "name": name},
+        )
+        assert lookup.status_code == 200
+
+    unauthenticated = client.get(f"/wallets/{wallet_one}/hmis/timeline")
+    assert unauthenticated.status_code == 400
+
+    timeline = client.get(
+        f"/wallets/{wallet_one}/hmis/timeline",
+        params={"actor_did": "did:key:worker"},
+    )
+    assert timeline.status_code == 200
+    events = timeline.json()["events"]
+    assert events
+    assert {event["metadata"].get("wallet_id") for event in events} == {wallet_one}

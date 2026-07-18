@@ -198,9 +198,13 @@ def create_router(service: WalletInterfaceService):
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @router.get("/wallets/{wallet_id}/hmis/timeline")
-    def list_hmis_timeline(wallet_id: str, local_ref: str | None = None) -> dict[str, Any]:
+    def list_hmis_timeline(
+        wallet_id: str,
+        local_ref: str | None = None,
+        actor_did: str = "",
+    ) -> dict[str, Any]:
         try:
-            return app_service.list_hmis_sync_timeline(wallet_id, local_ref=local_ref)
+            return app_service.list_hmis_sync_timeline(wallet_id, actor_did=actor_did, local_ref=local_ref)
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

@@ -1366,6 +1366,7 @@ export async function listHmisSyncTimeline(
   input: { localRef?: string } = {}
 ): Promise<WalletHmisOperationResult> {
   const url = new URL(`/wallets/${config.walletId}/hmis/timeline`, normalizedBaseUrl(config.apiBaseUrl));
+  url.searchParams.set("actor_did", requiredActorDid(config));
   if (input.localRef) {
     url.searchParams.set("local_ref", input.localRef);
   }
