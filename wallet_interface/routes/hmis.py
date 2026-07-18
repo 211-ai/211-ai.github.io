@@ -244,9 +244,10 @@ def create_router(service: WalletInterfaceService):
                 actor_did=request.actor_did,
                 local_subject_ref=request.local_subject_ref,
                 destination_program_ref=request.destination_program_ref,
-                entry_date=request.entry_date or "",
-                household_ref=request.household_ref or "",
-                summary=request.summary or "",
+                # service expects str; None means "not provided" which maps to ""
+                entry_date=request.entry_date if request.entry_date is not None else "",
+                household_ref=request.household_ref if request.household_ref is not None else "",
+                summary=request.summary if request.summary is not None else "",
                 metadata=request.metadata,
             )
         except Exception as exc:

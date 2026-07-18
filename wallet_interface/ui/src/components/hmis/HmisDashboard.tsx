@@ -79,6 +79,7 @@ export function HmisDashboard({ apiConfig }: HmisDashboardProps) {
 
   useEffect(() => {
     void refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiConfig]);
 
   const openItems = reconciliationItems.filter(
