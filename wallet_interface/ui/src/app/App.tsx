@@ -5,9 +5,9 @@ import { AgentChatDrawer, type AgentChatMode } from "../features/agent/component
 import { primeVoiceChatActivation } from "../features/agent/components/AgentAudioChatSurface";
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../features/agent/lib/agentChatService";
-import { getServicePlanDocIdFromHash, setLocationServicePlanHash } from "./ServicePlanScreen";
-import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../agent/tools/serviceDetailTools";
-import { getRouteLabel } from "../agent/surfaceRegistry";
+import { getServicePlanDocIdFromHash, setLocationServicePlanHash } from "../features/service-navigation/components/ServicePlanScreen";
+import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../features/agent/lib/tools/serviceDetailTools";
+import { getRouteLabel } from "../features/agent/lib/surfaceRegistry";
 import type {
   AuditEvent,
   CheckInPolicyDraft,
@@ -62,7 +62,7 @@ import {
   secondaryNavigationRoutes,
 } from "./config/navigation";
 import { readWalletApiBaseUrl, readWalletApiConfig, WALLET_API_CONFIG_KEY } from "./services/walletConfig";
-import { LoginScreen } from "./screens/LoginScreen";
+import { LoginScreen } from "../features/wallet/components/LoginScreen";
 import {
   APP_SESSION_KEY,
   cacheEncryptedRecoveryBundleFromMagicLogin,

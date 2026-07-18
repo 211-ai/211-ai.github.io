@@ -34,6 +34,8 @@ from ipfs_accelerate_py.llm_consensus import (
     run_p2p_consensus_async,
 )
 
+pytestmark = pytest.mark.experimental
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -610,6 +612,8 @@ def test_receipt_content_hash_changes_when_output_changes() -> None:
         ConsensusReceipt,
         ConsensusResult,
     )
+
+
 
     request = _build_request()
     base = ConsensusReceipt(

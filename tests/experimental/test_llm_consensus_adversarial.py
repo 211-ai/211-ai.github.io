@@ -28,6 +28,7 @@ from ipfs_accelerate_py.llm_consensus import (
 )
 from ipfs_accelerate_py.proof_verifiers import ProofContext, ZKMLVerifier
 
+pytestmark = pytest.mark.experimental
 
 def _request(**overrides: Any):
     values = {

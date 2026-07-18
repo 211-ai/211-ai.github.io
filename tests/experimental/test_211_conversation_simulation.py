@@ -4,6 +4,9 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
+pytestmark = pytest.mark.experimental
 
 def _load_simulation_module():
     module_path = Path(__file__).parents[1] / "scripts" / "simulate_211_conversations.py"

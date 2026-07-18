@@ -4,8 +4,11 @@ import argparse
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts.build_slotted_response_dag import build_slotted_dag
 
+pytestmark = pytest.mark.experimental
 
 def test_build_slotted_dag_embeds_canonical_intents_and_unique_exemplars(tmp_path: Path) -> None:
     memory = tmp_path / "memory.json"

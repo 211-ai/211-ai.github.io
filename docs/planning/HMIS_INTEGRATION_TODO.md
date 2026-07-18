@@ -239,8 +239,8 @@ Track guide:
 - Priority: P1
 - Track: privacy
 - Depends on: HMIS-011
-- Outputs: docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md, docs/HMIS_RETENTION_AND_LOGGING_REVIEW.md
-- Validation: test -f docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md && test -f docs/HMIS_RETENTION_AND_LOGGING_REVIEW.md
+- Outputs: docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md, docs/specs/HMIS_RETENTION_AND_LOGGING_REVIEW.md
+- Validation: test -f docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md && test -f docs/specs/HMIS_RETENTION_AND_LOGGING_REVIEW.md
 - Acceptance: HMIS trust boundaries, incident classes, retention rules, and logging constraints are documented and tied to release gates.
 
 ## HMIS-080 Sandbox Fixtures And End-To-End Test Harness
@@ -259,8 +259,8 @@ Track guide:
 - Priority: P1
 - Track: ops
 - Depends on: HMIS-052, HMIS-071, HMIS-080
-- Outputs: docs/HMIS_INTEGRATION_RUNBOOK.md, data/hmis/release_checklist.json
-- Validation: test -f docs/HMIS_INTEGRATION_RUNBOOK.md && test -f data/hmis/release_checklist.json
+- Outputs: docs/runbooks/HMIS_INTEGRATION_RUNBOOK.md, data/hmis/release_checklist.json
+- Validation: test -f docs/runbooks/HMIS_INTEGRATION_RUNBOOK.md && test -f data/hmis/release_checklist.json
 - Acceptance: Operators have environment setup, credential rotation, outage handling, reconciliation, monitoring, and launch gates documented.
 
 ## HMIS-090 Production Readiness Gate
@@ -269,6 +269,6 @@ Track guide:
 - Priority: P1
 - Track: ops
 - Depends on: HMIS-081, HMIS-063, HMIS-080
-- Outputs: docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md, docs/HMIS_INTEGRATION_RUNBOOK.md, data/hmis/release_checklist.json
+- Outputs: docs/specs/HMIS_INTEGRATION_THREAT_MODEL.md, docs/runbooks/HMIS_INTEGRATION_RUNBOOK.md, data/hmis/release_checklist.json
 - Validation: python -m pytest tests/test_hmis_end_to_end.py -q; npm --prefix wallet_interface/ui run build
 - Acceptance: Governance approval, consent controls, audit completeness, reconciliation, UI review, and incident response evidence are complete for the first deployment.

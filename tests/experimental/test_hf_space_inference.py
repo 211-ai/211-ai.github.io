@@ -17,6 +17,7 @@ from ipfs_accelerate_py.hf_space_inference import (
     LocalFileSystemBackend,
 )
 
+pytestmark = pytest.mark.experimental
 
 class TestBatchState:
     """Tests for BatchState dataclass."""

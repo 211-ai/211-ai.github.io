@@ -22,6 +22,8 @@ from ipfs_accelerate_py.proof_verifiers import (
     ZKMLVerifier,
 )
 
+pytestmark = pytest.mark.experimental
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

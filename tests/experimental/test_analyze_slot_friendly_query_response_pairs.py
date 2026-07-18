@@ -4,8 +4,11 @@ import argparse
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts.analyze_slot_friendly_query_response_pairs import build_analysis, mask_query
 
+pytestmark = pytest.mark.experimental
 
 def test_mask_query_slots_service_location_and_entity() -> None:
     masked = mask_query("I need shelter near Portland and I lost my Oregon ID.")

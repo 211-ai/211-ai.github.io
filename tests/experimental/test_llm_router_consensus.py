@@ -30,6 +30,8 @@ try:
 except (ImportError, ModuleNotFoundError):
     pytest.skip("ipfs_accelerate_py.llm_router backend not available in this environment", allow_module_level=True)
 
+pytestmark = pytest.mark.experimental
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -151,6 +153,7 @@ def test_import_ipfs_accelerate_llm_router_defers_upstream_router_side_effects()
         builtins.open = guarded_open
 
         import ipfs_accelerate_py.llm_router as router
+
 
         blocked = [
             name

@@ -126,6 +126,8 @@ Old locations in `app/screens/` and `services/` are backward-compat re-export st
 | Python lint | `ruff check scraper/ wallet_interface/ tests/` |
 | Unit tests | `python -m pytest tests/unit/ -q` |
 | Contract tests | `python -m pytest tests/contract/ -q` |
+| Integration tests | `python -m pytest tests/integration/ -q --timeout=300` |
+| Experimental tests | `python -m pytest tests/experimental/ -q --timeout=300` |
 | Scraper tests | `python -m pytest tests/test_scraper.py -q` |
 | Packaging/docs checks | `python -m pytest tests/test_wallet_python_dependencies.py -q` |
 | Abby UI type check | `cd wallet_interface/ui && npx tsc --noEmit` |

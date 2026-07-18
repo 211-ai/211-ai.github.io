@@ -36,6 +36,7 @@ from ipfs_accelerate_py.llm_consensus import (
     verify_operator_response_signature,
 )
 
+pytestmark = pytest.mark.experimental
 
 @dataclass
 class _MockConsensusOperator:

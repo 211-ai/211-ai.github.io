@@ -23,6 +23,8 @@ from ipfs_accelerate_py.proof_verifiers import (
     ZKMLVerifier,
 )
 
+pytestmark = pytest.mark.experimental
+
 RAW_PROMPT = (
     "CLZKML-150 raw prompt marker: user secret is configured-sensitive-substring-150 "
     "and the emergency phrase is keep-this-prompt-private"
