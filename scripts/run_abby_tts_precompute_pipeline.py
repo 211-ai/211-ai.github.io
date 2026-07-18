@@ -9,10 +9,9 @@ import shlex
 import subprocess
 import sys
 import time
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -413,7 +412,7 @@ def build_batch_step(spec: BatchPhaseSpec, args: argparse.Namespace, repo_root: 
     phase_bucket_uri = append_path_suffix(args.bucket_uri, spec.key)
     if phase_bucket_uri:
         cmd.extend(["--bucket-uri", phase_bucket_uri])
-    if args.require_upload_capable_batch:
+    if getattr(args, "require_upload_capable_batch", False):
         cmd.append("--require-upload-capable-batch")
     if getattr(args, "prune_local_audio_after_sync", False):
         cmd.append("--prune-local-audio-after-sync")

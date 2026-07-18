@@ -233,6 +233,8 @@ def _target_env(tmp_path: Path, verifier_url: str) -> dict[str, str]:
         "WALLET_OPS_ALERT_SECRET_REF": "secret://ci/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://ci/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://ci/wallet/storage",
+        "WALLET_INDEXTTS_SPACE_URL": "https://indexteam-indextts-2-demo.hf.space",
+        "WALLET_INDEXTTS_MODEL_NAME": "IndexTeam/IndexTTS-2-Demo",
     }
 
 

@@ -234,9 +234,10 @@ class WebArchivingAdapter:
     def _request_with_timeout(self, url: str, *, timeout_seconds: int) -> FetchResult:
         response = self._session.get(url, timeout=timeout_seconds)
         response.raise_for_status()
-        content_type = response.headers.get("Content-Type", "")
-        if is_pdf_document(response.url, content_type=content_type, content=response.content):
-            extraction = extract_pdf_text_from_bytes(response.content, source_name=response.url)
+        content = getattr(response, "content", b"")
+        content_type = getattr(response, "headers", {}).get("Content-Type", "")
+        if is_pdf_document(response.url, content_type=content_type, content=content):
+            extraction = extract_pdf_text_from_bytes(content, source_name=response.url)
             title = pdf_title_from_metadata(extraction.metadata) or Path(urlparse(response.url).path).stem.replace("-", " ")
             return FetchResult(
                 url=response.url,

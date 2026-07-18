@@ -212,6 +212,9 @@ class HmisDomainServiceMixin:
         ]
         return ManualReviewHmisAdapter(fixtures=fixtures)
 
+    def _hmis_fixture_import_rows(self):
+        return getattr(self, "_hmis_fixture_imports", None) or getattr(self, "_fixture_imports", ())
+
     def _hmis_submission_service(self):
         from ..hmis import FileExchangeHmisAdapter, HmisService
         from ..hmis.service import HmisReconciliationItem
@@ -220,7 +223,7 @@ class HmisDomainServiceMixin:
         if service is None:
             adapter = FileExchangeHmisAdapter(
                 staging_dir=self._hmis_repository_root() / "data" / "hmis",
-                fixture_imports=getattr(self, "_hmis_fixture_imports", ()),
+                fixture_imports=self._hmis_fixture_import_rows(),
             )
             service = HmisService(adapter=adapter, audit_store=self._hmis_audit_store())
             state = self._ensure_hmis_state()
@@ -231,6 +234,13 @@ class HmisDomainServiceMixin:
             ]
             setattr(self, "_hmis_submission_service_cache", service)
         return service
+
+    @property
+    def submission_service(self):
+        return self._hmis_submission_service()
+
+    def _save_state(self) -> None:
+        self._store_reconciliation_queue()
 
     def _store_reconciliation_queue(self) -> None:
         service = self._hmis_submission_service()
@@ -744,7 +754,7 @@ class HmisDomainServiceMixin:
         result = service.retry_reconciliation_item(
             item,
             actor_id=actor_did,
-            context={"imports": getattr(self, "_hmis_fixture_imports", ())},
+            context={"imports": self._hmis_fixture_import_rows()},
         )
         self._store_reconciliation_queue()
         return {
@@ -765,7 +775,7 @@ class HmisDomainServiceMixin:
             result = service.retry_reconciliation_item(
                 item,
                 actor_id="did:wallet:hmis-reconciliation",
-                context={"imports": getattr(self, "_hmis_fixture_imports", ())},
+                context={"imports": self._hmis_fixture_import_rows()},
             )
             if result.adapter_result.ok:
                 resolved += 1

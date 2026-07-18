@@ -21,7 +21,7 @@ except ImportError:
     WalletInterfaceService = None  # type: ignore[assignment,misc]
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_TARGET_SIGNOFF_PACKET_TEMPLATE = _REPO_ROOT / "docs" / "WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json"
+_TARGET_SIGNOFF_PACKET_TEMPLATE = _REPO_ROOT / "docs" / "planning" / "WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json"
 
 _PRODUCTION_PLACEHOLDER_MARKERS = (
     "example.com",

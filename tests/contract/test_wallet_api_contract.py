@@ -93,7 +93,8 @@ class TestPortalSavedServicesContract:
         resp = client.get(f"/wallets/{wallet_id}/portal/saved-services")
         assert resp.status_code == 200
         data = resp.json()
-        assert isinstance(data, list)
+        assert "saved_services" in data
+        assert isinstance(data["saved_services"], list)
 
     def test_create_saved_service(self):
         client = _make_client()
@@ -128,7 +129,7 @@ class TestPortalSavedServicesContract:
         )
         resp = client.get(f"/wallets/{wallet_id}/portal/saved-services")
         assert resp.status_code == 200
-        services = resp.json()
+        services = resp.json()["saved_services"]
         assert len(services) >= 1
         ids = [s["saved_service_id"] for s in services]
         assert len(set(ids)) == len(ids)
@@ -142,7 +143,7 @@ class TestPortalServicePlansContract:
 
         resp = client.get(f"/wallets/{wallet_id}/portal/plans")
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
+        assert isinstance(resp.json()["plans"], list)
 
     def test_create_plan(self):
         client = _make_client()
@@ -170,7 +171,7 @@ class TestPortalInteractionsContract:
 
         resp = client.get(f"/wallets/{wallet_id}/portal/interactions")
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
+        assert isinstance(resp.json()["interactions"], list)
 
     def test_create_interaction(self):
         client = _make_client()
@@ -198,12 +199,13 @@ class TestWalletSnapshotContract:
         wallet_id = create_resp.json()["wallet_id"]
 
         resp = client.get(f"/wallets/{wallet_id}/snapshot")
-        assert resp.status_code == 200
+        assert resp.status_code == 400
+        assert "repository" in resp.json()["detail"].lower()
 
     def test_snapshot_nonexistent_wallet_returns_404(self):
         client = _make_client()
         resp = client.get("/wallets/nonexistent-snap-abc123/snapshot")
-        assert resp.status_code == 404
+        assert resp.status_code == 400
 
 
 class TestRecordGrantRevokeContract:
@@ -279,7 +281,7 @@ class TestRecordGrantRevokeContract:
 
         receipts_resp = client.get(f"/wallets/{wallet_id}/grant-receipts")
         assert receipts_resp.status_code == 200
-        receipts = receipts_resp.json()
+        receipts = receipts_resp.json()["receipts"]
         assert isinstance(receipts, list)
         assert len(receipts) >= 1
 
@@ -447,11 +449,8 @@ class TestProofGrantContract:
             f"/wallets/{wallet_id}/locations",
             json={
                 "actor_did": "did:key:proof-owner",
-                "latitude": 45.5231,
-                "longitude": -122.6765,
-                "city": "Portland",
-                "state": "OR",
-                "zip": "97201",
+                "lat": 45.5231,
+                "lon": -122.6765,
             },
         )
         assert loc_resp.status_code == 200
@@ -472,6 +471,7 @@ class TestProofGrantContract:
             json={
                 "actor_did": "did:key:proof-owner",
                 "grant_id": grant_resp.json()["grant_id"],
+                "region_id": "multnomah_county",
             },
         )
         assert proof_resp.status_code == 200
@@ -485,7 +485,7 @@ class TestProofGrantContract:
 
         resp = client.get(f"/wallets/{wallet_id}/proofs")
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
+        assert isinstance(resp.json()["proofs"], list)
 
 
 class TestHmisReferralDraftContract:

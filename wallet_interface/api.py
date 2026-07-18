@@ -13,7 +13,11 @@ from .helpers._app import _cors_origins_from_env, _wallet_interface_service_from
 # those call-sites (and monkeypatches) working without requiring test changes.
 # ---------------------------------------------------------------------------
 from .helpers._auth import _send_sms_notification  # noqa: F401
-from .helpers._tts import _run_indextts_gradio_batch_tts, _run_indextts_gradio_tts, _run_indextts_tts_with_batch_fallback  # noqa: F401
+from .helpers._tts import (  # noqa: F401
+    _run_indextts_gradio_batch_tts,
+    _run_indextts_gradio_tts,
+    _run_indextts_tts_with_batch_fallback,
+)
 from .helpers._tts_client import (  # noqa: F401
     _INDEXTTS_CONFIG_CACHE,
     _INDEXTTS_FN_INDEX_CACHE,
@@ -65,6 +69,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
     from .routes.records import create_router as create_records_router
     from .routes.storage import create_router as create_storage_router
     from .routes.wallets import create_router as create_wallets_router
+    from .routes.world_id import create_router as create_world_id_router
 
     app_service = service or _wallet_interface_service_from_env()
     app = FastAPI(title="211-AI Wallet Interface", version="0.1.0")
@@ -89,6 +94,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
         create_ai_router,
         create_storage_router,
         create_records_router,
+        create_world_id_router,
         create_hmis_router,
         create_grants_router,
         create_exports_router,

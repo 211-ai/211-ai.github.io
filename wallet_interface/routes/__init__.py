@@ -3,6 +3,7 @@
 __all__ = [
     "auth",
     "wallets",
+    "world_id",
     "dead_drops",
     "notifications",
     "proofs",

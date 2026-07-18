@@ -7,6 +7,7 @@ import math
 import struct
 import sys
 from collections import defaultdict
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -63,6 +64,50 @@ def read_manifest(package_dir: Path) -> dict[str, Any]:
     if not manifest_path.exists():
         return {}
     return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def _parse_json_container(value: Any, fallback: Any) -> Any:
+    if isinstance(value, dict | list):
+        return value
+    if value in ("", None):
+        return fallback
+    try:
+        return json.loads(str(value))
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return fallback
+
+
+def _valid_geo_point(value: Any) -> dict[str, Any] | None:
+    geo = _parse_json_container(value, {})
+    if not isinstance(geo, dict):
+        return None
+    lat = geo.get("lat")
+    lon = geo.get("lon")
+    if lat in ("", None) or lon in ("", None):
+        return None
+    try:
+        return {**geo, "lat": float(lat), "lon": float(lon)}
+    except (TypeError, ValueError):
+        return None
+
+
+def coerce_service_geo_point(document: Mapping[str, Any], fallback: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Return the best available service geo point for browser search payloads."""
+
+    document_geo = _valid_geo_point(document.get("geo"))
+    if document_geo is not None:
+        return document_geo
+
+    addresses = _parse_json_container(document.get("addresses"), [])
+    if isinstance(addresses, list):
+        for address in addresses:
+            if not isinstance(address, Mapping):
+                continue
+            address_geo = _valid_geo_point(address.get("geo"))
+            if address_geo is not None:
+                return address_geo
+
+    return dict(fallback or {})
 
 
 def load_documents(package_dir: Path, *, max_documents: int, text_max_chars: int) -> list[dict[str, Any]]:
