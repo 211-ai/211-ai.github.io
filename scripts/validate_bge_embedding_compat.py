@@ -43,7 +43,7 @@ def load_probe_texts(package_dir: Path, max_document_texts: int) -> list[str]:
 
 
 def python_embeddings(texts: list[str], model_name: str) -> list[list[float]]:
-    from scraper.build_retrieval_package import _ensure_torchvision_stub
+    from scraper.export.build_retrieval_package import _ensure_torchvision_stub
 
     _ensure_torchvision_stub()
     from sentence_transformers import SentenceTransformer

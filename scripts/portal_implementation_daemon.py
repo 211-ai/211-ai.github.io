@@ -73,7 +73,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--todo-path",
         type=Path,
-        default=Path("docs/211_SERVICE_NAVIGATION_PORTAL_TODO.md"),
+        default=Path("docs/planning/211_SERVICE_NAVIGATION_PORTAL_TODO.md"),
         help="Machine-readable markdown backlog",
     )
     parser.add_argument(

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import fields
-from typing import Any, Callable, Dict
+from typing import Any
 from urllib import request as urllib_request
 
 from ._vendor import ensure_ipfs_datasets_py_path
@@ -13,7 +14,6 @@ ensure_ipfs_datasets_py_path()
 
 from ipfs_datasets_py.wallet.models import ProofReceipt  # noqa: E402
 from ipfs_datasets_py.wallet.proofs import verifier_digest  # noqa: E402
-
 
 _PRIVATE_WITNESS_KEYS = {
     "address",
@@ -34,10 +34,10 @@ _SAFE_WITNESS_KEY_EXCEPTIONS = {"witness_commitment", "witness_record_ids"}
 def _default_request_json(
     method: str,
     url: str,
-    payload: Dict[str, Any],
-    headers: Dict[str, str],
+    payload: dict[str, Any],
+    headers: dict[str, str],
     timeout_seconds: float,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     request_headers = {"content-type": "application/json", **headers}
     body = json.dumps(payload, sort_keys=True).encode("utf-8")
     req = urllib_request.Request(
@@ -83,9 +83,9 @@ class HttpLocationRegionProofBackend:
         verify_path: str = "/verify",
         health_path: str = "/health",
         bearer_token: str | None = None,
-        extra_headers: Dict[str, str] | None = None,
+        extra_headers: dict[str, str] | None = None,
         timeout_seconds: float = 30.0,
-        request_json: Callable[[str, str, Dict[str, Any], Dict[str, str], float], Dict[str, Any]] | None = None,
+        request_json: Callable[[str, str, dict[str, Any], dict[str, str], float], dict[str, Any]] | None = None,
     ) -> None:
         resolved_base_url = str(base_url or "").strip().rstrip("/")
         if not resolved_base_url:
@@ -119,9 +119,9 @@ class HttpLocationRegionProofBackend:
         self,
         *,
         wallet_id: str,
-        statement: Dict[str, Any],
-        public_inputs: Dict[str, Any],
-        witness: Dict[str, Any],
+        statement: dict[str, Any],
+        public_inputs: dict[str, Any],
+        witness: dict[str, Any],
         witness_record_ids: list[str],
     ) -> ProofReceipt:
         payload = {
@@ -148,9 +148,9 @@ class HttpLocationRegionProofBackend:
         self,
         *,
         wallet_id: str,
-        statement: Dict[str, Any],
-        public_inputs: Dict[str, Any],
-        witness: Dict[str, Any],
+        statement: dict[str, Any],
+        public_inputs: dict[str, Any],
+        witness: dict[str, Any],
         witness_record_ids: list[str],
     ) -> ProofReceipt:
         payload = {
@@ -183,7 +183,7 @@ class HttpLocationRegionProofBackend:
         )
         return bool(response.get("verified"))
 
-    def healthcheck(self) -> Dict[str, Any]:
+    def healthcheck(self) -> dict[str, Any]:
         response = self.request_json(
             "POST",
             f"{self.base_url}{self.health_path}",
@@ -203,11 +203,11 @@ class HttpLocationRegionProofBackend:
         wallet_id: str = "wallet-contract-test",
         witness_record_id: str = "record-contract-test",
         region_id: str = "contract-test-region",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a non-user health/prove/verify contract check against the verifier."""
-        checks: list[Dict[str, Any]] = []
+        checks: list[dict[str, Any]] = []
 
-        def add_check(name: str, ok: bool, summary: str, details: Dict[str, Any] | None = None) -> None:
+        def add_check(name: str, ok: bool, summary: str, details: dict[str, Any] | None = None) -> None:
             checks.append(
                 {
                     "name": name,
@@ -296,11 +296,11 @@ class HttpLocationRegionProofBackend:
         wallet_id: str = "wallet-contract-test",
         witness_record_id: str = "record-contract-test",
         target_id: str = "contract-test-service",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a non-user location-distance contract check against the verifier."""
-        checks: list[Dict[str, Any]] = []
+        checks: list[dict[str, Any]] = []
 
-        def add_check(name: str, ok: bool, summary: str, details: Dict[str, Any] | None = None) -> None:
+        def add_check(name: str, ok: bool, summary: str, details: dict[str, Any] | None = None) -> None:
             checks.append(
                 {
                     "name": name,
@@ -398,7 +398,7 @@ class HttpLocationRegionProofBackend:
 
     def _receipt_from_response(
         self,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         *,
         wallet_id: str,
         proof_type: str,
@@ -434,13 +434,13 @@ class HttpLocationRegionProofBackend:
             return False
         if isinstance(value, list):
             return any(cls._contains_private_witness_data(item, sensitive_values) for item in value)
-        if isinstance(value, (str, int, float)):
+        if isinstance(value, str | int | float):
             rendered = str(value)
             return any(secret and secret in rendered for secret in sensitive_values)
         return False
 
     @staticmethod
-    def _receipt_summary(receipt: ProofReceipt) -> Dict[str, Any]:
+    def _receipt_summary(receipt: ProofReceipt) -> dict[str, Any]:
         return {
             "proof_id": receipt.proof_id,
             "proof_type": receipt.proof_type,
@@ -453,7 +453,7 @@ class HttpLocationRegionProofBackend:
             "proof_artifact_ref": receipt.proof_artifact_ref,
         }
 
-    def _contract_result(self, checks: list[Dict[str, Any]], receipt: ProofReceipt | None = None) -> Dict[str, Any]:
+    def _contract_result(self, checks: list[dict[str, Any]], receipt: ProofReceipt | None = None) -> dict[str, Any]:
         ok = all(check["status"] == "ok" for check in checks)
         return {
             "ok": ok,

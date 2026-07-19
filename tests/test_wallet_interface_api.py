@@ -3,16 +3,21 @@ from __future__ import annotations
 import io
 import json
 import zipfile
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Mapping, Sequence
 
 from fastapi.testclient import TestClient
-
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
-from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
-import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
+
+import wallet_interface.api as wallet_api_module
+import wallet_interface.helpers._tts_client as _tts_client_module
+import wallet_interface.helpers._tts_http as _tts_http_module
+import wallet_interface.helpers._tts_pipeline as _tts_pipeline_module
+import wallet_interface.routes.ai_router as _ai_router_module
+import wallet_interface.routes.auth as _auth_route_module
+from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
 
 def _client() -> TestClient:
@@ -65,7 +70,7 @@ def test_health_warns_when_publicus_indextts_has_no_hf_token(monkeypatch) -> Non
         "HUGGINGFACE_HUB_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     client = _client()
 
     response = client.get("/health")
@@ -88,7 +93,7 @@ def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monk
         "HUGGINGFACE_HUB_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     client = _client_with_service(service)
 
@@ -105,7 +110,7 @@ def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monk
 def test_ops_voice_proxy_status_reports_publicus_warning(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
     monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
-    monkeypatch.setattr(wallet_api_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
     client = _client()
 
     response = client.get("/ops/voice-proxy/status")
@@ -141,7 +146,7 @@ def test_magic_login_request_sends_signed_sms_and_verify_connects_wallet(monkeyp
         deliveries.append(kwargs)
         return {"provider": "mock", "provider_status": "queued", "provider_message_id": "SM-login"}
 
-    monkeypatch.setattr(wallet_api_module, "_send_sms_notification", fake_sms_delivery)
+    monkeypatch.setattr(_auth_route_module, "_send_sms_notification", fake_sms_delivery)
     client = _client()
     wallet_ids = []
     for owner in ["did:key:owner1", "did:key:owner2"]:
@@ -1896,7 +1901,7 @@ def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     first = wallet_api_module._run_indextts_gradio_tts(text="hello")
     second = wallet_api_module._run_indextts_gradio_tts(text="again")
@@ -2035,7 +2040,7 @@ def test_indextts_proxy_sends_normalized_speech_text(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Visit SE 32nd ave or call 211.")
 
@@ -2081,7 +2086,7 @@ def test_indextts_batch_proxy_uses_batch_endpoint(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "gen_batch")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_batch_tts(texts=["Call 211.", "Meet at SE 32nd ave."])
 
@@ -2119,7 +2124,7 @@ def test_indextts_batch_extracts_audio_from_zip_output(monkeypatch) -> None:
     with zipfile.ZipFile(buffer, "w") as archive:
         archive.writestr("spk-item-1.wav", b"RIFFoneWAVE")
         archive.writestr("spk-item-2.wav", b"RIFFtwoWAVE")
-    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (buffer.getvalue(), "application/zip"))
+    monkeypatch.setattr(_tts_client_module, "_fetch_gradio_file", lambda ref: (buffer.getvalue(), "application/zip"))
     result = {
         "data": [
             {"__type__": "update", "value": {"path": "/tmp/preview.wav"}},
@@ -2166,7 +2171,7 @@ def test_indextts_single_tts_accepts_batch_shaped_result(monkeypatch) -> None:
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
 
@@ -2180,7 +2185,7 @@ def test_indextts_wait_for_result_expands_empty_space_queue_error(monkeypatch) -
         def wait_for_queue_result(self, session_hash: str, *, timeout_seconds: float | None = None, poll_interval_seconds: float = 0.5):
             raise RuntimeError("Space queue failed: {'error': None}")
 
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
 
     try:
         wallet_api_module._indextts_wait_for_result("session-opaque-error")
@@ -2232,9 +2237,12 @@ def test_indextts_tts_falls_back_to_api_name_call_after_opaque_queue_failures(mo
             return b"RIFFstubWAVE", "audio/wav"
 
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://example.test")
     monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
     monkeypatch.setenv("WALLET_INDEXTTS_ALLOW_DIRECT_PREDICT_FALLBACK", "true")
-    monkeypatch.setattr(wallet_api_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setenv("WALLET_INDEXTTS_DEGRADED_FAST_FAIL", "false")
+    monkeypatch.setattr(_tts_client_module, "_indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(_tts_pipeline_module, "_indextts_space_client", lambda: FakeClient())
 
     result = wallet_api_module._run_indextts_gradio_tts(text="Call 211.")
 
@@ -2259,7 +2267,7 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
         return {"audioBase64": "UklGRnN0dWJXQVZF", "mimeType": "audio/wav", "latency": {"tts_request_ms": 1}}
 
     monkeypatch.setattr(llm_router, "generate_text", fake_generate_text)
-    monkeypatch.setattr(wallet_api_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
+    monkeypatch.setattr(_ai_router_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
     monkeypatch.setenv("WALLET_VOICE_LLM_MODEL", "Qwen/Qwen3.5-2B")
 
     client = _client()
@@ -2309,7 +2317,10 @@ def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:
-    captured_requests = []
+    # TODO: complete this test — it should monkeypatch urllib.request.urlopen, push a
+    # phone-call notification through the /notifications endpoint, then assert that
+    # _captured_requests contains the expected webhook payload.
+    _captured_requests: list[object] = []
 
     class FakeResponse:
         def __init__(self, payload: dict[str, object]) -> None:
@@ -2933,3 +2944,136 @@ def test_wallet_api_export_grant_respects_threshold_approval() -> None:
 
     assert response.status_code == 200
     assert response.json()["abilities"] == ["export/create"]
+
+
+def test_wallet_api_service_plan_share_grant_creates_scoped_worker_access() -> None:
+    """PORTAL-060: service plan share grants support scoped worker collaboration."""
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    # Create a service plan first.
+    plan_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:energy-help",
+            "source_content_cid": "bafk-service-energy",
+            "source_page_cid": "bafk-page-energy",
+            "service_title": "Energy Assistance",
+            "provider_name": "Community Action",
+            "goal": "Avoid utility disconnection",
+            "steps": ["Call provider", "Gather bill"],
+            "documents_needed": ["Photo ID", "Utility bill"],
+            "status": "active",
+        },
+    )
+    assert plan_response.status_code == 200
+    plan = plan_response.json()
+    assert plan["plan_id"].startswith("service-plan-")
+
+    # Create a scoped share grant for a case worker.
+    share_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:worker",
+            "scopes": ["service_summary", "checklist"],
+            "worker_name": "Jane Worker",
+            "worker_recipient_id": "worker-ref-001",
+        },
+    )
+    assert share_response.status_code == 200
+    share = share_response.json()
+    assert share["grant_id"].startswith("grant-")
+    assert share["plan_id"] == plan["plan_id"]
+    assert share["interaction_id"].startswith("interaction-")
+
+    # Confirm the grant has the expected service_plan/read ability.
+    grant = share["grant"]
+    assert "service_plan/read" in grant["abilities"]
+    assert grant["audience_did"] == "did:key:worker"
+    assert grant["status"] == "active"
+
+    # Confirm scoped caveats are present.
+    caveats = grant["caveats"]
+    assert caveats["service_plan_id"] == plan["plan_id"]
+    assert set(caveats["service_plan_scopes"]) == {"service_summary", "checklist"}
+    assert caveats["redacted_by_default"] is True
+
+    # Confirm an interaction was recorded for the share event.
+    interactions_response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        params={"interaction_type": "shared_service_plan"},
+    )
+    assert interactions_response.status_code == 200
+    interactions = interactions_response.json()["interactions"]
+    share_interaction = next(
+        (item for item in interactions if item["interaction_id"] == share["interaction_id"]),
+        None,
+    )
+    assert share_interaction is not None
+    assert share_interaction["channel"] == "wallet_grant"
+    assert share["grant_id"] in share_interaction["related_grant_ids"]
+
+    # Confirm the plan is now linked to the worker.
+    plan_response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        params={"service_doc_id": "service:energy-help"},
+    )
+    assert plan_response.status_code == 200
+    updated_plan = plan_response.json()["plans"][0]
+    assert share["interaction_id"] in updated_plan["related_interaction_ids"]
+
+    # Confirm the share action is in the audit log.
+    audit = client.get(f"/wallets/{wallet['wallet_id']}/audit").json()
+    actions = [event["action"] for event in audit["events"]]
+    assert "service_plan/share" in actions
+
+
+def test_wallet_api_service_plan_share_grant_revocation_removes_active_access() -> None:
+    """PORTAL-061: revoking a service plan share grant removes active access while preserving audit history."""
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    # Create a plan.
+    plan = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:housing-help",
+            "source_content_cid": "bafk-housing",
+            "source_page_cid": "bafk-housing-page",
+            "service_title": "Emergency Housing",
+            "provider_name": "Portland Housing",
+            "goal": "Secure temporary shelter",
+            "status": "active",
+        },
+    ).json()
+
+    # Share the plan with a worker.
+    share = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:shelter-worker",
+            "scopes": ["service_summary"],
+            "worker_name": "Shelter Advocate",
+        },
+    ).json()
+    assert share["grant"]["status"] == "active"
+
+    # Revoke the grant.
+    revoke_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{share['grant_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert revoke_response.status_code == 200
+    revoked = revoke_response.json()
+    assert revoked["status"] == "revoked"
+    assert revoked["grant_id"] == share["grant_id"]
+
+    # Confirm audit log shows the revocation.
+    audit = client.get(f"/wallets/{wallet['wallet_id']}/audit").json()
+    actions = [event["action"] for event in audit["events"]]
+    assert "grant/revoke" in actions
+    assert "service_plan/share" in actions

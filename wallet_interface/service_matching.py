@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -23,7 +24,7 @@ class ServiceRecord:
     source_url: str = ""
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ServiceRecord":
+    def from_dict(cls, data: dict[str, Any]) -> ServiceRecord:
         return cls(
             id=str(data.get("id", "")),
             name=str(data.get("name", "")),
@@ -42,11 +43,11 @@ class ServiceRecord:
 class ServiceMatch:
     service: ServiceRecord
     score: float
-    reasons: List[str]
+    reasons: list[str]
 
 
-def load_services_jsonl(path: str | Path) -> List[ServiceRecord]:
-    records: List[ServiceRecord] = []
+def load_services_jsonl(path: str | Path) -> list[ServiceRecord]:
+    records: list[ServiceRecord] = []
     with Path(path).open("r", encoding="utf-8") as handle:
         for line in handle:
             line = line.strip()
@@ -60,9 +61,9 @@ def match_services(
     services: Iterable[ServiceRecord],
     *,
     need_terms: Sequence[str],
-    location_claim: Dict[str, Any] | None = None,
+    location_claim: dict[str, Any] | None = None,
     limit: int = 10,
-) -> List[ServiceMatch]:
+) -> list[ServiceMatch]:
     """Rank 211 services using need terms and coarse wallet-derived location.
 
     `location_claim` must be a public/coarse claim. This function intentionally
@@ -73,7 +74,7 @@ def match_services(
     claim = location_claim or {}
     _reject_precise_location(claim)
 
-    matches: List[ServiceMatch] = []
+    matches: list[ServiceMatch] = []
     for service in services:
         score, reasons = _score_service(service, normalized_terms, claim)
         if score > 0:
@@ -85,11 +86,11 @@ def match_services(
 def _score_service(
     service: ServiceRecord,
     terms: Sequence[str],
-    location_claim: Dict[str, Any],
-) -> tuple[float, List[str]]:
+    location_claim: dict[str, Any],
+) -> tuple[float, list[str]]:
     haystack = _normalize(" ".join([service.name, service.description, service.categories]))
     score = 0.0
-    reasons: List[str] = []
+    reasons: list[str] = []
 
     for term in terms:
         if not term:
@@ -119,7 +120,7 @@ def _normalize(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
 
 
-def _reject_precise_location(location_claim: Dict[str, Any]) -> None:
+def _reject_precise_location(location_claim: dict[str, Any]) -> None:
     claim_value = location_claim.get("public_value", location_claim)
     if "lat" in claim_value and "lon" in claim_value:
         precision = str(location_claim.get("precision", ""))

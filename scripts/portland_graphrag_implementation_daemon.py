@@ -26,7 +26,7 @@ logger = logging.getLogger("scraper.portland_graphrag.implementation.daemon")
 
 GRAPHRAG_TASK_PREFIX = "## GRAPHRAG-"
 GRAPHRAG_STATE_PREFIX = "portland_graphrag"
-DEFAULT_TODO_PATH = Path("docs/PORTLAND_LAWS_WEBGPU_GRAPHRAG_PORT_TODO.md")
+DEFAULT_TODO_PATH = Path("docs/planning/PORTLAND_LAWS_WEBGPU_GRAPHRAG_PORT_TODO.md")
 DEFAULT_STATE_DIR = Path("data/portland_graphrag_implementation/state")
 
 

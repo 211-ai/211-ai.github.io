@@ -16,7 +16,7 @@ import type {
   WalletGrantReceipt
 } from "../models/abby";
 import type { ShelterCaseRecord, ShelterProviderMessage, ShelterStaffAccount, ShelterUserAccount } from "./appState";
-import { type WalletApiConfig } from "../services/walletApi";
+import { type WalletApiConfig } from "../features/wallet/lib/walletApi";
 import {
   answerServiceNavigationQuestion,
   searchServiceNavigation,

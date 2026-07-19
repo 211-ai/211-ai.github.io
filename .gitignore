@@ -84,3 +84,20 @@ node_modules
 node_modules/
 wallet_interface/ui/node_modules
 wallet_interface/ui/node_modules/
+
+# Root-level operational clutter (belongs in ops/sandbox/ or data/)
+*.log
+*.pid
+*.sock
+nginx.conf
+nginx-local.conf
+/tmp_assets/
+/state/
+
+# Type-checking and lint caches
+.mypy_cache/
+.ruff_cache/
+.eslintcache
+
+# Build outputs
+wallet_interface/ui/dist/

@@ -6,7 +6,7 @@ The addendum combines the original backend evidence from
 `artifacts/provekit-release-checks/results.json` with wallet API contract
 tests, full-stack Playwright coverage, UX/accessibility review evidence,
 QR/export no-leak checks, proof-system label review, and the rollout decision
-recorded in `docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md`.
+recorded in `docs/planning/PROVEKIT_ZKP_TARGET_SIGNOFF.md`.
 
 Rollout decision:
 
@@ -14,12 +14,12 @@ Rollout decision:
   release-candidate validation.
 - Production-visible client wallet attachment remains blocked until the
   unresolved production cutover controls in
-  `docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md` are complete and explicitly enabled
+  `docs/planning/PROVEKIT_ZKP_TARGET_SIGNOFF.md` are complete and explicitly enabled
   by the release owner.
 
 Evidence index:
 
-- `docs/PROVEKIT_ZKP_TARGET_SIGNOFF.md`
+- `docs/planning/PROVEKIT_ZKP_TARGET_SIGNOFF.md`
 - `artifacts/provekit-ui-signoff/signoff-matrix.json`
 - `artifacts/provekit-ui-review/README.md`
 - `artifacts/provekit-ui-review/review-matrix.json`

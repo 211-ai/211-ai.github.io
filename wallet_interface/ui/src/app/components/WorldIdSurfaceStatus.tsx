@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Badge } from "../../components/ui";
-import { WorldIdVerificationPanel } from "../../components/world-id/WorldIdVerificationPanel";
-import { loadWalletWorldIdStatus, type WalletApiConfig, type WorldIdWalletStatus } from "../../services/walletApi";
+import { Badge } from "../../shared/components/ui";
+import { WorldIdVerificationPanel } from "../../shared/components/WorldIdVerificationPanel";
+import { loadWalletWorldIdStatus, type WalletApiConfig, type WorldIdWalletStatus } from "../../features/wallet/lib/walletApi";
 import { StatusPanel } from "./StatusPanel";
 
 type FlexibleWorldIdWalletStatus = WorldIdWalletStatus & {

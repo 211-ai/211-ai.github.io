@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-
 DEPLOY_ROOT = Path(__file__).parent.parent / "wallet_interface" / "deploy"
 K8S_ROOT = DEPLOY_ROOT / "kubernetes"
 CLOUDFLARE_ROOT = DEPLOY_ROOT / "cloudflare"
@@ -21,8 +20,8 @@ def test_wallet_deploy_reference_files_exist() -> None:
         DEPLOY_ROOT / "docker-compose.wallet.yml",
         DEPLOY_ROOT / "env.production.example",
         DEPLOY_ROOT / "storage-retention.example.json",
-        DOCS_ROOT / "WALLET_OPERATOR_INTEGRATOR_REFERENCE.md",
-        DOCS_ROOT / "WALLET_PROOF_VERIFIER_CONTRACT.md",
+        DOCS_ROOT / "specs" / "WALLET_OPERATOR_INTEGRATOR_REFERENCE.md",
+        DOCS_ROOT / "specs" / "WALLET_PROOF_VERIFIER_CONTRACT.md",
         DEPLOY_ROOT / "README.md",
         CLOUDFLARE_ROOT / "README.md",
         CLOUDFLARE_ROOT / "wrangler.toml",

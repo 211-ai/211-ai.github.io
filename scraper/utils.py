@@ -8,8 +8,9 @@ import logging
 import re
 import time
 import unicodedata
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 from urllib.parse import urljoin, urlparse, urlunparse
 
 try:

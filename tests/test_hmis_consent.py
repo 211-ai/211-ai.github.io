@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -24,7 +24,7 @@ def test_evaluate_hmis_consent_accepts_active_scoped_record() -> None:
         ),
         required_scope="hmis_submit_referral",
         program_ref="program-1",
-        now=datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc),
+        now=datetime(2026, 5, 19, 12, 0, tzinfo=UTC),
     )
 
     assert decision.allowed is True
@@ -49,7 +49,7 @@ def test_evaluate_hmis_consent_rejects_missing_program_scope() -> None:
             consent,
             required_scope="hmis_submit_referral",
             program_ref="program-2",
-            now=datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc),
+            now=datetime(2026, 5, 19, 12, 0, tzinfo=UTC),
         )
 
 
@@ -68,5 +68,5 @@ def test_evaluate_hmis_consent_rejects_expired_record() -> None:
         evaluate_hmis_consent(
             consent,
             required_scope="hmis_lookup_client",
-            now=datetime(2026, 5, 19, 12, 0, tzinfo=timezone.utc),
+            now=datetime(2026, 5, 19, 12, 0, tzinfo=UTC),
         )

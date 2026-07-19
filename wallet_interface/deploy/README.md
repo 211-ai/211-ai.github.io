@@ -4,8 +4,8 @@ This directory contains reference deployment assets for the 211-AI wallet API,
 wallet UI, and ops-health worker.
 
 For the stable API, CLI, MCP, and release-check reference, see
-`docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`. For the external proof verifier
-HTTP contract, see `docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
+`docs/specs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`. For the external proof verifier
+HTTP contract, see `docs/specs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
 
 Build context is the repository root:
 
@@ -310,7 +310,7 @@ export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
 export WALLET_OPS_HEALTH_SECRET_REF=secret-manager://replace-me
 export WALLET_OPS_ALERT_SECRET_REF=secret-manager://replace-me
 export WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://replace-me
-export WALLET_STORAGE_RETENTION_POLICY_REF=docs/WALLET_RETENTION_POLICY.md@2026-05-05
+export WALLET_STORAGE_RETENTION_POLICY_REF=docs/specs/WALLET_RETENTION_POLICY.md@2026-05-05
 export WALLET_STORAGE_IPFS_PINNING_POLICY_REF=replace-with-private-ipfs-pinset-policy-id
 export WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF=replace-with-filecoin-deal-policy-id-or-not-used
 export WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF=replace-with-s3-lifecycle-policy-id

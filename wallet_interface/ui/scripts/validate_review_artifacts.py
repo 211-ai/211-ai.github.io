@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 UI_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCREENSHOT_ROOT = "artifacts/ui-screenshots/latest"
 DEFAULT_REVIEW_RESULTS = "artifacts/ui-review/latest/review-results.json"

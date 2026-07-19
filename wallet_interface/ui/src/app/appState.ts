@@ -17,7 +17,7 @@ import {
   initialRecipients,
   initialShelterContactRequests,
   initialUploads
-} from "../services/mockAbbyService";
+} from "../features/wallet/lib/mockAbbyService";
 
 export { defaultCheckInPolicy };
 

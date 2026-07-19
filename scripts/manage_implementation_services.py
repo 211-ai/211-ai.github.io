@@ -159,7 +159,7 @@ SERVICES = {
         state_prefix="clzkml",
         supervisor_args=(
             "--todo-path",
-            "docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md",
+            "docs/planning/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md",
             "--task-prefix",
             "## CLZKML-",
             "--state-prefix",
@@ -176,7 +176,7 @@ SERVICES = {
         state_prefix="worldid_backend",
         supervisor_args=(
             "--todo-path",
-            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "docs/planning/WORLD_ID_IDKIT_WALLET_TODO.md",
             "--task-prefix",
             "## WORLDID-",
             "--state-prefix",
@@ -195,7 +195,7 @@ SERVICES = {
         state_prefix="worldid_ui",
         supervisor_args=(
             "--todo-path",
-            "docs/WORLD_ID_IDKIT_WALLET_TODO.md",
+            "docs/planning/WORLD_ID_IDKIT_WALLET_TODO.md",
             "--task-prefix",
             "## WORLDID-",
             "--state-prefix",

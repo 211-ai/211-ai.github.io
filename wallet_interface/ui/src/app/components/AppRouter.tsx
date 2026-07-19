@@ -15,8 +15,8 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt,
 } from "../../models/abby";
-import type { WalletApiConfig } from "../../services/walletApi";
-import type { SupportedLocale } from "../../lib/localization";
+import type { WalletApiConfig } from "../../features/wallet/lib/walletApi";
+import type { SupportedLocale } from "../../shared/lib/localization";
 import type {
   ShelterCaseRecord,
   ShelterProviderMessage,
@@ -26,23 +26,24 @@ import type {
 } from "../appState";
 import type { ProviderPortalView } from "../config/navigation";
 import { providerRouteIds, getProviderPortalView } from "../config/navigation";
-import { AnalyticsScreen } from "../screens/AnalyticsScreen";
-import { BenefitsProtectionScreen } from "../screens/BenefitsProtectionScreen";
-import { CheckInScreen } from "../screens/CheckInScreen";
-import { ClientMessagesScreen } from "../screens/ClientMessagesScreen";
-import { ContactsScreen } from "../screens/ContactsScreen";
-import { HomeScreen } from "../screens/HomeScreen";
-import { ProofCenterScreen } from "../screens/ProofCenterScreen";
-import { RecipientAccessScreen } from "../screens/RecipientAccessScreen";
-import { RegistrationScreen } from "../screens/RegistrationScreen";
-import { SettingsScreen } from "../screens/SettingsScreen";
-import { ShelterScreen } from "../screens/ShelterScreen";
-import { SocialServicesScreen } from "../screens/SocialServicesScreen";
-import { UploadsScreen } from "../screens/UploadsScreen";
-import { CalendarScreen } from "../CalendarScreen";
-import { InteractionsScreen } from "../InteractionsScreen";
-import { ServiceDetailScreen } from "../ServiceDetailScreen";
-import { ServicePlanScreen } from "../ServicePlanScreen";
+import { AnalyticsScreen } from "../../features/wallet/components/AnalyticsScreen";
+import { BenefitsProtectionScreen } from "../../features/wallet/components/BenefitsProtectionScreen";
+import { CheckInScreen } from "../../features/service-navigation/components/CheckInScreen";
+import { ClientMessagesScreen } from "../../features/interactions/components/ClientMessagesScreen";
+import { ContactsScreen } from "../../features/wallet/components/ContactsScreen";
+import { HomeScreen } from "../../features/service-navigation/components/HomeScreen";
+import { ProofCenterScreen } from "../../features/wallet/components/ProofCenterScreen";
+import { RecipientAccessScreen } from "../../features/wallet/components/RecipientAccessScreen";
+import { RegistrationScreen } from "../../features/wallet/components/RegistrationScreen";
+import { SettingsScreen } from "../../features/wallet/components/SettingsScreen";
+import { ShelterScreen } from "../../features/service-navigation/components/ShelterScreen";
+import { SocialServicesScreen } from "../../features/service-navigation/components/SocialServicesScreen";
+import { UploadsScreen } from "../../features/wallet/components/UploadsScreen";
+import { CalendarScreen } from "../../features/calendar/components/CalendarScreen";
+import { InteractionsScreen } from "../../features/interactions/components/InteractionsScreen";
+import { ServiceDetailScreen } from "../../features/service-navigation/components/ServiceDetailScreen";
+import { ServicePlanScreen } from "../../features/service-navigation/components/ServicePlanScreen";
+import { ExportCenterScreen } from "../../features/wallet/components/ExportCenterScreen";
 
 export interface AppRouterProps {
   // Routing
@@ -103,6 +104,7 @@ export interface AppRouterProps {
   savedServices: SavedService[];
   setSavedServices: Dispatch<SetStateAction<SavedService[]>>;
   serviceInteractions: ServiceInteractionEvent[];
+  setServiceInteractions: Dispatch<SetStateAction<ServiceInteractionEvent[]>>;
   servicePlans: ServicePlan[];
   setServicePlans: Dispatch<SetStateAction<ServicePlan[]>>;
 
@@ -183,6 +185,7 @@ export function AppRouter({
   setShelterProviderMessages,
   setShelterStaffAccounts,
   setShelterUserAccounts,
+  setServiceInteractions,
   setServicePlans,
   setSiteLocale,
   setUploads,
@@ -333,8 +336,10 @@ export function AppRouter({
       ) : null}
       {serviceDetailDocId && !servicePlanDocId ? (
         <ServiceDetailScreen
+          apiConfig={walletApiConfig}
           docId={serviceDetailDocId}
           onBack={() => navigate("social-services")}
+          onInteract={(event) => setServiceInteractions((prev) => [event, ...prev])}
           siteLocale={siteLocale}
         />
       ) : null}
@@ -422,6 +427,13 @@ export function AppRouter({
           refreshWalletAuditEvents={refreshWalletAuditEvents}
           setProofs={setWalletProofReceipts}
           uploads={uploads}
+        />
+      ) : null}
+      {activeRoute === "exports" ? (
+        <ExportCenterScreen
+          apiConfig={walletApiConfig}
+          bundles={exportBundleViews}
+          setBundles={setExportBundleViews}
         />
       ) : null}
     </>

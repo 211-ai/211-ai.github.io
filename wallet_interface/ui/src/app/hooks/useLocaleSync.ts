@@ -5,7 +5,7 @@ import {
   writeAssistantTranslationLocalePreference,
   writeSiteLocalePreference,
   type SupportedLocale,
-} from "../../lib/localization";
+} from "../../shared/lib/localization";
 
 export function useLocaleSync(
   siteLocale: SupportedLocale,

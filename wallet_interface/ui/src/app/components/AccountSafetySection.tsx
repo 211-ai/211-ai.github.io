@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Archive, KeyRound, LockKeyhole, RefreshCw, ShieldCheck } from "lucide-react";
-import { Badge, Button, Section, StatusBanner } from "../../components/ui";
+import { Badge, Button, Section, StatusBanner } from "../../shared/components/ui";
 import {
   listWalletSnapshots,
   loadWalletSnapshot,
@@ -8,7 +8,7 @@ import {
   verifyWalletSnapshot,
   type WalletApiConfig,
   type WalletSnapshotVerification
-} from "../../services/walletApi";
+} from "../../features/wallet/lib/walletApi";
 
 function shortHash(value?: string): string {
   if (!value) return "Unavailable";

@@ -7,10 +7,9 @@ import argparse
 import json
 import re
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
 
 UI_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BACKLOG = "artifacts/ui-review/latest/refinement-backlog.json"
@@ -150,7 +149,7 @@ def write_outputs(output_dir: Path, backlog: dict[str, Any], tasks: list[dict[st
     if output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     index_lines = [
         "# Abby UI Agent Prompts",
         "",

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Dict, Mapping, Sequence
+from typing import Any
 
 from .errors import HmisMappingError
 
@@ -19,7 +20,7 @@ class HmisFieldMapping:
 @dataclass(slots=True)
 class HmisMappingRegistry:
     version: str
-    mappings: Dict[str, tuple[HmisFieldMapping, ...]] = field(default_factory=dict)
+    mappings: dict[str, tuple[HmisFieldMapping, ...]] = field(default_factory=dict)
 
     def register(self, mapping_name: str, fields: Sequence[HmisFieldMapping]) -> None:
         if not mapping_name.strip():

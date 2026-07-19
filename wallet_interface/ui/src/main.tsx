@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./app/App";
-import { loadRuntimeConfig } from "./lib/runtimeConfig";
+import { loadRuntimeConfig } from "./shared/lib/runtimeConfig";
 import "./styles/global.css";
 
 void bootstrap();

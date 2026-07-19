@@ -7,8 +7,8 @@ from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
     WalletOpsHealthWorker,
     main,
-    validate_local_production_readiness_self_check,
     validate_distance_proof_contract,
+    validate_local_production_readiness_self_check,
     validate_production_readiness,
     validate_proof_contract,
     validate_target_signoff_packet,
@@ -627,7 +627,7 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "world_id_app_id": "app_staging_world_id_wallet",
             "world_id_rp_id": "rp_staging_world_id_wallet",
             "world_id_verify_endpoint": "https://developer.world.org",
-            "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
+            "retention_policy_version": "docs/specs/WALLET_RETENTION_POLICY.md@2026-05-05",
         },
         "secret_manager_refs": {
             "ops_health_secret": "secret://staging/wallet/ops-health",

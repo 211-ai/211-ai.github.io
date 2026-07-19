@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Dict, Literal, Mapping, Sequence
+from typing import Any, Literal
 
 HmisActionType = Literal[
     "lookup_client",
@@ -36,7 +37,7 @@ class HmisClientLink:
     candidate_ids: tuple[str, ...] = ()
     reviewed_by_actor_id: str | None = None
     reviewed_at: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -48,7 +49,7 @@ class HmisHouseholdLink:
     match_confidence: float | None = None
     reviewed_by_actor_id: str | None = None
     reviewed_at: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -60,7 +61,7 @@ class HmisProgramLink:
     match_confidence: float | None = None
     active_from: str | None = None
     active_until: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -75,7 +76,7 @@ class HmisReferralRecord:
     created_at: str | None = None
     updated_at: str | None = None
     consent_id: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -88,7 +89,7 @@ class HmisEnrollmentRecord:
     created_at: str | None = None
     updated_at: str | None = None
     consent_id: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -106,7 +107,7 @@ class HmisConsentRecord:
     evidence_ref: str | None = None
     copy_version: str | None = None
     policy_version: str | None = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -122,7 +123,7 @@ class HmisSyncEvent:
     response_summary: str | None = None
     occurred_at: str | None = None
     retry_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -142,8 +143,8 @@ class HmisAdapterResult:
     adapter_name: str
     status: HmisSyncStatus
     summary: str
-    external_refs: Dict[str, str] = field(default_factory=dict)
-    normalized_payload: Dict[str, Any] = field(default_factory=dict)
+    external_refs: dict[str, str] = field(default_factory=dict)
+    normalized_payload: dict[str, Any] = field(default_factory=dict)
     errors: tuple[str, ...] = ()
     warnings: tuple[str, ...] = ()
     retryable: bool = False
@@ -159,7 +160,7 @@ class HmisAdapterResult:
         external_refs: Mapping[str, str] | None = None,
         normalized_payload: Mapping[str, Any] | None = None,
         warnings: Sequence[str] = (),
-    ) -> "HmisAdapterResult":
+    ) -> HmisAdapterResult:
         return cls(
             ok=True,
             action_type=action_type,
@@ -183,7 +184,7 @@ class HmisAdapterResult:
         reconciliation_required: bool = False,
         normalized_payload: Mapping[str, Any] | None = None,
         warnings: Sequence[str] = (),
-    ) -> "HmisAdapterResult":
+    ) -> HmisAdapterResult:
         return cls(
             ok=False,
             action_type=action_type,

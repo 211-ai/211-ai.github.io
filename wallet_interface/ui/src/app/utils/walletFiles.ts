@@ -1,6 +1,6 @@
 import type { UploadItem } from "../../models/abby";
-import { normalizeIpfsGatewayUrl, sameOriginIpfsGatewayUrl } from "../../services/filecoinStorage";
-import { t, tFormat, type SupportedLocale } from "../../lib/localization";
+import { normalizeIpfsGatewayUrl, sameOriginIpfsGatewayUrl } from "../../features/wallet/lib/filecoinStorage";
+import { t, tFormat, type SupportedLocale } from "../../shared/lib/localization";
 
 export function sharingBadge(upload: UploadItem, locale: SupportedLocale): string {
   const count = upload.allowedRecipientIds?.length ?? 0;

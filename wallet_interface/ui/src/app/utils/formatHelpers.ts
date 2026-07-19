@@ -7,8 +7,8 @@ import type {
   RegistrationProfileDraft
 } from "../../models/abby";
 import type { ShelterProviderMessage } from "../appState";
-import { abilitiesForDisclosureScopes, plainCapabilityLabel, plainNonGrantedCapabilities } from "../../services/capabilities";
-import { t, type SupportedLocale } from "../../lib/localization";
+import { abilitiesForDisclosureScopes, plainCapabilityLabel, plainNonGrantedCapabilities } from "../../features/wallet/lib/capabilities";
+import { t, type SupportedLocale } from "../../shared/lib/localization";
 
 // ─── Document constants ───────────────────────────────────────────────────────
 

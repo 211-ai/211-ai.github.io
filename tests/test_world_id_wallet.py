@@ -7,9 +7,9 @@ import pytest
 from wallet_interface.world_id import (
     DEFAULT_WORLD_ID_ACTION,
     DEFAULT_WORLD_ID_VERIFY_BASE_URL,
-    WorldIdSignatureError,
     WorldIdConfigError,
     WorldIdPayloadError,
+    WorldIdSignatureError,
     WorldIdVerificationError,
     compute_rp_signature_message,
     hash_to_field,

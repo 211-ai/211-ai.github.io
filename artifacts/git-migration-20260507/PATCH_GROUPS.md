@@ -29,8 +29,8 @@ Representative patch files:
 
 Touched area:
 
-- `docs/WALLET_OPERATIONS_RUNBOOK.md`
-- `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`
+- `docs/runbooks/WALLET_OPERATIONS_RUNBOOK.md`
+- `docs/specs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`
 - `wallet_interface/ui/tests/fullstack-wallet.spec.ts`
 
 These are closely related WALLET-210 variants that differ in patch contents but stay within the same pilot-readiness docs/test slice.

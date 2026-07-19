@@ -1,5 +1,5 @@
-import { generateHuggingFaceWalletRouterText } from "../../lib/huggingFaceWalletRouterClient";
-import { generateOpenRouterText } from "../../lib/openRouterClient";
+import { generateHuggingFaceWalletRouterText } from "../../features/agent/lib/huggingFaceWalletRouterClient";
+import { generateOpenRouterText } from "../../features/agent/lib/openRouterClient";
 import type { UploadItem, WalletGrantReceipt } from "../../models/abby";
 import {
   analyzeRecordFormRedactedWithGrant,
@@ -8,7 +8,7 @@ import {
   createRedactedGraphRAG,
   extractRecordTextRedactedWithGrant,
   type WalletApiConfig
-} from "../../services/walletApi";
+} from "../../features/wallet/lib/walletApi";
 
 export type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";
 

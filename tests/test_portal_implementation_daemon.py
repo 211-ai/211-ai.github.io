@@ -4,28 +4,39 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.portal_implementation_daemon import PortalImplementationDaemon, PortalTaskState, parse_task_file
-import scripts.agent_chat_implementation_daemon as agent_daemon_module
-import scripts.portal_implementation_supervisor as supervisor_module
-import ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon as implementation_daemon_module
-from scripts.portal_implementation_supervisor import PortalImplementationSupervisor, PortalSupervisorConfig
-from ipfs_datasets_py.optimizers.todo_daemon import (
+import ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon as implementation_daemon_module  # noqa: E402
+from ipfs_datasets_py.optimizers.todo_daemon import (  # noqa: E402
     ManagedDaemonSpec,
     SupervisorLoop,
     SupervisorLoopDecision,
     TodoDaemonRunner,
 )
-from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import TodoImplementationDaemon, TodoTaskState
-from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import (
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import (  # noqa: E402
+    TodoImplementationDaemon,
+    TodoTaskState,
+)
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import (  # noqa: E402
     TodoImplementationSupervisor,
     TodoSupervisorConfig,
+)
+
+import scripts.agent_chat_implementation_daemon as agent_daemon_module  # noqa: E402
+import scripts.portal_implementation_supervisor as supervisor_module  # noqa: E402
+from scripts.portal_implementation_daemon import (  # noqa: E402
+    PortalImplementationDaemon,
+    PortalTaskState,
+    parse_task_file,
+)
+from scripts.portal_implementation_supervisor import (  # noqa: E402
+    PortalImplementationSupervisor,
+    PortalSupervisorConfig,
 )
 
 
@@ -1008,7 +1019,7 @@ def test_daemon_prefers_other_ready_task_when_unresolved_merge_failure_exists(tm
         json.dumps(
             {
                 "type": "implementation_finished",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_id": "AGENT-000",
                 "attempt": 1,
                 "returncode": 2,
@@ -1050,7 +1061,7 @@ def test_daemon_skips_recent_no_change_retry(tmp_path):
         json.dumps(
             {
                 "type": "implementation_finished",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_id": "AGENT-000",
                 "attempt": 1,
                 "returncode": 0,
@@ -1093,7 +1104,7 @@ def test_daemon_prefers_other_ready_task_when_recent_no_change_exists(tmp_path):
         json.dumps(
             {
                 "type": "implementation_finished",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_id": "AGENT-000",
                 "attempt": 3,
                 "returncode": 0,
@@ -1884,7 +1895,7 @@ def test_daemon_marks_successfully_merged_evidence_task_completed(tmp_path):
         json.dumps(
             {
                 "type": "implementation_finished",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_id": "AGENT-000",
                 "attempt": 1,
                 "returncode": 0,
@@ -1981,7 +1992,7 @@ def test_daemon_clears_stale_in_progress_state_when_process_is_missing(tmp_path,
         active_branch="implementation/agent-000-attempt-2",
         implementation_in_progress=True,
         last_implementation_task_id="AGENT-000",
-        last_implementation_started_at=datetime.now(timezone.utc).isoformat(),
+        last_implementation_started_at=datetime.now(UTC).isoformat(),
         last_implementation_finished_at="",
     ).save(state_dir / "agent_chat_task_state.json")
     events_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1989,7 +2000,7 @@ def test_daemon_clears_stale_in_progress_state_when_process_is_missing(tmp_path,
         json.dumps(
             {
                 "type": "implementation_started",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_id": "AGENT-000",
                 "attempt": 2,
                 "worktree_path": "/tmp/missing-worktree",
@@ -2315,7 +2326,7 @@ def test_supervisor_rewrites_strategy_for_stale_task(tmp_path):
     write_todo(todo_path)
     state_dir.mkdir(parents=True)
 
-    stale_time = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    stale_time = (datetime.now(UTC) - timedelta(hours=2)).isoformat()
     state = PortalTaskState(
         heartbeat_at=stale_time,
         last_progress_at=stale_time,
@@ -2363,8 +2374,8 @@ def test_supervisor_does_not_flag_recent_inflight_implementation_as_stuck(tmp_pa
     write_todo(todo_path)
     state_dir.mkdir(parents=True)
 
-    stale_time = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
-    recent_start = (datetime.now(timezone.utc) - timedelta(seconds=30)).isoformat()
+    stale_time = (datetime.now(UTC) - timedelta(hours=2)).isoformat()
+    recent_start = (datetime.now(UTC) - timedelta(seconds=30)).isoformat()
     state = PortalTaskState(
         heartbeat_at=stale_time,
         last_progress_at=stale_time,

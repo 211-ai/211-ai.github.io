@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import os
 import json
+import os
 import secrets as random_secrets
 import time
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, Callable, Mapping
+from typing import Any
 from urllib import error as urllib_error
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request

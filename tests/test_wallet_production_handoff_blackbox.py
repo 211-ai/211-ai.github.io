@@ -13,7 +13,6 @@ from typing import Any
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PROOF_TOKEN = "proof-token-ci"
 
@@ -234,6 +233,8 @@ def _target_env(tmp_path: Path, verifier_url: str) -> dict[str, str]:
         "WALLET_OPS_ALERT_SECRET_REF": "secret://ci/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://ci/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://ci/wallet/storage",
+        "WALLET_INDEXTTS_SPACE_URL": "https://indexteam-indextts-2-demo.hf.space",
+        "WALLET_INDEXTTS_MODEL_NAME": "IndexTeam/IndexTTS-2-Demo",
     }
 
 
@@ -262,7 +263,7 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "world_id_app_id": "app_ci_world_id_wallet",
             "world_id_rp_id": "rp_ci_world_id_wallet",
             "world_id_verify_endpoint": "https://developer.world.org",
-            "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
+            "retention_policy_version": "docs/specs/WALLET_RETENTION_POLICY.md@2026-05-05",
         },
         "secret_manager_refs": {
             "ops_health_secret": "secret://ci/wallet/ops-health",

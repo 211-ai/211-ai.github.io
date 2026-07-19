@@ -7,10 +7,6 @@ storage, processing, and configuration in isolation.
 
 from __future__ import annotations
 
-import json
-import tempfile
-from pathlib import Path
-
 import pytest
 
 # ---------------------------------------------------------------------------
@@ -18,7 +14,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 def test_config_defaults():
-    from scraper.config import Config, BASE_URL, SERVICE_CATEGORIES, COVERAGE_ZIPS
+    from scraper.config import BASE_URL, Config
 
     cfg = Config()
     assert cfg.base_url == BASE_URL
@@ -207,8 +203,9 @@ def test_storage_save_html(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_processor_normalise_full_record(tmp_path):
-    from scraper.config import Config
     from scraper.processor import DataProcessor
+
+    from scraper.config import Config
 
     cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "proc")
     proc = DataProcessor(cfg)
@@ -239,8 +236,9 @@ def test_processor_normalise_full_record(tmp_path):
 
 
 def test_processor_normalise_email_mailto(tmp_path):
-    from scraper.config import Config
     from scraper.processor import DataProcessor
+
+    from scraper.config import Config
 
     cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "proc")
     proc = DataProcessor(cfg)
@@ -251,8 +249,9 @@ def test_processor_normalise_email_mailto(tmp_path):
 
 
 def test_processor_deduplicate(tmp_path):
-    from scraper.config import Config
     from scraper.processor import DataProcessor
+
+    from scraper.config import Config
 
     cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "proc")
     proc = DataProcessor(cfg)
@@ -304,8 +303,9 @@ def test_processor_stable_id_differs(tmp_path):
 
 
 def test_processor_process_and_export(tmp_path):
-    from scraper.config import Config
     from scraper.processor import DataProcessor
+
+    from scraper.config import Config
 
     cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "proc")
     proc = DataProcessor(cfg)

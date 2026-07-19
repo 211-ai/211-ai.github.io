@@ -7,11 +7,11 @@ import json
 import os
 import sys
 import time
+import uuid
 from typing import Any
 from urllib import error as urllib_error
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
-import uuid
 
 
 def _request(
@@ -81,19 +81,19 @@ def _multipart_request(
     boundary = f"----abby-smoke-{uuid.uuid4().hex}"
     body = bytearray()
     for name, value in fields.items():
-        body.extend(f"--{boundary}\r\n".encode("utf-8"))
-        body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode("utf-8"))
+        body.extend(f"--{boundary}\r\n".encode())
+        body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode())
         body.extend(value.encode("utf-8"))
         body.extend(b"\r\n")
     for name, (filename, payload, mime_type) in files.items():
-        body.extend(f"--{boundary}\r\n".encode("utf-8"))
+        body.extend(f"--{boundary}\r\n".encode())
         body.extend(
-            f'Content-Disposition: form-data; name="{name}"; filename="{filename}"\r\n'.encode("utf-8")
+            f'Content-Disposition: form-data; name="{name}"; filename="{filename}"\r\n'.encode()
         )
-        body.extend(f"Content-Type: {mime_type}\r\n\r\n".encode("utf-8"))
+        body.extend(f"Content-Type: {mime_type}\r\n\r\n".encode())
         body.extend(payload)
         body.extend(b"\r\n")
-    body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+    body.extend(f"--{boundary}--\r\n".encode())
     return _json_request_with_bytes("POST", url, bytes(body), f"multipart/form-data; boundary={boundary}")
 
 

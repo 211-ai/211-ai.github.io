@@ -1,5 +1,5 @@
-import type { WalletApiConfig } from "../../services/walletApi";
-import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../../lib/runtimeConfig";
+import type { WalletApiConfig } from "../../features/wallet/lib/walletApi";
+import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../../shared/lib/runtimeConfig";
 
 export const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 

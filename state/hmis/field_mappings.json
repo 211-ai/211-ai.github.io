@@ -1,0 +1,27 @@
+{
+  "version": "2026.07",
+  "mappings": {
+    "client": [
+      {"source_field": "local_subject_ref", "target_field": "ClientID", "required": true},
+      {"source_field": "first_name", "target_field": "FirstName", "required": false},
+      {"source_field": "last_name", "target_field": "LastName", "required": false},
+      {"source_field": "date_of_birth", "target_field": "DateOfBirth", "required": false}
+    ],
+    "household": [
+      {"source_field": "local_household_ref", "target_field": "HouseholdID", "required": true},
+      {"source_field": "household_name", "target_field": "HouseholdName", "required": false},
+      {"source_field": "member_count", "target_field": "MemberCount", "required": false, "default_value": 1}
+    ],
+    "program": [
+      {"source_field": "local_program_ref", "target_field": "ProjectID", "required": true},
+      {"source_field": "external_project_id", "target_field": "ExternalProjectID", "required": false}
+    ],
+    "referral": [
+      {"source_field": "local_referral_ref", "target_field": "ReferralID", "required": true},
+      {"source_field": "local_subject_ref", "target_field": "ClientID", "required": true},
+      {"source_field": "destination_program_ref", "target_field": "ProjectID", "required": true},
+      {"source_field": "summary", "target_field": "ReferralSummary", "required": false},
+      {"source_field": "source_system", "target_field": "SourceSystem", "required": false, "default_value": "abby"}
+    ]
+  }
+}

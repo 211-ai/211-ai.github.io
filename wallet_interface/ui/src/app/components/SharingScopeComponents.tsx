@@ -1,7 +1,7 @@
-import { Badge } from "../../components/ui";
+import { Badge } from "../../shared/components/ui";
 import type { DisclosureDataScope } from "../../models/abby";
-import { abilitiesForDisclosureScopes } from "../../services/capabilities";
-import { t, tFormat, type SupportedLocale } from "../../lib/localization";
+import { abilitiesForDisclosureScopes } from "../../features/wallet/lib/capabilities";
+import { t, tFormat, type SupportedLocale } from "../../shared/lib/localization";
 import { disclosureScopes } from "../appState";
 import {
   disclosureScopeDetailKey,

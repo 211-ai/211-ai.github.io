@@ -145,9 +145,9 @@ See:
 - `MIGRATION_GUIDE.md` - How to refactor IndexTTS scripts
 - `space_inference_example.py` - Working code examples
 - `tests/test_hf_space_inference.py` - Test suite showing usage patterns
-- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_PLAN.md` - Plan for
+- `../docs/planning/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_PLAN.md` - Plan for
   Chainlink CRE/ZKML-backed LLM router consensus
-- `../docs/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md` - Daemon-consumable
+- `../docs/planning/CHAINLINK_ZKML_LLM_ROUTER_CONSENSUS_TODO.md` - Daemon-consumable
   implementation backlog for the consensus feature
 
 ## LLM Router Consensus Mode
@@ -156,7 +156,7 @@ See:
 independent operators to agree on the same answer before returning a result.
 This is built on `ipfs_accelerate_py.llm_consensus`.
 
-See the full runbook: `docs/CHAINLINK_ZKML_LLM_ROUTER_RUNBOOK.md`
+See the full runbook: `docs/runbooks/CHAINLINK_ZKML_LLM_ROUTER_RUNBOOK.md`
 
 ### Receipt-Only Local Consensus
 

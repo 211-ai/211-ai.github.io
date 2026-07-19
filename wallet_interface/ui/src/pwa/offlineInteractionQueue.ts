@@ -1,6 +1,6 @@
 import type { ServiceInteractionEvent } from "../models/abby";
-import type { ServiceInteractionIntent, ServiceInteractionIntentCreator } from "../services/serviceInteractionService";
-import { createWalletServiceInteraction, type WalletApiConfig } from "../services/walletApi";
+import type { ServiceInteractionIntent, ServiceInteractionIntentCreator } from "../features/service-navigation/lib/serviceInteractionService";
+import { createWalletServiceInteraction, type WalletApiConfig } from "../features/wallet/lib/walletApi";
 
 export type OfflineInteractionQueueStatus = "pending" | "replaying" | "synced" | "failed" | "discarded";
 

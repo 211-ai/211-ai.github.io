@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { LogOut, Menu, MessageSquare, Mic } from "lucide-react";
-import { Button } from "../components/ui";
-import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
-import { primeVoiceChatActivation } from "../components/agent/AgentAudioChatSurface";
+import { Button } from "../shared/components/ui";
+import { AgentChatDrawer, type AgentChatMode } from "../features/agent/components/AgentChatDrawer";
+import { primeVoiceChatActivation } from "../features/agent/components/AgentAudioChatSurface";
 import type { AppActionRuntime } from "./appActions";
-import { useAgentChatService } from "../services/agentChatService";
-import { getServicePlanDocIdFromHash, setLocationServicePlanHash } from "./ServicePlanScreen";
-import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../agent/tools/serviceDetailTools";
-import { getRouteLabel } from "../agent/surfaceRegistry";
+import { useAgentChatService } from "../features/agent/lib/agentChatService";
+import { getServicePlanDocIdFromHash, setLocationServicePlanHash } from "../features/service-navigation/components/ServicePlanScreen";
+import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../features/agent/lib/tools/serviceDetailTools";
+import { getRouteLabel } from "../features/agent/lib/surfaceRegistry";
 import type {
   AuditEvent,
   CheckInPolicyDraft,
@@ -24,14 +24,14 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt,
 } from "../models/abby";
-import type { WalletApiConfig } from "../services/walletApi";
+import type { WalletApiConfig } from "../features/wallet/lib/walletApi";
 import {
   auditEvents,
   exportBundles,
   initialAccessRequests,
   initialGrantReceipts,
   proofReceipts,
-} from "../services/mockAbbyService";
+} from "../features/wallet/lib/mockAbbyService";
 import {
   createDefaultAppState,
   defaultShelterChecklist,
@@ -52,7 +52,7 @@ import {
   t,
   translateRouteLabel,
   type SupportedLocale,
-} from "../lib/localization";
+} from "../shared/lib/localization";
 import { NavigationGroup } from "./components/NavigationGroup";
 import {
   clientNavigationRoutes,
@@ -62,7 +62,7 @@ import {
   secondaryNavigationRoutes,
 } from "./config/navigation";
 import { readWalletApiBaseUrl, readWalletApiConfig, WALLET_API_CONFIG_KEY } from "./services/walletConfig";
-import { LoginScreen } from "./screens/LoginScreen";
+import { LoginScreen } from "../features/wallet/components/LoginScreen";
 import {
   APP_SESSION_KEY,
   cacheEncryptedRecoveryBundleFromMagicLogin,
@@ -612,6 +612,7 @@ export function App() {
           setShelterProviderMessages={setShelterProviderMessages}
           setShelterStaffAccounts={setShelterStaffAccounts}
           setShelterUserAccounts={setShelterUserAccounts}
+          setServiceInteractions={setServiceInteractions}
           setServicePlans={setServicePlans}
           setSiteLocale={setSiteLocale}
           setUploads={setUploads}
