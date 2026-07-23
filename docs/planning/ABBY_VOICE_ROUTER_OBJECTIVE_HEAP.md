@@ -105,14 +105,14 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G004 Define the canonical Abby voice dataset schema
 
-- Status: active
+- Status: complete
 - Fib priority: 3001
 - Priority: P0
 - Track: voice-data
 - Parents: ABBY-VOICE-G001
 - Goal: Define a flat versioned dataset contract that ipfs_datasets_py and Hugging Face Dataset Viewer can load without interpreting indexes or manifests as response rows.
-- Evidence: abby_voice_response_v2 schema, abby_voice_template_v2 schema, abby_voice_audio_v2 schema, abby_voice_provenance_v2 schema, schema validation and migration fixtures, ABBY-VOICE-G004 completion receipt
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py, docs/data/ABBY_VOICE_DATASET_SCHEMA.md
+- Evidence: `abby_voice_response_v2`, `abby_voice_template_v2`, `abby_voice_audio_v2`, and `abby_voice_provenance_v2` definitions and typed rows in `ipfs_datasets_py/ipfs_datasets_py/voice/schema.py`; strict schema, migration, bundle-reference, publication-policy, and Arrow/Parquet round-trip fixtures in `ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py`; column and release-layout contract in `docs/data/ABBY_VOICE_DATASET_SCHEMA.md`; ABBY-VOICE-G004 objective-validation repair receipt
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py, docs/data/ABBY_VOICE_DATASET_SCHEMA.md, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-003-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py
 - Bundle: abby-voice/dataset-schema
 - Parallel lane: abby-voice-data
@@ -123,6 +123,16 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py, docs/data/ABBY_VOICE_DATASET_SCHEMA.md
 - Conflict policy: keep runtime indexes and aggregate manifests out of row files; use stable IDs and nullable scalar or consistently typed list columns
 - Gap task: Specify normalized rows for utterances response frames slot values audio assets and provenance with content hashes licensing consent locale safety labels and source CIDs.
+- Objective-validation repair: `ABBY-VOICE-AUTO-003` owns the G004 validation gate. The source discovery scan attributed the four schema names and migration evidence to unrelated ProveKit, Chainlink, review-matrix, and IndexTTS batch JSON through AST-token coincidence. Those artifacts are not G004 evidence. The authoritative evidence map and focused validation result are recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-003-objective-validation-repair.md`.
+- Acceptance gate:
+  1. The exact, separate `abby_voice_response_v2`, `abby_voice_template_v2`, `abby_voice_audio_v2`, and `abby_voice_provenance_v2` contracts are importable through dependency-light typed rows; no config accepts a row from another config.
+  2. Serialized rows contain only fixed scalar, nullable scalar, and non-null `list[string]` columns. Runtime indexes, aggregate manifests, raw audio bytes, and arbitrary metadata objects are rejected as rows.
+  3. Stable IDs, full SHA-256 integrity values, explicit licensing and consent state, BCP-47-style locale, safety labels, provenance references, and source CIDs are represented and validated. Grounded response slot name/value/source-CID lists stay aligned.
+  4. Template placeholders use simple declared slot names only; required and factual slots are declared subsets. Audio remains externally addressed and provenance identifies a present response, template, or audio subject when validated as a bundle.
+  5. Legacy migration is deterministic and non-mutating, recomputes canonical hashes/IDs, refuses truncated hashes as integrity evidence, and rejects manifest/index wrappers. Structural migration permits quarantine metadata, while a separate publication gate refuses unknown consent or licensing.
+  6. Lazy Hugging Face and PyArrow schema adapters expose fixed feature types without making either optional dependency an import-time requirement. Focused Arrow/Parquet fixtures preserve nullable scalars and empty typed lists.
+  7. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py` passes and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no smaller child goal is needed. G004 owns the cohesive row-contract and focused validation gate. G005 owns batch normalization, de-duplication, and quarantine; G011 owns curated materialization and Dataset Viewer/Parquet output; G006 owns the review-only remote migration plan.
 
 ## ABBY-VOICE-G005 Build deterministic dataset normalization and quality gates
 
