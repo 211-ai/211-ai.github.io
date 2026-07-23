@@ -30,8 +30,8 @@ approves a reviewed manifest and dry-run receipt.
 - Priority: P0
 - Track: voice-platform
 - Goal: Deliver a reusable voice turn pipeline that transcribes caller audio, retrieves grounded 211 evidence and reusable response frames, renders safe spoken text, synthesizes audio, and returns provenance and fallback metadata.
-- Evidence: unified VoiceTurnRequest and VoiceTurnResult contracts, GraphRAG response-template retrieval adapter, curated Abby voice dataset configurations, end-to-end voice pipeline acceptance receipts, ABBY-VOICE-G001 completion receipt
-- Outputs: docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_pipeline.py
+- Evidence: unified VoiceTurnRequest and VoiceTurnResult contracts in `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py`; an injected GraphRAG response-template retrieval boundary; one offline test that proves transcription, grounded template rendering, synthesis, provenance, stage trace, and deterministic degradation; architecture and objective-validation receipts that map every claim to a repository path
+- Outputs: docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_pipeline.py, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-001-objective-validation-repair.md
 - Validation: python -m pytest -q tests/voice/test_abby_voice_pipeline.py
 - Bundle: abby-voice/integration
 - Parallel lane: abby-voice-integration
@@ -42,6 +42,15 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_pipeline.py
 - Conflict policy: integrate child-goal contracts only after their focused tests pass; preserve backward compatibility for text_to_speech and speech_to_text
 - Gap task: Integrate the child deliverables into one backward-compatible process_voice_turn API and record an offline end-to-end acceptance receipt.
+- Objective-validation repair: `ABBY-VOICE-AUTO-001` owns the cross-child validation gate. The source discovery scan found the phrase `objective validation repair` missing and attributed the other evidence to unrelated JSON by AST token coincidence. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-001-objective-validation-repair.md`; evidence is valid only when it names the defining or asserting source path.
+- Acceptance gate:
+  1. Importing `ipfs_accelerate_py.voice_router` remains optional-dependency safe, and the existing `text_to_speech` and `speech_to_text` entry points remain compatible.
+  2. `process_voice_turn` accepts injected STT, template-retrieval, and TTS collaborators so the complete route is testable without network access, credentials, mutable datasets, or heavyweight model downloads.
+  3. The success receipt contains the transcript, grounded rendered response, non-empty audio, selected providers, `transcription` → `retrieval` → `rendering` → `synthesis` traces, retrieved source provenance, and no fallback reason. A grounded slot cites a present source ID; when that source declares the corresponding fact, its value must match.
+  4. The degraded receipt is deterministic when no grounded template is returned: it does not invent a factual service claim, records the template-stage degradation and fallback reason, and still synthesizes the safe response when TTS is available.
+  5. An STT failure returns status `failed`, skips retrieval/rendering, and synthesizes a deterministic safe handoff when TTS is available. A total TTS failure preserves grounded text and provenance with status `text_only` and no false audio.
+  6. `python -m pytest -q tests/voice/test_abby_voice_pipeline.py` passes and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no additional child goal is needed for this repair. G002 owns typed contracts, G003 provider fallback, G004/G005/G011 curated data, G007 retrieval, G008 router/template composition, and G009 safety evaluation. G001 owns only their offline integration gate and evidence receipt; it does not mark those independently active goals complete.
 
 ## ABBY-VOICE-G002 Define stable voice-turn and provider contracts
 
