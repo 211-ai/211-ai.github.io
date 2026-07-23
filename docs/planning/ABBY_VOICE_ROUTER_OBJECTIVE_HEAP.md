@@ -25,7 +25,7 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G001 Deliver a unified grounded Abby voice pipeline
 
-- Status: active
+- Status: complete
 - Fib priority: 1000
 - Priority: P0
 - Track: voice-platform
