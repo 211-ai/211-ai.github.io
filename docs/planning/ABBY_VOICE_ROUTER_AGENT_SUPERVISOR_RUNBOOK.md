@@ -120,6 +120,7 @@ ipfs-accelerate-agent-bundle-supervisor \
   --log-dir data/abby_voice/agent_supervisor/logs \
   --manifest-path data/abby_voice/agent_supervisor/lane-manifest.json \
   --task-prefix ABBY-VOICE-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
   --max-lanes 4 \
   --no-implement
 ```
@@ -138,6 +139,11 @@ ipfs-accelerate-agent-bundle-supervisor \
   --log-dir data/abby_voice/agent_supervisor/logs \
   --manifest-path data/abby_voice/agent_supervisor/lane-manifest.json \
   --task-prefix ABBY-VOICE-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
+  --lease-ms 300000 \
+  --heartbeat-interval 5 \
+  --implementation-timeout 3600 \
+  --max-restarts 3 \
   --max-lanes 4 \
   --implement \
   --start
