@@ -54,14 +54,14 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G002 Define stable voice-turn and provider contracts
 
-- Status: active
+- Status: complete
 - Fib priority: 2000
 - Priority: P0
 - Track: voice-router
 - Parents: ABBY-VOICE-G001
 - Goal: Replace byte-or-string-only routing with typed request result capability and trace contracts while preserving the existing public TTS and STT functions.
-- Evidence: VoiceTurnRequest dataclass, VoiceTurnResult dataclass, VoiceProviderCapabilities contract, VoiceStageTrace contract, compatibility tests for text_to_speech and speech_to_text, ABBY-VOICE-G002 completion receipt
-- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_contracts.py
+- Evidence: versioned and privacy-safe VoiceTurnRequest serialization; validated VoiceTurnResult, VoiceTurnProvenance, and VoiceStageTrace receipts; serializable VoiceProviderCapabilities and ProviderInfo metadata; capability-aware registry routing; complete cache identities; direct compatibility tests for text_to_speech and speech_to_text; ABBY-VOICE-G002 completion receipt
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_contracts.py, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-002-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py
 - Bundle: abby-voice/voice-router-contracts
 - Parallel lane: abby-voice-router
@@ -72,6 +72,15 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_contracts.py
 - Conflict policy: retain current function signatures and lazy optional dependencies; add new orchestration as an additive API
 - Gap task: Introduce serializable typed contracts for audio input transcript retrieval template rendered text audio output provider selection fallback reason cache identity timings and provenance.
+- Objective-validation repair: `ABBY-VOICE-AUTO-002` owns this validation gate. The source discovery scan found the phrase `objective validation repair` missing and attributed contract terms to unrelated Chainlink, ProveKit, and IndexTTS artifacts by token coincidence. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-002-objective-validation-repair.md`; evidence is accepted only when it names the defining source and focused assertion.
+- Acceptance gate:
+  1. `VoiceTurnRequest` validates that audio or a transcript is present, normalizes provider/model/locale/options fields, derives deterministic audio identity from bytes or current file contents, serializes every routing-affecting field, and excludes raw audio and local paths unless transport serialization is explicitly requested.
+  2. `VoiceTurnResult`, `VoiceTurnProvenance`, and `VoiceStageTrace` reject invalid statuses and malformed values, normalize sequence/mapping fields, expose provider selection, fallback, cache identity, duration, audio metadata, hashes, and provenance, and produce JSON-safe receipts with output audio omitted by default.
+  3. `VoiceProviderCapabilities` and `ProviderInfo` preserve explicit STT, TTS, streaming, and format metadata. Registry lookup is canonical, capabilities are discoverable without constructing optional providers, unsupported operations are skipped, and re-registration invalidates the global provider cache.
+  4. Voice-turn and legacy response-cache identities cover every output-affecting option, current file content, and injected provider instance. They contain hashes rather than caller audio, transcript, fallback wording, or request IDs.
+  5. Importing `ipfs_accelerate_py.voice_router` remains optional-dependency safe. The established keyword-only signatures and bytes/string returns of `text_to_speech` and `speech_to_text`, provider injection, arbitrary provider kwargs, response caching, and `output_path` behavior remain compatible.
+  6. `python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py` passes and its result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no additional child goal is needed. G002 owns typed contracts, capability metadata, identity isolation, and compatibility only. G003 remains responsible for provider adapters and production fallback policy; G008 remains responsible for GraphRAG template composition and orchestration behavior.
 
 ## ABBY-VOICE-G003 Port Abby provider fallback behavior into voice_router
 
