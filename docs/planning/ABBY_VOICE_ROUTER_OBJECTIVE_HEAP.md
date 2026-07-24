@@ -244,7 +244,7 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G008 Integrate GraphRAG templating into voice_router
 
-- Status: active
+- Status: complete
 - Fib priority: 8000
 - Priority: P0
 - Track: voice-graphrag
@@ -262,6 +262,15 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_templates.py, ipfs_accelerate_py/test/test_voice_router_graphrag.py
 - Conflict policy: use dependency injection across submodules and avoid mandatory ipfs_datasets_py imports at voice_router import time
 - Gap task: Implement STT to retrieval to safe response rendering to TTS orchestration with explicit fallback stages and provenance.
+- Objective-validation repair: `ABBY-VOICE-AUTO-007` owns this validation gate. The source discovery scan incorrectly attributed the router's GraphRAG evidence to unrelated generated artifacts. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-007-objective-validation-repair.md`; the dependency-light template helper, router integration, focused offline suite, and this acceptance gate are the only G008 completion evidence.
+- Acceptance gate:
+  1. `voice_templates.py` exposes `buildVoiceGraphRagPromptParts` and its Pythonic alias as a deterministic, JSON-safe query envelope. It normalizes the transcript, preserves language/context/current grounding, validates result limits, and never produces a final answer or invents a slot value.
+  2. `GraphRAGVoiceTemplateProvider` remains lazy and dependency-injected. It uses the canonical prompt envelope for opt-in backends, accepts legacy narrow backend signatures, normalizes candidate mappings into response plans, and applies confidence filtering without importing `ipfs_datasets_py` at router import time.
+  3. `process_voice_turn` executes STT → retrieval → grounded rendering → TTS. Every factual placeholder requires a cited evidence source and agrees with any structured current fact; unsupported fields, missing sources, conflicting facts, malformed templates, and empty citation-stripped output fail closed.
+  4. Spoken output removes visual URLs, CIDs, and citations while `VoiceTurnProvenance` retains template identity, evidence/CIDs, grounded slots, hashes, provider selection, stage traces, and fallback reasons. The deterministic safe fallback is synthesized when retrieval or grounding fails.
+  5. `ipfs_accelerate_py/test/test_voice_router_graphrag.py` covers canonical prompt construction/non-mutation, citation normalization, STT-to-TTS ordering, opt-in GraphRAG prompt delivery, safe slot rejection, deterministic retrieval fallback, TTS text-only degradation, and template-expression rejection using only in-memory fakes.
+  6. `python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py` passes offline. No focused assertion calls a remote speech service, GraphRAG deployment, IPFS node, or Hugging Face API.
+- Child-goal boundary: no smaller child goal is needed. G008 owns the router-side prompt envelope, response-plan rendering, citation stripping, fallback orchestration, and focused gate. G007 owns canonical GraphRAG ingestion/retrieval, G009 owns evaluation, and G010 owns downstream wallet adoption.
 
 ## ABBY-VOICE-G009 Establish voice safety quality and performance evaluation
 
