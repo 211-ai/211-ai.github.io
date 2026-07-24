@@ -185,7 +185,7 @@ approves a reviewed manifest and dry-run receipt.
 - Fib priority: 5001
 - Priority: P1
 - Track: voice-data
-- Parents: ABBY-VOICE-G004, ABBY-VOICE-G005, ABBY-VOICE-G011
+- Parents: ABBY-VOICE-G004, ABBY-VOICE-G005
 - Goal: Separate mutable run artifacts from curated Dataset Viewer data and prepare a reviewable migration without changing remote state.
 - Evidence: bucket inventory summary, proposed canonical prefix layout, Hugging Face dataset YAML with separate configs and splits, dry-run copy upload and delete plan, Dataset Viewer validation procedure, ABBY-VOICE-G006 completion receipt
 - Outputs: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
@@ -200,6 +200,15 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
 - Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
 - Gap task: Plan separate responses templates audio provenance and evaluation configs in Parquet while retaining raw bucket inputs under date and run scoped prefixes.
+- Objective-validation repair: `ABBY-VOICE-AUTO-009` owns this validation gate. The source discovery scan found the phrase `objective validation repair` missing and attributed inventory, prefix, Dataset Viewer, and migration terms to unrelated artifacts through AST-token coincidence. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-009-objective-validation-repair.md`; the machine-readable plan, dataset-card template, focused safety assertions, and this acceptance gate are the only G006 evidence.
+- Acceptance gate:
+  1. `data/abby_voice/huggingface/migration-plan.json` records the two source interfaces, the read-only inventory boundary, known mutable/raw prefixes, a canonical date/run-scoped bucket layout, five isolated Parquet configs (`responses`, `templates`, `audio`, `provenance`, and `evaluation`), and explicit split-to-`data_files` mappings.
+  2. The plan contains reproducible local counts and SHA-256 evidence from `build_abby_voice_dataset_v2.py --check`, while remote object counts, byte totals, and monetary costs remain null until a human-approved read-only snapshot. It provides formulas and a receipt schema instead of inventing remote state.
+  3. The dry-run copy/upload/delete plan can inventory with `list_bucket_tree`, stage through `upload_hf_abby_tts_dataset`, and describe `sync_bucket`/copy operations, but has no upload, move, rewrite, or delete action enabled. The delete plan is an empty prohibited operation set.
+  4. `data/abby_voice/huggingface/README.template.md` is a valid Dataset Card template whose YAML declares the same five configs and split paths; no config directory contains manifests, indexes, batch wrappers, or run output.
+  5. The Dataset Viewer procedure validates schema columns, Parquet readability, split isolation, row counts, checksums, and a smoke load before any human-approved remote publication. Rollback is by selecting the previous immutable release/revision; it never deletes or rewrites the legacy source.
+  6. `python -m pytest -q tests/voice/test_abby_voice_hf_migration.py` passes offline and records the required evidence mapping in the repair receipt. No focused assertion calls Hugging Face, requires credentials, or mutates a remote source.
+- Child-goal boundary: no smaller child goal is needed. G006 owns the human-reviewed migration plan and safety gate; G011 owns immutable inventory plus complete curated Parquet materialization, and G009 owns evaluation fixture content. G006 does not claim that remote inventory or publication has occurred.
 
 ## ABBY-VOICE-G007 Add GraphRAG response-template ingestion and retrieval
 
