@@ -306,6 +306,7 @@ def _validate_approval(
             approval_path=path,
             allowed_signers_path=allowed_signers,
             now=now,
+            expected_approval_bytes=before,
         )
     except ApprovalVerificationError as exc:
         raise BootstrapVerificationError(f"canonical Gate 0B approval rejected: {exc}") from exc
