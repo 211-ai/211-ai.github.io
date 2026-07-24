@@ -1,0 +1,133 @@
+{
+  "schema_version": "world-aid-zkp-toolchain-dependency-proposal/v1",
+  "status": "unapproved-inventory-only",
+  "goal_id": "WORLDCOIN-G041",
+  "authority_statement": "NOT APPROVED. This repository-only packet carries qualified G002 ZKP observations and a locked smoke-input contract into human review. It does not select, download, install, import, execute, or attest to a native backend, binary, image, proof system, circuit, setup parameter, or production trust.",
+  "approval": {
+    "required": true,
+    "binding": "signed Gate 0B-selection",
+    "canonical_path": "data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json",
+    "canonical_schema": "world-human-aid-gate-0b-selection/v1",
+    "selection_owner": "human Gate 0B reviewers",
+    "expires_at": null,
+    "exceptions": {
+      "required_fields": ["id", "owner", "rationale", "compensating_controls", "expires_at"],
+      "selected": []
+    }
+  },
+  "dependency": {
+    "name": "native-zkp-toolchain",
+    "architecture": null,
+    "backend": null,
+    "version": null,
+    "binary_or_image": null,
+    "binary_or_image_digest": null,
+    "licenses": null,
+    "provenance": null,
+    "sbom": null,
+    "vulnerability_disposition": null,
+    "deterministic_flags": [],
+    "resource_bounds": null,
+    "offline_location": null,
+    "smoke_inputs": {
+      "source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+      "lock": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+      "toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+    },
+    "expected_evidence": [
+      "native architecture match",
+      "exact backend and version",
+      "binary/image digest",
+      "license review",
+      "provenance and custody chain",
+      "SBOM and vulnerability disposition",
+      "deterministic flags and resource bounds",
+      "offline location and locked smoke inputs",
+      "two repeat-build artifact hashes",
+      "bounded proof result and verify result",
+      "network and registry deny evidence",
+      "expiry and named human reviewers"
+    ],
+    "expiry": null,
+    "selection_is_human_owned": true
+  },
+  "inventory": {
+    "source_goal": "WORLDCOIN-G002",
+    "source_artifact": "data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory.zkp",
+    "qualified_inventory": {
+      "observed_environment": [
+        {"input": "jsonschema distribution metadata", "version": "4.26.0", "state": "observed-install-metadata", "qualification": "Metadata only; jsonschema was not imported for this inventory."},
+        {"input": "Cargo command", "version": null, "state": "observed-command-on-path", "qualification": "Path presence only; Cargo was not executed."},
+        {"input": "Rust compiler command", "version": null, "state": "observed-command-on-path", "qualification": "Path presence only; rustc was not executed."},
+        {"input": "stable Rust toolchain metadata", "version": "1.93.1 (01f6ddf75 2026-02-11)", "state": "observed-install-metadata", "qualification": "rustup metadata only; compiler/build execution and approval were not tested."},
+        {"input": "ProveKit-smoke Rust nightly metadata", "version": "1.96.0-nightly (d9563937f 2026-03-03), channel date 2026-03-04", "state": "observed-install-metadata", "qualification": "Metadata matches the historical smoke's nightly date; no current execution or readiness claim."},
+        {"input": "ProveKit compatibility target", "version": "v1 commit 4c085f03aa583c255dda4831f1dba7e8c3f284cb", "state": "recorded-prior-smoke-only", "qualification": "Historical receipt only; it does not prove current-host readiness."},
+        {"input": "partial ProveKit Cargo crate cache", "version": "30 provekit-prefixed crate archives", "state": "observed-unapproved-cache", "qualification": "Archive-name inventory only; dependency closure, integrity, buildability, and approval were not established."},
+        {"input": "bundled non-aid Groth16 binary", "version": "sha256:7cd14c97f321c0b4220cfc881c424800f2da288b3056c49c2a6bf7a030bb02dc", "state": "observed-wrong-architecture-non-aid", "qualification": "The artifact is non-aid and unapproved."}
+      ],
+      "locked_or_declared": [
+        {"input": "ProveKit Python validation helper", "version": "jsonschema>=4.0.0", "state": "declared", "qualification": "A declaration is not a selected runtime."},
+        {"input": "ipfs_datasets_py dynamic base validation dependency", "version": "jsonschema>=4.0.0", "state": "declared", "qualification": "A declaration is not a selected runtime."}
+      ],
+      "not_observed_or_unselected": [
+        {"input": "ProveKit CLI command and declared packaged candidates", "state": "observed-not-on-path", "selection_owner": "humans", "qualification": "PATH observation only; no command was executed."},
+        {"input": "Noir/nargo, noirup, and bb commands", "state": "observed-not-on-path", "selection_owner": "humans", "qualification": "PATH observation only; no binaries were executed."},
+        {"input": "Noir circuit locks and generated proof artifacts", "state": "missing-required-artifact", "selection_owner": "humans", "qualification": "The exact finite lock and generated-artifact candidates were absent from the audited inventory."},
+        {"input": "aid-eligibility circuit and canonical public-input contract", "state": "missing-required-artifact", "selection_owner": "humans", "qualification": "G012 owns the later aid circuit."},
+        {"input": "proving key, verifier key, and setup provenance for the aid circuit", "state": "missing-required-artifact", "selection_owner": "humans", "qualification": "No human-approved aid-circuit artifact set exists."}
+      ],
+      "unknown_or_not_inspected": [
+        {"input": "approved complete ZKP binary, circuit, and key bundle or vault", "state": "unknown-not-inspected", "selection_owner": "humans", "qualification": "G041 prepares the non-executing verifier; G039 may execute only a later human-approved toolchain."}
+      ]
+    },
+    "selection_questions": [
+      "Which exact native architecture and backend/version are approved?",
+      "Which binary or OCI image digest and offline custody location are approved?",
+      "Which licenses and notices are approved for redistribution?",
+      "Which provenance attestations, maintainers, signatures, and SBOM are trusted?",
+      "What vulnerability disposition, exceptions, reviewer, and expiry apply?",
+      "Which deterministic flags and CPU/resource bounds are mandatory?",
+      "Which locked smoke inputs and repeat-build/proof/verify evidence authorize G039?"
+    ],
+    "note": "This is qualified inventory and a review question set, not approval; observed metadata, caches, prior smoke receipts, and source presence do not select a trusted toolchain."
+  },
+  "inputs": {
+    "architecture": {"required": true, "selected": null, "allowed": ["x86_64", "aarch64"]},
+    "tool": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
+    "licenses": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
+    "provenance": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
+    "sbom": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
+    "vulnerability_review": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
+    "smoke_spec": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md", "sha256": null, "locked": true},
+    "smoke_toml": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml", "sha256": null, "locked": true},
+    "smoke_lock": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock", "sha256": null, "locked": true},
+    "smoke_source": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr", "sha256": null, "locked": true},
+    "offline_root": {"path": "data/worldcoin_human_aid/offline/zkp", "read_only": true, "selection_owner": "human Gate 0B reviewers"},
+    "mutable_paths": []
+  },
+  "smoke": {
+    "status": "locked-input-only; not executed",
+    "circuit": {"toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml", "lock": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock", "source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr"},
+    "bounded_inputs": {"public": "7", "private": "7", "max_witness_fields": 2},
+    "network": "denied",
+    "registries": "denied",
+    "determinism": "fixed compiler/backend flags, locale, timezone, and stable output ordering",
+    "repeat_build": "two isolated builds with byte-identical artifact hashes",
+    "proof_and_verify": "bounded proof and verify evidence using locked inputs",
+    "production_trust": "Smoke artifacts, proof fixtures, and developer-generated Groth16 parameters are not production trust and do not approve a ceremony."
+  },
+  "tests": {
+    "static": "tests/world_aid/test_zkp_toolchain_bootstrap_static.py",
+    "runtime_contract": "tests/world_aid/test_zkp_toolchain_bootstrap.py",
+    "approved_execution_owner": "G039",
+    "fail_closed_on": ["missing approval", "conflicting approval", "wrong architecture", "digest drift", "unpinned inputs", "unexpected network", "registry configuration", "mutable paths", "production-trust claims", "nondeterminism", "resource-limit breach"],
+    "forbidden_static_actions": ["tool import", "tool execution", "package or container action", "subprocess smoke", "download", "secret lookup", "cache mutation", "circuit build", "proof", "verification", "parameter generation"],
+    "required_g039_evidence": ["architecture", "binary/image digest", "repeat-build hashes", "proof result", "verify result", "network/registry deny", "resource bounds", "expiry"]
+  },
+  "non_execution_receipt": {
+    "performed": false,
+    "status": "not approved",
+    "owner": "G041",
+    "prohibited": ["ZKP tool import or execution", "package or container action", "subprocess smoke", "download", "registry contact", "secret lookup", "cache mutation", "circuit build", "proof generation", "verification", "parameter generation"]
+  }
+}

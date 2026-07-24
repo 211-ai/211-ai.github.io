@@ -1277,6 +1277,9 @@ deployment, or asset transfer.
   2. The verifier, locked bounded smoke circuit, and runtime test contract exist before selection and fail closed on absent/conflicting approval, wrong architecture, digest drift, unpinned inputs, unexpected network/registry configuration, mutable paths, or production-trust claims.
   3. Static validation performs no tool import/execution, package/container action, subprocess smoke, download, secret lookup, cache mutation, circuit build, proof, verification, or parameter generation.
   4. Artifacts remain explicitly non-approved until Gate 0B-selection binds them; G039 alone owns approved runtime execution.
+- Objective-validation evidence (WORLDCOIN-AUTO-006):
+  - Discovery repair: `data/worldcoin_human_aid/agent_supervisor/discovery/2026-07-24-worldcoin-auto-006-zkp-bootstrap.md`
+  - The discovery record and canonical command document the repository-only, non-executing validation boundary; the proposal, locked smoke inputs, verifier, static contract, and future G039 runtime contract are all explicitly unapproved until signed Gate 0B-selection.
 
 ## WORLDCOIN-G042 Prepare a non-executing DuckDB bootstrap verifier proposal
 
