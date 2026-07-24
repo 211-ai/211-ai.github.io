@@ -338,10 +338,16 @@ chain-client selection to G019
 
 ## Acceptance trace
 
+The table below is the frozen hand-off contract: each gate has one named
+artifact that can be reviewed independently. Each artifact is evidence and
+not a runtime approval, an instruction to acquire dependencies, or an
+implementation shortcut around later human-owned goals
+(`docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G002`).
+
 | G002 gate | Evidence |
 |---|---|
 | Claims cite source/contract and speculation is labeled | This report's evidence rule, finding citations, and speculation register |
-| Exact unsafe facts recorded | Findings A-01 through A-06 |
+| Exact unsafe facts recorded | Findings A-01 through A-07, including the distinct raw-nullifier durability risk |
 | Missing trust domains and stable machine ownership | “Missing trust boundaries” and `data/worldcoin_human_aid/audit/component-map.json` |
 | Offline installed/missing inventory and human questions | `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json` |
 | Contract causes no prohibited integration action | `tests/world_aid/test_integration_audit_contract.py` and proposal `audit_observation` |

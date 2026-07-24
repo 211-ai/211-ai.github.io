@@ -76,3 +76,6 @@ pytest capture files, repository configuration, and the repository-root
 `conftest.py` are disabled by the guarded invocation. The no-toolchain claim
 is limited to the audited integration body rather than overstating what the
 runner itself does.
+
+Validation result: the guarded contract completed with `8 passed` on
+2026-07-24.
