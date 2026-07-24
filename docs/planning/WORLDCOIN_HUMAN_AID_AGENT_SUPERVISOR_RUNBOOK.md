@@ -499,7 +499,13 @@ WORLD_AID_GENERATED_ROOT="$(
   mktemp -d \
     "$REPOSITORY_ROOT/data/worldcoin_human_aid/agent_supervisor/regenerations/duckdb-v1.XXXXXX"
 )"
+WORLD_AID_MERGE_TARGET_BRANCH="$(git branch --show-current)"
+test -n "$WORLD_AID_MERGE_TARGET_BRANCH" || {
+  echo "refusing to launch from a detached HEAD; create a reviewed execution branch" >&2
+  exit 1
+}
 export WORLD_AID_GENERATED_ROOT
+export WORLD_AID_MERGE_TARGET_BRANCH
 ```
 
 ```bash
@@ -1474,6 +1480,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0a/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --max-restarts 0 \
@@ -1538,6 +1545,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0a/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
@@ -1600,6 +1608,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/scheduler-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --max-restarts 0 \
@@ -1713,6 +1722,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/scheduler-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
@@ -1785,6 +1795,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/scheduler-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --max-restarts 0 \
@@ -1892,6 +1903,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/scheduler-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
@@ -1944,6 +1956,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path "$WORLD_AID_GENERATED_ROOT/dry_run/scheduler-metrics.json" \
   --coordination-path "$WORLD_AID_GENERATED_ROOT/dry_run/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --max-restarts 0 \
@@ -2115,6 +2128,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --metrics-path data/worldcoin_human_aid/agent_supervisor/scheduler-metrics.json \
   --coordination-path data/worldcoin_human_aid/agent_supervisor/coordination.duckdb \
   --task-prefix WORLDCOIN-AUTO- \
+  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
   --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
