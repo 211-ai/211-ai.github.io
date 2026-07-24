@@ -7,7 +7,8 @@ Todo vector key: `3acfa404134f3aa1`
 Merge key: `da65cca9cb744dfe`  
 Merge family: `objective/WORLDCOIN-G002`  
 Work scope: `objective_validation_repair`  
-Status: evidence produced; validation is the task's pytest gate
+Status: evidence produced and independently corrected; validation is the
+guarded pytest contract below
 
 ## Gap disposition
 
@@ -24,12 +25,12 @@ The exact G002 acceptance terms are covered by:
 - `data/worldcoin_human_aid/audit/component-map.json` — stable component IDs,
   owners, interfaces, risks, goals, conflict surfaces, classifications, and
   evidence.
-- `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json` — static
-  installed/missing npm, Python/PostgreSQL, and ZKP inventory plus a
-  human-selection-only approval question set.
+- `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json` — qualified
+  observed, locked/declared, not-observed, and not-inspected npm,
+  Python/PostgreSQL, and ZKP inventory plus a human-selection-only question
+  set.
 - `tests/world_aid/test_integration_audit_contract.py` — offline structural,
-  source-citation, exact-finding, machine-map, bootstrap, and no-side-effect
-  contract.
+  source-citation, exact semantic-owner, bootstrap, and static-body contract.
 - `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G002` —
   supervisor/heap alignment and the canonical validation command.
 
@@ -47,19 +48,24 @@ The exact G002 acceptance terms are covered by:
 | Missing EIP-1271 SIWE | Audit “Missing trust boundaries” item 1; component `wallet-principal-auth` |
 | Missing issuer lifecycle | Audit item 2; component `issuer-lifecycle` |
 | Missing encrypted transactional storage | Audit item 3; component `local-wallet-repository` |
-| Missing payout and reconciliation | Audit items 4–5; component `payout-reconciliation` |
+| Missing payout and reconciliation | Audit items 4–5; components `payout-intent`, `treasury-custody`, `world-chain-client`, `provider-minikit-transaction`, `direct-wld-payout`, and `chain-reconciliation` |
 | Stable machine ownership/conflicts | Component map `components` |
 | Human-approved offline inputs only | Bootstrap proposal `human_approval_questions` and `approval_gate` |
-| No prohibited audit integration actions | Bootstrap `audit_observation`; static pytest contract |
+| No prohibited audit integration actions | Bootstrap `audit_observation`; guarded static pytest invocation |
 
 ## Validation
 
 Canonical command:
 
 ```text
-python -m pytest -q tests/world_aid/test_integration_audit_contract.py
+PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -s -p no:cacheprovider -c /dev/null --confcutdir=tests/world_aid tests/world_aid/test_integration_audit_contract.py
 ```
 
-The contract reads repository text and JSON only. It imports no wallet,
+The contract body reads repository text and JSON only. It imports no wallet,
 World, database, package-core, or ZKP runtime module and invokes no network,
-secret, package, container, database, npm, or proof tool.
+secret, package, container, database, npm, or proof tool. Python and pytest
+necessarily execute the test runner; bytecode/cache writes, plugin autoload,
+pytest capture files, repository configuration, and the repository-root
+`conftest.py` are disabled by the guarded invocation. The no-toolchain claim
+is limited to the audited integration body rather than overstating what the
+runner itself does.

@@ -17,10 +17,22 @@ An absence finding cites both the searched integration surface and the child
 goal that owns the missing boundary. Forward-looking deductions are prefixed
 **Speculation** and are not treated as observed fact.
 
-The audit inspected files only. It did not call World or any other network,
-look up a secret, download or install a package, pull or start a container,
-execute a ZKP/database/npm toolchain, or initialize package core. The
-machine-readable record of that constraint is
+The substantive inventory and final contract body used static filesystem
+inspection. They did not call World or any other network, look up a secret,
+download or install a package, pull or start a container, execute a
+ZKP/database/npm toolchain, import an audited integration package, or
+initialize package core. The worker's rejected first pytest validation loaded
+the repository-root `conftest.py`; it is not cited for this boundary. During
+earlier planning, a helper mistakenly ran `npm cache verify`, which
+garbage-collected approximately 4.53 GB from the user's npm cache. It did not
+change the repository or installed UI dependency tree, but removed cache
+objects are recoverable only by re-download; current npm-cache facts are
+post-incident observations and the overall planning history is not represented
+as a no-cache-mutation run. During independent QA, one shell check accidentally
+created and immediately removed an empty `/tmp/g002_no_write_guard` file; it
+changed no repository, cache, package, container, secret, or external state and
+is not cited as the final no-write acceptance run. The machine-readable scope
+and transparency record is
 `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::audit_observation`;
 the contract is a data/source parser only at
 `tests/world_aid/test_integration_audit_contract.py`.
@@ -29,8 +41,9 @@ the contract is a data/source parser only at
 
 The existing World integration is a useful wallet-binding prototype, but it is
 not a human-aid eligibility or payment system. Server-side configuration, RP
-signing, Developer Portal verification, a durable binding model, proof-center
-receipts, and an IDKit 4.1.8 UI are present
+signing, Developer Portal verification, a serializable binding model with
+optional local persistence, proof-center receipts, and an IDKit 4.1.8 UI are
+present
 (`wallet_interface/world_id.py::WorldIdConfig`;
 `wallet_interface/app_service.py::register_world_id_verification`;
 `ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding`;
@@ -56,15 +69,15 @@ authoritative audit inventory, not a runtime registry.
 |---|---|---|---|
 | World configuration and RP signatures | Partial | Configuration validates environment, IDs, actions, signing material, TTL, and verify URL; secrets are omitted from the public projection (`wallet_interface/world_id.py::load_world_id_config`; `wallet_interface/world_id.py::WorldIdConfig.public_dict`). | Preserve the current API through an additive G004 adapter; do not broaden remote I/O. |
 | IDKit parsing and verification | Partial | Both protocol `3.0` and `4.0` are normalized and sent to the Developer Portal verifier (`wallet_interface/world_id.py::normalize_idkit_response`; `wallet_interface/world_id.py::verify_world_id_proof`). | G004 must default legacy off and define a v3 sunset without silently changing old wallet consumers. |
-| Wallet binding | Unsafe to reuse | A verified result becomes a durable `WorldIdBinding` plus proof receipt (`wallet_interface/app_service.py::register_world_id_verification`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::add_world_id_binding`). | G006 owns a private/public adapter, accurate protocol labels, signal binding, expiry, and revocation semantics. |
-| World status API | Unsafe to reuse | The optional `actor_did` permits unauthenticated status, and status returns all serialized bindings (`wallet_interface/routes/world_id.py::get_world_id_status`; `wallet_interface/app_service.py::get_world_id_status`). | Preserve route shape only until G006/G008 provide authenticated summary and privileged detail projections. |
-| Local wallet snapshots | Unsafe to reuse | Snapshots are JSON files containing hex principal secrets and raw serialized World binding objects (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot`). | Local development only; G007 owns encrypted transactional replacement and migration. |
-| Document privacy profile | Simulated | `create_document_profile_proof` always calls `create_simulated_proof_receipt` with type `document_privacy_profile` (`ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::create_document_profile_proof`; `ipfs_datasets_py/ipfs_datasets_py/wallet/proofs.py::create_simulated_proof_receipt`). | Never accept as program eligibility. G012/G016 own the eligibility statement and production verifier. |
+| Wallet binding | Unsafe to reuse | A verified result becomes a serializable `WorldIdBinding` plus proof receipt and may be saved by the optional local repository (`wallet_interface/app_service.py::register_world_id_verification`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::add_world_id_binding`; `ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository`). | G004 owns protocol labels, G007 owns optional-human context binding, G008 owns replay durability, and G014 owns trust-state composition. |
+| World status API | Unsafe to reuse | The optional `actor_did` permits unauthenticated status, and status returns all serialized bindings (`wallet_interface/routes/world_id.py::get_world_id_status`; `wallet_interface/app_service.py::get_world_id_status`). | Preserve route shape only until G007/G024/G033 provide authenticated minimum-necessary projections and secure storage. |
+| Local wallet snapshots | Unsafe to reuse | Snapshots are JSON files containing hex principal secrets and raw serialized World binding objects (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot`). | Local development only; G033 owns encrypted transactional replacement and migration, consuming the human-approved G040 runtime. |
+| Document privacy profile | Simulated | `create_document_profile_proof` always calls `create_simulated_proof_receipt` with type `document_privacy_profile` (`ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::create_document_profile_proof`; `ipfs_datasets_py/ipfs_datasets_py/wallet/proofs.py::create_simulated_proof_receipt`). | Never accept as program eligibility. G012/G013 own the eligibility prover/verifier and artifacts; G014 owns composition with other trust states. |
 | Location HTTP proof backend | Partial | The backend transmits statement, public inputs, and witness to an injected HTTP prover (`wallet_interface/proof_backends.py::HttpLocationRegionProofBackend.prove_location_region`). | Preserve only as an isolated proof adapter; it does not establish program eligibility. |
-| Provider staff context | Partial | The RP-signature response adds provider and staff IDs plus `signal_context`, while registration validates action and proof without comparing those response annotations (`wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature`; `wallet_interface/app_service.py::register_world_id_verification`). | Do not treat it as provider approval. G021/G022 own registry-backed authorization and claim-context binding. |
-| IDKit UI | Implemented | The UI requests a signature, opens `IDKitRequestWidget`, posts the result, refreshes status, and presents non-claim/private-field messaging (`wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel`). | Preserve cancellation, disabled, manual-path, accessibility, and privacy messages while APIs migrate. |
-| Issuer lifecycle | Missing | `WorldIdBinding` stores issuer schema IDs, but the audited integration exposes no aid-issuer issuance/rotation/suspension/revocation verifier (`ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding.issuer_schema_ids`; `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G010`). | G010/G011 must define issuer and policy registries before eligibility verification. |
-| WLD payout and chain reconciliation | Missing | The heap assigns payout intent, treasury/chain submission, and reconciliation to G023–G026 rather than an existing audited World wallet symbol (`docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G023`; `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G026`). | No signing, broadcast, payout, or settlement claim may be inferred from current World verification. |
+| Provider staff context | Partial | The RP-signature response adds provider and staff IDs plus `signal_context`, while registration validates action and proof without comparing those response annotations (`wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature`; `wallet_interface/app_service.py::register_world_id_verification`). | Do not treat it as provider approval. G006 owns wallet authentication, G007 optional-human context, G014 composition, and G017 registry-backed provider authorization. |
+| IDKit UI | Implemented | `WorldIdVerificationPanel` requests a signature, opens `IDKitRequestWidget`, posts the result, and refreshes status; `WorldIdSurfaceStatus` carries the essential-service/manual-path statement (`wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel`; `wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx::WorldIdSurfaceStatus`). | G025 owns the recipient experience; preserve cancellation, disabled, manual-path, accessibility, and privacy behavior through G004/G007/G024/G027/G028 migrations. |
+| Issuer lifecycle | Missing | `WorldIdBinding` stores issuer schema IDs, but the audited integration exposes no aid-issuer enrollment, issuance, rotation, suspension, revocation, or credential verifier (`ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding.issuer_schema_ids`; `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G034`). | G009 owns issuer trust/status registries and G034 owns enrollment and credential lifecycle before eligibility verification. |
+| WLD payout and chain reconciliation | Missing | No audited World-wallet symbol implements the distinct payout intent, custody, chain client, optional MiniKit, direct payout, or reconciliation boundaries assigned to G016 and G018–G022 (`docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G016`; `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G022`). | No signing, broadcast, payout, or settlement claim may be inferred from current World verification. |
 
 ## Confirmed unsafe findings
 
@@ -122,9 +135,9 @@ protocol, nullifier reference, credential identifiers, issuer schema IDs,
 session presence data, status, timestamps, and metadata
 (`wallet_interface/app_service.py::get_world_id_status`;
 `ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding`).
-Therefore unauthenticated status returns full bindings. G006/G008 must add an
-authenticated projection without deleting the response contract before UI
-migration tests exist
+Therefore unauthenticated status returns full bindings. G007/G024/G033 must
+add an authenticated minimum-necessary projection and secure persistence
+without deleting the response contract before UI migration tests exist
 (`wallet_interface/ui/src/features/wallet/lib/walletApi.ts::WorldIdWalletStatus`).
 
 ### A-05 — legacy acceptance defaults on
@@ -152,7 +165,7 @@ putting the binding's protocol version into the statement
 (`ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::WORLD_ID_PROOF_SYSTEM`;
 `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_create_world_id_proof_receipt`).
 Receipts can therefore mislabel accepted v3 evidence as v4. Existing receipts
-must not be rewritten in place; G004/G006 must introduce protocol-accurate
+must not be rewritten in place; G004/G007 must introduce protocol-accurate
 labels plus a migration adapter and tests.
 
 ### A-07 — raw nullifier durability is a distinct private risk
@@ -166,9 +179,11 @@ The snapshot exports raw binding objects and principal secrets but no
 without calling `_store_world_id_private_nullifier`
 (`ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot`;
 `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::import_wallet_snapshot`).
-G006/G007 must explicitly define private nullifier retention, uniqueness,
-encryption, deletion, and migration rather than relying on incidental snapshot
-behavior.
+Import therefore rebuilds neither `world_id_private_nullifiers` nor
+`world_id_raw_nullifier_index`: the cross-wallet raw-nullifier replay index is
+process-local and is lost after restart. G008 owns durable replay controls and
+G033 owns their encrypted transactional persistence; neither may rely on
+incidental snapshot behavior.
 
 ## Missing trust boundaries
 
@@ -179,39 +194,47 @@ World proof-of-human:
    `actor_did`; it is not an EIP-4361 session and exposes no EIP-1271
    contract-wallet signature verifier
    (`wallet_interface/app_service.py::_require_portal_actor`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G008`).
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G006`).
+   G037 prepares the non-executing dependency lock and G038 verifies the
+   human-approved dependency set offline before G006 consumes it
+   (`docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G037`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G038`).
 
 2. **Issuer credential lifecycle.** A binding can carry
    `issuer_schema_ids`, but no aid issuer registry provides issuance,
    rotation, expiry, suspension, revocation, or status evidence
    (`ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G010`).
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G009`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G034`).
 
 3. **Encrypted transactional storage.** The local repository writes one
    plaintext JSON snapshot through a temporary-file replacement; it is not an
    encrypted multi-record transaction, row-locking, migration, backup, or
    recovery boundary
    (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G007`).
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G033`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040`).
 
 4. **Payout.** No current audited World binding function creates an idempotent
    payout intent, validates WLD amount/recipient/chain, obtains treasury
-   approval, signs, or broadcasts; those interfaces are assigned to G023–G025
-   (`data/worldcoin_human_aid/audit/component-map.json::payout-reconciliation`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G023`).
+   approval, signs, or broadcasts. G016 owns payout intent, G018 treasury
+   custody, G019 the chain client, G020 optional MiniKit, and G021 direct payout
+   (`data/worldcoin_human_aid/audit/component-map.json::payout-intent`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G016`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G021`).
 
 5. **Reconciliation.** No current audited World binding function tracks
    pending/final/reverted/replaced transactions, confirmation policy,
-   reorganization, or accounting settlement; G026 owns that boundary
-   (`data/worldcoin_human_aid/audit/component-map.json::payout-reconciliation`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G026`).
+   reorganization, or accounting settlement; G022 owns that boundary
+   (`data/worldcoin_human_aid/audit/component-map.json::chain-reconciliation`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G022`).
 
 6. **Eligibility composition.** World proof-of-human, a document privacy
    profile, an aid issuer credential, a policy decision, provider approval,
    and payout settlement are separate trust states; the canonical composition
-   is assigned to G005/G022 rather than the present binding model
-   (`docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G005`;
-   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G022`).
+   is assigned to G014 rather than the present binding model
+   (`data/worldcoin_human_aid/audit/component-map.json::aid-trust-composition`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G014`).
 
 ## Compatibility boundary freeze
 
@@ -232,7 +255,8 @@ migration, and an explicit retirement record
   mislabeled receipts from entering the new aid verifier
   (`ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::ProofReceipt`;
   `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_create_world_id_proof_receipt`).
-- UI disabled/cancelled/non-claim behavior and API type consumers
+- UI disabled/cancelled behavior, the essential-service/manual-path statement,
+  and API type consumers
   (`wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel`;
   `wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx::WorldIdSurfaceStatus`;
   `wallet_interface/ui/src/features/wallet/lib/walletApi.ts::WorldIdWalletStatus`).
@@ -249,13 +273,24 @@ blocked at the new human-aid boundary
 
 ## Offline bootstrap decision record
 
-The source inventory records locked IDKit npm packages; declared Python and
-FastAPI inputs; absent SIWE/EIP-1271, chain, PostgreSQL, driver, and migration
-inputs; and present versus operator-provided ZKP inputs
-(`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory`).
-The proposal does not choose or approve dependencies. It asks humans to select
-exact versions, checksums, licenses, provenance, SBOM policy, cache/image/key
-locations, and smoke tests before any acquisition or execution
+The qualified inventory separates what is observed in this checkout/host from
+what is merely locked or declared, what was not observed, and what remains
+unknown because inspecting it would exceed this audit's authority. It records
+installed-tree IDKit manifests, Python distribution metadata, non-executing
+PATH observations for PostgreSQL and ZKP commands, repository ZKP sources, and
+prior-smoke evidence without presenting any of those facts as approval or
+runtime readiness
+(`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory`;
+`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::audit_observation`).
+Manifest absence is not used to claim that a PostgreSQL server, image, private
+cache, or off-PATH binary is globally missing; qualified not-observed and
+not-inspected states remain explicit.
+
+The proposal asks humans to select exact versions, checksums, licenses,
+provenance, SBOM policy, cache/image/key locations, and smoke tests before any
+acquisition or execution. It routes SIWE proposal/verification to G037/G038,
+ZKP verification to G039, PostgreSQL verification to G040, and chain-client
+selection to G019
 (`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::human_approval_questions`;
 `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::approval_gate`).
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "world-human-aid-component-map/v1",
+  "schema_version": "world-human-aid-component-map/v2",
   "goal_id": "WORLDCOIN-G002",
   "task_id": "WORLDCOIN-AUTO-001",
   "generated_at": "2026-07-24",
@@ -48,7 +48,7 @@
       ],
       "goals": [
         "WORLDCOIN-G004",
-        "WORLDCOIN-G006"
+        "WORLDCOIN-G007"
       ],
       "conflict_surfaces": [
         "WORLD_ID_ALLOW_LEGACY_PROOFS",
@@ -65,7 +65,7 @@
       "id": "world-id-wallet-binding",
       "name": "Wallet-bound World ID record and receipt",
       "status": "unsafe-to-reuse",
-      "owner": "WORLDCOIN-G006",
+      "owner": "WORLDCOIN-G007",
       "interfaces": [
         "wallet_interface/app_service.py::register_world_id_verification",
         "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::add_world_id_binding",
@@ -77,9 +77,10 @@
         "Issuer schema identifiers are data fields without an issuer lifecycle policy."
       ],
       "goals": [
-        "WORLDCOIN-G006",
-        "WORLDCOIN-G012",
-        "WORLDCOIN-G022"
+        "WORLDCOIN-G004",
+        "WORLDCOIN-G007",
+        "WORLDCOIN-G008",
+        "WORLDCOIN-G014"
       ],
       "conflict_surfaces": [
         "ProofReceipt proof_system and circuit_id labels",
@@ -96,7 +97,7 @@
       "id": "wallet-status-api",
       "name": "World ID configuration and binding status API",
       "status": "unsafe-to-reuse",
-      "owner": "WORLDCOIN-G006",
+      "owner": "WORLDCOIN-G007",
       "interfaces": [
         "GET /wallets/{wallet_id}/world-id/config",
         "GET /wallets/{wallet_id}/world-id/status",
@@ -108,8 +109,9 @@
         "The unauthenticated response contains every serialized binding and its metadata."
       ],
       "goals": [
-        "WORLDCOIN-G006",
-        "WORLDCOIN-G008"
+        "WORLDCOIN-G007",
+        "WORLDCOIN-G024",
+        "WORLDCOIN-G033"
       ],
       "conflict_surfaces": [
         "Existing UI binding-count and binding-detail consumers",
@@ -126,7 +128,7 @@
       "id": "local-wallet-repository",
       "name": "Local filesystem wallet repository",
       "status": "unsafe-to-reuse",
-      "owner": "WORLDCOIN-G007",
+      "owner": "WORLDCOIN-G033",
       "interfaces": [
         "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository",
         "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot",
@@ -139,8 +141,9 @@
         "Snapshot hashes provide integrity detection, not encryption or authentication."
       ],
       "goals": [
-        "WORLDCOIN-G007",
-        "WORLDCOIN-G009"
+        "WORLDCOIN-G008",
+        "WORLDCOIN-G033",
+        "WORLDCOIN-G040"
       ],
       "conflict_surfaces": [
         "Snapshot v1 import compatibility",
@@ -156,7 +159,7 @@
       "id": "wallet-principal-auth",
       "name": "Wallet principal authorization",
       "status": "partial",
-      "owner": "WORLDCOIN-G008",
+      "owner": "WORLDCOIN-G006",
       "interfaces": [
         "wallet_interface/app_service.py::_require_portal_actor",
         "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_wallet_principals",
@@ -167,7 +170,9 @@
         "No EIP-1271 contract-wallet signature validation boundary exists in the audited path."
       ],
       "goals": [
-        "WORLDCOIN-G008"
+        "WORLDCOIN-G006",
+        "WORLDCOIN-G037",
+        "WORLDCOIN-G038"
       ],
       "conflict_surfaces": [
         "Current actor_did request bodies and query parameters",
@@ -195,7 +200,8 @@
       ],
       "goals": [
         "WORLDCOIN-G012",
-        "WORLDCOIN-G016"
+        "WORLDCOIN-G013",
+        "WORLDCOIN-G014"
       ],
       "conflict_surfaces": [
         "Existing proof-center rendering",
@@ -224,7 +230,7 @@
       "goals": [
         "WORLDCOIN-G012",
         "WORLDCOIN-G013",
-        "WORLDCOIN-G016"
+        "WORLDCOIN-G039"
       ],
       "conflict_surfaces": [
         "ProofBackend receipt schema",
@@ -241,7 +247,7 @@
       "id": "provider-context",
       "name": "Provider staff World ID context",
       "status": "partial",
-      "owner": "WORLDCOIN-G021",
+      "owner": "WORLDCOIN-G017",
       "interfaces": [
         "POST /wallets/{wallet_id}/world-id/provider-staff/rp-signature",
         "wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature"
@@ -252,8 +258,10 @@
         "No provider approval state machine is connected to payout authorization."
       ],
       "goals": [
-        "WORLDCOIN-G021",
-        "WORLDCOIN-G022"
+        "WORLDCOIN-G006",
+        "WORLDCOIN-G007",
+        "WORLDCOIN-G014",
+        "WORLDCOIN-G017"
       ],
       "conflict_surfaces": [
         "Provider staff action naming",
@@ -269,7 +277,7 @@
       "id": "issuer-lifecycle",
       "name": "Eligibility credential issuer lifecycle",
       "status": "missing",
-      "owner": "WORLDCOIN-G010",
+      "owner": "WORLDCOIN-G034",
       "interfaces": [
         "future issuer registry",
         "WorldIdBinding.issuer_schema_ids",
@@ -279,8 +287,8 @@
         "No issuance, rotation, expiry, suspension, or revocation contract is available to an aid eligibility verifier."
       ],
       "goals": [
-        "WORLDCOIN-G010",
-        "WORLDCOIN-G011"
+        "WORLDCOIN-G009",
+        "WORLDCOIN-G034"
       ],
       "conflict_surfaces": [
         "World issuer schema identifiers versus aid-program issuers",
@@ -289,46 +297,192 @@
       ],
       "evidence": [
         "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding.issuer_schema_ids",
-        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G010"
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G034"
       ]
     },
     {
-      "id": "payout-reconciliation",
-      "name": "WLD payout and World Chain reconciliation",
+      "id": "aid-trust-composition",
+      "name": "Human, eligibility, provider, and payout trust-state composition",
       "status": "missing",
-      "owner": "WORLDCOIN-G023",
+      "owner": "WORLDCOIN-G014",
+      "interfaces": [
+        "future immutable claim context",
+        "future eligibility result binding",
+        "future provider approval binding",
+        "future payout payload binding"
+      ],
+      "risks": [
+        "Current World, document-profile, provider-context, and receipt states can be mistaken as authority for one another.",
+        "No current boundary binds the narrow eligibility result to an immutable recipient, program, benefit period, amount, and provider authorization."
+      ],
+      "goals": [
+        "WORLDCOIN-G014"
+      ],
+      "conflict_surfaces": [
+        "ClaimContext canonical encoding",
+        "Eligibility and provider authorization references",
+        "PayoutPayload recipient, amount, and period binding"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G014",
+        "wallet_interface/app_service.py::register_world_id_verification"
+      ]
+    },
+    {
+      "id": "payout-intent",
+      "name": "Idempotent payout intent and durable state machine",
+      "status": "missing",
+      "owner": "WORLDCOIN-G016",
       "interfaces": [
         "future payout intent repository",
-        "future treasury signer adapter",
-        "future WLD ERC-20 adapter",
-        "future World Chain receipt reconciler"
+        "future payout state transition service"
       ],
       "risks": [
         "No idempotent payout boundary exists.",
-        "No signer or broadcast policy exists.",
-        "No confirmation, reorganization, replacement, or accounting reconciliation state exists."
+        "No durable state distinguishes approval, authorization, submission ambiguity, and settlement."
       ],
       "goals": [
-        "WORLDCOIN-G023",
-        "WORLDCOIN-G024",
-        "WORLDCOIN-G025",
-        "WORLDCOIN-G026"
+        "WORLDCOIN-G016"
       ],
       "conflict_surfaces": [
         "Canonical claim and payout identifiers",
-        "Treasury approval boundary",
-        "Chain receipt finality and accounting export"
+        "Recipient, token, amount, and quote immutability",
+        "Idempotency and retry state"
       ],
       "evidence": [
-        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G023",
-        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G026"
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G016"
+      ]
+    },
+    {
+      "id": "treasury-custody",
+      "name": "Treasury custody, budget, approval, and signing boundary",
+      "status": "missing",
+      "owner": "WORLDCOIN-G018",
+      "interfaces": [
+        "future treasury policy repository",
+        "future custody and signer adapter"
+      ],
+      "risks": [
+        "No treasury account, budget, separation-of-duties, or signer policy exists.",
+        "No current guard independently blocks signing."
+      ],
+      "goals": [
+        "WORLDCOIN-G018"
+      ],
+      "conflict_surfaces": [
+        "Treasury approval boundary",
+        "Signer and custody handles",
+        "Budget reservation and release"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G018"
+      ]
+    },
+    {
+      "id": "world-chain-client",
+      "name": "Validated World Chain and WLD ERC-20 client",
+      "status": "missing",
+      "owner": "WORLDCOIN-G019",
+      "interfaces": [
+        "future World Chain RPC adapter",
+        "future WLD ERC-20 calldata validator"
+      ],
+      "risks": [
+        "No chain, token-code, recipient, amount, fee, or RPC-consensus validation boundary exists.",
+        "No current external-I/O guard protects World Chain reads."
+      ],
+      "goals": [
+        "WORLDCOIN-G019"
+      ],
+      "conflict_surfaces": [
+        "Chain and token configuration",
+        "RPC trust and retry policy",
+        "ERC-20 calldata encoding"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G019"
+      ]
+    },
+    {
+      "id": "provider-minikit-transaction",
+      "name": "Optional provider-interactive MiniKit transaction path",
+      "status": "missing",
+      "owner": "WORLDCOIN-G020",
+      "interfaces": [
+        "future MiniKit transaction adapter",
+        "future provider-interactive transaction receipt"
+      ],
+      "risks": [
+        "No approved interactive provider transaction path exists.",
+        "A future MiniKit path must not become a recipient eligibility or smartphone requirement."
+      ],
+      "goals": [
+        "WORLDCOIN-G020"
+      ],
+      "conflict_surfaces": [
+        "Provider wallet authorization",
+        "MiniKit command payload",
+        "Direct-treasury versus interactive custody"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G020"
+      ]
+    },
+    {
+      "id": "direct-wld-payout",
+      "name": "Controlled direct WLD treasury payout",
+      "status": "missing",
+      "owner": "WORLDCOIN-G021",
+      "interfaces": [
+        "future direct payout orchestrator",
+        "future guarded broadcaster"
+      ],
+      "risks": [
+        "No signer or broadcast policy exists.",
+        "No current transfer guard independently blocks transaction submission."
+      ],
+      "goals": [
+        "WORLDCOIN-G021"
+      ],
+      "conflict_surfaces": [
+        "Treasury nonce and submission attempts",
+        "Transfer guard and custody envelope",
+        "Ambiguous submission recovery"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G021"
+      ]
+    },
+    {
+      "id": "chain-reconciliation",
+      "name": "World Chain receipt, Transfer log, finality, and accounting reconciliation",
+      "status": "missing",
+      "owner": "WORLDCOIN-G022",
+      "interfaces": [
+        "future World Chain receipt reconciler",
+        "future accounting settlement projection"
+      ],
+      "risks": [
+        "No confirmation, reorganization, replacement, or accounting reconciliation state exists.",
+        "No current boundary validates canonical WLD Transfer logs against the authorized payout."
+      ],
+      "goals": [
+        "WORLDCOIN-G022"
+      ],
+      "conflict_surfaces": [
+        "Chain receipt finality",
+        "Replacement and reorganization state",
+        "Accounting export"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G022"
       ]
     },
     {
       "id": "world-id-ui",
       "name": "IDKit wallet UI and proof-center consumers",
       "status": "implemented",
-      "owner": "WORLDCOIN-G029",
+      "owner": "WORLDCOIN-G025",
       "interfaces": [
         "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel",
         "wallet_interface/ui/src/features/wallet/lib/walletApi.ts::WorldIdWalletStatus",
@@ -341,8 +495,11 @@
       ],
       "goals": [
         "WORLDCOIN-G004",
-        "WORLDCOIN-G006",
-        "WORLDCOIN-G029"
+        "WORLDCOIN-G007",
+        "WORLDCOIN-G024",
+        "WORLDCOIN-G025",
+        "WORLDCOIN-G027",
+        "WORLDCOIN-G028"
       ],
       "conflict_surfaces": [
         "WorldIdWalletStatus response projection",

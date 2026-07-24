@@ -1,16 +1,20 @@
 {
-  "schema_version": "world-human-aid-offline-bootstrap-proposal/v1",
+  "schema_version": "world-human-aid-offline-bootstrap-proposal/v2",
   "goal_id": "WORLDCOIN-G002",
   "task_id": "WORLDCOIN-AUTO-001",
   "proposal_status": "human-selection-required",
-  "authority_statement": "This is a source-derived inventory and question set, not approval to download, install, initialize, build, pull, start, or execute anything.",
+  "authority_statement": "This is a qualified, non-executing environment inventory and question set, not approval to download, install, initialize, build, pull, start, or execute anything.",
   "audit_observation": {
     "date": "2026-07-24",
-    "method": "Read repository manifests, lockfiles, source, and recorded artifacts only.",
+    "scope": "The host and repository checkout after the G002 worker stopped and after the disclosed npm-cache garbage collection; the historical worker command is recorded but its exact interpreter environment is not. Observations are not portable and must be rechecked inside each approved offline verification lane.",
+    "method": "Read repository manifests, lockfiles, source, installed-package and operating-system metadata, finite cache indexes/archive names, filesystem paths, and recorded artifacts; resolve command names with the Bash type -P builtin without executing the target commands.",
     "performed": [
       "filesystem reads",
-      "static manifest inspection",
-      "static source inspection"
+      "static manifest and lockfile inspection",
+      "static installed-package metadata inspection",
+      "static operating-system and environment metadata inspection",
+      "static finite package-cache index and archive-name inspection",
+      "non-executing PATH name resolution"
     ],
     "not_performed": [
       "network call",
@@ -19,13 +23,129 @@
       "package install",
       "container pull",
       "container start",
+      "container image listing",
       "toolchain execution",
+      "audited World, wallet, database, npm, container, or ZKP package import by the inventory or contract body",
       "package-core initialization"
+    ],
+    "limitations": [
+      "A command absent from PATH may exist elsewhere and is not asserted globally missing.",
+      "Package metadata on disk does not prove importability, integrity, approval, or successful execution.",
+      "A lockfile or manifest declaration does not prove installation.",
+      "The named npm, Cargo, and Conda cache locations were inspected read-only; cache presence does not establish integrity, closure, approval, installation, or readiness.",
+      "The npm entries are a post-mutation snapshot after the disclosed npm cache verify incident and cannot establish the cache's earlier contents, completeness, or recoverability.",
+      "Container images, private registry mirrors, wheelhouses, secret stores, and key vaults were not inspected because doing so is outside this audit's authority.",
+      "The completed supervisor receipt records a login-shell Python command but not the exact interpreter path or package environment selected inside the historical worker.",
+      "The worker's rejected first validation used default pytest collection and loaded the repository-root conftest; only the later guarded validation is cited for the static contract boundary.",
+      "A prior smoke receipt describes its recorded run, not the current host."
+    ],
+    "review_transparency": [
+      "The supervisor worker performed the repository writes required to create the G002 outputs; no runtime integration or external state was enabled.",
+      "During earlier planning, a helper that was assigned read-only review mistakenly ran npm cache verify. It garbage-collected approximately 4.53 GB from /home/barberb/.npm/_cacache. The repository and installed wallet_interface/ui/node_modules tree were not changed, but removed cache objects are recoverable only by re-download. This mutation is excluded from, and prevents treating the overall planning history as, a literally no-cache-mutation audit; every npm-cache entry below is explicitly a post-incident observation.",
+      "An independent read-only inventory review accidentally created and immediately removed one empty /tmp/g002_no_write_guard file. It changed no repository, cache, package, container, secret, or external state and is not cited as the final no-write acceptance run.",
+      "The final acceptance command is run separately with bytecode/cache writes, plugin autoload, pytest capture files, repository configuration, and repository-root conftest loading disabled."
     ]
+  },
+  "state_vocabulary": {
+    "observed-command-on-path": "A shell builtin resolved the command name to a path; the target was not executed.",
+    "observed-workspace-package": "A package manifest exists under this checkout's installed dependency tree; the package was not imported or executed.",
+    "observed-install-metadata": "Distribution metadata exists for the named interpreter environment; importability was not tested.",
+    "observed-system-package": "Operating-system package metadata and its named filesystem payload were observed; dependent services were not executed.",
+    "observed-alternate-environment-metadata": "Metadata exists in an environment that was not selected as the historical supervisor worker runtime.",
+    "observed-unapproved-cache": "A finite cache index or archive name was observed read-only; integrity, closure, approval, installation, and readiness were not established.",
+    "observed-wrong-architecture-non-aid": "A repository artifact exists but targets another architecture and does not implement the aid circuit.",
+    "present-non-aid-unapproved": "A repository artifact exists for another proof domain and has not met aid-circuit provenance or approval gates.",
+    "historical-environment-not-recorded": "A historical receipt records the command but not enough interpreter or environment detail to reconstruct installed state.",
+    "locked": "A lockfile selects a version; installation is a separate observation.",
+    "declared": "A manifest requests a version range; installation is a separate observation.",
+    "source-present": "Repository source exists; buildability and correctness were not tested.",
+    "recorded-prior-smoke-only": "A committed receipt records an earlier run and does not establish current readiness.",
+    "observed-not-on-path": "The command did not resolve in the observed PATH; this is not a global absence claim.",
+    "not-observed-not-proven-missing": "The inspected manifests, paths, or metadata did not show the input; broader environments were not executed or exhaustively searched.",
+    "unknown-not-inspected": "Inspection would exceed this audit's read-only, no-secret, no-container, or no-toolchain authority.",
+    "missing-required-artifact": "The repository objective defines the artifact, but the audited implementation does not contain it."
   },
   "inventory": {
     "npm": {
-      "installed_or_locked": [
+      "observed_environment": [
+        {
+          "input": "Node.js command",
+          "version": "22.23.1 inferred from installation path; not runtime-verified",
+          "state": "observed-command-on-path",
+          "evidence": "host-PATH::/home/barberb/.local/bin/node -> /home/barberb/.local/share/node-v22.23.1-linux-x64/bin/node",
+          "qualification": "Path presence only; node was not executed."
+        },
+        {
+          "input": "npm command",
+          "version": null,
+          "state": "observed-command-on-path",
+          "evidence": "host-PATH::/home/barberb/.local/bin/npm",
+          "qualification": "Path presence only; npm was not executed."
+        },
+        {
+          "input": "npm installation metadata",
+          "version": "10.9.8",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/share/node-v22.23.1-linux-x64/lib/node_modules/npm/package.json#version",
+          "qualification": "Static package metadata only; npm was not executed."
+        },
+        {
+          "input": "@worldcoin/idkit",
+          "version": "4.1.8",
+          "state": "observed-workspace-package",
+          "evidence": "wallet_interface/ui/node_modules/@worldcoin/idkit/package.json::version",
+          "qualification": "Installed-tree manifest presence only; no package code was executed."
+        },
+        {
+          "input": "@worldcoin/idkit-core",
+          "version": "4.1.8",
+          "state": "observed-workspace-package",
+          "evidence": "wallet_interface/ui/node_modules/@worldcoin/idkit-core/package.json::version",
+          "qualification": "Installed-tree manifest presence only; no package code was executed."
+        },
+        {
+          "input": "@worldcoin/idkit-server",
+          "version": "1.1.1",
+          "state": "observed-workspace-package",
+          "evidence": "wallet_interface/ui/node_modules/@worldcoin/idkit-server/package.json::version",
+          "qualification": "Installed-tree manifest presence only; no package code was executed."
+        },
+        {
+          "input": "@worldcoin/idkit npm cache entry",
+          "version": "4.1.8",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/.npm/_cacache/index-v5/fe/13/8a967dd8fb06d191f806a43df6680b4b2c1c1e74febeae8635e406e30dd6",
+          "qualification": "Index entry only; cached payload integrity was not independently recalculated."
+        },
+        {
+          "input": "@worldcoin/idkit-core npm cache entry",
+          "version": "4.1.8",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/.npm/_cacache/index-v5/4e/ca/2205d38541d7bb14c2ae4c7d722f4ff7249ef1f575aa00116e5e44f553b9",
+          "qualification": "Index entry only; cached payload integrity was not independently recalculated."
+        },
+        {
+          "input": "@worldcoin/idkit-server npm cache entry",
+          "version": "1.1.1",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/.npm/_cacache/index-v5/63/d8/0a331bf6b2ea201edc3c22096276390cec3293a0530691c62a78a8f256c5",
+          "qualification": "Index entry only; cached payload integrity was not independently recalculated."
+        },
+        {
+          "input": "ethers npm cache entry",
+          "version": "5.8.0",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/.npm/_cacache/index-v5/ae/0b/7a9b394b4de3a6fd24fd028bbc187b418ed3feb2615c8bb86e28fb1f3141",
+          "qualification": "Cached but not selected, declared, installed, integrity-verified, or approved as the World Chain client."
+        }
+      ],
+      "locked_or_declared": [
+        {
+          "input": "@worldcoin/idkit",
+          "version": "^4.1.8",
+          "state": "declared",
+          "evidence": "wallet_interface/ui/package.json::dependencies.@worldcoin/idkit"
+        },
         {
           "input": "@worldcoin/idkit",
           "version": "4.1.8",
@@ -35,39 +155,158 @@
         {
           "input": "@worldcoin/idkit-core",
           "version": "4.1.8",
-          "state": "transitively-locked",
+          "state": "locked",
           "evidence": "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit-core"
         },
         {
           "input": "@worldcoin/idkit-server",
           "version": "1.1.1",
-          "state": "transitively-locked",
+          "state": "locked",
           "evidence": "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit-server"
         }
       ],
-      "missing_or_unselected": [
+      "not_observed_or_unselected": [
         {
           "input": "EIP-4361 SIWE client/server library",
-          "state": "missing",
+          "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "wallet_interface/ui/package.json::dependencies"
+          "evidence": "wallet_interface/ui/package.json::dependencies",
+          "qualification": "Not declared in the audited UI manifest and no wallet_interface/ui/node_modules/siwe/package.json was observed."
         },
         {
           "input": "EIP-1271 contract-wallet verification library",
-          "state": "missing",
+          "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "wallet_interface/ui/package.json::dependencies"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G037",
+          "qualification": "No reviewed dependency proposal exists yet; G037 owns selection and lock proposal."
         },
         {
           "input": "World Chain JSON-RPC and WLD ERC-20 client",
-          "state": "missing",
+          "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "wallet_interface/ui/package.json::dependencies"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G019",
+          "qualification": "An ethers 5.8.0 cache index entry was observed, but it is not declared or installed in the audited UI and is not a human-approved chain-client selection."
+        }
+      ],
+      "unknown_or_not_inspected": [
+        {
+          "input": "approved private npm mirror and complete reviewed tarball set",
+          "state": "unknown-not-inspected",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G037",
+          "qualification": "The named user cache was inspected read-only, but no approved private mirror, complete dependency closure, or human approval record was inspected or inferred."
         }
       ]
     },
     "python_postgresql": {
-      "installed_or_declared": [
+      "observed_environment": [
+        {
+          "input": "completed G002 supervisor worker interpreter",
+          "version": null,
+          "state": "historical-environment-not-recorded",
+          "evidence": "data/worldcoin_human_aid/agent_supervisor/apparmor_lane_state/worldcoin-human-aid-integration-audit/state/agent_worldcoin_human_aid_integration_audit_task_state.json::historical validation command",
+          "qualification": "The receipt records bash -lc with python -m pytest, not the exact resolved interpreter or site-packages environment."
+        },
+        {
+          "input": "current login-shell python command",
+          "version": "3.12.3 from dpkg metadata; command not executed for version discovery",
+          "state": "observed-command-on-path",
+          "evidence": "host-filesystem::/home/barberb/bin/python -> /usr/bin/python3.12",
+          "qualification": "Current post-worker login-shell path, not evidence of the historical worker interpreter."
+        },
+        {
+          "input": "system Python package",
+          "version": "3.12.3-1ubuntu0.15",
+          "state": "observed-system-package",
+          "evidence": "host-filesystem::/var/lib/dpkg/status#Package=python3.12",
+          "qualification": "dpkg metadata only; Python was not executed for this inventory."
+        },
+        {
+          "input": "current login-shell python3 command",
+          "version": "3.12.12 from Conda metadata; command not executed for version discovery",
+          "state": "observed-command-on-path",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/bin/python3 -> python3.12",
+          "qualification": "Current login-shell python3 differs from python and was not established as the historical worker interpreter."
+        },
+        {
+          "input": "FastAPI system-user-site distribution metadata",
+          "version": "0.138.2",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/lib/python3.12/site-packages/fastapi-0.138.2.dist-info/METADATA#Version",
+          "qualification": "System-user-site metadata; FastAPI was not imported and this was not proven to be the historical worker environment."
+        },
+        {
+          "input": "Pydantic system-user-site distribution metadata",
+          "version": "2.13.4",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/lib/python3.12/site-packages/pydantic-2.13.4.dist-info/METADATA#Version",
+          "qualification": "System-user-site metadata; Pydantic was not imported."
+        },
+        {
+          "input": "jsonschema system-user-site distribution metadata",
+          "version": "4.26.0",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/lib/python3.12/site-packages/jsonschema-4.26.0.dist-info/METADATA#Version",
+          "qualification": "System-user-site metadata; jsonschema was not imported."
+        },
+        {
+          "input": "Miniforge Python environment",
+          "version": "3.12.12",
+          "state": "observed-alternate-environment-metadata",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/conda-meta/python-3.12.12-hd63d673_1_cpython.json",
+          "qualification": "Alternate current environment metadata; not selected or verified as the completed worker runtime."
+        },
+        {
+          "input": "Miniforge FastAPI distribution metadata",
+          "version": "0.101.1",
+          "state": "observed-alternate-environment-metadata",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/lib/python3.12/site-packages/fastapi-0.101.1.dist-info/METADATA#Version",
+          "qualification": "Below the root wallet declaration >=0.110 and not selected or verified for the completed worker."
+        },
+        {
+          "input": "Miniforge Pydantic and jsonschema distribution metadata",
+          "version": "Pydantic 2.13.4; jsonschema 4.26.0",
+          "state": "observed-alternate-environment-metadata",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/lib/python3.12/site-packages",
+          "qualification": "Alternate-environment metadata only; packages were not imported."
+        },
+        {
+          "input": "Miniforge SQLAlchemy distribution metadata",
+          "version": "2.0.50",
+          "state": "observed-alternate-environment-metadata",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/lib/python3.12/site-packages/sqlalchemy-2.0.50.dist-info/METADATA#Version",
+          "qualification": "Present in an alternate environment; not selected, locked, or sufficient to establish the G033 migration/repository boundary."
+        },
+        {
+          "input": "inactive workspace virtual environment",
+          "version": "3.12.3",
+          "state": "observed-alternate-environment-metadata",
+          "evidence": ".venv/pyvenv.cfg::version",
+          "qualification": "Not current on PATH; inspected site-packages lack the audited FastAPI, Pydantic, jsonschema, SQLAlchemy, Alembic, and PostgreSQL driver metadata."
+        },
+        {
+          "input": "system libpq5 client library",
+          "version": "16.14-0ubuntu0.24.04.1",
+          "state": "observed-system-package",
+          "evidence": "host-filesystem::/var/lib/dpkg/status#Package=libpq5",
+          "qualification": "/usr/lib/x86_64-linux-gnu/libpq.so.5 is present; this is not a PostgreSQL server, CLI, Python driver, or approval."
+        },
+        {
+          "input": "Conda libpq package archives",
+          "version": "17.7 and 18.1 variants",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/miniforge3/pkgs/libpq-{17.7-h5c52fec_1,18.1-h5c52fec_2,18.1-hb80d175_3}.conda",
+          "qualification": "Cached archives only; not proof of installation, a server/CLI, integrity, or approval."
+        },
+        {
+          "input": "Docker CLI command",
+          "version": null,
+          "state": "observed-command-on-path",
+          "evidence": "host-PATH::/usr/bin/docker",
+          "qualification": "CLI path presence only; Docker was not executed and no daemon, image, archive, or registry state was inspected."
+        }
+      ],
+      "locked_or_declared": [
         {
           "input": "Python",
           "version": ">=3.11",
@@ -85,86 +324,227 @@
           "version": ">=2.7,<3.0",
           "state": "declared",
           "evidence": "pyproject.toml::project.optional-dependencies.wallet"
+        },
+        {
+          "input": "ipfs_datasets_py Python",
+          "version": ">=3.12",
+          "state": "declared",
+          "evidence": "ipfs_datasets_py/pyproject.toml::project.requires-python"
+        },
+        {
+          "input": "wallet API container base and unbounded application dependencies",
+          "version": "python:3.12-slim; FastAPI>=0.110; bare pydantic",
+          "state": "declared",
+          "evidence": "wallet_interface/deploy/Dockerfile.api::FROM and RUN pip install",
+          "qualification": "Mutable tags/ranges are declaration drift, not a lock or observed image."
         }
       ],
-      "missing_or_unselected": [
+      "not_observed_or_unselected": [
         {
-          "input": "PostgreSQL server image or native package",
-          "state": "missing",
+          "input": "PostgreSQL psql, postgres, pg_ctl, initdb, createdb, and pg_dump commands",
+          "state": "observed-not-on-path",
           "selection_owner": "humans",
-          "evidence": "pyproject.toml::project.dependencies"
+          "evidence": "host-PATH::type -P returned no path for psql, postgres, pg_ctl, initdb, createdb, or pg_dump",
+          "qualification": "Not observed in the current PATH, standard PostgreSQL paths, or corresponding dpkg client/server package metadata; libpq5 alone is present. This finite observation does not prove global absence."
         },
         {
-          "input": "PostgreSQL Python driver",
-          "state": "missing",
+          "input": "PostgreSQL Python driver (psycopg or asyncpg)",
+          "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "pyproject.toml::project.dependencies"
+          "evidence": "pyproject.toml::project.dependencies",
+          "qualification": "Not declared in relevant manifests and no psycopg, psycopg2, asyncpg, or pg8000 metadata was observed across the system user site, Miniforge, inactive .venv, or system dist-packages; no import was attempted."
         },
         {
-          "input": "migration and transactional repository library",
-          "state": "missing",
+          "input": "approved migration and transactional repository library set",
+          "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "pyproject.toml::project.dependencies"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G033",
+          "qualification": "SQLAlchemy 2.0.50 exists only in the alternate Miniforge environment; Alembic was not observed in the finite audited environments, and no reviewed G033 library set is selected."
         },
         {
-          "input": "database encryption/key-management integration",
-          "state": "missing",
+          "input": "database encryption and key-management integration",
+          "state": "missing-required-artifact",
           "selection_owner": "humans",
-          "evidence": "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository"
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository",
+          "qualification": "The audited production boundary is absent; G033 owns implementation."
+        }
+      ],
+      "unknown_or_not_inspected": [
+        {
+          "input": "PostgreSQL OCI image, archive, or private registry mirror",
+          "state": "unknown-not-inspected",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040",
+          "qualification": "The Docker CLI path exists, but no container command, daemon, image, archive, or private registry inspection was authorized."
+        },
+        {
+          "input": "approved Python wheelhouse",
+          "state": "unknown-not-inspected",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040",
+          "qualification": "Private/user cache contents were not inspected or modified."
         }
       ]
     },
     "zkp": {
-      "installed_or_recorded": [
+      "observed_environment": [
         {
-          "input": "ProveKit compatibility target",
-          "version": "v1 commit 4c085f03aa583c255dda4831f1dba7e8c3f284cb",
-          "state": "recorded-prior-smoke-only",
-          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::upstream"
+          "input": "jsonschema distribution metadata",
+          "version": "4.26.0",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/lib/python3.12/site-packages/jsonschema-4.26.0.dist-info/METADATA#Version",
+          "qualification": "Metadata only; jsonschema was not imported for this inventory."
         },
         {
-          "input": "ProveKit Python validation helper",
-          "version": "jsonschema>=4.0.0",
-          "state": "declared-optional",
-          "evidence": "ipfs_datasets_py/pyproject.toml::project.optional-dependencies.provekit"
+          "input": "Cargo command",
+          "version": null,
+          "state": "observed-command-on-path",
+          "evidence": "host-PATH::/home/barberb/.cargo/bin/cargo",
+          "qualification": "Path presence only; Cargo was not executed."
+        },
+        {
+          "input": "Rust compiler command",
+          "version": null,
+          "state": "observed-command-on-path",
+          "evidence": "host-PATH::/home/barberb/.cargo/bin/rustc",
+          "qualification": "Path presence only; rustc was not executed."
+        },
+        {
+          "input": "stable Rust toolchain metadata",
+          "version": "1.93.1 (01f6ddf75 2026-02-11)",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml",
+          "qualification": "rustup metadata only; compiler/build execution and approval were not tested."
+        },
+        {
+          "input": "ProveKit-smoke Rust nightly metadata",
+          "version": "1.96.0-nightly (d9563937f 2026-03-03), channel date 2026-03-04",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.rustup/toolchains/nightly-2026-03-04-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml",
+          "qualification": "Metadata matches the historical smoke's nightly date; no current execution or readiness claim."
         },
         {
           "input": "knowledge_of_axioms and tdfol_v1_trace Noir sources",
           "version": "repository source",
-          "state": "present",
-          "evidence": "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/provekit/circuits"
-        }
-      ],
-      "missing_or_unselected": [
-        {
-          "input": "ProveKit CLI binary",
-          "state": "operator-provided-not-package-managed",
-          "selection_owner": "humans",
-          "evidence": "ipfs_datasets_py/setup.py::extras_require.provekit"
+          "state": "source-present",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/provekit/circuits::filesystem entries",
+          "qualification": "Source presence only; no compile, prove, or verify command ran."
         },
         {
-          "input": "Noir/nargo toolchain",
-          "state": "missing-from-normal-install",
+          "input": "ProveKit compatibility target",
+          "version": "v1 commit 4c085f03aa583c255dda4831f1dba7e8c3f284cb",
+          "state": "recorded-prior-smoke-only",
+          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::upstream",
+          "qualification": "Historical receipt only; it does not prove current-host readiness."
+        },
+        {
+          "input": "partial ProveKit Cargo crate cache",
+          "version": "30 provekit-prefixed crate archives, including provekit-spongefish 0.1.0 and provekit-whir 0.1.1",
+          "state": "observed-unapproved-cache",
+          "evidence": "host-filesystem::/home/barberb/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/provekit*.crate",
+          "qualification": "Archive-name inventory only; dependency closure, integrity, source checkout, buildability, CLI presence, and approval were not established."
+        },
+        {
+          "input": "non-aid Groth16 Rust source and lock",
+          "version": "crate 0.1.0",
+          "state": "source-present",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/processors/groth16_backend/Cargo.lock::locked dependency graph",
+          "qualification": "Tracked source/lock for another proof domain; not the aid circuit and not executed."
+        },
+        {
+          "input": "bundled non-aid Groth16 binary",
+          "version": "sha256:7cd14c97f321c0b4220cfc881c424800f2da288b3056c49c2a6bf7a030bb02dc",
+          "state": "observed-wrong-architecture-non-aid",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/processors/groth16_backend/bin/linux-aarch64/groth16::ELF aarch64",
+          "qualification": "Host package architecture is amd64 and no x86_64 binary was observed; the artifact is non-aid and unapproved."
+        },
+        {
+          "input": "non-aid Groth16 v1 proving and verifying keys",
+          "version": "proving sha256:0efdaa9a518082122df987297fcd05b0ce411aa859d42cbe88a1b33d3be8c0a3; verifying sha256:790157b0ab34735872fc750a60eede767299c6771cd1501afe313eca6a11f67d",
+          "state": "present-non-aid-unapproved",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/processors/groth16_backend/artifacts/v1::proving_key.bin and verifying_key.bin",
+          "qualification": "Ignored local artifacts for another proof domain; no aid-circuit relation, ceremony provenance, integrity approval, or execution was established."
+        },
+        {
+          "input": "non-aid Groth16 v2 proving and verifying keys",
+          "version": "proving sha256:88bb2c916824dd86bc32f3419b622705eaa9724b2af6bc5231fc20ddb1642330; verifying sha256:3c5d85cf1ac5d305237704e1b26714ee89140fc46b3f87cbd0a9695a5a65d76d",
+          "state": "present-non-aid-unapproved",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/processors/groth16_backend/artifacts/v2::proving_key.bin and verifying_key.bin",
+          "qualification": "Ignored local artifacts for another proof domain; no aid-circuit relation, ceremony provenance, integrity approval, or execution was established."
+        }
+      ],
+      "locked_or_declared": [
+        {
+          "input": "ProveKit Python validation helper",
+          "version": "jsonschema>=4.0.0",
+          "state": "declared",
+          "evidence": "ipfs_datasets_py/pyproject.toml::project.optional-dependencies.provekit"
+        },
+        {
+          "input": "ipfs_datasets_py dynamic base validation dependency",
+          "version": "jsonschema>=4.0.0",
+          "state": "declared",
+          "evidence": "ipfs_datasets_py/setup.py::install_requires jsonschema"
+        }
+      ],
+      "not_observed_or_unselected": [
+        {
+          "input": "ProveKit CLI command and declared packaged candidates",
+          "state": "observed-not-on-path",
           "selection_owner": "humans",
-          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::toolchain.external_noir_tools_on_path"
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/provekit/cli.py::PROVEKIT_CLI_EXECUTABLE and candidate paths",
+          "qualification": "Neither provekit-cli nor provekit resolved in PATH; declared package bin/root/target-release candidates were absent. Operator paths elsewhere were not searched or executed."
+        },
+        {
+          "input": "Noir/nargo, noirup, and bb commands",
+          "state": "observed-not-on-path",
+          "selection_owner": "humans",
+          "evidence": "host-PATH::type -P returned no path for nargo, noir, noirup, or bb",
+          "qualification": "PATH observation only; binaries elsewhere were not searched or executed."
+        },
+        {
+          "input": "Noir circuit locks and generated proof artifacts",
+          "state": "missing-required-artifact",
+          "selection_owner": "humans",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/provekit/circuits::Nargo.lock, Prover.toml, .pkp, .pkv, .np, and toolchain.lock finite candidates",
+          "qualification": "The two source circuits and Nargo.toml files exist, but the exact finite lock/generated-artifact candidates were absent."
+        },
+        {
+          "input": "historical ProveKit temporary checkout, binary, and proof artifacts",
+          "state": "not-observed-not-proven-missing",
+          "selection_owner": "humans",
+          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::recorded /tmp/provekit-v1-spike paths",
+          "qualification": "The receipt's finite /tmp checkout, binary, pkp, pkv, np, and compiled JSON paths are absent now; the historical receipt remains recorded evidence only."
         },
         {
           "input": "aid-eligibility circuit and canonical public-input contract",
-          "state": "missing",
+          "state": "missing-required-artifact",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G012"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G012",
+          "qualification": "The audited integration contains other circuits but not the required human-aid circuit contract."
         },
         {
-          "input": "proving key, verifier key, trusted-setup or transparent-setup provenance",
-          "state": "missing-for-aid-circuit",
+          "input": "proving key, verifier key, and setup provenance for the aid circuit",
+          "state": "missing-required-artifact",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G013"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G013",
+          "qualification": "No human-approved aid-circuit artifact set exists."
         },
         {
-          "input": "reproducible verifier fixtures and negative vectors",
-          "state": "missing-for-aid-circuit",
+          "input": "reproducible verifier fixtures and adversarial negative vectors",
+          "state": "missing-required-artifact",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G016"
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G028",
+          "qualification": "G012/G013 define the implementation and artifact contracts; G028 owns adversarial coverage."
+        }
+      ],
+      "unknown_or_not_inspected": [
+        {
+          "input": "approved complete ZKP binary, circuit, and key bundle or vault",
+          "state": "unknown-not-inspected",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G039",
+          "qualification": "Named Cargo and repository artifact locations were inspected read-only, but no complete human-approved dependency closure, aid artifact bundle, private key vault, or approval record was inspected or inferred."
         }
       ]
     }
@@ -218,6 +598,12 @@
       "offline-location-policy",
       "smoke-test-approval"
     ],
-    "next_owner": "WORLDCOIN-G037"
+    "next_owners": {
+      "siwe_dependency_lock_proposal": "WORLDCOIN-G037",
+      "siwe_offline_verification": "WORLDCOIN-G038",
+      "zkp_offline_verification": "WORLDCOIN-G039",
+      "postgresql_offline_verification": "WORLDCOIN-G040",
+      "world_chain_client_selection": "WORLDCOIN-G019"
+    }
   }
 }

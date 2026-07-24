@@ -114,7 +114,7 @@ deployment, or asset transfer.
 - Goal: Map the current World ID, document-wallet, ZKP, provider, payment, and UI implementations to the target trust domains and record concrete reuse, drift, and deletion-prohibited boundaries.
 - Evidence: path-and-symbol inventory; IDKit v4 and legacy-label gap matrix; simulated-proof finding; signal-binding and nullifier durability findings; plaintext LocalWalletRepository snapshot and unauthenticated overbroad status findings; absent EIP-1271 wallet-auth, issuer lifecycle, production store, payout, and reconciliation findings; API and UI compatibility inventory; installed/missing npm, Python/PostgreSQL, and ZKP toolchain inventory; non-authoritative offline-bootstrap proposal with exact review questions and no downloads; dependency and ownership map
 - Outputs: docs/reports/WORLD_HUMAN_AID_INTEGRATION_AUDIT.md, data/worldcoin_human_aid/audit/component-map.json, data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json, tests/world_aid/test_integration_audit_contract.py
-- Validation: python -m pytest -q tests/world_aid/test_integration_audit_contract.py
+- Validation: PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -s -p no:cacheprovider -c /dev/null --confcutdir=tests/world_aid tests/world_aid/test_integration_audit_contract.py
 - Bundle: worldcoin-human-aid/integration-audit
 - Parallel lane: world-aid-discovery
 - Embedding query: current World ID IDKit wallet document proof backend provider payment integration gap audit compatibility
