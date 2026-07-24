@@ -972,7 +972,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
-  --implementation-command 'codex exec --ephemeral --sandbox workspace-write --ask-for-approval never -' \
+  --implementation-command 'codex --ask-for-approval never exec --ephemeral --sandbox workspace-write -' \
   --poll-interval 15 \
   --daemon-interval 15 \
   --check-interval 15 \
