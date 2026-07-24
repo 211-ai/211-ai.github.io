@@ -30,9 +30,10 @@
     "resource_bounds": null,
     "offline_location": null,
     "smoke_inputs": {
-      "source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+      "spec": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md",
+      "toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml",
       "lock": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
-      "toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+      "source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr"
     },
     "expected_evidence": [
       "native architecture match",
@@ -43,6 +44,7 @@
       "SBOM and vulnerability disposition",
       "deterministic flags and resource bounds",
       "offline location and locked smoke inputs",
+      "selected-backend manifest and repository-lock compatibility",
       "two repeat-build artifact hashes",
       "bounded proof result and verify result",
       "network and registry deny evidence",
@@ -98,10 +100,10 @@
     "provenance": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
     "sbom": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
     "vulnerability_review": {"path": null, "sha256": null, "status": "human evidence required before Gate 0B"},
-    "smoke_spec": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md", "sha256": null, "locked": true},
-    "smoke_toml": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml", "sha256": null, "locked": true},
-    "smoke_lock": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock", "sha256": null, "locked": true},
-    "smoke_source": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr", "sha256": null, "locked": true},
+    "smoke_spec": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md", "sha256": "sha256:96d238d9b671656b85c302902f393937a1f0825c20f22b35f25f57606182c968", "locked": true},
+    "smoke_toml": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml", "sha256": "sha256:52d99855c36165abb9c1fb21a02566c2d165e72476cd60fc1d03ea4eab3570ff", "locked": true},
+    "smoke_lock": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock", "sha256": "sha256:5b64f0782737d312d6ec91268314af927cc29dc92307778b882050a9830252d2", "locked": true},
+    "smoke_source": {"path": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr", "sha256": "sha256:fe51bd173515c7e76475d0d9752fcd740152645351e280bdf5d2099c9121401d", "locked": true},
     "offline_root": {"path": "data/worldcoin_human_aid/offline/zkp", "read_only": true, "selection_owner": "human Gate 0B reviewers"},
     "mutable_paths": []
   },
@@ -122,7 +124,7 @@
     "approved_execution_owner": "G039",
     "fail_closed_on": ["missing approval", "conflicting approval", "wrong architecture", "digest drift", "unpinned inputs", "unexpected network", "registry configuration", "mutable paths", "production-trust claims", "nondeterminism", "resource-limit breach"],
     "forbidden_static_actions": ["tool import", "tool execution", "package or container action", "subprocess smoke", "download", "secret lookup", "cache mutation", "circuit build", "proof", "verification", "parameter generation"],
-    "required_g039_evidence": ["architecture", "binary/image digest", "repeat-build hashes", "proof result", "verify result", "network/registry deny", "resource bounds", "expiry"]
+    "required_g039_evidence": ["architecture", "binary/image digest", "selected-backend manifest/lock compatibility", "repeat-build hashes", "proof result", "verify result", "network/registry deny", "resource bounds", "expiry"]
   },
   "non_execution_receipt": {
     "performed": false,

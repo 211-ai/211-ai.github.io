@@ -454,9 +454,9 @@ heap. This uses the daemon's deterministic planner: it does not request
 LLM-generated plan branches, submit bundles, or start workers.
 
 First run the static heap/runbook and offline verifier contracts. These tests
-are mandatory: they pin the exact 42-goal heap, 40 schedulable goals, blocked
-G035/G036 human gates, force list, and receipt/verifier behavior before an
-expensive scan begins.
+are mandatory: they pin the exact 42-goal heap, 37 schedulable goals, blocked
+G035/G036 human gates, blocked Gate-first execution goals G038-G040, force
+list, and receipt/verifier behavior before an expensive scan begins.
 
 ```bash
 env \
@@ -504,9 +504,16 @@ test -n "$WORLD_AID_MERGE_TARGET_BRANCH" || {
   echo "refusing to launch from a detached HEAD; create a reviewed execution branch" >&2
   exit 1
 }
+IPFS_ACCELERATE_DUCKDB_ONLY=1
 export WORLD_AID_GENERATED_ROOT
 export WORLD_AID_MERGE_TARGET_BRANCH
+export IPFS_ACCELERATE_DUCKDB_ONLY
 ```
+
+Keep `IPFS_ACCELERATE_DUCKDB_ONLY=1` exported for every generation, dry-run,
+launch, inspection, and resume command in this runbook. It makes DuckDB the
+only supervisor state backend and disables legacy SQLite discovery and
+migration; this workflow has no PostgreSQL state dependency.
 
 ```bash
 set -euo pipefail
@@ -617,13 +624,20 @@ grant a human gate, submit a bundle, or start a worker. Never add
 `--repeat-existing`, `--submit-bundles`, `--generate-plan-branches`, or
 `--start` to this generation command.
 
-The forced list intentionally omits only G035 and G036, which are
-supervisor-terminal `blocked` human gates, and then includes the preparation
-and executable offline-bootstrap goals G037 through G042. Only the named
-governance process may transition G035 or G036 to `reopened` after
-independently produced external evidence is reviewed. An agent-created
-approval/evidence file, textual match, or completed dependency cannot reopen
-either goal.
+The forced list intentionally omits G035 and G036, which are
+supervisor-terminal `blocked` human gates. It includes G038, G039, and G040
+only so the no-submit, no-start planning command can materialize the exact
+selection-review profiles; those three runtime goals remain terminally
+`blocked` and unschedulable. A signed approval or repository-controlled
+environment flag is necessary but cannot open their literal-false runtime
+fences. Each runtime requires an operator-controlled Gate-first supervisor
+launcher that authenticates the exact selection-bound entrypoint and verifier
+before repository Python runs, enforces descriptor-backed immutable inputs,
+network and registry denial, bounded process groups and output, and atomic
+no-follow receipts. Only the named governance process may transition a blocked
+goal after independently produced external evidence is reviewed; an
+agent-created approval/evidence file, textual match, or completed dependency
+cannot reopen one.
 
 ## Review the generated board
 

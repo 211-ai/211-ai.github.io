@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import os
 import re
 import sys
@@ -98,10 +99,16 @@ def test_worldcoin_human_aid_heap_uses_the_supervisor_contract() -> None:
 
     scheduled_ids = {record.goal_id for record in objective_heap_schedule(goals)}
     assert scheduled_ids == {goal.goal_id for goal in goals if goal.is_schedulable}
-    assert len(scheduled_ids) == 40
+    assert len(scheduled_ids) == 37
 
     blocked = {goal.goal_id for goal in goals if goal.status == "blocked"}
-    assert blocked == {"WORLDCOIN-G035", "WORLDCOIN-G036"}
+    assert blocked == {
+        "WORLDCOIN-G035",
+        "WORLDCOIN-G036",
+        "WORLDCOIN-G038",
+        "WORLDCOIN-G039",
+        "WORLDCOIN-G040",
+    }
     assert all(goal.is_terminal and not goal.is_schedulable for goal in goals if goal.goal_id in blocked)
 
 
@@ -222,16 +229,78 @@ def test_generated_worldcoin_tasks_preserve_goal_specific_acceptance() -> None:
         assert goal.fields["acceptance_criteria"].lower() in acceptance_lines[0].lower()
 
 
-def test_runbook_forces_only_schedulable_worldcoin_goals() -> None:
+def test_gate_bootstrap_runtime_goals_have_literal_false_first_action_fences() -> None:
+    parse_goal_heap, _, _, _ = _objective_graph_api()
+    goals = {
+        goal.goal_id: goal
+        for goal in parse_goal_heap(HEAP_PATH.read_text(encoding="utf-8"))
+    }
+    contracts = {
+        "WORLDCOIN-G038": REPO_ROOT / "tests/world_aid/test_siwe_offline_bootstrap.py",
+        "WORLDCOIN-G039": REPO_ROOT / "tests/world_aid/test_zkp_toolchain_bootstrap.py",
+        "WORLDCOIN-G040": REPO_ROOT / "tests/world_aid/test_duckdb_bootstrap.py",
+    }
+
+    for goal_id, contract_path in contracts.items():
+        assert goals[goal_id].status == "blocked"
+        source = contract_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        assignments = [
+            node
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name)
+                and target.id == "TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED"
+                for target in node.targets
+            )
+        ]
+        assert len(assignments) == 1
+        assert isinstance(assignments[0].value, ast.Constant)
+        assert assignments[0].value.value is False
+        runtime_tests = [
+            node
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name.startswith("test_")
+        ]
+        assert len(runtime_tests) == 1
+        actions = list(runtime_tests[0].body)
+        if (
+            actions
+            and isinstance(actions[0], ast.Expr)
+            and isinstance(actions[0].value, ast.Constant)
+            and isinstance(actions[0].value.value, str)
+        ):
+            actions.pop(0)
+        first_action = actions[0]
+        assert isinstance(first_action, ast.If)
+        assert (
+            ast.get_source_segment(source, first_action.test)
+            == "TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED is not True"
+        )
+        terminator = first_action.body[0]
+        assert isinstance(terminator, (ast.Raise, ast.Expr))
+        if isinstance(terminator, ast.Expr):
+            assert isinstance(terminator.value, ast.Call)
+            assert isinstance(terminator.value.func, ast.Attribute)
+            assert terminator.value.func.attr == "fail"
+        assert "operator-controlled Gate-first supervisor launcher" in source
+
+
+def test_runbook_forces_only_schedulable_or_gate_fenced_worldcoin_goals() -> None:
     parse_goal_heap, _, _, _ = _objective_graph_api()
     goals = parse_goal_heap(HEAP_PATH.read_text(encoding="utf-8"))
     runbook = RUNBOOK_PATH.read_text(encoding="utf-8")
     forced = set(re.findall(r"--force-goal-id (WORLDCOIN-G\d{3})", runbook))
     schedulable = {goal.goal_id for goal in goals if goal.is_schedulable}
     blocked = {goal.goal_id for goal in goals if goal.status == "blocked"}
+    gate_fenced = {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
 
-    assert forced == schedulable
-    assert not forced & blocked
+    assert forced == schedulable | gate_fenced
+    assert forced & blocked == gate_fenced
+    assert "IPFS_ACCELERATE_DUCKDB_ONLY=1" in runbook
+    assert "only supervisor state backend" in runbook
 
 
 def test_worldcoin_human_aid_plan_preserves_proof_and_privacy_boundaries() -> None:

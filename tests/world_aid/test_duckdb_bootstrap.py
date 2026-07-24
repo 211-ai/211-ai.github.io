@@ -1,9 +1,15 @@
 """Executable, fail-closed WORLDCOIN-G040 DuckDB runtime contract.
 
-STATUS: NOT APPROVED and NOT EXECUTED by G042. Collection without the explicit
-G040 execution marker fails. The test verifies the canonical signed selection
-before dynamically importing DuckDB, performs the bounded real smoke, and
-writes the canonical Gate receipt only after every check and cleanup succeeds.
+STATUS: NOT APPROVED and NOT EXECUTED by G042. Human approval and
+repository-controlled environment markers are necessary but are not a trusted
+execution boundary. G040 remains blocked until an operator-controlled,
+Gate-first supervisor launcher authenticates the exact entrypoint and verifier
+before any repository Python runs. That launcher must enforce a
+descriptor-backed read-only wheelhouse, an empty isolated interpreter, network and
+registry denial, process-group time/resource/output bounds, local-only storage,
+and an atomic no-follow receipt. Only then may this test dynamically import
+DuckDB, perform the bounded real smoke, and write the canonical Gate receipt
+after every check and cleanup succeeds.
 """
 
 from __future__ import annotations
@@ -29,6 +35,7 @@ CANONICAL_RECEIPT = (
     ROOT / "data/worldcoin_human_aid/bootstrap/duckdb-offline-smoke.fixture.json"
 )
 SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED = False
 
 REQUIRED_G040_CHECKS = (
     "empty_isolated_environment",
@@ -371,6 +378,10 @@ def _exercise_real_duckdb(
 
 
 def test_g040_executes_exact_approved_duckdb_smoke_and_writes_receipt() -> None:
+    if TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED is not True:
+        raise AssertionError(
+            "G040 remains blocked: an operator-controlled Gate-first supervisor launcher has not been implemented"
+        )
     allowed_signers, work_root = _require_g040_environment()
     approval_path = ROOT / CANONICAL_APPROVAL
     approval_before = _sha256(approval_path)

@@ -114,14 +114,26 @@ CANONICAL_SOURCE_PATHS = {
     "runbook": "docs/planning/WORLDCOIN_HUMAN_AID_AGENT_SUPERVISOR_RUNBOOK.md",
     "storage_adr": "docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md",
 }
+ZKP_SMOKE_CONTRACT_PATHS = {
+    "smoke_spec": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md",
+    "smoke_toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml",
+    "smoke_lock": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+    "smoke_source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+}
 SELECTION_VERIFIER_CONTRACT_PATHS = {
     "siwe_adapter": "wallet_interface/services/world_siwe_verifier/index.mjs",
     "siwe_proposal": "data/worldcoin_human_aid/bootstrap/world-siwe-dependency-proposal.json",
     "siwe_static_test": "tests/world_aid/test_siwe_dependency_lock.py",
     "siwe_verifier": "scripts/verify_world_siwe_offline_bootstrap.py",
     "siwe_runtime_test": "tests/world_aid/test_siwe_offline_bootstrap.py",
+    "zkp_proposal": "data/worldcoin_human_aid/bootstrap/zkp-toolchain-dependency-proposal.json",
+    "zkp_static_test": "tests/world_aid/test_zkp_toolchain_bootstrap_static.py",
     "zkp_verifier": "scripts/verify_world_aid_zkp_toolchain.py",
     "zkp_runtime_test": "tests/world_aid/test_zkp_toolchain_bootstrap.py",
+    "zkp_smoke_spec": ZKP_SMOKE_CONTRACT_PATHS["smoke_spec"],
+    "zkp_smoke_toml": ZKP_SMOKE_CONTRACT_PATHS["smoke_toml"],
+    "zkp_smoke_lock": ZKP_SMOKE_CONTRACT_PATHS["smoke_lock"],
+    "zkp_smoke_source": ZKP_SMOKE_CONTRACT_PATHS["smoke_source"],
     "duckdb_verifier": "scripts/verify_world_aid_duckdb_bootstrap.py",
     "duckdb_runtime_test": "tests/world_aid/test_duckdb_bootstrap.py",
 }
@@ -136,8 +148,6 @@ PROTECTED_WRITABLE_PATHS = frozenset(
         "requirements-world-aid.lock",
         "wallet_interface/deploy/world-aid-duckdb-runtime.yml",
         "docs/specs/WORLD_AID_DUCKDB_BACKUP.md",
-        "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
-        "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
     }
 )
 BOOTSTRAP_RECEIPT_PATHS = {
@@ -1514,6 +1524,7 @@ def _artifact_list(
 def _validate_selection_dependencies(
     value: Any,
     repo_root: Path,
+    reviewed_state: Mapping[str, Any],
 ) -> list[tuple[str, dict[str, str]]]:
     dependencies = _expect_object(value, "dependency_sets")
     _exact_keys(dependencies, {"siwe", "zkp", "duckdb"}, "dependency_sets")
@@ -1627,6 +1638,8 @@ def _validate_selection_dependencies(
         "backend",
         "version",
         "tool",
+        "smoke_spec",
+        "smoke_toml",
         "smoke_source",
         "smoke_lock",
         "licenses",
@@ -1644,11 +1657,42 @@ def _validate_selection_dependencies(
         _fail("dependency_sets.zkp.architecture does not match the verifier host")
     _expect_string(zkp["backend"], "dependency_sets.zkp.backend", maximum=64)
     _expect_string(zkp["version"], "dependency_sets.zkp.version", maximum=128)
-    for key in ("tool", "smoke_source", "smoke_lock", "licenses", "provenance", "sbom", "vulnerability_review"):
+    for key in (
+        "tool",
+        "smoke_spec",
+        "smoke_toml",
+        "smoke_source",
+        "smoke_lock",
+        "licenses",
+        "provenance",
+        "sbom",
+        "vulnerability_review",
+    ):
+        artifact = _validate_artifact_shape(
+            zkp[key],
+            f"dependency_sets.zkp.{key}",
+        )
+        expected_path = ZKP_SMOKE_CONTRACT_PATHS.get(key)
+        if expected_path is not None and artifact["path"] != expected_path:
+            _fail(
+                f"dependency_sets.zkp.{key}.path must be {expected_path}"
+            )
+        if expected_path is not None:
+            reviewed_key = f"zkp_{key}"
+            reviewed_artifact = _validate_artifact_shape(
+                reviewed_state[reviewed_key],
+                f"reviewed_state.{reviewed_key}",
+            )
+            if artifact != reviewed_artifact:
+                _fail(
+                    f"dependency_sets.zkp.{key} must exactly match "
+                    f"reviewed_state.{reviewed_key}"
+                )
+            continue
         artifacts.append(
             (
                 f"dependency_sets.zkp.{key}",
-                _validate_artifact_shape(zkp[key], f"dependency_sets.zkp.{key}"),
+                artifact,
             )
         )
     _unique_strings(
@@ -2993,7 +3037,13 @@ def _verify_approval(
     signatures = _validate_trust_shape(record["trust"], phase, reviewer_identities)
 
     if phase == SELECTION:
-        artifacts.extend(_validate_selection_dependencies(record["dependency_sets"], root))
+        artifacts.extend(
+            _validate_selection_dependencies(
+                record["dependency_sets"],
+                root,
+                record["reviewed_state"],
+            )
+        )
         security_artifacts, security_by_key = _validate_security_evidence_shape(
             record["security_evidence"],
             SELECTION,

@@ -11,10 +11,14 @@ from __future__ import annotations
 
 import ast
 import copy
+import hashlib
 import json
+import platform
+import tomllib
 from pathlib import Path
 from typing import Any, Callable
 
+import scripts.verify_world_aid_zkp_toolchain as zkp_verifier
 from scripts.verify_world_aid_zkp_toolchain import (
     ZkpToolchainVerificationError,
     _validate_zkp_selection,
@@ -28,6 +32,7 @@ DISCOVERY = ROOT / "data/worldcoin_human_aid/agent_supervisor/discovery/2026-07-
 HEAP = ROOT / "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md"
 VERIFIER = ROOT / "scripts/verify_world_aid_zkp_toolchain.py"
 RUNTIME_CONTRACT = ROOT / "tests/world_aid/test_zkp_toolchain_bootstrap.py"
+SMOKE_ROOT = ROOT / "tests/world_aid/fixtures/zkp_toolchain_smoke"
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -36,22 +41,64 @@ def _read_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _digest(path: str) -> str:
+    return "sha256:" + hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+
+
 def _selection() -> dict[str, Any]:
     artifact = lambda path: {"path": path, "sha256": "sha256:" + "1" * 64}
+    reviewed_artifact = lambda path: {"path": path, "sha256": _digest(path)}
+    architecture = {
+        "amd64": "x86_64",
+        "arm64": "aarch64",
+    }.get(platform.machine().lower(), platform.machine().lower())
     return {
         "reviewed_state": {
-            "zkp_verifier": artifact("scripts/verify_world_aid_zkp_toolchain.py"),
-            "zkp_runtime_test": artifact("tests/world_aid/test_zkp_toolchain_bootstrap.py"),
+            "zkp_proposal": reviewed_artifact(
+                "data/worldcoin_human_aid/bootstrap/"
+                "zkp-toolchain-dependency-proposal.json"
+            ),
+            "zkp_static_test": reviewed_artifact(
+                "tests/world_aid/test_zkp_toolchain_bootstrap_static.py"
+            ),
+            "zkp_verifier": reviewed_artifact(
+                "scripts/verify_world_aid_zkp_toolchain.py"
+            ),
+            "zkp_runtime_test": reviewed_artifact(
+                "tests/world_aid/test_zkp_toolchain_bootstrap.py"
+            ),
+            "zkp_smoke_spec": reviewed_artifact(
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md"
+            ),
+            "zkp_smoke_toml": reviewed_artifact(
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+            ),
+            "zkp_smoke_lock": reviewed_artifact(
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock"
+            ),
+            "zkp_smoke_source": reviewed_artifact(
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr"
+            ),
         },
         "dependency_sets": {
             "siwe": {},
             "zkp": {
-                "architecture": "x86_64",
+                "architecture": architecture,
                 "backend": "nargo-native",
                 "version": "0.36.0",
                 "tool": artifact("data/worldcoin_human_aid/offline/zkp/nargo-0.36.0-x86_64.bin"),
-                "smoke_source": artifact("tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr"),
-                "smoke_lock": artifact("tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock"),
+                "smoke_spec": reviewed_artifact(
+                    "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md"
+                ),
+                "smoke_toml": reviewed_artifact(
+                    "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+                ),
+                "smoke_lock": reviewed_artifact(
+                    "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock"
+                ),
+                "smoke_source": reviewed_artifact(
+                    "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr"
+                ),
                 "licenses": artifact("data/worldcoin_human_aid/bootstrap/zkp-licenses.json"),
                 "provenance": artifact("data/worldcoin_human_aid/bootstrap/zkp-provenance.json"),
                 "sbom": artifact("data/worldcoin_human_aid/bootstrap/zkp-sbom.json"),
@@ -98,6 +145,9 @@ def test_repository_only_verifier_passes_unapproved_preparation() -> None:
     assert result.backend is None
     assert result.version is None
     assert result.tool_digest is None
+    assert result.proposal_digest is None
+    assert result.smoke_spec_digest is None
+    assert result.smoke_toml_digest is None
     assert result.execution_owner == "G039"
 
 
@@ -119,7 +169,7 @@ def test_approved_mode_requires_canonical_approval_and_external_trust() -> None:
 
 def test_future_selection_cross_binds_exact_architecture_paths_and_digests() -> None:
     selected = _validate_zkp_selection(_selection())
-    assert selected["architecture"] == "x86_64"
+    assert selected["architecture"] in {"x86_64", "aarch64"}
     assert selected["backend"] == "nargo-native"
     assert selected["version"] == "0.36.0"
     assert selected["tool_digest"] == "sha256:" + "1" * 64
@@ -127,10 +177,81 @@ def test_future_selection_cross_binds_exact_architecture_paths_and_digests() -> 
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"].update(architecture="aarch64"), "architecture")
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"]["tool"].update(sha256="not-a-digest"), "sha256")
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"]["smoke_lock"].update(path="tests/world_aid/fixtures/other/Nargo.lock"), "conflicting path")
+    for key in ("smoke_spec", "smoke_toml", "smoke_lock", "smoke_source"):
+        _assert_selection_rejected(
+            lambda item, artifact_key=key: item["dependency_sets"]["zkp"][
+                artifact_key
+            ].update(sha256="sha256:" + "0" * 64),
+            "does not match",
+        )
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"].update(version="<SELECT>"), "exact")
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"].update(deterministic_flags=["--allow-network"]), "network")
     _assert_selection_rejected(lambda item: item["dependency_sets"]["zkp"].update(resource_bounds={"max_seconds": 0, "max_memory_mb": 4096, "max_output_bytes": 1}), "max_seconds")
     _assert_selection_rejected(lambda item: item["reviewed_state"]["zkp_verifier"].update(path="scripts/other.py"), "conflicting path")
+    _assert_selection_rejected(
+        lambda item: item["reviewed_state"]["zkp_proposal"].update(
+            sha256="sha256:" + "0" * 64
+        ),
+        "does not match",
+    )
+
+
+def test_approval_selection_is_parsed_only_from_verified_bytes(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    root = tmp_path
+    approval = root / zkp_verifier.CANONICAL_APPROVAL
+    approval.parent.mkdir(parents=True)
+    signed = json.dumps({"selection": "signed"}).encode("utf-8")
+    replacement = json.dumps({"selection": "unsigned-swap"}).encode("utf-8")
+    approval.write_bytes(signed)
+    allowed_signers = root / "allowed-signers.json"
+    allowed_signers.write_text("{}", encoding="utf-8")
+
+    import scripts.verify_world_aid_gate_0b as gate_verifier
+
+    monkeypatch.setattr(gate_verifier, "verify_approval", lambda **_kwargs: None)
+    captured: list[dict[str, Any]] = []
+    monkeypatch.setattr(
+        zkp_verifier,
+        "_validate_zkp_selection",
+        lambda value, _root: captured.append(value) or {"selection": "signed"},
+    )
+
+    original_read_bytes = Path.read_bytes
+    original_read_text = Path.read_text
+    approval_reads = 0
+
+    def controlled_read_bytes(path: Path) -> bytes:
+        nonlocal approval_reads
+        if path == approval:
+            approval_reads += 1
+            return signed if approval_reads <= 2 else replacement
+        return original_read_bytes(path)
+
+    def controlled_read_text(
+        path: Path,
+        encoding: str | None = None,
+        errors: str | None = None,
+    ) -> str:
+        if path == approval:
+            return replacement.decode("utf-8")
+        return original_read_text(path, encoding=encoding, errors=errors)
+
+    monkeypatch.setattr(Path, "read_bytes", controlled_read_bytes)
+    monkeypatch.setattr(Path, "read_text", controlled_read_text)
+
+    result = zkp_verifier._validate_approval(
+        root,
+        approval,
+        allowed_signers,
+        now=None,
+    )
+
+    assert result == {"selection": "signed"}
+    assert captured == [{"selection": "signed"}]
+    assert approval_reads == 2
 
 
 def test_static_verifier_has_no_tool_or_side_effecting_imports() -> None:
@@ -161,8 +282,27 @@ def test_fixture_is_locked_bounded_and_not_production_trust() -> None:
     lock = (ROOT / "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock").read_text(encoding="utf-8")
     source = (ROOT / "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr").read_text(encoding="utf-8")
     assert "NOT APPROVED" in spec
-    assert "compiler_version = \"0.36.0\"" in toml
-    assert "[[package]]" in lock and "source = \"local\"" in lock
+    assert "compiler_version" not in toml
+    assert tomllib.loads(toml) == {
+        "package": {
+            "name": "world_aid_zkp_toolchain_smoke",
+            "type": "bin",
+            "authors": ["211-AI"],
+        },
+        "dependencies": {},
+    }
+    assert tomllib.loads(lock) == {
+        "lock_schema": "world-aid-zkp-smoke-input-lock/v1",
+        "status": "unapproved-repository-contract",
+        "tool_lock_format": "human-selection-required",
+        "package": {
+            "name": "world_aid_zkp_toolchain_smoke",
+            "version": "0.1.0",
+            "source": "local",
+            "dependencies": [],
+        },
+    }
+    assert "fn main(input: pub Field, witness: Field)" in source
     assert "assert(input == 7)" in source and "assert(witness == input)" in source
     for term in ("repeat-build", "proof", "verify", "network", "registry", "production trust", "G039"):
         assert term.lower() in spec.lower()

@@ -580,8 +580,14 @@ def _build_generated_artifacts(root: Path) -> dict[str, dict[str, str]]:
         "siwe_static_test": "tests/world_aid/test_siwe_dependency_lock.py",
         "siwe_verifier": "scripts/verify_world_siwe_offline_bootstrap.py",
         "siwe_runtime_test": "tests/world_aid/test_siwe_offline_bootstrap.py",
+        "zkp_proposal": "data/worldcoin_human_aid/bootstrap/zkp-toolchain-dependency-proposal.json",
+        "zkp_static_test": "tests/world_aid/test_zkp_toolchain_bootstrap_static.py",
         "zkp_verifier": "scripts/verify_world_aid_zkp_toolchain.py",
         "zkp_runtime_test": "tests/world_aid/test_zkp_toolchain_bootstrap.py",
+        "zkp_smoke_spec": "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md",
+        "zkp_smoke_toml": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml",
+        "zkp_smoke_lock": "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+        "zkp_smoke_source": "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
         "duckdb_verifier": "scripts/verify_world_aid_duckdb_bootstrap.py",
         "duckdb_runtime_test": "tests/world_aid/test_duckdb_bootstrap.py",
     }.items():
@@ -795,8 +801,14 @@ def _selection_record(
                 "siwe_static_test",
                 "siwe_verifier",
                 "siwe_runtime_test",
+                "zkp_proposal",
+                "zkp_static_test",
                 "zkp_verifier",
                 "zkp_runtime_test",
+                "zkp_smoke_spec",
+                "zkp_smoke_toml",
+                "zkp_smoke_lock",
+                "zkp_smoke_source",
                 "duckdb_verifier",
                 "duckdb_runtime_test",
                 "preflight_receipt",
@@ -858,8 +870,22 @@ def _selection_record(
             "backend": "synthetic-test-backend",
             "version": "1.2.3",
             "tool": _artifact(root, "data/worldcoin_human_aid/offline/zkp/tool", b"synthetic tool"),
-            "smoke_source": _artifact(root, "tests/world_aid/fixtures/zkp_smoke/main.nr"),
-            "smoke_lock": _artifact(root, "tests/world_aid/fixtures/zkp_smoke/Nargo.lock"),
+            "smoke_spec": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md",
+            ),
+            "smoke_toml": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml",
+            ),
+            "smoke_source": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+            ),
+            "smoke_lock": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+            ),
             "licenses": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-licenses.json", "{}\n"),
             "provenance": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-provenance.json", "{}\n"),
             "sbom": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-sbom.json", "{}\n"),
@@ -1201,8 +1227,14 @@ def test_gate_0b_schemas_are_strict_and_templates_are_unsigned() -> None:
         "restricted_bundle_index_duckdb",
         "siwe_verifier",
         "siwe_runtime_test",
+        "zkp_proposal",
+        "zkp_static_test",
         "zkp_verifier",
         "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
         "duckdb_verifier",
         "duckdb_runtime_test",
     } <= selection_state_keys
@@ -1212,6 +1244,14 @@ def test_gate_0b_schemas_are_strict_and_templates_are_unsigned() -> None:
     assert "runtime_toolchain" in selection_schema["$defs"]["siweDependencies"]["required"]
     assert siwe_properties["runtime_toolchain"] == {"$ref": "#/$defs/siweRuntimeToolchain"}
     assert selection_template["dependency_sets"]["siwe"]["runtime_toolchain"]["archive_format"] == "tar.xz"
+    zkp_required = set(selection_schema["$defs"]["zkpDependencies"]["required"])
+    assert {"smoke_spec", "smoke_toml", "smoke_lock", "smoke_source"} <= zkp_required
+    assert selection_template["dependency_sets"]["zkp"]["smoke_spec"]["path"] == (
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md"
+    )
+    assert selection_template["dependency_sets"]["zkp"]["smoke_toml"]["path"] == (
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+    )
     assert {
         "implementation_bundle_index",
         "implementation_bundle_index_duckdb",
@@ -1605,8 +1645,14 @@ def test_selection_binds_full_generated_root_and_bootstrap_contracts(
         "siwe_static_test",
         "siwe_verifier",
         "siwe_runtime_test",
+        "zkp_proposal",
+        "zkp_static_test",
         "zkp_verifier",
         "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
         "duckdb_verifier",
         "duckdb_runtime_test",
     ):
@@ -1634,6 +1680,83 @@ def test_selection_rejects_noncanonical_verifier_contract_path(
     _write_json(selection_environment.selection_path, record)
 
     with pytest.raises(ApprovalVerificationError, match="siwe_verifier.path must be"):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    "reviewed_key",
+    [
+        "zkp_proposal",
+        "zkp_static_test",
+        "zkp_verifier",
+        "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
+    ],
+)
+def test_selection_rejects_noncanonical_zkp_reviewed_contract_paths(
+    selection_environment: SignedGateEnvironment,
+    reviewed_key: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["reviewed_state"][reviewed_key]["path"] = (
+        f"tests/world_aid/noncanonical/{reviewed_key}"
+    )
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"reviewed_state\.{reviewed_key}\.path must be",
+    ):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    ("dependency_key", "replacement"),
+    [
+        ("smoke_spec", "tests/world_aid/fixtures/other/SMOKE_SPEC.md"),
+        ("smoke_toml", "tests/world_aid/fixtures/other/Nargo.toml"),
+        ("smoke_lock", "tests/world_aid/fixtures/other/Nargo.lock"),
+        ("smoke_source", "tests/world_aid/fixtures/other/src/main.nr"),
+    ],
+)
+def test_selection_rejects_noncanonical_zkp_smoke_dependency_paths(
+    selection_environment: SignedGateEnvironment,
+    dependency_key: str,
+    replacement: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["dependency_sets"]["zkp"][dependency_key]["path"] = replacement
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"dependency_sets\.zkp\.{dependency_key}\.path must be",
+    ):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    "dependency_key",
+    ["smoke_spec", "smoke_toml", "smoke_lock", "smoke_source"],
+)
+def test_selection_cross_binds_zkp_smoke_dependency_digests_to_reviewed_state(
+    selection_environment: SignedGateEnvironment,
+    dependency_key: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["dependency_sets"]["zkp"][dependency_key]["sha256"] = (
+        "sha256:" + "0" * 64
+    )
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"dependency_sets\.zkp\.{dependency_key} must exactly match "
+        rf"reviewed_state\.zkp_{dependency_key}",
+    ):
         _verify(selection_environment, SELECTION)
 
 

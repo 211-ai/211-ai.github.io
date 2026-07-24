@@ -300,7 +300,7 @@ def test_static_lane_has_no_duckdb_or_side_effecting_runtime_imports_calls() -> 
         assert forbidden not in source
 
 
-def test_runtime_contract_is_executable_fail_closed_and_exactly_bounded() -> None:
+def test_runtime_contract_is_blocked_fail_closed_and_exactly_bounded() -> None:
     source = RUNTIME_CONTRACT.read_text(encoding="utf-8")
     tree = ast.parse(source)
     imported = {
@@ -313,6 +313,20 @@ def test_runtime_contract_is_executable_fail_closed_and_exactly_bounded() -> Non
     assert "pytest" not in imported
     assert "duckdb-g040-runtime-evidence.json" not in source
     assert "duckdb-offline-smoke.fixture.json" in source
+    assert "TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED = False" in source
+    fence_offset = source.index(
+        "    if TRUSTED_GATE_FIRST_LAUNCHER_IMPLEMENTED is not True:"
+    )
+    environment_offset = source.index(
+        "    allowed_signers, work_root = _require_g040_environment()"
+    )
+    gate_offset = source.index("    selected = verify_world_aid_duckdb_bootstrap(")
+    import_offset = source.rindex('    duckdb_module = __import__("duckdb")')
+    assert fence_offset < environment_offset < gate_offset < import_offset
+    assert "operator-controlled Gate-first supervisor launcher" in source
+    assert "descriptor-backed read-only wheelhouse" in source
+    assert "process-group time/resource/output bounds" in source
+    assert "atomic no-follow receipt" in source
     assert "WORLD_AID_G040_REAL_EXECUTION" in source
     assert "absent or skipped execution fails closed" in source
     assert "verify_world_aid_duckdb_bootstrap(" in source

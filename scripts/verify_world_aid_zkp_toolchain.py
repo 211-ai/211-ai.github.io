@@ -11,11 +11,13 @@ selection binds every tool and artifact digest.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
 import re
 import sys
+import tomllib
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path, PurePosixPath
@@ -55,6 +57,12 @@ class ZkpToolchainSelectionProposal:
     backend: str | None
     version: str | None
     tool_digest: str | None
+    proposal_digest: str | None
+    static_test_digest: str | None
+    verifier_digest: str | None
+    runtime_test_digest: str | None
+    smoke_spec_digest: str | None
+    smoke_toml_digest: str | None
     smoke_source_digest: str | None
     smoke_lock_digest: str | None
     execution_owner: str
@@ -88,20 +96,50 @@ def _read(path: Path) -> str:
         raise ZkpToolchainVerificationError(f"cannot read {path}: {exc}") from exc
 
 
-def _json(path: Path) -> dict[str, Any]:
+def _json_bytes(raw: bytes, context: str) -> dict[str, Any]:
     def reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for key, value in pairs:
-            _require(key not in result, f"duplicate JSON key in {path}: {key}")
+            _require(key not in result, f"duplicate JSON key in {context}: {key}")
             result[key] = value
         return result
 
     try:
-        value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicates)
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ZkpToolchainVerificationError(f"invalid JSON in {path}: {exc}") from exc
-    _require(isinstance(value, dict), f"{path} must contain an object")
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=reject_duplicates)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ZkpToolchainVerificationError(
+            f"invalid JSON in {context}: {exc}"
+        ) from exc
+    _require(isinstance(value, dict), f"{context} must contain an object")
     return value
+
+
+def _json(path: Path) -> dict[str, Any]:
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise ZkpToolchainVerificationError(f"cannot read {path}: {exc}") from exc
+    return _json_bytes(raw, str(path))
+
+
+def _toml(path: Path) -> dict[str, Any]:
+    try:
+        value = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        raise ZkpToolchainVerificationError(f"invalid TOML in {path}: {exc}") from exc
+    _require(isinstance(value, dict), f"{path} must contain a table")
+    return value
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as handle:
+            while chunk := handle.read(1024 * 1024):
+                digest.update(chunk)
+    except OSError as exc:
+        raise ZkpToolchainVerificationError(f"cannot hash {path}: {exc}") from exc
+    return f"sha256:{digest.hexdigest()}"
 
 
 def _exact_keys(value: Any, expected: set[str], context: str) -> dict[str, Any]:
@@ -134,7 +172,10 @@ def _host_architecture() -> str:
     return {"amd64": "x86_64", "arm64": "aarch64"}.get(machine, machine)
 
 
-def _validate_zkp_selection(approval: dict[str, Any]) -> dict[str, str]:
+def _validate_zkp_selection(
+    approval: dict[str, Any],
+    root: Path = ROOT,
+) -> dict[str, str]:
     """Validate the G041-specific portion of a future Gate 0B record."""
     dependencies = _exact_keys(
         approval.get("dependency_sets"), {"siwe", "zkp", "duckdb"}, "approval.dependency_sets"
@@ -143,6 +184,7 @@ def _validate_zkp_selection(approval: dict[str, Any]) -> dict[str, str]:
         dependencies.get("zkp"),
         {
             "architecture", "backend", "version", "tool", "smoke_source", "smoke_lock",
+            "smoke_spec", "smoke_toml",
             "licenses", "provenance", "sbom", "vulnerability_review",
             "deterministic_flags", "resource_bounds",
         },
@@ -160,8 +202,23 @@ def _validate_zkp_selection(approval: dict[str, Any]) -> dict[str, str]:
     tool_path = PurePosixPath(tool["path"])
     _require(tool_path.parts[:4] == ("data", "worldcoin_human_aid", "offline", "zkp"), "ZKP tool is not in the offline tool location")
     _require(tool_path.suffix in {".bin", ".img", ".oci", ".tar", ".gz", ".squashfs"}, "ZKP tool is not a binary or immutable image archive")
-    _artifact(selection["smoke_source"], "approval.dependency_sets.zkp.smoke_source", expected_path=SMOKE_SOURCE)
-    _artifact(selection["smoke_lock"], "approval.dependency_sets.zkp.smoke_lock", expected_path=SMOKE_LOCK)
+    fixture_artifacts: dict[str, dict[str, str]] = {}
+    for key, expected in (
+        ("smoke_spec", SMOKE_SPEC),
+        ("smoke_toml", SMOKE_TOML),
+        ("smoke_lock", SMOKE_LOCK),
+        ("smoke_source", SMOKE_SOURCE),
+    ):
+        fixture_artifacts[key] = _artifact(
+            selection[key],
+            f"approval.dependency_sets.zkp.{key}",
+            expected_path=expected,
+        )
+        _require(
+            fixture_artifacts[key]["sha256"] == _sha256(root / expected),
+            f"approval.dependency_sets.zkp.{key}.sha256 does not match "
+            "the reviewed repository input",
+        )
     for key in ("licenses", "provenance", "sbom", "vulnerability_review"):
         item = _artifact(selection[key], f"approval.dependency_sets.zkp.{key}")
         _require(item["path"].startswith("data/worldcoin_human_aid/bootstrap/"), f"ZKP {key} evidence is outside the reviewed bootstrap directory")
@@ -176,15 +233,40 @@ def _validate_zkp_selection(approval: dict[str, Any]) -> dict[str, str]:
 
     reviewed = approval.get("reviewed_state")
     _require(isinstance(reviewed, dict), "approval.reviewed_state is missing")
-    for key, expected in (("zkp_verifier", Path("scripts/verify_world_aid_zkp_toolchain.py")), ("zkp_runtime_test", RUNTIME_TEST)):
-        _artifact(reviewed.get(key), f"approval.reviewed_state.{key}", expected_path=expected)
+    reviewed_artifacts: dict[str, dict[str, str]] = {}
+    for key, expected in (
+        ("zkp_proposal", PROPOSAL),
+        ("zkp_static_test", STATIC_TEST),
+        ("zkp_verifier", Path("scripts/verify_world_aid_zkp_toolchain.py")),
+        ("zkp_runtime_test", RUNTIME_TEST),
+        ("zkp_smoke_spec", SMOKE_SPEC),
+        ("zkp_smoke_toml", SMOKE_TOML),
+        ("zkp_smoke_lock", SMOKE_LOCK),
+        ("zkp_smoke_source", SMOKE_SOURCE),
+    ):
+        reviewed_artifacts[key] = _artifact(
+            reviewed.get(key),
+            f"approval.reviewed_state.{key}",
+            expected_path=expected,
+        )
+        _require(
+            reviewed_artifacts[key]["sha256"] == _sha256(root / expected),
+            f"approval.reviewed_state.{key}.sha256 does not match "
+            "the reviewed repository artifact",
+        )
     return {
         "architecture": architecture,
         "backend": backend,
         "version": version,
         "tool_digest": tool["sha256"],
-        "smoke_source_digest": selection["smoke_source"]["sha256"],
-        "smoke_lock_digest": selection["smoke_lock"]["sha256"],
+        "proposal_digest": reviewed_artifacts["zkp_proposal"]["sha256"],
+        "static_test_digest": reviewed_artifacts["zkp_static_test"]["sha256"],
+        "verifier_digest": reviewed_artifacts["zkp_verifier"]["sha256"],
+        "runtime_test_digest": reviewed_artifacts["zkp_runtime_test"]["sha256"],
+        "smoke_spec_digest": fixture_artifacts["smoke_spec"]["sha256"],
+        "smoke_toml_digest": fixture_artifacts["smoke_toml"]["sha256"],
+        "smoke_source_digest": fixture_artifacts["smoke_source"]["sha256"],
+        "smoke_lock_digest": fixture_artifacts["smoke_lock"]["sha256"],
     }
 
 
@@ -204,8 +286,17 @@ def _validate_approval(root: Path, path: Path, allowed_signers: Path, *, now: da
         verify_approval(repo_root=root, phase=SELECTION, approval_path=path, allowed_signers_path=allowed_signers, now=now, expected_approval_bytes=before)
     except ApprovalVerificationError as exc:
         raise ZkpToolchainVerificationError(f"canonical Gate 0B approval rejected: {exc}") from exc
-    _require(path.read_bytes() == before, "canonical Gate 0B approval changed during verification")
-    return _validate_zkp_selection(_json(path))
+    try:
+        after = path.read_bytes()
+    except OSError as exc:
+        raise ZkpToolchainVerificationError(
+            f"cannot re-read canonical approval: {exc}"
+        ) from exc
+    _require(after == before, "canonical Gate 0B approval changed during verification")
+    return _validate_zkp_selection(
+        _json_bytes(before, str(path)),
+        root,
+    )
 
 
 def verify_world_aid_zkp_toolchain(
@@ -254,7 +345,12 @@ def verify_world_aid_zkp_toolchain(
     for key in ("architecture", "backend", "version", "binary_or_image", "binary_or_image_digest", "licenses", "provenance", "sbom", "vulnerability_disposition", "resource_bounds", "offline_location", "expiry"):
         _require(dependency[key] is None, f"proposal manufactured a ZKP selection: {key}")
     _require(dependency["deterministic_flags"] == [], "proposal preselected deterministic flags")
-    _require(dependency["smoke_inputs"] == {"source": SMOKE_SOURCE.as_posix(), "lock": SMOKE_LOCK.as_posix(), "toml": SMOKE_TOML.as_posix()}, "proposal changed locked smoke inputs")
+    _require(dependency["smoke_inputs"] == {
+        "spec": SMOKE_SPEC.as_posix(),
+        "toml": SMOKE_TOML.as_posix(),
+        "lock": SMOKE_LOCK.as_posix(),
+        "source": SMOKE_SOURCE.as_posix(),
+    }, "proposal changed locked smoke inputs")
     _require(len(dependency["expected_evidence"]) >= 5 and all(isinstance(item, str) for item in dependency["expected_evidence"]), "proposal under-specifies expected evidence")
 
     inventory = _exact_keys(proposal["inventory"], {"source_goal", "source_artifact", "qualified_inventory", "selection_questions", "note"}, "proposal.inventory")
@@ -284,7 +380,11 @@ def verify_world_aid_zkp_toolchain(
     for key in ("tool", "licenses", "provenance", "sbom", "vulnerability_review"):
         _require(inputs[key] == {"path": None, "sha256": None, "status": "human evidence required before Gate 0B"}, f"proposal selected {key}")
     for key, expected in (("smoke_spec", SMOKE_SPEC), ("smoke_toml", SMOKE_TOML), ("smoke_lock", SMOKE_LOCK), ("smoke_source", SMOKE_SOURCE)):
-        _require(inputs[key] == {"path": expected.as_posix(), "sha256": None, "locked": True}, f"proposal changed {key}")
+        _require(inputs[key] == {
+            "path": expected.as_posix(),
+            "sha256": _sha256(root / expected),
+            "locked": True,
+        }, f"proposal changed {key}")
     _require(inputs["offline_root"] == {"path": "data/worldcoin_human_aid/offline/zkp", "read_only": True, "selection_owner": "human Gate 0B reviewers"}, "offline location is mutable or selected")
     _require(inputs["mutable_paths"] == [], "proposal permits mutable selection-bound paths")
 
@@ -318,7 +418,17 @@ def verify_world_aid_zkp_toolchain(
         _require(term in tests["fail_closed_on"], f"proposal omits fail-closed condition: {term}")
     for term in ("tool import", "tool execution", "package or container action", "subprocess smoke", "download", "secret lookup", "cache mutation", "circuit build", "proof", "verification", "parameter generation"):
         _require(term in tests["forbidden_static_actions"], f"proposal omits static prohibition: {term}")
-    _require(set(tests["required_g039_evidence"]) >= {"architecture", "binary/image digest", "repeat-build hashes", "proof result", "verify result", "network/registry deny", "resource bounds", "expiry"}, "proposal under-specifies G039 evidence")
+    _require(set(tests["required_g039_evidence"]) >= {
+        "architecture",
+        "binary/image digest",
+        "selected-backend manifest/lock compatibility",
+        "repeat-build hashes",
+        "proof result",
+        "verify result",
+        "network/registry deny",
+        "resource bounds",
+        "expiry",
+    }, "proposal under-specifies G039 evidence")
 
     non_execution = _exact_keys(proposal["non_execution_receipt"], {"performed", "prohibited", "owner", "status"}, "proposal.non_execution_receipt")
     _require(non_execution["performed"] is False and non_execution["owner"] == "G041" and non_execution["status"] == "not approved", "invalid non-execution receipt")
@@ -331,14 +441,65 @@ def verify_world_aid_zkp_toolchain(
     source = _read(root / SMOKE_SOURCE)
     for text, terms, label in (
         (spec, ("NOT APPROVED", "bounded", "locked", "repeat-build", "proof", "verify", "network", "registry", "G039", "Groth16", "production trust"), "smoke specification"),
-        (toml, ("world_aid_zkp_toolchain_smoke", "compiler_version = \"0.36.0\""), "Nargo.toml"),
-        (lock, ("[[package]]", "world_aid_zkp_toolchain_smoke", "version = \"0.1.0\"", "source = \"local\""), "Nargo.lock"),
+        (toml, ("world_aid_zkp_toolchain_smoke", "[dependencies]"), "Nargo.toml"),
+        (lock, ("world-aid-zkp-smoke-input-lock/v1", "unapproved-repository-contract", "human-selection-required", "world_aid_zkp_toolchain_smoke"), "Nargo.lock"),
         (source, ("fn main", "assert", "input", "witness"), "smoke source"),
     ):
         for term in terms:
             _require(term.lower() in text.lower(), f"{label} omits required term: {term}")
     _require("<" not in lock and "REPLACE" not in lock.upper(), "smoke lock contains an unpinned placeholder")
     _require("network" not in toml.lower() and "registry" not in toml.lower(), "Nargo.toml adds network or registry configuration")
+    manifest = _exact_keys(_toml(root / SMOKE_TOML), {"package", "dependencies"}, "Nargo.toml")
+    _require(manifest["dependencies"] == {}, "Nargo.toml must not resolve dependencies")
+    _require(
+        _exact_keys(
+            manifest["package"],
+            {"name", "type", "authors"},
+            "Nargo.toml.package",
+        )
+        == {
+            "name": "world_aid_zkp_toolchain_smoke",
+            "type": "bin",
+            "authors": ["211-AI"],
+        },
+        "Nargo.toml preselects or changes the smoke package contract",
+    )
+    lock_contract = _exact_keys(
+        _toml(root / SMOKE_LOCK),
+        {"lock_schema", "status", "tool_lock_format", "package"},
+        "Nargo.lock",
+    )
+    _require(
+        {
+            "lock_schema": lock_contract["lock_schema"],
+            "status": lock_contract["status"],
+            "tool_lock_format": lock_contract["tool_lock_format"],
+        }
+        == {
+            "lock_schema": "world-aid-zkp-smoke-input-lock/v1",
+            "status": "unapproved-repository-contract",
+            "tool_lock_format": "human-selection-required",
+        },
+        "Nargo.lock claims a selected or tool-generated lock format",
+    )
+    _require(
+        _exact_keys(
+            lock_contract["package"],
+            {"name", "version", "source", "dependencies"},
+            "Nargo.lock.package",
+        )
+        == {
+            "name": "world_aid_zkp_toolchain_smoke",
+            "version": "0.1.0",
+            "source": "local",
+            "dependencies": [],
+        },
+        "Nargo.lock package contract drifted",
+    )
+    _require(
+        "fn main(input: pub Field, witness: Field)" in source,
+        "smoke source does not expose the documented public input",
+    )
     _require("production" not in source.lower(), "smoke circuit makes a production-trust claim")
 
     discovery = _read(root / DISCOVERY)
@@ -354,6 +515,12 @@ def verify_world_aid_zkp_toolchain(
         backend=selected["backend"] if selected else None,
         version=selected["version"] if selected else None,
         tool_digest=selected["tool_digest"] if selected else None,
+        proposal_digest=selected["proposal_digest"] if selected else None,
+        static_test_digest=selected["static_test_digest"] if selected else None,
+        verifier_digest=selected["verifier_digest"] if selected else None,
+        runtime_test_digest=selected["runtime_test_digest"] if selected else None,
+        smoke_spec_digest=selected["smoke_spec_digest"] if selected else None,
+        smoke_toml_digest=selected["smoke_toml_digest"] if selected else None,
         smoke_source_digest=selected["smoke_source_digest"] if selected else None,
         smoke_lock_digest=selected["smoke_lock_digest"] if selected else None,
         execution_owner="G039",
