@@ -46,8 +46,25 @@ NON_SCHEDULABLE_STATES = frozenset(
     }
 )
 EXPECTED_GOAL_IDS = frozenset(f"WORLDCOIN-G{index:03d}" for index in range(1, 43))
-EXPECTED_BLOCKED_GOAL_IDS = frozenset({"WORLDCOIN-G035", "WORLDCOIN-G036"})
+EXPECTED_BLOCKED_GOAL_IDS = frozenset(
+    {
+        "WORLDCOIN-G035",
+        "WORLDCOIN-G036",
+        "WORLDCOIN-G038",
+        "WORLDCOIN-G039",
+        "WORLDCOIN-G040",
+    }
+)
+EXPECTED_NON_MATERIALIZED_GOAL_IDS = frozenset(
+    {"WORLDCOIN-G035", "WORLDCOIN-G036"}
+)
+EXPECTED_REVIEW_ONLY_GOAL_IDS = frozenset(
+    {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
+)
 EXPECTED_SCHEDULABLE_GOAL_IDS = EXPECTED_GOAL_IDS - EXPECTED_BLOCKED_GOAL_IDS
+EXPECTED_MATERIALIZED_GOAL_IDS = (
+    EXPECTED_SCHEDULABLE_GOAL_IDS | EXPECTED_REVIEW_ONLY_GOAL_IDS
+)
 OBJECTIVE_GRAPH_SCHEMA = "ipfs_accelerate_py.agent_supervisor.objective_graph"
 TODO_VECTOR_INDEX_SCHEMA = "ipfs_accelerate_py.agent_supervisor.todo_vector_index"
 BUNDLE_QUERY_SCHEMA = "ipfs_accelerate_py.agent_supervisor.queryable_artifact@2"
@@ -98,6 +115,10 @@ class TaskRecord:
     def task_cid(self) -> str:
         return str(self.fields.get("canonical_task_cid") or self.fields.get("task_cid") or "").strip()
 
+    @property
+    def status(self) -> str:
+        return _normalize_state(self.fields.get("status", ""))
+
 
 @dataclass(frozen=True)
 class VerificationSummary:
@@ -128,6 +149,42 @@ def _normalize_field_name(value: str) -> str:
 
 def _normalize_state(value: str) -> str:
     return re.sub(r"[-\s]+", "_", str(value or "").strip().lower())
+
+
+def _verify_review_only_scheduling_flags(
+    record: Mapping[str, Any],
+    *,
+    location: str,
+    json_booleans: bool,
+    problems: list[str],
+) -> None:
+    """Require the durable scheduling-deny flags on a review-only record."""
+
+    expected = {
+        "is_schedulable": False,
+        "review_only": True,
+    }
+    for field, expected_value in expected.items():
+        if field not in record:
+            problems.append(
+                f"{location} is missing review-only scheduling flag {field!r}"
+            )
+            continue
+        value = record[field]
+        if json_booleans:
+            valid = isinstance(value, bool) and value is expected_value
+            expected_text = f"JSON boolean {str(expected_value).lower()}"
+        else:
+            valid = (
+                isinstance(value, str)
+                and value.strip().casefold() == str(expected_value).lower()
+            )
+            expected_text = f"literal {str(expected_value).lower()!r}"
+        if not valid:
+            problems.append(
+                f"{location} review-only scheduling flag {field!r} must be "
+                f"{expected_text}; found {value!r}"
+            )
 
 
 def _split_csv(value: str, *, omit_none: bool = False) -> tuple[str, ...]:
@@ -334,6 +391,7 @@ def _verify_source_task_coverage(
         "goal_id",
         "graph_parents",
         "outputs",
+        "status",
         "acceptance",
         "validation",
     }
@@ -355,7 +413,19 @@ def _verify_source_task_coverage(
             problems.append(f"{location} references unknown goal {task.goal_id!r}")
             continue
         tasks_by_goal[task.goal_id].append(task)
-        if not goal.is_schedulable:
+        if task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+            if task.status != "blocked":
+                problems.append(
+                    f"{location} review-only goal {task.goal_id} must remain "
+                    f"status 'blocked'; found {task.status!r}"
+                )
+            _verify_review_only_scheduling_flags(
+                task.fields,
+                location=f"{location} for review-only goal {task.goal_id}",
+                json_booleans=False,
+                problems=problems,
+            )
+        elif not goal.is_schedulable:
             problems.append(f"{location} materializes non-schedulable goal {goal.goal_id} with status {goal.status!r}")
 
     schedulable = {goal.goal_id for goal in goals if goal.is_schedulable}
@@ -364,8 +434,30 @@ def _verify_source_task_coverage(
         if count != 1:
             problems.append(f"schedulable goal {goal_id} must have exactly one generated task; found {count}")
 
+    for goal_id in sorted(EXPECTED_REVIEW_ONLY_GOAL_IDS):
+        count = len(tasks_by_goal.get(goal_id, ()))
+        if count != 1:
+            problems.append(
+                f"review-only blocked goal {goal_id} must have exactly one "
+                f"generated task; found {count}"
+            )
+
+    for goal_id in sorted(EXPECTED_NON_MATERIALIZED_GOAL_IDS):
+        count = len(tasks_by_goal.get(goal_id, ()))
+        if count:
+            problems.append(
+                f"terminal blocked goal {goal_id} must never materialize; "
+                f"found {count} generated task(s)"
+            )
+
+    if len(tasks) != len(EXPECTED_MATERIALIZED_GOAL_IDS):
+        problems.append(
+            "generated review TODO must contain exactly "
+            f"{len(EXPECTED_MATERIALIZED_GOAL_IDS)} tasks; found {len(tasks)}"
+        )
+
     for goal in goals:
-        if not goal.is_schedulable:
+        if goal.goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS:
             continue
         matching = tasks_by_goal.get(goal.goal_id, ())
         if len(matching) != 1:
@@ -495,6 +587,27 @@ def _verify_index_task_identity(
                 f"{location} parents differ from TODO: index={list(indexed_parents)!r}, todo={list(todo_parents)!r}"
             )
 
+        if task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+            indexed_status = _normalize_state(indexed_task.get("status", ""))
+            if indexed_status != "blocked":
+                problems.append(
+                    f"{location} for review-only goal {task.goal_id} must "
+                    f"remain status 'blocked'; found {indexed_status!r}"
+                )
+            _verify_review_only_scheduling_flags(
+                indexed_task,
+                location=f"{location} for review-only goal {task.goal_id}",
+                json_booleans=True,
+                problems=problems,
+            )
+            if isinstance(raw_bundle, Mapping):
+                _verify_review_only_scheduling_flags(
+                    raw_bundle,
+                    location=f"bundle {bundle_key!r} for review-only goal {task.goal_id}",
+                    json_booleans=True,
+                    problems=problems,
+                )
+
         goal = goals_by_id.get(task.goal_id)
         if goal is not None:
             source_outputs = _split_csv(goal.fields.get("outputs", ""))
@@ -528,7 +641,10 @@ def _expected_task_parent_edges(
             if parent_goal_id not in goals_by_id:
                 problems.append(f"{goal.goal_id} references unknown parent goal {parent_goal_id!r}")
                 continue
-            if not goal.is_schedulable or not goals_by_id[parent_goal_id].is_schedulable:
+            if (
+                goal.goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS
+                or parent_goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS
+            ):
                 continue
             child_task = task_by_goal.get(goal.goal_id)
             parent_task = task_by_goal.get(parent_goal_id)
@@ -558,6 +674,11 @@ def _verify_dag(
 
     dag_pairs: set[tuple[str, str]] = set()
     todo_by_cid = {task.task_cid: task for task in todo_tasks if task.task_cid}
+    review_only_cids = {
+        task.task_cid
+        for task in todo_tasks
+        if task.task_cid and task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS
+    }
     node_cids = {str(cid) for cid in raw_nodes}
     for raw_cid, raw_node in raw_nodes.items():
         cid = str(raw_cid)
@@ -578,6 +699,30 @@ def _verify_dag(
                     f"node_task={task_id!r}, todo_task={todo_task.task_id!r}, "
                     f"node_goal={node_goal_id!r}, todo_goal={todo_task.goal_id!r}"
                 )
+            if todo_task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+                node_status = _normalize_state(raw_node.get("status", ""))
+                if node_status != "blocked":
+                    problems.append(
+                        f"{name} node {cid!r} for review-only goal "
+                        f"{todo_task.goal_id} must remain status 'blocked'; "
+                        f"found {node_status!r}"
+                    )
+                metadata = raw_node.get("metadata")
+                if not isinstance(metadata, Mapping):
+                    problems.append(
+                        f"{name} node {cid!r} for review-only goal "
+                        f"{todo_task.goal_id} has no metadata object"
+                    )
+                else:
+                    _verify_review_only_scheduling_flags(
+                        metadata,
+                        location=(
+                            f"{name} node {cid!r} metadata for review-only "
+                            f"goal {todo_task.goal_id}"
+                        ),
+                        json_booleans=True,
+                        problems=problems,
+                    )
     if dag_pairs != todo_pairs:
         problems.append(
             f"{name} task ID/CID set differs from generated TODO: "
@@ -616,8 +761,9 @@ def _verify_dag(
             f"unexpected={sorted(observed_edges - expected_parent_edges)}"
         )
 
-    expected_claimable = {cid for cid, degree in indegree.items() if degree == 0}
-    ready = deque(sorted(expected_claimable))
+    topological_roots = {cid for cid, degree in indegree.items() if degree == 0}
+    expected_claimable = topological_roots - review_only_cids
+    ready = deque(sorted(topological_roots))
     visited = 0
     while ready:
         cid = ready.popleft()
@@ -979,8 +1125,15 @@ def _verify_todo_vector_index(
     expected_count = len(todo_tasks)
     if int(payload.get("task_count") or -1) != expected_count:
         problems.append("TODO vector task_count differs from generated TODO")
-    if int(payload.get("active_task_count") or -1) != expected_count:
-        problems.append("TODO vector active_task_count differs from generated TODO")
+    expected_active_count = sum(
+        task.goal_id not in EXPECTED_REVIEW_ONLY_GOAL_IDS
+        for task in todo_tasks
+    )
+    if int(payload.get("active_task_count") or -1) != expected_active_count:
+        problems.append(
+            "TODO vector active_task_count differs from the non-blocked "
+            "generated task count"
+        )
 
     query_artifact = payload.get("query_artifact")
     if not isinstance(query_artifact, Mapping):

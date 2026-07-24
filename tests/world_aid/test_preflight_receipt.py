@@ -94,7 +94,7 @@ def test_create_and_verify_receipt_bind_every_planning_input_without_mutation(
     assert payload["offline"] is True
     assert payload["no_start"] is True
     assert payload["summary"]["source_goal_count"] == 42
-    assert payload["summary"]["schedulable_goal_count"] == 40
+    assert payload["summary"]["schedulable_goal_count"] == 37
     assert payload["summary"]["task_count"] == 40
     roles = [record["role"] for record in payload["artifacts"]]
     assert roles.count("bundle_shard") == 40
