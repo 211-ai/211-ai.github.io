@@ -274,13 +274,13 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G009 Establish voice safety quality and performance evaluation
 
-- Status: active
+- Status: complete
 - Fib priority: 8001
 - Priority: P0
 - Track: voice-evaluation
 - Parents: ABBY-VOICE-G005, ABBY-VOICE-G007, ABBY-VOICE-G008
 - Goal: Prevent autonomous optimization from trading away grounding privacy accessibility or emergency behavior for latency or response reuse.
-- Evidence: golden voice-turn evaluation set, STT word error measurements, template retrieval and slot fidelity metrics, grounded factuality and crisis policy tests, latency cache and fallback benchmarks, ABBY-VOICE-G009 completion receipt
+- Evidence: `data/abby_voice/eval/golden_voice_turns.jsonl` provides eight synthetic, schema-versioned voice turns; `tests/voice/test_abby_voice_safety.py` provides eleven offline assertions for WER, retrieval, slot fidelity, grounded factuality, crisis routing, accessibility/readability, privacy-safe receipts, fallback, GraphRAG prompt handling, legacy STT, stage traces, and cache reuse; `benchmarks/bench_abby_voice_router.py` provides the offline latency/cache/fallback gate; `docs/reports/ABBY_VOICE_EVALUATION.md` is the completion receipt; objective-validation repair is recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-008-objective-validation-repair.md`
 - Outputs: data/abby_voice/eval/golden_voice_turns.jsonl, tests/voice/test_abby_voice_safety.py, benchmarks/bench_abby_voice_router.py, docs/reports/ABBY_VOICE_EVALUATION.md
 - Validation: python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check
 - Bundle: abby-voice/evaluation
@@ -292,7 +292,15 @@ approves a reviewed manifest and dry-run receipt.
 - Generated artifacts: docs/reports/ABBY_VOICE_EVALUATION.md
 - Predicted files: data/abby_voice/eval/golden_voice_turns.jsonl, tests/voice/test_abby_voice_safety.py, benchmarks/bench_abby_voice_router.py, docs/reports/ABBY_VOICE_EVALUATION.md
 - Conflict policy: evaluation fixtures must contain synthetic or explicitly public data and no private caller audio or secrets
-- Gap task: Build offline deterministic gates for emergency routing source grounding slot fidelity spoken readability fallback behavior and latency budgets.
+- Gap task: **completed** — build offline deterministic gates for emergency routing, source grounding, slot fidelity, spoken readability, privacy-safe receipts, fallback behavior, and latency budgets.
+- Objective-validation repair: `ABBY-VOICE-AUTO-008` replaces the source scan's unrelated AST matches with the directly defining evaluation fixtures, focused assertions, offline benchmark, report, and receipt listed above. The repair is local-only and makes no remote provider or dataset call.
+- Acceptance gate:
+  1. The golden set contains only synthetic/publicly safe data and includes grounded, crisis, accessibility, no-match, unsafe-slot, privacy, and language-access cases.
+  2. Focused tests measure mean STT WER <= 5%, successful retrieval for every response plan, 100% exact grounded slot/source fidelity, structured-fact factuality, crisis urgency/911 policy, readable citation-free speech, and privacy-safe receipts.
+  3. Retrieval/grounding failures fail closed to the deterministic safe handoff; STT failure returns `failed`; total TTS failure returns `text_only`; provider fallback records failed and selected attempts.
+  4. The offline benchmark enforces cache reuse, visible fallback receipts, route/fallback p95 <= 1000 ms, and all safety checks without network, credentials, model downloads, or mutable data.
+  5. `python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check` passes, with the exact result recorded in the objective-validation repair receipt and evaluation report.
+- Child-goal boundary: no smaller child goal is needed. G009 owns the cohesive evaluation gate; G010 remains responsible for wallet adoption and production/provider-specific latency measurement.
 
 ## ABBY-VOICE-G010 Adopt the unified router in wallet_interface
 
