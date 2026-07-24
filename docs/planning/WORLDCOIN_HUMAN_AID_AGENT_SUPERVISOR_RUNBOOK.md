@@ -954,6 +954,19 @@ child by its exact recorded PID, and relaunch from the immutable G002 index.
 single-agent guidance because noninteractive Codex sessions do not necessarily
 have a registered collaboration thread.
 
+On Ubuntu hosts where `kernel.apparmor_restrict_unprivileged_userns=1`, verify
+the installed AppArmor sandbox profile before launch:
+
+```bash
+aa-exec -p linux-sandbox -- unshare -Urn /bin/true
+```
+
+The command must exit zero. The launch prefixes Codex with that profile so
+Bubblewrap can create its restricted user/network namespaces. If the profile
+is absent or the probe fails, do not switch to `danger-full-access`; have an
+administrator install/review the profile or move the run to a compatible
+isolated host.
+
 ```bash
 env \
   WORLD_ID_ENABLED=0 \
@@ -982,7 +995,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
-  --implementation-command 'codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
+  --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
   --poll-interval 15 \
   --daemon-interval 15 \
   --check-interval 15 \

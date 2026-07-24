@@ -240,7 +240,8 @@ def test_worldcoin_human_aid_runbook_defaults_to_offline_dry_run() -> None:
     assert "excluded_bundle_keys" in runbook
     assert "g002-only.index.json" in runbook
     assert "--max-restarts 0" in runbook
-    assert "--implementation-command 'codex --ask-for-approval never" in runbook
+    assert "aa-exec -p linux-sandbox -- unshare -Urn /bin/true" in runbook
+    assert "--implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never" in runbook
     assert "--disable browser_use" in runbook
     assert "--disable multi_agent" in runbook
     assert r"-c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write" in runbook
