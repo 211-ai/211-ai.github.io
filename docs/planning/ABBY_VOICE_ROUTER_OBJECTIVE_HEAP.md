@@ -203,14 +203,14 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G007 Add GraphRAG response-template ingestion and retrieval
 
-- Status: active
+- Status: complete
 - Fib priority: 5002
 - Priority: P0
 - Track: voice-graphrag
 - Parents: ABBY-VOICE-G004, ABBY-VOICE-G005, ABBY-VOICE-G011
 - Goal: Ingest canonical response frames evidence links and slot relationships into ipfs_datasets_py and retrieve them as response plans rather than uncited final answers.
-- Evidence: GraphRAGVoiceTemplateProvider implementation, IPLD template intent evidence graph, hybrid template retriever, slot binding safety policy, retrieval provenance tests, ABBY-VOICE-G007 completion receipt
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py, docs/data/ABBY_VOICE_GRAPHRAG.md
+- Evidence: dependency-light `GraphRAGVoiceTemplateProvider` and `SlottedResponseIndex`; deterministic CID-addressed intent/template/slot/evidence/response/audio/provenance graph with injected `IPLDKnowledgeGraph` publication; lexical, sparse-vector, injected `IPLDVectorStore`, and graph hybrid ranking; fail-closed current-evidence slot binding that never uses historical response values as facts; 19 focused offline ingestion, safety, ranking, provenance, serialization, and optional-collaborator assertions; ABBY-VOICE-G007 objective-validation completion receipt
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py, docs/data/ABBY_VOICE_GRAPHRAG.md, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-006-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py
 - Bundle: abby-voice/graphrag-templates
 - Parallel lane: abby-voice-graphrag
@@ -221,6 +221,17 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py, docs/data/ABBY_VOICE_GRAPHRAG.md
 - Conflict policy: retrieved templates are response plans only; factual slots must bind from current cited evidence and never from stale example wording
 - Gap task: Model caller intents response frames slots evidence documents and audio assets as a queryable graph with confidence thresholds and source CIDs.
+- Objective-validation repair: `ABBY-VOICE-AUTO-006` owns this validation gate. The source discovery scan found the phrase `objective validation repair` missing and attributed the provider, graph, hybrid retrieval, slot policy, provenance tests, and completion evidence to unrelated Chainlink, ProveKit, conversation, and IndexTTS artifacts through AST/token coincidence. Those files are not G007 evidence. The defining implementation, focused offline assertions, exact validation result, and evidence-term mapping are recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-006-objective-validation-repair.md`.
+- Acceptance gate:
+  1. Canonical Abby voice v2 template, response, audio, and provenance configs are strictly validated and atomically merged into deterministic intent/template/slot/evidence/response/audio/provenance nodes and typed relationships. Exact duplicates are idempotent; conflicting IDs, broken references, and slotted templates without source-CID allowlists reject.
+  2. Canonical graph and index serialization is independent of input order, clocks, UUIDs, Python hashes, local paths, and mutable remote state. Valid CIDv1 identities cover sorted graph content and canonical indexed rows, checked export/restore preserves identity, and tampering fails validation.
+  3. `SlottedResponseIndex` combines exact/lexical, deterministic sparse-vector or injected vector-store, and graph/source-coverage signals; enforces locale, explicit intent, confidence, and result limits; and breaks equal-score ties by stable template ID.
+  4. `GraphRAGVoiceTemplateProvider` exposes the synchronous backend methods recognized by the router and returns an unrendered plan with declared template, grounded slot structures, current evidence, confidence, intent, and machine provenance—not generated final-answer prose.
+  5. Every placeholder binds only from an exact structured fact on current evidence whose CID is declared by the template. Missing, malformed, disallowed, or contradictory evidence fails closed, and canonical response example values are absent from evidence nodes and never read as current facts.
+  6. Retrieval receipts preserve source IDs/CIDs, graph/index CIDs, score components, template checksum/source/provenance identities, historical match IDs, and audio IDs in stable JSON-safe order. Slot source IDs resolve to emitted evidence and exact fact values.
+  7. `IPLDKnowledgeGraph`, `IPLDVectorStore`, and `GraphRAGLLMProcessor` integrations remain injected and optional. Importing the module loads no model/vector/IPLD extras or network client; query expansion can affect retrieval text only and cannot provide a slot or final answer.
+  8. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py` passes offline and the exact result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no smaller child goal is needed. G007 owns canonical response-frame graph ingestion, deterministic hybrid template retrieval, and current-evidence binding. G008 owns router rendering and voice-turn orchestration, G009 owns cross-pipeline safety/performance evaluation, and G011 owns immutable inventory plus complete curated dataset materialization. G007 depends on the G004 schema and G005 normalization policy but does not wait for G011 to ingest already canonical rows.
 
 ## ABBY-VOICE-G008 Integrate GraphRAG templating into voice_router
 
