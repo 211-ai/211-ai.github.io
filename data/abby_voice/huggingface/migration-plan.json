@@ -1,0 +1,287 @@
+{
+  "schema_version": "abby_voice_hf_migration_plan_v1",
+  "task_id": "ABBY-VOICE-AUTO-009",
+  "goal_id": "ABBY-VOICE-G006",
+  "plan_date": "2026-07-23",
+  "plan_status": "human_review_required",
+  "deterministic": true,
+  "remote_mutation": {
+    "allowed": false,
+    "policy": "plan_only_no_remote_writes_moves_rewrites_or_deletes",
+    "approval_required_for": [
+      "read_only_remote_inventory",
+      "copy_upload",
+      "dataset_publication",
+      "release_pointer_change"
+    ],
+    "credentials_required_by_plan": false
+  },
+  "source_interfaces": [
+    {
+      "kind": "bucket",
+      "uri": "hf://buckets/Publicus/abby-voice",
+      "role": "mutable preprocessing and generated run artifacts",
+      "read_policy": "immutable source; inventory only after human approval",
+      "known_prefixes": [
+        "runs/",
+        "audio/",
+        "metadata/"
+      ]
+    },
+    {
+      "kind": "dataset",
+      "repo_id": "Publicus/211-abby-tts",
+      "role": "legacy dataset repository and current audio metadata",
+      "read_policy": "immutable source; never rewrite in place",
+      "known_prefixes": [
+        "audio/abby-tts/current/",
+        "metadata/"
+      ]
+    }
+  ],
+  "inventory_summary": {
+    "status": "not_observed_remote_read_only_snapshot_required",
+    "why_remote_counts_are_unknown": "This repository task is intentionally offline and the conflict policy prohibits remote reads unless a human approves the inventory step. No remote object count, byte count, revision, or cost is inferred from local manifests.",
+    "known_local_inputs": [
+      {
+        "path": "docs/pregenerated_text_response_manifest.json",
+        "sha256": "91103f89fcc12137f1a1603e5fa8cbb9e5922aa978e5c0b8f055b5d7fc1442fe",
+        "byte_length": 28602699,
+        "role": "checked-in legacy response source; not a bucket inventory"
+      }
+    ],
+    "remote_inventory_receipt_schema": {
+      "required_fields": [
+        "source_uri",
+        "revision",
+        "observed_at",
+        "object_count",
+        "total_bytes",
+        "objects",
+        "inventory_sha256"
+      ],
+      "object_fields": ["path", "byte_length", "sha256", "etag", "kind"],
+      "collection_method": "read_only_list_bucket_tree",
+      "must_not_include": ["caller_audio", "access_tokens", "authorization_headers"]
+    }
+  },
+  "local_build_evidence": {
+    "command": "python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check",
+    "builder_manifest_sha256": "6c7fb33fc18515a3ea5ef43d7129c1e4e45c1df6defbd453123219179d9d783c",
+    "normalization_version": "2.0.0",
+    "source_manifest_count": 1,
+    "input_record_count": 13809,
+    "accepted_counts": {
+      "responses": 13779,
+      "templates": 0,
+      "audio": 0,
+      "provenance": 13779
+    },
+    "quarantined_source_count": 30,
+    "warning_source_count": 13779,
+    "reason_counts": {
+      "malformed_spoken_text": 30,
+      "missing_audio": 13779
+    },
+    "interpretation": "These are reproducible local normalization results for the checked-in text manifest. They are not claims about the remote bucket, and missing audio remains visible as a warning under the permissive builder policy."
+  },
+  "canonical_prefix_layout": {
+    "bucket": {
+      "raw_runs": "raw/runs/{yyyy-mm-dd}/{run_id}/",
+      "raw_inventory": "raw/inventory/{inventory_revision}/",
+      "curated_release": "curated/abby_voice_v2/{release_id}/",
+      "curated_configs": {
+        "responses": "curated/abby_voice_v2/{release_id}/responses/{split}/",
+        "templates": "curated/abby_voice_v2/{release_id}/templates/{split}/",
+        "audio": "curated/abby_voice_v2/{release_id}/audio/{split}/",
+        "provenance": "curated/abby_voice_v2/{release_id}/provenance/{split}/",
+        "evaluation": "curated/abby_voice_v2/{release_id}/evaluation/{split}/"
+      },
+      "release_manifests": "curated/abby_voice_v2/{release_id}/manifests/",
+      "rules": [
+        "Raw run output is append-only and date/run scoped.",
+        "Curated files are content-addressed by release manifest and are never overwritten in place.",
+        "Indexes, manifests, batch wrappers, summaries, and logs stay under manifests/ or raw/ and never enter a config directory.",
+        "Audio bytes remain external to audio metadata rows; every published audio row carries a full SHA-256."
+      ]
+    },
+    "dataset_repo": {
+      "repo_id": "Publicus/211-abby-tts",
+      "release_root": "data/abby_voice_v2/{release_id}/",
+      "legacy_prefix_policy": "retain audio/abby-tts/current/ unchanged until a separately approved deprecation",
+      "config_directories": [
+        "responses/",
+        "templates/",
+        "audio/",
+        "provenance/",
+        "evaluation/"
+      ]
+    }
+  },
+  "dataset_yaml": {
+    "format": "huggingface_dataset_card_frontmatter",
+    "configs": [
+      {
+        "config_name": "abby_voice_response_v2",
+        "schema_version": "abby_voice_response_v2",
+        "data_files": [
+          {"split": "train", "path": "data/abby_voice_v2/{release_id}/responses/train-*.parquet"},
+          {"split": "validation", "path": "data/abby_voice_v2/{release_id}/responses/validation-*.parquet"},
+          {"split": "test", "path": "data/abby_voice_v2/{release_id}/responses/test-*.parquet"}
+        ]
+      },
+      {
+        "config_name": "abby_voice_template_v2",
+        "schema_version": "abby_voice_template_v2",
+        "data_files": [
+          {"split": "train", "path": "data/abby_voice_v2/{release_id}/templates/train-*.parquet"},
+          {"split": "validation", "path": "data/abby_voice_v2/{release_id}/templates/validation-*.parquet"},
+          {"split": "test", "path": "data/abby_voice_v2/{release_id}/templates/test-*.parquet"}
+        ]
+      },
+      {
+        "config_name": "abby_voice_audio_v2",
+        "schema_version": "abby_voice_audio_v2",
+        "data_files": [
+          {"split": "train", "path": "data/abby_voice_v2/{release_id}/audio/train-*.parquet"},
+          {"split": "validation", "path": "data/abby_voice_v2/{release_id}/audio/validation-*.parquet"},
+          {"split": "test", "path": "data/abby_voice_v2/{release_id}/audio/test-*.parquet"}
+        ]
+      },
+      {
+        "config_name": "abby_voice_provenance_v2",
+        "schema_version": "abby_voice_provenance_v2",
+        "data_files": [
+          {"split": "train", "path": "data/abby_voice_v2/{release_id}/provenance/train-*.parquet"},
+          {"split": "validation", "path": "data/abby_voice_v2/{release_id}/provenance/validation-*.parquet"},
+          {"split": "test", "path": "data/abby_voice_v2/{release_id}/provenance/test-*.parquet"}
+        ]
+      },
+      {
+        "config_name": "abby_voice_evaluation_v2",
+        "schema_version": "abby_voice_evaluation_v2",
+        "data_files": [
+          {"split": "validation", "path": "data/abby_voice_v2/{release_id}/evaluation/validation-*.parquet"},
+          {"split": "test", "path": "data/abby_voice_v2/{release_id}/evaluation/test-*.parquet"}
+        ]
+      }
+    ]
+  },
+  "dry_run_migration": {
+    "mode": "local_manifest_only",
+    "release_id_placeholder": "release-YYYY-MM-DD-rN",
+    "steps": [
+      {
+        "id": "inventory",
+        "operation": "list_bucket_tree",
+        "action": "capture a read-only source inventory and checksum each object",
+        "remote_state_change": false,
+        "approval": "human_required"
+      },
+      {
+        "id": "normalize",
+        "operation": "build_abby_voice_dataset_v2",
+        "action": "build and check local canonical JSONL, quarantine, warnings, and manifest artifacts",
+        "command": "python scripts/build_abby_voice_dataset_v2.py --check --check-idempotence --output-dir /tmp/abby-voice-v2-release",
+        "remote_state_change": false,
+        "approval": "not_required"
+      },
+      {
+        "id": "parquet",
+        "operation": "materialize_local_parquet",
+        "action": "write one schema-stable Parquet family per config and split, then validate columns and checksums",
+        "remote_state_change": false,
+        "approval": "not_required"
+      },
+      {
+        "id": "copy_upload",
+        "operation": "upload_hf_abby_tts_dataset",
+        "action": "produce a file-by-file copy/upload manifest for human review; do not pass --upload",
+        "command": "python scripts/upload_hf_abby_tts_dataset.py --repo-id Publicus/211-abby-tts --remote-prefix data/abby_voice_v2/{release_id} --stage-dir /tmp/abby-voice-hf-stage",
+        "remote_state_change": false,
+        "approval": "human_required_before_any_upload"
+      },
+      {
+        "id": "bucket_sync_review",
+        "operation": "sync_bucket",
+        "action": "compare the approved local release manifest with the proposed immutable bucket prefix; report additions and checksum mismatches only",
+        "remote_state_change": false,
+        "approval": "human_required"
+      },
+      {
+        "id": "delete",
+        "operation": "delete",
+        "action": "no delete, move, overwrite, or force-upload operation is proposed",
+        "remote_state_change": false,
+        "approval": "prohibited"
+      }
+    ],
+    "delete_plan": {
+      "operations": [],
+      "policy": "prohibited",
+      "legacy_sources_retained": true,
+      "reason": "Rollback must be possible without reconstructing mutable source data."
+    }
+  },
+  "checksums_counts_costs": {
+    "checksum_policy": "SHA-256 every source object and every emitted Parquet shard; include byte length, row count, schema version, and release manifest digest.",
+    "count_reconciliation": [
+      "source rows = accepted rows + quarantined rows",
+      "each config split count equals its Parquet row count",
+      "provenance subjects resolve to an emitted response, template, or audio row",
+      "published audio byte length and SHA-256 match the external object"
+    ],
+    "remote_estimates": {
+      "object_count": null,
+      "total_bytes": null,
+      "upload_bytes": null,
+      "estimated_storage_cost_usd": null,
+      "estimated_transfer_cost_usd": null,
+      "cost_status": "pending_approved_remote_inventory",
+      "cost_formula": "max(0, upload_bytes - already_matching_bytes) * provider_transfer_rate + retained_bytes * provider_storage_rate",
+      "why_null": "A cost estimate without a remote inventory would imply an unverified bucket state."
+    },
+    "release_receipt_fields": [
+      "source_inventory_sha256",
+      "release_manifest_sha256",
+      "object_count",
+      "total_bytes",
+      "row_counts_by_config_and_split",
+      "new_object_count",
+      "matching_object_count",
+      "checksum_mismatch_count",
+      "estimated_storage_cost_usd",
+      "estimated_transfer_cost_usd"
+    ]
+  },
+  "dataset_viewer_validation": {
+    "local_preflight": [
+      "load each config with pyarrow or datasets using only its own Parquet paths",
+      "assert the exact schema_version and fixed column types from docs/data/ABBY_VOICE_DATASET_SCHEMA.md",
+      "assert train, validation, and test paths do not overlap",
+      "validate row counts, full SHA-256 manifest entries, references, consent/license publication gates, and quarantine reconciliation",
+      "load at least one row from every non-empty config/split without importing batch wrappers, indexes, or manifests"
+    ],
+    "remote_viewer_after_approval": [
+      "open each named config in Dataset Viewer and verify all declared splits load",
+      "check that no split reports a schema inference error or mixed-type column",
+      "compare Viewer row counts and config names with the signed release receipt",
+      "sample response-to-template, response-to-audio, and response-to-provenance references",
+      "retain the Viewer URL, dataset revision, timestamp, and screenshot or API response digest"
+    ],
+    "failure_action": "do not publish or change a release pointer; quarantine the release candidate and repair locally"
+  },
+  "rollback": {
+    "strategy": "immutable_release_selection",
+    "before_publication": "discard only the local staging directory after preserving its manifest and review receipt",
+    "after_publication": "repoint the consumer to the last approved dataset revision or release manifest; leave the failed release and all legacy source prefixes intact",
+    "prohibited_rollback_actions": ["delete source objects", "move legacy objects", "rewrite a published shard", "force-upload over a release"],
+    "required_receipts": ["previous_release_manifest_sha256", "failed_release_manifest_sha256", "consumer_revision", "operator_approval"]
+  },
+  "evidence": {
+    "objective_validation_repair": "data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-009-objective-validation-repair.md",
+    "schema_contract": "docs/data/ABBY_VOICE_DATASET_SCHEMA.md",
+    "dataset_card_template": "data/abby_voice/huggingface/README.template.md",
+    "focused_test": "tests/voice/test_abby_voice_hf_migration.py"
+  }
+}
