@@ -1,0 +1,359 @@
+{
+  "schema_version": "world-human-aid-component-map/v1",
+  "goal_id": "WORLDCOIN-G002",
+  "task_id": "WORLDCOIN-AUTO-001",
+  "generated_at": "2026-07-24",
+  "authority": "repository-source-audit",
+  "audit_mode": {
+    "read_only": true,
+    "network_access": false,
+    "secret_lookup": false,
+    "package_install": false,
+    "container_operation": false,
+    "toolchain_execution": false,
+    "package_core_initialization": false
+  },
+  "status_vocabulary": [
+    "implemented",
+    "partial",
+    "simulated",
+    "missing",
+    "deprecated",
+    "unsafe-to-reuse"
+  ],
+  "compatibility_policy": {
+    "preserve": "Existing wallet, World ID, proof, route, and UI contracts are deletion-prohibited until an additive adapter and migration test exist.",
+    "do_not_promote": "Simulated proofs, plaintext snapshots, unauthenticated binding status, and protocol-inaccurate receipts must not be promoted into the human-aid eligibility or payout trust path.",
+    "evidence": [
+      "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G002",
+      "docs/reports/WORLD_HUMAN_AID_INTEGRATION_AUDIT.md::Compatibility boundary freeze"
+    ]
+  },
+  "components": [
+    {
+      "id": "world-id-config-verifier",
+      "name": "World ID configuration, RP signing, and Developer Portal verifier",
+      "status": "partial",
+      "owner": "WORLDCOIN-G004",
+      "interfaces": [
+        "wallet_interface/world_id.py::WorldIdConfig",
+        "wallet_interface/world_id.py::sign_world_id_request_from_config",
+        "wallet_interface/world_id.py::verify_world_id_proof_from_config",
+        "World Developer Portal verify API v4"
+      ],
+      "risks": [
+        "Legacy proof acceptance defaults on.",
+        "The verifier accepts both protocol 3.0 and 4.0 payload shapes.",
+        "External verification is not governed by a human-aid-specific external-I/O gate."
+      ],
+      "goals": [
+        "WORLDCOIN-G004",
+        "WORLDCOIN-G006"
+      ],
+      "conflict_surfaces": [
+        "WORLD_ID_ALLOW_LEGACY_PROOFS",
+        "WORLD_ID_VERIFY_BASE_URL",
+        "IDKit protocol migration and sunset behavior"
+      ],
+      "evidence": [
+        "wallet_interface/world_id.py::load_world_id_config",
+        "wallet_interface/world_id.py::normalize_idkit_response",
+        "wallet_interface/world_id.py::verify_world_id_proof"
+      ]
+    },
+    {
+      "id": "world-id-wallet-binding",
+      "name": "Wallet-bound World ID record and receipt",
+      "status": "unsafe-to-reuse",
+      "owner": "WORLDCOIN-G006",
+      "interfaces": [
+        "wallet_interface/app_service.py::register_world_id_verification",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::add_world_id_binding",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding"
+      ],
+      "risks": [
+        "Accepted v3 evidence can be labeled world_id_idkit_v4 in a receipt.",
+        "Signal hashes are recorded but no aid claim context is compared or enforced.",
+        "Issuer schema identifiers are data fields without an issuer lifecycle policy."
+      ],
+      "goals": [
+        "WORLDCOIN-G006",
+        "WORLDCOIN-G012",
+        "WORLDCOIN-G022"
+      ],
+      "conflict_surfaces": [
+        "ProofReceipt proof_system and circuit_id labels",
+        "WorldIdBinding protocol_version compatibility",
+        "nullifier and signal context durability"
+      ],
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_create_world_id_proof_receipt",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_world_id_proof_public_inputs",
+        "wallet_interface/app_service.py::register_world_id_verification"
+      ]
+    },
+    {
+      "id": "wallet-status-api",
+      "name": "World ID configuration and binding status API",
+      "status": "unsafe-to-reuse",
+      "owner": "WORLDCOIN-G006",
+      "interfaces": [
+        "GET /wallets/{wallet_id}/world-id/config",
+        "GET /wallets/{wallet_id}/world-id/status",
+        "wallet_interface/routes/world_id.py::create_router",
+        "wallet_interface/app_service.py::get_world_id_status"
+      ],
+      "risks": [
+        "Status authentication is optional.",
+        "The unauthenticated response contains every serialized binding and its metadata."
+      ],
+      "goals": [
+        "WORLDCOIN-G006",
+        "WORLDCOIN-G008"
+      ],
+      "conflict_surfaces": [
+        "Existing UI binding-count and binding-detail consumers",
+        "Actor DID query compatibility",
+        "Public versus private World binding projections"
+      ],
+      "evidence": [
+        "wallet_interface/routes/world_id.py::get_world_id_status",
+        "wallet_interface/app_service.py::get_world_id_status",
+        "wallet_interface/ui/src/features/wallet/lib/walletApi.ts::WorldIdWalletStatus"
+      ]
+    },
+    {
+      "id": "local-wallet-repository",
+      "name": "Local filesystem wallet repository",
+      "status": "unsafe-to-reuse",
+      "owner": "WORLDCOIN-G007",
+      "interfaces": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot",
+        "wallet_interface/app_service.py::save_wallet_snapshot"
+      ],
+      "risks": [
+        "Principal secrets are hex-encoded into plaintext JSON.",
+        "Raw serialized WorldIdBinding objects are stored in the snapshot.",
+        "Filesystem replacement is per-file and is not a multi-record database transaction.",
+        "Snapshot hashes provide integrity detection, not encryption or authentication."
+      ],
+      "goals": [
+        "WORLDCOIN-G007",
+        "WORLDCOIN-G009"
+      ],
+      "conflict_surfaces": [
+        "Snapshot v1 import compatibility",
+        "CLI local-development persistence",
+        "Secret and World binding migration"
+      ],
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot"
+      ]
+    },
+    {
+      "id": "wallet-principal-auth",
+      "name": "Wallet principal authorization",
+      "status": "partial",
+      "owner": "WORLDCOIN-G008",
+      "interfaces": [
+        "wallet_interface/app_service.py::_require_portal_actor",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_wallet_principals",
+        "wallet_interface/routes/world_id.py::WorldIdVerificationRequest"
+      ],
+      "risks": [
+        "Actor DID membership is authorization data, not an EIP-4361 SIWE session.",
+        "No EIP-1271 contract-wallet signature validation boundary exists in the audited path."
+      ],
+      "goals": [
+        "WORLDCOIN-G008"
+      ],
+      "conflict_surfaces": [
+        "Current actor_did request bodies and query parameters",
+        "UCAN-style wallet authorization",
+        "Future SIWE session middleware"
+      ],
+      "evidence": [
+        "wallet_interface/app_service.py::_require_portal_actor",
+        "wallet_interface/routes/world_id.py::WorldIdRpSignatureRequest"
+      ]
+    },
+    {
+      "id": "document-profile-receipt",
+      "name": "Document privacy-profile proof receipt",
+      "status": "simulated",
+      "owner": "WORLDCOIN-G012",
+      "interfaces": [
+        "wallet_interface/services/record_service.py::create_document_profile_proof",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::create_document_profile_proof",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/proofs.py::create_simulated_proof_receipt"
+      ],
+      "risks": [
+        "The receipt proves no aid-program eligibility statement.",
+        "A verification_status value of verified can be mistaken for production eligibility evidence."
+      ],
+      "goals": [
+        "WORLDCOIN-G012",
+        "WORLDCOIN-G016"
+      ],
+      "conflict_surfaces": [
+        "Existing proof-center rendering",
+        "document_privacy_profile proof type",
+        "SimulatedProofBackend registry behavior"
+      ],
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::create_document_profile_proof",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/proofs.py::create_simulated_proof_receipt"
+      ]
+    },
+    {
+      "id": "zkp-backends",
+      "name": "Location and theorem ZKP backends",
+      "status": "partial",
+      "owner": "WORLDCOIN-G012",
+      "interfaces": [
+        "wallet_interface/proof_backends.py::HttpLocationRegionProofBackend",
+        "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/backends/provekit.py::ProveKitBackend",
+        "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/backends/groth16.py::Groth16Backend"
+      ],
+      "risks": [
+        "Location proof semantics do not define aid-program eligibility.",
+        "Prover binaries, circuits, keys, and trusted-setup provenance are operator inputs outside normal Python installation."
+      ],
+      "goals": [
+        "WORLDCOIN-G012",
+        "WORLDCOIN-G013",
+        "WORLDCOIN-G016"
+      ],
+      "conflict_surfaces": [
+        "ProofBackend receipt schema",
+        "HTTP witness transport",
+        "ProveKit and Groth16 artifact manifests"
+      ],
+      "evidence": [
+        "wallet_interface/proof_backends.py::HttpLocationRegionProofBackend.prove_location_region",
+        "ipfs_datasets_py/pyproject.toml::project.optional-dependencies.provekit",
+        "artifacts/provekit-spike/provekit-v1-smoke.json::observed_cli_contract"
+      ]
+    },
+    {
+      "id": "provider-context",
+      "name": "Provider staff World ID context",
+      "status": "partial",
+      "owner": "WORLDCOIN-G021",
+      "interfaces": [
+        "POST /wallets/{wallet_id}/world-id/provider-staff/rp-signature",
+        "wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature"
+      ],
+      "risks": [
+        "provider_id, provider_staff_id, and signal_context are response annotations.",
+        "The registration verifier does not require or compare provider signal context.",
+        "No provider approval state machine is connected to payout authorization."
+      ],
+      "goals": [
+        "WORLDCOIN-G021",
+        "WORLDCOIN-G022"
+      ],
+      "conflict_surfaces": [
+        "Provider staff action naming",
+        "Provider registry and authorization policy",
+        "Claim-context signal encoding"
+      ],
+      "evidence": [
+        "wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature",
+        "wallet_interface/app_service.py::register_world_id_verification"
+      ]
+    },
+    {
+      "id": "issuer-lifecycle",
+      "name": "Eligibility credential issuer lifecycle",
+      "status": "missing",
+      "owner": "WORLDCOIN-G010",
+      "interfaces": [
+        "future issuer registry",
+        "WorldIdBinding.issuer_schema_ids",
+        "future eligibility credential verifier"
+      ],
+      "risks": [
+        "No issuance, rotation, expiry, suspension, or revocation contract is available to an aid eligibility verifier."
+      ],
+      "goals": [
+        "WORLDCOIN-G010",
+        "WORLDCOIN-G011"
+      ],
+      "conflict_surfaces": [
+        "World issuer schema identifiers versus aid-program issuers",
+        "Credential status and revocation receipts",
+        "Offline verifier material"
+      ],
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py::WorldIdBinding.issuer_schema_ids",
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G010"
+      ]
+    },
+    {
+      "id": "payout-reconciliation",
+      "name": "WLD payout and World Chain reconciliation",
+      "status": "missing",
+      "owner": "WORLDCOIN-G023",
+      "interfaces": [
+        "future payout intent repository",
+        "future treasury signer adapter",
+        "future WLD ERC-20 adapter",
+        "future World Chain receipt reconciler"
+      ],
+      "risks": [
+        "No idempotent payout boundary exists.",
+        "No signer or broadcast policy exists.",
+        "No confirmation, reorganization, replacement, or accounting reconciliation state exists."
+      ],
+      "goals": [
+        "WORLDCOIN-G023",
+        "WORLDCOIN-G024",
+        "WORLDCOIN-G025",
+        "WORLDCOIN-G026"
+      ],
+      "conflict_surfaces": [
+        "Canonical claim and payout identifiers",
+        "Treasury approval boundary",
+        "Chain receipt finality and accounting export"
+      ],
+      "evidence": [
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G023",
+        "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G026"
+      ]
+    },
+    {
+      "id": "world-id-ui",
+      "name": "IDKit wallet UI and proof-center consumers",
+      "status": "implemented",
+      "owner": "WORLDCOIN-G029",
+      "interfaces": [
+        "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel",
+        "wallet_interface/ui/src/features/wallet/lib/walletApi.ts::WorldIdWalletStatus",
+        "@worldcoin/idkit 4.1.8"
+      ],
+      "risks": [
+        "The UI consumes full binding objects from status.",
+        "The UI forwards allow_legacy_proofs from server configuration.",
+        "Existing disabled, cancellation, and non-claim messaging is compatibility-sensitive."
+      ],
+      "goals": [
+        "WORLDCOIN-G004",
+        "WORLDCOIN-G006",
+        "WORLDCOIN-G029"
+      ],
+      "conflict_surfaces": [
+        "WorldIdWalletStatus response projection",
+        "IDKitRequestWidget props",
+        "Accessible manual and non-World-ID path messaging"
+      ],
+      "evidence": [
+        "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit",
+        "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx::WorldIdVerificationPanel",
+        "wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx::WorldIdSurfaceStatus"
+      ]
+    }
+  ]
+}
