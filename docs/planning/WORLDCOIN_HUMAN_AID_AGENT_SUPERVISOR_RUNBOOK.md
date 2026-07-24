@@ -401,7 +401,7 @@ paths relative to it are:
 | `plan_evaluations.json` | Deterministic plan-selection evidence |
 | `analysis_escalation.json` | Bounded-analysis escalation evidence |
 | `objective_generation.json` | Bounded-work generation receipt |
-| `lane_state/` | Per-lane durable state |
+| `lane_state/` | Per-lane durable state, operational taskboard copies, and source-digest bindings |
 | `logs/` | Redacted supervisor/lane logs |
 | `lane-manifest.json` | Planned or live lane projection |
 | `scheduler-metrics.json` | Scheduler metrics projection |
@@ -417,6 +417,14 @@ The supervisor's `coordination.duckdb` is operational scheduler state. It is
 not the World human-aid financial store and does not satisfy G033 or G040.
 Those goals use the independently reviewed single-writer security boundary in
 `docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md`.
+
+Bundle shards and the canonical generated TODO are immutable planning inputs.
+Before a worker starts, the bundle supervisor verifies the planned shard
+SHA-256 and copies it into that lane's state directory. Completion and
+dependency-ready status transitions may update only this operational copy.
+The adjacent `*_taskboard_input.json` record binds its source path and digest
+to the runtime path; a missing, malformed, or mismatched binding is a hard
+stop, and a restart must reuse rather than overwrite a bound runtime copy.
 
 The first full objective/AST scan can be expensive and can materialize
 multi-gigabyte snapshots; approximately 2.5 GB was observed during one scan of
@@ -1309,15 +1317,17 @@ env \
   PYTHONPATH=ipfs_accelerate_py \
 python - <<'PY'
 from pathlib import Path
+import hashlib
 import os
 
 from ipfs_accelerate_py.agent_supervisor.bundle_supervisor import plan_bundle_lanes
 
 base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+repo_root = Path.cwd().resolve()
 index_path = base / "launch_profiles/g002-only.index.duckdb"
 lanes = plan_bundle_lanes(
     bundle_index_path=index_path,
-    repo_root=Path.cwd(),
+    repo_root=repo_root,
     state_root=base / "gate0a/lane_state",
     worktree_root=base / "gate0a/worktrees",
     log_dir=base / "gate0a/logs",
@@ -1334,10 +1344,29 @@ assert {
     for task in payload.get("tasks") or ()
 } == {"WORLDCOIN-G002"}
 assert lanes[0].claimable and lanes[0].task_ids
+assert lanes[0].runtime_todo_path is not None
+assert lanes[0].runtime_todo_path.parent == lanes[0].state_dir
+assert lanes[0].source_todo_sha256 == hashlib.sha256(
+    lanes[0].todo_path.read_bytes()
+).hexdigest()
+assert lanes[0].command[
+    lanes[0].command.index("--todo-path") + 1
+] == str(lanes[0].runtime_todo_path)
+for disabled_writer in (
+    "--no-retry-budget-guardrail",
+    "--no-dependency-guardrail",
+    "--no-reconciliation-guardrail",
+    "--no-objective-task-janitor",
+    "--no-objective-goal-migration",
+):
+    assert disabled_writer in lanes[0].command
+assert "--auto-commit-generated-dirty" not in lanes[0].command
 print({
     "bundle": lanes[0].bundle_key,
     "task_ids": lanes[0].task_ids,
     "claimable": lanes[0].claimable,
+    "source_todo_sha256": lanes[0].source_todo_sha256,
+    "runtime_todo_path": lanes[0].runtime_todo_path.relative_to(repo_root).as_posix(),
 })
 PY
 ```
@@ -1584,6 +1613,7 @@ absence of worker activity:
 ```bash
 python - <<'PY'
 from pathlib import Path
+import hashlib
 import json
 import os
 
@@ -1608,6 +1638,20 @@ assert manifest.get("bundle_index_path") == expected_index
 assert observed_goals == expected_goals
 assert int(manifest.get("planned_count") or 0) == len(lanes) > 0
 assert len({str(lane.get("bundle_key") or "") for lane in lanes}) == len(lanes)
+for lane in lanes:
+    source_path = repo_root / str(lane.get("todo_path") or "")
+    runtime_path = repo_root / str(lane.get("runtime_todo_path") or "")
+    state_dir = repo_root / str(lane.get("state_dir") or "")
+    assert source_path.is_file()
+    assert runtime_path.parent == state_dir
+    assert str(lane.get("source_todo_sha256") or "") == hashlib.sha256(
+        source_path.read_bytes()
+    ).hexdigest()
+    command = [str(item) for item in (lane.get("command") or [])]
+    assert command[command.index("--todo-path") + 1] == str(runtime_path)
+    assert "--no-objective-task-janitor" in command
+    assert "--no-objective-goal-migration" in command
+    assert "--auto-commit-generated-dirty" not in command
 for key in ("started_count", "running_count", "active_worker_count"):
     assert int(manifest.get(key) or 0) == 0
 for key in ("started", "launched_task_cids", "active_worker_pids"):
