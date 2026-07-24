@@ -1547,7 +1547,8 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --lease-ms 300000 \
   --heartbeat-interval 5 \
   --implementation-timeout 3600 \
-  --max-restarts 0 \
+  --max-restarts 1 \
+  --max-task-attempts 1 \
   --max-lanes 1 \
   --implement \
   --start
@@ -1721,7 +1722,8 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --lease-ms 300000 \
   --heartbeat-interval 5 \
   --implementation-timeout 3600 \
-  --max-restarts 0 \
+  --max-restarts 1 \
+  --max-task-attempts 1 \
   --max-lanes 1 \
   --implement \
   --start
@@ -1899,7 +1901,8 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --lease-ms 300000 \
   --heartbeat-interval 5 \
   --implementation-timeout 3600 \
-  --max-restarts 0 \
+  --max-restarts 1 \
+  --max-task-attempts 1 \
   --max-lanes 1 \
   --implement \
   --start
@@ -2118,7 +2121,8 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --lease-ms 300000 \
   --heartbeat-interval 5 \
   --implementation-timeout 3600 \
-  --max-restarts 0 \
+  --max-restarts 1 \
+  --max-task-attempts 1 \
   --max-lanes 2 \
   --implement \
   --start
@@ -2276,8 +2280,13 @@ database can lose lease and idempotency evidence.
 
 ### Repeated worker restart or timeout
 
-The initial `--max-restarts 0` setting prevents a failed worker from entering
-an automatic restart loop and consuming provider capacity. Inspect the task
+The live launch commands use `--max-restarts 1` to bound each managed
+child-loop cycle and `--max-task-attempts 1` to prevent a failed canonical task
+from invoking the implementation model again. The outer supervisor may still
+run recovery maintenance and open a new child-loop cycle; the durable
+canonical-task attempt limit is the control that prevents repeated model
+spend. The current supervisor treats `--max-restarts 0` as unbounded, so zero
+is not a safe finite-restart setting. Inspect the task
 validation command, latest lane log, heartbeat age, implementation-provider
 quota/capacity telemetry, dirty worktree, merge conflicts, and task acceptance
 evidence. Fix the underlying cause, run the task's deterministic tests
