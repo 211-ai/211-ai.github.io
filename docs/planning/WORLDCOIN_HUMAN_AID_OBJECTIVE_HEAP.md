@@ -1301,3 +1301,11 @@ deployment, or asset transfer.
   2. The reviewed ADR, requirements lock, runtime and backup policies, verifier, and runtime test contract exist before selection; the verifier fails closed on absent/conflicting approval, hash/ABI drift, mutable inputs, extension/network enablement, non-local/shared paths, direct or multiple writers, skipped execution, or a claim that DuckDB supplies application encryption.
   3. Static validation performs no DuckDB import, database creation, wheel install, pip/index/extension action, cache access/mutation, secret lookup, or runtime smoke.
   4. Artifacts remain explicitly non-approved until Gate 0B-selection binds them; G040 owns approved runtime execution and G033 owns envelope-encryption/plaintext-marker implementation.
+- Objective-validation evidence (WORLDCOIN-AUTO-007):
+  - Discovery repair: `data/worldcoin_human_aid/agent_supervisor/discovery/2026-07-24-worldcoin-auto-007-duckdb-bootstrap.md`
+  - Human-selection-only proposal: `data/worldcoin_human_aid/bootstrap/duckdb-dependency-proposal.json`
+  - Repository-only verifier: `scripts/verify_world_aid_duckdb_bootstrap.py`
+  - Reviewed storage inputs: `docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md`, `requirements-world-aid.lock`, `wallet_interface/deploy/world-aid-duckdb-runtime.yml`, `docs/specs/WORLD_AID_DUCKDB_BACKUP.md`
+  - Static/runtime contracts: `tests/world_aid/test_duckdb_bootstrap_static.py`, `tests/world_aid/test_duckdb_bootstrap.py`
+  - G002 inventory source: `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory.python_duckdb`
+  - Preparation validation is deliberately unapproved; G040 must supply the signed-selection-bound, non-skipped real runtime receipt.
