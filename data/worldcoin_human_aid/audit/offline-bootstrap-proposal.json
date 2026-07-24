@@ -1,0 +1,223 @@
+{
+  "schema_version": "world-human-aid-offline-bootstrap-proposal/v1",
+  "goal_id": "WORLDCOIN-G002",
+  "task_id": "WORLDCOIN-AUTO-001",
+  "proposal_status": "human-selection-required",
+  "authority_statement": "This is a source-derived inventory and question set, not approval to download, install, initialize, build, pull, start, or execute anything.",
+  "audit_observation": {
+    "date": "2026-07-24",
+    "method": "Read repository manifests, lockfiles, source, and recorded artifacts only.",
+    "performed": [
+      "filesystem reads",
+      "static manifest inspection",
+      "static source inspection"
+    ],
+    "not_performed": [
+      "network call",
+      "download",
+      "secret lookup",
+      "package install",
+      "container pull",
+      "container start",
+      "toolchain execution",
+      "package-core initialization"
+    ]
+  },
+  "inventory": {
+    "npm": {
+      "installed_or_locked": [
+        {
+          "input": "@worldcoin/idkit",
+          "version": "4.1.8",
+          "state": "locked",
+          "evidence": "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit"
+        },
+        {
+          "input": "@worldcoin/idkit-core",
+          "version": "4.1.8",
+          "state": "transitively-locked",
+          "evidence": "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit-core"
+        },
+        {
+          "input": "@worldcoin/idkit-server",
+          "version": "1.1.1",
+          "state": "transitively-locked",
+          "evidence": "wallet_interface/ui/package-lock.json::node_modules/@worldcoin/idkit-server"
+        }
+      ],
+      "missing_or_unselected": [
+        {
+          "input": "EIP-4361 SIWE client/server library",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "wallet_interface/ui/package.json::dependencies"
+        },
+        {
+          "input": "EIP-1271 contract-wallet verification library",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "wallet_interface/ui/package.json::dependencies"
+        },
+        {
+          "input": "World Chain JSON-RPC and WLD ERC-20 client",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "wallet_interface/ui/package.json::dependencies"
+        }
+      ]
+    },
+    "python_postgresql": {
+      "installed_or_declared": [
+        {
+          "input": "Python",
+          "version": ">=3.11",
+          "state": "declared",
+          "evidence": "pyproject.toml::project.requires-python"
+        },
+        {
+          "input": "FastAPI",
+          "version": ">=0.110,<1.0",
+          "state": "declared",
+          "evidence": "pyproject.toml::project.optional-dependencies.wallet"
+        },
+        {
+          "input": "Pydantic",
+          "version": ">=2.7,<3.0",
+          "state": "declared",
+          "evidence": "pyproject.toml::project.optional-dependencies.wallet"
+        }
+      ],
+      "missing_or_unselected": [
+        {
+          "input": "PostgreSQL server image or native package",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "pyproject.toml::project.dependencies"
+        },
+        {
+          "input": "PostgreSQL Python driver",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "pyproject.toml::project.dependencies"
+        },
+        {
+          "input": "migration and transactional repository library",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "pyproject.toml::project.dependencies"
+        },
+        {
+          "input": "database encryption/key-management integration",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository"
+        }
+      ]
+    },
+    "zkp": {
+      "installed_or_recorded": [
+        {
+          "input": "ProveKit compatibility target",
+          "version": "v1 commit 4c085f03aa583c255dda4831f1dba7e8c3f284cb",
+          "state": "recorded-prior-smoke-only",
+          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::upstream"
+        },
+        {
+          "input": "ProveKit Python validation helper",
+          "version": "jsonschema>=4.0.0",
+          "state": "declared-optional",
+          "evidence": "ipfs_datasets_py/pyproject.toml::project.optional-dependencies.provekit"
+        },
+        {
+          "input": "knowledge_of_axioms and tdfol_v1_trace Noir sources",
+          "version": "repository source",
+          "state": "present",
+          "evidence": "ipfs_datasets_py/ipfs_datasets_py/logic/zkp/provekit/circuits"
+        }
+      ],
+      "missing_or_unselected": [
+        {
+          "input": "ProveKit CLI binary",
+          "state": "operator-provided-not-package-managed",
+          "selection_owner": "humans",
+          "evidence": "ipfs_datasets_py/setup.py::extras_require.provekit"
+        },
+        {
+          "input": "Noir/nargo toolchain",
+          "state": "missing-from-normal-install",
+          "selection_owner": "humans",
+          "evidence": "artifacts/provekit-spike/provekit-v1-smoke.json::toolchain.external_noir_tools_on_path"
+        },
+        {
+          "input": "aid-eligibility circuit and canonical public-input contract",
+          "state": "missing",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G012"
+        },
+        {
+          "input": "proving key, verifier key, trusted-setup or transparent-setup provenance",
+          "state": "missing-for-aid-circuit",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G013"
+        },
+        {
+          "input": "reproducible verifier fixtures and negative vectors",
+          "state": "missing-for-aid-circuit",
+          "selection_owner": "humans",
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G016"
+        }
+      ]
+    }
+  },
+  "human_approval_questions": [
+    {
+      "id": "versions",
+      "question": "Which exact npm, Python, PostgreSQL, database-driver, migration, World Chain, ProveKit, Noir, Rust, circuit, and key versions are approved?",
+      "required_record": "version-selection"
+    },
+    {
+      "id": "checksums",
+      "question": "Which publisher checksums or independently reproduced digests must every wheel, npm tarball, image, binary, circuit, proving key, and verifier key match?",
+      "required_record": "checksum-manifest"
+    },
+    {
+      "id": "licenses",
+      "question": "Which licenses and notices have legal and procurement reviewers approved for redistribution and deployment?",
+      "required_record": "license-review"
+    },
+    {
+      "id": "provenance",
+      "question": "Which upstream repositories, registries, signatures, build attestations, maintainers, and custody chain are trusted as provenance?",
+      "required_record": "provenance-policy"
+    },
+    {
+      "id": "sbom",
+      "question": "Which SBOM format, generator, vulnerability policy, signature, retention period, and reviewer are required?",
+      "required_record": "sbom-policy"
+    },
+    {
+      "id": "cache-image-locations",
+      "question": "Which offline wheelhouse, npm cache, binary cache, circuit/key vault, OCI archive, image registry mirror, and PostgreSQL data locations are approved, encrypted, access-controlled, and backed up?",
+      "required_record": "offline-location-policy"
+    },
+    {
+      "id": "smoke-tests",
+      "question": "Which offline smoke tests, negative vectors, migration/recovery checks, architecture targets, and signed pass criteria authorize later use?",
+      "required_record": "smoke-test-approval"
+    }
+  ],
+  "approval_gate": {
+    "default": "blocked",
+    "agent_selections_are_approval": false,
+    "required_human_records": [
+      "version-selection",
+      "checksum-manifest",
+      "license-review",
+      "provenance-policy",
+      "sbom-policy",
+      "offline-location-policy",
+      "smoke-test-approval"
+    ],
+    "next_owner": "WORLDCOIN-G037"
+  }
+}

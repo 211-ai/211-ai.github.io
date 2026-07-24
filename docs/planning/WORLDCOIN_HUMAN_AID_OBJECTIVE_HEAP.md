@@ -133,6 +133,13 @@ deployment, or asset transfer.
   3. It identifies missing EIP-1271 SIWE, issuer credential lifecycle, encrypted transactional storage, payout, and reconciliation boundaries; the machine map has stable owners, interfaces, risks, goals, and conflict surfaces.
   4. The offline-bootstrap proposal inventories installed and missing npm, Python/PostgreSQL, and ZKP inputs and asks humans to select versions, checksums, licenses, provenance, SBOM, cache/image locations, and smoke tests without presenting agent choices as approval.
   5. Running the audit contract performs no mutation, download, network call, secret lookup, package install, container pull/start, toolchain execution, or package-core initialization.
+- Objective-validation evidence (WORLDCOIN-AUTO-001):
+  - Discovery repair: `data/worldcoin_human_aid/agent_supervisor/discovery/2026-07-24-worldcoin-auto-001-integration-audit.md`
+  - Cited audit: `docs/reports/WORLD_HUMAN_AID_INTEGRATION_AUDIT.md`
+  - Stable machine map: `data/worldcoin_human_aid/audit/component-map.json`
+  - Human-selection-only bootstrap proposal: `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json`
+  - Static contract: `tests/world_aid/test_integration_audit_contract.py`
+  - Backlog identity: todo vector `3acfa404134f3aa1`, merge family `objective/WORLDCOIN-G002`, work scope `objective_validation_repair`
 
 ## WORLDCOIN-G003 Establish policy, DPIA, legal, accessibility, and manual-path gates
 
