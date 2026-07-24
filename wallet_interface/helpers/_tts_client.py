@@ -13,7 +13,13 @@ import time
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from ipfs_accelerate_py import HFSpaceClient  # noqa: E402
+try:
+    # The wallet API must remain importable when the optional legacy HF Space
+    # client is not exported by the selected ipfs_accelerate_py checkout. The
+    # unified voice adapter and the direct HTTP helpers do not need it.
+    from ipfs_accelerate_py import HFSpaceClient  # type: ignore[attr-defined]  # noqa: E402
+except ImportError:  # pragma: no cover - exercised by minimal router installs.
+    HFSpaceClient = Any  # type: ignore[misc,assignment]
 
 from ._tts_config import (
     _indextts_api_name,
@@ -62,6 +68,8 @@ def _indextts_space_client() -> HFSpaceClient:
     )
     if _INDEXTTS_SPACE_CLIENT is not None and cache_key == _INDEXTTS_SPACE_CLIENT_KEY:
         return _INDEXTTS_SPACE_CLIENT
+    if HFSpaceClient is Any:
+        raise RuntimeError("optional HFSpaceClient is unavailable in this ipfs_accelerate_py installation")
     _INDEXTTS_SPACE_CLIENT = HFSpaceClient(
         _indextts_space_base_url(),
         timeout_seconds=_indextts_timeout_seconds(),
@@ -224,5 +232,4 @@ def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
     path = str(reference.get("path") or reference.get("name") or "") if isinstance(reference, Mapping) else str(reference or "")
     mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "") if isinstance(reference, Mapping) else ""
     return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
-
 

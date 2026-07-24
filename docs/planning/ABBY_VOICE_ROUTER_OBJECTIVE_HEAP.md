@@ -310,7 +310,7 @@ approves a reviewed manifest and dry-run receipt.
 - Track: voice-integration
 - Parents: ABBY-VOICE-G008, ABBY-VOICE-G009
 - Goal: Let the current Abby UI and service proxy use the shared contracts without removing its browser local-audio and browser-speech fallbacks.
-- Evidence: wallet voice proxy adapter for VoiceTurnResult, preserved browser SpeechRecognition fallback, preserved local WebGPU and browser speech fallback, end-to-end UI voice tests, operator rollout and rollback documentation, ABBY-VOICE-G010 completion receipt
+- Evidence: the lazy, opt-in wallet adapter delegates to `process_voice_turn` and serializes the canonical `VoiceTurnResult`; the UI normalizer consumes that receipt while preserving legacy payloads; focused tests cover provenance, stage ordering, audio decoding, text-only degradation, and legacy rejection; `AgentAudioChatSurface` retains browser SpeechRecognition, local WebGPU, and browser speech fallback branches; the rollout runbook defines canary receipts and flag-off rollback; the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
 - Outputs: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
 - Validation: python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts
 - Bundle: abby-voice/wallet-adoption
@@ -322,6 +322,14 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
 - Conflict policy: use a feature flag and preserve all existing fallback paths until end-to-end receipts pass in deployed-like tests
 - Gap task: Add an adapter and staged rollout that consumes the unified router result while retaining the proven client fallback chain.
+- Objective-validation repair: `ABBY-VOICE-AUTO-010` owns the wallet adoption validation gate. The source scan incorrectly treated generated manifests and unrelated review artifacts as wallet-router evidence; the authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-010-objective-validation-repair.md`. Evidence is accepted only when the defining adapter, UI parser, focused test, fallback implementation, and runbook are named directly.
+- Acceptance gate:
+  1. `wallet_interface/helpers/_voice_router_adapter.py` imports the shared router lazily, is disabled by default with `WALLET_VOICE_UNIFIED_ROUTER_ENABLED`, accepts injected STT/template/TTS collaborators, and serializes the typed receipt without putting raw audio in ordinary router fields.
+  2. The enabled adapter produces a canonical result with `status`, transcript, response text, provenance, ordered transcription/retrieval/rendering/synthesis traces, explicit fallback reasons, and an opt-in base64 audio wire field.
+  3. `voiceTurnResult.ts` accepts snake_case and camelCase receipt fields, retains provenance and fallback metadata, decodes audio only when present, and does not reinterpret an unrelated legacy payload as a unified result.
+  4. `ClientAudioReplyService`, `RemoteSpeechToTextResult`, and `AgentAudioChatSurface` continue to retain remote endpoint fallback, browser SpeechRecognition, local WebGPU, and browser speech-synthesis paths when the unified receipt is unavailable, degraded, or text-only.
+  5. `python -m pytest -q wallet_interface/tests` and `npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts` pass offline, and `docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md` defines a reversible canary/rollback procedure.
+- Child-goal boundary: no smaller child goal is needed. G010 is the cohesive wallet/UI adoption and rollout-validation boundary; G008 owns router/template composition and G009 owns safety/performance evaluation.
 
 ## ABBY-VOICE-G011 Normalize and materialize the Abby voice dataset
 
