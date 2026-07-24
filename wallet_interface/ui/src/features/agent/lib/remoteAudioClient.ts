@@ -1,6 +1,13 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "../../../shared/lib/publicEndpointPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
+import {
+  base64ToBlob,
+  parseVoiceTurnResult,
+  voiceTurnResultAudioBlob,
+  voiceTurnResultText,
+  type VoiceTurnResult,
+} from "./voiceTurnResult";
 
 export interface RemoteAudioGenerationResult {
   audioBlob?: Blob;
@@ -8,6 +15,7 @@ export interface RemoteAudioGenerationResult {
   modelName: string;
   text?: string;
   endpointRole?: "primary" | "fallback";
+  voiceTurnResult?: VoiceTurnResult;
 }
 
 export interface RemoteSpeechToTextResult {
@@ -15,6 +23,7 @@ export interface RemoteSpeechToTextResult {
   modelName: string;
   provider?: string;
   text: string;
+  voiceTurnResult?: VoiceTurnResult;
 }
 
 export function isRemoteVoiceProxyConfigured(): boolean {
@@ -75,6 +84,16 @@ export async function transcribeRemoteSpeech(options: {
         }
       }
       const payload = await response.json();
+      const voiceTurnResult = parseVoiceTurnResult(payload);
+      if (voiceTurnResult) {
+        return {
+          endpointRole: endpoint.role,
+          modelName: voiceTurnResult.provenance.sttProvider || endpoint.modelName,
+          provider: voiceTurnResult.provenance.sttProvider || "remote-voice-proxy",
+          text: voiceTurnResult.transcript,
+          voiceTurnResult,
+        };
+      }
       const normalized = normalizeSpeechToTextJsonPayload(payload, endpoint);
       if (normalized.text || options.audioBlob.size > 0) return normalized;
     } catch (error) {
@@ -273,6 +292,18 @@ async function normalizeRemoteAudioResponse(
   }
 
   const payload = await response.json();
+  const voiceTurnResult = parseVoiceTurnResult(payload);
+  if (voiceTurnResult) {
+    const audioBlob = voiceTurnResultAudioBlob(voiceTurnResult);
+    return {
+      audioBlob,
+      endpointRole: endpoint.role,
+      mimeType: audioBlob?.type || voiceTurnResult.audioFormat || "audio/wav",
+      modelName: voiceTurnResult.provenance.ttsProvider || endpoint.modelName,
+      text: voiceTurnResultText(voiceTurnResult),
+      voiceTurnResult,
+    };
+  }
   return normalizeJsonPayload(payload, endpoint);
 }
 
@@ -282,6 +313,18 @@ function normalizeJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoi
   }
 
   const normalizedPayload = unwrapFirstBatchItem(payload);
+  const voiceTurnResult = parseVoiceTurnResult(normalizedPayload);
+  if (voiceTurnResult) {
+    const audioBlob = voiceTurnResultAudioBlob(voiceTurnResult);
+    return {
+      audioBlob,
+      endpointRole: endpoint.role,
+      mimeType: audioBlob?.type || voiceTurnResult.audioFormat || "audio/wav",
+      modelName: voiceTurnResult.provenance.ttsProvider || endpoint.modelName,
+      text: voiceTurnResultText(voiceTurnResult),
+      voiceTurnResult,
+    };
+  }
 
   const generatedText = firstString(normalizedPayload, ["text", "outputText", "output_text"]);
   const modelName = firstString(normalizedPayload, ["model", "modelName", "model_name"]) || endpoint.modelName;
@@ -362,24 +405,6 @@ function firstString(payload: Record<string, unknown>, keys: string[]): string |
     }
   }
   return undefined;
-}
-
-function base64ToBlob(value: string, mimeType: string): Blob {
-  const normalized = value.includes(",") ? value.slice(value.indexOf(",") + 1) : value;
-  if (typeof atob === "function") {
-    const binary = atob(normalized);
-    const bytes = new Uint8Array(binary.length);
-    for (let index = 0; index < binary.length; index += 1) {
-      bytes[index] = binary.charCodeAt(index);
-    }
-    return new Blob([bytes], { type: mimeType });
-  }
-  const bufferCtor = (globalThis as { Buffer?: { from: (input: string, encoding: string) => Uint8Array } }).Buffer;
-  if (bufferCtor) {
-    const bytes = Uint8Array.from(bufferCtor.from(normalized, "base64"));
-    return new Blob([bytes], { type: mimeType });
-  }
-  throw new Error("Base64 audio decoding is unavailable in this browser.");
 }
 
 function getBrowserOrigin(): string {

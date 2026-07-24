@@ -43,6 +43,7 @@ export * from "./lib/audioChatConfig";
 export * from "./lib/clientAudioReplyService";
 export * from "./lib/precomputedAudioReplyService";
 export * from "./lib/remoteAudioClient";
+export * from "./lib/voiceTurnResult";
 export * from "./lib/voiceGraphRagPrompt";
 export * from "./lib/voiceProxyPayload";
 export * from "./lib/liquidAudioRuntimePatch";

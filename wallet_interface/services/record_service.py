@@ -100,6 +100,25 @@ class RecordDomainServiceMixin:
             records = [record for record in records if record.data_type == data_type]
         return sorted(records, key=lambda item: item.created_at)
 
+    def update_record_metadata(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        metadata: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """Persist a record metadata patch through the canonical wallet service."""
+
+        record = self.wallet_service.update_record_metadata(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            metadata=metadata,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
     def record_to_dict(self, record: Any) -> dict[str, Any]:
         """Serialize a DataRecord to a plain dict."""
         if hasattr(record, "to_dict"):
@@ -289,6 +308,25 @@ class RecordDomainServiceMixin:
             grant_id=grant_id,
             actor_secret=actor_secret,
             chunk_size_words=chunk_size_words,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def create_document_profile_proof(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        public_inputs: Mapping[str, Any],
+    ):
+        """Create the canonical redacted document-profile proof receipt."""
+
+        result = self.wallet_service.create_document_profile_proof(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            public_inputs=public_inputs,
         )
         self._persist_wallet_if_configured(wallet_id)
         return result
@@ -1151,4 +1189,3 @@ class RecordDomainServiceMixin:
             ],
             key=lambda item: item.created_at,
         )
-

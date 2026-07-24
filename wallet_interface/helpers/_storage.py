@@ -288,13 +288,19 @@ def _publish_record_metadata_ipld(record: Mapping[str, Any]) -> dict[str, Any]:
             ),
         ],
     }
-    result = _publish_bytes_to_ipfs(
-        json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
-        file_name=f"{record_id or 'wallet-record'}.wallet-metadata.ipld.json",
-        mime_type="application/vnd.211-ai.wallet.record-metadata+json",
-        source_record_id=record_id or None,
-        wallet_id=wallet_id or None,
-    )
+    try:
+        result = _publish_bytes_to_ipfs(
+            json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+            file_name=f"{record_id or 'wallet-record'}.wallet-metadata.ipld.json",
+            mime_type="application/vnd.211-ai.wallet.record-metadata+json",
+            source_record_id=record_id or None,
+            wallet_id=wallet_id or None,
+        )
+    except Exception as exc:  # metadata generation remains useful without an IPFS daemon
+        return {
+            "metadataStorageStatus": "degraded",
+            "metadataStorageMessage": f"IPLD publish failed: {exc}",
+        }
     cid = str(result.get("ipfsCid") or result.get("cid") or "")
     if not cid:
         return {}
@@ -364,6 +370,12 @@ def _publish_bytes_via_ipfs_backend(data: bytes) -> str:
     backend_mode = str(os.getenv("WALLET_IPFS_UPLOAD_BACKEND") or "").strip().lower()
     if backend_mode == "mock":
         return _mock_ipfs_cid_for_bytes(data)
+    auto_install_disabled = any(
+        str(os.getenv(name) or "").strip().lower() in {"0", "false", "no", "off"}
+        for name in ("IPFS_AUTO_INSTALL", "IPFS_DATASETS_AUTO_INSTALL")
+    )
+    if auto_install_disabled:
+        raise RuntimeError("IPFS backend disabled by environment")
     if not _IPFS_BACKEND_AVAILABLE or get_ipfs_backend is None:
         raise RuntimeError("ipfs_datasets_py is required for IPFS upload")
     backend = get_ipfs_backend()
