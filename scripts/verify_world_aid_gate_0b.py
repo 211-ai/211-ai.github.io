@@ -13,6 +13,7 @@ import argparse
 import base64
 import binascii
 import errno
+import fcntl
 import hashlib
 import json
 import os
@@ -114,6 +115,9 @@ CANONICAL_SOURCE_PATHS = {
     "storage_adr": "docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md",
 }
 SELECTION_VERIFIER_CONTRACT_PATHS = {
+    "siwe_adapter": "wallet_interface/services/world_siwe_verifier/index.mjs",
+    "siwe_proposal": "data/worldcoin_human_aid/bootstrap/world-siwe-dependency-proposal.json",
+    "siwe_static_test": "tests/world_aid/test_siwe_dependency_lock.py",
     "siwe_verifier": "scripts/verify_world_siwe_offline_bootstrap.py",
     "siwe_runtime_test": "tests/world_aid/test_siwe_offline_bootstrap.py",
     "zkp_verifier": "scripts/verify_world_aid_zkp_toolchain.py",
@@ -126,6 +130,7 @@ PROTECTED_WRITABLE_PATHS = frozenset(
         *CANONICAL_SOURCE_PATHS.values(),
         *SELECTION_VERIFIER_CONTRACT_PATHS.values(),
         "data/worldcoin_human_aid/approvals",
+        "scripts/verify_world_aid_gate_0b.py",
         "wallet_interface/services/world_siwe_verifier/package.json",
         "wallet_interface/services/world_siwe_verifier/package-lock.json",
         "requirements-world-aid.lock",
@@ -233,6 +238,8 @@ FORBIDDEN_DESTINATION_FRAGMENTS = (
 
 MAX_RECORD_VALIDITY = timedelta(days=31)
 MAX_EVIDENCE_AGE = timedelta(hours=24)
+MAX_REVIEWED_TREE_ENTRIES = 100_000
+MAX_REVIEWED_TREE_BYTES = 2 * 1024 * 1024 * 1024
 
 
 class ApprovalVerificationError(ValueError):
@@ -252,11 +259,7 @@ def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
-def _load_json_strict(path: Path, context: str = "approval") -> tuple[dict[str, Any], bytes]:
-    try:
-        raw = path.read_bytes()
-    except OSError as exc:
-        _fail(f"cannot read {context}: {exc}")
+def _load_json_bytes_strict(raw: bytes, context: str) -> dict[str, Any]:
     try:
         value = json.loads(raw.decode("utf-8"), object_pairs_hook=_reject_duplicate_pairs)
     except UnicodeDecodeError as exc:
@@ -265,6 +268,15 @@ def _load_json_strict(path: Path, context: str = "approval") -> tuple[dict[str, 
         _fail(f"{context} is not valid JSON: {exc}")
     if not isinstance(value, dict):
         _fail(f"{context} root must be an object")
+    return value
+
+
+def _load_json_strict(path: Path, context: str = "approval") -> tuple[dict[str, Any], bytes]:
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        _fail(f"cannot read {context}: {exc}")
+    value = _load_json_bytes_strict(raw, context)
     return value, raw
 
 
@@ -724,12 +736,7 @@ def _validate_reviewed_state(
     return root_commit, submodules, artifacts, generated_root
 
 
-def _schedulable_goals_from_heap(repo_root: Path) -> set[str]:
-    heap_path = repo_root / CANONICAL_SOURCE_PATHS["objective_heap"]
-    try:
-        text = heap_path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError) as exc:
-        _fail(f"cannot read canonical objective heap: {exc}")
+def _schedulable_goals_from_heap(text: str) -> set[str]:
     headings = list(re.finditer(r"^## (WORLDCOIN-G[0-9]{3}) .+$", text, flags=re.MULTILINE))
     if not headings:
         _fail("canonical objective heap contains no goals")
@@ -753,12 +760,7 @@ def _schedulable_goals_from_heap(repo_root: Path) -> set[str]:
     return schedulable
 
 
-def _validation_commands_from_heap(repo_root: Path, goal_ids: set[str]) -> set[str]:
-    heap_path = repo_root / CANONICAL_SOURCE_PATHS["objective_heap"]
-    try:
-        text = heap_path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError) as exc:
-        _fail(f"cannot read canonical objective heap validation commands: {exc}")
+def _validation_commands_from_heap(text: str, goal_ids: set[str]) -> set[str]:
     headings = list(re.finditer(r"^## (WORLDCOIN-G[0-9]{3}) .+$", text, flags=re.MULTILINE))
     commands: dict[str, str] = {}
     for index, heading in enumerate(headings):
@@ -889,6 +891,7 @@ def _validate_scope(
     repo_root: Path,
     generated_root: Path,
     immutable_artifact_paths: Iterable[Path],
+    objective_heap_text: str,
 ) -> None:
     scope = _expect_object(value, "scope")
     keys = {
@@ -910,7 +913,7 @@ def _validate_scope(
     if phase == SELECTION and goals != SELECTION_GOALS:
         _fail("selection scope must contain exactly WORLDCOIN-G038, G039, and G040")
     if phase == LAUNCH:
-        expected_goals = _schedulable_goals_from_heap(repo_root) - LAUNCH_PREREQUISITE_GOALS
+        expected_goals = _schedulable_goals_from_heap(objective_heap_text) - LAUNCH_PREREQUISITE_GOALS
         if not expected_goals:
             _fail("launch objective projection is empty after removing completed prerequisites")
         if goals != expected_goals:
@@ -941,7 +944,7 @@ def _validate_scope(
         )
         if any(fragment in lowered for fragment in forbidden_fragments):
             _fail("scope.validation_commands contains a start, live, network, or package substitution")
-    expected_commands = _validation_commands_from_heap(repo_root, goals)
+    expected_commands = _validation_commands_from_heap(objective_heap_text, goals)
     if set(commands) != expected_commands:
         _fail(
             "scope.validation_commands must exactly match the canonical objective Validation fields; "
@@ -1084,10 +1087,87 @@ def _validate_exceptions(value: Any, issued_at: datetime, record_expires_at: dat
         ids.add(exception_id)
 
 
-def _parse_allowed_signers(path: Path) -> dict[str, set[str]]:
+def _read_allowed_signers_snapshot(path: Path) -> bytes:
+    descriptor = -1
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except (OSError, UnicodeDecodeError) as exc:
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_NOFOLLOW", 0),
+        )
+        before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH)
+            or before.st_size > 16 * 1024 * 1024
+        ):
+            _fail("allowed signers trust store snapshot is not a bounded read-only regular file")
+        chunks: list[bytes] = []
+        remaining = 16 * 1024 * 1024
+        while remaining:
+            chunk = os.read(descriptor, min(1024 * 1024, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        if remaining == 0 and os.read(descriptor, 1):
+            _fail("allowed signers trust store exceeds the size limit")
+        after = os.fstat(descriptor)
+    except OSError as exc:
+        _fail(f"cannot capture allowed signers trust store: {exc}")
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+    if (
+        before.st_dev,
+        before.st_ino,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    ) != (
+        after.st_dev,
+        after.st_ino,
+        after.st_size,
+        after.st_mtime_ns,
+        after.st_ctime_ns,
+    ):
+        _fail("allowed signers trust store changed while being captured")
+    return b"".join(chunks)
+
+
+def _sealed_snapshot_fd(raw: bytes) -> int:
+    if not hasattr(os, "memfd_create") or not hasattr(os, "MFD_ALLOW_SEALING"):
+        _fail("sealed in-memory trust snapshots are unavailable on this platform")
+    try:
+        descriptor = os.memfd_create(
+            "world-aid-allowed-signers",
+            os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING,
+        )
+        view = memoryview(raw)
+        while view:
+            written = os.write(descriptor, view)
+            if written <= 0:
+                raise OSError("short write to trust snapshot")
+            view = view[written:]
+        fcntl.fcntl(
+            descriptor,
+            fcntl.F_ADD_SEALS,
+            fcntl.F_SEAL_WRITE
+            | fcntl.F_SEAL_GROW
+            | fcntl.F_SEAL_SHRINK
+            | fcntl.F_SEAL_SEAL,
+        )
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        return descriptor
+    except OSError as exc:
+        if "descriptor" in locals():
+            os.close(descriptor)
+        _fail(f"cannot create sealed allowed-signers snapshot: {exc}")
+
+
+def _parse_allowed_signers(raw: bytes) -> dict[str, set[str]]:
+    try:
+        lines = raw.decode("utf-8").splitlines()
+    except UnicodeDecodeError as exc:
         _fail(f"cannot read allowed signers trust store: {exc}")
     principals: dict[str, set[str]] = {}
     for line_number, line in enumerate(lines, start=1):
@@ -1193,7 +1273,7 @@ def _verify_signatures(
     approval_bytes: bytes,
     phase: str,
     signatures: Sequence[Mapping[str, str]],
-    allowed_signers_path: Path,
+    allowed_signers_descriptor: int,
     allowed_principals: Mapping[str, set[str]],
 ) -> None:
     signature_dir = approval_path.parent / "signatures"
@@ -1212,6 +1292,7 @@ def _verify_signatures(
             "WORLD_AID_WLD_TRANSFERS_ENABLED": "0",
         }
     )
+    allowed_signers_path = f"/proc/self/fd/{allowed_signers_descriptor}"
     for signature in sorted(signatures, key=lambda item: item["role"]):
         identity = signature["identity"]
         fingerprint = signature["key_fingerprint"]
@@ -1233,7 +1314,7 @@ def _verify_signatures(
                     "-Y",
                     "verify",
                     "-f",
-                    str(allowed_signers_path),
+                    allowed_signers_path,
                     "-I",
                     identity,
                     "-n",
@@ -1244,6 +1325,7 @@ def _verify_signatures(
                 check=False,
                 input=approval_bytes,
                 capture_output=True,
+                pass_fds=(allowed_signers_descriptor,),
                 timeout=10,
                 env=env,
             )
@@ -1253,13 +1335,143 @@ def _verify_signatures(
             _fail(f"detached signature rejected for role {signature['role']}")
 
 
+def _tree_metadata_snapshot(metadata: os.stat_result) -> tuple[int, ...]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _open_directory_without_symlinks(path: Path, context: str) -> int:
+    if not path.is_absolute():
+        _fail(f"{context}.path must be absolute after repository resolution")
+    flags = os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = -1
+    try:
+        descriptor = os.open("/", flags)
+        for component in path.parts[1:]:
+            child = os.open(component, flags, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = child
+        return descriptor
+    except OSError as exc:
+        if descriptor >= 0:
+            os.close(descriptor)
+        _fail(f"cannot open {context}.path without following symlinks: {exc}")
+
+
+def _read_only_tree_digest(path: Path, context: str) -> str:
+    digest = hashlib.sha256()
+    entry_count = 0
+    discovered_count = 1
+    total_bytes = 0
+    root_descriptor = _open_directory_without_symlinks(path, context)
+    root_identity = _tree_metadata_snapshot(os.fstat(root_descriptor))[:2]
+
+    def add_entry(entry_type: bytes, relative: bytes) -> None:
+        nonlocal entry_count
+        entry_count += 1
+        if entry_count > MAX_REVIEWED_TREE_ENTRIES:
+            _fail(f"{context}.path tree exceeds the entry limit")
+        digest.update(entry_type)
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+
+    def walk(directory_descriptor: int, relative: str, depth: int) -> None:
+        nonlocal discovered_count, total_bytes
+        if depth > 256:
+            _fail(f"{context}.path tree exceeds the directory depth limit")
+        before = os.fstat(directory_descriptor)
+        if not stat.S_ISDIR(before.st_mode):
+            _fail(f"{context}.path tree contains a non-directory traversal root")
+        if before.st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
+            _fail(f"{context}.path tree contains a mode-writable entry")
+        relative_bytes = relative.encode("utf-8")
+        add_entry(b"D", relative_bytes)
+        encoded_names: list[tuple[bytes, str]] = []
+        try:
+            with os.scandir(directory_descriptor) as entries:
+                for entry in entries:
+                    if discovered_count >= MAX_REVIEWED_TREE_ENTRIES:
+                        _fail(f"{context}.path tree exceeds the entry limit")
+                    discovered_count += 1
+                    name = entry.name
+                    if not name or name in {".", ".."} or "/" in name or "\x00" in name:
+                        _fail(f"{context}.path tree contains an invalid entry name")
+                    try:
+                        encoded_names.append((name.encode("utf-8"), name))
+                    except UnicodeEncodeError:
+                        _fail(f"{context}.path tree contains a non-UTF-8 entry name")
+        except OSError as exc:
+            _fail(f"cannot enumerate {context}.path tree: {exc}")
+        for _, name in sorted(encoded_names):
+            child_descriptor = -1
+            child_relative = name if relative == "." else f"{relative}/{name}"
+            try:
+                child_descriptor = os.open(
+                    name,
+                    os.O_RDONLY
+                    | os.O_CLOEXEC
+                    | getattr(os, "O_NOFOLLOW", 0)
+                    | getattr(os, "O_NONBLOCK", 0),
+                    dir_fd=directory_descriptor,
+                )
+                child_before = os.fstat(child_descriptor)
+                if child_before.st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
+                    _fail(f"{context}.path tree contains a mode-writable entry")
+                if stat.S_ISDIR(child_before.st_mode):
+                    walk(child_descriptor, child_relative, depth + 1)
+                elif stat.S_ISREG(child_before.st_mode):
+                    child_relative_bytes = child_relative.encode("utf-8")
+                    add_entry(b"F", child_relative_bytes)
+                    total_bytes += child_before.st_size
+                    if total_bytes > MAX_REVIEWED_TREE_BYTES:
+                        _fail(f"{context}.path tree exceeds the byte limit")
+                    observed = hashlib.sha256()
+                    while chunk := os.read(child_descriptor, 1024 * 1024):
+                        observed.update(chunk)
+                    child_after = os.fstat(child_descriptor)
+                    if _tree_metadata_snapshot(child_before) != _tree_metadata_snapshot(child_after):
+                        _fail(f"{context}.path tree entry changed while being hashed")
+                    digest.update(observed.digest())
+                else:
+                    _fail(f"{context}.path tree contains a non-file, non-directory entry")
+            except OSError as exc:
+                _fail(f"cannot inspect {context}.path tree entry: {exc}")
+            finally:
+                if child_descriptor >= 0:
+                    os.close(child_descriptor)
+        after = os.fstat(directory_descriptor)
+        if _tree_metadata_snapshot(before) != _tree_metadata_snapshot(after):
+            _fail(f"{context}.path tree directory changed while being hashed")
+
+    try:
+        walk(root_descriptor, ".", 0)
+        reopened_descriptor = _open_directory_without_symlinks(path, context)
+        try:
+            if _tree_metadata_snapshot(os.fstat(reopened_descriptor))[:2] != root_identity:
+                _fail(f"{context}.path tree root changed while being hashed")
+        finally:
+            os.close(reopened_descriptor)
+    finally:
+        os.close(root_descriptor)
+    return f"sha256:{digest.hexdigest()}"
+
+
 def _validate_read_only_directory(
     value: Any,
     context: str,
     repo_root: Path,
+    *,
+    require_tree_digest: bool = False,
 ) -> None:
     directory = _expect_object(value, context)
-    _exact_keys(directory, {"path", "read_only"}, context)
+    expected_keys = {"path", "read_only", "tree_sha256"} if require_tree_digest else {"path", "read_only"}
+    _exact_keys(directory, expected_keys, context)
     if _expect_bool(directory["read_only"], f"{context}.read_only") is not True:
         _fail(f"{context}.read_only must be true")
     path = _safe_repo_path(
@@ -1269,12 +1481,18 @@ def _validate_read_only_directory(
         must_exist=True,
         require_directory=True,
     )
-    try:
-        mode = path.stat().st_mode
-    except OSError as exc:
-        _fail(f"cannot inspect {context}.path mode: {exc}")
-    if mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
-        _fail(f"{context}.path is not mode-read-only")
+    observed_tree_digest = _read_only_tree_digest(path, context)
+    if require_tree_digest:
+        expected_tree_digest = _expect_string(
+            directory["tree_sha256"],
+            f"{context}.tree_sha256",
+            minimum=71,
+            maximum=71,
+        )
+        if not DIGEST_RE.fullmatch(expected_tree_digest):
+            _fail(f"{context}.tree_sha256 must be a lowercase sha256 digest")
+        if observed_tree_digest != expected_tree_digest:
+            _fail(f"{context}.tree_sha256 differs from the reviewed read-only tree")
 
 
 def _artifact_list(
@@ -1303,6 +1521,7 @@ def _validate_selection_dependencies(
 
     siwe = _expect_object(dependencies["siwe"], "dependency_sets.siwe")
     siwe_keys = {
+        "runtime_toolchain",
         "manifest",
         "lockfile",
         "tarballs",
@@ -1314,7 +1533,77 @@ def _validate_selection_dependencies(
         "lifecycle_scripts",
     }
     _exact_keys(siwe, siwe_keys, "dependency_sets.siwe")
-    for key in ("manifest", "lockfile", "licenses", "provenance", "sbom", "vulnerability_review"):
+    toolchain = _expect_object(
+        siwe["runtime_toolchain"],
+        "dependency_sets.siwe.runtime_toolchain",
+    )
+    _exact_keys(
+        toolchain,
+        {
+            "platform",
+            "architecture",
+            "archive_format",
+            "archive",
+            "root",
+            "node",
+            "npm_cli",
+        },
+        "dependency_sets.siwe.runtime_toolchain",
+    )
+    if toolchain["platform"] != "linux":
+        _fail("dependency_sets.siwe.runtime_toolchain.platform must be linux")
+    architecture = _expect_string(
+        toolchain["architecture"],
+        "dependency_sets.siwe.runtime_toolchain.architecture",
+        maximum=16,
+    )
+    machine = platform.machine().lower()
+    normalized_machine = {"amd64": "x86_64", "arm64": "aarch64"}.get(machine, machine)
+    if architecture not in {"x86_64", "aarch64"} or architecture != normalized_machine:
+        _fail("dependency_sets.siwe.runtime_toolchain.architecture does not match the verifier host")
+    if toolchain["archive_format"] != "tar.xz":
+        _fail("dependency_sets.siwe.runtime_toolchain.archive_format must be tar.xz")
+    root = _validate_relative_path_text(
+        toolchain["root"],
+        "dependency_sets.siwe.runtime_toolchain.root",
+    )
+    artifacts.append(
+        (
+            "dependency_sets.siwe.runtime_toolchain.archive",
+            _validate_artifact_shape(
+                toolchain["archive"],
+                "dependency_sets.siwe.runtime_toolchain.archive",
+            ),
+        )
+    )
+    for key in ("node", "npm_cli"):
+        context = f"dependency_sets.siwe.runtime_toolchain.{key}"
+        member = _expect_object(toolchain[key], context)
+        _exact_keys(member, {"path", "sha256", "version"}, context)
+        member_path = _validate_relative_path_text(member["path"], f"{context}.path")
+        if PurePosixPath(root) not in PurePosixPath(member_path).parents:
+            _fail(f"{context}.path must be inside the reviewed toolchain root")
+        digest = _expect_string(member["sha256"], f"{context}.sha256", minimum=71, maximum=71)
+        if not DIGEST_RE.fullmatch(digest):
+            _fail(f"{context}.sha256 must be a lowercase sha256 digest")
+        version = _expect_string(
+            member["version"],
+            f"{context}.version",
+            maximum=32,
+        )
+        if not re.fullmatch(
+            r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)",
+            version,
+        ):
+            _fail(f"{context}.version must be an exact stable version")
+    for key in (
+        "manifest",
+        "lockfile",
+        "licenses",
+        "provenance",
+        "sbom",
+        "vulnerability_review",
+    ):
         artifacts.append(
             (
                 f"dependency_sets.siwe.{key}",
@@ -1322,7 +1611,12 @@ def _validate_selection_dependencies(
             )
         )
     artifacts.extend(_artifact_list(siwe["tarballs"], "dependency_sets.siwe.tarballs", minimum_items=1))
-    _validate_read_only_directory(siwe["cache"], "dependency_sets.siwe.cache", repo_root)
+    _validate_read_only_directory(
+        siwe["cache"],
+        "dependency_sets.siwe.cache",
+        repo_root,
+        require_tree_digest=True,
+    )
     lifecycle_scripts = _unique_strings(siwe["lifecycle_scripts"], "dependency_sets.siwe.lifecycle_scripts")
     if any("\n" in script or "\r" in script for script in lifecycle_scripts):
         _fail("dependency_sets.siwe.lifecycle_scripts contains a multiline value")
@@ -1570,11 +1864,11 @@ def _validate_launch_evidence(
     return artifacts, selection_approval, bootstrap_by_key, security_by_key
 
 
-def _load_bound_json(
+def _load_bound_bytes(
     repo_root: Path,
     artifact: Mapping[str, str],
     context: str,
-) -> dict[str, Any]:
+) -> bytes:
     path = _safe_repo_path(
         repo_root,
         artifact["path"],
@@ -1582,8 +1876,34 @@ def _load_bound_json(
         must_exist=True,
         require_file=True,
     )
-    value, _ = _load_json_strict(path, context)
-    return value
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        _fail(f"cannot read {context}: {exc}")
+    if _sha256_bytes(raw) != artifact["sha256"]:
+        _fail(f"digest drift for {artifact['path']}")
+    return raw
+
+
+def _load_bound_text(
+    repo_root: Path,
+    artifact: Mapping[str, str],
+    context: str,
+) -> str:
+    raw = _load_bound_bytes(repo_root, artifact, context)
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        _fail(f"cannot decode {context} as UTF-8: {exc}")
+
+
+def _load_bound_json(
+    repo_root: Path,
+    artifact: Mapping[str, str],
+    context: str,
+) -> dict[str, Any]:
+    raw = _load_bound_bytes(repo_root, artifact, context)
+    return _load_json_bytes_strict(raw, context)
 
 
 def _validate_evidence_window(
@@ -1868,6 +2188,182 @@ def _validate_security_receipts(
                     _fail(f"no-live-secrets receipt must prove {field} is false")
 
 
+def _validate_siwe_bootstrap_receipt(
+    receipt: Mapping[str, Any],
+    selection_record: Mapping[str, Any],
+    repo_root: Path,
+    context: str,
+) -> None:
+    selection_dependencies = _expect_object(
+        selection_record["dependency_sets"],
+        "bound selection dependency_sets",
+    )
+    siwe = _expect_object(selection_dependencies["siwe"], "bound selection SIWE dependencies")
+    selected_toolchain = _expect_object(
+        siwe["runtime_toolchain"],
+        "bound selection SIWE runtime toolchain",
+    )
+    toolchain = _expect_object(receipt["toolchain"], f"{context}.toolchain")
+    _exact_keys(
+        toolchain,
+        {
+            "platform",
+            "architecture",
+            "archive_sha256",
+            "node_sha256",
+            "node_version",
+            "npm_cli_sha256",
+            "npm_version",
+        },
+        f"{context}.toolchain",
+    )
+    expected_toolchain = {
+        "platform": selected_toolchain["platform"],
+        "architecture": selected_toolchain["architecture"],
+        "archive_sha256": selected_toolchain["archive"]["sha256"],
+        "node_sha256": selected_toolchain["node"]["sha256"],
+        "node_version": selected_toolchain["node"]["version"],
+        "npm_cli_sha256": selected_toolchain["npm_cli"]["sha256"],
+        "npm_version": selected_toolchain["npm_cli"]["version"],
+    }
+    if toolchain != expected_toolchain:
+        _fail(f"{context}.toolchain differs from the signed selection")
+
+    inputs = _expect_object(receipt["inputs"], f"{context}.inputs")
+    _exact_keys(
+        inputs,
+        {"manifest_sha256", "lock_sha256", "adapter_sha256"},
+        f"{context}.inputs",
+    )
+    expected_inputs = {
+        "manifest_sha256": siwe["manifest"]["sha256"],
+        "lock_sha256": siwe["lockfile"]["sha256"],
+        "adapter_sha256": selection_record["reviewed_state"]["siwe_adapter"]["sha256"],
+    }
+    if inputs != expected_inputs:
+        _fail(f"{context}.inputs differ from the signed selection")
+
+    cache = _expect_object(receipt["cache"], f"{context}.cache")
+    _exact_keys(
+        cache,
+        {
+            "reviewed_before_sha256",
+            "reviewed_after_sha256",
+            "local_before_sha256",
+            "local_after_sha256",
+        },
+        f"{context}.cache",
+    )
+    cache_digests = {
+        key: _expect_string(cache[key], f"{context}.cache.{key}", minimum=71, maximum=71)
+        for key in (
+            "reviewed_before_sha256",
+            "reviewed_after_sha256",
+            "local_before_sha256",
+            "local_after_sha256",
+        )
+    }
+    if any(not DIGEST_RE.fullmatch(digest) for digest in cache_digests.values()):
+        _fail(f"{context}.cache contains an invalid digest")
+    signed_cache_digest = siwe["cache"]["tree_sha256"]
+    if any(
+        cache_digests[key] != signed_cache_digest
+        for key in (
+            "reviewed_before_sha256",
+            "reviewed_after_sha256",
+            "local_before_sha256",
+        )
+    ):
+        _fail(f"{context}.cache differs from the signed reviewed tree")
+
+    security = _expect_object(
+        selection_record["security_evidence"],
+        "bound selection security_evidence",
+    )
+    canary = _load_bound_json(
+        repo_root,
+        security["network_deny_canary"],
+        "bound selection network deny canary",
+    )
+    expected_namespace = canary["boundary"]["network_namespace"]["identity"]
+    expected_profile = canary["boundary"]["apparmor"]["profile"] + " (enforce)"
+
+    def validate_boundary(value: Any, boundary_context: str) -> dict[str, Any]:
+        boundary = _expect_object(value, boundary_context)
+        _exact_keys(
+            boundary,
+            {
+                "namespace",
+                "apparmor_profile",
+                "interfaces",
+                "no_external_route",
+                "network_deny_canary_sha256",
+                "egress_policy_sha256",
+            },
+            boundary_context,
+        )
+        if boundary["namespace"] != expected_namespace:
+            _fail(f"{boundary_context}.namespace differs from the signed canary")
+        if boundary["apparmor_profile"] != expected_profile:
+            _fail(f"{boundary_context}.apparmor_profile differs from the signed canary")
+        if _unique_strings(boundary["interfaces"], f"{boundary_context}.interfaces") != ["lo"]:
+            _fail(f"{boundary_context}.interfaces must contain loopback only")
+        if _expect_bool(boundary["no_external_route"], f"{boundary_context}.no_external_route") is not True:
+            _fail(f"{boundary_context} must prove no external route")
+        if boundary["network_deny_canary_sha256"] != security["network_deny_canary"]["sha256"]:
+            _fail(f"{boundary_context} does not bind the signed network canary")
+        if boundary["egress_policy_sha256"] != security["egress_policy"]["sha256"]:
+            _fail(f"{boundary_context} does not bind the signed egress policy")
+        return boundary
+
+    network = _expect_object(receipt["network"], f"{context}.network")
+    _exact_keys(
+        network,
+        {
+            "enforcement",
+            "attempt_monitor",
+            "attempt_count",
+            "external_network_succeeded",
+            "boundary_before",
+            "boundary_after",
+        },
+        f"{context}.network",
+    )
+    if (
+        network["enforcement"] != "signed-namespace-plus-apparmor"
+        or network["attempt_monitor"] != "not-configured"
+        or network["attempt_count"] is not None
+    ):
+        _fail(f"{context}.network must truthfully describe its enforcement and observation limits")
+    if (
+        _expect_bool(
+            network["external_network_succeeded"],
+            f"{context}.network.external_network_succeeded",
+        )
+        is not False
+    ):
+        _fail(f"{context}.network must prove no external network success")
+    before = validate_boundary(network["boundary_before"], f"{context}.network.boundary_before")
+    after = validate_boundary(network["boundary_after"], f"{context}.network.boundary_after")
+    if before != after:
+        _fail(f"{context}.network boundary changed during execution")
+
+    smoke = _expect_object(receipt["smoke_result"], f"{context}.smoke_result")
+    _exact_keys(smoke, {"eoa", "eip1271", "contractReads"}, f"{context}.smoke_result")
+    if (
+        _expect_bool(smoke["eoa"], f"{context}.smoke_result.eoa") is not True
+        or _expect_bool(smoke["eip1271"], f"{context}.smoke_result.eip1271") is not True
+        or _expect_int(
+            smoke["contractReads"],
+            f"{context}.smoke_result.contractReads",
+            0,
+            2,
+        )
+        != 1
+    ):
+        _fail(f"{context}.smoke_result does not prove both exact SIWE paths")
+
+
 def _validate_bootstrap_receipts(
     repo_root: Path,
     artifacts: Mapping[str, Mapping[str, str]],
@@ -1910,17 +2406,27 @@ def _validate_bootstrap_receipts(
         "selection_record_id",
         "selection_approval_sha256",
         "real_execution",
-        "network_attempts",
-        "cache_mutated",
     }
     for key, expected_goal in BOOTSTRAP_GOALS.items():
         context = f"bootstrap_receipts.{key} receipt"
         receipt = _load_bound_json(repo_root, artifacts[key], context)
-        expected_keys = set(common_keys)
+        if key == "siwe":
+            expected_keys = common_keys | {
+                "cache_mutated",
+                "toolchain",
+                "inputs",
+                "cache",
+                "network",
+                "smoke_result",
+            }
+            expected_schema = "world-human-aid-siwe-bootstrap-verification-receipt/v2"
+        else:
+            expected_keys = common_keys | {"network_attempts", "cache_mutated"}
+            expected_schema = "world-human-aid-bootstrap-verification-receipt/v1"
         if key == "duckdb":
             expected_keys.update({"single_writer_enforced", "external_access"})
         _exact_keys(receipt, expected_keys, context)
-        if receipt["schema_version"] != "world-human-aid-bootstrap-verification-receipt/v1":
+        if receipt["schema_version"] != expected_schema:
             _fail(f"{context}.schema_version is not the strict expected receipt schema")
         if receipt["goal_id"] != expected_goal:
             _fail(f"{context} must bind exact goal {expected_goal}")
@@ -1954,10 +2460,22 @@ def _validate_bootstrap_receipts(
             _fail(f"{context} cannot authorize live actions")
         if _expect_bool(receipt["real_execution"], f"{context}.real_execution") is not True:
             _fail(f"{context} must prove real execution")
-        if _expect_int(receipt["network_attempts"], f"{context}.network_attempts", 0, 1000000) != 0:
-            _fail(f"{context} must record zero network attempts")
         if _expect_bool(receipt["cache_mutated"], f"{context}.cache_mutated") is not False:
             _fail(f"{context} must prove the reviewed cache was not mutated")
+        if key == "siwe":
+            _validate_siwe_bootstrap_receipt(
+                receipt,
+                selection_record,
+                repo_root,
+                context,
+            )
+        elif _expect_int(
+            receipt["network_attempts"],
+            f"{context}.network_attempts",
+            0,
+            1000000,
+        ) != 0:
+            _fail(f"{context} must record zero network attempts")
         if key == "duckdb":
             if (
                 _expect_bool(
@@ -2376,6 +2894,7 @@ def _verify_approval(
     now: datetime | None,
     verify_linked_selection: bool,
     historical_link: bool,
+    expected_approval_bytes: bytes | None,
 ) -> dict[str, Any]:
     if phase not in {SELECTION, LAUNCH}:
         _fail("phase must be selection or launch")
@@ -2416,6 +2935,11 @@ def _verify_approval(
     verification_time = verification_time.astimezone(UTC).replace(microsecond=0)
 
     record, raw = _load_json_strict(canonical_approval)
+    if expected_approval_bytes is not None:
+        if not isinstance(expected_approval_bytes, bytes):
+            _fail("expected approval snapshot must be bytes")
+        if raw != expected_approval_bytes:
+            _fail("canonical approval differs from the caller-captured snapshot")
     common_keys = {
         "schema_version",
         "gate_id",
@@ -2494,12 +3018,18 @@ def _verify_approval(
     # digest has been verified.  Besides preserving a clear fail-closed error
     # boundary, this prevents tampered heap content from influencing semantic
     # scope validation before its integrity failure is reported.
+    objective_heap_text = _load_bound_text(
+        root,
+        record["reviewed_state"]["objective_heap"],
+        "reviewed_state.objective_heap",
+    )
     _validate_scope(
         record["scope"],
         phase,
         root,
         generated_root,
         (Path(artifact["path"]) for _, artifact in artifacts),
+        objective_heap_text,
     )
     _validate_preflight_receipt(root, record["reviewed_state"], generated_root)
     if phase == SELECTION:
@@ -2525,7 +3055,7 @@ def _verify_approval(
     else:
         if selection_approval_artifact is None:
             _fail("launch approval omitted selection evidence")
-        implementation_goals = _schedulable_goals_from_heap(root) - LAUNCH_PREREQUISITE_GOALS
+        implementation_goals = _schedulable_goals_from_heap(objective_heap_text) - LAUNCH_PREREQUISITE_GOALS
         implementation_cids, implementation_bundles = _validate_derived_bundle_profile(
             root,
             record["reviewed_state"]["bundle_index"],
@@ -2570,38 +3100,64 @@ def _verify_approval(
         historical_link=historical_link,
     )
 
-    observed_trust_digest = _sha256_file(trust_path)
+    trust_raw = _read_allowed_signers_snapshot(trust_path)
+    observed_trust_digest = _sha256_bytes(trust_raw)
     if observed_trust_digest != record["trust"]["allowed_signers_sha256"]:
         _fail("allowed signers trust-store digest drift")
-    allowed_principals = _parse_allowed_signers(trust_path)
-
-    _verify_signatures(
-        canonical_approval,
-        raw,
-        phase,
-        signatures,
-        trust_path,
-        allowed_principals,
-    )
+    allowed_principals = _parse_allowed_signers(trust_raw)
+    allowed_signers_descriptor = _sealed_snapshot_fd(trust_raw)
+    try:
+        _verify_signatures(
+            canonical_approval,
+            raw,
+            phase,
+            signatures,
+            allowed_signers_descriptor,
+            allowed_principals,
+        )
+    finally:
+        os.close(allowed_signers_descriptor)
 
     if phase == LAUNCH and verify_linked_selection:
         if selection_approval_artifact is None:
             _fail("launch approval omitted selection evidence")
+        linked_selection = _safe_repo_path(
+            root,
+            selection_approval_artifact["path"],
+            "selection_evidence.approval.path",
+            must_exist=True,
+            require_file=True,
+        )
+        try:
+            linked_selection_raw = linked_selection.read_bytes()
+        except OSError as exc:
+            _fail(f"linked selection approval cannot be read: {exc}")
+        if _sha256_bytes(linked_selection_raw) != selection_approval_artifact["sha256"]:
+            _fail("linked selection approval digest drift")
         _verify_approval(
             repo_root=root,
             phase=SELECTION,
-            approval_path=root / selection_approval_artifact["path"],
+            approval_path=linked_selection,
             allowed_signers_path=trust_path,
             now=verification_time,
             verify_linked_selection=False,
             historical_link=True,
+            expected_approval_bytes=linked_selection_raw,
         )
+
+    try:
+        final_raw = canonical_approval.read_bytes()
+    except OSError as exc:
+        _fail(f"canonical approval cannot be reread after verification: {exc}")
+    if final_raw != raw:
+        _fail("canonical approval changed during verification")
 
     return {
         "status": "verified",
         "phase": phase,
         "gate_id": GATE_IDS[phase],
         "record_id": record_id,
+        "verified_approval_sha256": _sha256_bytes(raw),
         "expires_at": record["expires_at"],
         "reviewed_root_commit": root_commit,
         "artifact_count": len(seen_artifacts),
@@ -2618,6 +3174,7 @@ def verify_approval(
     approval_path: Path,
     allowed_signers_path: Path,
     now: datetime | None = None,
+    expected_approval_bytes: bytes | None = None,
 ) -> dict[str, Any]:
     """Verify one approval and return a non-secret summary.
 
@@ -2634,6 +3191,7 @@ def verify_approval(
         now=now,
         verify_linked_selection=True,
         historical_link=False,
+        expected_approval_bytes=expected_approval_bytes,
     )
 
 

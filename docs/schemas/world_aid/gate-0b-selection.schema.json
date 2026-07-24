@@ -59,6 +59,9 @@
         "bundle_index",
         "restricted_bundle_index",
         "restricted_bundle_index_duckdb",
+        "siwe_adapter",
+        "siwe_proposal",
+        "siwe_static_test",
         "siwe_verifier",
         "siwe_runtime_test",
         "zkp_verifier",
@@ -99,6 +102,15 @@
           "$ref": "#/$defs/artifact"
         },
         "restricted_bundle_index_duckdb": {
+          "$ref": "#/$defs/artifact"
+        },
+        "siwe_adapter": {
+          "$ref": "#/$defs/artifact"
+        },
+        "siwe_proposal": {
+          "$ref": "#/$defs/artifact"
+        },
+        "siwe_static_test": {
           "$ref": "#/$defs/artifact"
         },
         "siwe_verifier": {
@@ -510,6 +522,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "runtime_toolchain",
         "manifest",
         "lockfile",
         "tarballs",
@@ -521,6 +534,9 @@
         "lifecycle_scripts"
       ],
       "properties": {
+        "runtime_toolchain": {
+          "$ref": "#/$defs/siweRuntimeToolchain"
+        },
         "manifest": {
           "$ref": "#/$defs/artifact"
         },
@@ -535,7 +551,7 @@
           }
         },
         "cache": {
-          "$ref": "#/$defs/readOnlyDirectory"
+          "$ref": "#/$defs/siweReadOnlyCache"
         },
         "licenses": {
           "$ref": "#/$defs/artifact"
@@ -557,6 +573,87 @@
             "minLength": 1,
             "maxLength": 256
           }
+        }
+      }
+    },
+    "siweReadOnlyCache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "read_only",
+        "tree_sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "read_only": {
+          "const": true
+        },
+        "tree_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "siweRuntimeToolchainMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "version"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        }
+      }
+    },
+    "siweRuntimeToolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "architecture",
+        "archive_format",
+        "archive",
+        "root",
+        "node",
+        "npm_cli"
+      ],
+      "properties": {
+        "platform": {
+          "const": "linux"
+        },
+        "architecture": {
+          "type": "string",
+          "enum": [
+            "x86_64",
+            "aarch64"
+          ]
+        },
+        "archive_format": {
+          "const": "tar.xz"
+        },
+        "archive": {
+          "$ref": "#/$defs/artifact"
+        },
+        "root": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "node": {
+          "$ref": "#/$defs/siweRuntimeToolchainMember"
+        },
+        "npm_cli": {
+          "$ref": "#/$defs/siweRuntimeToolchainMember"
         }
       }
     },
