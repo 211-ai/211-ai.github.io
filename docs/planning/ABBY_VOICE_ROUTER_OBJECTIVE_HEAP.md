@@ -136,14 +136,14 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G005 Build deterministic dataset normalization and quality gates
 
-- Status: active
+- Status: complete
 - Fib priority: 5000
 - Priority: P0
 - Track: voice-data
 - Parents: ABBY-VOICE-G004
 - Goal: Convert the existing manifests and response corpus into canonical rows while detecting low-value vocabulary fragments malformed spoken text duplicates ungrounded claims missing audio and inconsistent slots.
-- Evidence: deterministic manifest normalizer, text and audio deduplication report, spoken-text corruption checks, slot fidelity checks, dataset quality summary with quarantine reasons, ABBY-VOICE-G005 completion receipt
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
+- Evidence: dependency-light `AbbyVoiceDatasetNormalizer`, stable source references/content IDs/splits, canonical response/template/audio/provenance output, text/audio duplicate winner ledger, `normalize_indextts_spoken_text` corruption checks, grounded slot-fidelity and factual-claim gates, lossless quarantine records, deterministic quality/build manifests in `ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py` and `scripts/build_abby_voice_dataset_v2.py`; 16 focused offline assertions in `ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py`; objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
 - Bundle: abby-voice/dataset-normalization
 - Parallel lane: abby-voice-data
@@ -154,6 +154,18 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
 - Conflict policy: normalization must be deterministic and non-destructive; every rejected row receives machine-readable reason codes and source references
 - Gap task: Reuse the strongest current dedupe and slotted-response logic behind an ipfs_datasets_py normalization API and produce reproducible quality statistics.
+- Objective-validation repair: `ABBY-VOICE-AUTO-005` owns the G005 validation gate. The source discovery scan attributed normalization, de-duplication, corruption, slot-fidelity, quality-summary, and completion evidence to unrelated ProveKit, Chainlink, transcript, and IndexTTS batch artifacts through AST-token coincidence. Those artifacts are not G005 evidence. The defining implementation, focused assertions, checked-in corpus dry run, and exact validation result are mapped in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`.
+- Acceptance gate:
+  1. Aggregate legacy response manifests, top-level record lists, canonical rows, and JSONL inputs normalize without mutating their source objects or files. Source references use a stable legacy ID or complete source-row SHA-256 and never an array position.
+  2. Normalized output is independent of input order and wall-clock time. Response/template IDs, real audio-byte hashes/IDs, provenance IDs, split assignments, ordering, JSONL bytes, quality statistics, checksums, and the build manifest are deterministic on rerun.
+  3. Accepted response, template, audio, and provenance values use the separate canonical Abby voice v2 row contracts. Audio integrity comes from a full declared or locally verified SHA-256, never a path or truncated legacy text hash.
+  4. Canonical spoken-text identity drives text de-duplication; full audio-byte SHA-256 drives audio de-duplication. Each group records one deterministic survivor, every duplicate source reference, merge outcome, reason code, and count.
+  5. Empty text, source-aware low-value vocabulary, empty-quote/control/replacement/residual-markup/placeholder corruption, ungrounded factual claims, missing or unverifiable audio under the configured policy, audio hash mismatch, and inconsistent slot/placeholder/source binding are covered by focused quarantine assertions.
+  6. Every rejected source row remains recoverable in `QuarantineRecord` with the original JSON-safe value, full source-row SHA-256, stable source reference, sorted reason codes, field diagnostics, and optional candidate ID. Planned missing audio can be retained as a visible warning or promoted to quarantine by policy.
+  7. The quality report deterministically reconciles input, accepted canonical configs, quarantine/warning reason counts, text/audio duplicate counts, and split counts. The builder writes separate schema-stable JSONL configs plus quarantine, warnings, duplicate ledger, split map, quality report, and checksummed manifest through atomic local replacements.
+  8. The CLI is offline and non-destructive, accepts manifests/directories/JSONL, supports strict audio/grounding/quarantine gates, validates bundle references and checksums with `--check`, and proves byte-identical reruns with `--check-idempotence`; it performs no remote bucket or Hugging Face mutation.
+  9. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py` passes and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no smaller child goal is needed. G005 owns the reusable normalization API, deterministic de-duplication/quality evidence, quarantine policy, local JSONL builder, and focused unit gate. G011 owns immutable remote-source inventory, full curated materialization, Parquet/Dataset Viewer compatibility, and byte-identical release artifacts. G006 owns the human-reviewed remote migration plan, and G007 owns searchable GraphRAG ingestion/retrieval.
 
 ## ABBY-VOICE-G006 Produce a safe Hugging Face bucket and dataset migration plan
 
