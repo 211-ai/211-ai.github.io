@@ -944,6 +944,12 @@ implementation command deliberately replaces the supervisor's unsandboxed
 default with an ephemeral `workspace-write` Codex sandbox whose command tools
 have network access disabled. The Codex model control plane remains available;
 World, RPC, package/container registries, and arbitrary command egress do not.
+The command also disables Codex browser, app, and multi-agent surfaces and sets
+`web_search="disabled"` because those surfaces are outside the command sandbox
+and would violate G002's offline acceptance contract. Treat any attempted web
+or browser tool call as a failed launch: stop the foreground supervisor, verify
+that its isolated worktree is clean, terminate any orphaned implementation
+child by its exact recorded PID, and relaunch from the immutable G002 index.
 
 ```bash
 env \
@@ -972,7 +978,7 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
-  --implementation-command 'codex --ask-for-approval never exec --ephemeral --sandbox workspace-write -' \
+  --implementation-command 'codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
   --poll-interval 15 \
   --daemon-interval 15 \
   --check-interval 15 \
