@@ -950,12 +950,16 @@ and would violate G002's offline acceptance contract. Treat any attempted web
 or browser tool call as a failed launch: stop the foreground supervisor, verify
 that its isolated worktree is clean, terminate any orphaned implementation
 child by its exact recorded PID, and relaunch from the immutable G002 index.
+`IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1` also makes the daemon emit explicit
+single-agent guidance because noninteractive Codex sessions do not necessarily
+have a registered collaboration thread.
 
 ```bash
 env \
   WORLD_ID_ENABLED=0 \
   WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
   WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \

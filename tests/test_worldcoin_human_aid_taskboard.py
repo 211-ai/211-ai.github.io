@@ -244,5 +244,6 @@ def test_worldcoin_human_aid_runbook_defaults_to_offline_dry_run() -> None:
     assert "--disable browser_use" in runbook
     assert "--disable multi_agent" in runbook
     assert r"-c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write" in runbook
+    assert "IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1" in runbook
     assert "human approval" in lowered
     assert "production" in lowered and "transfer" in lowered
