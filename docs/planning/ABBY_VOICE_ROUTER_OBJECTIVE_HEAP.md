@@ -84,14 +84,14 @@ approves a reviewed manifest and dry-run receipt.
 
 ## ABBY-VOICE-G003 Port Abby provider fallback behavior into voice_router
 
-- Status: active
+- Status: complete
 - Fib priority: 3000
 - Priority: P0
 - Track: voice-router
 - Parents: ABBY-VOICE-G002
 - Goal: Make the Python voice router capable of the same ordered remote local and degraded behaviors used by the wallet voice assistant without importing UI-specific code.
-- Evidence: IndexTTS provider adapter, Hugging Face Whisper HTTP adapter, ordered capability-aware fallback policy, bounded retry timeout and circuit-breaker tests, structured degraded-result receipts, ABBY-VOICE-G003 completion receipt
-- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Evidence: dependency-light `IndexTTSHTTPProvider` and `HuggingFaceWhisperHTTPProvider` adapters with injected stdlib transports; lazy `abby_indextts` and `abby_whisper` router capabilities and aliases; ordered capability-aware remote/local fallback; bounded transient retry, timeout, backoff, and per-endpoint circuit breakers; privacy-safe `AbbyProviderReceipt` attempt history embedded in structured degraded `VoiceTurnResult` traces; 28 focused offline assertions; ABBY-VOICE-G003 completion receipt
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_abby_voice_providers.py, data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-004-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py
 - Bundle: abby-voice/provider-routing
 - Parallel lane: abby-voice-router
@@ -102,6 +102,18 @@ approves a reviewed manifest and dry-run receipt.
 - Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_abby_voice_providers.py
 - Conflict policy: adapters must be optional and secret-free; tests use injected transports and never call paid or mutable remote services
 - Gap task: Extract provider-neutral behavior from wallet_interface helpers into injectable adapters and prove provider selection fallback and error normalization.
+- Objective-validation repair: `ABBY-VOICE-AUTO-004` owns this validation gate. The source discovery scan attributed adapter, fallback, resilience, receipt, and completion terms to unrelated Chainlink, ProveKit, and IndexTTS batch artifacts through AST-token coincidence. Those files are not G003 evidence. The defining implementation, focused offline assertions, and exact validation result are mapped in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-004-objective-validation-repair.md`.
+- Acceptance gate:
+  1. Importing `voice_providers.abby` has no optional model, UI, credential, or network side effect. The router lazily resolves canonical `abby_indextts`/`abby_whisper` names and aliases, exposes their synthesis-only/transcription-only capabilities without construction, and leaves automatic legacy provider selection unchanged.
+  2. IndexTTS sends normalized JSON synthesis requests through an injected transport, applies optional authorization and billing headers only when configured, accepts direct or base64 audio and same-origin audio references, rejects malformed/empty/unsafe responses, and retains the migration symbol `_run_indextts_gradio_tts`.
+  3. Whisper reads byte or current local-file audio, sends raw audio with normalized model URL, content type, language, authorization, billing, and finite timeout, extracts supported nested transcription forms, rejects empty/malformed results, and retains the migration symbol `_run_hf_whisper_stt`.
+  4. Explicit preferred/fallback chains are authoritative, de-duplicated, capability-filtered before provider construction, attempted in exact order, and stop on first success. A failed remote followed by local success records the selected local provider, failed and successful traces, content hashes, and `stt_provider_fallback` or `tts_provider_fallback`; all TTS failures return text-only and all STT failures return a failed safe-handoff receipt.
+  5. Timeout, connection, HTTP 408/425/429, and 5xx failures retry no more than the configured bound with capped injected backoff and the same finite per-attempt timeout. Terminal validation and HTTP 400/401/403/404/422 failures do not retry or open circuits.
+  6. Each provider endpoint has an isolated, lock-protected circuit. Consecutive exhausted transient calls open it; open calls fail without transport I/O; one half-open probe is admitted after cooldown; probe success closes and resets it while failure reopens it.
+  7. `AbbyProviderReceipt` records sanitized endpoint, attempt number, status, duration, HTTP status, retryability, selected endpoint, and error code. Router traces retain that receipt while excluding credentials, prompts, caller audio, local paths, and synthesized bytes; Bearer/query/assignment credential forms and reflected caller input are redacted.
+  8. Unexpected coroutine results are closed and rejected at the synchronous `VoiceProvider` boundary, allowing the next fallback without an unawaited-coroutine leak. Existing `text_to_speech` and `speech_to_text` signatures and bytes/string returns remain unchanged.
+  9. `python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py` passes offline and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: no smaller child goal is needed. G003 owns dependency-light remote adapters, resilience, capability-aware provider order, and adapter/degraded receipt evidence. G008 owns GraphRAG template retrieval and grounded turn composition; G010 owns wallet/UI adoption.
 
 ## ABBY-VOICE-G004 Define the canonical Abby voice dataset schema
 
