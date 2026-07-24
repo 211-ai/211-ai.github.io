@@ -5,7 +5,6 @@ import re
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLAN_PATH = REPO_ROOT / "docs/planning/WORLDCOIN_HUMAN_AID_IMPLEMENTATION_PLAN.md"
 HEAP_PATH = REPO_ROOT / "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md"
@@ -55,7 +54,7 @@ def test_worldcoin_human_aid_heap_uses_the_supervisor_contract() -> None:
     parse_goal_heap, objective_heap_schedule, _, _ = _objective_graph_api()
     goals = parse_goal_heap(HEAP_PATH.read_text(encoding="utf-8"))
 
-    assert len(goals) == 40
+    assert len(goals) == 42
     goal_ids = [goal.goal_id for goal in goals]
     assert len(goal_ids) == len(set(goal_ids))
     assert all(re.fullmatch(r"WORLDCOIN-G\d{3}", goal_id) for goal_id in goal_ids)
@@ -88,10 +87,7 @@ def test_worldcoin_human_aid_heap_uses_the_supervisor_contract() -> None:
             for output in goal.fields["outputs"].split(",")
             if (
                 output.strip().endswith((".py", ".js", ".jsx", ".ts", ".tsx"))
-                and (
-                    Path(output.strip()).name.startswith("test_")
-                    or ".spec." in Path(output.strip()).name
-                )
+                and (Path(output.strip()).name.startswith("test_") or ".spec." in Path(output.strip()).name)
             )
         ]
         assert all(Path(output).name in validation for output in test_outputs), (
@@ -102,7 +98,7 @@ def test_worldcoin_human_aid_heap_uses_the_supervisor_contract() -> None:
 
     scheduled_ids = {record.goal_id for record in objective_heap_schedule(goals)}
     assert scheduled_ids == {goal.goal_id for goal in goals if goal.is_schedulable}
-    assert len(scheduled_ids) == 38
+    assert len(scheduled_ids) == 40
 
     blocked = {goal.goal_id for goal in goals if goal.status == "blocked"}
     assert blocked == {"WORLDCOIN-G035", "WORLDCOIN-G036"}
@@ -138,6 +134,59 @@ def test_worldcoin_human_aid_goal_dependencies_exist_and_are_acyclic() -> None:
     assert "WORLDCOIN-G038" in by_id["WORLDCOIN-G006"].parent_goal_ids
     assert "WORLDCOIN-G039" in by_id["WORLDCOIN-G012"].parent_goal_ids
     assert "WORLDCOIN-G040" in by_id["WORLDCOIN-G033"].parent_goal_ids
+    assert "WORLDCOIN-G041" in by_id["WORLDCOIN-G039"].parent_goal_ids
+    assert "WORLDCOIN-G042" in by_id["WORLDCOIN-G040"].parent_goal_ids
+
+
+def test_gate_0b_preparation_owns_every_selection_bound_input() -> None:
+    parse_goal_heap, _, _, _ = _objective_graph_api()
+    goals = {goal.goal_id: goal for goal in parse_goal_heap(HEAP_PATH.read_text(encoding="utf-8"))}
+
+    def outputs(goal_id: str) -> set[str]:
+        return {value.strip() for value in goals[goal_id].fields["outputs"].split(",") if value.strip()}
+
+    g037 = outputs("WORLDCOIN-G037")
+    g038 = outputs("WORLDCOIN-G038")
+    assert {
+        "scripts/verify_world_siwe_offline_bootstrap.py",
+        "wallet_interface/services/world_siwe_verifier/package-lock.json",
+        "tests/world_aid/test_siwe_offline_bootstrap.py",
+    } <= g037
+    assert not g038 & g037
+    assert g038 == {
+        "docs/reports/WORLD_SIWE_OFFLINE_BOOTSTRAP.md",
+        "data/worldcoin_human_aid/bootstrap/world-siwe-offline-smoke.fixture.json",
+    }
+
+    g041 = outputs("WORLDCOIN-G041")
+    g039 = outputs("WORLDCOIN-G039")
+    assert {
+        "scripts/verify_world_aid_zkp_toolchain.py",
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+        "tests/world_aid/test_zkp_toolchain_bootstrap.py",
+    } <= g041
+    assert not g039 & g041
+    assert g039 == {
+        "docs/reports/WORLD_AID_ZKP_OFFLINE_BOOTSTRAP.md",
+        "data/worldcoin_human_aid/bootstrap/zkp-toolchain-smoke.fixture.json",
+    }
+
+    g042 = outputs("WORLDCOIN-G042")
+    g040 = outputs("WORLDCOIN-G040")
+    assert {
+        "docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md",
+        "requirements-world-aid.lock",
+        "wallet_interface/deploy/world-aid-duckdb-runtime.yml",
+        "docs/specs/WORLD_AID_DUCKDB_BACKUP.md",
+        "scripts/verify_world_aid_duckdb_bootstrap.py",
+        "tests/world_aid/test_duckdb_bootstrap.py",
+    } <= g042
+    assert not g040 & g042
+    assert g040 == {
+        "docs/reports/WORLD_AID_DUCKDB_OFFLINE_BOOTSTRAP.md",
+        "data/worldcoin_human_aid/bootstrap/duckdb-offline-smoke.fixture.json",
+    }
 
 
 def test_generated_worldcoin_tasks_preserve_goal_specific_acceptance() -> None:
@@ -165,9 +214,7 @@ def test_generated_worldcoin_tasks_preserve_goal_specific_acceptance() -> None:
             finding=finding,
             discovery_path=Path(f"data/worldcoin_human_aid/discovery/{index:03d}.json"),
         )
-        acceptance_lines = [
-            line for line in rendered.splitlines() if line.startswith("- Acceptance:")
-        ]
+        acceptance_lines = [line for line in rendered.splitlines() if line.startswith("- Acceptance:")]
 
         assert len(acceptance_lines) == 1
         assert acceptance_lines[0].removeprefix("- Acceptance:").strip()
@@ -201,7 +248,8 @@ def test_worldcoin_human_aid_plan_preserves_proof_and_privacy_boundaries() -> No
         "reorg",
         "submission_ambiguous",
         "do not advertise the direct erc-20 path as anonymous",
-        "postgresql",
+        "duckdb",
+        "single-writer",
         "localwalletrepository",
         "0x2cfc85d8e48f8eab294be644d9e25c3030863003",
         "world_aid_external_calls_enabled",

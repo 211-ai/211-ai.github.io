@@ -71,7 +71,7 @@ authoritative audit inventory, not a runtime registry.
 | IDKit parsing and verification | Partial | Both protocol `3.0` and `4.0` are normalized and sent to the Developer Portal verifier (`wallet_interface/world_id.py::normalize_idkit_response`; `wallet_interface/world_id.py::verify_world_id_proof`). | G004 must default legacy off and define a v3 sunset without silently changing old wallet consumers. |
 | Wallet binding | Unsafe to reuse | A verified result becomes a serializable `WorldIdBinding` plus proof receipt and may be saved by the optional local repository (`wallet_interface/app_service.py::register_world_id_verification`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::add_world_id_binding`; `ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository`). | G004 owns protocol labels, G007 owns optional-human context binding, G008 owns replay durability, and G014 owns trust-state composition. |
 | World status API | Unsafe to reuse | The optional `actor_did` permits unauthenticated status, and status returns all serialized bindings (`wallet_interface/routes/world_id.py::get_world_id_status`; `wallet_interface/app_service.py::get_world_id_status`). | Preserve route shape only until G007/G024/G033 provide authenticated minimum-necessary projections and secure storage. |
-| Local wallet snapshots | Unsafe to reuse | Snapshots are JSON files containing hex principal secrets and raw serialized World binding objects (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot`). | Local development only; G033 owns encrypted transactional replacement and migration, consuming the human-approved G040 runtime. |
+| Local wallet snapshots | Unsafe to reuse | Snapshots are JSON files containing hex principal secrets and raw serialized World binding objects (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot`; `ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::export_wallet_snapshot`). | Local development only; G033 owns the encrypted, single-writer transactional replacement and migration, consuming the human-approved G040 DuckDB runtime. Direct worker access to the DuckDB file is not an approved substitute for that boundary. |
 | Document privacy profile | Simulated | `create_document_profile_proof` always calls `create_simulated_proof_receipt` with type `document_privacy_profile` (`ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::create_document_profile_proof`; `ipfs_datasets_py/ipfs_datasets_py/wallet/proofs.py::create_simulated_proof_receipt`). | Never accept as program eligibility. G012/G013 own the eligibility prover/verifier and artifacts; G014 owns composition with other trust states. |
 | Location HTTP proof backend | Partial | The backend transmits statement, public inputs, and witness to an injected HTTP prover (`wallet_interface/proof_backends.py::HttpLocationRegionProofBackend.prove_location_region`). | Preserve only as an isolated proof adapter; it does not establish program eligibility. |
 | Provider staff context | Partial | The RP-signature response adds provider and staff IDs plus `signal_context`, while registration validates action and proof without comparing those response annotations (`wallet_interface/app_service.py::create_provider_staff_world_id_rp_signature`; `wallet_interface/app_service.py::register_world_id_verification`). | Do not treat it as provider approval. G006 owns wallet authentication, G007 optional-human context, G014 composition, and G017 registry-backed provider authorization. |
@@ -212,6 +212,7 @@ World proof-of-human:
    encrypted multi-record transaction, row-locking, migration, backup, or
    recovery boundary
    (`ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository`;
+   `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G042`;
    `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G033`;
    `docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040`).
 
@@ -273,24 +274,47 @@ blocked at the new human-aid boundary
 
 ## Offline bootstrap decision record
 
+### Historical PostgreSQL-selection supersession
+
+The original G002 receipt inventoried Python/PostgreSQL inputs because
+PostgreSQL was the database selection target in the objective at that time.
+That observation remains historical audit evidence; it is not the current
+selection target and is not silently rewritten into a DuckDB approval.
+Subsequent repository-owner direction replaces that target with Python/DuckDB.
+This direction changes the proposal questions only: it is not a signed Gate 0B
+dependency, architecture, security, license, or production approval
+(`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::historical_supersession`).
+
 The qualified inventory separates what is observed in this checkout/host from
 what is merely locked or declared, what was not observed, and what remains
 unknown because inspecting it would exceed this audit's authority. It records
-installed-tree IDKit manifests, Python distribution metadata, non-executing
-PATH observations for PostgreSQL and ZKP commands, repository ZKP sources, and
-prior-smoke evidence without presenting any of those facts as approval or
-runtime readiness
+installed-tree IDKit manifests, Python distribution metadata, the root
+`duckdb>=1.4.0` declaration, observed-but-unapproved DuckDB 1.4.3 metadata,
+non-executing PATH observations for DuckDB and ZKP commands, repository ZKP
+sources, and prior-smoke evidence without importing DuckDB or presenting any
+of those facts as approval or runtime readiness
 (`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory`;
 `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::audit_observation`).
-Manifest absence is not used to claim that a PostgreSQL server, image, private
-cache, or off-PATH binary is globally missing; qualified not-observed and
-not-inspected states remain explicit.
+The declaration and installed metadata are not an exact lock or approved
+wheel. Command or manifest absence is not used to claim that a DuckDB CLI,
+private wheelhouse, or off-PATH binary is globally missing;
+qualified not-observed and not-inspected states remain explicit.
+
+DuckDB permits only one external writer process for the native database-file
+mode used by the existing supervisor primitives. G033 must therefore place the
+file behind one authenticated writer boundary and reject direct opens from
+wallet, API, payout, and reconciliation workers. A file path, process-shared
+lock, or successful local import alone does not prove cross-worker transaction
+safety, authorization, encryption, backup, or recovery
+(`ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/duckdb_state.py::DuckDBConnection`;
+`data/worldcoin_human_aid/audit/component-map.json::local-wallet-repository`).
 
 The proposal asks humans to select exact versions, checksums, licenses,
-provenance, SBOM policy, cache/image/key locations, and smoke tests before any
+provenance, SBOM policy, cache/storage/key locations, and smoke tests before any
 acquisition or execution. It routes SIWE proposal/verification to G037/G038,
-ZKP verification to G039, PostgreSQL verification to G040, and chain-client
-selection to G019
+ZKP verifier/smoke preparation and execution to G041/G039, DuckDB
+ADR/lock/policy/verifier preparation and execution to G042/G040, and
+chain-client selection to G019
 (`data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::human_approval_questions`;
 `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::approval_gate`).
 

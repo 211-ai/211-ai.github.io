@@ -83,4 +83,5 @@ asyncio_default_fixture_loop_scope = "function"
 markers = [
   "integration: marks tests as requiring live external services (deselect with '-m \"not integration\"')",
   "experimental: marks tests as speculative, adversarial, or requiring non-deterministic deps (deselect with '-m \"not experimental\"')",
+  "world_aid_egress_canary: deliberately attempts a guarded non-local connection and requires the deny/spy to report it",
 ]

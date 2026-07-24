@@ -27,7 +27,7 @@ The exact G002 acceptance terms are covered by:
   evidence.
 - `data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json` — qualified
   observed, locked/declared, not-observed, and not-inspected npm,
-  Python/PostgreSQL, and ZKP inventory plus a human-selection-only question
+  Python/DuckDB, and ZKP inventory plus a human-selection-only question
   set.
 - `tests/world_aid/test_integration_audit_contract.py` — offline structural,
   source-citation, exact semantic-owner, bootstrap, and static-body contract.
@@ -52,6 +52,13 @@ The exact G002 acceptance terms are covered by:
 | Stable machine ownership/conflicts | Component map `components` |
 | Human-approved offline inputs only | Bootstrap proposal `human_approval_questions` and `approval_gate` |
 | No prohibited audit integration actions | Bootstrap `audit_observation`; guarded static pytest invocation |
+
+The original G002 evidence described Python/PostgreSQL because that was the
+then-current storage selection. The tracked rebaseline preserves that fact as a
+historical supersession note and changes the current question set to
+Python/DuckDB. Observed DuckDB metadata and repository-owner direction are not
+Gate 0B approval, an exact dependency lock, or proof that direct multi-process
+file access is safe.
 
 ## Validation
 

@@ -1,0 +1,290 @@
+{
+  "schema_version": "world-human-aid-gate-0b-launch/v1",
+  "gate_id": "gate-0b-launch",
+  "record_id": "REPLACE-WITH-UNIQUE-RECORD-ID",
+  "decision": "pending",
+  "issued_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+  "not_before": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+  "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+  "reviewed_state": {
+    "root_commit": "REPLACE-WITH-40-HEX-COMMIT",
+    "submodule_commits": {
+      "ipfs_accelerate_py": "REPLACE-WITH-40-HEX-COMMIT",
+      "ipfs_datasets_py": "REPLACE-WITH-40-HEX-COMMIT"
+    },
+    "objective_heap": {
+      "path": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "implementation_plan": {
+      "path": "docs/planning/WORLDCOIN_HUMAN_AID_IMPLEMENTATION_PLAN.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "runbook": {
+      "path": "docs/planning/WORLDCOIN_HUMAN_AID_AGENT_SUPERVISOR_RUNBOOK.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "storage_adr": {
+      "path": "docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "full_board": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/WORLDCOIN_HUMAN_AID_TODO.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "objective_graph": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/objective_graph.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "bundle_index": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/objective_bundles/index.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "implementation_bundle_index": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/launch_profiles/implementation.index.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "implementation_bundle_index_duckdb": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/launch_profiles/implementation.index.duckdb",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "preflight_receipt": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/preflight-receipt.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "dry_run_receipt": {
+      "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/dry_run/lane-manifest.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    }
+  },
+  "scope": {
+    "goal_ids": [
+      "REPLACE-WITH-REVIEWED-GOAL-ID"
+    ],
+    "validation_commands": [
+      "REPLACE-WITH-EXACT-REVIEWED-VALIDATION-COMMAND"
+    ],
+    "writable_paths": [
+      "REPLACE-WITH-REVIEWED-REPOSITORY-RELATIVE-PATH"
+    ],
+    "network": {
+      "default_deny": true,
+      "registry_access": false,
+      "allowed_destinations": []
+    },
+    "feature_flags": {
+      "WORLD_ID_ENABLED": "0",
+      "WORLD_AID_EXTERNAL_CALLS_ENABLED": "0",
+      "WORLD_AID_WLD_TRANSFERS_ENABLED": "0"
+    },
+    "live_secrets_present": false,
+    "forbidden_actions": [
+      "world-api-call",
+      "chain-broadcast",
+      "token-transfer",
+      "contract-deployment",
+      "allowance-change",
+      "live-secret-access",
+      "package-registry-access",
+      "container-registry-access"
+    ]
+  },
+  "reviewers": [
+    {
+      "role": "product-owner",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "security-reviewer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "privacy-reviewer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "program-policy-owner",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "accessibility-reviewer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "repository-maintainer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "supply-chain-maintainer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "cryptography-reviewer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    },
+    {
+      "role": "storage-security-reviewer",
+      "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+      "decision": "pending",
+      "reviewed_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+      "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP"
+    }
+  ],
+  "exceptions": [],
+  "trust": {
+    "signature_namespace": "world-aid-gate-0b-launch-v1",
+    "allowed_signers_sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+    "signatures": [
+      {
+        "role": "product-owner",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "product-owner.sshsig"
+      },
+      {
+        "role": "security-reviewer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "security-reviewer.sshsig"
+      },
+      {
+        "role": "privacy-reviewer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "privacy-reviewer.sshsig"
+      },
+      {
+        "role": "program-policy-owner",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "program-policy-owner.sshsig"
+      },
+      {
+        "role": "accessibility-reviewer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "accessibility-reviewer.sshsig"
+      },
+      {
+        "role": "repository-maintainer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "repository-maintainer.sshsig"
+      },
+      {
+        "role": "supply-chain-maintainer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "supply-chain-maintainer.sshsig"
+      },
+      {
+        "role": "cryptography-reviewer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "cryptography-reviewer.sshsig"
+      },
+      {
+        "role": "storage-security-reviewer",
+        "identity": "REPLACE-WITH-ALLOWED-SIGNER-IDENTITY",
+        "key_fingerprint": "SHA256:REPLACE-WITH-OPENSSH-FINGERPRINT",
+        "file": "storage-security-reviewer.sshsig"
+      }
+    ]
+  },
+  "selection_evidence": {
+    "approval": {
+      "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "signatures": [
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/repository-maintainer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/supply-chain-maintainer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/cryptography-reviewer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/storage-security-reviewer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/security-reviewer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/product-owner.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/privacy-reviewer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/program-policy-owner.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      {
+        "path": "data/worldcoin_human_aid/approvals/gate-0b-selection/signatures/accessibility-reviewer.sshsig",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      }
+    ]
+  },
+  "bootstrap_receipts": {
+    "siwe": {
+      "path": "data/worldcoin_human_aid/bootstrap/world-siwe-offline-smoke.fixture.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "zkp": {
+      "path": "data/worldcoin_human_aid/bootstrap/zkp-toolchain-smoke.fixture.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "duckdb": {
+      "path": "data/worldcoin_human_aid/bootstrap/duckdb-offline-smoke.fixture.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    }
+  },
+  "security_evidence": {
+    "network_deny_canary": {
+      "path": "data/worldcoin_human_aid/gate_evidence/gate-0b-launch/network-deny-canary.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "egress_policy": {
+      "path": "data/worldcoin_human_aid/gate_evidence/gate-0b-launch/egress-policy-attestation.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "no_live_secrets_attestation": {
+      "path": "data/worldcoin_human_aid/gate_evidence/gate-0b-launch/no-live-secrets-attestation.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    }
+  }
+}

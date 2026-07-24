@@ -7,6 +7,14 @@ data/worldcoin_human_aid/*
 data/worldcoin_human_aid/audit/*
 !data/worldcoin_human_aid/audit/component-map.json
 !data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json
+!data/worldcoin_human_aid/bootstrap/
+data/worldcoin_human_aid/bootstrap/*
+!data/worldcoin_human_aid/bootstrap/world-siwe-dependency-proposal.json
+!data/worldcoin_human_aid/bootstrap/zkp-toolchain-dependency-proposal.json
+!data/worldcoin_human_aid/bootstrap/duckdb-dependency-proposal.json
+!data/worldcoin_human_aid/bootstrap/world-siwe-offline-smoke.fixture.json
+!data/worldcoin_human_aid/bootstrap/zkp-toolchain-smoke.fixture.json
+!data/worldcoin_human_aid/bootstrap/duckdb-offline-smoke.fixture.json
 !data/worldcoin_human_aid/agent_supervisor/
 data/worldcoin_human_aid/agent_supervisor/*
 !data/worldcoin_human_aid/agent_supervisor/discovery/
@@ -71,6 +79,9 @@ coverage.xml
 etl_warehouse.duckdb
 state.duckdb
 *.duckdb
+*.duckdb.wal
+*.duckdb.tmp/
+*.duckdb.lock
 data/live/state/agentic_daemon_state.duckdb
 
 # Implementation daemon runtime state
@@ -109,6 +120,7 @@ nginx-local.conf
 .mypy_cache/
 .ruff_cache/
 .eslintcache
+.worktrees/
 
 # Build outputs
 wallet_interface/ui/dist/

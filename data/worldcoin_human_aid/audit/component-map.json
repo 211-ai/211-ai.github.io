@@ -138,17 +138,22 @@
         "Principal secrets are hex-encoded into plaintext JSON.",
         "Raw serialized WorldIdBinding objects are stored in the snapshot.",
         "Filesystem replacement is per-file and is not a multi-record database transaction.",
-        "Snapshot hashes provide integrity detection, not encryption or authentication."
+        "Snapshot hashes provide integrity detection, not encryption or authentication.",
+        "DuckDB native file mode permits only one external writer process; uncoordinated direct opens by wallet, API, payout, or reconciliation workers cannot satisfy the cross-worker transaction boundary.",
+        "Direct access to a DuckDB file would bypass the authenticated single-writer service, domain authorization, and minimum-necessary projection boundary."
       ],
-      "goals": [
-        "WORLDCOIN-G008",
-        "WORLDCOIN-G033",
-        "WORLDCOIN-G040"
+  "goals": [
+    "WORLDCOIN-G008",
+    "WORLDCOIN-G033",
+    "WORLDCOIN-G042",
+    "WORLDCOIN-G040"
       ],
       "conflict_surfaces": [
         "Snapshot v1 import compatibility",
         "CLI local-development persistence",
-        "Secret and World binding migration"
+        "Secret and World binding migration",
+        "DuckDB single-writer service ownership and direct-file-access rejection",
+        "DuckDB database, WAL, temporary-file, and backup lifecycle"
       ],
       "evidence": [
         "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository._save_wallet_snapshot",
@@ -227,10 +232,11 @@
         "Location proof semantics do not define aid-program eligibility.",
         "Prover binaries, circuits, keys, and trusted-setup provenance are operator inputs outside normal Python installation."
       ],
-      "goals": [
-        "WORLDCOIN-G012",
-        "WORLDCOIN-G013",
-        "WORLDCOIN-G039"
+  "goals": [
+    "WORLDCOIN-G012",
+    "WORLDCOIN-G013",
+    "WORLDCOIN-G041",
+    "WORLDCOIN-G039"
       ],
       "conflict_surfaces": [
         "ProofBackend receipt schema",

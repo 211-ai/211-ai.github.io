@@ -144,52 +144,173 @@ G002 may inventory existing files, installed commands, images, and caches
 without mutating them. Its `offline-bootstrap-proposal.json` is advisory and
 cannot approve a package, image, binary, license, or vulnerability exception.
 
-### Gate 0B: full implementation-board and offline-dependency approval
+### Gate 0B: two-phase offline selection and implementation-board approval
+
+Gate 0B is deliberately split so agents can prepare and execute verifiers
+without circularly approving their own inputs.
+
+#### Gate 0B preparation
+
+Before any Gate 0B signature, a separately reviewed preparation board may
+contain the read-only G002 audit root plus only G037, G041, and G042. The
+preparation goals create non-executing SIWE, ZKP, and DuckDB proposals and
+fail-closed verifier code. Their validation may read
+repository text and installed distribution metadata, but it may not install or
+execute packages/toolchains, import DuckDB, create a database, build a circuit,
+start a container, access a registry, mutate a cache, or claim approval.
+
+#### Gate 0B-selection
+
+A current, detached-signature-verified selection record is required before the
+restricted execution board containing G038, G039, and G040 may start. It must
+bind:
+
+- product-owner approval of preparation scope and priority;
+- security/privacy approval of data boundaries and the threat model;
+- program-policy confirmation that optional proof of human remains separate
+  from eligibility;
+- accessibility confirmation of the manual and non-World-ID fallback;
+- repository-maintainer approval of the preparation board, DAG, conflict plan,
+  verifier code, and worktree surfaces;
+- exact npm versions, integrity values, lifecycle scripts, licenses,
+  provenance, transitive SBOM, vulnerability dispositions, human-produced
+  lockfile, and read-only pre-staged tarball closure;
+- the selected native ZKP backend, architecture, version, checksum-pinned
+  binary/container, licenses, provenance, SBOM, locked smoke inputs,
+  deterministic flags, resource bounds, and explicit statement that smoke or
+  developer-generated setup material is not production trust;
+- exact Python and DuckDB wheel names, hashes, CPython ABI/platform, licenses,
+  provenance, SBOM, vulnerability dispositions, and read-only wheelhouse;
+- the DuckDB single-host, exactly-one-writer service topology from
+  `docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md`, including authenticated local
+  clients, local filesystem paths, extension autoinstall/autoload and external
+  access disabled, application-layer envelope encryption, encrypted volume,
+  backup/restore, and the prohibition on direct, multi-process, multi-host, or
+  shared-filesystem writers;
+- the externally enforced OS/container default-deny egress policy and its exact
+  implementation-control-plane/local-fixture allowlist; and
+- verification that the restricted worker environment has no live secrets,
+  signing material, production credentials, or treasury access.
+
+Gate 0B-selection authorizes only the isolated, offline execution of G038,
+G039, and G040. It does not authorize the full implementation board.
+
+#### Gate 0B-launch
 
 Required before the full implementation command containing `--start`:
 
-- product owner approves the scope and priority;
-- security/privacy reviewer approves the data boundaries and threat model;
-- program-policy owner confirms that optional proof of human is separate from
-  eligibility;
-- accessibility reviewer confirms the manual and non-World-ID fallback;
-- repository maintainer approves the generated board, dependency DAG, conflict
-  plan, and worktree surfaces;
-- maintainers review required npm package versions, integrity checks, licenses,
-  provenance, transitive SBOM, and vulnerability findings, then preload the
-  exact approved tarballs and a human-produced lockfile in an offline
-  cache/internal mirror and demonstrate a verifier-boundary smoke install with
-  `npm ci --offline`; the G006 package files may later be rendered only from
-  that reviewed input and workers may not open registry egress;
-- maintainers inventory required ZKP toolchains (for example Nargo, ProveKit,
-  or `bb`), select the reviewed backend, and pre-stage checksum-pinned
-  binaries/containers plus licenses and provenance; a reviewed smoke circuit
-  must build offline before launch, while the G012 eligibility circuit remains
-  a later task output;
-- maintainers review and pre-stage checksum-pinned Python wheels for the
-  PostgreSQL driver/migration/test boundary and an exact PostgreSQL
-  image/binary with digest, license, SBOM, and provenance, then demonstrate
-  that an ephemeral local database starts and accepts a smoke transaction with
-  all package and container registries denied;
-- security reviewer verifies the externally enforced OS/container default-deny
-  egress policy and its exact control-plane/local-fixture allowlist;
-- security reviewer verifies that the worker environment has no live secrets,
-  signing material, production credentials, or treasury access;
+- every product, security/privacy, program-policy, accessibility, dependency,
+  and repository-maintainer decision above remains current;
+- successful immutable G038, G039, and G040 receipts match the selection
+  record exactly;
 - the deterministic network-spy/deny fixture passes and its deliberate egress
-  canary proves that an unexpected request is blocked and reported; and
-- deterministic preflight and bundle dry run pass.
+  canary proves that an unexpected request is blocked and reported;
+- security verifies the externally enforced egress receipt and absence of live
+  secrets again for the launch environment;
+- the repository maintainer approves the final generated board, dependency
+  DAG, conflict plan, validation commands, and worktree surfaces; and
+- the standalone generated-board verifier, deterministic preflight, and
+  non-starting bundle dry run pass against the exact immutable generated root.
 
-Record each Gate 0A or Gate 0B decision outside generated task data, with
-approver identity, UTC time, reviewed commit, reviewed objective-heap digest,
-generated-board digest, scope, and expiration. Gate 0B additionally binds the
-human-authored offline-bootstrap manifest and lock/image/toolchain digests. Do
-not place secrets or recipient data in either record.
+Store actual human records only under
+`data/worldcoin_human_aid/approvals/gate-0b-selection/` and
+`data/worldcoin_human_aid/approvals/gate-0b-launch/`, outside generated
+supervisor state. Each record and detached signature must bind approver
+identity, UTC time, reviewed root and submodule commits, objective-heap,
+implementation-plan, runbook, generated-board, graph, bundle-index and
+preflight digests, exact scope, allowed writes/destinations, disabled live
+features, exceptions, trust-store digest, and expiration. Gate 0B-launch also
+binds Gate 0B-selection and all offline, egress, no-secret, preflight, and dry
+run receipts.
+
+Templates under `docs/governance/templates/` are intentionally unsigned and
+invalid as approval. Verify completed records and their detached OpenSSH
+signatures with `scripts/verify_world_aid_gate_0b.py`; an agent-created record,
+identity string, template, fixture, or passing technical test is never human
+authorization. Do not place secrets or recipient data in a record or receipt.
+
+The operator must supply a reviewed, read-only OpenSSH `allowed_signers` file
+outside generated supervisor state. Verify each phase from the repository root;
+both commands are offline and fail closed on an absent record, an untrusted or
+missing role, a stale approval, digest drift, an unsafe DuckDB topology, or
+scope drift:
+
+```bash
+test -n "${WORLD_AID_ALLOWED_SIGNERS:-}"
+test -f "$WORLD_AID_ALLOWED_SIGNERS"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b.py \
+  --phase selection \
+  --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json \
+  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
+  --repo-root . \
+  --offline
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b.py \
+  --phase launch \
+  --approval data/worldcoin_human_aid/approvals/gate-0b-launch/approval.json \
+  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
+  --repo-root . \
+  --offline
+```
+
+Run the selection verifier immediately before the G038/G039/G040 restricted
+execution wave. Run the launch verifier immediately before any full-board
+command containing `--start`; launch verification also re-verifies the exact
+selection record it binds.
+
+Generate each phase's bounded network-deny receipt inside the reviewed
+AppArmor profile and a fresh, loopback-only network namespace. Capture the host
+namespace before `unshare`; the receipt fails unless the inner namespace is
+different, has no external route, and the single RFC 5737 TEST-NET connection
+is denied with a policy-consistent error. Set `WORLD_AID_GATE_PHASE` to exactly
+`selection` or `launch`; the tool refuses to overwrite earlier evidence:
+
+```bash
+set -euo pipefail
+case "${WORLD_AID_GATE_PHASE:?set selection or launch}" in
+  selection|launch) ;;
+  *) echo "WORLD_AID_GATE_PHASE must be selection or launch" >&2; exit 1 ;;
+esac
+
+REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
+WORLD_AID_HOST_NETNS="$(readlink /proc/self/ns/net)"
+WORLD_AID_CANARY_RECEIPT="$REPOSITORY_ROOT/data/worldcoin_human_aid/gate_evidence/gate-0b-$WORLD_AID_GATE_PHASE/network-deny-canary.json"
+test ! -e "$WORLD_AID_CANARY_RECEIPT"
+
+aa-exec -p linux-sandbox -- unshare -Urn \
+env -i \
+  PATH=/usr/bin:/bin \
+  PYTHONDONTWRITEBYTECODE=1 \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  REPOSITORY_ROOT="$REPOSITORY_ROOT" \
+  WORLD_AID_CANARY_RECEIPT="$WORLD_AID_CANARY_RECEIPT" \
+  WORLD_AID_HOST_NETNS="$WORLD_AID_HOST_NETNS" \
+/bin/bash -ceu '
+  WORLD_AID_REVIEWED_NETNS="$(readlink /proc/self/ns/net)"
+  exec /usr/bin/python3 "$REPOSITORY_ROOT/scripts/run_world_aid_egress_canary.py" \
+    --receipt "$WORLD_AID_CANARY_RECEIPT" \
+    --inside-reviewed-deny-sandbox \
+    --offline \
+    --expected-apparmor-profile linux-sandbox \
+    --expected-network-namespace "$WORLD_AID_REVIEWED_NETNS" \
+    --host-network-namespace "$WORLD_AID_HOST_NETNS"
+'
+```
+
+This receipt is technical evidence, not approval. The phase still requires
+the separate externally produced egress-policy and no-live-secrets
+attestations named by its Gate 0B template.
 
 ### Gate 1: World staging API approval
 
 Required before the first call to a World staging API:
 
-- Gate 0B is current;
+- Gate 0B-launch is current;
 - a security reviewer has approved the exact app ID, RP ID, action allowlist,
   signal/claim-binding format, redirect/origin allowlist, secret references,
   retention policy, replay controls, and redacted telemetry;
@@ -257,13 +378,15 @@ Production transfer commands are intentionally not included in this runbook.
 
 ## Generated artifact layout
 
-All objective-generation outputs use this repository-local root:
+Objective-generation outputs use an immutable directory below this
+repository-local root:
 
 ```text
-data/worldcoin_human_aid/agent_supervisor/
+data/worldcoin_human_aid/agent_supervisor/regenerations/<review-id>/
 ```
 
-Expected paths are:
+The selected directory is exported as `WORLD_AID_GENERATED_ROOT`. Expected
+paths relative to it are:
 
 | Path | Purpose |
 | --- | --- |
@@ -282,13 +405,18 @@ Expected paths are:
 | `logs/` | Redacted supervisor/lane logs |
 | `lane-manifest.json` | Planned or live lane projection |
 | `scheduler-metrics.json` | Scheduler metrics projection |
-| `coordination.duckdb` | Durable claims, leases, and reconciliation state |
-| `approvals/` | Human-authored, non-secret approval references |
+| `coordination.duckdb` | Durable supervisor claims, leases, and reconciliation state |
 
 Generated planning artifacts must not contain World secrets, recipient data,
-raw proof payloads, private document data, or treasury material. The
-`approvals/` directory is a reference/evidence location, not an authorization
-mechanism by itself.
+raw proof payloads, private document data, or treasury material. Human-authored
+approval records live outside this generated root under
+`data/worldcoin_human_aid/approvals/`. That directory is a reference/evidence
+location, not an authorization mechanism by itself.
+
+The supervisor's `coordination.duckdb` is operational scheduler state. It is
+not the World human-aid financial store and does not satisfy G033 or G040.
+Those goals use the independently reviewed single-writer security boundary in
+`docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md`.
 
 The first full objective/AST scan can be expensive and can materialize
 multi-gigabyte snapshots; approximately 2.5 GB was observed during one scan of
@@ -298,9 +426,9 @@ available storage and review these cache paths rather than assuming an exact
 cost:
 
 ```text
-data/worldcoin_human_aid/agent_supervisor/objective_datasets/objective-ast.jsonl
-data/worldcoin_human_aid/agent_supervisor/objective_datasets/objective-ast.manifest.json
-data/worldcoin_human_aid/agent_supervisor/objective_datasets/objective-ast.parquet
+data/worldcoin_human_aid/agent_supervisor/objective_datasets/worldcoin-auto-objective-ast.jsonl
+data/worldcoin_human_aid/agent_supervisor/objective_datasets/worldcoin-auto-objective-ast.manifest.json
+data/worldcoin_human_aid/agent_supervisor/objective_datasets/worldcoin-auto-objective-ast.parquet
 ```
 
 The JSONL snapshot is the authoritative fallback; parquet is optional. Preserve
@@ -317,8 +445,86 @@ Run this from the repository root only after reviewing the source objective
 heap. This uses the daemon's deterministic planner: it does not request
 LLM-generated plan branches, submit bundles, or start workers.
 
+First run the static heap/runbook and offline verifier contracts. These tests
+are mandatory: they pin the exact 42-goal heap, 40 schedulable goals, blocked
+G035/G036 human gates, force list, and receipt/verifier behavior before an
+expensive scan begins.
+
 ```bash
 env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+python -m pytest -q -s -p no:cacheprovider -c /dev/null \
+  tests/test_worldcoin_human_aid_taskboard.py \
+  tests/world_aid/test_generated_board_verifier.py \
+  tests/world_aid/test_preflight_receipt.py
+```
+
+The daemon appends to an existing taskboard. Never regenerate into the
+canonical or previously approved directory. Create a fresh immutable
+repository-local root, do not seed it with old discovery files, and keep that
+exact path for review and launch because discovery evidence records absolute
+paths:
+
+```bash
+set -euo pipefail
+REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
+test "$PWD" = "$REPOSITORY_ROOT" || {
+  echo "run from the reviewed repository root: $REPOSITORY_ROOT" >&2
+  exit 1
+}
+test -z "$(git status --porcelain=v1 --untracked-files=all)" || {
+  echo "refusing to generate from a dirty or partially untracked review tree" >&2
+  exit 1
+}
+git diff --check
+if git submodule status --recursive | grep -Eq '^[+U]'; then
+  echo "refusing to generate with a drifted or conflicted submodule" >&2
+  exit 1
+fi
+
+mkdir -p "$REPOSITORY_ROOT/data/worldcoin_human_aid/agent_supervisor/regenerations"
+umask 077
+WORLD_AID_GENERATED_ROOT="$(
+  mktemp -d \
+    "$REPOSITORY_ROOT/data/worldcoin_human_aid/agent_supervisor/regenerations/duckdb-v1.XXXXXX"
+)"
+export WORLD_AID_GENERATED_ROOT
+```
+
+```bash
+set -euo pipefail
+: "${WORLD_AID_GENERATED_ROOT:?create and export a fresh regeneration root first}"
+PYTHONDONTWRITEBYTECODE=1 python - <<'PY'
+from pathlib import Path
+import os
+
+repo_root = Path.cwd().resolve()
+allowed_parent = (
+    repo_root / "data/worldcoin_human_aid/agent_supervisor/regenerations"
+).resolve()
+generated_root = Path(os.environ["WORLD_AID_GENERATED_ROOT"])
+if generated_root.is_symlink():
+    raise SystemExit("generated root must not be a symlink")
+generated_root = generated_root.resolve()
+if generated_root.parent != allowed_parent:
+    raise SystemExit(
+        f"generated root must be one direct child of {allowed_parent}: "
+        f"{generated_root}"
+    )
+if not generated_root.is_dir():
+    raise SystemExit(f"generated root is not a directory: {generated_root}")
+if any(generated_root.iterdir()):
+    raise SystemExit(f"generated root is not empty: {generated_root}")
+PY
+
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  LC_ALL=C.UTF-8 \
+  TZ=UTC \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \
@@ -328,18 +534,18 @@ env \
 python -m ipfs_accelerate_py.agent_supervisor.objective_daemon \
   --repo-root . \
   --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
-  --todo-path data/worldcoin_human_aid/agent_supervisor/WORLDCOIN_HUMAN_AID_TODO.md \
-  --discovery-dir data/worldcoin_human_aid/agent_supervisor/discovery \
-  --bundle-dir data/worldcoin_human_aid/agent_supervisor/objective_bundles \
-  --dataset-dir data/worldcoin_human_aid/agent_supervisor/objective_datasets \
-  --graph-path data/worldcoin_human_aid/agent_supervisor/objective_graph.json \
+  --todo-path "$WORLD_AID_GENERATED_ROOT/WORLDCOIN_HUMAN_AID_TODO.md" \
+  --discovery-dir "$WORLD_AID_GENERATED_ROOT/discovery" \
+  --bundle-dir "$WORLD_AID_GENERATED_ROOT/objective_bundles" \
+  --dataset-dir "$WORLD_AID_GENERATED_ROOT/objective_datasets" \
+  --graph-path "$WORLD_AID_GENERATED_ROOT/objective_graph.json" \
   --task-prefix WORLDCOIN-AUTO- \
   --objective-summary-prefix "Implement Worldcoin human-aid objective" \
-  --discovery-output-path data/worldcoin_human_aid/agent_supervisor/discovery \
-  --plan-evaluation-path data/worldcoin_human_aid/agent_supervisor/plan_evaluations.json \
-  --analysis-escalation-path data/worldcoin_human_aid/agent_supervisor/analysis_escalation.json \
-  --objective-generation-path data/worldcoin_human_aid/agent_supervisor/objective_generation.json \
-  --max-findings 40 \
+  --discovery-output-path "$WORLD_AID_GENERATED_ROOT/discovery" \
+  --plan-evaluation-path "$WORLD_AID_GENERATED_ROOT/plan_evaluations.json" \
+  --analysis-escalation-path "$WORLD_AID_GENERATED_ROOT/analysis_escalation.json" \
+  --objective-generation-path "$WORLD_AID_GENERATED_ROOT/objective_generation.json" \
+  --max-findings 42 \
   --surplus-findings-per-goal 1 \
   --force-goal-id WORLDCOIN-G001 \
   --force-goal-id WORLDCOIN-G002 \
@@ -379,6 +585,8 @@ python -m ipfs_accelerate_py.agent_supervisor.objective_daemon \
   --force-goal-id WORLDCOIN-G038 \
   --force-goal-id WORLDCOIN-G039 \
   --force-goal-id WORLDCOIN-G040 \
+  --force-goal-id WORLDCOIN-G041 \
+  --force-goal-id WORLDCOIN-G042 \
   --no-reconcile-goal-completion
 ```
 
@@ -391,14 +599,17 @@ These explicit flags are required here because broad evidence matches can
 otherwise suppress every finding and produce a zero-task board even though the
 goals remain active. Whenever an active goal is added, add its exact ID to this
 list before regenerating. A forced rescan does not weaken acceptance criteria,
-grant a human gate, submit a bundle, or start a worker.
+grant a human gate, submit a bundle, or start a worker. Never add
+`--repeat-existing`, `--submit-bundles`, `--generate-plan-branches`, or
+`--start` to this generation command.
 
 The forced list intentionally omits only G035 and G036, which are
-supervisor-terminal `blocked` human gates, and then includes the executable
-offline-bootstrap goals G037 through G040. Only the named governance process
-may transition G035 or G036 to `reopened` after independently produced
-external evidence is reviewed. An agent-created approval/evidence file,
-textual match, or completed dependency cannot reopen either goal.
+supervisor-terminal `blocked` human gates, and then includes the preparation
+and executable offline-bootstrap goals G037 through G042. Only the named
+governance process may transition G035 or G036 to `reopened` after
+independently produced external evidence is reviewed. An agent-created
+approval/evidence file, textual match, or completed dependency cannot reopen
+either goal.
 
 ## Review the generated board
 
@@ -406,12 +617,12 @@ At minimum, inspect:
 
 ```text
 docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md
-data/worldcoin_human_aid/agent_supervisor/WORLDCOIN_HUMAN_AID_TODO.md
-data/worldcoin_human_aid/agent_supervisor/objective_graph.json
-data/worldcoin_human_aid/agent_supervisor/objective_bundles/index.json
-data/worldcoin_human_aid/agent_supervisor/objective_bundles/todo_vector_index.json
-data/worldcoin_human_aid/agent_supervisor/objective_bundles/*.todo.md
-data/worldcoin_human_aid/agent_supervisor/discovery/
+$WORLD_AID_GENERATED_ROOT/WORLDCOIN_HUMAN_AID_TODO.md
+$WORLD_AID_GENERATED_ROOT/objective_graph.json
+$WORLD_AID_GENERATED_ROOT/objective_bundles/index.json
+$WORLD_AID_GENERATED_ROOT/objective_bundles/todo_vector_index.json
+$WORLD_AID_GENERATED_ROOT/objective_bundles/*.todo.md
+$WORLD_AID_GENERATED_ROOT/discovery/
 ```
 
 The review must confirm:
@@ -454,6 +665,7 @@ invalid.
 
 ```bash
 env \
+  PYTHONDONTWRITEBYTECODE=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \
@@ -464,6 +676,7 @@ python - <<'PY'
 from collections import defaultdict, deque
 from pathlib import Path
 import json
+import os
 import re
 import sys
 
@@ -471,7 +684,13 @@ from ipfs_accelerate_py.agent_supervisor.objective_graph import parse_goal_heap
 from ipfs_accelerate_py.agent_supervisor.todo_vector_index import parse_todo_blocks
 
 root = Path.cwd().resolve()
-base = root / "data/worldcoin_human_aid/agent_supervisor"
+generated_root = os.environ.get("WORLD_AID_GENERATED_ROOT")
+if not generated_root:
+    raise SystemExit("WORLD_AID_GENERATED_ROOT must name the immutable reviewed root")
+base = Path(generated_root).resolve()
+allowed_parent = root / "data/worldcoin_human_aid/agent_supervisor/regenerations"
+if allowed_parent not in base.parents:
+    raise SystemExit(f"generated root escapes the approved regeneration parent: {base}")
 objective_path = root / "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md"
 todo_path = base / "WORLDCOIN_HUMAN_AID_TODO.md"
 graph_path = base / "objective_graph.json"
@@ -787,6 +1006,22 @@ print(
 PY
 ```
 
+The legacy preflight above validates the planner's dependency projections. Run
+the stricter source/shard alignment verifier as a second, mandatory check:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_generated_board.py \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT"
+```
+
+It fails on stale validation commands, parent/output drift, duplicate or
+missing schedulable goals, non-schedulable tasks, TODO/index/DAG/CID
+disagreement, invalid CIDs, and shard bodies that do not exactly match the
+canonical generated task.
+
 Any non-empty `invalid_task_cids` value is a hard stop. Do not assume the
 scheduler will repair a semantic cycle safely. Correct the source objective
 parents/dependencies, regenerate, review the diff, and rerun the preflight.
@@ -802,55 +1037,265 @@ git submodule status --recursive
 Unrelated user changes must be preserved. Do not launch if a generated lane is
 predicted to overwrite an unreviewed dirty path.
 
-## Derive the Gate 0A G002-only execution index
+## Derive immutable stage execution indexes
 
 The canonical index remains the reviewed source. The scheduler has no
 goal/bundle include flag, and `--max-lanes` limits concurrency rather than
-scope. Create a new paired JSON/DuckDB index whose native
-`excluded_bundle_keys` fence leaves only the G002 integration-audit bundle.
-Never hand-edit only the JSON representation.
+scope. Create four paired JSON/DuckDB indexes with native
+`excluded_bundle_keys` fences:
+
+- Gate 0A permits only G002;
+- Gate 0B preparation permits only G037, G041, and G042 after a reviewed G002
+  completion receipt;
+- Gate 0B restricted bootstrap permits only G038, G039, and G040 after reviewed
+  G002/G037/G041/G042 completion receipts; and
+- implementation excludes G002 and G037-G042 after reviewed receipts for all
+  seven predecessor tasks.
+
+The completed statuses below are predeclared receipt adapters, not completion
+evidence. Never use a later-stage profile until its
+`receipt_backed_completed_goal_ids` have matching immutable successful-merge
+receipts and the applicable human gate binds those receipts. Never hand-edit
+only the JSON representation.
 
 ```bash
 env \
+  PYTHONDONTWRITEBYTECODE=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   PYTHONPATH=ipfs_accelerate_py \
 python - <<'PY'
+from copy import deepcopy
 from pathlib import Path
+import os
 
 from ipfs_accelerate_py.agent_supervisor.artifact_store import (
     read_bundle_index_artifact,
     write_bundle_index_artifact,
 )
 
-source = Path(
-    "data/worldcoin_human_aid/agent_supervisor/objective_bundles/index.json"
-)
-destination = Path(
-    "data/worldcoin_human_aid/agent_supervisor/"
-    "launch_profiles/g002-only.index.json"
-)
-allowed = {"worldcoin-human-aid/integration-audit"}
-payload = read_bundle_index_artifact(source)
-known = set(payload.get("bundles") or {})
-missing = allowed - known
-if missing:
-    raise SystemExit(f"missing allowed bundles: {sorted(missing)}")
-payload["derived_from_bundle_index"] = str(source)
-payload["execution_allowlist"] = sorted(allowed)
-payload["excluded_bundle_keys"] = sorted(known - allowed)
-write_bundle_index_artifact(destination, payload)
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+source = base / "objective_bundles/index.json"
+source_relative = source.relative_to(Path.cwd().resolve()).as_posix()
+profile_dir = base / "launch_profiles"
+profile_dir.mkdir(parents=True, exist_ok=False)
+canonical = read_bundle_index_artifact(source)
+bundles = canonical.get("bundles")
+if not isinstance(bundles, dict) or not bundles:
+    raise SystemExit("canonical bundle index contains no bundles")
 
-rendered = read_bundle_index_artifact(destination)
-if set(rendered.get("excluded_bundle_keys") or ()) != known - allowed:
-    raise SystemExit("derived index lost its native exclusion fence")
-print({
-    "allowed": sorted(allowed),
-    "excluded_count": len(known - allowed),
-    "index": str(destination),
-    "duckdb": str(destination.with_suffix(".duckdb")),
-})
+goal_to_task = {}
+goal_to_bundle = {}
+for bundle_key, bundle in bundles.items():
+    tasks = bundle.get("tasks") if isinstance(bundle, dict) else None
+    if not isinstance(tasks, list) or not tasks:
+        raise SystemExit(f"bundle has no tasks: {bundle_key}")
+    for task in tasks:
+        goal_id = str(task.get("goal_id") or "")
+        task_id = str(task.get("task_id") or "")
+        task_cid = str(
+            task.get("canonical_task_cid") or task.get("task_cid") or ""
+        )
+        if not goal_id or not task_id or not task_cid or goal_id in goal_to_task:
+            raise SystemExit(f"invalid or duplicate goal/task identity: {goal_id!r}")
+        goal_to_task[goal_id] = (task_id, task_cid)
+        goal_to_bundle[goal_id] = str(bundle_key)
+
+blocked = {"WORLDCOIN-G035", "WORLDCOIN-G036"}
+schedulable = {
+    f"WORLDCOIN-G{number:03d}" for number in range(1, 43)
+} - blocked
+if set(goal_to_task) != schedulable:
+    raise SystemExit(
+        "canonical bundle goal set differs from the reviewed schedulable set: "
+        f"missing={sorted(schedulable - set(goal_to_task))}, "
+        f"unexpected={sorted(set(goal_to_task) - schedulable)}"
+    )
+
+bootstrap_predecessors = {
+    "WORLDCOIN-G002",
+    "WORLDCOIN-G037",
+    "WORLDCOIN-G038",
+    "WORLDCOIN-G039",
+    "WORLDCOIN-G040",
+    "WORLDCOIN-G041",
+    "WORLDCOIN-G042",
+}
+specifications = {
+    "g002-only.index.json": (
+        {"WORLDCOIN-G002"},
+        set(),
+    ),
+    "gate0b-preparation.index.json": (
+        {"WORLDCOIN-G037", "WORLDCOIN-G041", "WORLDCOIN-G042"},
+        {"WORLDCOIN-G002"},
+    ),
+    "g038-g040.index.json": (
+        {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"},
+        {"WORLDCOIN-G002", "WORLDCOIN-G037", "WORLDCOIN-G041", "WORLDCOIN-G042"},
+    ),
+    "implementation.index.json": (
+        schedulable - bootstrap_predecessors,
+        bootstrap_predecessors,
+    ),
+}
+
+for filename, (allowed_goal_ids, completed_goal_ids) in specifications.items():
+    if not completed_goal_ids.isdisjoint(allowed_goal_ids):
+        raise SystemExit(f"profile completes an allowed goal: {filename}")
+    allowed_bundles = {goal_to_bundle[goal_id] for goal_id in allowed_goal_ids}
+    completed_task_ids = {
+        goal_to_task[goal_id][0] for goal_id in completed_goal_ids
+    }
+    completed_task_cids = {
+        goal_to_task[goal_id][1] for goal_id in completed_goal_ids
+    }
+    profile = deepcopy(canonical)
+    profile_bundles = profile["bundles"]
+    for bundle in profile_bundles.values():
+        for task in bundle.get("tasks") or ():
+            if str(task.get("goal_id") or "") in completed_goal_ids:
+                task["status"] = "completed"
+    profile["profile_id"] = filename.removesuffix(".index.json")
+    profile["derived_from_bundle_index"] = source_relative
+    profile["execution_goal_ids"] = sorted(allowed_goal_ids)
+    profile["completed_prerequisite_goal_ids"] = sorted(completed_goal_ids)
+    profile["execution_allowlist"] = sorted(allowed_bundles)
+    profile["excluded_bundle_keys"] = sorted(set(profile_bundles) - allowed_bundles)
+    profile["receipt_backed_completed_goal_ids"] = sorted(completed_goal_ids)
+    profile["receipt_backed_completed_task_ids"] = sorted(completed_task_ids)
+    profile["receipt_backed_completed_task_cids"] = sorted(completed_task_cids)
+
+    destination = profile_dir / filename
+    if destination.exists() or destination.with_suffix(".duckdb").exists():
+        raise SystemExit(f"refusing to replace stage profile: {destination}")
+    write_bundle_index_artifact(destination, profile)
+    rendered = read_bundle_index_artifact(destination)
+    if set(rendered.get("execution_allowlist") or ()) != allowed_bundles:
+        raise SystemExit(f"{filename} lost its execution allowlist")
+    if rendered.get("execution_goal_ids") != sorted(allowed_goal_ids):
+        raise SystemExit(f"{filename} lost its execution goal set")
+    if rendered.get("completed_prerequisite_goal_ids") != sorted(completed_goal_ids):
+        raise SystemExit(f"{filename} lost its completed prerequisite set")
+    if set(rendered.get("excluded_bundle_keys") or ()) != set(profile_bundles) - allowed_bundles:
+        raise SystemExit(f"{filename} lost its native exclusion fence")
+    if set(rendered.get("receipt_backed_completed_task_ids") or ()) != completed_task_ids:
+        raise SystemExit(f"{filename} lost its receipt-backed task set")
+    if not destination.with_suffix(".duckdb").is_file():
+        raise SystemExit(f"{filename} has no paired DuckDB artifact")
+    print({
+        "profile": filename,
+        "allowed_goal_ids": sorted(allowed_goal_ids),
+        "receipt_backed_completed_goal_ids": sorted(completed_goal_ids),
+        "excluded_count": len(set(profile_bundles) - allowed_bundles),
+    })
 PY
+```
+
+Verify every canonical/profile JSON-DuckDB pair through a read-only DuckDB
+connection before binding it. This compares content hashes, not only file size
+and modification time:
+
+```bash
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+python - <<'PY'
+from pathlib import Path
+import hashlib
+import json
+import os
+
+import duckdb
+
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+json_paths = [
+    base / "objective_bundles/index.json",
+    base / "launch_profiles/g002-only.index.json",
+    base / "launch_profiles/gate0b-preparation.index.json",
+    base / "launch_profiles/g038-g040.index.json",
+    base / "launch_profiles/implementation.index.json",
+]
+for json_path in json_paths:
+    duckdb_path = json_path.with_suffix(".duckdb")
+    raw = json_path.read_bytes()
+    payload = json.loads(raw)
+    source_sha256 = hashlib.sha256(raw).hexdigest()
+    canonical_payload = json.dumps(
+        payload, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    database_payload_sha256 = hashlib.sha256(canonical_payload).hexdigest()
+    connection = duckdb.connect(str(duckdb_path), read_only=True)
+    try:
+        rows = connection.execute(
+            "SELECT artifact_kind, schema_version, source_path, "
+            "source_sha256, database_payload_sha256, source_size, "
+            "source_mtime_ns FROM artifact_catalog"
+        ).fetchall()
+    finally:
+        connection.close()
+    if len(rows) != 1:
+        raise SystemExit(f"invalid artifact_catalog row count: {duckdb_path}")
+    (
+        kind,
+        schema,
+        source_path,
+        observed_source_sha256,
+        observed_payload_sha256,
+        source_size,
+        source_mtime_ns,
+    ) = rows[0]
+    stat = json_path.stat()
+    expected = (
+        "bundle_planning_index",
+        "ipfs_accelerate_py.agent_supervisor.queryable_artifact@2",
+        json_path.resolve(),
+        source_sha256,
+        database_payload_sha256,
+        stat.st_size,
+        stat.st_mtime_ns,
+    )
+    observed = (
+        str(kind),
+        str(schema),
+        Path(str(source_path)).resolve(),
+        str(observed_source_sha256),
+        str(observed_payload_sha256),
+        int(source_size),
+        int(source_mtime_ns),
+    )
+    if observed != expected:
+        raise SystemExit(
+            f"stale or mismatched JSON/DuckDB pair: {json_path}"
+        )
+    print({"json": str(json_path), "duckdb": str(duckdb_path), "sha256": source_sha256})
+PY
+```
+
+Create the deterministic preflight receipt only after the canonical board and
+all four stage profiles pass. Creation refuses to overwrite an existing
+receipt. Verification recomputes the complete manifest without writing and
+binds the full board, graph, canonical JSON/DuckDB index, vector index, every
+bundle shard, discovery evidence, planning receipts, dataset manifests, all
+four paired launch profiles, and both verifier implementations:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --create \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
 ```
 
 Then ask the actual lane planner, rather than a hand-written JSON check, to
@@ -858,28 +1303,24 @@ prove that the execution projection contains exactly G002:
 
 ```bash
 env \
+  PYTHONDONTWRITEBYTECODE=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   PYTHONPATH=ipfs_accelerate_py \
 python - <<'PY'
 from pathlib import Path
+import os
 
 from ipfs_accelerate_py.agent_supervisor.bundle_supervisor import plan_bundle_lanes
 
-index_path = Path(
-    "data/worldcoin_human_aid/agent_supervisor/"
-    "launch_profiles/g002-only.index.json"
-).resolve()
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+index_path = base / "launch_profiles/g002-only.index.duckdb"
 lanes = plan_bundle_lanes(
     bundle_index_path=index_path,
     repo_root=Path.cwd(),
-    state_root=Path(
-        "data/worldcoin_human_aid/agent_supervisor/lane_state"
-    ).resolve(),
-    worktree_root=Path("/tmp/worldcoin-human-aid-agent-worktrees"),
-    log_dir=Path(
-        "data/worldcoin_human_aid/agent_supervisor/logs"
-    ).resolve(),
+    state_root=base / "gate0a/lane_state",
+    worktree_root=base / "gate0a/worktrees",
+    log_dir=base / "gate0a/logs",
     task_prefix="WORLDCOIN-AUTO-",
     implement=False,
     max_lanes=None,
@@ -901,6 +1342,80 @@ print({
 PY
 ```
 
+Assert the remaining three stage profiles through the real lane planner. This
+also proves that the completed-prerequisite statuses were available before the
+native exclusion fence removed their bundles:
+
+```bash
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  PYTHONPATH=ipfs_accelerate_py \
+python - <<'PY'
+from pathlib import Path
+import os
+
+from ipfs_accelerate_py.agent_supervisor.bundle_supervisor import plan_bundle_lanes
+
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+repo_root = Path.cwd().resolve()
+blocked = {"WORLDCOIN-G035", "WORLDCOIN-G036"}
+schedulable = {
+    f"WORLDCOIN-G{number:03d}" for number in range(1, 43)
+} - blocked
+bootstrap = {
+    "WORLDCOIN-G002",
+    "WORLDCOIN-G037",
+    "WORLDCOIN-G038",
+    "WORLDCOIN-G039",
+    "WORLDCOIN-G040",
+    "WORLDCOIN-G041",
+    "WORLDCOIN-G042",
+}
+profiles = {
+    "gate0b-preparation.index.duckdb": {
+        "WORLDCOIN-G037", "WORLDCOIN-G041", "WORLDCOIN-G042"
+    },
+    "g038-g040.index.duckdb": {
+        "WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"
+    },
+    "implementation.index.duckdb": schedulable - bootstrap,
+}
+for filename, expected_goals in profiles.items():
+    lanes = plan_bundle_lanes(
+        bundle_index_path=base / "launch_profiles" / filename,
+        repo_root=repo_root,
+        state_root=base / "profile_assertions" / filename / "lane_state",
+        worktree_root=base / "profile_assertions" / filename / "worktrees",
+        log_dir=base / "profile_assertions" / filename / "logs",
+        task_prefix="WORLDCOIN-AUTO-",
+        implement=False,
+        max_lanes=None,
+    )
+    observed_goals = {
+        str(task.get("goal_id") or "")
+        for lane in lanes
+        for task in (lane.queue_payload or {}).get("tasks") or ()
+    }
+    observed_bundles = {lane.bundle_key for lane in lanes}
+    if observed_goals != expected_goals:
+        raise SystemExit(
+            f"{filename} lane goals differ: "
+            f"missing={sorted(expected_goals - observed_goals)}, "
+            f"unexpected={sorted(observed_goals - expected_goals)}"
+        )
+    if len(observed_bundles) != len(lanes) or not all(lane.task_ids for lane in lanes):
+        raise SystemExit(f"{filename} has duplicate or empty lane projections")
+    print({
+        "profile": filename,
+        "lane_count": len(lanes),
+        "goal_ids": sorted(observed_goals),
+        "claimable_count": sum(lane.claimable for lane in lanes),
+    })
+PY
+```
+
 ### Gate 0A no-start dry run
 
 This writes a manifest but starts no worker:
@@ -910,6 +1425,7 @@ env \
   WORLD_ID_ENABLED=0 \
   WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
   WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  PYTHONDONTWRITEBYTECODE=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \
@@ -921,13 +1437,13 @@ env \
   PYTHONPATH=ipfs_accelerate_py \
 python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --repo-root . \
-  --bundle-index-path data/worldcoin_human_aid/agent_supervisor/launch_profiles/g002-only.index.json \
-  --state-root data/worldcoin_human_aid/agent_supervisor/lane_state \
-  --worktree-root /tmp/worldcoin-human-aid-agent-worktrees \
-  --log-dir data/worldcoin_human_aid/agent_supervisor/logs \
-  --manifest-path data/worldcoin_human_aid/agent_supervisor/g002-only-manifest.json \
-  --metrics-path data/worldcoin_human_aid/agent_supervisor/g002-only-metrics.json \
-  --coordination-path data/worldcoin_human_aid/agent_supervisor/coordination.duckdb \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/g002-only.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0a/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0a/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0a/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0a/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
@@ -985,13 +1501,13 @@ env \
   PYTHONPATH=ipfs_accelerate_py \
 python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --repo-root . \
-  --bundle-index-path data/worldcoin_human_aid/agent_supervisor/launch_profiles/g002-only.index.json \
-  --state-root data/worldcoin_human_aid/agent_supervisor/lane_state \
-  --worktree-root /tmp/worldcoin-human-aid-agent-worktrees \
-  --log-dir data/worldcoin_human_aid/agent_supervisor/logs \
-  --manifest-path data/worldcoin_human_aid/agent_supervisor/g002-only-manifest.json \
-  --metrics-path data/worldcoin_human_aid/agent_supervisor/g002-only-metrics.json \
-  --coordination-path data/worldcoin_human_aid/agent_supervisor/coordination.duckdb \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/g002-only.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0a/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0a/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0a/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0a/g002-only-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0a/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
@@ -1014,69 +1530,468 @@ for graceful stop. After G002 settles, stop and review its canonical successful
 bundle receipt and offline-bootstrap proposal before deriving a wider immutable
 launch profile. Do not mutate a live derived index in place.
 
-## Bundle-supervisor dry run
+## Gate 0B preparation no-start dry run
 
-This command plans lanes and writes a manifest. It does not contain `--start`
-and therefore starts no workers.
+Do not use the preparation profile until the reviewed G002 receipt is available.
+Re-verify the immutable preflight receipt, then make the actual supervisor
+project the three preparation goals from the paired DuckDB index without
+starting a worker:
 
 ```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
 env \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  PYTHONDONTWRITEBYTECODE=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \
   HF_DATASETS_OFFLINE=1 \
   TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
   PYTHONPATH=ipfs_accelerate_py \
 python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --repo-root . \
-  --bundle-index-path data/worldcoin_human_aid/agent_supervisor/objective_bundles/index.json \
-  --state-root data/worldcoin_human_aid/agent_supervisor/lane_state \
-  --worktree-root /tmp/worldcoin-human-aid-agent-worktrees \
-  --log-dir data/worldcoin_human_aid/agent_supervisor/logs \
-  --manifest-path data/worldcoin_human_aid/agent_supervisor/lane-manifest.json \
-  --metrics-path data/worldcoin_human_aid/agent_supervisor/scheduler-metrics.json \
-  --coordination-path data/worldcoin_human_aid/agent_supervisor/coordination.duckdb \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/gate0b-preparation.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/lane-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/scheduler-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/dry_run/coordination.duckdb" \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
-  --max-lanes 2 \
+  --max-restarts 0 \
   --no-implement \
   --once
 ```
 
-Confirm that the dry run started nothing:
+The non-starting code path deliberately ignores `--max-lanes`; scope comes
+from the profile's native exclusion fence. Prove the exact lane projection and
+absence of worker activity:
 
 ```bash
 python - <<'PY'
 from pathlib import Path
 import json
+import os
 
-path = Path("data/worldcoin_human_aid/agent_supervisor/lane-manifest.json")
-manifest = json.loads(path.read_text(encoding="utf-8"))
-schemas = {
-    "ipfs_accelerate_py.agent_supervisor.bundle_supervisor",
-    "ipfs_accelerate_py.agent_supervisor.dynamic_bundle_scheduler@1",
+repo_root = Path.cwd().resolve()
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+index_path = base / "launch_profiles/gate0b-preparation.index.duckdb"
+manifest_path = base / "gate0b-preparation/dry_run/lane-manifest.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+expected_goals = {"WORLDCOIN-G037", "WORLDCOIN-G041", "WORLDCOIN-G042"}
+lanes = manifest.get("lanes")
+if not isinstance(lanes, list):
+    raise SystemExit("preparation dry run omitted lanes")
+observed_goals = {
+    str(task.get("goal_id") or "")
+    for lane in lanes
+    for task in ((lane.get("queue_payload") or {}).get("tasks") or ())
+    if isinstance(task, dict)
 }
-assert manifest.get("schema") in schemas
-assert int(manifest.get("planned_count") or 0) > 0
-assert int(manifest.get("started_count") or 0) == 0
-assert int(manifest.get("running_count") or 0) == 0
-assert int(manifest.get("active_worker_count") or 0) == 0
-assert not (manifest.get("started") or [])
-assert not (manifest.get("launched_task_cids") or [])
-assert not (manifest.get("active_worker_pids") or [])
+expected_index = index_path.relative_to(repo_root).as_posix()
+assert manifest.get("schema") == "ipfs_accelerate_py.agent_supervisor.bundle_supervisor"
+assert manifest.get("bundle_index_path") == expected_index
+assert observed_goals == expected_goals
+assert int(manifest.get("planned_count") or 0) == len(lanes) > 0
+assert len({str(lane.get("bundle_key") or "") for lane in lanes}) == len(lanes)
+for key in ("started_count", "running_count", "active_worker_count"):
+    assert int(manifest.get(key) or 0) == 0
+for key in ("started", "launched_task_cids", "active_worker_pids"):
+    assert not (manifest.get(key) or [])
+assert not any(lane.get("pid") for lane in lanes)
+print({
+    "profile": expected_index,
+    "planned": len(lanes),
+    "goal_ids": sorted(observed_goals),
+    "started": 0,
+})
+PY
+```
+
+## Gate 0B preparation sandboxed launch
+
+This preparation wave runs before Gate 0B-selection and may execute only G037,
+G041, and G042. It must have the reviewed G002 completion receipt and the
+passing no-start manifest above. Its workers may inspect repository files and
+installed distribution metadata, but they must honor the preparation
+prohibitions in the objective heap. Re-run the AppArmor probe described for
+Gate 0A, then launch with the same browser, app, multi-agent, and command-egress
+restrictions:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+aa-exec -p linux-sandbox -- unshare -Urn /bin/true
+
+env \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  HF_HUB_OFFLINE=1 \
+  HF_DATASETS_OFFLINE=1 \
+  TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
+  GIT_TERMINAL_PROMPT=0 \
+  PYTHONPATH=ipfs_accelerate_py \
+python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
+  --repo-root . \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/gate0b-preparation.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/lane-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/scheduler-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-preparation/live/coordination.duckdb" \
+  --task-prefix WORLDCOIN-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
+  --worktree-submodule-path ipfs_datasets_py \
+  --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
+  --poll-interval 15 \
+  --daemon-interval 15 \
+  --check-interval 15 \
+  --lease-ms 300000 \
+  --heartbeat-interval 5 \
+  --implementation-timeout 3600 \
+  --max-restarts 0 \
+  --max-lanes 1 \
+  --implement \
+  --start
+```
+
+Stop the foreground supervisor after all three preparation receipts settle.
+Review those receipts and their generated verifier/proposal files before human
+reviewers create and sign Gate 0B-selection. A preparation worker cannot create
+or satisfy that approval.
+
+## Gate 0B restricted no-start dry run
+
+The restricted profile may be used only after a current human-signed
+Gate 0B-selection record binds the reviewed G002/G037/G041/G042 receipts and
+the approved offline dependency closures. Verify that record and the immutable
+preflight receipt before projecting G038-G040:
+
+```bash
+test -n "${WORLD_AID_ALLOWED_SIGNERS:-}"
+test -f "$WORLD_AID_ALLOWED_SIGNERS"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b.py \
+  --phase selection \
+  --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json \
+  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
+  --repo-root . \
+  --offline
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+env \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  HF_HUB_OFFLINE=1 \
+  HF_DATASETS_OFFLINE=1 \
+  TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
+  PYTHONPATH=ipfs_accelerate_py \
+python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
+  --repo-root . \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/g038-g040.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/lane-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/scheduler-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/dry_run/coordination.duckdb" \
+  --task-prefix WORLDCOIN-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
+  --worktree-submodule-path ipfs_datasets_py \
+  --max-restarts 0 \
+  --no-implement \
+  --once
+```
+
+```bash
+python - <<'PY'
+from pathlib import Path
+import json
+import os
+
+repo_root = Path.cwd().resolve()
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+index_path = base / "launch_profiles/g038-g040.index.duckdb"
+manifest_path = base / "gate0b-restricted/dry_run/lane-manifest.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+expected_goals = {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
+lanes = manifest.get("lanes")
+if not isinstance(lanes, list):
+    raise SystemExit("restricted dry run omitted lanes")
+observed_goals = {
+    str(task.get("goal_id") or "")
+    for lane in lanes
+    for task in ((lane.get("queue_payload") or {}).get("tasks") or ())
+    if isinstance(task, dict)
+}
+expected_index = index_path.relative_to(repo_root).as_posix()
+assert manifest.get("schema") == "ipfs_accelerate_py.agent_supervisor.bundle_supervisor"
+assert manifest.get("bundle_index_path") == expected_index
+assert observed_goals == expected_goals
+assert int(manifest.get("planned_count") or 0) == len(lanes) > 0
+assert len({str(lane.get("bundle_key") or "") for lane in lanes}) == len(lanes)
+for key in ("started_count", "running_count", "active_worker_count"):
+    assert int(manifest.get(key) or 0) == 0
+for key in ("started", "launched_task_cids", "active_worker_pids"):
+    assert not (manifest.get(key) or [])
+assert not any(lane.get("pid") for lane in lanes)
+print({
+    "profile": expected_index,
+    "planned": len(lanes),
+    "goal_ids": sorted(observed_goals),
+    "started": 0,
+})
+PY
+```
+
+## Gate 0B restricted sandboxed launch
+
+Immediately before this command, re-verify the same selection record and
+preflight receipt; do not rely on an earlier terminal's exit code. The
+selection record must name the exact read-only npm tarball closure, native ZKP
+tool, and Python/DuckDB wheelhouse visible to the sandbox. Use an isolated
+writable temporary directory for tool output. No registry, World, RPC,
+Hugging Face, IPFS, or arbitrary network destination is permitted.
+
+```bash
+test -n "${WORLD_AID_ALLOWED_SIGNERS:-}"
+test -f "$WORLD_AID_ALLOWED_SIGNERS"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b.py \
+  --phase selection \
+  --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json \
+  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
+  --repo-root . \
+  --offline
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+aa-exec -p linux-sandbox -- unshare -Urn /bin/true
+mkdir -p "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/tmp"
+chmod 0700 "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/tmp"
+
+env \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  HF_HUB_OFFLINE=1 \
+  HF_DATASETS_OFFLINE=1 \
+  TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
+  GIT_TERMINAL_PROMPT=0 \
+  TMPDIR="$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/tmp" \
+  PYTHONPATH=ipfs_accelerate_py \
+python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
+  --repo-root . \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/g038-g040.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/lane-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/scheduler-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/gate0b-restricted/live/coordination.duckdb" \
+  --task-prefix WORLDCOIN-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
+  --worktree-submodule-path ipfs_datasets_py \
+  --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
+  --poll-interval 15 \
+  --daemon-interval 15 \
+  --check-interval 15 \
+  --lease-ms 300000 \
+  --heartbeat-interval 5 \
+  --implementation-timeout 3600 \
+  --max-restarts 0 \
+  --max-lanes 1 \
+  --implement \
+  --start
+```
+
+Keep the restricted supervisor in the foreground. Stop it after G038-G040
+settle, preserve their immutable successful-merge receipts, and obtain a
+separate Gate 0B-launch approval before using the implementation profile.
+
+## Implementation-profile no-start dry run
+
+This command plans lanes and writes a manifest. It does not contain `--start`
+and therefore starts no workers. Do not run it until the successful
+G002/G037-G042 receipts exist. The resulting manifest is the exact receipt
+bound by Gate 0B-launch.
+
+```bash
+env \
+  WORLD_ID_ENABLED=0 \
+  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
+  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  HF_HUB_OFFLINE=1 \
+  HF_DATASETS_OFFLINE=1 \
+  TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
+  PYTHONPATH=ipfs_accelerate_py \
+python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
+  --repo-root . \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/implementation.index.duckdb" \
+  --state-root "$WORLD_AID_GENERATED_ROOT/dry_run/lane_state" \
+  --worktree-root "$WORLD_AID_GENERATED_ROOT/dry_run/worktrees" \
+  --log-dir "$WORLD_AID_GENERATED_ROOT/dry_run/logs" \
+  --manifest-path "$WORLD_AID_GENERATED_ROOT/dry_run/lane-manifest.json" \
+  --metrics-path "$WORLD_AID_GENERATED_ROOT/dry_run/scheduler-metrics.json" \
+  --coordination-path "$WORLD_AID_GENERATED_ROOT/dry_run/coordination.duckdb" \
+  --task-prefix WORLDCOIN-AUTO- \
+  --worktree-submodule-path ipfs_accelerate_py \
+  --worktree-submodule-path ipfs_datasets_py \
+  --max-restarts 0 \
+  --no-implement \
+  --once
+```
+
+Confirm the exact implementation goal/CID/bundle projection and prove that the
+dry run started nothing:
+
+```bash
+python - <<'PY'
+import json
+import os
+from pathlib import Path
+
+repo_root = Path.cwd().resolve()
+base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
+profile_path = base / "launch_profiles/implementation.index.json"
+index_path = profile_path.with_suffix(".duckdb")
+manifest_path = base / "dry_run/lane-manifest.json"
+profile = json.loads(profile_path.read_text(encoding="utf-8"))
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+blocked = {"WORLDCOIN-G035", "WORLDCOIN-G036"}
+bootstrap = {
+    "WORLDCOIN-G002",
+    "WORLDCOIN-G037",
+    "WORLDCOIN-G038",
+    "WORLDCOIN-G039",
+    "WORLDCOIN-G040",
+    "WORLDCOIN-G041",
+    "WORLDCOIN-G042",
+}
+expected_goals = {
+    f"WORLDCOIN-G{number:03d}" for number in range(1, 43)
+} - blocked - bootstrap
+if set(profile.get("execution_goal_ids") or ()) != expected_goals:
+    raise SystemExit("implementation profile goal metadata drifted")
+expected_bundles = set(profile.get("execution_allowlist") or ())
+expected_records = {
+    (
+        str(bundle_key),
+        str(task.get("goal_id") or ""),
+        str(task.get("task_id") or ""),
+        str(task.get("canonical_task_cid") or task.get("task_cid") or ""),
+    )
+    for bundle_key, bundle in (profile.get("bundles") or {}).items()
+    for task in bundle.get("tasks") or ()
+    if str(task.get("goal_id") or "") in expected_goals
+}
+if (
+    {record[1] for record in expected_records} != expected_goals
+    or not all(record[2] and record[3] for record in expected_records)
+):
+    raise SystemExit("implementation profile task identity is incomplete")
+
+lanes = manifest.get("lanes")
+if not isinstance(lanes, list):
+    raise SystemExit("implementation dry run omitted lanes")
+observed_bundles = {str(lane.get("bundle_key") or "") for lane in lanes}
+observed_records = {
+    (
+        str(lane.get("bundle_key") or ""),
+        str(task.get("goal_id") or ""),
+        str(task.get("task_id") or ""),
+        str(task.get("canonical_task_cid") or task.get("task_cid") or ""),
+    )
+    for lane in lanes
+    for task in ((lane.get("queue_payload") or {}).get("tasks") or ())
+    if isinstance(task, dict)
+}
+expected_index = index_path.relative_to(repo_root).as_posix()
+assert manifest.get("schema") == "ipfs_accelerate_py.agent_supervisor.bundle_supervisor"
+assert manifest.get("bundle_index_path") == expected_index
+assert observed_bundles == expected_bundles
+assert observed_records == expected_records
+assert int(manifest.get("planned_count") or 0) == len(lanes) == len(expected_bundles)
+assert len(observed_bundles) == len(lanes) > 0
+for key in ("started_count", "running_count", "active_worker_count"):
+    assert int(manifest.get(key) or 0) == 0
+for key in ("started", "launched_task_cids", "active_worker_pids"):
+    assert not (manifest.get(key) or [])
+assert not any(lane.get("pid") for lane in lanes)
 ready = manifest.get("claimable_count")
 if ready is None:
     ready = manifest.get("ready_count", 0)
 print({
     "schema": manifest["schema"],
+    "profile": expected_index,
     "planned": manifest["planned_count"],
+    "goal_count": len(expected_goals),
     "claimable_or_ready": ready,
     "dependency_blocked": manifest.get("blocked_count", 0),
-    "started": manifest.get("started_count", 0),
-    "running": manifest.get("running_count", 0),
-    "active_worker_pids": manifest.get("active_worker_pids", []),
-    "launched_task_cids": manifest.get("launched_task_cids", []),
+    "started": 0,
 })
 PY
 ```
@@ -1086,8 +2001,8 @@ are not; those are rejected by the earlier preflight.
 
 ## Live-feature-disabled implementation launch
 
-Use this only after Gate 0B is recorded and all earlier review/preflight steps
-pass. The environment deliberately disables World integration and WLD
+Use this only after Gate 0B-launch is verified and all earlier
+review/preflight steps pass. The environment deliberately disables World integration and WLD
 transfers. It permits agents to edit code and run deterministic tests, but it
 does not authorize live integration testing.
 
@@ -1101,20 +2016,51 @@ guards have fail-closed tests, the existing `WORLD_ID_ENABLED=0`, external
 egress enforcement, absent live secrets, and the taskboard prohibition on
 remote validations are all required boundaries.
 
+Immediately before launch, verify the signed launch record, its bound
+selection record, the implementation dry-run manifest, and the immutable
+preflight receipt. Re-run the AppArmor namespace probe in the same host
+environment. Any failure is a hard stop:
+
 ```bash
+test -n "${WORLD_AID_ALLOWED_SIGNERS:-}"
+test -f "$WORLD_AID_ALLOWED_SIGNERS"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b.py \
+  --phase launch \
+  --approval data/worldcoin_human_aid/approvals/gate-0b-launch/approval.json \
+  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
+  --repo-root . \
+  --offline
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+aa-exec -p linux-sandbox -- unshare -Urn /bin/true
+
 env \
   WORLD_ID_ENABLED=0 \
   WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
   WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
+  IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1 \
   IPFS_ACCEL_SKIP_CORE=1 \
   IPFS_KIT_DISABLE=1 \
   HF_HUB_OFFLINE=1 \
   HF_DATASETS_OFFLINE=1 \
   TRANSFORMERS_OFFLINE=1 \
+  NPM_CONFIG_OFFLINE=true \
+  PIP_NO_INDEX=1 \
+  CARGO_NET_OFFLINE=true \
+  GIT_TERMINAL_PROMPT=0 \
   PYTHONPATH=ipfs_accelerate_py \
 python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --repo-root . \
-  --bundle-index-path data/worldcoin_human_aid/agent_supervisor/objective_bundles/index.json \
+  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/implementation.index.duckdb" \
   --state-root data/worldcoin_human_aid/agent_supervisor/lane_state \
   --worktree-root /tmp/worldcoin-human-aid-agent-worktrees \
   --log-dir data/worldcoin_human_aid/agent_supervisor/logs \
@@ -1124,18 +2070,20 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
   --task-prefix WORLDCOIN-AUTO- \
   --worktree-submodule-path ipfs_accelerate_py \
   --worktree-submodule-path ipfs_datasets_py \
+  --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
   --lease-ms 300000 \
   --heartbeat-interval 5 \
   --implementation-timeout 3600 \
-  --max-restarts 1 \
+  --max-restarts 0 \
   --max-lanes 2 \
   --implement \
   --start
 ```
 
 This command runs in the foreground. Keep its terminal available for a graceful
-stop. `--max-restarts 1` bounds automatic retries; repeated failure is evidence
-to inspect, not a reason to raise the limit blindly.
+stop. The initial launch disables automatic retries. Inspect and preserve the
+first failure receipt before a separately reviewed relaunch; do not increase
+the retry limit blindly.
 
 The live-feature-disabled profile applies to World/Hugging Face/model-data
 integrations inside the implementation and tests. The agent implementation
@@ -1284,12 +2232,13 @@ database can lose lease and idempotency evidence.
 
 ### Repeated worker restart or timeout
 
-`--max-restarts 1` intentionally stops a restart loop from consuming unlimited
-provider capacity. Inspect the task validation command, latest lane log,
-heartbeat age, implementation-provider quota/capacity telemetry, dirty
-worktree, merge conflicts, and task acceptance evidence. Fix the underlying
-cause, run the task's deterministic tests directly, then resume. A token limit,
-rate limit, provider outage, test failure, merge conflict, and human gate are
+The initial `--max-restarts 0` setting prevents a failed worker from entering
+an automatic restart loop and consuming provider capacity. Inspect the task
+validation command, latest lane log, heartbeat age, implementation-provider
+quota/capacity telemetry, dirty worktree, merge conflicts, and task acceptance
+evidence. Fix the underlying cause, run the task's deterministic tests
+directly, then perform a separately reviewed relaunch. A token limit, rate
+limit, provider outage, test failure, merge conflict, and human gate are
 different conditions and must not be collapsed into a generic retry.
 
 ### Dirty or divergent worktree

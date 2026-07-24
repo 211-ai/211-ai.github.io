@@ -461,11 +461,15 @@ must never become self-issued eligibility credentials.
 are neither a production database nor an acceptable portable production
 backup. Any portable backup for staging/production must be authenticated,
 envelope-encrypted, access-controlled, retention-bound, and restore-tested.
-Before any staging identity or financial workflow, implement PostgreSQL as the
-reference production transaction store with a versioned migration chain.
-SQLite, DuckDB, in-memory repositories, and raw snapshots may support bounded
-local tests, but they cannot satisfy staging or production persistence
-acceptance. The PostgreSQL boundary must provide:
+Before any staging identity or financial workflow, implement DuckDB as the
+reference transaction store with a versioned migration chain and the
+single-host, single-writer topology defined in
+`docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md`. SQLite, in-memory repositories,
+direct multi-process DuckDB writers, and raw snapshots may support neither
+staging nor production persistence acceptance. Application workers must use an
+authenticated local service or IPC boundary owned by the sole writer process;
+they must not receive a writable database path. The DuckDB boundary must
+provide:
 
 - envelope encryption through KMS/HSM-managed key references and explicit
   separation between wallet data, subject secrets, World proof evidence,
@@ -475,9 +479,13 @@ acceptance. The PostgreSQL boundary must provide:
   and event identities;
 - compare-and-swap state transitions and an atomic outbox for signer,
   reconciliation, revocation, and audit work;
+- a fenced single-writer lease, rejection of a second writer, and no fallback
+  to JSON, SQLite, in-memory, or directly writable worker-local state;
 - authenticated, minimum-necessary projections instead of serializing
   `WorldIdBinding.to_dict()` or a wallet snapshot;
-- encrypted backups, tested restore, key rotation, retention/deletion,
+- application-layer authenticated encryption for sensitive columns, an
+  approved encrypted volume for the database/WAL/temp files, encrypted
+  authenticated backups, tested restore, key rotation, retention/deletion,
   disaster recovery, and audit access;
 - a recoverable import/cutover workflow that inventories eligible source
   snapshots, migrates synthetic copies first, and keeps the source recoverable
@@ -1477,10 +1485,11 @@ which technical step is incomplete and how to continue.
 - Provider tenant isolation and authorization boundaries.
 - Duplicate requests, stale sessions, expired claims, and concurrent workers.
 - Developer Portal/RPC timeouts, rate limits, malformed responses, and failover.
-- PostgreSQL production-store migrations, encryption/KMS boundary, unique
-  indexes, transactional outbox, real-database concurrency/crash recovery,
-  backup/restore, and rejection of the plaintext local repository and
-  non-PostgreSQL substitutes outside development.
+- DuckDB production-store migrations, envelope-encryption/KMS boundary, unique
+  constraints, transactional outbox, fenced single-writer behavior,
+  crash/checkpoint recovery, backup/restore, and rejection of the plaintext
+  local repository, direct worker writes, and fallback stores outside
+  development.
 - Sepolia transfers of the reviewed test token, with independently asserted
   receipt/event fields and no assumption that the mainnet WLD address applies.
 - MiniKit `sendTransaction` remains an injected fixture in Sepolia tests; no
@@ -1563,11 +1572,14 @@ accept the written invariants. No funds move.
   and fake chain/signer adapters.
 - Implement the pinned EIP-1271-capable SIWE verification boundary, issuer
   enrollment/issuance/import/correction lifecycle, and encrypted transactional
-  PostgreSQL production store before integrating their APIs.
+  single-writer DuckDB production store before integrating their APIs.
 - Run the G002-only bootstrap audit first. Humans then review and pre-stage the
   exact npm tarballs/lock, native ZKP toolchain, Python wheelhouse, and
-  PostgreSQL image or binary. G037 through G040 turn those external choices
-  into deterministic offline evidence before G006, G012, or G033 can run.
+  checksum-pinned DuckDB wheel. G037, G041, and G042 prepare every
+  selection-bound verifier, lock, policy, smoke input, and test contract
+  without executing a package or toolchain; G038 through G040 are execute-only
+  and turn the resulting human selections into deterministic offline receipts
+  before G006, G012, or G033 can run.
 - Prove the checksum-pinned eligibility-circuit toolchain's locked smoke build
   is reproducible and offline before assigning the circuit implementation
   lane.
@@ -1666,18 +1678,22 @@ hashing, signer interfaces, and migration files. Generated tasks remain
 `blocked` when a production credential, treasury signer, legal decision,
 external audit, or named-owner signoff is required.
 
-The source heap currently contains 38 schedulable implementation goals:
-`WORLDCOIN-G001` through `WORLDCOIN-G034` plus the four offline-bootstrap
-objectives `WORLDCOIN-G037` through `WORLDCOIN-G040`. Two goals are deliberately
+The source heap currently contains 40 schedulable implementation goals:
+`WORLDCOIN-G001` through `WORLDCOIN-G034` plus the six offline-bootstrap
+objectives `WORLDCOIN-G037` through `WORLDCOIN-G042`. Two goals are deliberately
 terminal human gates: `WORLDCOIN-G035` for an externally authorized Sepolia
 evidence record and `WORLDCOIN-G036` for the production canary. The supervisor
 must not materialize, claim, or infer completion of either blocked goal.
 
 The first executable profile is mechanically fenced to G002. Wider immutable
 profiles may be derived only after reviewing successful predecessor receipts.
-G037 prepares a non-executing SIWE lock proposal; G038 verifies the
-human-approved npm set offline; G039 verifies the human-approved native ZKP
-toolchain; and G040 verifies the human-approved Python/PostgreSQL runtime. A
+G037 prepares the non-executing SIWE verifier and lock proposal; G041 prepares
+the non-executing ZKP verifier and locked smoke inputs; G042 prepares the
+non-executing DuckDB verifier, dependency lock, storage ADR, runtime/backup
+policies, and test contract. G038 verifies the human-approved npm set offline;
+G039 verifies the human-approved native ZKP toolchain; and G040 verifies the
+human-approved Python/DuckDB runtime and single-writer smoke contract without
+claiming application-layer encryption, which remains G033-owned. A
 missing approval or pre-staged artifact blocks its lane and all dependent work
 without being converted into an agent-generated substitute.
 
@@ -1706,9 +1722,10 @@ The integration is complete only when:
 10. every payout is independently reconciled through a canonical receipt and WLD
    `Transfer` event to the required finality;
 11. reorg, retry, replacement, revocation, pause, and incident paths are tested;
-12. PostgreSQL-backed encrypted transactional storage, versioned migrations,
-    unique indexes, atomic outbox, real-database concurrency/crash tests,
-    restore, retention, and minimum-necessary API projections pass their gates;
+12. single-writer DuckDB-backed encrypted transactional storage, versioned
+    migrations, unique constraints, atomic outbox, second-writer rejection,
+    crash/checkpoint tests, restore, retention, and minimum-necessary API
+    projections pass their gates;
 13. raw documents, homelessness status, World identifiers, exact eligibility
    reasons, and private mappings do not appear on-chain or in public artifacts;
 14. no-device, no-World-ID, accessibility, manual evidence, and appeal paths

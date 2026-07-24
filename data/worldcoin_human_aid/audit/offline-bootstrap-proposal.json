@@ -4,6 +4,14 @@
   "task_id": "WORLDCOIN-AUTO-001",
   "proposal_status": "human-selection-required",
   "authority_statement": "This is a qualified, non-executing environment inventory and question set, not approval to download, install, initialize, build, pull, start, or execute anything.",
+  "historical_supersession": {
+    "status": "superseded-selection-retained-as-history",
+    "superseded_selection_target": "Python/PostgreSQL",
+    "current_selection_target": "Python/DuckDB",
+    "reason": "The original G002 receipt inventoried PostgreSQL because it was the database selection target in the objective at that time; subsequent repository-owner direction changes the planned target to DuckDB.",
+    "authority_limit": "This direction updates the inventory and human questions only. It is not a signed Gate 0B dependency, architecture, security, license, vulnerability, or production approval, and it does not approve direct multi-process access to a DuckDB file.",
+    "retained_evidence": "docs/reports/WORLD_HUMAN_AID_INTEGRATION_AUDIT.md::Historical PostgreSQL-selection supersession"
+  },
   "audit_observation": {
     "date": "2026-07-24",
     "scope": "The host and repository checkout after the G002 worker stopped and after the disclosed npm-cache garbage collection; the historical worker command is recorded but its exact interpreter environment is not. Observations are not portable and must be rechecked inside each approved offline verification lane.",
@@ -198,7 +206,7 @@
         }
       ]
     },
-    "python_postgresql": {
+    "python_duckdb": {
       "observed_environment": [
         {
           "input": "completed G002 supervisor worker interpreter",
@@ -250,6 +258,13 @@
           "qualification": "System-user-site metadata; jsonschema was not imported."
         },
         {
+          "input": "DuckDB system-user-site distribution metadata",
+          "version": "1.4.3",
+          "state": "observed-install-metadata",
+          "evidence": "host-filesystem::/home/barberb/.local/lib/python3.12/site-packages/duckdb-1.4.3.dist-info/METADATA#Version",
+          "qualification": "Observed-but-unapproved static metadata only. DuckDB was not imported; this does not prove wheel integrity, an exact lock, extension availability, encryption readiness, or Gate 0B approval."
+        },
+        {
           "input": "Miniforge Python environment",
           "version": "3.12.12",
           "state": "observed-alternate-environment-metadata",
@@ -275,35 +290,14 @@
           "version": "2.0.50",
           "state": "observed-alternate-environment-metadata",
           "evidence": "host-filesystem::/home/barberb/miniforge3/lib/python3.12/site-packages/sqlalchemy-2.0.50.dist-info/METADATA#Version",
-          "qualification": "Present in an alternate environment; not selected, locked, or sufficient to establish the G033 migration/repository boundary."
+          "qualification": "Present in an alternate environment; not selected, locked, or sufficient to choose the DuckDB migration/repository boundary."
         },
         {
           "input": "inactive workspace virtual environment",
-          "version": "3.12.3",
+          "version": "Python 3.12.3; DuckDB 1.5.2 distribution metadata",
           "state": "observed-alternate-environment-metadata",
-          "evidence": ".venv/pyvenv.cfg::version",
-          "qualification": "Not current on PATH; inspected site-packages lack the audited FastAPI, Pydantic, jsonschema, SQLAlchemy, Alembic, and PostgreSQL driver metadata."
-        },
-        {
-          "input": "system libpq5 client library",
-          "version": "16.14-0ubuntu0.24.04.1",
-          "state": "observed-system-package",
-          "evidence": "host-filesystem::/var/lib/dpkg/status#Package=libpq5",
-          "qualification": "/usr/lib/x86_64-linux-gnu/libpq.so.5 is present; this is not a PostgreSQL server, CLI, Python driver, or approval."
-        },
-        {
-          "input": "Conda libpq package archives",
-          "version": "17.7 and 18.1 variants",
-          "state": "observed-unapproved-cache",
-          "evidence": "host-filesystem::/home/barberb/miniforge3/pkgs/libpq-{17.7-h5c52fec_1,18.1-h5c52fec_2,18.1-hb80d175_3}.conda",
-          "qualification": "Cached archives only; not proof of installation, a server/CLI, integrity, or approval."
-        },
-        {
-          "input": "Docker CLI command",
-          "version": null,
-          "state": "observed-command-on-path",
-          "evidence": "host-PATH::/usr/bin/docker",
-          "qualification": "CLI path presence only; Docker was not executed and no daemon, image, archive, or registry state was inspected."
+          "evidence": "host-filesystem::.venv/pyvenv.cfg#version and .venv/lib/python3.12/site-packages/duckdb-1.5.2.dist-info/METADATA#Version",
+          "qualification": "Alternate inactive-environment metadata only. It conflicts with the observed system-user-site 1.4.3 metadata, was not imported, and is neither a selected runtime nor an exact approved lock."
         }
       ],
       "locked_or_declared": [
@@ -312,6 +306,13 @@
           "version": ">=3.11",
           "state": "declared",
           "evidence": "pyproject.toml::project.requires-python"
+        },
+        {
+          "input": "DuckDB Python dependency",
+          "version": ">=1.4.0",
+          "state": "declared",
+          "evidence": "pyproject.toml::project.dependencies[duckdb]",
+          "qualification": "The root range is a declaration, not an exact version selection, hash-pinned wheel lock, native-library attestation, or Gate 0B approval."
         },
         {
           "input": "FastAPI",
@@ -341,48 +342,48 @@
       ],
       "not_observed_or_unselected": [
         {
-          "input": "PostgreSQL psql, postgres, pg_ctl, initdb, createdb, and pg_dump commands",
+          "input": "DuckDB CLI command",
           "state": "observed-not-on-path",
           "selection_owner": "humans",
-          "evidence": "host-PATH::type -P returned no path for psql, postgres, pg_ctl, initdb, createdb, or pg_dump",
-          "qualification": "Not observed in the current PATH, standard PostgreSQL paths, or corresponding dpkg client/server package metadata; libpq5 alone is present. This finite observation does not prove global absence."
+          "evidence": "host-PATH::type -P returned no path for duckdb",
+          "qualification": "Not observed in the current PATH. This finite observation does not prove global absence and does not affect the separate unapproved Python distribution metadata observations."
         },
         {
-          "input": "PostgreSQL Python driver (psycopg or asyncpg)",
+          "input": "exact approved DuckDB Python wheel and embedded native library",
           "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "pyproject.toml::project.dependencies",
-          "qualification": "Not declared in relevant manifests and no psycopg, psycopg2, asyncpg, or pg8000 metadata was observed across the system user site, Miniforge, inactive .venv, or system dist-packages; no import was attempted."
+          "evidence": "pyproject.toml::project.dependencies[duckdb]",
+          "qualification": "The root >=1.4.0 range and observed 1.4.3/1.5.2 metadata do not select one version, platform wheel, Python ABI, native library, checksum, provenance, SBOM, vulnerability disposition, or approval."
         },
         {
-          "input": "approved migration and transactional repository library set",
+          "input": "approved DuckDB migration and transactional repository design",
           "state": "not-observed-not-proven-missing",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G033",
-          "qualification": "SQLAlchemy 2.0.50 exists only in the alternate Miniforge environment; Alembic was not observed in the finite audited environments, and no reviewed G033 library set is selected."
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G042,WORLDCOIN-G033",
+          "qualification": "G042 must prepare the reviewable ADR, lock, runtime, backup, verifier, and test contracts before selection; G033 later implements the authenticated single-writer repository. Neither preparation nor implementation was observed."
         },
         {
-          "input": "database encryption and key-management integration",
+          "input": "DuckDB single-writer service, authenticated envelope encryption, and key-management integration",
           "state": "missing-required-artifact",
           "selection_owner": "humans",
           "evidence": "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py::LocalWalletRepository",
-          "qualification": "The audited production boundary is absent; G033 owns implementation."
+          "qualification": "The audited production boundary is absent; G033 owns implementation after human architecture and dependency selection. Direct worker access to a DuckDB file is not an acceptable substitute."
         }
       ],
       "unknown_or_not_inspected": [
         {
-          "input": "PostgreSQL OCI image, archive, or private registry mirror",
+          "input": "approved DuckDB wheelhouse and exact platform-native wheel closure",
           "state": "unknown-not-inspected",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040",
-          "qualification": "The Docker CLI path exists, but no container command, daemon, image, archive, or private registry inspection was authorized."
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G042,WORLDCOIN-G040",
+          "qualification": "Private/user wheel caches were not inspected or modified. G042 prepares the non-executing wheel/lock proposal; G040 may execute only the exact later human-approved wheelhouse."
         },
         {
-          "input": "approved Python wheelhouse",
+          "input": "approved encrypted DuckDB database, WAL, temporary-file, and backup locations",
           "state": "unknown-not-inspected",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G040",
-          "qualification": "Private/user cache contents were not inspected or modified."
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G042,WORLDCOIN-G033",
+          "qualification": "No production state, key store, backup, or private location was inspected. G042 prepares the location/policy contract; G033 later implements it. All paths must be access-controlled and unavailable to direct worker opens."
         }
       ]
     },
@@ -543,8 +544,8 @@
           "input": "approved complete ZKP binary, circuit, and key bundle or vault",
           "state": "unknown-not-inspected",
           "selection_owner": "humans",
-          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G039",
-          "qualification": "Named Cargo and repository artifact locations were inspected read-only, but no complete human-approved dependency closure, aid artifact bundle, private key vault, or approval record was inspected or inferred."
+          "evidence": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G041,WORLDCOIN-G039",
+          "qualification": "Named Cargo and repository artifact locations were inspected read-only. G041 prepares the non-executing verifier and locked smoke inputs; G039 may execute only a later human-approved toolchain. No complete approved closure, aid artifact bundle, private key vault, or approval record was inspected or inferred."
         }
       ]
     }
@@ -552,12 +553,12 @@
   "human_approval_questions": [
     {
       "id": "versions",
-      "question": "Which exact npm, Python, PostgreSQL, database-driver, migration, World Chain, ProveKit, Noir, Rust, circuit, and key versions are approved?",
+      "question": "Which exact npm, Python, DuckDB wheel/native-library, migration, World Chain, ProveKit, Noir, Rust, circuit, and key versions are approved?",
       "required_record": "version-selection"
     },
     {
       "id": "checksums",
-      "question": "Which publisher checksums or independently reproduced digests must every wheel, npm tarball, image, binary, circuit, proving key, and verifier key match?",
+      "question": "Which publisher checksums or independently reproduced digests must every wheel, embedded native library, npm tarball, image, binary, circuit, proving key, and verifier key match?",
       "required_record": "checksum-manifest"
     },
     {
@@ -577,12 +578,12 @@
     },
     {
       "id": "cache-image-locations",
-      "question": "Which offline wheelhouse, npm cache, binary cache, circuit/key vault, OCI archive, image registry mirror, and PostgreSQL data locations are approved, encrypted, access-controlled, and backed up?",
+      "question": "Which offline DuckDB wheelhouse, npm cache, binary cache, circuit/key vault, OCI archive, image registry mirror, and encrypted DuckDB database/WAL/temporary/backup locations are approved and access-controlled?",
       "required_record": "offline-location-policy"
     },
     {
       "id": "smoke-tests",
-      "question": "Which offline smoke tests, negative vectors, migration/recovery checks, architecture targets, and signed pass criteria authorize later use?",
+      "question": "Which offline smoke tests, single-writer/direct-open negative vectors, DuckDB transaction/checkpoint/crash/opaque-backup/restore checks, architecture targets, and signed pass criteria authorize runtime use, and which separate G033 envelope-encryption checks are required before staging?",
       "required_record": "smoke-test-approval"
     }
   ],
@@ -601,8 +602,10 @@
     "next_owners": {
       "siwe_dependency_lock_proposal": "WORLDCOIN-G037",
       "siwe_offline_verification": "WORLDCOIN-G038",
+      "zkp_verifier_and_smoke_proposal": "WORLDCOIN-G041",
       "zkp_offline_verification": "WORLDCOIN-G039",
-      "postgresql_offline_verification": "WORLDCOIN-G040",
+      "duckdb_verifier_lock_and_policy_proposal": "WORLDCOIN-G042",
+      "duckdb_offline_verification": "WORLDCOIN-G040",
       "world_chain_client_selection": "WORLDCOIN-G019"
     }
   }

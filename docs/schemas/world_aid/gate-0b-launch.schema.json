@@ -1,0 +1,498 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://211-ai.local/schemas/world-aid/gate-0b-launch.schema.json",
+  "title": "World Human Aid Gate 0B Launch Approval",
+  "description": "A human-signed authorization for the offline, live-feature-disabled implementation board after dependency verification. It does not authorize World API calls, chain activity, signing, or token transfers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "gate_id",
+    "record_id",
+    "decision",
+    "issued_at",
+    "not_before",
+    "expires_at",
+    "reviewed_state",
+    "scope",
+    "reviewers",
+    "exceptions",
+    "trust",
+    "selection_evidence",
+    "bootstrap_receipts",
+    "security_evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "world-human-aid-gate-0b-launch/v1"
+    },
+    "gate_id": {
+      "const": "gate-0b-launch"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^gate-0b-launch-[a-z0-9][a-z0-9._-]{7,95}$"
+    },
+    "decision": {
+      "const": "approved"
+    },
+    "issued_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "not_before": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "expires_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "reviewed_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_commit",
+        "submodule_commits",
+        "objective_heap",
+        "implementation_plan",
+        "runbook",
+        "storage_adr",
+        "full_board",
+        "objective_graph",
+        "bundle_index",
+        "implementation_bundle_index",
+        "implementation_bundle_index_duckdb",
+        "preflight_receipt",
+        "dry_run_receipt"
+      ],
+      "properties": {
+        "root_commit": {
+          "$ref": "#/$defs/gitCommit"
+        },
+        "submodule_commits": {
+          "$ref": "#/$defs/submoduleCommits"
+        },
+        "objective_heap": {
+          "$ref": "#/$defs/artifact"
+        },
+        "implementation_plan": {
+          "$ref": "#/$defs/artifact"
+        },
+        "runbook": {
+          "$ref": "#/$defs/artifact"
+        },
+        "storage_adr": {
+          "$ref": "#/$defs/artifact"
+        },
+        "full_board": {
+          "$ref": "#/$defs/artifact"
+        },
+        "objective_graph": {
+          "$ref": "#/$defs/artifact"
+        },
+        "bundle_index": {
+          "$ref": "#/$defs/artifact"
+        },
+        "implementation_bundle_index": {
+          "$ref": "#/$defs/artifact"
+        },
+        "implementation_bundle_index_duckdb": {
+          "$ref": "#/$defs/artifact"
+        },
+        "preflight_receipt": {
+          "$ref": "#/$defs/artifact"
+        },
+        "dry_run_receipt": {
+          "$ref": "#/$defs/artifact"
+        }
+      }
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "reviewers": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "$ref": "#/$defs/reviewer"
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/exception"
+      }
+    },
+    "trust": {
+      "$ref": "#/$defs/trust"
+    },
+    "selection_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval",
+        "signatures"
+      ],
+      "properties": {
+        "approval": {
+          "$ref": "#/$defs/artifact"
+        },
+        "signatures": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    },
+    "bootstrap_receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "siwe",
+        "zkp",
+        "duckdb"
+      ],
+      "properties": {
+        "siwe": {
+          "$ref": "#/$defs/artifact"
+        },
+        "zkp": {
+          "$ref": "#/$defs/artifact"
+        },
+        "duckdb": {
+          "$ref": "#/$defs/artifact"
+        }
+      }
+    },
+    "security_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "network_deny_canary",
+        "egress_policy",
+        "no_live_secrets_attestation"
+      ],
+      "properties": {
+        "network_deny_canary": {
+          "$ref": "#/$defs/artifact"
+        },
+        "egress_policy": {
+          "$ref": "#/$defs/artifact"
+        },
+        "no_live_secrets_attestation": {
+          "$ref": "#/$defs/artifact"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*//)[^\\u0000]+$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "submoduleCommits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ipfs_accelerate_py",
+        "ipfs_datasets_py"
+      ],
+      "properties": {
+        "ipfs_accelerate_py": {
+          "$ref": "#/$defs/gitCommit"
+        },
+        "ipfs_datasets_py": {
+          "$ref": "#/$defs/gitCommit"
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_deny",
+        "registry_access",
+        "allowed_destinations"
+      ],
+      "properties": {
+        "default_deny": {
+          "const": true
+        },
+        "registry_access": {
+          "const": false
+        },
+        "allowed_destinations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          }
+        }
+      }
+    },
+    "featureFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "WORLD_ID_ENABLED",
+        "WORLD_AID_EXTERNAL_CALLS_ENABLED",
+        "WORLD_AID_WLD_TRANSFERS_ENABLED"
+      ],
+      "properties": {
+        "WORLD_ID_ENABLED": {
+          "const": "0"
+        },
+        "WORLD_AID_EXTERNAL_CALLS_ENABLED": {
+          "const": "0"
+        },
+        "WORLD_AID_WLD_TRANSFERS_ENABLED": {
+          "const": "0"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_ids",
+        "validation_commands",
+        "writable_paths",
+        "network",
+        "feature_flags",
+        "live_secrets_present",
+        "forbidden_actions"
+      ],
+      "properties": {
+        "goal_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^WORLDCOIN-G[0-9]{3}$",
+            "not": {
+              "enum": [
+                "WORLDCOIN-G035",
+                "WORLDCOIN-G036"
+              ]
+            }
+          }
+        },
+        "validation_commands": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "writable_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/relativePath"
+          }
+        },
+        "network": {
+          "$ref": "#/$defs/network"
+        },
+        "feature_flags": {
+          "$ref": "#/$defs/featureFlags"
+        },
+        "live_secrets_present": {
+          "const": false
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "world-api-call",
+              "chain-broadcast",
+              "token-transfer",
+              "contract-deployment",
+              "allowance-change",
+              "live-secret-access",
+              "package-registry-access",
+              "container-registry-access"
+            ]
+          }
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "identity",
+        "decision",
+        "reviewed_at",
+        "expires_at"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "product-owner",
+            "security-reviewer",
+            "privacy-reviewer",
+            "program-policy-owner",
+            "accessibility-reviewer",
+            "repository-maintainer",
+            "supply-chain-maintainer",
+            "cryptography-reviewer",
+            "storage-security-reviewer"
+          ]
+        },
+        "identity": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 254,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9@._+-]+$"
+        },
+        "decision": {
+          "const": "approved"
+        },
+        "reviewed_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        }
+      }
+    },
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "owner",
+        "rationale",
+        "compensating_controls",
+        "expires_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^EX-[A-Z0-9][A-Z0-9_-]{2,31}$"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 2000
+        },
+        "compensating_controls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          }
+        },
+        "expires_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "identity",
+        "key_fingerprint",
+        "file"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "identity": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "key_fingerprint": {
+          "type": "string",
+          "pattern": "^SHA256:[A-Za-z0-9+/]{43}$"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,63}\\.sshsig$"
+        }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signature_namespace",
+        "allowed_signers_sha256",
+        "signatures"
+      ],
+      "properties": {
+        "signature_namespace": {
+          "const": "world-aid-gate-0b-launch-v1"
+        },
+        "allowed_signers_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "signatures": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": {
+            "$ref": "#/$defs/signature"
+          }
+        }
+      }
+    }
+  }
+}

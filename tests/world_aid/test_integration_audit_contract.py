@@ -11,7 +11,6 @@ import json
 import re
 from pathlib import Path
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_PATH = REPOSITORY_ROOT / "docs/reports/WORLD_HUMAN_AID_INTEGRATION_AUDIT.md"
 MAP_PATH = REPOSITORY_ROOT / "data/worldcoin_human_aid/audit/component-map.json"
@@ -55,8 +54,7 @@ def test_all_expected_audit_outputs_exist_and_are_aligned() -> None:
     assert "!data/worldcoin_human_aid/audit/component-map.json" in ignore
     assert "!data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json" in ignore
     assert (
-        "!data/worldcoin_human_aid/agent_supervisor/discovery/"
-        "2026-07-24-worldcoin-auto-001-integration-audit.md"
+        "!data/worldcoin_human_aid/agent_supervisor/discovery/2026-07-24-worldcoin-auto-001-integration-audit.md"
     ) in ignore
 
 
@@ -173,10 +171,20 @@ def test_component_map_semantically_matches_the_objective_heap() -> None:
             "WORLDCOIN-G014",
         },
         "wallet-status-api": {"WORLDCOIN-G007", "WORLDCOIN-G024", "WORLDCOIN-G033"},
-        "local-wallet-repository": {"WORLDCOIN-G008", "WORLDCOIN-G033", "WORLDCOIN-G040"},
+        "local-wallet-repository": {
+            "WORLDCOIN-G008",
+            "WORLDCOIN-G033",
+            "WORLDCOIN-G040",
+            "WORLDCOIN-G042",
+        },
         "wallet-principal-auth": {"WORLDCOIN-G006", "WORLDCOIN-G037", "WORLDCOIN-G038"},
         "document-profile-receipt": {"WORLDCOIN-G012", "WORLDCOIN-G013", "WORLDCOIN-G014"},
-        "zkp-backends": {"WORLDCOIN-G012", "WORLDCOIN-G013", "WORLDCOIN-G039"},
+        "zkp-backends": {
+            "WORLDCOIN-G012",
+            "WORLDCOIN-G013",
+            "WORLDCOIN-G039",
+            "WORLDCOIN-G041",
+        },
         "provider-context": {
             "WORLDCOIN-G006",
             "WORLDCOIN-G007",
@@ -203,8 +211,7 @@ def test_component_map_semantically_matches_the_objective_heap() -> None:
 
     heap = HEAP_PATH.read_text(encoding="utf-8")
     heap_goals = {
-        goal_id: title
-        for goal_id, title in re.findall(r"^## (WORLDCOIN-G\d{3}) (.+)$", heap, flags=re.MULTILINE)
+        goal_id: title for goal_id, title in re.findall(r"^## (WORLDCOIN-G\d{3}) (.+)$", heap, flags=re.MULTILINE)
     }
     statuses = set(component_map["status_vocabulary"])
     for component_id, component in by_id.items():
@@ -220,9 +227,7 @@ def test_component_map_semantically_matches_the_objective_heap() -> None:
         assert all(goal in heap_goals for goal in component["goals"])
         assert all("::" in citation for citation in component["evidence"])
 
-    assert "secure" in heap_goals["WORLDCOIN-G033"].lower() or "transactional" in heap_goals[
-        "WORLDCOIN-G033"
-    ].lower()
+    assert "secure" in heap_goals["WORLDCOIN-G033"].lower() or "transactional" in heap_goals["WORLDCOIN-G033"].lower()
     assert "siwe" in heap_goals["WORLDCOIN-G006"].lower()
     assert "issuer" in heap_goals["WORLDCOIN-G034"].lower()
     assert "reconcile" in heap_goals["WORLDCOIN-G022"].lower()
@@ -254,6 +259,8 @@ def test_component_map_classifies_unsafe_and_missing_boundaries_without_overclai
         "Accepted v3 evidence can be labeled world_id_idkit_v4 in a receipt.",
         "Status authentication is optional.",
         "Principal secrets are hex-encoded into plaintext JSON.",
+        "DuckDB native file mode permits only one external writer process; uncoordinated direct opens by wallet, API, payout, or reconciliation workers cannot satisfy the cross-worker transaction boundary.",
+        "Direct access to a DuckDB file would bypass the authenticated single-writer service, domain authorization, and minimum-necessary projection boundary.",
         "The receipt proves no aid-program eligibility statement.",
         "The registration verifier does not require or compare provider signal context.",
         "No EIP-1271 contract-wallet signature validation boundary exists in the audited path.",
@@ -285,7 +292,7 @@ def test_offline_bootstrap_uses_qualified_observed_and_unknown_states() -> None:
     } <= set(vocabulary)
 
     inventory = proposal["inventory"]
-    assert set(inventory) == {"npm", "python_postgresql", "zkp"}
+    assert set(inventory) == {"npm", "python_duckdb", "zkp"}
     for family_name, family in inventory.items():
         assert family["observed_environment"], family_name
         assert family["locked_or_declared"], family_name
@@ -307,9 +314,7 @@ def test_offline_bootstrap_uses_qualified_observed_and_unknown_states() -> None:
     assert ("@worldcoin/idkit-server", "1.1.1", "observed-workspace-package") in observed_npm
     assert ("ethers npm cache entry", "5.8.0", "observed-unapproved-cache") in observed_npm
     assert any(
-        item["input"] == "@worldcoin/idkit"
-        and item["version"] == "^4.1.8"
-        and item["state"] == "declared"
+        item["input"] == "@worldcoin/idkit" and item["version"] == "^4.1.8" and item["state"] == "declared"
         for item in npm["locked_or_declared"]
     )
     assert "npm cache not inspected" not in json.dumps(npm).lower()
@@ -319,8 +324,8 @@ def test_offline_bootstrap_uses_qualified_observed_and_unknown_states() -> None:
         "eip-4361 siwe",
         "eip-1271",
         "world chain",
-        "postgresql",
-        "psycopg",
+        "duckdb",
+        "single-writer",
         "migration",
         "provekit",
         "noir/nargo",
@@ -330,12 +335,17 @@ def test_offline_bootstrap_uses_qualified_observed_and_unknown_states() -> None:
     ):
         assert required_input in rendered
     assert "manifest absence" not in rendered
+    assert "postgresql" not in rendered
+    assert "psycopg" not in rendered
+    assert "optional signed duckdb extension" not in rendered
+    assert "native-extension cache" not in rendered
 
-    postgres_unknowns = json.dumps(inventory["python_postgresql"]["unknown_or_not_inspected"]).lower()
-    assert "postgresql oci image" in postgres_unknowns
-    assert "unknown-not-inspected" in postgres_unknowns
+    duckdb_unknowns = json.dumps(inventory["python_duckdb"]["unknown_or_not_inspected"]).lower()
+    assert "approved duckdb wheelhouse" in duckdb_unknowns
+    assert "database, wal, temporary-file, and backup locations" in duckdb_unknowns
+    assert "unknown-not-inspected" in duckdb_unknowns
 
-    python_observed = json.dumps(inventory["python_postgresql"]["observed_environment"], sort_keys=True)
+    python_observed = json.dumps(inventory["python_duckdb"]["observed_environment"], sort_keys=True)
     for exact_fact in (
         "historical-environment-not-recorded",
         "3.12.3-1ubuntu0.15",
@@ -347,10 +357,27 @@ def test_offline_bootstrap_uses_qualified_observed_and_unknown_states() -> None:
         "Miniforge SQLAlchemy distribution metadata",
         "2.0.50",
         "inactive workspace virtual environment",
-        "16.14-0ubuntu0.24.04.1",
-        "Docker CLI command",
+        "DuckDB system-user-site distribution metadata",
+        "1.4.3",
+        "DuckDB 1.5.2 distribution metadata",
     ):
         assert exact_fact in python_observed
+    duckdb_declared = inventory["python_duckdb"]["locked_or_declared"]
+    assert any(
+        item["input"] == "DuckDB Python dependency" and item["version"] == ">=1.4.0" and item["state"] == "declared"
+        for item in duckdb_declared
+    )
+    assert (
+        "exact approved duckdb python wheel"
+        in json.dumps(inventory["python_duckdb"]["not_observed_or_unselected"]).lower()
+    )
+
+    supersession = proposal["historical_supersession"]
+    assert supersession["status"] == "superseded-selection-retained-as-history"
+    assert supersession["superseded_selection_target"] == "Python/PostgreSQL"
+    assert supersession["current_selection_target"] == "Python/DuckDB"
+    assert "not a signed Gate 0B" in supersession["authority_limit"]
+    assert "direct multi-process access" in supersession["authority_limit"]
 
     zkp_observed = json.dumps(inventory["zkp"]["observed_environment"], sort_keys=True)
     for exact_fact in (
@@ -394,8 +421,10 @@ def test_offline_bootstrap_reserves_every_selection_for_humans_and_routes_famili
     assert gate["next_owners"] == {
         "siwe_dependency_lock_proposal": "WORLDCOIN-G037",
         "siwe_offline_verification": "WORLDCOIN-G038",
+        "zkp_verifier_and_smoke_proposal": "WORLDCOIN-G041",
         "zkp_offline_verification": "WORLDCOIN-G039",
-        "postgresql_offline_verification": "WORLDCOIN-G040",
+        "duckdb_verifier_lock_and_policy_proposal": "WORLDCOIN-G042",
+        "duckdb_offline_verification": "WORLDCOIN-G040",
         "world_chain_client_selection": "WORLDCOIN-G019",
     }
 
@@ -441,6 +470,7 @@ def test_contract_body_and_declared_audit_are_static_and_side_effect_free() -> N
         "urllib",
         "socket",
         "subprocess",
+        "duckdb",
         "psycopg",
         "sqlalchemy",
         "pytest",
