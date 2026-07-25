@@ -46,7 +46,13 @@ NON_SCHEDULABLE_STATES = frozenset(
     }
 )
 EXPECTED_GOAL_IDS = frozenset(f"WORLDCOIN-G{index:03d}" for index in range(1, 43))
-EXPECTED_BLOCKED_GOAL_IDS = frozenset(
+BLOCKED_REVIEW_CONTRACT = "blocked-review-v1"
+GATE0B_REOPENED_CONTRACT = "gate0b-selection-reopened-v1"
+GATE0B_EXECUTION_GOAL_IDS = frozenset(
+    {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
+)
+HUMAN_ONLY_GOAL_IDS = frozenset({"WORLDCOIN-G035", "WORLDCOIN-G036"})
+BLOCKED_REVIEW_GOAL_IDS = frozenset(
     {
         "WORLDCOIN-G035",
         "WORLDCOIN-G036",
@@ -54,16 +60,6 @@ EXPECTED_BLOCKED_GOAL_IDS = frozenset(
         "WORLDCOIN-G039",
         "WORLDCOIN-G040",
     }
-)
-EXPECTED_NON_MATERIALIZED_GOAL_IDS = frozenset(
-    {"WORLDCOIN-G035", "WORLDCOIN-G036"}
-)
-EXPECTED_REVIEW_ONLY_GOAL_IDS = frozenset(
-    {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
-)
-EXPECTED_SCHEDULABLE_GOAL_IDS = EXPECTED_GOAL_IDS - EXPECTED_BLOCKED_GOAL_IDS
-EXPECTED_MATERIALIZED_GOAL_IDS = (
-    EXPECTED_SCHEDULABLE_GOAL_IDS | EXPECTED_REVIEW_ONLY_GOAL_IDS
 )
 OBJECTIVE_GRAPH_SCHEMA = "ipfs_accelerate_py.agent_supervisor.objective_graph"
 TODO_VECTOR_INDEX_SCHEMA = "ipfs_accelerate_py.agent_supervisor.todo_vector_index"
@@ -77,6 +73,55 @@ class BoardVerificationError(ValueError):
     def __init__(self, problems: Iterable[str]):
         self.problems = tuple(dict.fromkeys(str(problem) for problem in problems if str(problem)))
         super().__init__("\n".join(self.problems))
+
+
+@dataclass(frozen=True)
+class BoardContract:
+    """Exact generated-board state accepted at one governance boundary."""
+
+    name: str
+    blocked_goal_ids: frozenset[str]
+    non_materialized_goal_ids: frozenset[str]
+    review_only_goal_ids: frozenset[str]
+    reopened_goal_ids: frozenset[str]
+
+    @property
+    def schedulable_goal_ids(self) -> frozenset[str]:
+        return EXPECTED_GOAL_IDS - self.blocked_goal_ids
+
+    @property
+    def materialized_goal_ids(self) -> frozenset[str]:
+        return self.schedulable_goal_ids | self.review_only_goal_ids
+
+
+BOARD_CONTRACTS = {
+    BLOCKED_REVIEW_CONTRACT: BoardContract(
+        name=BLOCKED_REVIEW_CONTRACT,
+        blocked_goal_ids=BLOCKED_REVIEW_GOAL_IDS,
+        non_materialized_goal_ids=HUMAN_ONLY_GOAL_IDS,
+        review_only_goal_ids=GATE0B_EXECUTION_GOAL_IDS,
+        reopened_goal_ids=frozenset(),
+    ),
+    GATE0B_REOPENED_CONTRACT: BoardContract(
+        name=GATE0B_REOPENED_CONTRACT,
+        blocked_goal_ids=HUMAN_ONLY_GOAL_IDS,
+        non_materialized_goal_ids=HUMAN_ONLY_GOAL_IDS,
+        review_only_goal_ids=frozenset(),
+        reopened_goal_ids=GATE0B_EXECUTION_GOAL_IDS,
+    ),
+}
+
+
+def _board_contract(name: str) -> BoardContract:
+    try:
+        return BOARD_CONTRACTS[name]
+    except KeyError as exc:
+        raise BoardVerificationError(
+            [
+                f"unknown board contract {name!r}; "
+                f"expected one of {sorted(BOARD_CONTRACTS)}"
+            ]
+        ) from exc
 
 
 @dataclass(frozen=True)
@@ -183,6 +228,42 @@ def _verify_review_only_scheduling_flags(
         if not valid:
             problems.append(
                 f"{location} review-only scheduling flag {field!r} must be "
+                f"{expected_text}; found {value!r}"
+            )
+
+
+def _verify_reopened_scheduling_flags(
+    record: Mapping[str, Any],
+    *,
+    location: str,
+    json_booleans: bool,
+    problems: list[str],
+) -> None:
+    """Require affirmative scheduling flags on a transition-approved record."""
+
+    expected = {
+        "is_schedulable": True,
+        "review_only": False,
+    }
+    for field, expected_value in expected.items():
+        if field not in record:
+            problems.append(
+                f"{location} is missing reopened scheduling flag {field!r}"
+            )
+            continue
+        value = record[field]
+        if json_booleans:
+            valid = isinstance(value, bool) and value is expected_value
+            expected_text = f"JSON boolean {str(expected_value).lower()}"
+        else:
+            valid = (
+                isinstance(value, str)
+                and value.strip().casefold() == str(expected_value).lower()
+            )
+            expected_text = f"literal {str(expected_value).lower()!r}"
+        if not valid:
+            problems.append(
+                f"{location} reopened scheduling flag {field!r} must be "
                 f"{expected_text}; found {value!r}"
             )
 
@@ -323,6 +404,7 @@ def _verify_source_task_coverage(
     goals: Sequence[GoalRecord],
     tasks: Sequence[TaskRecord],
     *,
+    contract: BoardContract,
     problems: list[str],
 ) -> None:
     required_goal_fields = {
@@ -342,19 +424,27 @@ def _verify_source_task_coverage(
             f"unexpected={sorted(observed_goal_ids - EXPECTED_GOAL_IDS)}"
         )
     blocked_goal_ids = {goal.goal_id for goal in goals if goal.status == "blocked"}
-    if blocked_goal_ids != EXPECTED_BLOCKED_GOAL_IDS:
+    if blocked_goal_ids != contract.blocked_goal_ids:
         problems.append(
             "objective heap blocked-goal set differs from the reviewed human gates: "
-            f"expected={sorted(EXPECTED_BLOCKED_GOAL_IDS)}, "
+            f"expected={sorted(contract.blocked_goal_ids)}, "
             f"actual={sorted(blocked_goal_ids)}"
         )
     schedulable_goal_ids = {goal.goal_id for goal in goals if goal.is_schedulable}
-    if schedulable_goal_ids != EXPECTED_SCHEDULABLE_GOAL_IDS:
+    if schedulable_goal_ids != contract.schedulable_goal_ids:
         problems.append(
             "objective heap schedulable-goal set differs from the reviewed contract: "
-            f"missing={sorted(EXPECTED_SCHEDULABLE_GOAL_IDS - schedulable_goal_ids)}, "
-            f"unexpected={sorted(schedulable_goal_ids - EXPECTED_SCHEDULABLE_GOAL_IDS)}"
+            f"missing={sorted(contract.schedulable_goal_ids - schedulable_goal_ids)}, "
+            f"unexpected={sorted(schedulable_goal_ids - contract.schedulable_goal_ids)}"
         )
+    goals_by_id = {goal.goal_id: goal for goal in goals}
+    for goal_id in sorted(contract.reopened_goal_ids):
+        goal = goals_by_id.get(goal_id)
+        if goal is not None and goal.status != "reopened":
+            problems.append(
+                f"{contract.name} requires {goal_id} status to be exactly "
+                f"'reopened'; found {goal.status!r}"
+            )
 
     for goal in goals:
         location = f"{goal.goal_id} at objective heap line {goal.source_line}"
@@ -382,7 +472,6 @@ def _verify_source_task_coverage(
     if cid_duplicates:
         problems.append(f"generated TODO has duplicate task CIDs: {cid_duplicates}")
 
-    goals_by_id = {goal.goal_id: goal for goal in goals}
     tasks_by_goal: dict[str, list[TaskRecord]] = defaultdict(list)
     required_task_fields = {
         "bundle",
@@ -413,7 +502,7 @@ def _verify_source_task_coverage(
             problems.append(f"{location} references unknown goal {task.goal_id!r}")
             continue
         tasks_by_goal[task.goal_id].append(task)
-        if task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+        if task.goal_id in contract.review_only_goal_ids:
             if task.status != "blocked":
                 problems.append(
                     f"{location} review-only goal {task.goal_id} must remain "
@@ -422,6 +511,18 @@ def _verify_source_task_coverage(
             _verify_review_only_scheduling_flags(
                 task.fields,
                 location=f"{location} for review-only goal {task.goal_id}",
+                json_booleans=False,
+                problems=problems,
+            )
+        elif task.goal_id in contract.reopened_goal_ids:
+            if task.status not in SCHEDULABLE_STATES:
+                problems.append(
+                    f"{location} reopened goal {task.goal_id} must have a "
+                    f"schedulable task status; found {task.status!r}"
+                )
+            _verify_reopened_scheduling_flags(
+                task.fields,
+                location=f"{location} for reopened goal {task.goal_id}",
                 json_booleans=False,
                 problems=problems,
             )
@@ -434,7 +535,7 @@ def _verify_source_task_coverage(
         if count != 1:
             problems.append(f"schedulable goal {goal_id} must have exactly one generated task; found {count}")
 
-    for goal_id in sorted(EXPECTED_REVIEW_ONLY_GOAL_IDS):
+    for goal_id in sorted(contract.review_only_goal_ids):
         count = len(tasks_by_goal.get(goal_id, ()))
         if count != 1:
             problems.append(
@@ -442,7 +543,7 @@ def _verify_source_task_coverage(
                 f"generated task; found {count}"
             )
 
-    for goal_id in sorted(EXPECTED_NON_MATERIALIZED_GOAL_IDS):
+    for goal_id in sorted(contract.non_materialized_goal_ids):
         count = len(tasks_by_goal.get(goal_id, ()))
         if count:
             problems.append(
@@ -450,14 +551,14 @@ def _verify_source_task_coverage(
                 f"found {count} generated task(s)"
             )
 
-    if len(tasks) != len(EXPECTED_MATERIALIZED_GOAL_IDS):
+    if len(tasks) != len(contract.materialized_goal_ids):
         problems.append(
             "generated review TODO must contain exactly "
-            f"{len(EXPECTED_MATERIALIZED_GOAL_IDS)} tasks; found {len(tasks)}"
+            f"{len(contract.materialized_goal_ids)} tasks; found {len(tasks)}"
         )
 
     for goal in goals:
-        if goal.goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS:
+        if goal.goal_id not in contract.materialized_goal_ids:
             continue
         matching = tasks_by_goal.get(goal.goal_id, ())
         if len(matching) != 1:
@@ -556,6 +657,7 @@ def _verify_index_task_identity(
     bundles: Mapping[str, Any],
     indexed_tasks: Mapping[str, tuple[str, Mapping[str, Any]]],
     repo_root: Path,
+    contract: BoardContract,
     problems: list[str],
 ) -> None:
     goals_by_id = {goal.goal_id: goal for goal in goals}
@@ -587,7 +689,7 @@ def _verify_index_task_identity(
                 f"{location} parents differ from TODO: index={list(indexed_parents)!r}, todo={list(todo_parents)!r}"
             )
 
-        if task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+        if task.goal_id in contract.review_only_goal_ids:
             indexed_status = _normalize_state(indexed_task.get("status", ""))
             if indexed_status != "blocked":
                 problems.append(
@@ -604,6 +706,26 @@ def _verify_index_task_identity(
                 _verify_review_only_scheduling_flags(
                     raw_bundle,
                     location=f"bundle {bundle_key!r} for review-only goal {task.goal_id}",
+                    json_booleans=True,
+                    problems=problems,
+                )
+        elif task.goal_id in contract.reopened_goal_ids:
+            indexed_status = _normalize_state(indexed_task.get("status", ""))
+            if indexed_status not in SCHEDULABLE_STATES:
+                problems.append(
+                    f"{location} for reopened goal {task.goal_id} must have "
+                    f"a schedulable status; found {indexed_status!r}"
+                )
+            _verify_reopened_scheduling_flags(
+                indexed_task,
+                location=f"{location} for reopened goal {task.goal_id}",
+                json_booleans=True,
+                problems=problems,
+            )
+            if isinstance(raw_bundle, Mapping):
+                _verify_reopened_scheduling_flags(
+                    raw_bundle,
+                    location=f"bundle {bundle_key!r} for reopened goal {task.goal_id}",
                     json_booleans=True,
                     problems=problems,
                 )
@@ -631,6 +753,7 @@ def _expected_task_parent_edges(
     goals: Sequence[GoalRecord],
     tasks: Sequence[TaskRecord],
     *,
+    contract: BoardContract,
     problems: list[str],
 ) -> set[tuple[str, str]]:
     goals_by_id = {goal.goal_id: goal for goal in goals}
@@ -642,8 +765,8 @@ def _expected_task_parent_edges(
                 problems.append(f"{goal.goal_id} references unknown parent goal {parent_goal_id!r}")
                 continue
             if (
-                goal.goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS
-                or parent_goal_id not in EXPECTED_MATERIALIZED_GOAL_IDS
+                goal.goal_id not in contract.materialized_goal_ids
+                or parent_goal_id not in contract.materialized_goal_ids
             ):
                 continue
             child_task = task_by_goal.get(goal.goal_id)
@@ -661,6 +784,7 @@ def _verify_dag(
     todo_pairs: set[tuple[str, str]],
     todo_tasks: Sequence[TaskRecord],
     expected_parent_edges: set[tuple[str, str]],
+    contract: BoardContract,
     problems: list[str],
 ) -> None:
     invalid = dag.get("invalid_task_cids") or []
@@ -677,7 +801,7 @@ def _verify_dag(
     review_only_cids = {
         task.task_cid
         for task in todo_tasks
-        if task.task_cid and task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS
+        if task.task_cid and task.goal_id in contract.review_only_goal_ids
     }
     node_cids = {str(cid) for cid in raw_nodes}
     for raw_cid, raw_node in raw_nodes.items():
@@ -699,7 +823,7 @@ def _verify_dag(
                     f"node_task={task_id!r}, todo_task={todo_task.task_id!r}, "
                     f"node_goal={node_goal_id!r}, todo_goal={todo_task.goal_id!r}"
                 )
-            if todo_task.goal_id in EXPECTED_REVIEW_ONLY_GOAL_IDS:
+            if todo_task.goal_id in contract.review_only_goal_ids:
                 node_status = _normalize_state(raw_node.get("status", ""))
                 if node_status != "blocked":
                     problems.append(
@@ -718,6 +842,30 @@ def _verify_dag(
                         metadata,
                         location=(
                             f"{name} node {cid!r} metadata for review-only "
+                            f"goal {todo_task.goal_id}"
+                        ),
+                        json_booleans=True,
+                        problems=problems,
+                    )
+            elif todo_task.goal_id in contract.reopened_goal_ids:
+                node_status = _normalize_state(raw_node.get("status", ""))
+                if node_status not in SCHEDULABLE_STATES:
+                    problems.append(
+                        f"{name} node {cid!r} for reopened goal "
+                        f"{todo_task.goal_id} must have a schedulable status; "
+                        f"found {node_status!r}"
+                    )
+                metadata = raw_node.get("metadata")
+                if not isinstance(metadata, Mapping):
+                    problems.append(
+                        f"{name} node {cid!r} for reopened goal "
+                        f"{todo_task.goal_id} has no metadata object"
+                    )
+                else:
+                    _verify_reopened_scheduling_flags(
+                        metadata,
+                        location=(
+                            f"{name} node {cid!r} metadata for reopened "
                             f"goal {todo_task.goal_id}"
                         ),
                         json_booleans=True,
@@ -1037,6 +1185,7 @@ def _verify_todo_vector_index(
     objective_path: Path,
     bundle_index_path: Path,
     repo_root: Path,
+    contract: BoardContract,
     problems: list[str],
 ) -> None:
     if payload.get("schema") != TODO_VECTOR_INDEX_SCHEMA:
@@ -1126,7 +1275,7 @@ def _verify_todo_vector_index(
     if int(payload.get("task_count") or -1) != expected_count:
         problems.append("TODO vector task_count differs from generated TODO")
     expected_active_count = sum(
-        task.goal_id not in EXPECTED_REVIEW_ONLY_GOAL_IDS
+        task.goal_id not in contract.review_only_goal_ids
         for task in todo_tasks
     )
     if int(payload.get("active_task_count") or -1) != expected_active_count:
@@ -1178,6 +1327,7 @@ def verify_generated_board(
     repo_root: Path,
     objective_path: Path,
     generated_root: Path,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
 ) -> VerificationSummary:
     """Verify generated board identity and source alignment.
 
@@ -1186,6 +1336,7 @@ def verify_generated_board(
             invariant is violated.
     """
 
+    contract = _board_contract(board_contract)
     root = repo_root.resolve()
     objective = objective_path if objective_path.is_absolute() else root / objective_path
     objective = objective.resolve()
@@ -1222,7 +1373,12 @@ def verify_generated_board(
 
     goals = parse_goal_heap(goal_text, source=str(objective), problems=problems) if goal_text else []
     tasks = parse_task_board(todo_text, source=str(todo_path), problems=problems) if todo_text else []
-    _verify_source_task_coverage(goals, tasks, problems=problems)
+    _verify_source_task_coverage(
+        goals,
+        tasks,
+        contract=contract,
+        problems=problems,
+    )
 
     source_todo_reference = str(index.get("source_todo") or "").strip()
     if not source_todo_reference:
@@ -1267,6 +1423,7 @@ def verify_generated_board(
         bundles=bundles,
         indexed_tasks=indexed_tasks,
         repo_root=root,
+        contract=contract,
         problems=problems,
     )
     _verify_bundle_query_store(
@@ -1274,7 +1431,12 @@ def verify_generated_board(
         bundle_index_path=index_path,
         problems=problems,
     )
-    expected_parent_edges = _expected_task_parent_edges(goals, tasks, problems=problems)
+    expected_parent_edges = _expected_task_parent_edges(
+        goals,
+        tasks,
+        contract=contract,
+        problems=problems,
+    )
 
     planning = index.get("task_planning_graph")
     dag_candidates: dict[str, Any] = {
@@ -1296,6 +1458,7 @@ def verify_generated_board(
             todo_pairs=todo_pairs,
             todo_tasks=tasks,
             expected_parent_edges=expected_parent_edges,
+            contract=contract,
             problems=problems,
         )
 
@@ -1321,6 +1484,7 @@ def verify_generated_board(
         objective_path=objective,
         bundle_index_path=index_path,
         repo_root=root,
+        contract=contract,
         problems=problems,
     )
 
@@ -1344,6 +1508,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--objective-path", type=Path, required=True)
     parser.add_argument("--generated-root", type=Path, required=True)
+    parser.add_argument(
+        "--board-contract",
+        choices=tuple(sorted(BOARD_CONTRACTS)),
+        default=BLOCKED_REVIEW_CONTRACT,
+    )
     return parser
 
 
@@ -1356,6 +1525,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             repo_root=args.repo_root,
             objective_path=args.objective_path,
             generated_root=args.generated_root,
+            board_contract=args.board_contract,
         )
     except BoardVerificationError as exc:
         print("World aid generated-board verification FAILED:", file=sys.stderr)

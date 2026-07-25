@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://211-ai.local/schemas/world-aid/gate-first-deployment-conformance-attestation.schema.json",
+  "title": "World Aid Gate-first Deployment Conformance Attestation",
+  "description": "An independently administered deployment attestation bound into a separately human-signed Gate 0B transition record. The repository template is deliberately non-conformant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "attestation_id",
+    "issued_at",
+    "independently_administered",
+    "administrator_identity",
+    "deployed",
+    "conformant",
+    "protocol_id",
+    "protocol_sha256",
+    "launcher_sha256",
+    "gate_verifier_id",
+    "gate_verifier_sha256",
+    "trust_policy_id",
+    "trust_policy_sha256",
+    "target_commit",
+    "target_heap_id",
+    "runtime_authorized"
+  ],
+  "properties": {
+    "schema": {
+      "const": "world-aid-gate-first-deployment-conformance-attestation/v1"
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^gate-first-deployment-[a-z0-9][a-z0-9._-]{7,95}$"
+    },
+    "issued_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "independently_administered": {
+      "const": true
+    },
+    "administrator_identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9@._+-]{2,253}$"
+    },
+    "deployed": {
+      "const": true
+    },
+    "conformant": {
+      "const": true
+    },
+    "protocol_id": {
+      "const": "world-aid-gate-first-launcher/v1"
+    },
+    "protocol_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "launcher_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "gate_verifier_id": {
+      "const": "world-aid-gate-0b-verifier/v1"
+    },
+    "gate_verifier_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "trust_policy_id": {
+      "const": "world-aid-gate-first-operator-policy/v1"
+    },
+    "trust_policy_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "target_commit": {
+      "$ref": "#/$defs/gitCommit"
+    },
+    "target_heap_id": {
+      "$ref": "#/$defs/sha256"
+    },
+    "runtime_authorized": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    }
+  }
+}

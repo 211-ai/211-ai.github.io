@@ -401,7 +401,7 @@ def verify_world_aid_duckdb_bootstrap(
     _require(approval_contract["required"] is True, "proposal does not require approval")
     _require(approval_contract["canonical_path"] == CANONICAL_APPROVAL.as_posix(), "proposal names a conflicting approval")
     _require(
-        approval_contract["canonical_schema"] == "world-human-aid-gate-0b-selection/v1",
+        approval_contract["canonical_schema"] == "world-human-aid-gate-0b-selection/v2",
         "proposal names a conflicting approval schema",
     )
     _require(approval_contract["expires_at"] is None, "proposal manufactured an approval expiry")

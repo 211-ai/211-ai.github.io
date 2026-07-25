@@ -170,7 +170,8 @@ Before a future detached-signature-verified selection record may be created,
 humans must accept an operator-controlled Gate-first launcher, governance must
 transition the exact goals out of `blocked`, and the board, profiles, and
 preflight receipt must be freshly regenerated and reviewed. That future record
-must bind:
+uses `world-human-aid-gate-0b-selection/v2` with OpenSSH namespace
+`world-aid-gate-0b-selection-v2` and must bind:
 
 - product-owner approval of preparation scope and priority;
 - security/privacy approval of data boundaries and the threat model;
@@ -198,6 +199,11 @@ must bind:
   implementation-control-plane/local-fixture allowlist; and
 - verification that the restricted worker environment has no live secrets,
   signing material, production credentials, or treasury access.
+- the exact `operator-gate-first/v1` execution boundary, installed launcher
+  path, `run-selection/v1` operation, sealed-input/result protocols, external
+  operator-policy digest, independently administered deployment-attestation
+  id/digest, and the reviewed digests of the launcher, Gate verifier, receipt
+  verifier, selection-profile builder, and all three dedicated runners.
 
 Gate 0B-selection authorizes only the exact future isolated, offline
 G038-G040 execution profile it binds. It never authorizes the current blocked
@@ -235,6 +241,12 @@ features, exceptions, trust-store digest, and expiration. Gate 0B-launch also
 binds Gate 0B-selection and all offline, egress, no-secret, preflight, and dry
 run receipts.
 
+Selection and launch approvals are v2 records signed in their matching v2
+namespaces. They fail closed unless `execution_boundary.reviewed_artifacts`
+exactly rebinds every execution-relevant digest already present in
+`reviewed_state`. The launch record uses operation `run-implementation/v1`;
+neither phase delegates execution authority to the generic supervisor.
+
 Templates under `docs/governance/templates/` are intentionally unsigned and
 invalid as approval. Verify completed records and their detached OpenSSH
 signatures with `scripts/verify_world_aid_gate_0b.py`; an agent-created record,
@@ -267,6 +279,34 @@ python scripts/verify_world_aid_gate_0b.py \
   --repo-root . \
   --offline
 ```
+
+These standalone verifier commands are review and negative-test tools. They
+must never be followed by a separately invoked execution command: the gap
+between two processes would permit approval, signature, profile, or repository
+replacement after verification.
+
+The repository-side
+`scripts/world_aid_gate_first_launcher.py` is also reviewable source, not an
+authority. After an independent operator installs and digest-pins it at
+`/usr/local/libexec/world-aid-gate-first-launcher`, pins its policy at
+`/etc/world-aid/gate-first-policy.json`, and supplies the required OS sandbox,
+the installed copy may perform the one supported verify-only operation:
+
+```bash
+env -i \
+  LANG=C.UTF-8 \
+  LC_ALL=C.UTF-8 \
+  PATH=/usr/bin:/bin \
+  TZ=UTC \
+/usr/bin/python3.12 -I -S -B \
+  /usr/local/libexec/world-aid-gate-first-launcher \
+  --verify-only
+```
+
+The interpreter path/version in this example must equal the completed
+operator policy. There is deliberately no `--run-selection` command in this
+revision. A successful result has
+`run_selection_authorized=false` and starts no worker.
 
 Do not run the selection verifier against the current G038/G039/G040 blocked
 projection except as a negative test: it must reject that empty execution
@@ -1212,6 +1252,10 @@ bundle payload: 37 schedulable goals plus blocked G038-G040. G035 and G036 are
 absent. `execution_goal_ids`, `execution_allowlist`, and
 `excluded_bundle_keys` are the only execution projection; the presence of a
 blocked review record in a profile is never launch authority.
+Every G038-G040 bundle and task also carries
+`execution_authority: operator-gate-first/v1`. The generic agent supervisor
+rejects that authority before coordination registration; only the separately
+installed operator launcher may execute those records.
 
 The completed statuses below are predeclared receipt adapters, not completion
 evidence. The G038-G040 records stay blocked in every current profile and are
@@ -1355,9 +1399,16 @@ for filename, (
     profile = deepcopy(canonical)
     profile_bundles = profile["bundles"]
     for bundle in profile_bundles.values():
+        external_authority = False
         for task in bundle.get("tasks") or ():
-            if str(task.get("goal_id") or "") in completed_goal_ids:
+            task_goal_id = str(task.get("goal_id") or "")
+            if task_goal_id in review_only:
+                task["execution_authority"] = "operator-gate-first/v1"
+                external_authority = True
+            if task_goal_id in completed_goal_ids:
                 task["status"] = "completed"
+        if external_authority:
+            bundle["execution_authority"] = "operator-gate-first/v1"
     profile["profile_id"] = filename.removesuffix(".index.json")
     profile["derived_from_bundle_index"] = source_relative
     profile["execution_goal_ids"] = sorted(allowed_goal_ids)
@@ -1399,6 +1450,22 @@ for filename, (
     }
     if rendered_review_status != {goal_id: "blocked" for goal_id in review_only}:
         raise SystemExit(f"{filename} mutated a blocked review-only task")
+    for bundle in (rendered.get("bundles") or {}).values():
+        selected = [
+            task
+            for task in bundle.get("tasks") or ()
+            if str(task.get("goal_id") or "") in review_only
+        ]
+        if selected and (
+            bundle.get("execution_authority") != "operator-gate-first/v1"
+            or any(
+                task.get("execution_authority") != "operator-gate-first/v1"
+                for task in selected
+            )
+        ):
+            raise SystemExit(
+                f"{filename} lost the operator Gate-first execution authority"
+            )
     if projected_review_goal_ids and (
         allowed_goal_ids
         or allowed_bundles
@@ -2103,15 +2170,78 @@ the blocked review profile. A selection signature, environment flag, or
 agent-authored receipt cannot open it. There is intentionally no launch command
 for G038-G040 in this runbook.
 
-A future execution workflow requires all of the following as new, reviewable
-artifacts: an operator-controlled Gate-first launcher that authenticates the
-exact entrypoint before repository code runs; governance approval to transition
-G038-G040 from `blocked`; a fresh objective heap, TODO/index/DAG, profiles, and
-preflight receipt generated after that transition; and new human signatures
-binding the launcher and regenerated artifacts. The future execution profile
-must retain the selected offline tool digests, default-deny egress, no-live-
-secret evidence, descriptor-backed inputs, process/resource/output bounds, and
-atomic no-follow receipts. Never edit or promote the current review profile.
+The repository now contains reviewable reference code for the Gate-first
+verify-only launcher, receipt verifier, selection-profile builder, and
+dedicated G038/G039/G040 offline runners. Their presence resolves neither
+authority nor deployment: the current launcher still has no atomic
+`--run-selection` operation. A future execution workflow additionally requires
+an independently installed operator launcher revision that captures and runs
+those exact approved bytes, an enforcing sandbox, governance approval to
+transition G038-G040 from `blocked`, a fresh objective heap,
+TODO/index/DAG/profiles/preflight receipt generated after that transition, and
+new v2 human signatures binding every digest. The execution profile must retain
+the selected offline tool digests, default-deny egress, no-live-secret
+evidence, descriptor-backed inputs, process/resource/output bounds, and atomic
+no-follow receipts. Never edit or promote the current review profile.
+
+The blocked-to-reopened change uses the separate
+`world-human-aid-gate-0b-transition/v1` record. The pending template under
+`docs/governance/templates/` is deliberately invalid. After the independent
+operator deployment attestation exists and the exact target heap commit is
+reviewed, verify the completed record and its four distinct human signatures:
+
+```bash
+test -n "${WORLD_AID_TRANSITION_ALLOWED_SIGNERS:-}"
+test -f "$WORLD_AID_TRANSITION_ALLOWED_SIGNERS"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_gate_0b_transition.py \
+  --repo-root . \
+  --record data/worldcoin_human_aid/approvals/gate-0b-transition/transition.json \
+  --allowed-signers "$WORLD_AID_TRANSITION_ALLOWED_SIGNERS" \
+  --offline
+```
+
+The verified transition has `runtime_authorized=false`. It authorizes only the
+exact G038-G040 `blocked` to `reopened` source change and requires a fresh
+generated root; every bound pre-transition taskboard/index/DAG/preflight
+artifact is explicitly non-reusable.
+
+The future selection preflight must explicitly use the reopened-board
+contract; the default contract remains the current blocked review board:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --create \
+  --board-contract gate0b-selection-reopened-v1 \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+PYTHONDONTWRITEBYTECODE=1 \
+python scripts/verify_world_aid_preflight_receipt.py \
+  --verify \
+  --board-contract gate0b-selection-reopened-v1 \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT" \
+  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
+
+PYTHONDONTWRITEBYTECODE=1 \
+PYTHONPATH=ipfs_accelerate_py \
+python scripts/build_world_aid_gate0b_selection_profile.py \
+  --repo-root . \
+  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
+  --generated-root "$WORLD_AID_GENERATED_ROOT"
+```
+
+Each dedicated bootstrap runner writes only into a fresh operator-owned run
+directory outside the repository. It must not overwrite the tracked
+`*.fixture.json` proposal/test fixtures. The external launcher may publish one
+immutable aggregate run only after all three goal receipts pass; a partial run
+is never completion evidence.
 
 ## Current implementation-projection review-only dry run
 
@@ -2316,76 +2446,22 @@ guards have fail-closed tests, the existing `WORLD_ID_ENABLED=0`, external
 egress enforcement, absent live secrets, and the taskboard prohibition on
 remote validations are all required boundaries.
 
-Immediately before launch, verify the signed launch record, its bound
-selection record, the implementation dry-run manifest, and the immutable
-preflight receipt. Re-run the AppArmor namespace probe in the same host
-environment. Any failure is a hard stop:
+There is intentionally no implementation `--start` command in this runbook.
+Running the standalone Gate verifier and preflight verifier and then starting
+the generic supervisor would create a time-of-check/time-of-use gap. A future
+operator-controlled implementation launcher must capture the signed launch
+record, linked selection record, trust store, JSON/DuckDB profile pair,
+preflight receipt, dry-run manifest, verifier, supervisor entrypoint, and
+runtime policy through sealed descriptors; verify the captured bytes; and
+start the digest-pinned supervisor inside the same externally enforced process
+and network boundary. It must also terminate the complete process group and
+atomically publish a signed run receipt.
 
-```bash
-test -n "${WORLD_AID_ALLOWED_SIGNERS:-}"
-test -f "$WORLD_AID_ALLOWED_SIGNERS"
-
-PYTHONDONTWRITEBYTECODE=1 \
-python scripts/verify_world_aid_gate_0b.py \
-  --phase launch \
-  --approval data/worldcoin_human_aid/approvals/gate-0b-launch/approval.json \
-  --allowed-signers "$WORLD_AID_ALLOWED_SIGNERS" \
-  --repo-root . \
-  --offline
-
-PYTHONDONTWRITEBYTECODE=1 \
-python scripts/verify_world_aid_preflight_receipt.py \
-  --verify \
-  --repo-root . \
-  --objective-path docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md \
-  --generated-root "$WORLD_AID_GENERATED_ROOT" \
-  --receipt "$WORLD_AID_GENERATED_ROOT/preflight-receipt.json"
-
-aa-exec -p linux-sandbox -- unshare -Urn /bin/true
-
-env \
-  WORLD_ID_ENABLED=0 \
-  WORLD_AID_EXTERNAL_CALLS_ENABLED=0 \
-  WORLD_AID_WLD_TRANSFERS_ENABLED=0 \
-  IPFS_ACCELERATE_AGENT_DISABLE_SUBAGENTS=1 \
-  IPFS_ACCEL_SKIP_CORE=1 \
-  IPFS_KIT_DISABLE=1 \
-  HF_HUB_OFFLINE=1 \
-  HF_DATASETS_OFFLINE=1 \
-  TRANSFORMERS_OFFLINE=1 \
-  NPM_CONFIG_OFFLINE=true \
-  PIP_NO_INDEX=1 \
-  CARGO_NET_OFFLINE=true \
-  GIT_TERMINAL_PROMPT=0 \
-  PYTHONPATH=ipfs_accelerate_py \
-python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
-  --repo-root . \
-  --bundle-index-path "$WORLD_AID_GENERATED_ROOT/launch_profiles/implementation.index.duckdb" \
-  --state-root data/worldcoin_human_aid/agent_supervisor/lane_state \
-  --worktree-root /tmp/worldcoin-human-aid-agent-worktrees \
-  --log-dir data/worldcoin_human_aid/agent_supervisor/logs \
-  --manifest-path data/worldcoin_human_aid/agent_supervisor/lane-manifest.json \
-  --metrics-path data/worldcoin_human_aid/agent_supervisor/scheduler-metrics.json \
-  --coordination-path data/worldcoin_human_aid/agent_supervisor/coordination.duckdb \
-  --task-prefix WORLDCOIN-AUTO- \
-  --merge-target-branch "$WORLD_AID_MERGE_TARGET_BRANCH" \
-  --worktree-submodule-path ipfs_accelerate_py \
-  --worktree-submodule-path ipfs_datasets_py \
-  --implementation-command 'aa-exec -p linux-sandbox -- codex --ask-for-approval never --disable apps --disable browser_use --disable browser_use_external --disable browser_use_full_cdp_access --disable in_app_browser --disable multi_agent --disable multi_agent_v2 -c web_search=\"disabled\" exec --ephemeral --sandbox workspace-write -' \
-  --lease-ms 300000 \
-  --heartbeat-interval 5 \
-  --implementation-timeout 3600 \
-  --max-restarts 1 \
-  --max-task-attempts 1 \
-  --max-lanes 2 \
-  --implement \
-  --start
-```
-
-This command runs in the foreground. Keep its terminal available for a graceful
-stop. The initial launch disables automatic retries. Inspect and preserve the
-first failure receipt before a separately reviewed relaunch; do not increase
-the retry limit blindly.
+The current Gate-first reference exposes verify-only and therefore cannot
+perform that launch. Until a separately reviewed installed revision adds the
+atomic operation, the correct response to a proposed implementation launch is
+a hard stop. Do not reconstruct the removed raw supervisor command from older
+runbook revisions.
 
 The live-feature-disabled profile applies to World/Hugging Face/model-data
 integrations inside the implementation and tests. The agent implementation

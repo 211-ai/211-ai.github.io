@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import ctypes
 import errno
 import fcntl
 import hashlib
@@ -37,8 +38,8 @@ CANONICAL_APPROVAL_PATHS = {
 }
 
 SCHEMA_VERSIONS = {
-    SELECTION: "world-human-aid-gate-0b-selection/v1",
-    LAUNCH: "world-human-aid-gate-0b-launch/v1",
+    SELECTION: "world-human-aid-gate-0b-selection/v2",
+    LAUNCH: "world-human-aid-gate-0b-launch/v2",
 }
 
 GATE_IDS = {
@@ -47,8 +48,8 @@ GATE_IDS = {
 }
 
 SIGNATURE_NAMESPACES = {
-    SELECTION: "world-aid-gate-0b-selection-v1",
-    LAUNCH: "world-aid-gate-0b-launch-v1",
+    SELECTION: "world-aid-gate-0b-selection-v2",
+    LAUNCH: "world-aid-gate-0b-launch-v2",
 }
 
 REQUIRED_ROLES = {
@@ -137,12 +138,55 @@ SELECTION_VERIFIER_CONTRACT_PATHS = {
     "duckdb_verifier": "scripts/verify_world_aid_duckdb_bootstrap.py",
     "duckdb_runtime_test": "tests/world_aid/test_duckdb_bootstrap.py",
 }
+GATE_FIRST_CONTRACT_PATHS = {
+    "gate_verifier": "scripts/verify_world_aid_gate_0b.py",
+    "gate_launcher": "scripts/world_aid_gate_first_launcher.py",
+    "gate_launcher_protocol": "docs/specs/WORLD_AID_GATE_FIRST_LAUNCHER.md",
+    "operator_policy_template": "docs/governance/templates/gate-first-operator-policy.template.json",
+    "gate_receipt_verifier": "scripts/verify_world_aid_gate_first_receipt.py",
+    "gate_transition_verifier": "scripts/verify_world_aid_gate_0b_transition.py",
+    "gate_transition_schema": "docs/schemas/world_aid/gate-0b-transition.schema.json",
+    "gate_transition_template": "docs/governance/templates/gate-0b-transition.template.json",
+    "deployment_attestation_schema": (
+        "docs/schemas/world_aid/gate-first-deployment-conformance-attestation.schema.json"
+    ),
+    "deployment_attestation_template": (
+        "docs/governance/templates/gate-first-deployment-conformance-attestation.template.json"
+    ),
+    "selection_profile_builder": "scripts/build_world_aid_gate0b_selection_profile.py",
+    "siwe_bootstrap_runner": "scripts/run_world_aid_siwe_bootstrap.py",
+    "zkp_bootstrap_runner": "scripts/run_world_aid_zkp_bootstrap.py",
+    "duckdb_bootstrap_runner": "scripts/run_world_aid_duckdb_bootstrap.py",
+}
+PHASE_APPROVAL_CONTRACT_PATHS = {
+    SELECTION: {
+        "selection_schema": "docs/schemas/world_aid/gate-0b-selection.schema.json",
+        "selection_template": "docs/governance/templates/gate-0b-selection.template.json",
+    },
+    LAUNCH: {
+        "launch_schema": "docs/schemas/world_aid/gate-0b-launch.schema.json",
+        "launch_template": "docs/governance/templates/gate-0b-launch.template.json",
+    },
+}
+EXECUTION_BOUND_ARTIFACT_KEYS = frozenset(
+    {
+        "gate_verifier",
+        "gate_launcher",
+        "gate_launcher_protocol",
+        "gate_receipt_verifier",
+        "selection_profile_builder",
+        "siwe_bootstrap_runner",
+        "zkp_bootstrap_runner",
+        "duckdb_bootstrap_runner",
+    }
+)
 PROTECTED_WRITABLE_PATHS = frozenset(
     {
         *CANONICAL_SOURCE_PATHS.values(),
         *SELECTION_VERIFIER_CONTRACT_PATHS.values(),
+        *GATE_FIRST_CONTRACT_PATHS.values(),
+        *(path for paths in PHASE_APPROVAL_CONTRACT_PATHS.values() for path in paths.values()),
         "data/worldcoin_human_aid/approvals",
-        "scripts/verify_world_aid_gate_0b.py",
         "wallet_interface/services/world_siwe_verifier/package.json",
         "wallet_interface/services/world_siwe_verifier/package-lock.json",
         "requirements-world-aid.lock",
@@ -166,7 +210,19 @@ SECURITY_EVIDENCE_FILENAMES = {
     "no_live_secrets_attestation": "no-live-secrets-attestation.json",
 }
 GENERATED_ROOT_PREFIX = Path("data/worldcoin_human_aid/agent_supervisor/regenerations")
-PREFLIGHT_RECEIPT_SCHEMA = "world_aid.generated_board_preflight_receipt@1"
+LEGACY_PREFLIGHT_RECEIPT_SCHEMA = "world_aid.generated_board_preflight_receipt@1"
+SELECTION_PREFLIGHT_RECEIPT_SCHEMA = "world_aid.generated_board_preflight_receipt@2"
+SELECTION_BOARD_CONTRACT = "gate0b-selection-reopened-v1"
+OPERATOR_GATE_EXECUTION_AUTHORITY = "operator-gate-first/v1"
+GATE_FIRST_PROTOCOL_ID = "world-aid-gate-first-launcher/v1"
+GATE_FIRST_INSTALLED_LAUNCHER_PATH = "/usr/local/libexec/world-aid-gate-first-launcher"
+GATE_FIRST_POLICY_ID = "world-aid-gate-first-operator-policy/v1"
+SEALED_INPUT_PROTOCOL = "sealed-fd-json/v1"
+RESULT_PROTOCOL = "stdout-json/v1"
+EXECUTION_OPERATIONS = {
+    SELECTION: "run-selection/v1",
+    LAUNCH: "run-implementation/v1",
+}
 DRY_RUN_SCHEMAS = frozenset(
     {
         "ipfs_accelerate_py.agent_supervisor.bundle_supervisor",
@@ -204,6 +260,9 @@ IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9@._+-]{2,253}$")
 FINGERPRINT_RE = re.compile(r"^SHA256:[A-Za-z0-9+/]{43}$")
 SIGNATURE_FILE_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,63}\.sshsig$")
 EXCEPTION_ID_RE = re.compile(r"^EX-[A-Z0-9][A-Z0-9_-]{2,31}$")
+DEPLOYMENT_ATTESTATION_ID_RE = re.compile(
+    r"^gate-first-deployment-[a-z0-9][a-z0-9._-]{7,95}$"
+)
 DUCKDB_EXTENSION_NAME_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 TRUSTED_GIT = Path("/usr/bin/git")
 TRUSTED_SSH_KEYGEN = Path("/usr/bin/ssh-keygen")
@@ -677,6 +736,8 @@ def _validate_reviewed_state(
             "restricted_bundle_index_duckdb",
             "preflight_receipt",
             *SELECTION_VERIFIER_CONTRACT_PATHS,
+            *GATE_FIRST_CONTRACT_PATHS,
+            *PHASE_APPROVAL_CONTRACT_PATHS[SELECTION],
         }
     else:
         artifact_keys = {
@@ -691,6 +752,8 @@ def _validate_reviewed_state(
             "implementation_bundle_index_duckdb",
             "preflight_receipt",
             "dry_run_receipt",
+            *GATE_FIRST_CONTRACT_PATHS,
+            *PHASE_APPROVAL_CONTRACT_PATHS[LAUNCH],
         }
     _exact_keys(state, common | artifact_keys, "reviewed_state")
 
@@ -703,6 +766,12 @@ def _validate_reviewed_state(
         for name in sorted(artifact_keys)
     ]
     for name, expected_path in CANONICAL_SOURCE_PATHS.items():
+        if state[name]["path"] != expected_path:
+            _fail(f"reviewed_state.{name}.path must be {expected_path}")
+    for name, expected_path in {
+        **GATE_FIRST_CONTRACT_PATHS,
+        **PHASE_APPROVAL_CONTRACT_PATHS[phase],
+    }.items():
         if state[name]["path"] != expected_path:
             _fail(f"reviewed_state.{name}.path must be {expected_path}")
 
@@ -746,25 +815,130 @@ def _validate_reviewed_state(
     return root_commit, submodules, artifacts, generated_root
 
 
-def _schedulable_goals_from_heap(text: str) -> set[str]:
+def _validate_execution_boundary(
+    value: Any,
+    phase: str,
+    reviewed_state: Mapping[str, Any],
+) -> dict[str, str]:
+    boundary = _expect_object(value, "execution_boundary")
+    _exact_keys(
+        boundary,
+        {
+            "protocol_id",
+            "execution_authority",
+            "operation",
+            "sealed_input_protocol",
+            "result_protocol",
+            "installed_launcher_path",
+            "operator_policy_id",
+            "operator_policy_sha256",
+            "deployment_attestation_id",
+            "deployment_attestation_sha256",
+            "reviewed_artifacts",
+        },
+        "execution_boundary",
+    )
+    expected_literals = {
+        "protocol_id": GATE_FIRST_PROTOCOL_ID,
+        "execution_authority": OPERATOR_GATE_EXECUTION_AUTHORITY,
+        "operation": EXECUTION_OPERATIONS[phase],
+        "sealed_input_protocol": SEALED_INPUT_PROTOCOL,
+        "result_protocol": RESULT_PROTOCOL,
+        "installed_launcher_path": GATE_FIRST_INSTALLED_LAUNCHER_PATH,
+        "operator_policy_id": GATE_FIRST_POLICY_ID,
+    }
+    for key, expected in expected_literals.items():
+        observed = _expect_string(
+            boundary[key],
+            f"execution_boundary.{key}",
+            maximum=256,
+        )
+        if observed != expected:
+            _fail(f"execution_boundary.{key} must be {expected}")
+
+    for key in ("operator_policy_sha256", "deployment_attestation_sha256"):
+        digest = _expect_string(
+            boundary[key],
+            f"execution_boundary.{key}",
+            minimum=71,
+            maximum=71,
+        )
+        if not DIGEST_RE.fullmatch(digest):
+            _fail(f"execution_boundary.{key} must be a lowercase sha256 digest")
+
+    attestation_id = _expect_string(
+        boundary["deployment_attestation_id"],
+        "execution_boundary.deployment_attestation_id",
+        minimum=30,
+        maximum=128,
+    )
+    if not DEPLOYMENT_ATTESTATION_ID_RE.fullmatch(attestation_id):
+        _fail("execution_boundary.deployment_attestation_id is invalid")
+
+    reviewed_artifacts = _expect_object(
+        boundary["reviewed_artifacts"],
+        "execution_boundary.reviewed_artifacts",
+    )
+    _exact_keys(
+        reviewed_artifacts,
+        EXECUTION_BOUND_ARTIFACT_KEYS,
+        "execution_boundary.reviewed_artifacts",
+    )
+    for key in sorted(EXECUTION_BOUND_ARTIFACT_KEYS):
+        digest = _expect_string(
+            reviewed_artifacts[key],
+            f"execution_boundary.reviewed_artifacts.{key}",
+            minimum=71,
+            maximum=71,
+        )
+        if not DIGEST_RE.fullmatch(digest):
+            _fail(
+                f"execution_boundary.reviewed_artifacts.{key} must be a lowercase sha256 digest"
+            )
+        reviewed_artifact = _validate_artifact_shape(
+            reviewed_state[key],
+            f"reviewed_state.{key}",
+        )
+        if digest != reviewed_artifact["sha256"]:
+            _fail(
+                f"execution_boundary.reviewed_artifacts.{key} does not bind "
+                f"reviewed_state.{key}"
+            )
+
+    return {
+        "execution_authority": OPERATOR_GATE_EXECUTION_AUTHORITY,
+        "operation": EXECUTION_OPERATIONS[phase],
+        "operator_policy_sha256": boundary["operator_policy_sha256"],
+        "deployment_attestation_id": attestation_id,
+        "deployment_attestation_sha256": boundary["deployment_attestation_sha256"],
+    }
+
+
+def _goal_statuses_from_heap(text: str) -> dict[str, str]:
     headings = list(re.finditer(r"^## (WORLDCOIN-G[0-9]{3}) .+$", text, flags=re.MULTILINE))
     if not headings:
         _fail("canonical objective heap contains no goals")
-    schedulable: set[str] = set()
-    seen: set[str] = set()
+    statuses: dict[str, str] = {}
     for index, heading in enumerate(headings):
         goal_id = heading.group(1)
-        if goal_id in seen:
+        if goal_id in statuses:
             _fail(f"canonical objective heap contains duplicate goal {goal_id}")
-        seen.add(goal_id)
         end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
         block = text[heading.end() : end]
         status_match = re.search(r"^- Status: (.+)$", block, flags=re.MULTILINE)
         if status_match is None:
             _fail(f"canonical objective heap goal {goal_id} has no status")
         status = status_match.group(1).strip().lower().replace("-", "_").replace(" ", "_")
-        if status in SCHEDULABLE_GOAL_STATES:
-            schedulable.add(goal_id)
+        statuses[goal_id] = status
+    return statuses
+
+
+def _schedulable_goals_from_heap(text: str) -> set[str]:
+    schedulable = {
+        goal_id
+        for goal_id, status in _goal_statuses_from_heap(text).items()
+        if status in SCHEDULABLE_GOAL_STATES
+    }
     if not schedulable:
         _fail("canonical objective heap contains no schedulable goals")
     return schedulable
@@ -922,6 +1096,18 @@ def _validate_scope(
         _fail("scope.goal_ids contains a terminal human-gated goal")
     if phase == SELECTION and goals != SELECTION_GOALS:
         _fail("selection scope must contain exactly WORLDCOIN-G038, G039, and G040")
+    if phase == SELECTION:
+        source_statuses = _goal_statuses_from_heap(objective_heap_text)
+        invalid_statuses = {
+            goal_id: source_statuses.get(goal_id)
+            for goal_id in sorted(SELECTION_GOALS)
+            if source_statuses.get(goal_id) != "reopened"
+        }
+        if invalid_statuses:
+            _fail(
+                "selection source goals WORLDCOIN-G038 through G040 must have "
+                f"status exactly reopened; observed={invalid_statuses}"
+            )
     if phase == LAUNCH:
         expected_goals = _schedulable_goals_from_heap(objective_heap_text) - LAUNCH_PREREQUISITE_GOALS
         if not expected_goals:
@@ -1145,45 +1331,69 @@ def _read_allowed_signers_snapshot(path: Path) -> bytes:
 
 
 def _sealed_snapshot_fd(raw: bytes) -> int:
-    if not hasattr(os, "memfd_create") or not hasattr(os, "MFD_ALLOW_SEALING"):
-        _fail("sealed in-memory trust snapshots are unavailable on this platform")
+    descriptor = -1
     try:
-        descriptor = os.memfd_create(
-            "world-aid-allowed-signers",
-            os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING,
+        flags = getattr(os, "MFD_CLOEXEC", 0x0001) | getattr(
+            os,
+            "MFD_ALLOW_SEALING",
+            0x0002,
         )
+        if hasattr(os, "memfd_create"):
+            descriptor = os.memfd_create("world-aid-allowed-signers", flags)
+        else:
+            libc = ctypes.CDLL(None, use_errno=True)
+            memfd_create = libc.memfd_create
+            memfd_create.argtypes = (ctypes.c_char_p, ctypes.c_uint)
+            memfd_create.restype = ctypes.c_int
+            descriptor = int(
+                memfd_create(b"world-aid-allowed-signers", flags)
+            )
+            if descriptor < 0:
+                error_number = ctypes.get_errno()
+                raise OSError(error_number, os.strerror(error_number))
         view = memoryview(raw)
         while view:
             written = os.write(descriptor, view)
             if written <= 0:
                 raise OSError("short write to trust snapshot")
             view = view[written:]
+        required_seals = (
+            getattr(fcntl, "F_SEAL_WRITE", 0x0008)
+            | getattr(fcntl, "F_SEAL_GROW", 0x0004)
+            | getattr(fcntl, "F_SEAL_SHRINK", 0x0002)
+            | getattr(fcntl, "F_SEAL_SEAL", 0x0001)
+        )
         fcntl.fcntl(
             descriptor,
-            fcntl.F_ADD_SEALS,
-            fcntl.F_SEAL_WRITE
-            | fcntl.F_SEAL_GROW
-            | fcntl.F_SEAL_SHRINK
-            | fcntl.F_SEAL_SEAL,
+            getattr(fcntl, "F_ADD_SEALS", 1033),
+            required_seals,
         )
+        observed_seals = int(
+            fcntl.fcntl(descriptor, getattr(fcntl, "F_GET_SEALS", 1034))
+        )
+        if observed_seals & required_seals != required_seals:
+            raise OSError("trust snapshot did not acquire all required seals")
         os.lseek(descriptor, 0, os.SEEK_SET)
         return descriptor
-    except OSError as exc:
-        if "descriptor" in locals():
+    except (AttributeError, OSError) as exc:
+        if descriptor >= 0:
             os.close(descriptor)
         _fail(f"cannot create sealed allowed-signers snapshot: {exc}")
 
 
-def _parse_allowed_signers(raw: bytes) -> dict[str, set[str]]:
+def _parse_allowed_signers(raw: bytes) -> dict[str, dict[str, tuple[bytes, ...]]]:
     try:
         lines = raw.decode("utf-8").splitlines()
     except UnicodeDecodeError as exc:
         _fail(f"cannot read allowed signers trust store: {exc}")
-    principals: dict[str, set[str]] = {}
+    principals: dict[str, dict[str, list[bytes]]] = {}
     for line_number, line in enumerate(lines, start=1):
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
+        line_match = re.fullmatch(r"(?P<principals>\S+)(?P<suffix>[ \t]+.+)", stripped)
+        if line_match is None:
+            _fail(f"allowed signers line {line_number} is invalid")
         try:
             fields = shlex.split(stripped, comments=True, posix=True)
         except ValueError as exc:
@@ -1199,6 +1409,8 @@ def _parse_allowed_signers(raw: bytes) -> dict[str, set[str]]:
         if key_index is None or key_index == 0 or key_index + 1 >= len(fields):
             _fail(f"allowed signers line {line_number} has no supported public key")
         identity_field = fields[0]
+        if identity_field != line_match.group("principals"):
+            _fail(f"allowed signers line {line_number} has an invalid principal field")
         key_blob_text = fields[key_index + 1]
         try:
             key_blob = base64.b64decode(key_blob_text.encode("ascii"), validate=True)
@@ -1208,10 +1420,24 @@ def _parse_allowed_signers(raw: bytes) -> dict[str, set[str]]:
         for identity in identity_field.split(","):
             if not IDENTITY_RE.fullmatch(identity):
                 _fail(f"allowed signers line {line_number} has an invalid identity")
-            principals.setdefault(identity, set()).add(fingerprint)
+            # Narrow each later ssh-keygen invocation to the declared principal
+            # and fingerprint.  Keep the original suffix byte-for-byte so
+            # namespaces, validity windows, cert-authority, key material, and
+            # comments retain their OpenSSH semantics.
+            selected_line = f"{identity}{line_match.group('suffix')}\n".encode()
+            by_fingerprint = principals.setdefault(identity, {})
+            selected_lines = by_fingerprint.setdefault(fingerprint, [])
+            if selected_line not in selected_lines:
+                selected_lines.append(selected_line)
     if not principals:
         _fail("allowed signers trust store contains no principals")
-    return principals
+    return {
+        identity: {
+            fingerprint: tuple(selected_lines)
+            for fingerprint, selected_lines in by_fingerprint.items()
+        }
+        for identity, by_fingerprint in principals.items()
+    }
 
 
 def _validate_trust_shape(
@@ -1283,8 +1509,7 @@ def _verify_signatures(
     approval_bytes: bytes,
     phase: str,
     signatures: Sequence[Mapping[str, str]],
-    allowed_signers_descriptor: int,
-    allowed_principals: Mapping[str, set[str]],
+    allowed_principals: Mapping[str, Mapping[str, Sequence[bytes]]],
 ) -> None:
     signature_dir = approval_path.parent / "signatures"
     if not signature_dir.exists() or not signature_dir.is_dir() or signature_dir.is_symlink():
@@ -1302,45 +1527,53 @@ def _verify_signatures(
             "WORLD_AID_WLD_TRANSFERS_ENABLED": "0",
         }
     )
-    allowed_signers_path = f"/proc/self/fd/{allowed_signers_descriptor}"
     for signature in sorted(signatures, key=lambda item: item["role"]):
         identity = signature["identity"]
         fingerprint = signature["key_fingerprint"]
         if identity not in allowed_principals:
             _fail(f"signature identity is absent from the operator trust store: {identity}")
-        if fingerprint not in allowed_principals[identity]:
+        selected_lines = allowed_principals[identity].get(fingerprint)
+        if not selected_lines:
             _fail(f"signature key fingerprint is not trusted for identity: {identity}")
+        selected_signers = b"".join(selected_lines)
+        allowed_signers_descriptor = _sealed_snapshot_fd(selected_signers)
+        allowed_signers_path = f"/proc/self/fd/{allowed_signers_descriptor}"
         signature_path = signature_dir / signature["file"]
         if not signature_path.exists() or not signature_path.is_file() or signature_path.is_symlink():
+            os.close(allowed_signers_descriptor)
             _fail(f"detached signature is missing or unsafe for role {signature['role']}")
         try:
             signature_path.resolve(strict=True).relative_to(signature_dir.resolve(strict=True))
         except (OSError, RuntimeError, ValueError):
+            os.close(allowed_signers_descriptor)
             _fail(f"detached signature escapes the canonical signature directory for role {signature['role']}")
         try:
-            result = subprocess.run(
-                [
-                    str(TRUSTED_SSH_KEYGEN),
-                    "-Y",
-                    "verify",
-                    "-f",
-                    allowed_signers_path,
-                    "-I",
-                    identity,
-                    "-n",
-                    SIGNATURE_NAMESPACES[phase],
-                    "-s",
-                    str(signature_path),
-                ],
-                check=False,
-                input=approval_bytes,
-                capture_output=True,
-                pass_fds=(allowed_signers_descriptor,),
-                timeout=10,
-                env=env,
-            )
-        except (OSError, subprocess.SubprocessError) as exc:
-            _fail(f"OpenSSH signature verification failed to run: {exc}")
+            try:
+                result = subprocess.run(
+                    [
+                        str(TRUSTED_SSH_KEYGEN),
+                        "-Y",
+                        "verify",
+                        "-f",
+                        allowed_signers_path,
+                        "-I",
+                        identity,
+                        "-n",
+                        SIGNATURE_NAMESPACES[phase],
+                        "-s",
+                        str(signature_path),
+                    ],
+                    check=False,
+                    input=approval_bytes,
+                    capture_output=True,
+                    pass_fds=(allowed_signers_descriptor,),
+                    timeout=10,
+                    env=env,
+                )
+            except (OSError, subprocess.SubprocessError) as exc:
+                _fail(f"OpenSSH signature verification failed to run: {exc}")
+        finally:
+            os.close(allowed_signers_descriptor)
         if result.returncode != 0:
             _fail(f"detached signature rejected for role {signature['role']}")
 
@@ -2577,6 +2810,126 @@ def _bundle_task_projection(
     return bundles, goals_by_bundle, cids_by_bundle
 
 
+def _normalized_profile_status(value: Any, context: str) -> str:
+    status = (
+        _expect_string(value, context, maximum=64)
+        .strip()
+        .lower()
+        .replace("-", "_")
+        .replace(" ", "_")
+    )
+    if status != "reopened":
+        _fail(f"{context} must be exactly reopened for Gate 0B selection")
+    return status
+
+
+def _validate_operator_gate_profile(
+    derived: Mapping[str, Any],
+    derived_bundles: Mapping[str, Any],
+    derived_cids_by_bundle: Mapping[str, set[str]],
+    *,
+    context: str,
+    allowed_bundles: set[str],
+) -> None:
+    review_projection = _unique_strings(
+        derived.get("review_projection_goal_ids"),
+        f"{context}.review_projection_goal_ids",
+    )
+    if review_projection:
+        _fail(f"{context}.review_projection_goal_ids must be empty for executable selection")
+
+    for bundle_key in sorted(allowed_bundles):
+        bundle_context = f"{context}.bundles[{bundle_key!r}]"
+        bundle = derived_bundles[bundle_key]
+        if _expect_bool(bundle.get("is_schedulable"), f"{bundle_context}.is_schedulable") is not True:
+            _fail(f"{bundle_context}.is_schedulable must be true")
+        if _expect_bool(bundle.get("review_only"), f"{bundle_context}.review_only") is not False:
+            _fail(f"{bundle_context}.review_only must be false")
+        _normalized_profile_status(bundle.get("status"), f"{bundle_context}.status")
+        if (
+            _expect_string(
+                bundle.get("execution_authority"),
+                f"{bundle_context}.execution_authority",
+                maximum=128,
+            )
+            != OPERATOR_GATE_EXECUTION_AUTHORITY
+        ):
+            _fail(
+                f"{bundle_context}.execution_authority must be "
+                f"{OPERATOR_GATE_EXECUTION_AUTHORITY}"
+            )
+
+        blocked_member_cids = _unique_strings(
+            bundle.get("blocked_member_task_cids"),
+            f"{bundle_context}.blocked_member_task_cids",
+        )
+        if blocked_member_cids:
+            _fail(f"{bundle_context}.blocked_member_task_cids must be empty")
+        expected_active_cids = sorted(derived_cids_by_bundle[bundle_key])
+        expected_task_ids = sorted(
+            _expect_string(
+                _expect_object(raw_task, f"{bundle_context}.tasks[{index}]").get("task_id"),
+                f"{bundle_context}.tasks[{index}].task_id",
+                maximum=256,
+            )
+            for index, raw_task in enumerate(bundle["tasks"])
+        )
+        execution_slice_cids = _unique_strings(
+            bundle.get("execution_slice_task_cids"),
+            f"{bundle_context}.execution_slice_task_cids",
+            minimum_items=len(expected_active_cids),
+            maximum_items=len(expected_active_cids),
+        )
+        if execution_slice_cids != expected_active_cids:
+            _fail(
+                f"{bundle_context}.execution_slice_task_cids must be the exact "
+                "sorted selected task CID set"
+            )
+        execution_slice_ids = _unique_strings(
+            bundle.get("execution_slice_task_ids"),
+            f"{bundle_context}.execution_slice_task_ids",
+            minimum_items=len(expected_task_ids),
+            maximum_items=len(expected_task_ids),
+        )
+        if execution_slice_ids != expected_task_ids:
+            _fail(
+                f"{bundle_context}.execution_slice_task_ids must be the exact "
+                "sorted selected task ID set"
+            )
+        active_member_cids = _unique_strings(
+            bundle.get("active_member_task_cids"),
+            f"{bundle_context}.active_member_task_cids",
+            minimum_items=len(expected_active_cids),
+            maximum_items=len(expected_active_cids),
+        )
+        if active_member_cids != expected_active_cids:
+            _fail(
+                f"{bundle_context}.active_member_task_cids must be the exact "
+                "sorted selected task CID set"
+            )
+
+        for index, raw_task in enumerate(bundle["tasks"]):
+            task_context = f"{bundle_context}.tasks[{index}]"
+            task = _expect_object(raw_task, task_context)
+            if _expect_bool(task.get("is_schedulable"), f"{task_context}.is_schedulable") is not True:
+                _fail(f"{task_context}.is_schedulable must be true")
+            if _expect_bool(task.get("review_only"), f"{task_context}.review_only") is not False:
+                _fail(f"{task_context}.review_only must be false")
+            _normalized_profile_status(task.get("status"), f"{task_context}.status")
+            if (
+                _expect_string(
+                    task.get("execution_authority"),
+                    f"{task_context}.execution_authority",
+                    maximum=128,
+                )
+                != OPERATOR_GATE_EXECUTION_AUTHORITY
+            ):
+                _fail(
+                    f"{task_context}.execution_authority must be "
+                    f"{OPERATOR_GATE_EXECUTION_AUTHORITY}"
+                )
+
+
 def _validate_derived_bundle_profile(
     repo_root: Path,
     canonical_artifact: Mapping[str, str],
@@ -2586,6 +2939,7 @@ def _validate_derived_bundle_profile(
     expected_goals: set[str] | frozenset[str],
     completed_prerequisite_goals: set[str] | frozenset[str],
     exact_allowed_bundles: set[str] | frozenset[str] | None,
+    require_operator_gate_contract: bool = False,
 ) -> tuple[set[str], set[str]]:
     canonical = _load_bound_json(repo_root, canonical_artifact, "reviewed canonical bundle index")
     derived = _load_bound_json(repo_root, derived_artifact, context)
@@ -2593,28 +2947,9 @@ def _validate_derived_bundle_profile(
         canonical,
         "reviewed canonical bundle index",
     )
-    derived_bundles, _, _ = _bundle_task_projection(derived, context)
+    derived_bundles, _, derived_cids_by_bundle = _bundle_task_projection(derived, context)
     if set(derived_bundles) != set(canonical_bundles):
         _fail(f"{context} must preserve the exact canonical bundle-key set")
-    for bundle_key, canonical_bundle in canonical_bundles.items():
-        derived_bundle = derived_bundles[bundle_key]
-        canonical_without_tasks = {key: value for key, value in canonical_bundle.items() if key != "tasks"}
-        derived_without_tasks = {key: value for key, value in derived_bundle.items() if key != "tasks"}
-        if derived_without_tasks != canonical_without_tasks:
-            _fail(f"{context} may not mutate canonical bundle metadata")
-        canonical_tasks = canonical_bundle["tasks"]
-        derived_tasks = derived_bundle["tasks"]
-        if len(derived_tasks) != len(canonical_tasks):
-            _fail(f"{context} may not add or remove canonical tasks")
-        for index, canonical_task in enumerate(canonical_tasks):
-            expected_task = dict(canonical_task)
-            if canonical_task.get("goal_id") in completed_prerequisite_goals:
-                expected_task["status"] = "completed"
-            if derived_tasks[index] != expected_task:
-                _fail(
-                    f"{context} may only set status='completed' on exact completed-prerequisite tasks; "
-                    "all other task fields and CIDs must remain canonical"
-                )
 
     if exact_allowed_bundles is None:
         allowed_bundles: set[str] = set()
@@ -2635,6 +2970,71 @@ def _validate_derived_bundle_profile(
             f"missing={sorted(set(expected_goals) - projected_goals)}, "
             f"unexpected={sorted(projected_goals - set(expected_goals))}"
         )
+    if require_operator_gate_contract:
+        _validate_operator_gate_profile(
+            derived,
+            derived_bundles,
+            derived_cids_by_bundle,
+            context=context,
+            allowed_bundles=allowed_bundles,
+        )
+
+    for bundle_key, canonical_bundle in canonical_bundles.items():
+        derived_bundle = derived_bundles[bundle_key]
+        canonical_without_tasks = {key: value for key, value in canonical_bundle.items() if key != "tasks"}
+        derived_without_tasks = {key: value for key, value in derived_bundle.items() if key != "tasks"}
+        expected_bundle = dict(canonical_without_tasks)
+        if require_operator_gate_contract and bundle_key in allowed_bundles:
+            expected_cids = sorted(cids_by_bundle[bundle_key])
+            expected_ids = sorted(
+                _expect_string(
+                    _expect_object(
+                        raw_task,
+                        f"reviewed canonical bundle index.bundles[{bundle_key!r}].tasks[{index}]",
+                    ).get("task_id"),
+                    (
+                        "reviewed canonical bundle index."
+                        f"bundles[{bundle_key!r}].tasks[{index}].task_id"
+                    ),
+                    maximum=256,
+                )
+                for index, raw_task in enumerate(canonical_bundle["tasks"])
+            )
+            expected_bundle.update(
+                {
+                    "status": "reopened",
+                    "execution_authority": OPERATOR_GATE_EXECUTION_AUTHORITY,
+                    "active_member_task_cids": expected_cids,
+                    "blocked_member_task_cids": [],
+                    "execution_slice_task_cids": expected_cids,
+                    "execution_slice_task_ids": expected_ids,
+                }
+            )
+        if derived_without_tasks != expected_bundle:
+            _fail(f"{context} may not mutate canonical bundle metadata")
+        canonical_tasks = canonical_bundle["tasks"]
+        derived_tasks = derived_bundle["tasks"]
+        if len(derived_tasks) != len(canonical_tasks):
+            _fail(f"{context} may not add or remove canonical tasks")
+        for index, canonical_task in enumerate(canonical_tasks):
+            expected_task = dict(canonical_task)
+            if canonical_task.get("goal_id") in completed_prerequisite_goals:
+                expected_task["status"] = "completed"
+            if (
+                require_operator_gate_contract
+                and bundle_key in allowed_bundles
+            ):
+                expected_task["execution_authority"] = (
+                    OPERATOR_GATE_EXECUTION_AUTHORITY
+                )
+            if derived_tasks[index] != expected_task:
+                _fail(
+                    f"{context} may only add the exact operator Gate authority "
+                    "projection or set status='completed' on exact completed-"
+                    "prerequisite tasks; all other task fields and CIDs must "
+                    "remain canonical"
+                )
+
     execution_goal_ids = _unique_strings(
         derived.get("execution_goal_ids"),
         f"{context}.execution_goal_ids",
@@ -2680,30 +3080,57 @@ def _validate_preflight_receipt(
     repo_root: Path,
     reviewed_state: Mapping[str, Any],
     generated_root: Path,
+    phase: str,
 ) -> None:
     receipt = _load_bound_json(
         repo_root,
         reviewed_state["preflight_receipt"],
         "reviewed_state.preflight_receipt",
     )
-    _exact_keys(
-        receipt,
-        {
-            "schema",
-            "status",
-            "passed",
-            "offline",
-            "no_start",
-            "generated_root",
-            "objective_path",
-            "summary",
-            "verifiers",
-            "artifacts",
-        },
-        "reviewed_state.preflight_receipt",
-    )
-    if receipt["schema"] != PREFLIGHT_RECEIPT_SCHEMA:
-        _fail("preflight receipt schema is not the deterministic generated-board receipt")
+    common_keys = {
+        "schema",
+        "status",
+        "passed",
+        "offline",
+        "no_start",
+        "generated_root",
+        "objective_path",
+        "summary",
+        "verifiers",
+        "artifacts",
+    }
+    schema = receipt.get("schema")
+    if phase == SELECTION:
+        _exact_keys(
+            receipt,
+            common_keys | {"board_contract"},
+            "reviewed_state.preflight_receipt",
+        )
+        if schema != SELECTION_PREFLIGHT_RECEIPT_SCHEMA:
+            _fail("selection preflight receipt must use deterministic reopened receipt schema @2")
+        if receipt["board_contract"] != SELECTION_BOARD_CONTRACT:
+            _fail(
+                "selection preflight receipt board_contract must be "
+                f"{SELECTION_BOARD_CONTRACT}"
+            )
+    elif schema == LEGACY_PREFLIGHT_RECEIPT_SCHEMA:
+        _exact_keys(receipt, common_keys, "reviewed_state.preflight_receipt")
+    elif schema == SELECTION_PREFLIGHT_RECEIPT_SCHEMA:
+        # Transitional launch approvals may inherit the selection board receipt.
+        # This is board evidence only, not a launch execution contract. A fresh
+        # post-bootstrap board contract must replace this compatibility branch.
+        _exact_keys(
+            receipt,
+            common_keys | {"board_contract"},
+            "reviewed_state.preflight_receipt",
+        )
+        if receipt["board_contract"] != SELECTION_BOARD_CONTRACT:
+            _fail(
+                "launch may only inherit an @2 receipt for the exact reopened "
+                "selection board contract"
+            )
+    else:
+        _fail("launch preflight receipt schema is not a supported deterministic receipt")
     if receipt["status"] != "passed":
         _fail("preflight receipt status must be passed")
     for key in ("passed", "offline", "no_start"):
@@ -2728,6 +3155,7 @@ def _validate_preflight_receipt(
     )
     if summary["status"] != "passed":
         _fail("preflight receipt summary.status must be passed")
+    summary_counts: dict[str, int] = {}
     for key in (
         "source_goal_count",
         "schedulable_goal_count",
@@ -2735,7 +3163,25 @@ def _validate_preflight_receipt(
         "bundle_count",
         "dag_count",
     ):
-        _expect_int(summary[key], f"preflight receipt summary.{key}", 1, 1000000000)
+        summary_counts[key] = _expect_int(
+            summary[key],
+            f"preflight receipt summary.{key}",
+            1,
+            1000000000,
+        )
+    if phase == SELECTION:
+        expected_counts = {
+            "source_goal_count": 42,
+            "schedulable_goal_count": 40,
+            "task_count": 40,
+            "bundle_count": 40,
+        }
+        observed_counts = {key: summary_counts[key] for key in expected_counts}
+        if observed_counts != expected_counts:
+            _fail(
+                "selection preflight receipt must prove exact reopened board "
+                f"counts 42/40/40/40; observed={observed_counts}"
+            )
 
     verifiers = _expect_object(receipt["verifiers"], "preflight receipt verifiers")
     _exact_keys(
@@ -2993,6 +3439,7 @@ def _verify_approval(
         "not_before",
         "expires_at",
         "reviewed_state",
+        "execution_boundary",
         "scope",
         "reviewers",
         "exceptions",
@@ -3031,6 +3478,11 @@ def _verify_approval(
     root_commit, submodule_commits, artifacts, generated_root = _validate_reviewed_state(
         record["reviewed_state"],
         phase,
+    )
+    execution_boundary = _validate_execution_boundary(
+        record["execution_boundary"],
+        phase,
+        record["reviewed_state"],
     )
     reviewer_identities = _validate_reviewers(record["reviewers"], phase, issued_at, expires_at, verification_time)
     _validate_exceptions(record["exceptions"], issued_at, expires_at, verification_time)
@@ -3081,7 +3533,7 @@ def _verify_approval(
         (Path(artifact["path"]) for _, artifact in artifacts),
         objective_heap_text,
     )
-    _validate_preflight_receipt(root, record["reviewed_state"], generated_root)
+    _validate_preflight_receipt(root, record["reviewed_state"], generated_root, phase)
     if phase == SELECTION:
         _validate_derived_bundle_profile(
             root,
@@ -3091,6 +3543,7 @@ def _verify_approval(
             expected_goals=SELECTION_GOALS,
             completed_prerequisite_goals=SELECTION_PREPARATION_GOALS,
             exact_allowed_bundles=RESTRICTED_BOOTSTRAP_BUNDLES,
+            require_operator_gate_contract=True,
         )
         _validate_security_receipts(
             root,
@@ -3155,18 +3608,13 @@ def _verify_approval(
     if observed_trust_digest != record["trust"]["allowed_signers_sha256"]:
         _fail("allowed signers trust-store digest drift")
     allowed_principals = _parse_allowed_signers(trust_raw)
-    allowed_signers_descriptor = _sealed_snapshot_fd(trust_raw)
-    try:
-        _verify_signatures(
-            canonical_approval,
-            raw,
-            phase,
-            signatures,
-            allowed_signers_descriptor,
-            allowed_principals,
-        )
-    finally:
-        os.close(allowed_signers_descriptor)
+    _verify_signatures(
+        canonical_approval,
+        raw,
+        phase,
+        signatures,
+        allowed_principals,
+    )
 
     if phase == LAUNCH and verify_linked_selection:
         if selection_approval_artifact is None:
@@ -3210,6 +3658,14 @@ def _verify_approval(
         "verified_approval_sha256": _sha256_bytes(raw),
         "expires_at": record["expires_at"],
         "reviewed_root_commit": root_commit,
+        "execution_authority": execution_boundary["execution_authority"],
+        "approved_operation": execution_boundary["operation"],
+        "operator_policy_sha256": execution_boundary["operator_policy_sha256"],
+        "deployment_attestation_id": execution_boundary["deployment_attestation_id"],
+        "deployment_attestation_sha256": execution_boundary[
+            "deployment_attestation_sha256"
+        ],
+        "execution_boundary_verified": True,
         "artifact_count": len(seen_artifacts),
         "signature_count": len(signatures),
         "offline": True,

@@ -10,6 +10,8 @@ from pathlib import Path
 import pytest
 
 from scripts.verify_world_aid_generated_board import (
+    BLOCKED_REVIEW_CONTRACT,
+    GATE0B_REOPENED_CONTRACT,
     BoardVerificationError,
     main,
     verify_generated_board,
@@ -71,7 +73,11 @@ def _task(
 """
 
 
-def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+def _write_fixture(
+    tmp_path: Path,
+    *,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
+) -> tuple[Path, Path, Path]:
     repo_root = tmp_path / "repo"
     generated_root = repo_root / "data/worldcoin_human_aid/agent_supervisor/regenerations/test-review"
     bundle_dir = generated_root / "objective_bundles"
@@ -83,7 +89,16 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     goal_specs: list[dict[str, str]] = []
     for number in range(1, 43):
         goal_id = f"WORLDCOIN-G{number:03d}"
-        status = "blocked" if number in {35, 36, 38, 39, 40} else "active"
+        if number in {35, 36}:
+            status = "blocked"
+        elif number in {38, 39, 40}:
+            status = (
+                "reopened"
+                if board_contract == GATE0B_REOPENED_CONTRACT
+                else "blocked"
+            )
+        else:
+            status = "active"
         if number == 1:
             parents = ""
         elif number == 36:
@@ -113,7 +128,7 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         (
             item
             for item in goal_specs
-            if item["status"] == "active"
+            if item["status"] in {"active", "reopened"}
             or item["goal_id"] in {
                 "WORLDCOIN-G038",
                 "WORLDCOIN-G039",
@@ -250,7 +265,10 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
         "objective_path": objective_path.relative_to(repo_root).as_posix(),
         "goal_count": len(goal_specs),
-        "active_goal_count": sum(spec["status"] == "active" for spec in goal_specs),
+        "active_goal_count": sum(
+            spec["status"] in {"active", "reopened"}
+            for spec in goal_specs
+        ),
         "completed_goal_count": 0,
         "goals": [
             {
@@ -271,20 +289,18 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             "schedulable_goal_ids": sorted(
                 spec["goal_id"]
                 for spec in goal_specs
-                if spec["status"] == "active"
+                if spec["status"] in {"active", "reopened"}
             ),
             "terminal_goal_ids": [
-                "WORLDCOIN-G035",
-                "WORLDCOIN-G036",
-                "WORLDCOIN-G038",
-                "WORLDCOIN-G039",
-                "WORLDCOIN-G040",
+                spec["goal_id"]
+                for spec in goal_specs
+                if spec["status"] == "blocked"
             ],
         },
         "heap_schedule": [
             {"goal_id": spec["goal_id"]}
             for spec in goal_specs
-            if spec["status"] == "active"
+            if spec["status"] in {"active", "reopened"}
         ],
     }
     (generated_root / "objective_graph.json").write_text(
@@ -336,12 +352,17 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return repo_root, objective_path, generated_root
 
 
-def _verify(paths: tuple[Path, Path, Path]):
+def _verify(
+    paths: tuple[Path, Path, Path],
+    *,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
+):
     repo_root, objective_path, generated_root = paths
     return verify_generated_board(
         repo_root=repo_root,
         objective_path=objective_path,
         generated_root=generated_root,
+        board_contract=board_contract,
     )
 
 
@@ -401,6 +422,98 @@ def test_valid_board_passes_and_cli_writes_no_generated_data(
         if path.is_file()
     }
     assert after == before
+
+
+def test_reopened_gate0b_board_requires_explicit_contract_and_exact_status(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    paths = _write_fixture(
+        tmp_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    repo_root, objective_path, generated_root = paths
+
+    with pytest.raises(BoardVerificationError, match="blocked-goal set differs"):
+        _verify(paths)
+
+    summary = _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+    exit_code = main(
+        [
+            "--repo-root",
+            str(repo_root),
+            "--objective-path",
+            str(objective_path.relative_to(repo_root)),
+            "--generated-root",
+            str(generated_root.relative_to(repo_root)),
+            "--board-contract",
+            GATE0B_REOPENED_CONTRACT,
+        ]
+    )
+    assert summary.schedulable_goal_count == 40
+    assert summary.task_count == 40
+    assert exit_code == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "passed"
+
+    _replace(
+        objective_path,
+        "## WORLDCOIN-G038 Example goal\n\n- Status: reopened",
+        "## WORLDCOIN-G038 Example goal\n\n- Status: active",
+    )
+    with pytest.raises(
+        BoardVerificationError,
+        match=(
+            "gate0b-selection-reopened-v1 requires WORLDCOIN-G038 "
+            "status to be exactly 'reopened'"
+        ),
+    ):
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+
+
+def test_reopened_gate0b_board_rejects_review_only_flags(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(
+        tmp_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    _replace(
+        paths[2] / "WORLDCOIN_HUMAN_AID_TODO.md",
+        (
+            "## WORLDCOIN-AUTO-036 Implement WORLDCOIN-G038\n\n"
+            "- Status: todo\n"
+            "- Completion: manual\n"
+            "- Is schedulable: true"
+        ),
+        (
+            "## WORLDCOIN-AUTO-036 Implement WORLDCOIN-G038\n\n"
+            "- Status: todo\n"
+            "- Completion: manual\n"
+            "- Is schedulable: false"
+        ),
+    )
+    with pytest.raises(
+        BoardVerificationError,
+        match=(
+            "reopened scheduling flag 'is_schedulable' must be "
+            "literal 'true'"
+        ),
+    ):
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+
+
+def test_reopened_contract_rejects_current_blocked_review_projection(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    with pytest.raises(BoardVerificationError) as raised:
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+    rendered = "\n".join(raised.value.problems)
+    assert "blocked-goal set differs" in rendered
+    assert (
+        "requires WORLDCOIN-G038 status to be exactly 'reopened'; "
+        "found 'blocked'"
+    ) in rendered
 
 
 @pytest.mark.parametrize(

@@ -14,6 +14,7 @@
     "not_before",
     "expires_at",
     "reviewed_state",
+    "execution_boundary",
     "scope",
     "reviewers",
     "exceptions",
@@ -23,7 +24,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "world-human-aid-gate-0b-selection/v1"
+      "const": "world-human-aid-gate-0b-selection/v2"
     },
     "gate_id": {
       "const": "gate-0b-selection"
@@ -74,7 +75,23 @@
         "zkp_smoke_source",
         "duckdb_verifier",
         "duckdb_runtime_test",
-        "preflight_receipt"
+        "preflight_receipt",
+        "gate_verifier",
+        "gate_launcher",
+        "gate_launcher_protocol",
+        "operator_policy_template",
+        "gate_receipt_verifier",
+        "gate_transition_verifier",
+        "gate_transition_schema",
+        "gate_transition_template",
+        "deployment_attestation_schema",
+        "deployment_attestation_template",
+        "selection_profile_builder",
+        "siwe_bootstrap_runner",
+        "zkp_bootstrap_runner",
+        "duckdb_bootstrap_runner",
+        "selection_schema",
+        "selection_template"
       ],
       "properties": {
         "root_commit": {
@@ -157,8 +174,59 @@
         },
         "preflight_receipt": {
           "$ref": "#/$defs/artifact"
+        },
+        "gate_verifier": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_launcher": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_launcher_protocol": {
+          "$ref": "#/$defs/artifact"
+        },
+        "operator_policy_template": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_receipt_verifier": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_transition_verifier": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_transition_schema": {
+          "$ref": "#/$defs/artifact"
+        },
+        "gate_transition_template": {
+          "$ref": "#/$defs/artifact"
+        },
+        "deployment_attestation_schema": {
+          "$ref": "#/$defs/artifact"
+        },
+        "deployment_attestation_template": {
+          "$ref": "#/$defs/artifact"
+        },
+        "selection_profile_builder": {
+          "$ref": "#/$defs/artifact"
+        },
+        "siwe_bootstrap_runner": {
+          "$ref": "#/$defs/artifact"
+        },
+        "zkp_bootstrap_runner": {
+          "$ref": "#/$defs/artifact"
+        },
+        "duckdb_bootstrap_runner": {
+          "$ref": "#/$defs/artifact"
+        },
+        "selection_schema": {
+          "$ref": "#/$defs/artifact"
+        },
+        "selection_template": {
+          "$ref": "#/$defs/artifact"
         }
       }
+    },
+    "execution_boundary": {
+      "$ref": "#/$defs/executionBoundary"
     },
     "scope": {
       "$ref": "#/$defs/scope"
@@ -252,6 +320,99 @@
           "$ref": "#/$defs/relativePath"
         },
         "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "executionBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol_id",
+        "execution_authority",
+        "operation",
+        "sealed_input_protocol",
+        "result_protocol",
+        "installed_launcher_path",
+        "operator_policy_id",
+        "operator_policy_sha256",
+        "deployment_attestation_id",
+        "deployment_attestation_sha256",
+        "reviewed_artifacts"
+      ],
+      "properties": {
+        "protocol_id": {
+          "const": "world-aid-gate-first-launcher/v1"
+        },
+        "execution_authority": {
+          "const": "operator-gate-first/v1"
+        },
+        "operation": {
+          "const": "run-selection/v1"
+        },
+        "sealed_input_protocol": {
+          "const": "sealed-fd-json/v1"
+        },
+        "result_protocol": {
+          "const": "stdout-json/v1"
+        },
+        "installed_launcher_path": {
+          "const": "/usr/local/libexec/world-aid-gate-first-launcher"
+        },
+        "operator_policy_id": {
+          "const": "world-aid-gate-first-operator-policy/v1"
+        },
+        "operator_policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "deployment_attestation_id": {
+          "type": "string",
+          "pattern": "^gate-first-deployment-[a-z0-9][a-z0-9._-]{7,95}$"
+        },
+        "deployment_attestation_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reviewed_artifacts": {
+          "$ref": "#/$defs/executionBoundaryArtifacts"
+        }
+      }
+    },
+    "executionBoundaryArtifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_verifier",
+        "gate_launcher",
+        "gate_launcher_protocol",
+        "gate_receipt_verifier",
+        "selection_profile_builder",
+        "siwe_bootstrap_runner",
+        "zkp_bootstrap_runner",
+        "duckdb_bootstrap_runner"
+      ],
+      "properties": {
+        "gate_verifier": {
+          "$ref": "#/$defs/sha256"
+        },
+        "gate_launcher": {
+          "$ref": "#/$defs/sha256"
+        },
+        "gate_launcher_protocol": {
+          "$ref": "#/$defs/sha256"
+        },
+        "gate_receipt_verifier": {
+          "$ref": "#/$defs/sha256"
+        },
+        "selection_profile_builder": {
+          "$ref": "#/$defs/sha256"
+        },
+        "siwe_bootstrap_runner": {
+          "$ref": "#/$defs/sha256"
+        },
+        "zkp_bootstrap_runner": {
+          "$ref": "#/$defs/sha256"
+        },
+        "duckdb_bootstrap_runner": {
           "$ref": "#/$defs/sha256"
         }
       }
@@ -511,7 +672,7 @@
       ],
       "properties": {
         "signature_namespace": {
-          "const": "world-aid-gate-0b-selection-v1"
+          "const": "world-aid-gate-0b-selection-v2"
         },
         "allowed_signers_sha256": {
           "$ref": "#/$defs/sha256"

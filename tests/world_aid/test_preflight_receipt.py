@@ -7,6 +7,11 @@ from pathlib import Path
 
 import pytest
 
+from scripts.verify_world_aid_generated_board import (
+    BLOCKED_REVIEW_CONTRACT,
+    GATE0B_REOPENED_CONTRACT,
+    BoardVerificationError,
+)
 from scripts.verify_world_aid_preflight_receipt import (
     PreflightReceiptError,
     build_preflight_receipt,
@@ -19,8 +24,15 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = REPOSITORY_ROOT / "scripts/verify_world_aid_preflight_receipt.py"
 
 
-def _prepare_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
-    repo_root, objective_path, generated_root = _write_fixture(tmp_path)
+def _prepare_fixture(
+    tmp_path: Path,
+    *,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
+) -> tuple[Path, Path, Path, Path]:
+    repo_root, objective_path, generated_root = _write_fixture(
+        tmp_path,
+        board_contract=board_contract,
+    )
     scripts_dir = repo_root / "scripts"
     scripts_dir.mkdir()
     for name in (
@@ -123,6 +135,45 @@ def test_create_and_verify_receipt_bind_every_planning_input_without_mutation(
         )
         == payload
     )
+
+
+def test_reopened_gate0b_receipt_uses_v2_and_binds_board_contract(
+    tmp_path: Path,
+) -> None:
+    repo_root, objective_path, generated_root, receipt_path = _prepare_fixture(
+        tmp_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    payload = write_preflight_receipt(
+        repo_root=repo_root,
+        objective_path=objective_path,
+        generated_root=generated_root,
+        receipt_path=receipt_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    assert payload["schema"] == "world_aid.generated_board_preflight_receipt@2"
+    assert payload["board_contract"] == GATE0B_REOPENED_CONTRACT
+    assert payload["summary"]["source_goal_count"] == 42
+    assert payload["summary"]["schedulable_goal_count"] == 40
+    assert payload["summary"]["task_count"] == 40
+    assert payload["summary"]["bundle_count"] == 40
+    assert (
+        verify_preflight_receipt(
+            repo_root=repo_root,
+            objective_path=objective_path,
+            generated_root=generated_root,
+            receipt_path=receipt_path,
+            board_contract=GATE0B_REOPENED_CONTRACT,
+        )
+        == payload
+    )
+    with pytest.raises(BoardVerificationError, match="blocked-goal set differs"):
+        verify_preflight_receipt(
+            repo_root=repo_root,
+            objective_path=objective_path,
+            generated_root=generated_root,
+            receipt_path=receipt_path,
+        )
 
 
 def test_receipt_creation_refuses_overwrite_and_verification_detects_drift(

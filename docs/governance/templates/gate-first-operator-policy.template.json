@@ -1,0 +1,63 @@
+{
+  "schema": "world-aid-gate-first-operator-policy/v1",
+  "mode": "verify-only",
+  "installation": {
+    "launcher_path": "/usr/local/libexec/world-aid-gate-first-launcher",
+    "launcher_sha256": "sha256:REPLACE-WITH-INSTALLED-LAUNCHER-DIGEST",
+    "python_path": "/usr/bin/python3.12",
+    "python_sha256": "sha256:REPLACE-WITH-ISOLATED-PYTHON-DIGEST",
+    "python_version": "3.12.0",
+    "ssh_keygen_path": "/usr/bin/ssh-keygen",
+    "ssh_keygen_sha256": "sha256:REPLACE-WITH-SSH-KEYGEN-DIGEST",
+    "authority_uid": 0
+  },
+  "repository": {
+    "root": "/srv/world-aid/repository"
+  },
+  "gate": {
+    "phase": "selection",
+    "verifier_path": "scripts/verify_world_aid_gate_0b.py",
+    "verifier_sha256": "sha256:REPLACE-WITH-PINNED-GATE-VERIFIER-DIGEST",
+    "approval_path": "data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json",
+    "profile_json_path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/launch_profiles/g038-g040.index.json",
+    "profile_json_sha256": "sha256:REPLACE-WITH-REVIEWED-PROFILE-JSON-DIGEST",
+    "profile_duckdb_path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/launch_profiles/g038-g040.index.duckdb",
+    "profile_duckdb_sha256": "sha256:REPLACE-WITH-REVIEWED-PROFILE-DUCKDB-DIGEST"
+  },
+  "trust": {
+    "allowed_signers_path": "/etc/world-aid/gate-0b.allowed_signers",
+    "allowed_signers_sha256": "sha256:REPLACE-WITH-GATE-TRUST-STORE-DIGEST"
+  },
+  "execution": {
+    "run_selection_enabled": false,
+    "expected_goal_ids": [
+      "WORLDCOIN-G038",
+      "WORLDCOIN-G039",
+      "WORLDCOIN-G040"
+    ],
+    "runners": []
+  },
+  "receipts": {
+    "root": "/var/lib/world-aid/gate-first-runs",
+    "allowed_signers_path": "/etc/world-aid/gate-first-receipts.allowed_signers",
+    "allowed_signers_sha256": "sha256:REPLACE-WITH-RECEIPT-TRUST-STORE-DIGEST",
+    "signer_identity": "world-aid-gate-first-launcher@example.invalid",
+    "signer_fingerprint": "SHA256:REPLACE-WITH-43-CHAR-BASE64-FINGERPRINT",
+    "signature_namespace": "world-aid-gate-first-launch-v1"
+  },
+  "runtime": {
+    "require_isolated_python": true,
+    "require_no_site": true,
+    "require_dont_write_bytecode": true,
+    "clean_environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PATH": "/usr/bin:/bin",
+      "TZ": "UTC"
+    },
+    "apparmor_profile": "world-aid-gate-first",
+    "network_namespace": "world-aid-gate-first-offline",
+    "gate_timeout_seconds": 60,
+    "max_child_output_bytes": 1048576
+  }
+}

@@ -19,18 +19,25 @@ from typing import Any
 
 if __package__:
     from scripts.verify_world_aid_generated_board import (
+        BLOCKED_REVIEW_CONTRACT,
+        GATE0B_REOPENED_CONTRACT,
         BoardVerificationError,
         VerificationSummary,
         verify_generated_board,
     )
 else:
     from verify_world_aid_generated_board import (  # type: ignore[no-redef]
+        BLOCKED_REVIEW_CONTRACT,
+        GATE0B_REOPENED_CONTRACT,
         BoardVerificationError,
         VerificationSummary,
         verify_generated_board,
     )
 
-SCHEMA = "world_aid.generated_board_preflight_receipt@1"
+SCHEMAS_BY_BOARD_CONTRACT = {
+    BLOCKED_REVIEW_CONTRACT: "world_aid.generated_board_preflight_receipt@1",
+    GATE0B_REOPENED_CONTRACT: "world_aid.generated_board_preflight_receipt@2",
+}
 RECEIPT_NAME = "preflight-receipt.json"
 CANONICAL_OBJECTIVE_PATH = Path("docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md")
 REGENERATION_PARENT = Path("data/worldcoin_human_aid/agent_supervisor/regenerations")
@@ -203,6 +210,7 @@ def build_preflight_receipt(
     repo_root: Path,
     objective_path: Path,
     generated_root: Path,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
 ) -> dict[str, Any]:
     """Build the canonical receipt in memory without writing any file."""
 
@@ -216,9 +224,32 @@ def build_preflight_receipt(
         repo_root=root,
         objective_path=objective,
         generated_root=generated,
+        board_contract=board_contract,
     )
-    return {
-        "schema": SCHEMA,
+    try:
+        schema = SCHEMAS_BY_BOARD_CONTRACT[board_contract]
+    except KeyError as exc:
+        raise PreflightReceiptError(
+            f"unsupported board contract {board_contract!r}"
+        ) from exc
+    if board_contract == GATE0B_REOPENED_CONTRACT:
+        expected_counts = {
+            "source_goal_count": 42,
+            "schedulable_goal_count": 40,
+            "task_count": 40,
+            "bundle_count": 40,
+        }
+        observed_counts = {
+            key: getattr(summary, key)
+            for key in expected_counts
+        }
+        if observed_counts != expected_counts:
+            raise PreflightReceiptError(
+                "reopened Gate 0B board counts differ from the exact "
+                f"selection contract: {observed_counts!r}"
+            )
+    payload = {
+        "schema": schema,
         "status": "passed",
         "passed": True,
         "offline": True,
@@ -235,6 +266,9 @@ def build_preflight_receipt(
             generated_root=generated,
         ),
     }
+    if board_contract == GATE0B_REOPENED_CONTRACT:
+        payload["board_contract"] = board_contract
+    return payload
 
 
 def _canonical_bytes(payload: Mapping[str, Any]) -> bytes:
@@ -247,6 +281,7 @@ def write_preflight_receipt(
     objective_path: Path,
     generated_root: Path,
     receipt_path: Path,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
 ) -> dict[str, Any]:
     """Create a receipt exactly once without replacing any existing path."""
 
@@ -264,6 +299,7 @@ def write_preflight_receipt(
         repo_root=root,
         objective_path=objective_path,
         generated_root=generated,
+        board_contract=board_contract,
     )
     temporary = generated / f".{RECEIPT_NAME}.{os.getpid()}.tmp"
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
@@ -300,6 +336,7 @@ def verify_preflight_receipt(
     objective_path: Path,
     generated_root: Path,
     receipt_path: Path,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
 ) -> dict[str, Any]:
     """Recompute and compare a receipt without writing to the generated root."""
 
@@ -325,6 +362,7 @@ def verify_preflight_receipt(
         repo_root=root,
         objective_path=objective_path,
         generated_root=generated,
+        board_contract=board_contract,
     )
     if observed != expected:
         observed_records = {
@@ -351,6 +389,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--objective-path", type=Path, required=True)
     parser.add_argument("--generated-root", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument(
+        "--board-contract",
+        choices=tuple(sorted(SCHEMAS_BY_BOARD_CONTRACT)),
+        default=BLOCKED_REVIEW_CONTRACT,
+    )
     return parser
 
 
@@ -363,6 +406,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 objective_path=args.objective_path,
                 generated_root=args.generated_root,
                 receipt_path=args.receipt,
+                board_contract=args.board_contract,
             )
             action = "created"
         else:
@@ -371,6 +415,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 objective_path=args.objective_path,
                 generated_root=args.generated_root,
                 receipt_path=args.receipt,
+                board_contract=args.board_contract,
             )
             action = "verified"
     except (BoardVerificationError, OSError, PreflightReceiptError) as exc:

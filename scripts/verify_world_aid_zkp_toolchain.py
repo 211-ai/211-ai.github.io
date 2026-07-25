@@ -333,7 +333,7 @@ def verify_world_aid_zkp_toolchain(
         "required": True,
         "binding": "signed Gate 0B-selection",
         "canonical_path": CANONICAL_APPROVAL.as_posix(),
-        "canonical_schema": "world-human-aid-gate-0b-selection/v1",
+        "canonical_schema": "world-human-aid-gate-0b-selection/v2",
         "selection_owner": "human Gate 0B reviewers",
         "expires_at": None,
         "exceptions": {"required_fields": ["id", "owner", "rationale", "compensating_controls", "expires_at"], "selected": []},
