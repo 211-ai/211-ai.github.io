@@ -1,7 +1,7 @@
 {
   "active_goal_count": 12,
   "completed_goal_count": 9,
-  "generated_at": "2026-07-25T20:13:06.989289+00:00",
+  "generated_at": "2026-07-25T22:53:20.853406+00:00",
   "goal_count": 29,
   "goals": [
     {
@@ -198,12 +198,17 @@
     {
       "bundle": "abby-voice/hf-sources",
       "evidence": [
-        "immutable inventory",
-        "backward-compatible generic snapshot/cache API",
-        "pinned dataset commit receipt",
-        "bucket inventory digest with path size full SHA-256 ETag and media type",
-        "tamper and mutable-ref rejection tests",
-        "no-network cache-hit test"
+        "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
+        "`SkillCenterSnapshotCache`",
+        "and `HuggingFaceSkillCenterFetcher` imports remain compatible",
+        "`HuggingFaceRepository` records a pinned dataset commit",
+        "`HuggingFaceBucketStore` produces a canonical inventory digest over path",
+        "size",
+        "full SHA-256",
+        "ETag",
+        "and media type",
+        "focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access",
+        "the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`"
       ],
       "fib_priority": 5002,
       "goal_id": "ABBY-VOICE-G012",
@@ -1454,32 +1459,57 @@
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:1a360d8eb8335170"
+        "to": "evidence:e0aeec534cc68add"
       },
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:caf9b1055e88ccee"
+        "to": "evidence:7df5d49a07287494"
       },
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:bbe241ea8ac684d0"
+        "to": "evidence:9966ef7399e8ad87"
       },
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:5bcbf888cf127c65"
+        "to": "evidence:c497450cde95173f"
       },
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:6e59a1fcfc8d10b2"
+        "to": "evidence:cc718971ea047ad4"
       },
       {
         "from": "ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:329ade8eef2ad858"
+        "to": "evidence:6c1db14716b4c150"
+      },
+      {
+        "from": "ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:957db26db2436dfb"
+      },
+      {
+        "from": "ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:a0a18430aff869e7"
+      },
+      {
+        "from": "ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:b45c6c5b5a02940b"
+      },
+      {
+        "from": "ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:ea3ce845d266c0d0"
+      },
+      {
+        "from": "ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:99375e952fd20389"
       },
       {
         "from": "ABBY-VOICE-G013",
@@ -2399,34 +2429,59 @@
         "id": "evidence:956fba27e035436b"
       },
       {
-        "acceptance_criterion": "immutable inventory",
+        "acceptance_criterion": "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:1a360d8eb8335170"
+        "id": "evidence:e0aeec534cc68add"
       },
       {
-        "acceptance_criterion": "backward-compatible generic snapshot/cache API",
+        "acceptance_criterion": "`SkillCenterSnapshotCache`",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:caf9b1055e88ccee"
+        "id": "evidence:7df5d49a07287494"
       },
       {
-        "acceptance_criterion": "pinned dataset commit receipt",
+        "acceptance_criterion": "and `HuggingFaceSkillCenterFetcher` imports remain compatible",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:bbe241ea8ac684d0"
+        "id": "evidence:9966ef7399e8ad87"
       },
       {
-        "acceptance_criterion": "bucket inventory digest with path size full SHA-256 ETag and media type",
+        "acceptance_criterion": "`HuggingFaceRepository` records a pinned dataset commit",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:5bcbf888cf127c65"
+        "id": "evidence:c497450cde95173f"
       },
       {
-        "acceptance_criterion": "tamper and mutable-ref rejection tests",
+        "acceptance_criterion": "`HuggingFaceBucketStore` produces a canonical inventory digest over path",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:6e59a1fcfc8d10b2"
+        "id": "evidence:cc718971ea047ad4"
       },
       {
-        "acceptance_criterion": "no-network cache-hit test",
+        "acceptance_criterion": "size",
         "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:329ade8eef2ad858"
+        "id": "evidence:6c1db14716b4c150"
+      },
+      {
+        "acceptance_criterion": "full SHA-256",
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:957db26db2436dfb"
+      },
+      {
+        "acceptance_criterion": "ETag",
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:a0a18430aff869e7"
+      },
+      {
+        "acceptance_criterion": "and media type",
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:b45c6c5b5a02940b"
+      },
+      {
+        "acceptance_criterion": "focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access",
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:ea3ce845d266c0d0"
+      },
+      {
+        "acceptance_criterion": "the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`",
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:99375e952fd20389"
       },
       {
         "acceptance_criterion": "canonical normalization",
@@ -3116,12 +3171,17 @@
           "ABBY-VOICE-G011"
         ],
         "required_evidence": [
-          "immutable inventory",
-          "backward-compatible generic snapshot/cache API",
-          "pinned dataset commit receipt",
-          "bucket inventory digest with path size full SHA-256 ETag and media type",
-          "tamper and mutable-ref rejection tests",
-          "no-network cache-hit test"
+          "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
+          "`SkillCenterSnapshotCache`",
+          "and `HuggingFaceSkillCenterFetcher` imports remain compatible",
+          "`HuggingFaceRepository` records a pinned dataset commit",
+          "`HuggingFaceBucketStore` produces a canonical inventory digest over path",
+          "size",
+          "full SHA-256",
+          "ETag",
+          "and media type",
+          "focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access",
+          "the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`"
         ],
         "schedulable": true,
         "status": "active",
@@ -3541,24 +3601,24 @@
       "goal_id": "ABBY-VOICE-G012",
       "graph_depth": 4,
       "heap_index": 1,
-      "output_count": 4,
+      "output_count": 7,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 6,
+      "required_evidence_count": 11,
       "sort_key": [
         5002,
         0,
-        -49,
+        -75,
         4,
         "ABBY-VOICE-G012"
       ],
       "status": "active",
       "title": "Generalize immutable Hugging Face source snapshots",
       "track": "voice-data",
-      "work_surface_score": 49
+      "work_surface_score": 75
     },
     {
       "fib_priority": 5003,
@@ -3802,10 +3862,10 @@
       "work_surface_score": 51
     }
   ],
-  "objective_path": "/home/barberb/211-AI/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
+  "objective_path": "/home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
   "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
   "thought_graph": {
-    "edge_count": 374,
+    "edge_count": 382,
     "edges": [
       {
         "from": "goal:ABBY-VOICE-G001",
@@ -4750,32 +4810,57 @@
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:1a360d8eb833"
+        "to": "evidence:e0aeec534cc6"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:caf9b1055e88"
+        "to": "evidence:7df5d49a0728"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:bbe241ea8ac6"
+        "to": "evidence:9966ef7399e8"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:5bcbf888cf12"
+        "to": "evidence:c497450cde95"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:6e59a1fcfc8d"
+        "to": "evidence:cc718971ea04"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "requires_evidence",
-        "to": "evidence:329ade8eef2a"
+        "to": "evidence:6c1db14716b4"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:957db26db243"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:a0a18430aff8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:b45c6c5b5a02"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:ea3ce845d266"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "requires_evidence",
+        "to": "evidence:99375e952fd2"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
@@ -4800,7 +4885,22 @@
       {
         "from": "goal:ABBY-VOICE-G012",
         "kind": "touches_surface",
+        "to": "code_surface:ec180e1e3ae3"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "touches_surface",
         "to": "code_surface:c44e224210ef"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "touches_surface",
+        "to": "code_surface:c5cdc3d8ac16"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G012",
+        "kind": "touches_surface",
+        "to": "code_surface:fa3a9f040042"
       },
       {
         "from": "goal:ABBY-VOICE-G012",
@@ -5678,7 +5778,7 @@
         "to": "code_surface:3f73bdf93452"
       }
     ],
-    "node_count": 403,
+    "node_count": 411,
     "nodes": [
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -6262,6 +6362,13 @@
         "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "code_surface:c5cdc3d8ac16",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G028",
         "id": "code_surface:c6c5911666ec",
         "kind": "code_surface",
@@ -6409,6 +6516,13 @@
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_templates.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "code_surface:ec180e1e3ae3",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G010",
         "id": "code_surface:f074dbcaecce",
         "kind": "code_surface",
@@ -6456,6 +6570,13 @@
         "kind": "code_surface",
         "path": "data/abby_voice/huggingface/README.template.md",
         "thought": "Inspect or modify `data/abby_voice/huggingface/README.template.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "code_surface:fa3a9f040042",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G019",
@@ -6598,13 +6719,6 @@
         "thought": "Find or create repository evidence proving `Hugging Face dataset YAML with separate configs and splits`."
       },
       {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:1a360d8eb833",
-        "kind": "evidence_requirement",
-        "term": "immutable inventory",
-        "thought": "Find or create repository evidence proving `immutable inventory`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G014",
         "id": "evidence:1af1f942647d",
         "kind": "evidence_requirement",
@@ -6736,13 +6850,6 @@
         "kind": "evidence_requirement",
         "term": "canonical four-config bundle",
         "thought": "Find or create repository evidence proving `canonical four-config bundle`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:329ade8eef2a",
-        "kind": "evidence_requirement",
-        "term": "no-network cache-hit test",
-        "thought": "Find or create repository evidence proving `no-network cache-hit test`."
       },
       {
         "goal_id": "ABBY-VOICE-G021",
@@ -6941,13 +7048,6 @@
         "thought": "Find or create repository evidence proving `integration tests with fake GraphRAG provider`."
       },
       {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:5bcbf888cf12",
-        "kind": "evidence_requirement",
-        "term": "bucket inventory digest with path size full SHA-256 ETag and media type",
-        "thought": "Find or create repository evidence proving `bucket inventory digest with path size full SHA-256 ETag and media type`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "evidence:5dbadc7ef35c",
         "kind": "evidence_requirement",
@@ -6990,6 +7090,13 @@
         "thought": "Find or create repository evidence proving `privacy-safe receipts`."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:6c1db14716b4",
+        "kind": "evidence_requirement",
+        "term": "size",
+        "thought": "Find or create repository evidence proving `size`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G028",
         "id": "evidence:6d44023c277e",
         "kind": "evidence_requirement",
@@ -7002,13 +7109,6 @@
         "kind": "evidence_requirement",
         "term": "deterministic TTS ASR and validation work manifests",
         "thought": "Find or create repository evidence proving `deterministic TTS ASR and validation work manifests`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:6e59a1fcfc8d",
-        "kind": "evidence_requirement",
-        "term": "tamper and mutable-ref rejection tests",
-        "thought": "Find or create repository evidence proving `tamper and mutable-ref rejection tests`."
       },
       {
         "goal_id": "ABBY-VOICE-G005",
@@ -7093,6 +7193,13 @@
         "kind": "evidence_requirement",
         "term": "real-provider canary protocol",
         "thought": "Find or create repository evidence proving `real-provider canary protocol`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:7df5d49a0728",
+        "kind": "evidence_requirement",
+        "term": "`SkillCenterSnapshotCache`",
+        "thought": "Find or create repository evidence proving ``SkillCenterSnapshotCache``."
       },
       {
         "goal_id": "ABBY-VOICE-G004",
@@ -7242,6 +7349,20 @@
         "thought": "Find or create repository evidence proving `post-publication verification`."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:957db26db243",
+        "kind": "evidence_requirement",
+        "term": "full SHA-256",
+        "thought": "Find or create repository evidence proving `full SHA-256`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:99375e952fd2",
+        "kind": "evidence_requirement",
+        "term": "the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`",
+        "thought": "Find or create repository evidence proving `the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "evidence:99593eb12c7c",
         "kind": "evidence_requirement",
@@ -7249,11 +7370,25 @@
         "thought": "Find or create repository evidence proving `timeout`."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:9966ef7399e8",
+        "kind": "evidence_requirement",
+        "term": "and `HuggingFaceSkillCenterFetcher` imports remain compatible",
+        "thought": "Find or create repository evidence proving `and `HuggingFaceSkillCenterFetcher` imports remain compatible`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G002",
         "id": "evidence:9bdf79daa5a3",
         "kind": "evidence_requirement",
         "term": "serializable VoiceProviderCapabilities and ProviderInfo metadata",
         "thought": "Find or create repository evidence proving `serializable VoiceProviderCapabilities and ProviderInfo metadata`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:a0a18430aff8",
+        "kind": "evidence_requirement",
+        "term": "ETag",
+        "thought": "Find or create repository evidence proving `ETag`."
       },
       {
         "goal_id": "ABBY-VOICE-G014",
@@ -7417,6 +7552,13 @@
         "thought": "Find or create repository evidence proving `stage ordering`."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:b45c6c5b5a02",
+        "kind": "evidence_requirement",
+        "term": "and media type",
+        "thought": "Find or create repository evidence proving `and media type`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "evidence:b61932c92ccb",
         "kind": "evidence_requirement",
@@ -7436,13 +7578,6 @@
         "kind": "evidence_requirement",
         "term": "objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`",
         "thought": "Find or create repository evidence proving `objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md``."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:bbe241ea8ac6",
-        "kind": "evidence_requirement",
-        "term": "pinned dataset commit receipt",
-        "thought": "Find or create repository evidence proving `pinned dataset commit receipt`."
       },
       {
         "goal_id": "ABBY-VOICE-G011",
@@ -7480,6 +7615,13 @@
         "thought": "Find or create repository evidence proving `objective-validation repair is recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-008-objective-validation-repair.md``."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:c497450cde95",
+        "kind": "evidence_requirement",
+        "term": "`HuggingFaceRepository` records a pinned dataset commit",
+        "thought": "Find or create repository evidence proving ``HuggingFaceRepository` records a pinned dataset commit`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G001",
         "id": "evidence:c5d5ad5e2f34",
         "kind": "evidence_requirement",
@@ -7508,18 +7650,18 @@
         "thought": "Find or create repository evidence proving `serialization`."
       },
       {
-        "goal_id": "ABBY-VOICE-G012",
-        "id": "evidence:caf9b1055e88",
-        "kind": "evidence_requirement",
-        "term": "backward-compatible generic snapshot/cache API",
-        "thought": "Find or create repository evidence proving `backward-compatible generic snapshot/cache API`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G002",
         "id": "evidence:cc54c02a74e2",
         "kind": "evidence_requirement",
         "term": "and VoiceStageTrace receipts",
         "thought": "Find or create repository evidence proving `and VoiceStageTrace receipts`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:cc718971ea04",
+        "kind": "evidence_requirement",
+        "term": "`HuggingFaceBucketStore` produces a canonical inventory digest over path",
+        "thought": "Find or create repository evidence proving ``HuggingFaceBucketStore` produces a canonical inventory digest over path`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7655,6 +7797,13 @@
         "thought": "Find or create repository evidence proving `provenance`."
       },
       {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:e0aeec534cc6",
+        "kind": "evidence_requirement",
+        "term": "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
+        "thought": "Find or create repository evidence proving ``HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G010",
         "id": "evidence:e4087bf971df",
         "kind": "evidence_requirement",
@@ -7667,6 +7816,13 @@
         "kind": "evidence_requirement",
         "term": "capability/resource backpressure test",
         "thought": "Find or create repository evidence proving `capability/resource backpressure test`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G012",
+        "id": "evidence:ea3ce845d266",
+        "kind": "evidence_requirement",
+        "term": "focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access",
+        "thought": "Find or create repository evidence proving `focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access`."
       },
       {
         "goal_id": "ABBY-VOICE-G009",

@@ -1110,3 +1110,75 @@
 - Candidate kind: aggregate
 - Todo vector key: a25bb2a2fb26cb73
 - Acceptance: Objective scan filed this gap for ABBY-VOICE-G021. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-021-objective-gap-529dc663eadc.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (post-publication verification, dry-run diff and cost receipt, pinned redownload validation), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-022 Resolve validation retry-budget failure for ABBY-VOICE-AUTO-012
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: ABBY-VOICE-AUTO-011
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py, data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery
+- Validation: test -f data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-25-abby-voice-auto-022-abby-voice-auto-012-retry-budget.md
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in ABBY-VOICE-AUTO-012. Use evidence in data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-25-abby-voice-auto-022-abby-voice-auto-012-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release ABBY-VOICE-AUTO-012 from strategy blocked_tasks.
+
+## ABBY-VOICE-AUTO-023 Implement Abby voice objective: Generalize immutable Hugging Face source snapshots
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-data
+- Depends on: ABBY-VOICE-AUTO-003, ABBY-VOICE-AUTO-005, ABBY-VOICE-AUTO-009
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py, ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py, data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Bundle: abby-voice/hf-sources
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-hf-sources.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 1
+- Parallel lane: abby-voice-data
+- Conflict policy: extract or wrap generic behavior while keeping the SkillCenter symbols import-compatible; inventory and downloads are read-only; reject branch names such as main and master from canonical receipts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py, ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py, data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md
+- Changed paths:
+- AST symbols: SkillCenterSnapshot, SkillCenterSnapshotCache, HuggingFaceSkillCenterFetcher, HuggingFaceSnapshot, HuggingFaceBucketStore
+- Interfaces: huggingface_hub injected client, hf bucket CLI adapter, Artifact
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G012
+- Canonical task key: task/v1/41afc6aefb29f72529e9d991b645d88d9d1f1bfd485e1f56b128ce1fce20ce96
+- Canonical task CID: baguqeeraigx4nlx3fh3skkpj3gi3mroyrwor6g75jbpb6vvrfdhb7traz2la
+- Semantic identity: objective-evidence-obligation/v1/0544a515bbfaeede8b2248bf15c319b4b4d95c2bce20cc1ee2d7ae31c884479e
+- Acceptance subset: `HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`
+- Preconditions: objective goal ABBY-VOICE-G012 is schedulable
+- Effects: satisfy evidence requirement: `HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, satisfy evidence requirement: `HuggingFaceBucketStore` produces a canonical inventory digest over path, satisfy evidence requirement: focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, satisfy evidence requirement: the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`
+- Evidence subset: `HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G012
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/0544a515bbfaeede8b2248bf15c319b4b4d95c2bce20cc1ee2d7ae31c884479e
+- Missing evidence: `HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`
+- Embedding query: Hugging Face immutable revision bucket inventory content addressed cache Abby voice
+- AST query: SkillCenterSnapshot, SkillCenterSnapshotCache, HuggingFaceSkillCenterFetcher, HuggingFaceSnapshot, HuggingFaceBucketStore
+- Surplus group: objective/ABBY-VOICE-G012
+- Merge key: 18e244a471b684eb
+- Merge family: objective/ABBY-VOICE-G012
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f8adf7d2f7468cec
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G012. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-023-objective-gap-687350d0bedd.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
