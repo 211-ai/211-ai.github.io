@@ -1,0 +1,912 @@
+{
+  "$id": "https://211-ai.invalid/schemas/world-aid/runner-transport-v2-result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "goal_id": {
+            "const": "WORLDCOIN-G039"
+          }
+        },
+        "required": [
+          "goal_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_receipt": {
+            "$ref": "#/$defs/g039_receipt"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "goal_id": {
+            "const": "WORLDCOIN-G040"
+          }
+        },
+        "required": [
+          "goal_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_receipt": {
+            "$ref": "#/$defs/g040_receipt"
+          }
+        }
+      }
+    }
+  ],
+  "description": "Structural schema for exact-one G039/G040 canonical stdout success results. G038 is intentionally excluded because its frozen native receipt does not bind the execution-plan or boundary-attestation digests. Canonical bytes, native receipt digest, and cross-field authority bindings are enforced by scripts/world_aid_runner_transport_v2.py.",
+  "properties": {
+    "aggregate_receipt_object_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "approval_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "execution_plan_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "goal_id": {
+      "enum": [
+        "WORLDCOIN-G039",
+        "WORLDCOIN-G040"
+      ]
+    },
+    "native_receipt": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/g039_receipt"
+        },
+        {
+          "$ref": "#/$defs/g040_receipt"
+        }
+      ]
+    },
+    "native_receipt_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "network_boundary_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "protocol": {
+      "const": "stdout-json/v2"
+    },
+    "schema_version": {
+      "const": "world-human-aid-runner-result-envelope/v2"
+    },
+    "status": {
+      "const": "passed"
+    }
+  },
+  "required": [
+    "schema_version",
+    "protocol",
+    "goal_id",
+    "status",
+    "approval_sha256",
+    "network_boundary_sha256",
+    "execution_plan_sha256",
+    "native_receipt_sha256",
+    "aggregate_receipt_object_sha256",
+    "native_receipt"
+  ],
+  "title": "World Aid runner stdout result v2",
+  "type": "object",
+  "$defs": {
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "g039_receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "commands": {
+          "$ref": "#/$defs/g039_commands"
+        },
+        "completed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "execution_plan_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "expiry": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "goal_id": {
+          "const": "WORLDCOIN-G039"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/g039_input"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        "network_boundary": {
+          "$ref": "#/$defs/network_boundary"
+        },
+        "network_registry_denied": {
+          "const": true
+        },
+        "production_trust": {
+          "const": false
+        },
+        "proof_result": {
+          "const": true
+        },
+        "proof_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "repeat_build_hashes": {
+          "items": {
+            "$ref": "#/$defs/digest"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "resource_bounds": {
+          "$ref": "#/$defs/g039_resources"
+        },
+        "schema_version": {
+          "const": "world-human-aid-g039-native-smoke-receipt/v1"
+        },
+        "tool": {
+          "$ref": "#/$defs/g039_tool"
+        },
+        "verify_result": {
+          "const": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "goal_id",
+        "execution_plan_sha256",
+        "authorization_sha256",
+        "tool",
+        "inputs",
+        "repeat_build_hashes",
+        "proof_sha256",
+        "proof_result",
+        "verify_result",
+        "network_registry_denied",
+        "network_boundary",
+        "resource_bounds",
+        "expiry",
+        "commands",
+        "production_trust",
+        "completed_at"
+      ],
+      "type": "object"
+    },
+    "g040_receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "authorization_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "checks": {
+          "$ref": "#/$defs/g040_checks"
+        },
+        "cleanup": {
+          "$ref": "#/$defs/g040_cleanup"
+        },
+        "command": {
+          "$ref": "#/$defs/command_evidence"
+        },
+        "completed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "deny_settings": {
+          "$ref": "#/$defs/g040_deny_settings"
+        },
+        "execution_plan_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "g033_excluded_controls": {
+          "const": [
+            "application_envelope_encryption",
+            "plaintext_marker_absence",
+            "encrypted_authenticated_production_backup",
+            "key_rotation_retention_and_deletion"
+          ]
+        },
+        "goal_id": {
+          "const": "WORLDCOIN-G040"
+        },
+        "live_actions_authorized": {
+          "const": false
+        },
+        "loaded_dynamic_extensions": {
+          "maxItems": 0,
+          "type": "array"
+        },
+        "network_attempts": {
+          "const": 0
+        },
+        "network_boundary": {
+          "$ref": "#/$defs/network_boundary"
+        },
+        "offline": {
+          "const": true
+        },
+        "production_trust": {
+          "const": false
+        },
+        "python": {
+          "$ref": "#/$defs/g040_python"
+        },
+        "resource_bounds": {
+          "$ref": "#/$defs/g040_resources"
+        },
+        "reviewed_inputs": {
+          "$ref": "#/$defs/g040_reviewed_inputs"
+        },
+        "schema_version": {
+          "const": "world-human-aid-g040-duckdb-bootstrap-receipt/v1"
+        },
+        "second_writer_evidence": {
+          "$ref": "#/$defs/g040_second_writer"
+        },
+        "single_writer_enforced": {
+          "const": true
+        },
+        "smoke_bootstrap_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "status": {
+          "const": "passed"
+        },
+        "wheel": {
+          "$ref": "#/$defs/g040_wheel"
+        }
+      },
+      "required": [
+        "schema_version",
+        "goal_id",
+        "status",
+        "execution_plan_sha256",
+        "authorization_sha256",
+        "network_boundary",
+        "python",
+        "wheel",
+        "reviewed_inputs",
+        "smoke_bootstrap_sha256",
+        "checks",
+        "cleanup",
+        "deny_settings",
+        "loaded_dynamic_extensions",
+        "network_attempts",
+        "single_writer_enforced",
+        "second_writer_evidence",
+        "g033_excluded_controls",
+        "resource_bounds",
+        "command",
+        "offline",
+        "live_actions_authorized",
+        "production_trust",
+        "expires_at",
+        "completed_at"
+      ],
+      "type": "object"
+    },
+    "network_boundary": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "authority": {
+          "const": "external-gate-first-launcher"
+        },
+        "policy": {
+          "const": "external-deny-all"
+        }
+      },
+      "required": [
+        "policy",
+        "attestation_sha256",
+        "authority"
+      ],
+      "type": "object"
+    },
+    "command_evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "elapsed_ms": {
+          "$ref": "#/$defs/nonnegative_integer"
+        },
+        "exit_code": {
+          "const": 0
+        },
+        "stderr_bytes": {
+          "$ref": "#/$defs/nonnegative_integer"
+        },
+        "stderr_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "stdout_bytes": {
+          "$ref": "#/$defs/nonnegative_integer"
+        },
+        "stdout_sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "exit_code",
+        "elapsed_ms",
+        "stdout_sha256",
+        "stdout_bytes",
+        "stderr_sha256",
+        "stderr_bytes"
+      ],
+      "type": "object"
+    },
+    "g039_commands": {
+      "additionalProperties": false,
+      "properties": {
+        "build_a": {
+          "$ref": "#/$defs/command_evidence"
+        },
+        "build_b": {
+          "$ref": "#/$defs/command_evidence"
+        },
+        "prove": {
+          "$ref": "#/$defs/command_evidence"
+        },
+        "verify": {
+          "$ref": "#/$defs/command_evidence"
+        }
+      },
+      "required": [
+        "build_a",
+        "build_b",
+        "prove",
+        "verify"
+      ],
+      "type": "object"
+    },
+    "g039_input": {
+      "additionalProperties": false,
+      "properties": {
+        "max_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "source_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "workspace_relative_path": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_path",
+        "sha256",
+        "max_bytes",
+        "workspace_relative_path"
+      ],
+      "type": "object"
+    },
+    "g039_resources": {
+      "additionalProperties": false,
+      "properties": {
+        "max_memory_mb": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_open_files": {
+          "const": 64
+        },
+        "max_output_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_seconds": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "observed_process_output_bytes": {
+          "$ref": "#/$defs/nonnegative_integer"
+        }
+      },
+      "required": [
+        "max_seconds",
+        "max_memory_mb",
+        "max_output_bytes",
+        "max_open_files",
+        "observed_process_output_bytes"
+      ],
+      "type": "object"
+    },
+    "g039_tool": {
+      "additionalProperties": false,
+      "properties": {
+        "max_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "max_bytes"
+      ],
+      "type": "object"
+    },
+    "g040_artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "size": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "source_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_path",
+        "sha256",
+        "size"
+      ],
+      "type": "object"
+    },
+    "g040_checks": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_outbox": {
+          "const": true
+        },
+        "checkpoint": {
+          "const": true
+        },
+        "compare_and_swap": {
+          "const": true
+        },
+        "corruption_detected": {
+          "const": true
+        },
+        "crash_and_reopen": {
+          "const": true
+        },
+        "database_wal_and_temporary_data_torn_down": {
+          "const": true
+        },
+        "direct_second_writer_rejected": {
+          "const": true
+        },
+        "empty_isolated_environment": {
+          "const": true
+        },
+        "extensions_absent_and_deny_settings_locked": {
+          "const": true
+        },
+        "hash_required_read_only_wheelhouse_install": {
+          "const": true
+        },
+        "index_extension_registry_dns_http_denied": {
+          "const": true
+        },
+        "local_filesystem_database": {
+          "const": true
+        },
+        "opaque_synthetic_payload_round_trip": {
+          "const": true
+        },
+        "raw_opaque_backup_and_restore": {
+          "const": true
+        },
+        "rollback": {
+          "const": true
+        },
+        "transaction_commit": {
+          "const": true
+        },
+        "uniqueness": {
+          "const": true
+        }
+      },
+      "required": [
+        "empty_isolated_environment",
+        "hash_required_read_only_wheelhouse_install",
+        "index_extension_registry_dns_http_denied",
+        "local_filesystem_database",
+        "transaction_commit",
+        "rollback",
+        "uniqueness",
+        "compare_and_swap",
+        "atomic_outbox",
+        "direct_second_writer_rejected",
+        "checkpoint",
+        "crash_and_reopen",
+        "raw_opaque_backup_and_restore",
+        "corruption_detected",
+        "opaque_synthetic_payload_round_trip",
+        "extensions_absent_and_deny_settings_locked",
+        "database_wal_and_temporary_data_torn_down"
+      ],
+      "type": "object"
+    },
+    "g040_cleanup": {
+      "additionalProperties": false,
+      "properties": {
+        "database_exists": {
+          "const": false
+        },
+        "isolated_site_removed_before_publication": {
+          "const": true
+        },
+        "temporary_data_exists": {
+          "const": false
+        },
+        "wal_exists": {
+          "const": false
+        },
+        "workspace_removed_before_publication": {
+          "const": true
+        }
+      },
+      "required": [
+        "database_exists",
+        "temporary_data_exists",
+        "wal_exists",
+        "isolated_site_removed_before_publication",
+        "workspace_removed_before_publication"
+      ],
+      "type": "object"
+    },
+    "g040_deny_settings": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_community_extensions": {
+          "const": "false"
+        },
+        "autoinstall_known_extensions": {
+          "const": "false"
+        },
+        "autoload_known_extensions": {
+          "const": "false"
+        },
+        "enable_external_access": {
+          "const": "false"
+        },
+        "lock_configuration": {
+          "const": "true"
+        }
+      },
+      "required": [
+        "allow_community_extensions",
+        "autoinstall_known_extensions",
+        "autoload_known_extensions",
+        "enable_external_access",
+        "lock_configuration"
+      ],
+      "type": "object"
+    },
+    "g040_python": {
+      "additionalProperties": false,
+      "properties": {
+        "flags": {
+          "const": [
+            "-I",
+            "-S",
+            "-B"
+          ]
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "size": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "version": {
+          "maxLength": 32,
+          "minLength": 1,
+          "pattern": "^[0-9]+(?:\\.[0-9]+){2,3}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "version",
+        "flags"
+      ],
+      "type": "object"
+    },
+    "g040_resources": {
+      "additionalProperties": false,
+      "properties": {
+        "max_entry_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_file_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_memory_mb": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_open_files": {
+          "const": 128
+        },
+        "max_output_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_seconds": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_uncompressed_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_wheel_entries": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "max_workspace_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "observed_process_output_bytes": {
+          "$ref": "#/$defs/nonnegative_integer"
+        },
+        "observed_workspace_bytes_before_cleanup": {
+          "$ref": "#/$defs/nonnegative_integer"
+        }
+      },
+      "required": [
+        "max_seconds",
+        "max_memory_mb",
+        "max_output_bytes",
+        "max_file_bytes",
+        "max_workspace_bytes",
+        "max_wheel_entries",
+        "max_entry_bytes",
+        "max_uncompressed_bytes",
+        "max_open_files",
+        "observed_process_output_bytes",
+        "observed_workspace_bytes_before_cleanup"
+      ],
+      "type": "object"
+    },
+    "g040_reviewed_inputs": {
+      "additionalProperties": false,
+      "properties": {
+        "backup_policy": {
+          "$ref": "#/$defs/g040_artifact"
+        },
+        "requirements_lock": {
+          "$ref": "#/$defs/g040_artifact"
+        },
+        "runtime_policy": {
+          "$ref": "#/$defs/g040_artifact"
+        },
+        "storage_adr": {
+          "$ref": "#/$defs/g040_artifact"
+        }
+      },
+      "required": [
+        "requirements_lock",
+        "runtime_policy",
+        "backup_policy",
+        "storage_adr"
+      ],
+      "type": "object"
+    },
+    "g040_second_writer": {
+      "additionalProperties": false,
+      "properties": {
+        "connect_attempted": {
+          "const": true
+        },
+        "connect_succeeded": {
+          "type": "boolean"
+        },
+        "exception_module": {
+          "const": "_duckdb"
+        },
+        "exception_type": {
+          "const": "IOException"
+        },
+        "import_succeeded": {
+          "const": true
+        },
+        "lock_marker": {
+          "enum": [
+            "could not set lock",
+            "conflicting lock",
+            "database is locked",
+            "lock on file",
+            "cannot acquire lock",
+            "failed to acquire lock"
+          ]
+        },
+        "message_bytes": {
+          "maximum": 4096,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "message_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "message_truncated": {
+          "type": "boolean"
+        },
+        "rejected": {
+          "const": true
+        },
+        "rejection_stage": {
+          "enum": [
+            "connect",
+            "write"
+          ]
+        },
+        "schema_version": {
+          "const": "world-human-aid-g040-second-writer/v1"
+        },
+        "write_attempted": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "import_succeeded",
+        "connect_attempted",
+        "connect_succeeded",
+        "write_attempted",
+        "rejected",
+        "rejection_stage",
+        "exception_module",
+        "exception_type",
+        "lock_marker",
+        "message_sha256",
+        "message_bytes",
+        "message_truncated"
+      ],
+      "type": "object"
+    },
+    "g040_validation": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_count": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "file_count": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "metadata_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "metadata_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "record_count": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "uncompressed_bytes": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "wheel_tag": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry_count",
+        "file_count",
+        "uncompressed_bytes",
+        "record_count",
+        "metadata_name",
+        "metadata_version",
+        "wheel_tag"
+      ],
+      "type": "object"
+    },
+    "g040_wheel": {
+      "additionalProperties": false,
+      "properties": {
+        "abi_tag": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "duckdb_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "filename": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "platform_tag": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "python_tag": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "size": {
+          "$ref": "#/$defs/positive_integer"
+        },
+        "validation": {
+          "$ref": "#/$defs/g040_validation"
+        }
+      },
+      "required": [
+        "path",
+        "filename",
+        "sha256",
+        "size",
+        "duckdb_version",
+        "python_tag",
+        "abi_tag",
+        "platform_tag",
+        "validation"
+      ],
+      "type": "object"
+    },
+    "nonnegative_integer": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "positive_integer": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "timestamp": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+      "type": "string"
+    }
+  }
+}
