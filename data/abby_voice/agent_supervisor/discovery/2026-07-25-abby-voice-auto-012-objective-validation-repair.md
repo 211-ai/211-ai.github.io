@@ -29,10 +29,10 @@ execute jobs and performs no network or remote writes.
 | Required evidence | Defining evidence | Focused proof |
 | --- | --- | --- |
 | deterministic audio worksets | `VoiceAudioWorkset` selects only missing, corrupt, stale-policy, and explicit-revalidation subjects and commits the pinned source set, inventory, policy, exact subject, spoken-text hash, audio descriptor, reason, operation, and dependencies to full-hash identities and canonical bytes. | `test_deterministic_tts_asr_and_validation_work_manifests_cover_selection_matrix` reverses subject/audio order and asserts byte-identical worksets, exact selection, reasons, and operations. `test_manager_rebuild_is_byte_identical_and_input_order_independent` proves full-manager rerun stability. |
-| deterministic TTS ASR and validation work manifests | `AudioWorkManifest` and `VoiceAudioWorkset` expose separately identified `tts_manifest`, `asr_manifest`, and `validation_manifest` values. Each manifest sorts and deduplicates deterministic work IDs; ASR and validation dependencies bind generated or existing audio without embedding audio bytes. | `test_deterministic_tts_asr_and_validation_work_manifests_cover_selection_matrix` asserts exact per-kind membership, deterministic identities, dependency-safe canonical bytes, and explicit `audio_validation` serialization. |
-| fuzzy-review quarantine | `reconcile_legacy_audio_candidates` auto-links only exact canonical subject and normalized spoken-text identity after full SHA-256, byte length, pinned media/magic, and injected decode validation. Fuzzy text, unknown subjects, plural paths, and claimed/inventory hash disagreement receive stable review-only dispositions and never create canonical audio. | `test_fuzzy_and_ambiguous_legacy_candidates_are_review_only_quarantine` covers fuzzy text, plural paths, and subject mismatch. `test_integrity_failures_never_auto_link` covers claimed hash, downloaded hash, media bytes, and decode failures. |
-| complete inventory-to-disposition reconciliation | `LegacyAudioReconciliation` enforces unique stable source references. `AbbyVoiceDatasetManagerResult` merges accepted/quarantined normalized rows with every candidate and bucket object into a sorted, unique disposition ledger. | `test_manager_composes_strict_four_config_bundle_and_artifact_evidence` asserts exactly one disposition for the source row, candidate, audio object, and non-audio inventory object. |
-| canonical four-config composition and evaluation-support decision | `AbbyVoiceDatasetManager` calls `AbbyVoiceDatasetNormalizer.normalize_sources`, `validate_bundle`, and `SlottedResponseIndex.from_rows`, then describes every canonical payload and plan with `ArtifactManifest`. Evaluation remains a checksummed `support_pending_g018` artifact, not a fifth dataset config. | `test_manager_composes_strict_four_config_bundle_and_artifact_evidence` asserts strict reciprocal validation, GraphRAG bundle identity, the exact response/template/audio/provenance config set, and the pending-G018 evaluation decision. |
+| deterministic TTS ASR and validation work manifests | `AudioWorkManifest` and `VoiceAudioWorkset` expose separately identified `tts_manifest`, `asr_manifest`, and `validation_manifest` values. Each manifest sorts deterministic work IDs, rejects duplicate subjects/audio identities and overlapping policy classes, validates its closed same-subject dependency graph, and binds the exact source/policy envelope without embedding audio bytes, credentials, local paths, or data URIs. | Focused workset assertions cover the selection matrix, stale spoken-text detection, policy conflicts, descriptor safety, dependency-safe canonical bytes, and explicit `audio_validation` serialization. |
+| fuzzy-review quarantine | `reconcile_legacy_audio_candidates` auto-links only exact canonical subject, normalized spoken-text identity, and locale after full SHA-256, byte length, pinned media/magic, and injected decode validation. Fuzzy/empty text, unknown subjects, plural or multiply claimed paths, locale mismatch, and claimed/inventory hash disagreement receive stable review-only dispositions and never create canonical audio. | Focused legacy assertions cover fuzzy/empty text, plural and multiply claimed paths, subject/locale mismatch, claimed hash, downloaded hash, media bytes, missing decoder, and decode failures. |
+| complete inventory-to-disposition reconciliation | `NormalizedInputDisposition` is the normalizer-owned authoritative per-input ledger. `LegacyAudioReconciliation` enforces unique stable source references, audio IDs, and link provenance. `AbbyVoiceDatasetManagerResult` merges every normalized input, candidate, and bucket object without last-write-wins behavior. | Focused assertions cover canonical provenance inputs whose upstream URI differs from their pinned source identity, duplicate pinned sources, multiply claimed inventory paths, and exact one-to-one merged disposition counts. |
+| canonical four-config composition and evaluation-support decision | `AbbyVoiceDatasetManager` calls `AbbyVoiceDatasetNormalizer.normalize_sources`, `validate_bundle`, `validate_publishable`, and `SlottedResponseIndex.from_rows`, then describes every canonical payload and plan with `ArtifactManifest`. Exact legacy audio receives canonical provenance. Evaluation remains validated, checksummed `support_pending_g018` JSONL, not a fifth dataset config. | Focused assertions cover strict reciprocal and publication validation, linked-audio provenance, GraphRAG bundle identity, the exact response/template/audio/provenance config set, and the pending-G018 evaluation decision. |
 
 ## Acceptance assertions
 
@@ -42,12 +42,15 @@ execute jobs and performs no network or remote writes.
 3. Exact legacy linking requires canonical subject identity, exact normalized
    spoken text, full inventory and downloaded-byte SHA-256, byte length,
    declared/detected audio media, and successful injected decode validation.
+   A missing decode validator fails closed with a stable quarantine reason.
 4. Basename/path plurality, truncated or disagreeing hashes, fuzzy text, and
    inferred or mismatched subjects never auto-promote. They remain in the
    stable review/quarantine disposition evidence.
 5. The workset is deterministic planning only. Its TTS, ASR, and
    audio-validation manifests contain descriptors, hashes, and dependencies,
    never raw/base64 audio, credentials, timestamps, or arbitrary local paths.
+   Existing audio is current only when subject, spoken-text hash, and locale
+   agree; manifest dependencies must form a closed same-subject graph.
 6. Reversing pinned sources, candidates, and inventory objects preserves
    workset bytes, dispositions, GraphRAG CIDs, output payloads, and the
    deterministic `ArtifactManifest`.
@@ -63,9 +66,9 @@ Command:
 python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
 ```
 
-Result: PASS — 93 passed, 1 skipped in 3.66 seconds on 2026-07-25.
+Result: PASS — 115 passed, 1 skipped on 2026-07-25.
 
-The skip is the pre-existing optional PyArrow schema test; all 14 focused
+The skip is the pre-existing optional PyArrow schema test; all 36 focused
 dataset-manager tests passed.
 
 ## Supervisor and child-goal alignment
