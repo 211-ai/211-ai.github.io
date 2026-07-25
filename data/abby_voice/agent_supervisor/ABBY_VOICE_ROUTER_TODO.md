@@ -442,7 +442,7 @@
 
 ## ABBY-VOICE-AUTO-011 Implement Abby voice objective: Generalize immutable Hugging Face source snapshots
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
