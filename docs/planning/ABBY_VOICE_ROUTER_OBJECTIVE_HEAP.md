@@ -23,6 +23,55 @@ Autonomous workers must not delete or rewrite remote Hugging Face bucket or
 dataset content. Remote migration is plan-only until a human explicitly
 approves a reviewed manifest and dry-run receipt.
 
+## Reuse-first execution design
+
+The implementation boundary is intentionally split between the two existing
+submodules:
+
+- `ipfs_datasets_py` is the voice-data control plane. It owns immutable
+  Hugging Face inventory receipts, verified downloads and cache entries,
+  canonical Abby voice rows, normalization and quarantine, GraphRAG indexes,
+  audio-to-row reconciliation, release manifests, deterministic Parquet
+  materialization, and post-publication verification.
+- `ipfs_accelerate_py` is the audio execution plane. It owns durable DuckDB
+  tasks, worker and mesh capability discovery, provider/model/device routing,
+  resource admission, provider batching and single-flight execution, retries,
+  TTS/ASR execution through `voice_router`, and privacy-safe job receipts.
+- `ipfs_accelerate_py.agent_supervisor` implements and verifies the bounded
+  goals in this heap. It is not the high-volume audio-row queue. Dataset jobs
+  run through `ipfs_accelerate_py.p2p_tasks.TaskQueue`.
+
+The target flow is:
+
+```text
+pinned HF dataset commit + checksummed bucket inventory
+  -> verified content-addressed cache
+  -> canonical Abby normalization / quarantine / GraphRAG index
+  -> deterministic missing-or-revalidate workset
+  -> DuckDB P2P tasks
+  -> capability + resource admission
+  -> provider batch scheduler
+  -> voice_router TTS or ASR provider
+  -> immutable audio artifact descriptor + execution receipt
+  -> dataset reconciliation and audio quality gates
+  -> deterministic Parquet release candidate
+  -> human-approved append-only HF publication
+  -> download by returned commit SHA and revalidate
+```
+
+ASR and STT share one canonical scheduled operation, `voice.asr`. The job
+field `purpose` distinguishes `runtime_stt` from
+`dataset_asr_validation`; private runtime caller audio is ephemeral and can
+never enter the public Abby release. TTS, ASR, and audio validation remain
+separate composable jobs so each one is independently retryable, auditable,
+and cacheable.
+
+Remote bucket objects are raw immutable inputs. The Hugging Face dataset
+repository is a curated release surface containing schema-stable Parquet,
+manifests, GraphRAG support indexes, and immutable references to verified
+audio. Large audio bytes and base64 values must not be stored in DuckDB task
+rows, supervisor evidence, logs, or ordinary router receipts.
+
 ## ABBY-VOICE-G001 Deliver a unified grounded Abby voice pipeline
 
 - Status: complete
@@ -309,6 +358,7 @@ approves a reviewed manifest and dry-run receipt.
 - Priority: P1
 - Track: voice-integration
 - Parents: ABBY-VOICE-G008, ABBY-VOICE-G009
+- Depends on: ABBY-VOICE-G019, ABBY-VOICE-G020
 - Goal: Let the current Abby UI and service proxy use the shared contracts without removing its browser local-audio and browser-speech fallbacks.
 - Evidence: the lazy, opt-in wallet adapter delegates to `process_voice_turn` and serializes the canonical `VoiceTurnResult`; the UI normalizer consumes that receipt while preserving legacy payloads; focused tests cover provenance, stage ordering, audio decoding, text-only degradation, and legacy rejection; `AgentAudioChatSurface` retains browser SpeechRecognition, local WebGPU, and browser speech fallback branches; the rollout runbook defines canary receipts and flag-off rollback; the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
 - Outputs: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
@@ -338,17 +388,323 @@ approves a reviewed manifest and dry-run receipt.
 - Priority: P0
 - Track: voice-data
 - Parents: ABBY-VOICE-G004, ABBY-VOICE-G005
-- Goal: Run the canonical normalizer over an immutable inventory of the Abby bucket and 211 Abby TTS dataset, then materialize schema-stable responses templates audio provenance and evaluation configurations that ipfs_datasets_py and Hugging Face Dataset Viewer can load independently.
-- Evidence: normalized dataset manifest, schema-stable Parquet shards for five named configurations, deterministic ID and content-hash map, duplicate merge ledger, quarantined-row ledger with reason codes, before-and-after quality report, byte-identical rerun receipt, local Dataset Viewer compatibility receipt, ABBY-VOICE-G011 completion receipt
-- Outputs: scripts/build_abby_voice_dataset_v2.py, data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/normalized/README.md, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_build.py
-- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_build.py && python scripts/build_abby_voice_dataset_v2.py --fixture ipfs_datasets_py/tests/fixtures/voice/abby_mixed_records --output-dir /tmp/abby-voice-normalized-check --check-idempotence
+- Goal: Coordinate the reuse-first dataset and audio-job goals that turn immutable Abby source snapshots into a verified, schema-stable, GraphRAG-ready Hugging Face release.
+- Evidence: child-goal receipts for immutable inventory, canonical normalization, deterministic audio worksets, TTS/ASR execution, audio reconciliation, deterministic release construction, runtime resolution, and post-publication verification
+- Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
 - Bundle: abby-voice/dataset-materialization
 - Parallel lane: abby-voice-data
-- Embedding query: normalize materialize Abby voice bucket responses templates audio provenance evaluation Parquet quarantine deduplicate idempotent Dataset Viewer
-- AST query: build_abby_voice_dataset_v2, AbbyVoiceDatasetNormalizer, write_dataset_config, quarantine_record, normalization_receipt
-- Interfaces: ipfs_datasets_py.voice normalization API, Hugging Face datasets Arrow and Parquet, Publicus Abby source inventory
-- Submodules: ipfs_datasets_py
-- Generated artifacts: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl
-- Predicted files: scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_build.py, ipfs_datasets_py/tests/fixtures/voice/abby_mixed_records
+- Embedding query: immutable Hugging Face Abby voice normalization audio workset TTS ASR GraphRAG deterministic release
+- AST query: AbbyVoiceDatasetNormalizer, ArtifactManifest, VoiceAudioJobSpec, AbbyVoiceHFReleaseBuilder
+- Interfaces: ipfs_datasets_py.voice, ipfs_datasets_py ArtifactManifest, ipfs_accelerate_py p2p tasks, Hugging Face datasets and buckets
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks, data/abby_voice/normalized, data/abby_voice/releases
 - Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
-- Gap task: Build a reproducible local normalization run that separates row data from indexes and manifests, removes or quarantines low-value fragments, merges duplicates by stable content identity, preserves usable audio links and GraphRAG slots, and emits five independently loadable dataset configurations.
+- Gap task: Integrate and verify G012 through G021 without replacing the existing schema normalizer GraphRAG router providers TaskQueue resource scheduler or provider batch scheduler.
+- Acceptance gate:
+  1. G012 through G020 are verified complete and G021 has either a human-approved publication receipt or remains explicitly blocked at its remote-write gate.
+  2. Every discovered source row is classified as linked, synthesized, quarantined, or intentionally text-only; no unresolved row is silently omitted.
+  3. Every admitted audio link is backed by downloaded-byte SHA-256, byte length, immutable subject identity, source revision, and provenance. Basename, truncated-hash, fuzzy-text, and mutable-`main` matches never auto-promote.
+  4. Rebuilding the same pinned inputs produces byte-identical canonical rows, GraphRAG index identity, Parquet shards, and release manifest.
+  5. DuckDB tasks and receipts contain descriptors and hashes rather than raw or base64 audio, credentials, private caller transcripts, or arbitrary local paths.
+  6. The focused dataset, queue, provider, GraphRAG, safety, and release validation suites pass with an evidence receipt tied to the exact repository trees.
+- Child-goal boundary: G012-G013 own immutable source management and normalization; G014-G016 own job contracts and execution; G017 owns reconciliation and audio quality; G018 owns release construction; G019 owns runtime resolution; G020 owns end-to-end verification; G021 alone owns human-gated remote publication.
+
+## ABBY-VOICE-G012 Generalize immutable Hugging Face source snapshots
+
+- Status: active
+- Fib priority: 5002
+- Priority: P0
+- Track: voice-data
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G004, ABBY-VOICE-G005, ABBY-VOICE-G006
+- Goal: Reuse the existing SkillCenter immutable snapshot and verified-cache machinery as generic Hugging Face dataset and bucket source adapters for Abby.
+- Evidence: backward-compatible generic snapshot/cache API; pinned dataset commit receipt; bucket inventory digest with path size full SHA-256 ETag and media type; tamper and mutable-ref rejection tests; no-network cache-hit test
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Bundle: abby-voice/hf-sources
+- Parallel lane: abby-voice-data
+- Embedding query: Hugging Face immutable revision bucket inventory content addressed cache Abby voice
+- AST query: SkillCenterSnapshot, SkillCenterSnapshotCache, HuggingFaceSkillCenterFetcher, HuggingFaceSnapshot, HuggingFaceBucketStore
+- Interfaces: huggingface_hub injected client, hf bucket CLI adapter, Artifact
+- Submodules: ipfs_datasets_py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Conflict policy: extract or wrap generic behavior while keeping the SkillCenter symbols import-compatible; inventory and downloads are read-only; reject branch names such as main and master from canonical receipts
+- Gap task: Promote the existing pinned snapshot/cache pattern to a reusable API and add only the missing bucket inventory/fetch adapter.
+- Acceptance gate:
+  1. Dataset sources resolve to an immutable Hugging Face commit SHA and each bucket inventory has a deterministic digest over normalized path, size, SHA-256, ETag, and media type.
+  2. Cache promotion is atomic and locked; every hit is rehashed; a corrupt byte, stale alias, path traversal, mutable revision, or offline miss fails closed.
+  3. Network and CLI clients are injected and imports have no network or credential side effects.
+  4. Remote write, delete, move, overwrite, and release-pointer operations are absent from this goal.
+  5. Existing SkillCenter snapshot tests remain green and the Abby source tests cover dataset and bucket adapters.
+- Child-goal boundary: G012 owns source identity, inventory, fetch, and verified caching only. G013 owns Abby row interpretation and workset construction; G021 owns publication.
+
+## ABBY-VOICE-G013 Build the Abby dataset manager and deterministic audio workset
+
+- Status: active
+- Fib priority: 5003
+- Priority: P0
+- Track: voice-data
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G012
+- Goal: Compose the existing Abby schema normalizer GraphRAG and ArtifactManifest APIs into one dataset manager that reconciles legacy candidates and emits deterministic missing-or-revalidate audio work.
+- Evidence: exact legacy adapter; complete inventory-to-disposition ledger; canonical four-config bundle; explicit evaluation-support artifact decision; deterministic TTS ASR and validation work manifests; fuzzy-review quarantine
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Bundle: abby-voice/dataset-manager
+- Parallel lane: abby-voice-data
+- Embedding query: Abby voice dataset manager normalize reconcile missing audio exact identity workset
+- AST query: AbbyVoiceDatasetManager, AbbyVoiceDatasetNormalizer, SlottedResponseIndex, ArtifactManifest, VoiceAudioWorkset
+- Interfaces: Abby voice v2 schema, HuggingFaceSnapshot, ArtifactManifest
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/normalized/disposition.jsonl, data/abby_voice/normalized/audio-workset.jsonl
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Conflict policy: call the existing normalizer and GraphRAG index rather than duplicating their policy; plural legacy audio paths are candidates, not proof; fuzzy matches are review-only
+- Gap task: Replace script-level source handling with a reusable manager that converts pinned sources into canonical rows, quarantine records, ArtifactManifests, and deterministic work specifications.
+- Acceptance gate:
+  1. Every inventory object and input row receives exactly one disposition with a stable reason code and source identity.
+  2. An audio candidate auto-links only when subject and exact normalized spoken-text identity agree and downloaded bytes pass full SHA-256, size, media, and decode checks.
+  3. Canonical response, template, audio, and provenance rows pass existing strict bundle and publication validation; GraphRAG serialization remains content-addressed and input-order independent.
+  4. The workset contains only missing, corrupt, stale-policy, or explicitly requested revalidation work and is byte-identical for the same pinned source manifest and policy.
+  5. Evaluation remains a checksummed support artifact until G018 implements the promised `abby_voice_evaluation_v2` flat schema.
+- Child-goal boundary: G013 owns data-plane planning but does not submit, execute, upload, or delete anything. G014 owns the cross-package job contract.
+
+## ABBY-VOICE-G014 Define audio job contracts and the datasets-to-accelerate bridge
+
+- Status: active
+- Fib priority: 8002
+- Priority: P0
+- Track: voice-scheduling
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G002, ABBY-VOICE-G013
+- Goal: Define versioned TTS ASR and audio-validation job contracts and submit them through the existing ipfs_datasets_py accelerate integration into the canonical DuckDB P2P TaskQueue.
+- Evidence: dependency-light request and result schemas; full-hash deterministic task IDs; submit-once behavior; lineage propagation; no-audio-in-DuckDB assertions; datasets bridge integration tests
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, ipfs_accelerate_py/test/test_voice_job_contracts.py, ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_contracts.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Bundle: abby-voice/audio-job-contracts
+- Parallel lane: abby-voice-scheduling
+- Embedding query: deterministic TTS ASR STT audio validation task contract DuckDB lineage artifact descriptor
+- AST query: VoiceTTSJob, VoiceASRJob, VoiceAudioValidationJob, VoiceJobResult, submit_voice_workset
+- Interfaces: ipfs_accelerate_py.p2p_tasks.TaskQueue, ipfs_datasets_py.ml.accelerate_integration, Artifact
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, ipfs_accelerate_py/test/test_voice_job_contracts.py, ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Conflict policy: the contract carries immutable URI CID SHA-256 and size descriptors, never audio bytes; use the existing canonical P2P client rather than adding a second queue
+- Gap task: Add a small shared JSON contract and a datasets-side adapter for submit status wait cancel and receipt ingestion.
+- Acceptance gate:
+  1. Canonical task types are `voice.tts`, `voice.asr`, and `voice.audio-validate`; `speech-to-text`, `stt`, and `automatic-speech-recognition` normalize to `voice.asr`.
+  2. `purpose` separates `runtime_stt` and `dataset_asr_validation`; the runtime form rejects publication lineage and retention by default.
+  3. TTS identity covers exact normalized spoken-text bytes, provider/model/voice/version, locale, reference-audio hash, codec, sample rate, channels, and all generation settings. ASR and validation identities cover source audio full SHA-256 and every output-affecting policy.
+  4. Replaying one request returns the same task or terminal receipt and causes at most one physical artifact/provider execution.
+  5. Results contain immutable artifact descriptors, integer quality metrics, privacy-safe provider receipts, lineage, and typed retryable or terminal errors; no task row contains raw/base64 audio, secrets, private transcript text, or arbitrary paths.
+- Child-goal boundary: G014 owns contracts, deterministic identity, and bridge behavior only. G015 executes the jobs; G017 interprets their quality receipts.
+
+## ABBY-VOICE-G015 Add durable voice workers and repair backend routing
+
+- Status: active
+- Fib priority: 8003
+- Priority: P0
+- Track: voice-scheduling
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G003, ABBY-VOICE-G014
+- Goal: Add advertised TTS ASR and audio-validation handlers to the existing P2P worker and execute model work through the established voice_router providers.
+- Evidence: shared task alias registry; worker and service capability parity; voice handlers; backend-manager API regression fix; independent TTS/STT device controls; allowed-artifact resolver; offline worker and mesh tests
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Bundle: abby-voice/audio-workers
+- Parallel lane: abby-voice-scheduling
+- Embedding query: P2P worker voice TTS ASR STT capability voice_router backend manager artifact
+- AST query: execute_voice_tts_job, execute_voice_asr_job, execute_voice_audio_validation_job, execute_task, text_to_speech, speech_to_text
+- Interfaces: P2P worker handlers, voice_router, voice_providers.abby, InferenceBackendManager
+- Submodules: ipfs_accelerate_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Conflict policy: handlers call `voice_router.text_to_speech` and `speech_to_text` or injected equivalents; do not reimplement Abby HTTP retry/circuit-breaker behavior; preserve legacy router APIs
+- Gap task: Register and advertise real audio handlers, repair the drifted backend-manager adapter to the current async API, and fix STT device configuration before distributed routing.
+- Acceptance gate:
+  1. Worker, service, orchestrator, and capability registry use one task-name normalization function and advertise the same supported audio operations.
+  2. Claims reject workers that lack the requested provider, model, voice, codec, locale, device, memory, or artifact-access capability.
+  3. TTS and ASR handlers call existing router/provider APIs, verify input descriptors before decoding, persist output outside DuckDB, rehash the stored bytes, and return only a descriptor and receipt.
+  4. The backend-manager adapter uses current `BackendInfo` and async `execute_task` contracts; focused tests fail on the previously drifted `protocol`, mapping, and `execute_inference` calls.
+  5. STT reads its own device setting rather than the TTS device setting.
+  6. URI scheme/root allowlists, checksum/size/duration limits, decompression protection, and SSRF/path-traversal rejection are tested offline.
+- Child-goal boundary: G015 owns executable handlers and routing correctness. G016 owns queue recovery, resource admission, and provider batching.
+
+## ABBY-VOICE-G016 Add idempotent recovery resource admission and provider batching
+
+- Status: active
+- Fib priority: 8004
+- Priority: P0
+- Track: voice-scheduling
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G015
+- Goal: Make distributed voice jobs restart-safe and resource-aware by extending the existing TaskQueue ResourceScheduler and ProviderBatchScheduler rather than creating a new scheduler.
+- Evidence: submit-once queue semantics; attempt and backoff state; claim lease and heartbeat recovery; priority-aware claims; audio capability constraints; provider batch compatibility tests; resource and provider saturation tests
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py
+- Bundle: abby-voice/audio-scheduling
+- Parallel lane: abby-voice-scheduling
+- Embedding query: DuckDB voice task lease heartbeat retry idempotent GPU resource provider batch singleflight
+- AST query: TaskQueue, TaskOrchestrator, PeerCapabilityRegistry, ProviderBatchScheduler, ResourceScheduler
+- Interfaces: DuckDB TaskQueue, capability registry, ResourceScheduler, ProviderBatchScheduler
+- Submodules: ipfs_accelerate_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
+- Conflict policy: preserve existing text-task behavior and DuckDB compatibility; provider-local retry remains inside the existing Abby adapter while queue retry handles worker loss and exhausted retryable job failures
+- Gap task: Add the minimum generic reliability fields and semantics missing from TaskQueue, then configure existing resource and provider schedulers for audio.
+- Acceptance gate:
+  1. Atomic submit-once, `attempt`, `max_attempts`, `next_attempt_at`, `lease_until`, and heartbeat ownership make a worker crash recoverable without duplicate provider execution.
+  2. Claim order honors priority and eligibility while retaining atomic microbatch claims and safe DuckDB single-writer behavior.
+  3. Provider batch keys include provider, route, model, operation, policy digest, voice, locale, reference hash, codec, sample rate, channels, tenant policy, and generation digest; incompatible work never shares a batch.
+  4. IndexTTS and Whisper remain batch size one until their adapters prove real batching. Cancellation, timeout, or fallback of one member does not cancel or corrupt siblings.
+  5. Resource admission limits CPU, RAM, disk, GPU memory, provider concurrency/rate, and retry-after state; saturation backpressures rather than overclaims.
+  6. Single-flight identical work produces one physical provider call and a content-addressed batch receipt whose integrity can be verified.
+- Child-goal boundary: G016 owns generic queue reliability and resource/provider admission. G017 owns content and speech-quality decisions.
+
+## ABBY-VOICE-G017 Reconcile generated audio and enforce round-trip quality
+
+- Status: active
+- Fib priority: 8005
+- Priority: P0
+- Track: voice-quality
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G013, ABBY-VOICE-G016
+- Goal: Ingest completed audio-job receipts into the canonical dataset and promote only artifacts that pass integrity decode acoustic ASR and slot-fidelity gates.
+- Evidence: receipt-to-audio-row reconciler; decode and acoustic validator; TTS-to-ASR round-trip evaluation; exact critical-slot checks; terminal quarantine reason taxonomy; complete row disposition report
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py tests/voice/test_abby_voice_safety.py
+- Bundle: abby-voice/audio-reconciliation
+- Parallel lane: abby-voice-quality
+- Embedding query: Abby audio reconcile TTS ASR WER CER slot fidelity silence clipping quarantine
+- AST query: reconcile_voice_job_result, AudioQualityPolicy, validate_tts_asr_roundtrip, AbbyVoiceAudio
+- Interfaces: VoiceJobResult, AbbyVoiceAudio, ArtifactManifest, GraphRAG response plan
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts: data/abby_voice/normalized/audio-reconciliation.jsonl, data/abby_voice/normalized/audio-quality-report.json
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py
+- Conflict policy: quality policy is deterministic and versioned; no fuzzy acceptance; failed artifacts remain immutable evidence and are quarantined rather than deleted
+- Gap task: Turn immutable job results into reciprocal canonical row/audio links and require both byte integrity and speech-content fidelity.
+- Acceptance gate:
+  1. Every result is bound to the exact workset subject, task identity, source release, spoken-text hash, provider policy, and stored artifact hash before it can create an audio row.
+  2. The actual decoded format agrees with declared MIME/codec, size, duration, sample rate, and channels and passes versioned silence and clipping thresholds.
+  3. Dataset validation ASR meets the versioned WER/CER threshold and has 100 percent exact normalized fidelity for critical phone, address, ZIP, hours, eligibility, amount, and emergency slots.
+  4. Missing, corrupt, hash-mismatched, stale-policy, low-quality, nonconsensual, or slot-incorrect artifacts receive stable terminal or retryable reason codes and never silently fall back to a nearby row.
+  5. All response/template/audio/provenance references remain reciprocal and every source subject ends linked, synthesized, quarantined, or intentionally text-only.
+- Child-goal boundary: G017 owns artifact admission and quality. G018 owns release packaging, not speech generation.
+
+## ABBY-VOICE-G018 Build and validate deterministic Hugging Face releases
+
+- Status: active
+- Fib priority: 13001
+- Priority: P0
+- Track: voice-data
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G007, ABBY-VOICE-G017
+- Goal: Reuse the generic ArtifactManifest and SkillCenter Parquet release patterns to create a deterministic Abby release that Hugging Face Dataset Viewer can load by immutable revision.
+- Evidence: extracted generic release helpers; five flat Abby configs including evaluation; sharded ZSTD Parquet descriptors; GraphRAG support-index artifact; byte-identical rebuild; exhaustive local release validator
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py
+- Bundle: abby-voice/hf-release
+- Parallel lane: abby-voice-release
+- Embedding query: deterministic Abby Hugging Face Parquet release Dataset Viewer ArtifactManifest GraphRAG index
+- AST query: ArtifactManifest, AbbyVoiceHFReleaseBuilder, validate_abby_voice_hf_release, AbbyVoiceEvaluation
+- Interfaces: ArtifactManifest, PyArrow voice schemas, SlottedResponseIndex serialization, Hugging Face dataset YAML
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/releases/release-manifest.json, data/abby_voice/releases/README.md
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
+- Conflict policy: extract generic atomic Parquet descriptor helpers without copying the SkillCenter builder; manifests and indexes are support artifacts, never mixed into row configs
+- Gap task: Resolve the documented four-versus-five config mismatch and build a voice-specific release wrapper over shared hashing sharding and validation helpers.
+- Acceptance gate:
+  1. `abby_voice_response_v2`, `abby_voice_template_v2`, `abby_voice_audio_v2`, `abby_voice_provenance_v2`, and a newly defined flat `abby_voice_evaluation_v2` each have isolated schema-stable Parquet paths and split mappings.
+  2. Every file descriptor carries relative path, byte length, SHA-256, content CID, media/schema type, producer/config digest, parents, license/consent, and review/trust metadata where applicable.
+  3. Release validation verifies every descriptor, Parquet magic/schema/readability/row count/shard coverage, no duplicate IDs, exact bundle references, and GraphRAG graph/index identities.
+  4. Two builds from the same pinned source and policy are byte-identical and contain no timestamps, local paths, mutable `/resolve/main/` URLs, truncated hashes, or unordered runtime observations in identity-bearing files.
+  5. Runtime observations, job timing, and provider utilization remain non-identity evidence artifacts.
+- Child-goal boundary: G018 builds and validates locally. Only G021 can publish or promote a release.
+
+## ABBY-VOICE-G019 Load pinned releases and resolve precomputed audio safely
+
+- Status: active
+- Fib priority: 13002
+- Priority: P0
+- Track: voice-integration
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G008, ABBY-VOICE-G018
+- Goal: Load an immutable Abby release into the GraphRAG template provider and resolve precomputed audio only when the rendered spoken text and complete synthesis identity match.
+- Evidence: revision-pinned streaming/release loader; content-addressed GraphRAG restore; exact audio resolver; stale-slot regression test; text-only or live-TTS fallback receipt
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Bundle: abby-voice/runtime-release
+- Parallel lane: abby-voice-integration
+- Embedding query: pinned Abby release GraphRAG runtime precomputed audio exact rendered text slot hash
+- AST query: AbbyVoiceReleaseLoader, PrecomputedVoiceAudioResolver, process_voice_turn
+- Interfaces: HuggingFaceStreamingLoader, SlottedResponseIndex, VoiceTemplateProvider, voice_router
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Conflict policy: add revision support to the existing streaming loader; resolver failure falls through to live TTS or text-only output and never serves a near or stale match
+- Gap task: Connect curated rows to runtime retrieval and remove identifier-only precomputed-audio matching.
+- Acceptance gate:
+  1. The loader requires a release manifest plus immutable dataset commit SHA, downloads only the manifest, relevant indexes, and selected Parquet shards, and validates descriptors before use.
+  2. A precomputed artifact matches only the exact rendered spoken-text SHA-256 and the full provider/model/voice/version/locale/reference/codec/rate/channel/generation identity.
+  3. Changing a grounded phone, address, ZIP, hours, eligibility, amount, or emergency slot invalidates stale audio even if the template or slotted-response identifier is unchanged.
+  4. Missing or invalid audio records a deterministic resolver reason and falls through to live TTS or text-only behavior without weakening GraphRAG provenance.
+  5. Runtime caller audio and transcripts are neither cached into the public release nor written into ordinary receipts.
+- Child-goal boundary: G019 owns pinned runtime loading and exact audio reuse. G010 owns wallet rollout; G020 owns deployed-like end-to-end gates.
+
+## ABBY-VOICE-G020 Prove the distributed dataset-to-voice pipeline end to end
+
+- Status: active
+- Fib priority: 21000
+- Priority: P0
+- Track: voice-evaluation
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G009, ABBY-VOICE-G016, ABBY-VOICE-G018, ABBY-VOICE-G019
+- Goal: Demonstrate a restart-safe fixture and approved canary flow from pinned source inventory through TTS validation ASR release loading GraphRAG slotting and final voice output.
+- Evidence: offline deterministic fixture; DuckDB TTS-to-validate-to-ASR workflow receipt; worker-crash recovery test; capability/resource backpressure test; real-provider canary protocol; privacy and lineage audit
+- Outputs: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Validation: python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check
+- Bundle: abby-voice/end-to-end
+- Parallel lane: abby-voice-evaluation
+- Embedding query: Abby distributed TTS ASR STT DuckDB GraphRAG release end to end restart recovery
+- AST query: TaskQueue, VoiceJobResult, AbbyVoiceHFReleaseBuilder, AbbyVoiceReleaseLoader, process_voice_turn
+- Interfaces: all Abby voice dataset scheduler router and runtime boundaries
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts: docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Predicted files: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Conflict policy: offline gates use fakes and tiny public fixtures; real provider and remote read canaries require explicit scope credentials cost limit and retention approval
+- Gap task: Verify the complete control-plane and execution-plane contract including failure recovery and exact factual slot audio.
+- Acceptance gate:
+  1. The fixture runs pinned inventory to normalization to deterministic tasks to TTS to audio validation to ASR to reconciliation to release to GraphRAG voice turn with complete lineage and no network.
+  2. Replaying after process termination recovers expired leases, reuses completed identities, and produces no duplicate provider call or conflicting artifact.
+  3. Capability mismatch, GPU/RAM/disk/provider saturation, timeout, cancellation, 429, retryable 5xx, circuit-open, corrupt input, quality rejection, and text-only fallback are each asserted.
+  4. Critical factual slots are exact in rendered text, admitted audio ASR, and the final runtime response; citations remain machine provenance and are absent from spoken output.
+  5. Logs, DuckDB state, receipts, and artifacts pass a secret/private-audio/private-transcript scan.
+  6. Any real-provider canary is separately human-approved, bounded by item count and cost, uses non-sensitive rows, and writes only to a staging prefix.
+- Child-goal boundary: G020 owns verification and canary evidence. G021 owns the remote release transaction and promotion decision.
+
+## ABBY-VOICE-G021 Publish and promote an immutable Hugging Face release
+
+- Status: active
+- Fib priority: 21001
+- Priority: P1
+- Track: voice-release
+- Parents: ABBY-VOICE-G011
+- Depends on: ABBY-VOICE-G006, ABBY-VOICE-G018, ABBY-VOICE-G020
+- Goal: Perform an explicitly approved append-only release transaction, capture the resulting Hugging Face commit SHA, redownload by that SHA, revalidate, and canary the consumer pointer with rollback.
+- Evidence: signed reviewed release manifest; dry-run diff and cost receipt; approval record; append-only commit receipt; pinned redownload validation; canary and rollback receipt
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py, scripts/publish_abby_voice_release.py, docs/runbooks/ABBY_VOICE_HF_RELEASE.md, data/abby_voice/releases/publication-receipt.json
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run
+- Bundle: abby-voice/hf-publication
+- Parallel lane: abby-voice-release
+- Embedding query: Hugging Face append only publish commit SHA verify canary rollback Abby voice
+- AST query: HuggingFaceReleasePublisher, publish_abby_voice_release, validate_abby_voice_hf_release
+- Interfaces: HfApi create_commit, Abby release manifest, runtime release pointer
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/releases/publication-receipt.json
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py, scripts/publish_abby_voice_release.py, docs/runbooks/ABBY_VOICE_HF_RELEASE.md, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py
+- Conflict policy: autonomous work stops after a dry run; no delete move overwrite mutable-main URL or pointer promotion occurs without explicit human approval of the exact manifest commit operations credentials scope and cost bound
+- Gap task: Replace legacy script upload behavior with a digest-aware append-only publisher and a fail-closed promotion workflow.
+- Acceptance gate:
+  1. Before approval, the publisher can only produce a deterministic dry-run operation list, byte totals, estimated cost, target immutable release prefix, and hashes; it cannot contact a write endpoint.
+  2. The approved transaction uploads by full relative path and digest under a new release ID, never skips by basename, never deletes or rewrites a legacy object, and records the returned commit SHA.
+  3. The release is downloaded by returned commit SHA into an empty verified cache and every manifest, descriptor, Parquet shard, GraphRAG index, and audio reference revalidates.
+  4. Consumer promotion is a separate reviewed step with a bounded canary. Rollback restores the previous pinned manifest/commit and never deletes the failed release.
+  5. Tokens are never persisted in task rows, manifests, logs, receipts, or source control.
+- Child-goal boundary: G021 is the sole owner of remote writes and consumer-pointer changes; failure to obtain approval is a valid blocked state, not permission for an autonomous workaround.
