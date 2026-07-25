@@ -503,7 +503,7 @@
 
 ## ABBY-VOICE-AUTO-012 Implement Abby voice objective: Build the Abby dataset manager and deterministic audio workset
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
