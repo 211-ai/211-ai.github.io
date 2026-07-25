@@ -1113,7 +1113,7 @@
 
 ## ABBY-VOICE-AUTO-022 Resolve validation retry-budget failure for ABBY-VOICE-AUTO-012
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
