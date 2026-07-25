@@ -1,0 +1,66 @@
+# Objective Bundle: abby-voice/runtime-release
+
+Source todo: data/abby_voice/agent_supervisor/ABBY_VOICE_ROUTER_TODO.md
+Purpose: bundle objective-generated tasks so parallel daemons can work one lane at a time.
+Conflict policy: keep edits inside this bundle when possible; use the LLM merge resolver for semantic conflicts.
+
+## ABBY-VOICE-AUTO-019 Implement Abby voice objective: Load pinned releases and resolve precomputed audio safely
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-integration
+- Depends on: ABBY-VOICE-AUTO-007, ABBY-VOICE-AUTO-018
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Bundle: abby-voice/runtime-release
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-runtime-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 9
+- Parallel lane: abby-voice-integration
+- Conflict policy: add revision support to the existing streaming loader; resolver failure falls through to live TTS or text-only output and never serves a near or stale match
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Changed paths:
+- AST symbols: AbbyVoiceReleaseLoader, PrecomputedVoiceAudioResolver, process_voice_turn
+- Interfaces: HuggingFaceStreamingLoader, SlottedResponseIndex, VoiceTemplateProvider, voice_router
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G019
+- Canonical task key: task/v1/e81312c5e98617f4e7fc5cc2899cae0b802554fd4c9d5eb3ebb195b996dd734c
+- Canonical task CID: baguqeera5ajrfrpjqyl7jz74ltbithfoboackvh5jsov5m7lwgk3tfw5onga
+- Semantic identity: objective-evidence-obligation/v1/f2add973b1b0c4401abaa49edf3b683c6249c01b29c79104857b2cfe45fecd71
+- Acceptance subset: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Preconditions: objective goal ABBY-VOICE-G019 is schedulable
+- Effects: satisfy evidence requirement: runtime resolution, satisfy evidence requirement: revision-pinned streaming/release loader, satisfy evidence requirement: exact audio resolver, satisfy evidence requirement: stale-slot regression test
+- Evidence subset: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G019
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f2add973b1b0c4401abaa49edf3b683c6249c01b29c79104857b2cfe45fecd71
+- Missing evidence: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Embedding query: pinned Abby release GraphRAG runtime precomputed audio exact rendered text slot hash
+- AST query: AbbyVoiceReleaseLoader, PrecomputedVoiceAudioResolver, process_voice_turn
+- Surplus group: objective/ABBY-VOICE-G019
+- Merge key: 148999199b15c4be
+- Merge family: objective/ABBY-VOICE-G019
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 46142b506dd8941e
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G019. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-019-objective-gap-0d53313c748d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.

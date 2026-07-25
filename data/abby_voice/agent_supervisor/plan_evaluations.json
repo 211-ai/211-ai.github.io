@@ -1,0 +1,1186 @@
+{
+  "evaluation_count": 21,
+  "evaluations": [
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G001",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-001:focused-1",
+          "dependencies": [],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "tests/voice/test_abby_voice_pipeline.py"
+          ],
+          "predicted_symbols": [
+            "VoiceTurnRequest",
+            "VoiceTurnResult",
+            "process_voice_turn",
+            "GraphRAGVoiceTemplateProvider"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Deliver a unified grounded Abby voice pipeline",
+          "validation_commands": [
+            "python -m pytest -q tests/voice/test_abby_voice_pipeline.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/voice/test_abby_voice_pipeline.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-001",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G002",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-002:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "ipfs_accelerate_py/test/test_voice_router_contracts.py"
+          ],
+          "predicted_symbols": [
+            "VoiceProvider",
+            "text_to_speech",
+            "speech_to_text",
+            "VoiceTurnRequest",
+            "VoiceTurnResult"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define stable voice-turn and provider contracts",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-002",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G004",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-003:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/schema.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py",
+            "docs/data/ABBY_VOICE_DATASET_SCHEMA.md"
+          ],
+          "predicted_symbols": [
+            "AbbyVoiceResponse",
+            "AbbyVoiceTemplate",
+            "AbbyVoiceAudio",
+            "AbbyVoiceProvenance"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define the canonical Abby voice dataset schema",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-003",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G003",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-004:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G002"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "ipfs_accelerate_py/test/test_abby_voice_providers.py"
+          ],
+          "predicted_symbols": [
+            "_run_indextts_gradio_tts",
+            "_run_hf_whisper_stt",
+            "get_voice_provider",
+            "ProviderInfo"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Port Abby provider fallback behavior into voice_router",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-004",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G005",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-005:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G004"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py",
+            "scripts/build_abby_voice_dataset_v2.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py"
+          ],
+          "predicted_symbols": [
+            "normalize_indextts_spoken_text",
+            "deduplicate_voice_response_chunks",
+            "build_slotted_response_dag"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build deterministic dataset normalization and quality gates",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-005",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G007",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-006:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G004",
+            "ABBY-VOICE-G005"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py",
+            "docs/data/ABBY_VOICE_GRAPHRAG.md"
+          ],
+          "predicted_symbols": [
+            "IPLDKnowledgeGraph",
+            "IPLDVectorStore",
+            "GraphRAGLLMProcessor",
+            "SlottedResponseIndex"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add GraphRAG response-template ingestion and retrieval",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-006",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G008",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-007:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G002",
+            "ABBY-VOICE-G003",
+            "ABBY-VOICE-G007"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_templates.py",
+            "ipfs_accelerate_py/test/test_voice_router_graphrag.py"
+          ],
+          "predicted_symbols": [
+            "process_voice_turn",
+            "VoiceTemplateProvider",
+            "GraphRAGVoiceTemplateProvider",
+            "buildVoiceGraphRagPromptParts"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Integrate GraphRAG templating into voice_router",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-007",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G009",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-008:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G005",
+            "ABBY-VOICE-G007",
+            "ABBY-VOICE-G008"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "data/abby_voice/eval/golden_voice_turns.jsonl",
+            "tests/voice/test_abby_voice_safety.py",
+            "benchmarks/bench_abby_voice_router.py",
+            "docs/reports/ABBY_VOICE_EVALUATION.md"
+          ],
+          "predicted_symbols": [
+            "VoiceStageTrace",
+            "GraphRAGVoiceTemplateProvider",
+            "speech_to_text",
+            "text_to_speech"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Establish voice safety quality and performance evaluation",
+          "validation_commands": [
+            "python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-008",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G006",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-009:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G004",
+            "ABBY-VOICE-G005"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md",
+            "data/abby_voice/huggingface/README.template.md",
+            "data/abby_voice/huggingface/migration-plan.json"
+          ],
+          "predicted_symbols": [
+            "upload_hf_abby_tts_dataset",
+            "data_files",
+            "configs",
+            "list_bucket_tree",
+            "sync_bucket"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Produce a safe Hugging Face bucket and dataset migration plan",
+          "validation_commands": [
+            "python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json"
+          ],
+          "validation_proof": [
+            "python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-009",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G010",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-010:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G008",
+            "ABBY-VOICE-G009"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "wallet_interface/helpers/_voice_router_adapter.py",
+            "wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts",
+            "wallet_interface/ui/tests/agent-voice-router.spec.ts",
+            "docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md"
+          ],
+          "predicted_symbols": [
+            "ClientAudioReplyService",
+            "RemoteSpeechToTextResult",
+            "AgentAudioChatSurface",
+            "VoiceTurnResult"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Adopt the unified router in wallet_interface",
+          "validation_commands": [
+            "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts"
+          ],
+          "validation_proof": [
+            "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-010",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G012",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-011:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py",
+            "ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py",
+            "ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py",
+            "ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py"
+          ],
+          "predicted_symbols": [
+            "SkillCenterSnapshot",
+            "SkillCenterSnapshotCache",
+            "HuggingFaceSkillCenterFetcher",
+            "HuggingFaceSnapshot",
+            "HuggingFaceBucketStore"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Generalize immutable Hugging Face source snapshots",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-011",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G013",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-012:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py",
+            "ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py",
+            "ipfs_datasets_py/ipfs_datasets_py/voice/workset.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py"
+          ],
+          "predicted_symbols": [
+            "AbbyVoiceDatasetManager",
+            "AbbyVoiceDatasetNormalizer",
+            "SlottedResponseIndex",
+            "ArtifactManifest",
+            "VoiceAudioWorkset"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build the Abby dataset manager and deterministic audio workset",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-012",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G014",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-013:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py",
+            "ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py",
+            "ipfs_accelerate_py/test/test_voice_job_contracts.py",
+            "ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py"
+          ],
+          "predicted_symbols": [
+            "VoiceTTSJob",
+            "VoiceASRJob",
+            "VoiceAudioValidationJob",
+            "VoiceJobResult",
+            "submit_voice_workset"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define audio job contracts and the datasets-to-accelerate bridge",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_contracts.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_contracts.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-013",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G015",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-014:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "ipfs_accelerate_py/test/test_voice_job_worker.py"
+          ],
+          "predicted_symbols": [
+            "execute_voice_tts_job",
+            "execute_voice_asr_job",
+            "execute_voice_audio_validation_job",
+            "execute_task",
+            "text_to_speech",
+            "speech_to_text"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add durable voice workers and repair backend routing",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-014",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G016",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-015:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py",
+            "ipfs_accelerate_py/test/test_voice_job_recovery.py"
+          ],
+          "predicted_symbols": [
+            "TaskQueue",
+            "TaskOrchestrator",
+            "PeerCapabilityRegistry",
+            "ProviderBatchScheduler",
+            "ResourceScheduler"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add idempotent recovery resource admission and provider batching",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-015",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G017",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-016:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py",
+            "ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py"
+          ],
+          "predicted_symbols": [
+            "reconcile_voice_job_result",
+            "AudioQualityPolicy",
+            "validate_tts_asr_roundtrip",
+            "AbbyVoiceAudio"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Reconcile generated audio and enforce round-trip quality",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py tests/voice/test_abby_voice_safety.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py tests/voice/test_abby_voice_safety.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-016",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G010",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-017:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G008",
+            "ABBY-VOICE-G009"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "wallet_interface/helpers/_voice_router_adapter.py",
+            "wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts",
+            "wallet_interface/ui/tests/agent-voice-router.spec.ts",
+            "docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md"
+          ],
+          "predicted_symbols": [
+            "ClientAudioReplyService",
+            "RemoteSpeechToTextResult",
+            "AgentAudioChatSurface",
+            "VoiceTurnResult"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Adopt the unified router in wallet_interface",
+          "validation_commands": [
+            "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts"
+          ],
+          "validation_proof": [
+            "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-017",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G018",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-018:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py",
+            "ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py",
+            "ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py"
+          ],
+          "predicted_symbols": [
+            "ArtifactManifest",
+            "AbbyVoiceHFReleaseBuilder",
+            "validate_abby_voice_hf_release",
+            "AbbyVoiceEvaluation"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build and validate deterministic Hugging Face releases",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-018",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G019",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-019:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+            "ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py"
+          ],
+          "predicted_symbols": [
+            "AbbyVoiceReleaseLoader",
+            "PrecomputedVoiceAudioResolver",
+            "process_voice_turn"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Load pinned releases and resolve precomputed audio safely",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-019",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G020",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-020:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "tests/voice/test_abby_voice_distributed_pipeline.py",
+            "docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md",
+            "docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md"
+          ],
+          "predicted_symbols": [
+            "TaskQueue",
+            "VoiceJobResult",
+            "AbbyVoiceHFReleaseBuilder",
+            "AbbyVoiceReleaseLoader",
+            "process_voice_turn"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Prove the distributed dataset-to-voice pipeline end to end",
+          "validation_commands": [
+            "python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-020",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "ABBY-VOICE-G021",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:ABBY-VOICE-AUTO-021:focused-1",
+          "dependencies": [
+            "ABBY-VOICE-G011"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py",
+            "scripts/publish_abby_voice_release.py",
+            "docs/runbooks/ABBY_VOICE_HF_RELEASE.md",
+            "data/abby_voice/releases/publication-receipt.json",
+            "ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py"
+          ],
+          "predicted_symbols": [
+            "HuggingFaceReleasePublisher",
+            "publish_abby_voice_release",
+            "validate_abby_voice_hf_release"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Publish and promote an immutable Hugging Face release",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "ABBY-VOICE-AUTO-021",
+      "used_fallback": false
+    }
+  ],
+  "schema": "ipfs_accelerate_py.agent_supervisor.objective_plan_evaluations@1"
+}

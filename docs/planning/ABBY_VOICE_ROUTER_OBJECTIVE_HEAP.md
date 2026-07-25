@@ -230,7 +230,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G006 Produce a safe Hugging Face bucket and dataset migration plan
 
-- Status: active
+- Status: complete
 - Fib priority: 5001
 - Priority: P1
 - Track: voice-data
@@ -389,7 +389,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Track: voice-data
 - Parents: ABBY-VOICE-G004, ABBY-VOICE-G005
 - Goal: Coordinate the reuse-first dataset and audio-job goals that turn immutable Abby source snapshots into a verified, schema-stable, GraphRAG-ready Hugging Face release.
-- Evidence: child-goal receipts for immutable inventory, canonical normalization, deterministic audio worksets, TTS/ASR execution, audio reconciliation, deterministic release construction, runtime resolution, and post-publication verification
+- Evidence: immutable inventory; canonical normalization; deterministic audio worksets; TTS/ASR execution; audio reconciliation; deterministic release construction; runtime resolution; post-publication verification
 - Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
 - Bundle: abby-voice/dataset-materialization
@@ -420,7 +420,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G004, ABBY-VOICE-G005, ABBY-VOICE-G006
 - Goal: Reuse the existing SkillCenter immutable snapshot and verified-cache machinery as generic Hugging Face dataset and bucket source adapters for Abby.
-- Evidence: backward-compatible generic snapshot/cache API; pinned dataset commit receipt; bucket inventory digest with path size full SHA-256 ETag and media type; tamper and mutable-ref rejection tests; no-network cache-hit test
+- Evidence: immutable inventory; backward-compatible generic snapshot/cache API; pinned dataset commit receipt; bucket inventory digest with path size full SHA-256 ETag and media type; tamper and mutable-ref rejection tests; no-network cache-hit test
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
 - Bundle: abby-voice/hf-sources
@@ -449,7 +449,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G012
 - Goal: Compose the existing Abby schema normalizer GraphRAG and ArtifactManifest APIs into one dataset manager that reconciles legacy candidates and emits deterministic missing-or-revalidate audio work.
-- Evidence: exact legacy adapter; complete inventory-to-disposition ledger; canonical four-config bundle; explicit evaluation-support artifact decision; deterministic TTS ASR and validation work manifests; fuzzy-review quarantine
+- Evidence: canonical normalization; deterministic audio worksets; exact legacy adapter; complete inventory-to-disposition ledger; canonical four-config bundle; explicit evaluation-support artifact decision; deterministic TTS ASR and validation work manifests; fuzzy-review quarantine
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
 - Bundle: abby-voice/dataset-manager
@@ -508,7 +508,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G003, ABBY-VOICE-G014
 - Goal: Add advertised TTS ASR and audio-validation handlers to the existing P2P worker and execute model work through the established voice_router providers.
-- Evidence: shared task alias registry; worker and service capability parity; voice handlers; backend-manager API regression fix; independent TTS/STT device controls; allowed-artifact resolver; offline worker and mesh tests
+- Evidence: TTS/ASR execution; shared task alias registry; worker and service capability parity; voice handlers; backend-manager API regression fix; independent TTS/STT device controls; allowed-artifact resolver; offline worker and mesh tests
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py
 - Bundle: abby-voice/audio-workers
@@ -568,7 +568,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G013, ABBY-VOICE-G016
 - Goal: Ingest completed audio-job receipts into the canonical dataset and promote only artifacts that pass integrity decode acoustic ASR and slot-fidelity gates.
-- Evidence: receipt-to-audio-row reconciler; decode and acoustic validator; TTS-to-ASR round-trip evaluation; exact critical-slot checks; terminal quarantine reason taxonomy; complete row disposition report
+- Evidence: audio reconciliation; receipt-to-audio-row reconciler; decode and acoustic validator; TTS-to-ASR round-trip evaluation; exact critical-slot checks; terminal quarantine reason taxonomy; complete row disposition report
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py tests/voice/test_abby_voice_safety.py
 - Bundle: abby-voice/audio-reconciliation
@@ -598,7 +598,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G007, ABBY-VOICE-G017
 - Goal: Reuse the generic ArtifactManifest and SkillCenter Parquet release patterns to create a deterministic Abby release that Hugging Face Dataset Viewer can load by immutable revision.
-- Evidence: extracted generic release helpers; five flat Abby configs including evaluation; sharded ZSTD Parquet descriptors; GraphRAG support-index artifact; byte-identical rebuild; exhaustive local release validator
+- Evidence: deterministic release construction; extracted generic release helpers; five flat Abby configs including evaluation; sharded ZSTD Parquet descriptors; GraphRAG support-index artifact; byte-identical rebuild; exhaustive local release validator
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py
 - Bundle: abby-voice/hf-release
@@ -628,7 +628,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G008, ABBY-VOICE-G018
 - Goal: Load an immutable Abby release into the GraphRAG template provider and resolve precomputed audio only when the rendered spoken text and complete synthesis identity match.
-- Evidence: revision-pinned streaming/release loader; content-addressed GraphRAG restore; exact audio resolver; stale-slot regression test; text-only or live-TTS fallback receipt
+- Evidence: runtime resolution; revision-pinned streaming/release loader; content-addressed GraphRAG restore; exact audio resolver; stale-slot regression test; text-only or live-TTS fallback receipt
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
 - Bundle: abby-voice/runtime-release
@@ -688,7 +688,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G006, ABBY-VOICE-G018, ABBY-VOICE-G020
 - Goal: Perform an explicitly approved append-only release transaction, capture the resulting Hugging Face commit SHA, redownload by that SHA, revalidate, and canary the consumer pointer with rollback.
-- Evidence: signed reviewed release manifest; dry-run diff and cost receipt; approval record; append-only commit receipt; pinned redownload validation; canary and rollback receipt
+- Evidence: post-publication verification; signed reviewed release manifest; dry-run diff and cost receipt; approval record; append-only commit receipt; pinned redownload validation; canary and rollback receipt
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py, scripts/publish_abby_voice_release.py, docs/runbooks/ABBY_VOICE_HF_RELEASE.md, data/abby_voice/releases/publication-receipt.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run
 - Bundle: abby-voice/hf-publication
@@ -708,3 +708,171 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Consumer promotion is a separate reviewed step with a bounded canary. Rollback restores the previous pinned manifest/commit and never deletes the failed release.
   5. Tokens are never persisted in task rows, manifests, logs, receipts, or source control.
 - Child-goal boundary: G021 is the sole owner of remote writes and consumer-pointer changes; failure to obtain approval is a valid blocked state, not permission for an autonomous workaround.
+
+## ABBY-VOICE-G022 Prove deterministic audio worksets for Normalize and materialize the Abby voice dataset
+
+- Status: blocked
+- Blocked reason: duplicate refinement; ABBY-VOICE-G013 already owns the exact deterministic audio worksets evidence requirement
+- Superseded by: ABBY-VOICE-G013
+- Parent: ABBY-VOICE-G011
+- Fib priority: 13000
+- Track: voice-data
+- Priority: P0
+- Bundle: abby-voice/dataset-materialization
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `deterministic audio worksets`.
+- Evidence: deterministic audio worksets
+- Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
+- Refinement depth: 4
+- Embedding query: deterministic audio worksets
+- AST query: deterministic audio worksets
+- Parallel lane: abby-voice-data
+- Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
+- Gap task: Close the missing objective evidence `deterministic audio worksets` with a narrow, verifiable change.
+
+## ABBY-VOICE-G023 Prove TTS/ASR execution for Normalize and materialize the Abby voice dataset
+
+- Status: blocked
+- Blocked reason: duplicate refinement; ABBY-VOICE-G015 already owns the exact TTS/ASR execution evidence requirement
+- Superseded by: ABBY-VOICE-G015
+- Parent: ABBY-VOICE-G011
+- Fib priority: 13001
+- Track: voice-data
+- Priority: P0
+- Bundle: abby-voice/dataset-materialization
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `TTS/ASR execution`.
+- Evidence: TTS/ASR execution
+- Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
+- Refinement depth: 4
+- Embedding query: TTS/ASR execution
+- AST query: TTS/ASR execution
+- Parallel lane: abby-voice-data
+- Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
+- Gap task: Close the missing objective evidence `TTS/ASR execution` with a narrow, verifiable change.
+
+## ABBY-VOICE-G024 Prove audio reconciliation for Normalize and materialize the Abby voice dataset
+
+- Status: blocked
+- Blocked reason: duplicate refinement; ABBY-VOICE-G017 already owns the exact audio reconciliation evidence requirement
+- Superseded by: ABBY-VOICE-G017
+- Parent: ABBY-VOICE-G011
+- Fib priority: 13002
+- Track: voice-data
+- Priority: P0
+- Bundle: abby-voice/dataset-materialization
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `audio reconciliation`.
+- Evidence: audio reconciliation
+- Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
+- Refinement depth: 4
+- Embedding query: audio reconciliation
+- AST query: audio reconciliation
+- Parallel lane: abby-voice-data
+- Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
+- Gap task: Close the missing objective evidence `audio reconciliation` with a narrow, verifiable change.
+
+## ABBY-VOICE-G025 Prove deterministic release construction for Normalize and materialize the Abby voice dataset
+
+- Status: blocked
+- Blocked reason: duplicate refinement; ABBY-VOICE-G018 already owns the exact deterministic release construction evidence requirement
+- Superseded by: ABBY-VOICE-G018
+- Parent: ABBY-VOICE-G011
+- Fib priority: 13000
+- Track: voice-data
+- Priority: P0
+- Bundle: abby-voice/dataset-materialization
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `deterministic release construction`.
+- Evidence: deterministic release construction
+- Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
+- Refinement depth: 4
+- Embedding query: deterministic release construction
+- AST query: deterministic release construction
+- Parallel lane: abby-voice-data
+- Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
+- Gap task: Close the missing objective evidence `deterministic release construction` with a narrow, verifiable change.
+
+## ABBY-VOICE-G026 Prove bucket inventory summary for Produce a safe Hugging Face bucket and dataset migration plan
+
+- Status: blocked
+- Blocked reason: duplicate refinement; verified ABBY-VOICE-G006 migration artifacts already contain the bucket inventory summary
+- Superseded by: ABBY-VOICE-G006
+- Parent: ABBY-VOICE-G006
+- Fib priority: 13000
+- Track: voice-data
+- Priority: P1
+- Bundle: abby-voice/huggingface-migration
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `bucket inventory summary`.
+- Evidence: bucket inventory summary
+- Outputs: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Validation: python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json
+- Refinement depth: 4
+- Embedding query: bucket inventory summary
+- AST query: bucket inventory summary
+- Parallel lane: abby-voice-data
+- Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
+- Gap task: Close the missing objective evidence `bucket inventory summary` with a narrow, verifiable change.
+
+## ABBY-VOICE-G027 Prove proposed canonical prefix layout for Produce a safe Hugging Face bucket and dataset migration plan
+
+- Status: blocked
+- Blocked reason: duplicate refinement; verified ABBY-VOICE-G006 migration artifacts already contain the proposed canonical prefix layout
+- Superseded by: ABBY-VOICE-G006
+- Parent: ABBY-VOICE-G006
+- Fib priority: 13001
+- Track: voice-data
+- Priority: P1
+- Bundle: abby-voice/huggingface-migration
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `proposed canonical prefix layout`.
+- Evidence: proposed canonical prefix layout
+- Outputs: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Validation: python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json
+- Refinement depth: 4
+- Embedding query: proposed canonical prefix layout
+- AST query: proposed canonical prefix layout
+- Parallel lane: abby-voice-data
+- Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
+- Gap task: Close the missing objective evidence `proposed canonical prefix layout` with a narrow, verifiable change.
+
+## ABBY-VOICE-G028 Prove Dataset Viewer validation procedure for Produce a safe Hugging Face bucket and dataset migration plan
+
+- Status: blocked
+- Blocked reason: duplicate refinement; verified ABBY-VOICE-G006 migration artifacts already contain the Dataset Viewer validation procedure
+- Superseded by: ABBY-VOICE-G006
+- Parent: ABBY-VOICE-G006
+- Fib priority: 13002
+- Track: voice-data
+- Priority: P1
+- Bundle: abby-voice/huggingface-migration
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `Dataset Viewer validation procedure`.
+- Evidence: Dataset Viewer validation procedure
+- Outputs: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Validation: python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json
+- Refinement depth: 4
+- Embedding query: Dataset Viewer validation procedure
+- AST query: Dataset Viewer validation procedure
+- Parallel lane: abby-voice-data
+- Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
+- Gap task: Close the missing objective evidence `Dataset Viewer validation procedure` with a narrow, verifiable change.
+
+## ABBY-VOICE-G029 Prove ABBY-VOICE-G006 completion receipt for Produce a safe Hugging Face bucket and dataset migration plan
+
+- Status: blocked
+- Blocked reason: duplicate refinement; ABBY-VOICE-G006 already has its focused validation receipt and completed canonical task
+- Superseded by: ABBY-VOICE-G006
+- Parent: ABBY-VOICE-G006
+- Fib priority: 13000
+- Track: voice-data
+- Priority: P1
+- Bundle: abby-voice/huggingface-migration
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ABBY-VOICE-G006 completion receipt`.
+- Evidence: ABBY-VOICE-G006 completion receipt
+- Outputs: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Validation: python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json
+- Refinement depth: 4
+- Embedding query: ABBY-VOICE-G006 completion receipt
+- AST query: ABBY-VOICE-G006 completion receipt
+- Parallel lane: abby-voice-data
+- Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
+- Gap task: Close the missing objective evidence `ABBY-VOICE-G006 completion receipt` with a narrow, verifiable change.

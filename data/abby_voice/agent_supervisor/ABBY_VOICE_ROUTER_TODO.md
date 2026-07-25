@@ -1,0 +1,1112 @@
+# Objective Todo
+
+## ABBY-VOICE-AUTO-001 Implement Abby voice objective: Deliver a unified grounded Abby voice pipeline
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-platform
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_pipeline.py
+- Validation: python -m pytest -q tests/voice/test_abby_voice_pipeline.py
+- Bundle: abby-voice/integration
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-integration.todo.md
+- Bundle strategy: explicit
+- Graph parents: none
+- Graph depth: 0
+- Parallel lane: abby-voice-integration
+- Conflict policy: integrate child-goal contracts only after their focused tests pass; preserve backward compatibility for text_to_speech and speech_to_text
+- Predicted files: docs/architecture/ABBY_VOICE_ROUTER_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_pipeline.py
+- Changed paths:
+- AST symbols: VoiceTurnRequest, VoiceTurnResult, process_voice_turn, GraphRAGVoiceTemplateProvider
+- Interfaces: ipfs_accelerate_py.voice_router, ipfs_datasets_py GraphRAG, wallet voice proxy
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G001
+- Canonical task key: task/v1/e56607d2a1d11f8cd70bf580acb0fb42e32f2c654089e896db9c5dd6235e5adb
+- Canonical task CID: baguqeera4vtapuvb2epyzvyl6wakzmh3ilrs6ldfice6rfw3tro5mi26llnq
+- Missing evidence: objective validation repair
+- Embedding query: Abby grounded voice turn STT GraphRAG response templates TTS fallback provenance
+- AST query: VoiceTurnRequest, VoiceTurnResult, process_voice_turn, GraphRAGVoiceTemplateProvider
+- Surplus group: objective/ABBY-VOICE-G001
+- Merge key: 2a02bbdaf075da81
+- Merge family: objective/ABBY-VOICE-G001
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 176a49df84265f54
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G001. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-001-objective-gap-c1cb8a2061bb.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-002 Implement Abby voice objective: Define stable voice-turn and provider contracts
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-router
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_contracts.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py
+- Bundle: abby-voice/voice-router-contracts
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-voice-router-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G001
+- Graph depth: 1
+- Parallel lane: abby-voice-router
+- Conflict policy: retain current function signatures and lazy optional dependencies; add new orchestration as an additive API
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_contracts.py
+- Changed paths:
+- AST symbols: VoiceProvider, text_to_speech, speech_to_text, VoiceTurnRequest, VoiceTurnResult
+- Interfaces: ipfs_accelerate_py.voice_router public API
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G002
+- Canonical task key: task/v1/90880cb1cb867636a3c1ff14af98ae4ecaf99a72cbbb675e26038fbdb42b0b0e
+- Canonical task CID: baguqeerasceazmolqz3dni6b74kk7gfoj3fptgtszo5woxrgaoh33nblbmha
+- Missing evidence: objective validation repair
+- Embedding query: typed voice router contracts provider capabilities stage traces backward compatibility
+- AST query: VoiceProvider, text_to_speech, speech_to_text, VoiceTurnRequest, VoiceTurnResult
+- Surplus group: objective/ABBY-VOICE-G002
+- Merge key: 407fe86571e7b1a7
+- Merge family: objective/ABBY-VOICE-G002
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: f63efd593e502c7c
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G002. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-002-objective-gap-c4349323df82.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-003 Implement Abby voice objective: Define the canonical Abby voice dataset schema
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-data
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py, docs/data/ABBY_VOICE_DATASET_SCHEMA.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py
+- Bundle: abby-voice/dataset-schema
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-dataset-schema.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G001
+- Graph depth: 1
+- Parallel lane: abby-voice-data
+- Conflict policy: keep runtime indexes and aggregate manifests out of row files; use stable IDs and nullable scalar or consistently typed list columns
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py, docs/data/ABBY_VOICE_DATASET_SCHEMA.md
+- Changed paths:
+- AST symbols: AbbyVoiceResponse, AbbyVoiceTemplate, AbbyVoiceAudio, AbbyVoiceProvenance
+- Interfaces: ipfs_datasets_py.voice schema, Hugging Face datasets Arrow and Parquet
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G004
+- Canonical task key: task/v1/7872dc1dfc73d064545730db55555f0d513a204f2346ff466b52795821288e4f
+- Canonical task CID: baguqeerapbznyhp4opigivcxgdnvkvk7bvituicpendp6rtlkj4vqijirzhq
+- Missing evidence: objective validation repair
+- Embedding query: flat versioned Abby voice dataset schema responses templates audio provenance Hugging Face
+- AST query: AbbyVoiceResponse, AbbyVoiceTemplate, AbbyVoiceAudio, AbbyVoiceProvenance
+- Surplus group: objective/ABBY-VOICE-G004
+- Merge key: 1e4be5cfde01cb32
+- Merge family: objective/ABBY-VOICE-G004
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 1ecf8fc51c97c90e
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G004. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-003-objective-gap-009172687453.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-004 Implement Abby voice objective: Port Abby provider fallback behavior into voice_router
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-router
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Bundle: abby-voice/provider-routing
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-provider-routing.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G002
+- Graph depth: 2
+- Parallel lane: abby-voice-router
+- Conflict policy: adapters must be optional and secret-free; tests use injected transports and never call paid or mutable remote services
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_providers/abby.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Changed paths:
+- AST symbols: _run_indextts_gradio_tts, _run_hf_whisper_stt, get_voice_provider, ProviderInfo
+- Interfaces: VoiceProviderCapabilities, Abby IndexTTS HTTP, Abby Whisper HTTP
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G003
+- Canonical task key: task/v1/b0e4974e75cc85b5b48da2b5a594355cc00b4432f64f4dd99e152ed60a3e7b56
+- Canonical task CID: baguqeerawdsjottvzsc3lnenuk22lfbvltaawrbs6zhu3wm6cuxnmcr6pnla
+- Missing evidence: objective validation repair
+- Embedding query: IndexTTS Whisper remote local fallback retry timeout circuit breaker voice proxy
+- AST query: _run_indextts_gradio_tts, _run_hf_whisper_stt, get_voice_provider, ProviderInfo
+- Surplus group: objective/ABBY-VOICE-G003
+- Merge key: 8ece9d87394a54b2
+- Merge family: objective/ABBY-VOICE-G003
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 5d930aabc55df3e7
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G003. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-004-objective-gap-31b52886b489.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-005 Implement Abby voice objective: Build deterministic dataset normalization and quality gates
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-data
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
+- Bundle: abby-voice/dataset-normalization
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-dataset-normalization.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G004
+- Graph depth: 2
+- Parallel lane: abby-voice-data
+- Conflict policy: normalization must be deterministic and non-destructive; every rejected row receives machine-readable reason codes and source references
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py, scripts/build_abby_voice_dataset_v2.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py
+- Changed paths:
+- AST symbols: normalize_indextts_spoken_text, deduplicate_voice_response_chunks, build_slotted_response_dag
+- Interfaces: Abby voice v2 schemas, existing pregenerated response manifests
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G005
+- Canonical task key: task/v1/731830fcef31996a47e9f5ff21539f3b023c24c069ae3e96bbc8202141726792
+- Canonical task CID: baguqeeraommdb7hpggmwur7j6x7scu47hmbdyjgangxd5fv3zaqccqlsm6ja
+- Missing evidence: objective validation repair
+- Embedding query: Abby dataset normalize deduplicate quarantine short fragments malformed speech slot fidelity audio availability
+- AST query: normalize_indextts_spoken_text, deduplicate_voice_response_chunks, build_slotted_response_dag
+- Surplus group: objective/ABBY-VOICE-G005
+- Merge key: f51cfe8af230fb32
+- Merge family: objective/ABBY-VOICE-G005
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 60d36afe101f92e5
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G005. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-gap-ac09db7273d8.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-006 Implement Abby voice objective: Add GraphRAG response-template ingestion and retrieval
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-graphrag
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py, docs/data/ABBY_VOICE_GRAPHRAG.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py
+- Bundle: abby-voice/graphrag-templates
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-graphrag-templates.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G004, ABBY-VOICE-G005
+- Graph depth: 3
+- Parallel lane: abby-voice-graphrag
+- Conflict policy: retrieved templates are response plans only; factual slots must bind from current cited evidence and never from stale example wording
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py, docs/data/ABBY_VOICE_GRAPHRAG.md
+- Changed paths:
+- AST symbols: IPLDKnowledgeGraph, IPLDVectorStore, GraphRAGLLMProcessor, SlottedResponseIndex
+- Interfaces: GraphRAGVoiceTemplateProvider, ipfs_datasets_py vector store, IPLD knowledge graph
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G007
+- Canonical task key: task/v1/5c4cb26a6051c3fb8ab9522113b4d362c9d79d94df6c27fd877b47bbd45afc75
+- Canonical task CID: baguqeeralrgle2takhb7xcvzkiqrhngtmle5phmu35wcp7mhpnd3xvc27r2q
+- Missing evidence: objective validation repair
+- Embedding query: GraphRAG response frame intent slot evidence provenance hybrid retrieval Abby 211
+- AST query: IPLDKnowledgeGraph, IPLDVectorStore, GraphRAGLLMProcessor, SlottedResponseIndex
+- Surplus group: objective/ABBY-VOICE-G007
+- Merge key: 48fb2e0da7bdd0b3
+- Merge family: objective/ABBY-VOICE-G007
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: a5461a4fe555f956
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G007. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-006-objective-gap-961cb0c87404.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-007 Implement Abby voice objective: Integrate GraphRAG templating into voice_router
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-graphrag
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_templates.py, ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Bundle: abby-voice/router-graphrag-integration
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-router-graphrag-integration.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G002, ABBY-VOICE-G003, ABBY-VOICE-G007
+- Graph depth: 4
+- Parallel lane: abby-voice-graphrag
+- Conflict policy: use dependency injection across submodules and avoid mandatory ipfs_datasets_py imports at voice_router import time
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_templates.py, ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Changed paths:
+- AST symbols: process_voice_turn, VoiceTemplateProvider, GraphRAGVoiceTemplateProvider, buildVoiceGraphRagPromptParts
+- Interfaces: VoiceTemplateProvider, GraphRAGVoiceTemplateProvider, VoiceTurnResult
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G008
+- Canonical task key: task/v1/17399cd936ebf51296e9d75bc87fe57577ce392ebf8b19a6b3b5c58649ef1867
+- Canonical task CID: baguqeerac44zzwjw5p2rffxj25n4q77fov344ojox6frtjvtwxcymsppdbtq
+- Missing evidence: objective validation repair
+- Embedding query: voice router GraphRAG template provider grounded slot binding spoken normalization provenance
+- AST query: process_voice_turn, VoiceTemplateProvider, GraphRAGVoiceTemplateProvider, buildVoiceGraphRagPromptParts
+- Surplus group: objective/ABBY-VOICE-G008
+- Merge key: 56f4741286457bf7
+- Merge family: objective/ABBY-VOICE-G008
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 4e3a47ff3fc853a2
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G008. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-007-objective-gap-3380db9aa1f3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-008 Implement Abby voice objective: Establish voice safety quality and performance evaluation
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: voice-evaluation
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, data/abby_voice/eval/golden_voice_turns.jsonl, tests/voice/test_abby_voice_safety.py, benchmarks/bench_abby_voice_router.py, docs/reports/ABBY_VOICE_EVALUATION.md
+- Validation: python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check
+- Bundle: abby-voice/evaluation
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-evaluation.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G005, ABBY-VOICE-G007, ABBY-VOICE-G008
+- Graph depth: 5
+- Parallel lane: abby-voice-evaluation
+- Conflict policy: evaluation fixtures must contain synthetic or explicitly public data and no private caller audio or secrets
+- Predicted files: data/abby_voice/eval/golden_voice_turns.jsonl, tests/voice/test_abby_voice_safety.py, benchmarks/bench_abby_voice_router.py, docs/reports/ABBY_VOICE_EVALUATION.md
+- Changed paths:
+- AST symbols: VoiceStageTrace, GraphRAGVoiceTemplateProvider, speech_to_text, text_to_speech
+- Interfaces: Abby voice evaluation schema, VoiceTurnResult receipts
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts: docs/reports/ABBY_VOICE_EVALUATION.md
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G009
+- Canonical task key: task/v1/3dafbca3c96e5bde7515192084d8789f1f2599fc59956d3eb27470d3e82e3fe2
+- Canonical task CID: baguqeerahwx3zi6jnzn545ivdeqijwdyt4pslgp4lgkw2pvsorynh2boh7ra
+- Missing evidence: objective validation repair
+- Embedding query: voice safety grounding privacy emergency accessibility WER slot fidelity latency fallback benchmark
+- AST query: VoiceStageTrace, GraphRAGVoiceTemplateProvider, speech_to_text, text_to_speech
+- Surplus group: objective/ABBY-VOICE-G009
+- Merge key: 3795089a0378940e
+- Merge family: objective/ABBY-VOICE-G009
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: c7a81c4c36244ec3
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G009. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-008-objective-gap-c18c3e2f296c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-009 Implement Abby voice objective: Produce a safe Hugging Face bucket and dataset migration plan
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: voice-data
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Validation: python scripts/build_abby_voice_dataset_v2.py --check --output-dir /tmp/abby-voice-v2-check && test -f data/abby_voice/huggingface/migration-plan.json
+- Bundle: abby-voice/huggingface-migration
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-huggingface-migration.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G004, ABBY-VOICE-G005
+- Graph depth: 3
+- Parallel lane: abby-voice-data
+- Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
+- Predicted files: docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md, data/abby_voice/huggingface/README.template.md, data/abby_voice/huggingface/migration-plan.json
+- Changed paths:
+- AST symbols: upload_hf_abby_tts_dataset, data_files, configs, list_bucket_tree, sync_bucket
+- Interfaces: Publicus/abby-voice bucket, Publicus/211-abby-tts dataset
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/huggingface/migration-plan.json
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G006
+- Canonical task key: task/v1/632309306045625241a576bbdbb99c0854c6d1a1959bed84d9b00b5f3d7524ab
+- Canonical task CID: baguqeerammrqsmdaivrfeqnfo255xom4bbkmnunbswn63bgzwafv6plvesvq
+- Missing evidence: objective validation repair
+- Embedding query: Hugging Face bucket curated dataset configs splits Parquet migration dry run no delete
+- AST query: upload_hf_abby_tts_dataset, data_files, configs, list_bucket_tree, sync_bucket
+- Surplus group: objective/ABBY-VOICE-G006
+- Merge key: 1eedbf8f9889fb5b
+- Merge family: objective/ABBY-VOICE-G006
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: ea4fa40f0c683548
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G006. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-009-objective-gap-a78d6dd48ff4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-010 Implement Abby voice objective: Adopt the unified router in wallet_interface
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: voice-integration
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
+- Validation: python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts
+- Bundle: abby-voice/wallet-adoption
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-wallet-adoption.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G008, ABBY-VOICE-G009
+- Graph depth: 6
+- Parallel lane: abby-voice-integration
+- Conflict policy: use a feature flag and preserve all existing fallback paths until end-to-end receipts pass in deployed-like tests
+- Predicted files: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
+- Changed paths:
+- AST symbols: ClientAudioReplyService, RemoteSpeechToTextResult, AgentAudioChatSurface, VoiceTurnResult
+- Interfaces: wallet voice proxy HTTP, VoiceTurnResult JSON, browser audio fallbacks
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G010
+- Canonical task key: task/v1/8f4d68d7cc38d7ab3d64df9721d06b43edba047d126ebe0668e1eac8976e8db4
+- Canonical task CID: baguqeerar5gwrv6mhdl2wple36lsdudlipw3ubd5cjxl4bti4hvmrf3orw2a
+- Missing evidence: objective validation repair
+- Embedding query: wallet Abby voice proxy shared router browser SpeechRecognition WebGPU browser speech rollout
+- AST query: ClientAudioReplyService, RemoteSpeechToTextResult, AgentAudioChatSurface, VoiceTurnResult
+- Surplus group: objective/ABBY-VOICE-G010
+- Merge key: 91d0485fb9dd252a
+- Merge family: objective/ABBY-VOICE-G010
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: af92a5fb52cc760a
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G010. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-010-objective-gap-7d1d7d72091a.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-011 Implement Abby voice objective: Generalize immutable Hugging Face source snapshots
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-data
+- Depends on: ABBY-VOICE-AUTO-003, ABBY-VOICE-AUTO-005, ABBY-VOICE-AUTO-009
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Bundle: abby-voice/hf-sources
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-hf-sources.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 1
+- Parallel lane: abby-voice-data
+- Conflict policy: extract or wrap generic behavior while keeping the SkillCenter symbols import-compatible; inventory and downloads are read-only; reject branch names such as main and master from canonical receipts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/snapshot.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/repository.py, ipfs_datasets_py/ipfs_datasets_py/huggingface/bucket.py, ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py
+- Changed paths:
+- AST symbols: SkillCenterSnapshot, SkillCenterSnapshotCache, HuggingFaceSkillCenterFetcher, HuggingFaceSnapshot, HuggingFaceBucketStore
+- Interfaces: huggingface_hub injected client, hf bucket CLI adapter, Artifact
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G012
+- Canonical task key: task/v1/003343e110ca2d40ceb5e82f14f1652229169a36b852ff68a5b5eab352cb410e
+- Canonical task CID: baguqeeraaazuhyiqziwubtvv5axrj4lfeiurngrwxbjp62ffwxvlguwlieha
+- Semantic identity: objective-evidence-obligation/v1/7afac630bc04684f4a6c29d6c32ae593bfacc4734f75748b051522f7e8cbfb22
+- Acceptance subset: backward-compatible generic snapshot/cache API, tamper and mutable-ref rejection tests, no-network cache-hit test
+- Preconditions: objective goal ABBY-VOICE-G012 is schedulable
+- Effects: satisfy evidence requirement: backward-compatible generic snapshot/cache API, satisfy evidence requirement: tamper and mutable-ref rejection tests, satisfy evidence requirement: no-network cache-hit test
+- Evidence subset: backward-compatible generic snapshot/cache API, tamper and mutable-ref rejection tests, no-network cache-hit test
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G012
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/7afac630bc04684f4a6c29d6c32ae593bfacc4734f75748b051522f7e8cbfb22
+- Missing evidence: backward-compatible generic snapshot/cache API, tamper and mutable-ref rejection tests, no-network cache-hit test
+- Embedding query: Hugging Face immutable revision bucket inventory content addressed cache Abby voice
+- AST query: SkillCenterSnapshot, SkillCenterSnapshotCache, HuggingFaceSkillCenterFetcher, HuggingFaceSnapshot, HuggingFaceBucketStore
+- Surplus group: objective/ABBY-VOICE-G012
+- Merge key: dc0532fadbea1e8d
+- Merge family: objective/ABBY-VOICE-G012
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: b6b14e94e1870624
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G012. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-gap-d5cfef28e2c8.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (backward-compatible generic snapshot/cache API, tamper and mutable-ref rejection tests, no-network cache-hit test), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-012 Implement Abby voice objective: Build the Abby dataset manager and deterministic audio workset
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-data
+- Depends on: ABBY-VOICE-AUTO-011
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Bundle: abby-voice/dataset-manager
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-dataset-manager.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 2
+- Parallel lane: abby-voice-data
+- Conflict policy: call the existing normalizer and GraphRAG index rather than duplicating their policy; plural legacy audio paths are candidates, not proof; fuzzy matches are review-only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Changed paths:
+- AST symbols: AbbyVoiceDatasetManager, AbbyVoiceDatasetNormalizer, SlottedResponseIndex, ArtifactManifest, VoiceAudioWorkset
+- Interfaces: Abby voice v2 schema, HuggingFaceSnapshot, ArtifactManifest
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/normalized/disposition.jsonl, data/abby_voice/normalized/audio-workset.jsonl
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G013
+- Canonical task key: task/v1/895e3c059d0d9e903e50a04d5b6ed8414e06ca6d44eac5f9e342ab463e66caf6
+- Canonical task CID: baguqeerarfpdybm5bwpjapsqubgvw3wyifhanstnitvml6pdikvumptgzl3a
+- Semantic identity: objective-evidence-obligation/v1/900713683347da7b56c8a386b6da8ac8a19f377ae1e5a2b83c37bb71f0fb8751
+- Acceptance subset: deterministic audio worksets, deterministic TTS ASR and validation work manifests, fuzzy-review quarantine
+- Preconditions: objective goal ABBY-VOICE-G013 is schedulable
+- Effects: satisfy evidence requirement: deterministic audio worksets, satisfy evidence requirement: deterministic TTS ASR and validation work manifests, satisfy evidence requirement: fuzzy-review quarantine
+- Evidence subset: deterministic audio worksets, deterministic TTS ASR and validation work manifests, fuzzy-review quarantine
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G013
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/900713683347da7b56c8a386b6da8ac8a19f377ae1e5a2b83c37bb71f0fb8751
+- Missing evidence: deterministic audio worksets, deterministic TTS ASR and validation work manifests, fuzzy-review quarantine
+- Embedding query: Abby voice dataset manager normalize reconcile missing audio exact identity workset
+- AST query: AbbyVoiceDatasetManager, AbbyVoiceDatasetNormalizer, SlottedResponseIndex, ArtifactManifest, VoiceAudioWorkset
+- Surplus group: objective/ABBY-VOICE-G013
+- Merge key: e9e330f254c6edc8
+- Merge family: objective/ABBY-VOICE-G013
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 95ebae29da44ec43
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G013. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-gap-df61ec9b0c07.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (deterministic audio worksets, deterministic TTS ASR and validation work manifests, fuzzy-review quarantine), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-013 Implement Abby voice objective: Define audio job contracts and the datasets-to-accelerate bridge
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-scheduling
+- Depends on: ABBY-VOICE-AUTO-002, ABBY-VOICE-AUTO-012
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, ipfs_accelerate_py/test/test_voice_job_contracts.py, ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_contracts.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Bundle: abby-voice/audio-job-contracts
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-job-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 3
+- Parallel lane: abby-voice-scheduling
+- Conflict policy: the contract carries immutable URI CID SHA-256 and size descriptors, never audio bytes; use the existing canonical P2P client rather than adding a second queue
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, ipfs_accelerate_py/test/test_voice_job_contracts.py, ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py
+- Changed paths:
+- AST symbols: VoiceTTSJob, VoiceASRJob, VoiceAudioValidationJob, VoiceJobResult, submit_voice_workset
+- Interfaces: ipfs_accelerate_py.p2p_tasks.TaskQueue, ipfs_datasets_py.ml.accelerate_integration, Artifact
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G014
+- Canonical task key: task/v1/c929c2fe64a9f52d0249ec0f37544694878e9db89ebb08de41e83fe68a7fc927
+- Canonical task CID: baguqeerazeu4f7tevh2s2asj5qhtovcgssdy5hnyt25qrxsb5a76nct7zetq
+- Semantic identity: objective-evidence-obligation/v1/e3265f03d61eb784a8e5d1c682a0446d0b47684116a9e8f0fd505415275b7499
+- Acceptance subset: lineage propagation, datasets bridge integration tests
+- Preconditions: objective goal ABBY-VOICE-G014 is schedulable
+- Effects: satisfy evidence requirement: lineage propagation, satisfy evidence requirement: datasets bridge integration tests
+- Evidence subset: lineage propagation, datasets bridge integration tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G014
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/e3265f03d61eb784a8e5d1c682a0446d0b47684116a9e8f0fd505415275b7499
+- Missing evidence: lineage propagation, datasets bridge integration tests
+- Embedding query: deterministic TTS ASR STT audio validation task contract DuckDB lineage artifact descriptor
+- AST query: VoiceTTSJob, VoiceASRJob, VoiceAudioValidationJob, VoiceJobResult, submit_voice_workset
+- Surplus group: objective/ABBY-VOICE-G014
+- Merge key: 663ed194591a2277
+- Merge family: objective/ABBY-VOICE-G014
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f2f1595d927e863c
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G014. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-013-objective-gap-2141fa515140.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (lineage propagation, datasets bridge integration tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-014 Implement Abby voice objective: Add durable voice workers and repair backend routing
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-scheduling
+- Depends on: ABBY-VOICE-AUTO-004, ABBY-VOICE-AUTO-013
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Bundle: abby-voice/audio-workers
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-workers.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 4
+- Parallel lane: abby-voice-scheduling
+- Conflict policy: handlers call `voice_router.text_to_speech` and `speech_to_text` or injected equivalents; do not reimplement Abby HTTP retry/circuit-breaker behavior; preserve legacy router APIs
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Changed paths:
+- AST symbols: execute_voice_tts_job, execute_voice_asr_job, execute_voice_audio_validation_job, execute_task, text_to_speech, speech_to_text
+- Interfaces: P2P worker handlers, voice_router, voice_providers.abby, InferenceBackendManager
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G015
+- Canonical task key: task/v1/b565da18cd2115f0935079bff87d3d12564d308fbc5d95d1375afd889902ba71
+- Canonical task CID: baguqeerawvs5uggneek7be2qpg77q7j5cjle2mepxrozlujxll6yrgicxjyq
+- Semantic identity: objective-evidence-obligation/v1/94100771979b57c00f0db7693aa04f9e4a3e8d6587f7e3f8e6adc1f57a7ef486
+- Acceptance subset: TTS/ASR execution, voice handlers, independent TTS/STT device controls, offline worker and mesh tests
+- Preconditions: objective goal ABBY-VOICE-G015 is schedulable
+- Effects: satisfy evidence requirement: TTS/ASR execution, satisfy evidence requirement: voice handlers, satisfy evidence requirement: independent TTS/STT device controls, satisfy evidence requirement: offline worker and mesh tests
+- Evidence subset: TTS/ASR execution, voice handlers, independent TTS/STT device controls, offline worker and mesh tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G015
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/94100771979b57c00f0db7693aa04f9e4a3e8d6587f7e3f8e6adc1f57a7ef486
+- Missing evidence: TTS/ASR execution, voice handlers, independent TTS/STT device controls, offline worker and mesh tests
+- Embedding query: P2P worker voice TTS ASR STT capability voice_router backend manager artifact
+- AST query: execute_voice_tts_job, execute_voice_asr_job, execute_voice_audio_validation_job, execute_task, text_to_speech, speech_to_text
+- Surplus group: objective/ABBY-VOICE-G015
+- Merge key: 438932bfd049ffda
+- Merge family: objective/ABBY-VOICE-G015
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 41d64c2b520bfacc
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G015. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-014-objective-gap-d308fe5a1e3c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (TTS/ASR execution, voice handlers, independent TTS/STT device controls, offline worker and mesh tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-015 Implement Abby voice objective: Add idempotent recovery resource admission and provider batching
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-scheduling
+- Depends on: ABBY-VOICE-AUTO-014
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py
+- Bundle: abby-voice/audio-scheduling
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-scheduling.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 5
+- Parallel lane: abby-voice-scheduling
+- Conflict policy: preserve existing text-task behavior and DuckDB compatibility; provider-local retry remains inside the existing Abby adapter while queue retry handles worker loss and exhausted retryable job failures
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
+- Changed paths:
+- AST symbols: TaskQueue, TaskOrchestrator, PeerCapabilityRegistry, ProviderBatchScheduler, ResourceScheduler
+- Interfaces: DuckDB TaskQueue, capability registry, ResourceScheduler, ProviderBatchScheduler
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G016
+- Canonical task key: task/v1/6d310e2baf15978bf678eabee47f8aacf214149420b00f9a06279285e7c221a3
+- Canonical task CID: baguqeeranuyq4k5pcwlyx5ty5k7oi74kvtzbifeuecya7gqge6jilz6cegrq
+- Semantic identity: objective-evidence-obligation/v1/1f9de07afe18fd8804b4789f2956e46c60606148655126a33289fb5d1b664267
+- Acceptance subset: priority-aware claims, audio capability constraints, provider batch compatibility tests, resource and provider saturation tests
+- Preconditions: objective goal ABBY-VOICE-G016 is schedulable
+- Effects: satisfy evidence requirement: priority-aware claims, satisfy evidence requirement: audio capability constraints, satisfy evidence requirement: provider batch compatibility tests, satisfy evidence requirement: resource and provider saturation tests
+- Evidence subset: priority-aware claims, audio capability constraints, provider batch compatibility tests, resource and provider saturation tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G016
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/1f9de07afe18fd8804b4789f2956e46c60606148655126a33289fb5d1b664267
+- Missing evidence: priority-aware claims, audio capability constraints, provider batch compatibility tests, resource and provider saturation tests
+- Embedding query: DuckDB voice task lease heartbeat retry idempotent GPU resource provider batch singleflight
+- AST query: TaskQueue, TaskOrchestrator, PeerCapabilityRegistry, ProviderBatchScheduler, ResourceScheduler
+- Surplus group: objective/ABBY-VOICE-G016
+- Merge key: 5eb79dd7fa80778b
+- Merge family: objective/ABBY-VOICE-G016
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: fe4b2ce57d2dd612
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G016. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-015-objective-gap-7d9fb03c0236.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (priority-aware claims, audio capability constraints, provider batch compatibility tests, resource and provider saturation tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-016 Implement Abby voice objective: Reconcile generated audio and enforce round-trip quality
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-quality
+- Depends on: ABBY-VOICE-AUTO-012, ABBY-VOICE-AUTO-015
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py tests/voice/test_abby_voice_safety.py
+- Bundle: abby-voice/audio-reconciliation
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-reconciliation.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 6
+- Parallel lane: abby-voice-quality
+- Conflict policy: quality policy is deterministic and versioned; no fuzzy acceptance; failed artifacts remain immutable evidence and are quarantined rather than deleted
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py
+- Changed paths:
+- AST symbols: reconcile_voice_job_result, AudioQualityPolicy, validate_tts_asr_roundtrip, AbbyVoiceAudio
+- Interfaces: VoiceJobResult, AbbyVoiceAudio, ArtifactManifest, GraphRAG response plan
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts: data/abby_voice/normalized/audio-reconciliation.jsonl, data/abby_voice/normalized/audio-quality-report.json
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G017
+- Canonical task key: task/v1/9dfc89ed40dde1361cd5bf9e721cbbcd1bb7c76b6193c49789813d0ae5e89f5e
+- Canonical task CID: baguqeeratx6it3ka3xqtmhgvx6phehf3zun3pr3lmgj4jf4jqe6qvzpit5pa
+- Semantic identity: objective-evidence-obligation/v1/a0abe4be682f2d4d23be90b927eaddd0ea09a29a89296e4f6e70d2071a7f43f8
+- Acceptance subset: audio reconciliation
+- Preconditions: objective goal ABBY-VOICE-G017 is schedulable
+- Effects: satisfy evidence requirement: audio reconciliation
+- Evidence subset: audio reconciliation
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G017
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a0abe4be682f2d4d23be90b927eaddd0ea09a29a89296e4f6e70d2071a7f43f8
+- Missing evidence: audio reconciliation
+- Embedding query: Abby audio reconcile TTS ASR WER CER slot fidelity silence clipping quarantine
+- AST query: reconcile_voice_job_result, AudioQualityPolicy, validate_tts_asr_roundtrip, AbbyVoiceAudio
+- Surplus group: objective/ABBY-VOICE-G017
+- Merge key: 95a90ad00e6b22e2
+- Merge family: objective/ABBY-VOICE-G017
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f16d33e102c69e86
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G017. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-016-objective-gap-d40da75c0c06.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (audio reconciliation), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-017 Implement Abby voice objective: Adopt the unified router in wallet_interface
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: voice-integration
+- Depends on: ABBY-VOICE-AUTO-019, ABBY-VOICE-AUTO-020
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
+- Validation: python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts
+- Bundle: abby-voice/wallet-adoption
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-wallet-adoption.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G008, ABBY-VOICE-G009
+- Graph depth: 7
+- Objective heap index: 7
+- Parallel lane: abby-voice-integration
+- Conflict policy: use a feature flag and preserve all existing fallback paths until end-to-end receipts pass in deployed-like tests
+- Predicted files: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts, wallet_interface/ui/tests/agent-voice-router.spec.ts, docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md
+- Changed paths:
+- AST symbols: ClientAudioReplyService, RemoteSpeechToTextResult, AgentAudioChatSurface, VoiceTurnResult
+- Interfaces: wallet voice proxy HTTP, VoiceTurnResult JSON, browser audio fallbacks
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G010
+- Canonical task key: task/v1/73ca6376603b98d53f5a44598f2ee86e9bbe845a474c396d7b1595e67d0c3fd5
+- Canonical task CID: baguqeeraopfgg5tahomnkp22irmy6lxin2n35bc2i5gds3l3cwk6m7imh7kq
+- Semantic identity: objective-evidence-obligation/v1/930680fbaa1db6c01aaec79a39014f229361d6e787eff7b98bce851fe42fb0d6
+- Acceptance subset: focused tests cover provenance, `AgentAudioChatSurface` retains browser SpeechRecognition, the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
+- Preconditions: objective goal ABBY-VOICE-G010 is schedulable
+- Effects: satisfy evidence requirement: focused tests cover provenance, satisfy evidence requirement: `AgentAudioChatSurface` retains browser SpeechRecognition, satisfy evidence requirement: the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
+- Evidence subset: focused tests cover provenance, `AgentAudioChatSurface` retains browser SpeechRecognition, the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G010
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/930680fbaa1db6c01aaec79a39014f229361d6e787eff7b98bce851fe42fb0d6
+- Missing evidence: focused tests cover provenance, `AgentAudioChatSurface` retains browser SpeechRecognition, the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
+- Embedding query: wallet Abby voice proxy shared router browser SpeechRecognition WebGPU browser speech rollout
+- AST query: ClientAudioReplyService, RemoteSpeechToTextResult, AgentAudioChatSurface, VoiceTurnResult
+- Surplus group: objective/ABBY-VOICE-G010
+- Merge key: 110e7058228f20d9
+- Merge family: objective/ABBY-VOICE-G010
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d5e0b6da0795e234
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G010. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-017-objective-gap-25c15bfd594c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (focused tests cover provenance, `AgentAudioChatSurface` retains browser SpeechRecognition, the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-018 Implement Abby voice objective: Build and validate deterministic Hugging Face releases
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-data
+- Depends on: ABBY-VOICE-AUTO-006, ABBY-VOICE-AUTO-016
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py
+- Bundle: abby-voice/hf-release
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-hf-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 8
+- Parallel lane: abby-voice-release
+- Conflict policy: extract generic atomic Parquet descriptor helpers without copying the SkillCenter builder; manifests and indexes are support artifacts, never mixed into row configs
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
+- Changed paths:
+- AST symbols: ArtifactManifest, AbbyVoiceHFReleaseBuilder, validate_abby_voice_hf_release, AbbyVoiceEvaluation
+- Interfaces: ArtifactManifest, PyArrow voice schemas, SlottedResponseIndex serialization, Hugging Face dataset YAML
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/releases/release-manifest.json, data/abby_voice/releases/README.md
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G018
+- Canonical task key: task/v1/6cc88e1ee6e34ada05cbdbaf6214950c222353f70e4343ac52c47a02edbf330c
+- Canonical task CID: baguqeerantei4hxg4nfnubol3oxwefevbqrcgu7xbzbuhlcsyr5af3n7gmga
+- Semantic identity: objective-evidence-obligation/v1/86eca39bfb7aeb8c74771af34ff91bc7f4a67ab885be6c3652a1348d7618b519
+- Acceptance subset: deterministic release construction, five flat Abby configs including evaluation, sharded ZSTD Parquet descriptors, byte-identical rebuild
+- Preconditions: objective goal ABBY-VOICE-G018 is schedulable
+- Effects: satisfy evidence requirement: deterministic release construction, satisfy evidence requirement: five flat Abby configs including evaluation, satisfy evidence requirement: sharded ZSTD Parquet descriptors, satisfy evidence requirement: byte-identical rebuild
+- Evidence subset: deterministic release construction, five flat Abby configs including evaluation, sharded ZSTD Parquet descriptors, byte-identical rebuild
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G018
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/86eca39bfb7aeb8c74771af34ff91bc7f4a67ab885be6c3652a1348d7618b519
+- Missing evidence: deterministic release construction, five flat Abby configs including evaluation, sharded ZSTD Parquet descriptors, byte-identical rebuild
+- Embedding query: deterministic Abby Hugging Face Parquet release Dataset Viewer ArtifactManifest GraphRAG index
+- AST query: ArtifactManifest, AbbyVoiceHFReleaseBuilder, validate_abby_voice_hf_release, AbbyVoiceEvaluation
+- Surplus group: objective/ABBY-VOICE-G018
+- Merge key: e2842b7cf318f174
+- Merge family: objective/ABBY-VOICE-G018
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 3094616398567711
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G018. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-018-objective-gap-e21ff415cb45.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (deterministic release construction, five flat Abby configs including evaluation, sharded ZSTD Parquet descriptors, byte-identical rebuild), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-019 Implement Abby voice objective: Load pinned releases and resolve precomputed audio safely
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-integration
+- Depends on: ABBY-VOICE-AUTO-007, ABBY-VOICE-AUTO-018
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Bundle: abby-voice/runtime-release
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-runtime-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 9
+- Parallel lane: abby-voice-integration
+- Conflict policy: add revision support to the existing streaming loader; resolver failure falls through to live TTS or text-only output and never serves a near or stale match
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Changed paths:
+- AST symbols: AbbyVoiceReleaseLoader, PrecomputedVoiceAudioResolver, process_voice_turn
+- Interfaces: HuggingFaceStreamingLoader, SlottedResponseIndex, VoiceTemplateProvider, voice_router
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G019
+- Canonical task key: task/v1/e81312c5e98617f4e7fc5cc2899cae0b802554fd4c9d5eb3ebb195b996dd734c
+- Canonical task CID: baguqeera5ajrfrpjqyl7jz74ltbithfoboackvh5jsov5m7lwgk3tfw5onga
+- Semantic identity: objective-evidence-obligation/v1/f2add973b1b0c4401abaa49edf3b683c6249c01b29c79104857b2cfe45fecd71
+- Acceptance subset: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Preconditions: objective goal ABBY-VOICE-G019 is schedulable
+- Effects: satisfy evidence requirement: runtime resolution, satisfy evidence requirement: revision-pinned streaming/release loader, satisfy evidence requirement: exact audio resolver, satisfy evidence requirement: stale-slot regression test
+- Evidence subset: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G019
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f2add973b1b0c4401abaa49edf3b683c6249c01b29c79104857b2cfe45fecd71
+- Missing evidence: runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test
+- Embedding query: pinned Abby release GraphRAG runtime precomputed audio exact rendered text slot hash
+- AST query: AbbyVoiceReleaseLoader, PrecomputedVoiceAudioResolver, process_voice_turn
+- Surplus group: objective/ABBY-VOICE-G019
+- Merge key: 148999199b15c4be
+- Merge family: objective/ABBY-VOICE-G019
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 46142b506dd8941e
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G019. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-019-objective-gap-0d53313c748d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (runtime resolution, revision-pinned streaming/release loader, exact audio resolver, stale-slot regression test), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-020 Implement Abby voice objective: Prove the distributed dataset-to-voice pipeline end to end
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-evaluation
+- Depends on: ABBY-VOICE-AUTO-008, ABBY-VOICE-AUTO-015, ABBY-VOICE-AUTO-018, ABBY-VOICE-AUTO-019
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Validation: python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check
+- Bundle: abby-voice/end-to-end
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-end-to-end.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 10
+- Parallel lane: abby-voice-evaluation
+- Conflict policy: offline gates use fakes and tiny public fixtures; real provider and remote read canaries require explicit scope credentials cost limit and retention approval
+- Predicted files: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Changed paths:
+- AST symbols: TaskQueue, VoiceJobResult, AbbyVoiceHFReleaseBuilder, AbbyVoiceReleaseLoader, process_voice_turn
+- Interfaces: all Abby voice dataset scheduler router and runtime boundaries
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts: docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G020
+- Canonical task key: task/v1/d1daed4bbfb4f5f6010ec6bc1bcabec0b8d88fb3561925d68150659a233527a4
+- Canonical task CID: baguqeera2hno2s57wt27maioy26bxsv6yc4nrd5tkymslvubkbszuizve6sa
+- Semantic identity: objective-evidence-obligation/v1/864cf235cfa0250194a382de521e7210a99f724189d5923bb52f74ea5a71cd54
+- Acceptance subset: offline deterministic fixture, worker-crash recovery test, capability/resource backpressure test
+- Preconditions: objective goal ABBY-VOICE-G020 is schedulable
+- Effects: satisfy evidence requirement: offline deterministic fixture, satisfy evidence requirement: worker-crash recovery test, satisfy evidence requirement: capability/resource backpressure test
+- Evidence subset: offline deterministic fixture, worker-crash recovery test, capability/resource backpressure test
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G020
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/864cf235cfa0250194a382de521e7210a99f724189d5923bb52f74ea5a71cd54
+- Missing evidence: offline deterministic fixture, worker-crash recovery test, capability/resource backpressure test
+- Embedding query: Abby distributed TTS ASR STT DuckDB GraphRAG release end to end restart recovery
+- AST query: TaskQueue, VoiceJobResult, AbbyVoiceHFReleaseBuilder, AbbyVoiceReleaseLoader, process_voice_turn
+- Surplus group: objective/ABBY-VOICE-G020
+- Merge key: 09015e54d6bd7770
+- Merge family: objective/ABBY-VOICE-G020
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 5c20521ef76986f9
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G020. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-020-objective-gap-749af6bcaadf.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (offline deterministic fixture, worker-crash recovery test, capability/resource backpressure test), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-021 Implement Abby voice objective: Publish and promote an immutable Hugging Face release
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: voice-release
+- Depends on: ABBY-VOICE-AUTO-009, ABBY-VOICE-AUTO-018, ABBY-VOICE-AUTO-020
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py, scripts/publish_abby_voice_release.py, docs/runbooks/ABBY_VOICE_HF_RELEASE.md, data/abby_voice/releases/publication-receipt.json
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run
+- Bundle: abby-voice/hf-publication
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-hf-publication.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 11
+- Parallel lane: abby-voice-release
+- Conflict policy: autonomous work stops after a dry run; no delete move overwrite mutable-main URL or pointer promotion occurs without explicit human approval of the exact manifest commit operations credentials scope and cost bound
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/publisher.py, scripts/publish_abby_voice_release.py, docs/runbooks/ABBY_VOICE_HF_RELEASE.md, data/abby_voice/releases/publication-receipt.json, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py
+- Changed paths:
+- AST symbols: HuggingFaceReleasePublisher, publish_abby_voice_release, validate_abby_voice_hf_release
+- Interfaces: HfApi create_commit, Abby release manifest, runtime release pointer
+- Submodules: ipfs_datasets_py
+- Generated artifacts: data/abby_voice/releases/publication-receipt.json
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G021
+- Canonical task key: task/v1/e327bc9ed65bbd9070c5c30adf846fd6a597e7ab7ade557b9ed9321f04fd8489
+- Canonical task CID: baguqeera4mt3zhwwlo6za4gfymfn7bdp22szpz5lplpfk6463ezb6bh5qseq
+- Semantic identity: objective-evidence-obligation/v1/440386f69d9b031ad057cb8dce5fdd28769cdc601c66ae070f354ff148373cb1
+- Acceptance subset: post-publication verification, dry-run diff and cost receipt, pinned redownload validation
+- Preconditions: objective goal ABBY-VOICE-G021 is schedulable
+- Effects: satisfy evidence requirement: post-publication verification, satisfy evidence requirement: dry-run diff and cost receipt, satisfy evidence requirement: pinned redownload validation
+- Evidence subset: post-publication verification, dry-run diff and cost receipt, pinned redownload validation
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G021
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/440386f69d9b031ad057cb8dce5fdd28769cdc601c66ae070f354ff148373cb1
+- Missing evidence: post-publication verification, dry-run diff and cost receipt, pinned redownload validation
+- Embedding query: Hugging Face append only publish commit SHA verify canary rollback Abby voice
+- AST query: HuggingFaceReleasePublisher, publish_abby_voice_release, validate_abby_voice_hf_release
+- Surplus group: objective/ABBY-VOICE-G021
+- Merge key: 76b9de750361da43
+- Merge family: objective/ABBY-VOICE-G021
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: a25bb2a2fb26cb73
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G021. Use evidence in /home/barberb/211-AI/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-021-objective-gap-529dc663eadc.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (post-publication verification, dry-run diff and cost receipt, pinned redownload validation), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
