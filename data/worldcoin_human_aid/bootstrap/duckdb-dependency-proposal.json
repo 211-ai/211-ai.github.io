@@ -1,0 +1,184 @@
+{
+  "schema_version": "world-aid-duckdb-dependency-proposal/v1",
+  "status": "unapproved-inventory-only",
+  "goal_id": "WORLDCOIN-G042",
+  "authority_statement": "NOT APPROVED. This repository-only packet carries qualified G002 declarations and observations into human review; it does not select, install, import, execute, or attest to DuckDB.",
+  "approval": {
+    "required": true,
+    "binding": "signed Gate 0B-selection",
+    "canonical_path": "data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json",
+    "canonical_schema": "world-human-aid-gate-0b-selection/v2",
+    "selection_owner": "human-reviewers",
+    "expires_at": null,
+    "exceptions": {
+      "required_fields": [
+        "id",
+        "owner",
+        "rationale",
+        "compensating_controls",
+        "expires_at"
+      ],
+      "selected": []
+    }
+  },
+  "dependency": {
+    "name": "duckdb",
+    "version": null,
+    "wheel_filename": null,
+    "sha256": null,
+    "cpython_abi": null,
+    "platform_tag": null,
+    "license_evidence": null,
+    "provenance_evidence": null,
+    "sbom_evidence": null,
+    "vulnerability_disposition": null,
+    "selection_is_human_owned": true
+  },
+  "inventory": {
+    "source_goal": "WORLDCOIN-G002",
+    "source_artifact": "data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory.python_duckdb",
+    "declarations": [
+      {
+        "input": "DuckDB Python dependency",
+        "version": ">=1.4.0",
+        "state": "declared-unapproved",
+        "evidence": "pyproject.toml::project.dependencies[duckdb]",
+        "qualification": "A root version range is neither an exact version, wheel, hash, ABI/platform selection, nor Gate 0B approval."
+      }
+    ],
+    "observed_metadata": [
+      {
+        "input": "DuckDB system-user-site distribution metadata",
+        "version": "1.4.3",
+        "state": "observed-install-metadata-unapproved",
+        "evidence": "data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory.python_duckdb.observed_environment",
+        "qualification": "G002 observed static distribution metadata only. DuckDB was not imported and wheel bytes, integrity, provenance, ABI/platform compatibility, and runtime readiness were not established."
+      },
+      {
+        "input": "inactive workspace virtual-environment DuckDB metadata",
+        "version": "1.5.2",
+        "state": "observed-alternate-environment-metadata-unapproved",
+        "evidence": "data/worldcoin_human_aid/audit/offline-bootstrap-proposal.json::inventory.python_duckdb.observed_environment",
+        "qualification": "G002 observed alternate inactive-environment metadata only. It was not imported, selected, or established as the historical worker runtime."
+      }
+    ],
+    "version_conflict": {
+      "present": true,
+      "values": [
+        "declared >=1.4.0",
+        "observed system-user-site 1.4.3",
+        "observed inactive workspace 1.5.2"
+      ],
+      "disposition": "unresolved-human-selection-required",
+      "must_not_infer": "No observed or declared version is the approved DuckDB selection."
+    },
+    "not_observed_or_unselected": [
+      "exact approved DuckDB Python wheel and embedded native library",
+      "approved DuckDB wheelhouse and exact platform-native wheel closure"
+    ],
+    "note": "This is a qualified carry-forward of G002 evidence. Absence is not proof of global absence; observed metadata and declarations are not approval."
+  },
+  "inputs": {
+    "read_only_wheelhouse": {
+      "path": null,
+      "read_only": true,
+      "selection_owner": "human-reviewers"
+    },
+    "requirements_lock": {
+      "path": "requirements-world-aid.lock",
+      "sha256": null
+    },
+    "reviewed_adr": {
+      "path": "docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md",
+      "sha256": null
+    },
+    "runtime_policy": {
+      "path": "wallet_interface/deploy/world-aid-duckdb-runtime.yml",
+      "sha256": null
+    },
+    "backup_policy": {
+      "path": "docs/specs/WORLD_AID_DUCKDB_BACKUP.md",
+      "sha256": null
+    },
+    "storage_policy": "local-approved-encrypted-volume-only",
+    "encryption_policy": "G033-owned application envelope encryption; never supplied by DuckDB"
+  },
+  "runtime_policy": {
+    "enable_external_access": false,
+    "autoinstall_known_extensions": false,
+    "autoload_known_extensions": false,
+    "allow_community_extensions": false,
+    "extension_directory": {
+      "mode": "disabled",
+      "path": "",
+      "allowlist": []
+    },
+    "network": "denied",
+    "index": "denied",
+    "dns": "denied",
+    "http": "denied",
+    "extension_registry": "denied",
+    "topology": "single-host-exactly-one-writer",
+    "client_boundary": "authenticated-local-ipc",
+    "database_paths": "local-approved-encrypted-volume-only",
+    "direct_worker_writes": false,
+    "shared_filesystem": false,
+    "application_encryption": "G033-owned; DuckDB does not supply it"
+  },
+  "tests": {
+    "static": "tests/world_aid/test_duckdb_bootstrap_static.py",
+    "runtime_contract": "tests/world_aid/test_duckdb_bootstrap.py",
+    "approved_execution_owner": "G040",
+    "required_real_smoke_boundary": [
+      "empty isolated environment",
+      "hash-required install from approved read-only wheelhouse",
+      "index extension-registry DNS and HTTP deny",
+      "local-filesystem database",
+      "transaction commit",
+      "rollback",
+      "uniqueness",
+      "compare-and-swap",
+      "atomic outbox",
+      "direct second-writer rejection",
+      "checkpoint",
+      "crash and reopen",
+      "raw opaque backup and restore",
+      "corruption detection",
+      "opaque synthetic payload round trip",
+      "extension absence and deny settings",
+      "database WAL and temporary-data teardown"
+    ],
+    "fail_closed_on": [
+      "missing or mismatched wheel",
+      "dependency-lock drift",
+      "unexpected extension",
+      "non-local or shared path",
+      "direct worker or multiple writer access",
+      "network attempt",
+      "stale or conflicting approval",
+      "skipped real DuckDB execution",
+      "wheelhouse or reviewed-input mutation",
+      "incomplete cleanup"
+    ],
+    "g033_exclusions": [
+      "application envelope-encryption implementation",
+      "plaintext-marker absence",
+      "encrypted authenticated backup",
+      "key rotation retention and deletion"
+    ]
+  },
+  "non_execution_receipt": {
+    "performed": false,
+    "prohibited": [
+      "DuckDB import or execution",
+      "database creation or open",
+      "wheel install",
+      "pip execution",
+      "index or extension request",
+      "cache access or mutation",
+      "secret lookup",
+      "runtime smoke"
+    ],
+    "owner": "G042"
+  }
+}

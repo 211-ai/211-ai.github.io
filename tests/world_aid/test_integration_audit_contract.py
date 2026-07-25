@@ -92,6 +92,11 @@ def test_audit_records_every_required_confirmed_finding_with_source_citations() 
 
 def test_audit_identifies_missing_boundaries_with_correct_goal_ownership() -> None:
     audit = AUDIT_PATH.read_text(encoding="utf-8")
+    assert "## Acceptance trace" in audit
+    assert "frozen hand-off contract" in audit
+    assert "not a runtime approval" in audit
+    assert "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md::WORLDCOIN-G002" in audit
+    assert "Findings A-01 through A-07" in audit
     for heading_or_term in (
         "**EIP-1271 SIWE.**",
         "**Issuer credential lifecycle.**",

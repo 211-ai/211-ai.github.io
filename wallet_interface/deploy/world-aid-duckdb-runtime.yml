@@ -1,0 +1,88 @@
+# World Human-Aid DuckDB runtime policy proposal.
+# STATUS: NOT APPROVED. Gate 0B-selection must bind exact values before G040.
+apiVersion: world-aid.211-ai/v1
+kind: DuckDBRuntimePolicy
+metadata:
+  name: world-aid-duckdb
+  approval: gate-0b-selection-required
+  owner: G040
+spec:
+  execution: g040-only-after-signed-selection
+  host: single-local-host
+  writers:
+    expected: 1
+    direct_worker_writes: false
+    multi_host: false
+    shared_filesystem: false
+  boundary:
+    kind: authenticated-local-ipc
+    address: /run/world-aid/duckdb-writer.sock
+    network: local-only
+    raw_database_path_exposed_to_clients: false
+  paths:
+    database: /var/lib/world-aid/duckdb/world-aid.duckdb
+    wal: /var/lib/world-aid/duckdb/world-aid.duckdb.wal
+    temporary: /var/lib/world-aid/duckdb/tmp
+    backup: /var/lib/world-aid/duckdb/backups
+    wheelhouse: /opt/world-aid/wheelhouse
+    wheelhouse_source: human-gate-0b-repository-relative-path-required
+    lock: requirements-world-aid.lock
+    path_policy: local-approved-encrypted-volume-only
+    network_filesystem: false
+    symlinks: false
+    wheelhouse_mutable: false
+    lock_mutable: false
+  duckdb_settings:
+    enable_external_access: false
+    autoinstall_known_extensions: false
+    autoload_known_extensions: false
+    allow_community_extensions: false
+    extension_directory: /opt/world-aid/empty-extensions
+    extension_directory_mode: disabled
+    extension_allowlist: []
+    network: denied
+    index: denied
+    extension_registry: denied
+    dns: denied
+    http: denied
+  encryption:
+    database_file_is_application_encryption: false
+    envelope_encryption_owner: G033
+    key_material: external-approved-kms-or-hsm-reference
+    volume: approved-encrypted-volume-required
+  runtime_selection:
+    version: human-selection-required
+    wheel_filename: human-selection-required
+    sha256: human-selection-required
+    cpython_abi: human-selection-required
+    platform_tag: human-selection-required
+  verification:
+    verifier: scripts/verify_world_aid_duckdb_bootstrap.py
+    runtime_contract: tests/world_aid/test_duckdb_bootstrap.py
+    approved_runtime_owner: G040
+    static_contract_owner: G042
+    skipped_real_execution: fail
+    required_checks:
+      - empty-isolated-environment
+      - hash-required-read-only-wheelhouse-install
+      - index-extension-registry-dns-http-deny
+      - local-filesystem-database
+      - transaction-commit
+      - rollback
+      - uniqueness
+      - compare-and-swap
+      - atomic-outbox
+      - direct-second-writer-rejection
+      - checkpoint
+      - crash-and-reopen
+      - raw-opaque-backup-and-restore
+      - corruption-detection
+      - opaque-synthetic-payload-round-trip
+      - extension-absence-and-deny-settings
+      - database-wal-temporary-data-teardown
+    g033_excluded_checks:
+      - application-envelope-encryption
+      - plaintext-marker-absence
+      - encrypted-authenticated-production-backup
+      - key-rotation-retention-deletion
+  expiry: human-selection-required

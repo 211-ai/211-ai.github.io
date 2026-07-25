@@ -10,6 +10,8 @@ from pathlib import Path
 import pytest
 
 from scripts.verify_world_aid_generated_board import (
+    BLOCKED_REVIEW_CONTRACT,
+    GATE0B_REOPENED_CONTRACT,
     BoardVerificationError,
     main,
     verify_generated_board,
@@ -53,10 +55,13 @@ def _task(
     validation: str,
     status: str = "todo",
 ) -> str:
+    review_only = status == "blocked"
     return f"""## {task_id} Implement {goal_id}
 
 - Status: {status}
 - Completion: manual
+- Is schedulable: {str(not review_only).lower()}
+- Review only: {str(review_only).lower()}
 - Outputs: generated/discovery, objective.md, {output}
 - Validation: {validation}
 - Bundle: {bundle}
@@ -68,7 +73,11 @@ def _task(
 """
 
 
-def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+def _write_fixture(
+    tmp_path: Path,
+    *,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
+) -> tuple[Path, Path, Path]:
     repo_root = tmp_path / "repo"
     generated_root = repo_root / "data/worldcoin_human_aid/agent_supervisor/regenerations/test-review"
     bundle_dir = generated_root / "objective_bundles"
@@ -80,7 +89,16 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     goal_specs: list[dict[str, str]] = []
     for number in range(1, 43):
         goal_id = f"WORLDCOIN-G{number:03d}"
-        status = "blocked" if number in {35, 36} else "active"
+        if number in {35, 36}:
+            status = "blocked"
+        elif number in {38, 39, 40}:
+            status = (
+                "reopened"
+                if board_contract == GATE0B_REOPENED_CONTRACT
+                else "blocked"
+            )
+        else:
+            status = "active"
         if number == 1:
             parents = ""
         elif number == 36:
@@ -104,10 +122,19 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     )
 
     task_blocks: list[str] = []
-    task_by_goal: dict[str, dict[str, str]] = {}
+    task_by_goal: dict[str, dict[str, object]] = {}
     bundles: dict[str, dict[str, object]] = {}
     for task_number, spec in enumerate(
-        (item for item in goal_specs if item["status"] == "active"),
+        (
+            item
+            for item in goal_specs
+            if item["status"] in {"active", "reopened"}
+            or item["goal_id"] in {
+                "WORLDCOIN-G038",
+                "WORLDCOIN-G039",
+                "WORLDCOIN-G040",
+            }
+        ),
         start=1,
     ):
         goal_id = spec["goal_id"]
@@ -124,6 +151,7 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             parents=spec["parents"] or "none",
             output=spec["output"],
             validation=spec["validation"],
+            status="blocked" if spec["status"] == "blocked" else "todo",
         )
         task_blocks.append(task_block)
         task_by_goal[goal_id] = {
@@ -132,16 +160,24 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             "bundle": bundle,
             "shard": shard_relative,
             "body": task_block,
+            "status": "blocked" if spec["status"] == "blocked" else "todo",
+            "is_schedulable": spec["status"] != "blocked",
+            "review_only": spec["status"] == "blocked",
         }
         bundles[bundle] = {
             "bundle_key": bundle,
             "shard_path": shard_relative,
+            "is_schedulable": spec["status"] != "blocked",
+            "review_only": spec["status"] == "blocked",
             "tasks": [
                 {
                     "task_id": task_id,
                     "canonical_task_cid": cid,
                     "task_cid": cid,
                     "goal_id": goal_id,
+                    "status": "blocked" if spec["status"] == "blocked" else "todo",
+                    "is_schedulable": spec["status"] != "blocked",
+                    "review_only": spec["status"] == "blocked",
                     "parent_goal_ids": [item.strip() for item in spec["parents"].split(",") if item.strip()],
                     "outputs": [spec["output"]],
                     "acceptance_criteria": ["Deterministic fixture acceptance."],
@@ -162,7 +198,18 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             encoding="utf-8",
         )
 
-    nodes = {task["cid"]: {"task_id": task["task_id"], "goal_id": goal_id} for goal_id, task in task_by_goal.items()}
+    nodes = {
+        task["cid"]: {
+            "task_id": task["task_id"],
+            "goal_id": goal_id,
+            "status": task["status"],
+            "metadata": {
+                "is_schedulable": task["is_schedulable"],
+                "review_only": task["review_only"],
+            },
+        }
+        for goal_id, task in task_by_goal.items()
+    }
     edges = []
     for spec in goal_specs:
         child = task_by_goal.get(spec["goal_id"])
@@ -184,7 +231,11 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "nodes": nodes,
         "edges": edges,
         "invalid_task_cids": [],
-        "claimable_task_cids": sorted(cid for cid, count in incoming.items() if count == 0),
+        "claimable_task_cids": sorted(
+            cid
+            for cid, count in incoming.items()
+            if count == 0 and nodes[cid]["status"] != "blocked"
+        ),
     }
     index = {
         "source_todo": f"{generated_relative}/WORLDCOIN_HUMAN_AID_TODO.md",
@@ -214,7 +265,10 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
         "objective_path": objective_path.relative_to(repo_root).as_posix(),
         "goal_count": len(goal_specs),
-        "active_goal_count": len(task_by_goal),
+        "active_goal_count": sum(
+            spec["status"] in {"active", "reopened"}
+            for spec in goal_specs
+        ),
         "completed_goal_count": 0,
         "goals": [
             {
@@ -232,10 +286,22 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             "nodes": [spec["goal_id"] for spec in goal_specs],
             "edges": graph_edges,
             "roots": ["WORLDCOIN-G001"],
-            "schedulable_goal_ids": sorted(task_by_goal),
-            "terminal_goal_ids": ["WORLDCOIN-G035", "WORLDCOIN-G036"],
+            "schedulable_goal_ids": sorted(
+                spec["goal_id"]
+                for spec in goal_specs
+                if spec["status"] in {"active", "reopened"}
+            ),
+            "terminal_goal_ids": [
+                spec["goal_id"]
+                for spec in goal_specs
+                if spec["status"] == "blocked"
+            ],
         },
-        "heap_schedule": [{"goal_id": goal_id} for goal_id in sorted(task_by_goal)],
+        "heap_schedule": [
+            {"goal_id": spec["goal_id"]}
+            for spec in goal_specs
+            if spec["status"] in {"active", "reopened"}
+        ],
     }
     (generated_root / "objective_graph.json").write_text(
         json.dumps(graph_payload, indent=2, sort_keys=True) + "\n",
@@ -253,7 +319,7 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
                 "task_cid": task["cid"],
                 "goal_id": spec["goal_id"],
                 "title": f"Implement {spec['goal_id']}",
-                "status": "todo",
+                "status": task["status"],
                 "acceptance": "Deterministic fixture acceptance.",
                 "bundle_key": task["bundle"],
                 "bundle_shard": task["shard"],
@@ -272,7 +338,7 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "objective_path": objective_path.relative_to(repo_root).as_posix(),
         "bundle_index_path": f"{generated_relative}/objective_bundles/index.json",
         "task_count": len(records),
-        "active_task_count": len(records),
+        "active_task_count": sum(record["status"] != "blocked" for record in records),
         "records": records,
         "query_artifact": {
             "path": f"{generated_relative}/objective_bundles/index.json",
@@ -286,12 +352,17 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return repo_root, objective_path, generated_root
 
 
-def _verify(paths: tuple[Path, Path, Path]):
+def _verify(
+    paths: tuple[Path, Path, Path],
+    *,
+    board_contract: str = BLOCKED_REVIEW_CONTRACT,
+):
     repo_root, objective_path, generated_root = paths
     return verify_generated_board(
         repo_root=repo_root,
         objective_path=objective_path,
         generated_root=generated_root,
+        board_contract=board_contract,
     )
 
 
@@ -338,7 +409,7 @@ def test_valid_board_passes_and_cli_writes_no_generated_data(
     assert summary.to_dict() == {
         "bundle_count": 40,
         "dag_count": 2,
-        "schedulable_goal_count": 40,
+        "schedulable_goal_count": 37,
         "source_goal_count": 42,
         "status": "passed",
         "task_count": 40,
@@ -351,6 +422,346 @@ def test_valid_board_passes_and_cli_writes_no_generated_data(
         if path.is_file()
     }
     assert after == before
+
+
+def test_reopened_gate0b_board_requires_explicit_contract_and_exact_status(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    paths = _write_fixture(
+        tmp_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    repo_root, objective_path, generated_root = paths
+
+    with pytest.raises(BoardVerificationError, match="blocked-goal set differs"):
+        _verify(paths)
+
+    summary = _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+    exit_code = main(
+        [
+            "--repo-root",
+            str(repo_root),
+            "--objective-path",
+            str(objective_path.relative_to(repo_root)),
+            "--generated-root",
+            str(generated_root.relative_to(repo_root)),
+            "--board-contract",
+            GATE0B_REOPENED_CONTRACT,
+        ]
+    )
+    assert summary.schedulable_goal_count == 40
+    assert summary.task_count == 40
+    assert exit_code == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "passed"
+
+    _replace(
+        objective_path,
+        "## WORLDCOIN-G038 Example goal\n\n- Status: reopened",
+        "## WORLDCOIN-G038 Example goal\n\n- Status: active",
+    )
+    with pytest.raises(
+        BoardVerificationError,
+        match=(
+            "gate0b-selection-reopened-v1 requires WORLDCOIN-G038 "
+            "status to be exactly 'reopened'"
+        ),
+    ):
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+
+
+def test_reopened_gate0b_board_rejects_review_only_flags(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(
+        tmp_path,
+        board_contract=GATE0B_REOPENED_CONTRACT,
+    )
+    _replace(
+        paths[2] / "WORLDCOIN_HUMAN_AID_TODO.md",
+        (
+            "## WORLDCOIN-AUTO-036 Implement WORLDCOIN-G038\n\n"
+            "- Status: todo\n"
+            "- Completion: manual\n"
+            "- Is schedulable: true"
+        ),
+        (
+            "## WORLDCOIN-AUTO-036 Implement WORLDCOIN-G038\n\n"
+            "- Status: todo\n"
+            "- Completion: manual\n"
+            "- Is schedulable: false"
+        ),
+    )
+    with pytest.raises(
+        BoardVerificationError,
+        match=(
+            "reopened scheduling flag 'is_schedulable' must be "
+            "literal 'true'"
+        ),
+    ):
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+
+
+def test_reopened_contract_rejects_current_blocked_review_projection(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    with pytest.raises(BoardVerificationError) as raised:
+        _verify(paths, board_contract=GATE0B_REOPENED_CONTRACT)
+    rendered = "\n".join(raised.value.problems)
+    assert "blocked-goal set differs" in rendered
+    assert (
+        "requires WORLDCOIN-G038 status to be exactly 'reopened'; "
+        "found 'blocked'"
+    ) in rendered
+
+
+@pytest.mark.parametrize(
+    ("layer", "expected"),
+    [
+        (
+            "todo",
+            "review-only goal WORLDCOIN-G038 must remain status 'blocked'",
+        ),
+        (
+            "index",
+            "bundle index task WORLDCOIN-AUTO-036 for review-only goal "
+            "WORLDCOIN-G038 must remain status 'blocked'",
+        ),
+        (
+            "dag",
+            "dependency_dag node 'cid-worldcoin-g038' for review-only goal "
+            "WORLDCOIN-G038 must remain status 'blocked'",
+        ),
+    ],
+)
+def test_review_only_goal_status_must_remain_blocked_in_every_task_projection(
+    tmp_path: Path,
+    layer: str,
+    expected: str,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    if layer == "todo":
+        _replace(
+            paths[2] / "WORLDCOIN_HUMAN_AID_TODO.md",
+            "Status: blocked",
+            "Status: todo",
+        )
+    elif layer == "index":
+        def mutate_index(payload: dict[str, object]) -> None:
+            bundles = payload["bundles"]
+            assert isinstance(bundles, dict)
+            bundle = bundles["world-aid/worldcoin-g038"]
+            assert isinstance(bundle, dict)
+            tasks = bundle["tasks"]
+            assert isinstance(tasks, list)
+            task = tasks[0]
+            assert isinstance(task, dict)
+            task["status"] = "todo"
+
+        _rewrite_index(paths[2], mutate_index)
+    else:
+        def mutate_dag(payload: dict[str, object]) -> None:
+            dag = payload["dependency_dag"]
+            assert isinstance(dag, dict)
+            nodes = dag["nodes"]
+            assert isinstance(nodes, dict)
+            node = nodes["cid-worldcoin-g038"]
+            assert isinstance(node, dict)
+            node["status"] = "todo"
+
+        _rewrite_index(paths[2], mutate_dag)
+
+    with pytest.raises(BoardVerificationError) as raised:
+        _verify(paths)
+    assert expected in "\n".join(raised.value.problems)
+
+
+@pytest.mark.parametrize(
+    ("layer", "field", "mutation", "expected"),
+    [
+        (
+            "todo",
+            "is_schedulable",
+            "wrong",
+            "review-only scheduling flag 'is_schedulable' must be literal 'false'",
+        ),
+        (
+            "todo",
+            "review_only",
+            "missing",
+            "is missing review-only scheduling flag 'review_only'",
+        ),
+        (
+            "index_task",
+            "is_schedulable",
+            "missing",
+            "is missing review-only scheduling flag 'is_schedulable'",
+        ),
+        (
+            "index_task",
+            "review_only",
+            "wrong",
+            "review-only scheduling flag 'review_only' must be JSON boolean true",
+        ),
+        (
+            "bundle",
+            "is_schedulable",
+            "wrong",
+            "review-only scheduling flag 'is_schedulable' must be JSON boolean false",
+        ),
+        (
+            "bundle",
+            "review_only",
+            "missing",
+            "is missing review-only scheduling flag 'review_only'",
+        ),
+        (
+            "dag",
+            "is_schedulable",
+            "missing",
+            "is missing review-only scheduling flag 'is_schedulable'",
+        ),
+        (
+            "dag",
+            "review_only",
+            "wrong",
+            "review-only scheduling flag 'review_only' must be JSON boolean true",
+        ),
+    ],
+)
+def test_review_only_scheduling_flags_are_required_in_generated_projections(
+    tmp_path: Path,
+    layer: str,
+    field: str,
+    mutation: str,
+    expected: str,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    if layer == "todo":
+        labels = {
+            "is_schedulable": "Is schedulable",
+            "review_only": "Review only",
+        }
+        current = "false" if field == "is_schedulable" else "true"
+        replacement = (
+            ""
+            if mutation == "missing"
+            else f"- {labels[field]}: {'true' if current == 'false' else 'false'}\n"
+        )
+        _replace(
+            paths[2] / "WORLDCOIN_HUMAN_AID_TODO.md",
+            f"- {labels[field]}: {current}\n",
+            replacement,
+        )
+    else:
+        def mutate_index(payload: dict[str, object]) -> None:
+            bundles = payload["bundles"]
+            assert isinstance(bundles, dict)
+            bundle = bundles["world-aid/worldcoin-g038"]
+            assert isinstance(bundle, dict)
+            if layer == "bundle":
+                target = bundle
+            elif layer == "index_task":
+                tasks = bundle["tasks"]
+                assert isinstance(tasks, list)
+                target = tasks[0]
+                assert isinstance(target, dict)
+            else:
+                dag = payload["dependency_dag"]
+                assert isinstance(dag, dict)
+                nodes = dag["nodes"]
+                assert isinstance(nodes, dict)
+                node = nodes["cid-worldcoin-g038"]
+                assert isinstance(node, dict)
+                target = node["metadata"]
+                assert isinstance(target, dict)
+            if mutation == "missing":
+                target.pop(field)
+            else:
+                target[field] = not bool(target[field])
+
+        _rewrite_index(paths[2], mutate_index)
+
+    with pytest.raises(BoardVerificationError) as raised:
+        _verify(paths)
+    assert expected in "\n".join(raised.value.problems)
+
+
+@pytest.mark.parametrize(
+    ("old_goal", "new_goal", "expected"),
+    [
+        (
+            "WORLDCOIN-G038",
+            "WORLDCOIN-G035",
+            "review-only blocked goal WORLDCOIN-G038 must have exactly one "
+            "generated task; found 0",
+        ),
+        (
+            "WORLDCOIN-G039",
+            "WORLDCOIN-G038",
+            "review-only blocked goal WORLDCOIN-G038 must have exactly one "
+            "generated task; found 2",
+        ),
+    ],
+)
+def test_review_only_goals_must_materialize_exactly_once(
+    tmp_path: Path,
+    old_goal: str,
+    new_goal: str,
+    expected: str,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    _replace(
+        paths[2] / "WORLDCOIN_HUMAN_AID_TODO.md",
+        f"Goal id: {old_goal}",
+        f"Goal id: {new_goal}",
+    )
+
+    with pytest.raises(BoardVerificationError) as raised:
+        _verify(paths)
+    assert expected in "\n".join(raised.value.problems)
+
+
+def test_review_only_blocked_task_is_never_dag_claimable(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(tmp_path)
+
+    def mutate(payload: dict[str, object]) -> None:
+        dag = payload["dependency_dag"]
+        assert isinstance(dag, dict)
+        claimable = dag["claimable_task_cids"]
+        assert isinstance(claimable, list)
+        claimable.append("cid-worldcoin-g038")
+
+    _rewrite_index(paths[2], mutate)
+
+    with pytest.raises(
+        BoardVerificationError,
+        match="dependency_dag claimable roots differ",
+    ):
+        _verify(paths)
+
+
+def test_other_verified_goal_remains_non_materializable(
+    tmp_path: Path,
+) -> None:
+    paths = _write_fixture(tmp_path)
+    _replace(
+        paths[1],
+        "## WORLDCOIN-G001 Example goal\n\n- Status: active",
+        "## WORLDCOIN-G001 Example goal\n\n- Status: verified",
+    )
+
+    with pytest.raises(
+        BoardVerificationError,
+        match=(
+            "materializes non-schedulable goal WORLDCOIN-G001 "
+            "with status 'verified'"
+        ),
+    ):
+        _verify(paths)
 
 
 @pytest.mark.parametrize(

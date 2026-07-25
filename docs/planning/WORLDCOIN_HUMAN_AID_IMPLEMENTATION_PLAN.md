@@ -1678,15 +1678,26 @@ hashing, signer interfaces, and migration files. Generated tasks remain
 `blocked` when a production credential, treasury signer, legal decision,
 external audit, or named-owner signoff is required.
 
-The source heap currently contains 40 schedulable implementation goals:
-`WORLDCOIN-G001` through `WORLDCOIN-G034` plus the six offline-bootstrap
-objectives `WORLDCOIN-G037` through `WORLDCOIN-G042`. Two goals are deliberately
-terminal human gates: `WORLDCOIN-G035` for an externally authorized Sepolia
-evidence record and `WORLDCOIN-G036` for the production canary. The supervisor
-must not materialize, claim, or infer completion of either blocked goal.
+The source heap currently contains 37 schedulable implementation goals:
+`WORLDCOIN-G001` through `WORLDCOIN-G034` plus the three non-executing
+offline-bootstrap preparation objectives G037, G041, and G042. G038-G040 are
+materialized only as blocked, non-schedulable review records until a signed
+governance transition reopens exactly those three goals and a fresh board is
+generated; that future board would contain 40 schedulable goals. Two additional
+goals are deliberately terminal human gates: `WORLDCOIN-G035` for an externally
+authorized Sepolia evidence record and `WORLDCOIN-G036` for the production
+canary. The supervisor must not materialize, claim, or infer completion of
+either terminal human gate.
 
 The first executable profile is mechanically fenced to G002. Wider immutable
 profiles may be derived only after reviewing successful predecessor receipts.
+Any future G038-G040 execution uses a human-signed Gate 0B selection v2 record
+whose execution boundary binds `operator-gate-first/v1`, the independently
+deployed policy and conformance-attestation digests, sealed input/result
+protocols, and the exact reviewed launcher/verifier/runner bytes. A standalone
+Gate verifier result or ordinary agent-supervisor lane is not execution
+authority. The corresponding Gate 0B launch v2 record separately binds the
+future live-feature-disabled implementation operation.
 G037 prepares the non-executing SIWE verifier and lock proposal; G041 prepares
 the non-executing ZKP verifier and locked smoke inputs; G042 prepares the
 non-executing DuckDB verifier, dependency lock, storage ADR, runtime/backup

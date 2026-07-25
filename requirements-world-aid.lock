@@ -1,0 +1,22 @@
+# WORLD AID DEPENDENCY LOCK CONTRACT (unapproved proposal)
+#
+# This is intentionally not an installable selection. The exact DuckDB
+# release, wheel and hash remain human-owned until Gate 0B-selection binds
+# them. Human reviewers must replace this proposal with the exact hash-pinned
+# lock before signing Gate 0B-selection. G040 consumes that signed digest
+# read-only and may not materialize, rewrite, or regenerate the lock.
+
+--only-binary=:all:
+--no-index
+--require-hashes
+
+# HUMAN_SELECTION_REQUIRED: duckdb version is deliberately unselected.
+# HUMAN_SELECTION_REQUIRED: one exact filename must encode matching
+# DuckDB version, CPython interpreter tag, CPython ABI tag, and platform tag.
+# HUMAN_SELECTION_REQUIRED: the signed record must bind the same raw wheel
+# bytes with sha256:<64 lowercase hex> under its mode-read-only wheelhouse.
+# duckdb==<GATE-0B-SELECTION-REQUIRED> \\
+#     --hash=sha256:<GATE-0B-SELECTION-REQUIRED>
+
+# The proposal's non-DuckDB runtime closure is likewise human-reviewed and
+# must be hash-pinned before installation. No package installation is implied.

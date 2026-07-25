@@ -1,5 +1,5 @@
 {
-  "schema_version": "world-human-aid-gate-0b-launch/v1",
+  "schema_version": "world-human-aid-gate-0b-launch/v2",
   "gate_id": "gate-0b-launch",
   "record_id": "REPLACE-WITH-UNIQUE-RECORD-ID",
   "decision": "pending",
@@ -55,6 +55,92 @@
     "dry_run_receipt": {
       "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-IMMUTABLE-REVIEW-ID/dry_run/lane-manifest.json",
       "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_verifier": {
+      "path": "scripts/verify_world_aid_gate_0b.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_launcher": {
+      "path": "scripts/world_aid_gate_first_launcher.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_launcher_protocol": {
+      "path": "docs/specs/WORLD_AID_GATE_FIRST_LAUNCHER.md",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "operator_policy_template": {
+      "path": "docs/governance/templates/gate-first-operator-policy.template.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_receipt_verifier": {
+      "path": "scripts/verify_world_aid_gate_first_receipt.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_transition_verifier": {
+      "path": "scripts/verify_world_aid_gate_0b_transition.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_transition_schema": {
+      "path": "docs/schemas/world_aid/gate-0b-transition.schema.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "gate_transition_template": {
+      "path": "docs/governance/templates/gate-0b-transition.template.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "deployment_attestation_schema": {
+      "path": "docs/schemas/world_aid/gate-first-deployment-conformance-attestation.schema.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "deployment_attestation_template": {
+      "path": "docs/governance/templates/gate-first-deployment-conformance-attestation.template.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "selection_profile_builder": {
+      "path": "scripts/build_world_aid_gate0b_selection_profile.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "siwe_bootstrap_runner": {
+      "path": "scripts/run_world_aid_siwe_bootstrap.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "zkp_bootstrap_runner": {
+      "path": "scripts/run_world_aid_zkp_bootstrap.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "duckdb_bootstrap_runner": {
+      "path": "scripts/run_world_aid_duckdb_bootstrap.py",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "launch_schema": {
+      "path": "docs/schemas/world_aid/gate-0b-launch.schema.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    },
+    "launch_template": {
+      "path": "docs/governance/templates/gate-0b-launch.template.json",
+      "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+    }
+  },
+  "execution_boundary": {
+    "protocol_id": "world-aid-gate-first-launcher/v1",
+    "execution_authority": "operator-gate-first/v1",
+    "operation": "run-implementation/v1",
+    "sealed_input_protocol": "sealed-fd-json/v1",
+    "result_protocol": "stdout-json/v1",
+    "installed_launcher_path": "/usr/local/libexec/world-aid-gate-first-launcher",
+    "operator_policy_id": "world-aid-gate-first-operator-policy/v1",
+    "operator_policy_sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+    "deployment_attestation_id": "gate-first-deployment-REPLACE-WITH-UNIQUE-ATTESTATION-ID",
+    "deployment_attestation_sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+    "reviewed_artifacts": {
+      "gate_verifier": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "gate_launcher": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "gate_launcher_protocol": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "gate_receipt_verifier": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "selection_profile_builder": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "siwe_bootstrap_runner": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "zkp_bootstrap_runner": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+      "duckdb_bootstrap_runner": "sha256:REPLACE-WITH-64-HEX-DIGEST"
     }
   },
   "scope": {
@@ -156,7 +242,7 @@
   ],
   "exceptions": [],
   "trust": {
-    "signature_namespace": "world-aid-gate-0b-launch-v1",
+    "signature_namespace": "world-aid-gate-0b-launch-v2",
     "allowed_signers_sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
     "signatures": [
       {

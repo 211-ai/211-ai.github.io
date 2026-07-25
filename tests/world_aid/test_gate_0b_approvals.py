@@ -15,10 +15,15 @@ from typing import Any
 
 import pytest
 
+import scripts.verify_world_aid_gate_0b as gate_0b
 from scripts.verify_world_aid_gate_0b import (
     BOOTSTRAP_RECEIPT_PATHS,
     CANONICAL_APPROVAL_PATHS,
+    EXECUTION_BOUND_ARTIFACT_KEYS,
+    EXECUTION_OPERATIONS,
+    GATE_FIRST_CONTRACT_PATHS,
     LAUNCH,
+    PHASE_APPROVAL_CONTRACT_PATHS,
     REQUIRED_FEATURE_FLAGS,
     REQUIRED_FORBIDDEN_ACTIONS,
     REQUIRED_ROLES,
@@ -45,17 +50,17 @@ SYNTHETIC_HEAP = """\
 
 ## WORLDCOIN-G038 Synthetic SIWE bootstrap
 
-- Status: active
+- Status: reopened
 - Validation: python scripts/verify_world_siwe_offline_bootstrap.py --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json --offline
 
 ## WORLDCOIN-G039 Synthetic ZKP bootstrap
 
-- Status: active
+- Status: reopened
 - Validation: python scripts/verify_world_aid_zkp_toolchain.py --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json --offline
 
 ## WORLDCOIN-G040 Synthetic DuckDB bootstrap
 
-- Status: active
+- Status: reopened
 - Validation: python scripts/verify_world_aid_duckdb_bootstrap.py --approval data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json --offline
 
 ## WORLDCOIN-G035 Terminal synthetic gate
@@ -169,6 +174,8 @@ class SignedGateEnvironment:
     def restore_directory_modes(self) -> None:
         for path in self.read_only_directories:
             if path.exists():
+                for entry in path.rglob("*"):
+                    entry.chmod(0o755 if entry.is_dir() else 0o644)
                 path.chmod(0o755)
 
 
@@ -250,6 +257,30 @@ def _trust(
     }
 
 
+def _execution_boundary(
+    phase: str,
+    reviewed_state: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "protocol_id": "world-aid-gate-first-launcher/v1",
+        "execution_authority": "operator-gate-first/v1",
+        "operation": EXECUTION_OPERATIONS[phase],
+        "sealed_input_protocol": "sealed-fd-json/v1",
+        "result_protocol": "stdout-json/v1",
+        "installed_launcher_path": "/usr/local/libexec/world-aid-gate-first-launcher",
+        "operator_policy_id": "world-aid-gate-first-operator-policy/v1",
+        "operator_policy_sha256": "sha256:" + hashlib.sha256(b"synthetic operator policy").hexdigest(),
+        "deployment_attestation_id": "gate-first-deployment-synthetic-001",
+        "deployment_attestation_sha256": (
+            "sha256:" + hashlib.sha256(b"synthetic deployment attestation").hexdigest()
+        ),
+        "reviewed_artifacts": {
+            key: reviewed_state[key]["sha256"]
+            for key in sorted(EXECUTION_BOUND_ARTIFACT_KEYS)
+        },
+    }
+
+
 def _scope(phase: str) -> dict[str, Any]:
     if phase == SELECTION:
         goals = sorted(("WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"))
@@ -297,19 +328,43 @@ def _canonical_bundle_index() -> dict[str, Any]:
     for goal_id, bundle_key in SYNTHETIC_BUNDLES.items():
         task_id = f"WORLDCOIN-AUTO-{goal_id[-3:]}"
         task_cid = f"synthetic-cid-{goal_id.lower()}"
-        bundles[bundle_key] = {
+        task: dict[str, Any] = {
+            "task_id": task_id,
+            "goal_id": goal_id,
+            "canonical_task_cid": task_cid,
+            "task_cid": task_cid,
+            "depends_on": [],
+        }
+        tasks = [task]
+        if goal_id == "WORLDCOIN-G038":
+            tasks.append(
+                {
+                    **task,
+                    "task_id": f"{task_id}-B",
+                    "canonical_task_cid": f"{task_cid}-b",
+                    "task_cid": f"{task_cid}-b",
+                }
+            )
+        bundle: dict[str, Any] = {
             "bundle_key": bundle_key,
             "shard_path": f"synthetic/{bundle_key.replace('/', '-')}.todo.md",
-            "tasks": [
-                {
-                    "task_id": task_id,
-                    "goal_id": goal_id,
-                    "canonical_task_cid": task_cid,
-                    "task_cid": task_cid,
-                    "depends_on": [],
-                }
-            ],
+            "tasks": tasks,
         }
+        if goal_id in {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}:
+            execution_fields = {
+                "status": "reopened",
+                "is_schedulable": True,
+                "review_only": False,
+            }
+            for selected_task in tasks:
+                selected_task.update(execution_fields)
+            bundle.update(
+                {
+                    "is_schedulable": True,
+                    "review_only": False,
+                }
+            )
+        bundles[bundle_key] = bundle
     return {"schema": "synthetic-bundle-index/v1", "bundles": bundles}
 
 
@@ -326,6 +381,34 @@ def _derived_bundle_index(
         for task in bundle["tasks"]:
             if task["goal_id"] in completed_goals:
                 task["status"] = "completed"
+        selected_tasks = [
+            task
+            for task in bundle["tasks"]
+            if task["goal_id"] in execution_goals
+            and task["goal_id"]
+            in {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
+        ]
+        if selected_tasks:
+            selected_cids = sorted(
+                task["canonical_task_cid"] for task in selected_tasks
+            )
+            selected_ids = sorted(task["task_id"] for task in selected_tasks)
+            bundle.update(
+                {
+                    "status": "reopened",
+                    "execution_authority": (
+                        gate_0b.OPERATOR_GATE_EXECUTION_AUTHORITY
+                    ),
+                    "active_member_task_cids": selected_cids,
+                    "blocked_member_task_cids": [],
+                    "execution_slice_task_cids": selected_cids,
+                    "execution_slice_task_ids": selected_ids,
+                }
+            )
+            for task in selected_tasks:
+                task["execution_authority"] = (
+                    gate_0b.OPERATOR_GATE_EXECUTION_AUTHORITY
+                )
     derived.update(
         {
             "derived_from_bundle_index": canonical_path,
@@ -333,6 +416,7 @@ def _derived_bundle_index(
             "excluded_bundle_keys": sorted(set(derived["bundles"]) - allowed),
             "execution_goal_ids": sorted(execution_goals),
             "completed_prerequisite_goal_ids": sorted(completed_goals),
+            "review_projection_goal_ids": [],
         }
     )
     return derived
@@ -572,17 +656,16 @@ def _build_generated_artifacts(root: Path) -> dict[str, dict[str, str]]:
             "size": (root / relative).stat().st_size,
         }
     for key, relative in {
-        "siwe_verifier": "scripts/verify_world_siwe_offline_bootstrap.py",
-        "siwe_runtime_test": "tests/world_aid/test_siwe_offline_bootstrap.py",
-        "zkp_verifier": "scripts/verify_world_aid_zkp_toolchain.py",
-        "zkp_runtime_test": "tests/world_aid/test_zkp_toolchain_bootstrap.py",
-        "duckdb_verifier": "scripts/verify_world_aid_duckdb_bootstrap.py",
-        "duckdb_runtime_test": "tests/world_aid/test_duckdb_bootstrap.py",
+        **gate_0b.SELECTION_VERIFIER_CONTRACT_PATHS,
+        **GATE_FIRST_CONTRACT_PATHS,
+        **PHASE_APPROVAL_CONTRACT_PATHS[SELECTION],
+        **PHASE_APPROVAL_CONTRACT_PATHS[LAUNCH],
     }.items():
         artifacts[key] = _artifact(root, relative, f"# synthetic {key} contract\n")
 
     preflight = {
-        "schema": "world_aid.generated_board_preflight_receipt@1",
+        "schema": "world_aid.generated_board_preflight_receipt@2",
+        "board_contract": "gate0b-selection-reopened-v1",
         "status": "passed",
         "passed": True,
         "offline": True,
@@ -591,10 +674,10 @@ def _build_generated_artifacts(root: Path) -> dict[str, dict[str, str]]:
         "objective_path": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md",
         "summary": {
             "status": "passed",
-            "source_goal_count": len(SYNTHETIC_BUNDLES),
-            "schedulable_goal_count": len(SYNTHETIC_BUNDLES),
-            "task_count": len(SYNTHETIC_BUNDLES),
-            "bundle_count": len(SYNTHETIC_BUNDLES),
+            "source_goal_count": 42,
+            "schedulable_goal_count": 40,
+            "task_count": 40,
+            "bundle_count": 40,
             "dag_count": 1,
         },
         "verifiers": verifier_artifacts,
@@ -619,7 +702,6 @@ def _bootstrap_receipt(
     duckdb: bool = False,
 ) -> dict[str, Any]:
     receipt: dict[str, Any] = {
-        "schema_version": "world-human-aid-bootstrap-verification-receipt/v1",
         "goal_id": goal_id,
         "status": "passed",
         "completed_at": selection_record["issued_at"],
@@ -629,9 +711,67 @@ def _bootstrap_receipt(
         "selection_record_id": selection_record["record_id"],
         "selection_approval_sha256": selection_sha256,
         "real_execution": True,
-        "network_attempts": 0,
         "cache_mutated": False,
     }
+    if goal_id == "WORLDCOIN-G038":
+        siwe = selection_record["dependency_sets"]["siwe"]
+        toolchain = siwe["runtime_toolchain"]
+        canary_artifact = selection_record["security_evidence"]["network_deny_canary"]
+        policy_artifact = selection_record["security_evidence"]["egress_policy"]
+        boundary = {
+            "namespace": "net:[4026533000]",
+            "apparmor_profile": "linux-sandbox (enforce)",
+            "interfaces": ["lo"],
+            "no_external_route": True,
+            "network_deny_canary_sha256": canary_artifact["sha256"],
+            "egress_policy_sha256": policy_artifact["sha256"],
+        }
+        cache_digest = siwe["cache"]["tree_sha256"]
+        receipt.update(
+            {
+                "schema_version": "world-human-aid-siwe-bootstrap-verification-receipt/v2",
+                "toolchain": {
+                    "platform": toolchain["platform"],
+                    "architecture": toolchain["architecture"],
+                    "archive_sha256": toolchain["archive"]["sha256"],
+                    "node_sha256": toolchain["node"]["sha256"],
+                    "node_version": toolchain["node"]["version"],
+                    "npm_cli_sha256": toolchain["npm_cli"]["sha256"],
+                    "npm_version": toolchain["npm_cli"]["version"],
+                },
+                "inputs": {
+                    "manifest_sha256": siwe["manifest"]["sha256"],
+                    "lock_sha256": siwe["lockfile"]["sha256"],
+                    "adapter_sha256": selection_record["reviewed_state"]["siwe_adapter"]["sha256"],
+                },
+                "cache": {
+                    "reviewed_before_sha256": cache_digest,
+                    "reviewed_after_sha256": cache_digest,
+                    "local_before_sha256": cache_digest,
+                    "local_after_sha256": cache_digest,
+                },
+                "network": {
+                    "enforcement": "signed-namespace-plus-apparmor",
+                    "attempt_monitor": "not-configured",
+                    "attempt_count": None,
+                    "external_network_succeeded": False,
+                    "boundary_before": boundary,
+                    "boundary_after": copy.deepcopy(boundary),
+                },
+                "smoke_result": {
+                    "eoa": True,
+                    "eip1271": True,
+                    "contractReads": 1,
+                },
+            }
+        )
+        return receipt
+    receipt.update(
+        {
+            "schema_version": "world-human-aid-bootstrap-verification-receipt/v1",
+            "network_attempts": 0,
+        }
+    )
     if duckdb:
         receipt.update({"single_writer_enforced": True, "external_access": False})
     return receipt
@@ -693,6 +833,84 @@ def _sign_record(
     return approval_path
 
 
+def _generate_additional_operator_key(
+    environment: SignedGateEnvironment,
+    *,
+    label: str,
+    identity: str,
+) -> tuple[Path, str]:
+    key_root = environment.allowed_signers.parent
+    private_key = key_root / label
+    _run(
+        "ssh-keygen",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-C",
+        identity,
+        "-f",
+        str(private_key),
+        cwd=environment.root,
+    )
+    return private_key, private_key.with_suffix(".pub").read_text(encoding="utf-8").strip()
+
+
+def _append_trusted_public_key(
+    environment: SignedGateEnvironment,
+    *,
+    identity: str,
+    public_key_line: str,
+    options: str = "",
+) -> None:
+    key_type, key_blob, *_ = public_key_line.split()
+    option_prefix = f"{options} " if options else ""
+    environment.allowed_signers.chmod(0o644)
+    environment.allowed_signers.write_text(
+        environment.allowed_signers.read_text(encoding="utf-8")
+        + f"{identity} {option_prefix}{key_type} {key_blob}\n",
+        encoding="utf-8",
+    )
+    environment.allowed_signers.chmod(0o444)
+
+
+def _resign_selection_for_current_trust_store(environment: SignedGateEnvironment) -> None:
+    environment.selection_record["trust"]["allowed_signers_sha256"] = _sha256(
+        environment.allowed_signers
+    )
+    _sign_record(
+        environment.root,
+        SELECTION,
+        environment.selection_record,
+        environment.private_keys,
+    )
+
+
+def _replace_role_signature(
+    environment: SignedGateEnvironment,
+    *,
+    role: str,
+    private_key: Path,
+) -> None:
+    generated_signature = Path(f"{environment.selection_path}.sig")
+    generated_signature.unlink(missing_ok=True)
+    _run(
+        "ssh-keygen",
+        "-Y",
+        "sign",
+        "-f",
+        str(private_key),
+        "-n",
+        SIGNATURE_NAMESPACES[SELECTION],
+        str(environment.selection_path),
+        cwd=environment.root,
+    )
+    generated_signature.replace(
+        environment.selection_path.parent / "signatures" / f"{role}.sshsig"
+    )
+
+
 def _selection_record(
     root: Path,
     root_commit: str,
@@ -727,13 +945,24 @@ def _selection_record(
                 "bundle_index",
                 "restricted_bundle_index",
                 "restricted_bundle_index_duckdb",
+                "siwe_adapter",
+                "siwe_proposal",
+                "siwe_static_test",
                 "siwe_verifier",
                 "siwe_runtime_test",
+                "zkp_proposal",
+                "zkp_static_test",
                 "zkp_verifier",
                 "zkp_runtime_test",
+                "zkp_smoke_spec",
+                "zkp_smoke_toml",
+                "zkp_smoke_lock",
+                "zkp_smoke_source",
                 "duckdb_verifier",
                 "duckdb_runtime_test",
                 "preflight_receipt",
+                *GATE_FIRST_CONTRACT_PATHS,
+                *PHASE_APPROVAL_CONTRACT_PATHS[SELECTION],
             )
         },
     }
@@ -742,12 +971,37 @@ def _selection_record(
     wheelhouse = root / "data/worldcoin_human_aid/offline/wheels"
     dependencies = {
         "siwe": {
+            "runtime_toolchain": {
+                "platform": "linux",
+                "architecture": {"amd64": "x86_64", "arm64": "aarch64"}.get(
+                    platform.machine().lower(),
+                    platform.machine().lower(),
+                ),
+                "archive_format": "tar.xz",
+                "archive": _artifact(
+                    root,
+                    "data/worldcoin_human_aid/offline/node/node-synthetic.tar.xz",
+                    b"synthetic toolchain archive",
+                ),
+                "root": "node-synthetic",
+                "node": {
+                    "path": "node-synthetic/bin/node",
+                    "sha256": "sha256:" + hashlib.sha256(b"synthetic node").hexdigest(),
+                    "version": "22.23.1",
+                },
+                "npm_cli": {
+                    "path": "node-synthetic/lib/node_modules/npm/bin/npm-cli.js",
+                    "sha256": "sha256:" + hashlib.sha256(b"synthetic npm cli").hexdigest(),
+                    "version": "10.9.8",
+                },
+            },
             "manifest": _artifact(root, "wallet_interface/services/world_siwe_verifier/package.json", "{}\n"),
             "lockfile": _artifact(root, "wallet_interface/services/world_siwe_verifier/package-lock.json", "{}\n"),
             "tarballs": [_artifact(root, "data/worldcoin_human_aid/offline/npm/siwe.tgz", b"synthetic tgz")],
             "cache": {
                 "path": "data/worldcoin_human_aid/offline/npm",
                 "read_only": True,
+                "tree_sha256": "sha256:" + "0" * 64,
             },
             "licenses": _artifact(root, "data/worldcoin_human_aid/bootstrap/siwe-licenses.json", "{}\n"),
             "provenance": _artifact(root, "data/worldcoin_human_aid/bootstrap/siwe-provenance.json", "{}\n"),
@@ -767,8 +1021,22 @@ def _selection_record(
             "backend": "synthetic-test-backend",
             "version": "1.2.3",
             "tool": _artifact(root, "data/worldcoin_human_aid/offline/zkp/tool", b"synthetic tool"),
-            "smoke_source": _artifact(root, "tests/world_aid/fixtures/zkp_smoke/main.nr"),
-            "smoke_lock": _artifact(root, "tests/world_aid/fixtures/zkp_smoke/Nargo.lock"),
+            "smoke_spec": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md",
+            ),
+            "smoke_toml": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml",
+            ),
+            "smoke_source": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/src/main.nr",
+            ),
+            "smoke_lock": _existing_artifact(
+                root,
+                "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.lock",
+            ),
             "licenses": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-licenses.json", "{}\n"),
             "provenance": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-provenance.json", "{}\n"),
             "sbom": _artifact(root, "data/worldcoin_human_aid/bootstrap/zkp-sbom.json", "{}\n"),
@@ -820,7 +1088,7 @@ def _selection_record(
     issued, not_before, expires = _timestamps()
     return (
         {
-            "schema_version": "world-human-aid-gate-0b-selection/v1",
+            "schema_version": "world-human-aid-gate-0b-selection/v2",
             "gate_id": "gate-0b-selection",
             "record_id": "gate-0b-selection-synthetic-test-001",
             "decision": "approved",
@@ -828,6 +1096,7 @@ def _selection_record(
             "not_before": not_before,
             "expires_at": expires,
             "reviewed_state": reviewed_state,
+            "execution_boundary": _execution_boundary(SELECTION, reviewed_state),
             "scope": _scope(SELECTION),
             "reviewers": _reviewers(SELECTION, identities),
             "exceptions": [],
@@ -859,7 +1128,13 @@ def _build_selection_environment(tmp_path: Path, request: pytest.FixtureRequest)
         fingerprints,
     )
     for directory in read_only_directories:
+        for entry in directory.rglob("*"):
+            entry.chmod(0o555 if entry.is_dir() else 0o444)
         directory.chmod(0o555)
+    record["dependency_sets"]["siwe"]["cache"]["tree_sha256"] = gate_0b._read_only_tree_digest(
+        read_only_directories[0],
+        "synthetic SIWE cache",
+    )
     (root / "tracked-marker.txt").write_text("reviewed\n", encoding="utf-8")
     root_commit = _commit_all(root, "Prepare selection evidence")
     record["reviewed_state"]["root_commit"] = root_commit
@@ -914,7 +1189,12 @@ def launch_environment(tmp_path: Path, request: pytest.FixtureRequest) -> Signed
                 "objective_graph",
                 "bundle_index",
                 "preflight_receipt",
+                *GATE_FIRST_CONTRACT_PATHS,
             )
+        },
+        **{
+            key: _existing_artifact(root, relative)
+            for key, relative in PHASE_APPROVAL_CONTRACT_PATHS[LAUNCH].items()
         },
         "implementation_bundle_index": _existing_artifact(root, implementation_index_path),
         "implementation_bundle_index_duckdb": _existing_artifact(root, implementation_duckdb_path),
@@ -957,7 +1237,7 @@ def launch_environment(tmp_path: Path, request: pytest.FixtureRequest) -> Signed
         selection_approval_sha256=selection_sha256,
     )
     launch_record = {
-        "schema_version": "world-human-aid-gate-0b-launch/v1",
+        "schema_version": "world-human-aid-gate-0b-launch/v2",
         "gate_id": "gate-0b-launch",
         "record_id": "gate-0b-launch-synthetic-test-001",
         "decision": "approved",
@@ -965,6 +1245,7 @@ def launch_environment(tmp_path: Path, request: pytest.FixtureRequest) -> Signed
         "not_before": not_before,
         "expires_at": expires,
         "reviewed_state": reviewed_state,
+        "execution_boundary": _execution_boundary(LAUNCH, reviewed_state),
         "scope": _scope(LAUNCH),
         "reviewers": _reviewers(LAUNCH, environment.identities),
         "exceptions": [],
@@ -1001,6 +1282,166 @@ def _verify(environment: SignedGateEnvironment, phase: str) -> dict[str, Any]:
         approval_path=approval_path,
         allowed_signers_path=environment.allowed_signers,
         now=NOW,
+    )
+
+
+def _assert_gate_record_is_rejected(
+    environment: SignedGateEnvironment,
+    phase: str,
+    record: dict[str, Any],
+    *,
+    case: str,
+    message: str,
+) -> None:
+    approval_path = environment.selection_path if phase == SELECTION else environment.launch_path
+    assert approval_path is not None
+    _write_json(approval_path, record)
+    try:
+        _verify(environment, phase)
+    except ApprovalVerificationError as exc:
+        assert message in str(exc), f"{phase} {case} failed for an unexpected reason: {exc}"
+    else:
+        pytest.fail(f"{phase} {case} unexpectedly passed Gate 0B verification")
+
+
+def _exercise_gate_v2_execution_boundary_rejections(
+    environment: SignedGateEnvironment,
+    phase: str,
+) -> None:
+    source = environment.selection_record if phase == SELECTION else environment.launch_record
+    assert source is not None
+
+    record = copy.deepcopy(source)
+    record.pop("execution_boundary")
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="missing execution_boundary",
+        message="approval keys differ",
+    )
+
+    for field in sorted(source["execution_boundary"]):
+        record = copy.deepcopy(source)
+        record["execution_boundary"].pop(field)
+        _assert_gate_record_is_rejected(
+            environment,
+            phase,
+            record,
+            case=f"missing execution_boundary.{field}",
+            message="execution_boundary keys differ",
+        )
+
+    record = copy.deepcopy(source)
+    record["execution_boundary"]["unexpected"] = "not-reviewed"
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="extra execution_boundary field",
+        message="execution_boundary keys differ",
+    )
+
+    wrong_literals = {
+        "protocol_id": "world-aid-gate-first-launcher/v0",
+        "execution_authority": "agent-supervisor/v1",
+        "operation": "run-selection/v1" if phase == LAUNCH else "run-implementation/v1",
+        "sealed_input_protocol": "path-json/v1",
+        "result_protocol": "result-file-json/v1",
+        "installed_launcher_path": "/tmp/world-aid-gate-first-launcher",
+        "operator_policy_id": "world-aid-gate-first-operator-policy/v0",
+    }
+    for field, value in wrong_literals.items():
+        record = copy.deepcopy(source)
+        record["execution_boundary"][field] = value
+        _assert_gate_record_is_rejected(
+            environment,
+            phase,
+            record,
+            case=f"wrong execution_boundary.{field}",
+            message=f"execution_boundary.{field} must be",
+        )
+
+    for field in ("operator_policy_sha256", "deployment_attestation_sha256"):
+        record = copy.deepcopy(source)
+        record["execution_boundary"][field] = "sha256:" + "G" * 64
+        _assert_gate_record_is_rejected(
+            environment,
+            phase,
+            record,
+            case=f"malformed execution_boundary.{field}",
+            message=f"execution_boundary.{field} must be a lowercase sha256 digest",
+        )
+
+    record = copy.deepcopy(source)
+    record["execution_boundary"]["deployment_attestation_id"] = (
+        "invalid-deployment-attestation-id"
+    )
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="invalid deployment_attestation_id",
+        message="execution_boundary.deployment_attestation_id is invalid",
+    )
+
+    reviewed_key = sorted(EXECUTION_BOUND_ARTIFACT_KEYS)[0]
+    record = copy.deepcopy(source)
+    record["execution_boundary"]["reviewed_artifacts"].pop(reviewed_key)
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="missing reviewed artifact",
+        message="execution_boundary.reviewed_artifacts keys differ",
+    )
+
+    record = copy.deepcopy(source)
+    record["execution_boundary"]["reviewed_artifacts"]["unexpected"] = (
+        "sha256:" + "0" * 64
+    )
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="extra reviewed artifact",
+        message="execution_boundary.reviewed_artifacts keys differ",
+    )
+
+    for reviewed_key in sorted(EXECUTION_BOUND_ARTIFACT_KEYS):
+        record = copy.deepcopy(source)
+        record["execution_boundary"]["reviewed_artifacts"][reviewed_key] = (
+            "sha256:" + "0" * 64
+        )
+        _assert_gate_record_is_rejected(
+            environment,
+            phase,
+            record,
+            case=f"reviewed artifact digest mismatch for {reviewed_key}",
+            message=(
+                f"execution_boundary.reviewed_artifacts.{reviewed_key} does not bind "
+                f"reviewed_state.{reviewed_key}"
+            ),
+        )
+
+    record = copy.deepcopy(source)
+    record["schema_version"] = f"world-human-aid-gate-0b-{phase}/v1"
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="v1 schema downgrade",
+        message="schema_version does not match the selected phase",
+    )
+
+    record = copy.deepcopy(source)
+    record["trust"]["signature_namespace"] = f"world-aid-gate-0b-{phase}-v1"
+    _assert_gate_record_is_rejected(
+        environment,
+        phase,
+        record,
+        case="v1 signature namespace downgrade",
+        message="trust.signature_namespace does not match the gate phase",
     )
 
 
@@ -1095,19 +1536,40 @@ def test_gate_0b_schemas_are_strict_and_templates_are_unsigned() -> None:
     )
     selection_state_keys = set(selection_schema["properties"]["reviewed_state"]["required"])
     assert {
+        "siwe_adapter",
+        "siwe_proposal",
+        "siwe_static_test",
         "full_board",
         "objective_graph",
         "restricted_bundle_index",
         "restricted_bundle_index_duckdb",
         "siwe_verifier",
         "siwe_runtime_test",
+        "zkp_proposal",
+        "zkp_static_test",
         "zkp_verifier",
         "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
         "duckdb_verifier",
         "duckdb_runtime_test",
     } <= selection_state_keys
     assert "security_evidence" in selection_schema["required"]
     assert "security_evidence" in selection_template
+    siwe_properties = selection_schema["$defs"]["siweDependencies"]["properties"]
+    assert "runtime_toolchain" in selection_schema["$defs"]["siweDependencies"]["required"]
+    assert siwe_properties["runtime_toolchain"] == {"$ref": "#/$defs/siweRuntimeToolchain"}
+    assert selection_template["dependency_sets"]["siwe"]["runtime_toolchain"]["archive_format"] == "tar.xz"
+    zkp_required = set(selection_schema["$defs"]["zkpDependencies"]["required"])
+    assert {"smoke_spec", "smoke_toml", "smoke_lock", "smoke_source"} <= zkp_required
+    assert selection_template["dependency_sets"]["zkp"]["smoke_spec"]["path"] == (
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/SMOKE_SPEC.md"
+    )
+    assert selection_template["dependency_sets"]["zkp"]["smoke_toml"]["path"] == (
+        "tests/world_aid/fixtures/zkp_toolchain_smoke/Nargo.toml"
+    )
     assert {
         "implementation_bundle_index",
         "implementation_bundle_index_duckdb",
@@ -1130,8 +1592,215 @@ def test_selection_approval_verifies_with_exact_real_detached_signatures(
     assert summary["status"] == "verified"
     assert summary["phase"] == SELECTION
     assert summary["signature_count"] == len(REQUIRED_ROLES[SELECTION])
+    assert summary["verified_approval_sha256"] == (
+        "sha256:" + hashlib.sha256(selection_environment.selection_path.read_bytes()).hexdigest()
+    )
     assert summary["offline"] is True
     assert summary["live_actions_authorized"] is False
+
+
+def test_selection_gate_v2_execution_boundary_fails_closed(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    _exercise_gate_v2_execution_boundary_rejections(
+        selection_environment,
+        SELECTION,
+    )
+
+
+def test_launch_gate_v2_execution_boundary_fails_closed(
+    launch_environment: SignedGateEnvironment,
+) -> None:
+    _exercise_gate_v2_execution_boundary_rejections(
+        launch_environment,
+        LAUNCH,
+    )
+
+
+def test_read_only_dependency_cache_rejects_writable_nested_entries(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    tarball = selection_environment.root / "data/worldcoin_human_aid/offline/npm/siwe.tgz"
+    tarball.chmod(0o644)
+
+    with pytest.raises(ApprovalVerificationError, match="mode-writable entry"):
+        _verify(selection_environment, SELECTION)
+
+
+def test_tree_digest_validates_the_opened_file_after_path_substitution(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cache = tmp_path / "reviewed-cache"
+    cache.mkdir()
+    entry = cache / "package.tgz"
+    entry.write_bytes(b"x")
+    entry.chmod(0o444)
+    cache.chmod(0o555)
+    original_open = os.open
+    substituted = False
+
+    def substitute_before_open(
+        path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+        flags: int,
+        mode: int = 0o777,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        nonlocal substituted
+        if path == entry.name and dir_fd is not None and not substituted:
+            substituted = True
+            cache.chmod(0o755)
+            entry.unlink()
+            entry.write_bytes(b"attacker-controlled replacement")
+            entry.chmod(0o644)
+            cache.chmod(0o555)
+        return original_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(gate_0b.os, "open", substitute_before_open)
+    try:
+        with pytest.raises(ApprovalVerificationError, match="mode-writable entry"):
+            gate_0b._read_only_tree_digest(cache, "test cache")
+    finally:
+        cache.chmod(0o755)
+        entry.chmod(0o644)
+
+
+def test_tree_digest_stops_directory_enumeration_at_the_entry_cap(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cache = tmp_path / "reviewed-cache"
+    cache.mkdir()
+    cache.chmod(0o555)
+    yielded = 0
+
+    class SyntheticEntry:
+        def __init__(self, name: str) -> None:
+            self.name = name
+
+    class SyntheticScandir:
+        def __enter__(self) -> SyntheticScandir:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def __iter__(self):
+            nonlocal yielded
+            for index in range(1_000_000):
+                yielded += 1
+                yield SyntheticEntry(f"entry-{index:07d}")
+
+    monkeypatch.setattr(gate_0b, "MAX_REVIEWED_TREE_ENTRIES", 3)
+    monkeypatch.setattr(gate_0b.os, "scandir", lambda _descriptor: SyntheticScandir())
+    try:
+        with pytest.raises(ApprovalVerificationError, match="tree exceeds the entry limit"):
+            gate_0b._read_only_tree_digest(cache, "test cache")
+    finally:
+        cache.chmod(0o755)
+    assert yielded == 3
+
+
+def test_tree_digest_applies_one_global_cap_across_nested_enumeration(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cache = tmp_path / "reviewed-cache"
+    cache.mkdir()
+    children = [cache / name for name in ("a", "b", "c")]
+    for child in children:
+        child.mkdir()
+        child.chmod(0o555)
+    cache.chmod(0o555)
+    root_inode = cache.stat().st_ino
+    yielded = 0
+
+    class SyntheticEntry:
+        def __init__(self, name: str) -> None:
+            self.name = name
+
+    class SyntheticScandir:
+        def __init__(self, names: tuple[str, ...]) -> None:
+            self.names = names
+
+        def __enter__(self) -> SyntheticScandir:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def __iter__(self):
+            nonlocal yielded
+            for name in self.names:
+                yielded += 1
+                yield SyntheticEntry(name)
+
+    def synthetic_scandir(descriptor: int) -> SyntheticScandir:
+        names = ("a", "b", "c") if os.fstat(descriptor).st_ino == root_inode else ("one", "two", "three")
+        return SyntheticScandir(names)
+
+    monkeypatch.setattr(gate_0b, "MAX_REVIEWED_TREE_ENTRIES", 4)
+    monkeypatch.setattr(gate_0b.os, "scandir", synthetic_scandir)
+    try:
+        with pytest.raises(ApprovalVerificationError, match="tree exceeds the entry limit"):
+            gate_0b._read_only_tree_digest(cache, "test cache")
+    finally:
+        cache.chmod(0o755)
+        for child in children:
+            child.chmod(0o755)
+    assert yielded == 4
+
+
+def test_caller_captured_approval_bytes_are_the_verified_bytes(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    captured = selection_environment.selection_path.read_bytes()
+
+    summary = verify_approval(
+        repo_root=selection_environment.root,
+        phase=SELECTION,
+        approval_path=selection_environment.selection_path,
+        allowed_signers_path=selection_environment.allowed_signers,
+        now=NOW,
+        expected_approval_bytes=captured,
+    )
+    assert summary["verified_approval_sha256"] == (
+        "sha256:" + hashlib.sha256(captured).hexdigest()
+    )
+
+    with pytest.raises(ApprovalVerificationError, match="caller-captured snapshot"):
+        verify_approval(
+            repo_root=selection_environment.root,
+            phase=SELECTION,
+            approval_path=selection_environment.selection_path,
+            allowed_signers_path=selection_environment.allowed_signers,
+            now=NOW,
+            expected_approval_bytes=b'{"different":true}\n',
+        )
+
+
+def test_approval_mutation_during_verification_is_rejected(
+    selection_environment: SignedGateEnvironment,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = gate_0b._verify_signatures
+
+    def verify_then_mutate(*args: Any, **kwargs: Any) -> None:
+        original(*args, **kwargs)
+        selection_environment.selection_path.write_bytes(b'{"changed":true}\n')
+
+    monkeypatch.setattr(gate_0b, "_verify_signatures", verify_then_mutate)
+    captured = selection_environment.selection_path.read_bytes()
+    with pytest.raises(ApprovalVerificationError, match="changed during verification"):
+        verify_approval(
+            repo_root=selection_environment.root,
+            phase=SELECTION,
+            approval_path=selection_environment.selection_path,
+            allowed_signers_path=selection_environment.allowed_signers,
+            now=NOW,
+            expected_approval_bytes=captured,
+        )
 
 
 def test_launch_approval_verifies_and_reverifies_bound_selection(
@@ -1143,6 +1812,28 @@ def test_launch_approval_verifies_and_reverifies_bound_selection(
     assert summary["phase"] == LAUNCH
     assert summary["signature_count"] == len(REQUIRED_ROLES[LAUNCH])
     assert summary["live_actions_authorized"] is False
+
+
+def test_launch_rejects_linked_selection_swap_before_recursive_verification(
+    launch_environment: SignedGateEnvironment,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = gate_0b._verify_approval
+
+    def swap_linked_selection(**kwargs: Any) -> dict[str, Any]:
+        if kwargs["historical_link"]:
+            launch_environment.selection_path.write_bytes(b'{"swapped":true}\n')
+        return original(**kwargs)
+
+    monkeypatch.setattr(gate_0b, "_verify_approval", swap_linked_selection)
+    with pytest.raises(ApprovalVerificationError, match="caller-captured snapshot"):
+        verify_approval(
+            repo_root=launch_environment.root,
+            phase=LAUNCH,
+            approval_path=launch_environment.launch_path,
+            allowed_signers_path=launch_environment.allowed_signers,
+            now=NOW,
+        )
 
 
 def test_launch_requires_exact_implementation_profile_objective_set(
@@ -1285,14 +1976,43 @@ def test_selection_binds_full_generated_root_and_bootstrap_contracts(
     assert Path(state["restricted_bundle_index"]["path"]) == generated_root / "launch_profiles/g038-g040.index.json"
     assert Path(state["preflight_receipt"]["path"]) == generated_root / "preflight-receipt.json"
     for key in (
+        "siwe_adapter",
+        "siwe_proposal",
+        "siwe_static_test",
         "siwe_verifier",
         "siwe_runtime_test",
+        "zkp_proposal",
+        "zkp_static_test",
         "zkp_verifier",
         "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
         "duckdb_verifier",
         "duckdb_runtime_test",
     ):
         assert state[key]["sha256"].startswith("sha256:")
+
+
+def test_selection_source_bootstrap_goals_must_be_exactly_reopened(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    heap_artifact = record["reviewed_state"]["objective_heap"]
+    heap_path = selection_environment.root / heap_artifact["path"]
+    heap_path.write_text(
+        heap_path.read_text(encoding="utf-8").replace(
+            "## WORLDCOIN-G038 Synthetic SIWE bootstrap\n\n- Status: reopened",
+            "## WORLDCOIN-G038 Synthetic SIWE bootstrap\n\n- Status: active",
+        ),
+        encoding="utf-8",
+    )
+    heap_artifact["sha256"] = _sha256(heap_path)
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(ApprovalVerificationError, match="status exactly reopened"):
+        _verify(selection_environment, SELECTION)
 
 
 def test_selection_rejects_preflight_outside_the_immutable_generated_root(
@@ -1308,6 +2028,86 @@ def test_selection_rejects_preflight_outside_the_immutable_generated_root(
         _verify(selection_environment, SELECTION)
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("source_goal_count", 41),
+        ("schedulable_goal_count", 39),
+        ("task_count", 39),
+        ("bundle_count", 39),
+    ],
+)
+def test_selection_preflight_requires_exact_reopened_board_counts(
+    selection_environment: SignedGateEnvironment,
+    field: str,
+    value: int,
+) -> None:
+    _mutate_bound_json(
+        selection_environment,
+        SELECTION,
+        "reviewed_state",
+        "preflight_receipt",
+        lambda receipt: receipt["summary"].__setitem__(field, value),
+    )
+
+    with pytest.raises(ApprovalVerificationError, match="exact reopened board counts 42/40/40/40"):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        (
+            "schema",
+            "world_aid.generated_board_preflight_receipt@1",
+            "reopened receipt schema @2",
+        ),
+        ("board_contract", "blocked-review-v1", "board_contract"),
+    ],
+)
+def test_selection_preflight_requires_exact_reopened_receipt_contract(
+    selection_environment: SignedGateEnvironment,
+    field: str,
+    value: str,
+    message: str,
+) -> None:
+    _mutate_bound_json(
+        selection_environment,
+        SELECTION,
+        "reviewed_state",
+        "preflight_receipt",
+        lambda receipt: receipt.__setitem__(field, value),
+    )
+
+    with pytest.raises(ApprovalVerificationError, match=message):
+        _verify(selection_environment, SELECTION)
+
+
+def test_launch_preflight_still_accepts_the_legacy_receipt_shape(
+    launch_environment: SignedGateEnvironment,
+) -> None:
+    reviewed_state = copy.deepcopy(launch_environment.launch_record["reviewed_state"])
+    artifact = reviewed_state["preflight_receipt"]
+    receipt_path = launch_environment.root / artifact["path"]
+    reopened_receipt = receipt_path.read_bytes()
+    try:
+        receipt = json.loads(reopened_receipt)
+        receipt["schema"] = "world_aid.generated_board_preflight_receipt@1"
+        receipt.pop("board_contract")
+        _write_json(receipt_path, receipt)
+        artifact["sha256"] = _sha256(receipt_path)
+        generated_root = Path(reviewed_state["full_board"]["path"]).parent
+
+        gate_0b._validate_preflight_receipt(
+            launch_environment.root,
+            reviewed_state,
+            generated_root,
+            LAUNCH,
+        )
+    finally:
+        receipt_path.write_bytes(reopened_receipt)
+
+
 def test_selection_rejects_noncanonical_verifier_contract_path(
     selection_environment: SignedGateEnvironment,
 ) -> None:
@@ -1316,6 +2116,83 @@ def test_selection_rejects_noncanonical_verifier_contract_path(
     _write_json(selection_environment.selection_path, record)
 
     with pytest.raises(ApprovalVerificationError, match="siwe_verifier.path must be"):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    "reviewed_key",
+    [
+        "zkp_proposal",
+        "zkp_static_test",
+        "zkp_verifier",
+        "zkp_runtime_test",
+        "zkp_smoke_spec",
+        "zkp_smoke_toml",
+        "zkp_smoke_lock",
+        "zkp_smoke_source",
+    ],
+)
+def test_selection_rejects_noncanonical_zkp_reviewed_contract_paths(
+    selection_environment: SignedGateEnvironment,
+    reviewed_key: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["reviewed_state"][reviewed_key]["path"] = (
+        f"tests/world_aid/noncanonical/{reviewed_key}"
+    )
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"reviewed_state\.{reviewed_key}\.path must be",
+    ):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    ("dependency_key", "replacement"),
+    [
+        ("smoke_spec", "tests/world_aid/fixtures/other/SMOKE_SPEC.md"),
+        ("smoke_toml", "tests/world_aid/fixtures/other/Nargo.toml"),
+        ("smoke_lock", "tests/world_aid/fixtures/other/Nargo.lock"),
+        ("smoke_source", "tests/world_aid/fixtures/other/src/main.nr"),
+    ],
+)
+def test_selection_rejects_noncanonical_zkp_smoke_dependency_paths(
+    selection_environment: SignedGateEnvironment,
+    dependency_key: str,
+    replacement: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["dependency_sets"]["zkp"][dependency_key]["path"] = replacement
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"dependency_sets\.zkp\.{dependency_key}\.path must be",
+    ):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    "dependency_key",
+    ["smoke_spec", "smoke_toml", "smoke_lock", "smoke_source"],
+)
+def test_selection_cross_binds_zkp_smoke_dependency_digests_to_reviewed_state(
+    selection_environment: SignedGateEnvironment,
+    dependency_key: str,
+) -> None:
+    record = copy.deepcopy(selection_environment.selection_record)
+    record["dependency_sets"]["zkp"][dependency_key]["sha256"] = (
+        "sha256:" + "0" * 64
+    )
+    _write_json(selection_environment.selection_path, record)
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match=rf"dependency_sets\.zkp\.{dependency_key} must exactly match "
+        rf"reviewed_state\.zkp_{dependency_key}",
+    ):
         _verify(selection_environment, SELECTION)
 
 
@@ -1349,7 +2226,120 @@ def test_restricted_profile_allows_only_exact_prerequisite_status_projection(
         mutate,
     )
 
-    with pytest.raises(ApprovalVerificationError, match="only set status='completed'"):
+    with pytest.raises(ApprovalVerificationError, match="exactly reopened"):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    ("target", "field", "value", "message"),
+    [
+        ("bundle", "is_schedulable", False, "is_schedulable must be true"),
+        ("bundle", "review_only", True, "review_only must be false"),
+        ("task", "is_schedulable", False, "is_schedulable must be true"),
+        ("task", "review_only", True, "review_only must be false"),
+        ("bundle", "status", "blocked", "exactly reopened"),
+        ("bundle", "status", "failed", "exactly reopened"),
+        ("task", "status", "completed", "exactly reopened"),
+        ("task", "status", "unexpected", "exactly reopened"),
+    ],
+)
+def test_restricted_profile_requires_schedulable_nonterminal_selected_records(
+    selection_environment: SignedGateEnvironment,
+    target: str,
+    field: str,
+    value: Any,
+    message: str,
+) -> None:
+    def mutate(profile: dict[str, Any]) -> None:
+        bundle = profile["bundles"][SYNTHETIC_BUNDLES["WORLDCOIN-G038"]]
+        record = bundle if target == "bundle" else bundle["tasks"][0]
+        record[field] = value
+
+    _mutate_generated_profile(
+        selection_environment,
+        SELECTION,
+        "restricted_bundle_index",
+        mutate,
+    )
+
+    with pytest.raises(ApprovalVerificationError, match=message):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("review-projection", "review_projection_goal_ids must be empty"),
+        ("blocked-projection", "blocked_member_task_cids must be empty"),
+        ("active-projection", "active_member_task_cids must be the exact"),
+        ("execution-cid-projection", "execution_slice_task_cids must be the exact"),
+        ("execution-id-projection", "execution_slice_task_ids must be the exact"),
+        ("execution-cid-extra", "execution_slice_task_cids has an invalid item count"),
+        ("execution-id-missing", "execution_slice_task_ids has an invalid item count"),
+        ("active-duplicate", "active_member_task_cids contains duplicates"),
+    ],
+)
+def test_restricted_profile_rejects_review_blocked_or_wrong_active_projections(
+    selection_environment: SignedGateEnvironment,
+    mutation: str,
+    message: str,
+) -> None:
+    def mutate(profile: dict[str, Any]) -> None:
+        if mutation == "review-projection":
+            profile["review_projection_goal_ids"] = ["WORLDCOIN-G038"]
+            return
+        bundle = profile["bundles"][SYNTHETIC_BUNDLES["WORLDCOIN-G038"]]
+        if mutation == "blocked-projection":
+            bundle["blocked_member_task_cids"] = [
+                bundle["tasks"][0]["canonical_task_cid"]
+            ]
+        elif mutation == "active-projection":
+            bundle["active_member_task_cids"].reverse()
+        elif mutation == "execution-cid-projection":
+            bundle["execution_slice_task_cids"].reverse()
+        elif mutation == "execution-id-projection":
+            bundle["execution_slice_task_ids"].reverse()
+        elif mutation == "execution-cid-extra":
+            bundle["execution_slice_task_cids"].append("synthetic-cid-extra")
+        elif mutation == "execution-id-missing":
+            bundle["execution_slice_task_ids"].pop()
+        else:
+            bundle["active_member_task_cids"][1] = bundle[
+                "active_member_task_cids"
+            ][0]
+
+    _mutate_generated_profile(
+        selection_environment,
+        SELECTION,
+        "restricted_bundle_index",
+        mutate,
+    )
+
+    with pytest.raises(ApprovalVerificationError, match=message):
+        _verify(selection_environment, SELECTION)
+
+
+@pytest.mark.parametrize("target", ["bundle", "task"])
+def test_restricted_profile_requires_operator_gate_execution_authority(
+    selection_environment: SignedGateEnvironment,
+    target: str,
+) -> None:
+    def mutate(profile: dict[str, Any]) -> None:
+        bundle = profile["bundles"][SYNTHETIC_BUNDLES["WORLDCOIN-G038"]]
+        record = bundle if target == "bundle" else bundle["tasks"][0]
+        record["execution_authority"] = "internal-supervisor/v1"
+
+    _mutate_generated_profile(
+        selection_environment,
+        SELECTION,
+        "restricted_bundle_index",
+        mutate,
+    )
+
+    with pytest.raises(
+        ApprovalVerificationError,
+        match="execution_authority must be operator-gate-first/v1",
+    ):
         _verify(selection_environment, SELECTION)
 
 
@@ -1540,6 +2530,71 @@ def test_launch_bootstrap_receipt_semantics_fail_closed(
 
 
 @pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (
+            lambda receipt: receipt["toolchain"].__setitem__(
+                "node_sha256",
+                "sha256:" + "0" * 64,
+            ),
+            "toolchain differs",
+        ),
+        (
+            lambda receipt: receipt["inputs"].__setitem__(
+                "adapter_sha256",
+                "sha256:" + "0" * 64,
+            ),
+            "inputs differ",
+        ),
+        (
+            lambda receipt: receipt["cache"].__setitem__(
+                "reviewed_after_sha256",
+                "sha256:" + "0" * 64,
+            ),
+            "signed reviewed tree",
+        ),
+        (
+            lambda receipt: receipt["network"].__setitem__("attempt_count", 0),
+            "truthfully describe",
+        ),
+        (
+            lambda receipt: receipt["network"]["boundary_after"].__setitem__(
+                "namespace",
+                "net:[1]",
+            ),
+            "differs from the signed canary",
+        ),
+        (
+            lambda receipt: receipt["network"].__setitem__(
+                "external_network_succeeded",
+                True,
+            ),
+            "no external network success",
+        ),
+        (
+            lambda receipt: receipt["smoke_result"].__setitem__("eoa", False),
+            "both exact SIWE paths",
+        ),
+    ],
+)
+def test_siwe_v2_bootstrap_receipt_fails_closed(
+    launch_environment: SignedGateEnvironment,
+    mutation,
+    message: str,
+) -> None:
+    _mutate_bound_json(
+        launch_environment,
+        LAUNCH,
+        "bootstrap_receipts",
+        "siwe",
+        mutation,
+    )
+
+    with pytest.raises(ApprovalVerificationError, match=message):
+        _verify(launch_environment, LAUNCH)
+
+
+@pytest.mark.parametrize(
     ("field", "value", "message"),
     [
         ("started_count", 1, "workers were started"),
@@ -1602,6 +2657,28 @@ def test_digest_drift_is_rejected(
         _verify(selection_environment, SELECTION)
 
 
+def test_scope_uses_one_digest_bound_objective_heap_snapshot(
+    selection_environment: SignedGateEnvironment,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    objective_path = (
+        selection_environment.root / selection_environment.selection_record["reviewed_state"]["objective_heap"]["path"]
+    )
+    expected = objective_path.read_bytes()
+    original = gate_0b._validate_scope
+
+    def mutate_path_after_snapshot(*args: Any, **kwargs: Any) -> None:
+        assert args[5] == expected.decode("utf-8")
+        objective_path.write_text("# attacker-controlled replacement\n", encoding="utf-8")
+        try:
+            original(*args, **kwargs)
+        finally:
+            objective_path.write_bytes(expected)
+
+    monkeypatch.setattr(gate_0b, "_validate_scope", mutate_path_after_snapshot)
+    assert _verify(selection_environment, SELECTION)["status"] == "verified"
+
+
 def test_untrusted_or_tampered_signature_is_rejected(
     selection_environment: SignedGateEnvironment,
 ) -> None:
@@ -1611,6 +2688,86 @@ def test_untrusted_or_tampered_signature_is_rejected(
 
     with pytest.raises(ApprovalVerificationError, match="detached signature rejected"):
         _verify(selection_environment, SELECTION)
+
+
+def test_signature_must_use_the_declared_fingerprint_when_identity_has_multiple_keys(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    role = sorted(REQUIRED_ROLES[SELECTION])[0]
+    identity = selection_environment.identities[role]
+    alternate_key, alternate_public = _generate_additional_operator_key(
+        selection_environment,
+        label=f"{role}-alternate",
+        identity=identity,
+    )
+    _append_trusted_public_key(
+        selection_environment,
+        identity=identity,
+        public_key_line=alternate_public,
+    )
+    _resign_selection_for_current_trust_store(selection_environment)
+
+    # Both keys are trusted for the principal, but the signed record declares
+    # only the original key fingerprint. A signature made by the alternate key
+    # must not be accepted through the broader principal trust entry.
+    _replace_role_signature(
+        selection_environment,
+        role=role,
+        private_key=alternate_key,
+    )
+
+    with pytest.raises(ApprovalVerificationError, match="detached signature rejected"):
+        _verify(selection_environment, SELECTION)
+
+
+def test_actual_signing_key_cannot_be_reused_across_roles_via_multi_principal_trust(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    first_role, second_role = sorted(REQUIRED_ROLES[SELECTION])[:2]
+    reused_public = selection_environment.private_keys[second_role].with_suffix(
+        ".pub"
+    ).read_text(encoding="utf-8").strip()
+    _append_trusted_public_key(
+        selection_environment,
+        identity=selection_environment.identities[first_role],
+        public_key_line=reused_public,
+    )
+    _resign_selection_for_current_trust_store(selection_environment)
+
+    # The second role's key is now trusted for both principals. Keep the record's
+    # distinct declared fingerprints, then try to use that one actual key for
+    # both role signatures.
+    _replace_role_signature(
+        selection_environment,
+        role=first_role,
+        private_key=selection_environment.private_keys[second_role],
+    )
+
+    with pytest.raises(ApprovalVerificationError, match="detached signature rejected"):
+        _verify(selection_environment, SELECTION)
+
+
+def test_per_signature_snapshot_preserves_allowed_signers_namespace_options(
+    selection_environment: SignedGateEnvironment,
+) -> None:
+    namespace = SIGNATURE_NAMESPACES[SELECTION]
+    rewritten: list[str] = []
+    for line in selection_environment.allowed_signers.read_text(
+        encoding="utf-8"
+    ).splitlines():
+        identity, key_type, key_blob = line.split()
+        rewritten.append(
+            f'{identity} namespaces="{namespace}" {key_type} {key_blob}\n'
+        )
+    selection_environment.allowed_signers.chmod(0o644)
+    selection_environment.allowed_signers.write_text(
+        "".join(rewritten),
+        encoding="utf-8",
+    )
+    selection_environment.allowed_signers.chmod(0o444)
+    _resign_selection_for_current_trust_store(selection_environment)
+
+    assert _verify(selection_environment, SELECTION)["status"] == "verified"
 
 
 def test_unknown_fields_and_noncanonical_actual_path_are_rejected(
@@ -1655,6 +2812,47 @@ def test_operator_trust_store_digest_drift_is_rejected(
 
     with pytest.raises(ApprovalVerificationError, match="trust-store digest drift"):
         _verify(selection_environment, SELECTION)
+
+
+def test_signature_checks_use_sealed_fingerprint_scoped_allowed_signers_snapshots(
+    selection_environment: SignedGateEnvironment,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    expected_snapshots = {
+        (
+            selection_environment.identities[role]
+            + " "
+            + " ".join(
+                selection_environment.private_keys[role]
+                .with_suffix(".pub")
+                .read_text(encoding="utf-8")
+                .split()[:2]
+            )
+            + "\n"
+        ).encode("utf-8")
+        for role in REQUIRED_ROLES[SELECTION]
+    }
+    observed_snapshots: list[bytes] = []
+    original = gate_0b._sealed_snapshot_fd
+
+    def capture_then_mutate_path(raw: bytes) -> int:
+        descriptor = original(raw)
+        observed_snapshots.append(
+            os.pread(descriptor, len(raw) + 1, 0)
+        )
+        if len(observed_snapshots) == 1:
+            selection_environment.allowed_signers.chmod(0o644)
+            selection_environment.allowed_signers.write_text(
+                "attacker@example.invalid ssh-ed25519 AAAA\n",
+                encoding="utf-8",
+            )
+            selection_environment.allowed_signers.chmod(0o444)
+        return descriptor
+
+    monkeypatch.setattr(gate_0b, "_sealed_snapshot_fd", capture_then_mutate_path)
+    assert _verify(selection_environment, SELECTION)["status"] == "verified"
+    assert len(observed_snapshots) == len(REQUIRED_ROLES[SELECTION])
+    assert set(observed_snapshots) == expected_snapshots
 
 
 def test_reviewed_root_must_equal_exact_current_head(

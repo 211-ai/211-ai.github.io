@@ -1,0 +1,51 @@
+{
+  "schema": "world-aid-gate-first-execution-plan-set/v2",
+  "profile_id": "REPLACE-WITH-UNIQUE-EXECUTION-PLAN-PROFILE-ID",
+  "status": "pending",
+  "candidate_validation_enabled": false,
+  "runtime_authorized": false,
+  "contract": {
+    "contract_id": "world-aid-gate-first-plan-construction/v2",
+    "builder_path": "scripts/build_world_aid_gate_first_execution_plans.py",
+    "builder_sha256": "sha256:REPLACE-WITH-REVIEWED-BUILDER-DIGEST",
+    "schema_path": "docs/schemas/world_aid/gate-first-execution-plan-set.schema.json",
+    "schema_sha256": "sha256:REPLACE-WITH-REVIEWED-SCHEMA-DIGEST",
+    "transport_codec_path": "scripts/world_aid_runner_transport_v2.py",
+    "transport_codec_sha256": "sha256:REPLACE-WITH-REVIEWED-TRANSPORT-CODEC-DIGEST",
+    "transport_input_schema_path": "docs/schemas/world_aid/runner-transport-v2-input.schema.json",
+    "transport_input_schema_sha256": "sha256:REPLACE-WITH-REVIEWED-TRANSPORT-INPUT-SCHEMA-DIGEST",
+    "transport_result_schema_path": "docs/schemas/world_aid/runner-transport-v2-result.schema.json",
+    "transport_result_schema_sha256": "sha256:REPLACE-WITH-REVIEWED-TRANSPORT-RESULT-SCHEMA-DIGEST",
+    "transport_spec_path": "docs/specs/WORLD_AID_RUNNER_TRANSPORT_V2.md",
+    "transport_spec_sha256": "sha256:REPLACE-WITH-REVIEWED-TRANSPORT-SPEC-DIGEST",
+    "receipt_verifier_path": "scripts/verify_world_aid_gate_first_receipt.py",
+    "receipt_verifier_sha256": "sha256:REPLACE-WITH-STRICT-RECEIPT-VERIFIER-DIGEST"
+  },
+  "authority": {
+    "selection_approval": {
+      "schema": "world-human-aid-gate-0b-selection/v2",
+      "record_id": "REPLACE-WITH-VERIFIED-SELECTION-RECORD-ID",
+      "sha256": "sha256:REPLACE-WITH-VERIFIED-SELECTION-DIGEST"
+    },
+    "operator_policy": {
+      "schema": "world-aid-gate-first-operator-policy/v1",
+      "sha256": "sha256:REPLACE-WITH-OPERATOR-POLICY-DIGEST"
+    },
+    "deployment_attestation": {
+      "schema": "world-aid-gate-first-deployment-conformance-attestation/v1",
+      "attestation_id": "REPLACE-WITH-INDEPENDENT-DEPLOYMENT-ATTESTATION-ID",
+      "sha256": "sha256:REPLACE-WITH-DEPLOYMENT-ATTESTATION-DIGEST"
+    }
+  },
+  "protocol": {
+    "gate_protocol_id": "world-aid-gate-first-launcher/v1",
+    "execution_authority": "operator-gate-first/v1",
+    "operation": "run-selection/v1",
+    "transport_protocol_id": "world-aid-runner-transport/v2",
+    "input_schema": "world-human-aid-runner-input-envelope/v2",
+    "input_protocol": "sealed-fd-json/v2",
+    "result_schema": "world-human-aid-runner-result-envelope/v2",
+    "output_protocol": "stdout-json/v2"
+  },
+  "plans": []
+}

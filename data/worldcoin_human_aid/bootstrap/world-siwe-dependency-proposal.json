@@ -1,0 +1,361 @@
+{
+  "schema_version": "world-aid-siwe-dependency-proposal/v2",
+  "status": "NOT APPROVED",
+  "goal_id": "WORLDCOIN-G037",
+  "authority_statement": "NOT APPROVED. This is an agent-generated dependency and lock proposal, not a package selection. Only human Gate 0B reviewers may approve the exact committed state, tarballs, provenance, licenses, SBOM, vulnerability review, cache, and detached signatures.",
+  "approval": {
+    "required": true,
+    "binding": "canonical signed Gate 0B-selection",
+    "canonical_path": "data/worldcoin_human_aid/approvals/gate-0b-selection/approval.json",
+    "selection_owner": "human Gate 0B reviewers",
+    "cache_presence_is_not_trust": true
+  },
+  "artifacts": {
+    "manifest": {
+      "path": "wallet_interface/services/world_siwe_verifier/package.json",
+      "sha256": "sha256:73a7bc09842b39f38327083b549fa3deefec3c0d817b183a49b29090e5658f34"
+    },
+    "lockfile": {
+      "path": "wallet_interface/services/world_siwe_verifier/package-lock.json",
+      "sha256": "sha256:72b3e6718c996152b7fff5c73161cc9f01bf2b6e91ec220559e96b20ee1744f6"
+    },
+    "adapter": {
+      "path": "wallet_interface/services/world_siwe_verifier/index.mjs",
+      "sha256": "sha256:ac7fac667ffa394fb3f34793a35b627c936a5a0ec3cc8182513455ca60daa97d"
+    },
+    "verifier": {
+      "path": "scripts/verify_world_siwe_offline_bootstrap.py",
+      "sha256": "sha256:b42b23b511ef0fce85ab00ff6cb3fc57af8d7819979c4da3e0cf0af71fdb8e65"
+    },
+    "static_contract": {
+      "path": "tests/world_aid/test_siwe_dependency_lock.py",
+      "sha256": "sha256:a75ecda1facbee1f095bfcdb969b1676974f9b5793c063d47e052e2400527a95"
+    },
+    "runtime_contract": {
+      "path": "tests/world_aid/test_siwe_offline_bootstrap.py",
+      "sha256": "sha256:071956b7892e8a8544b007e0a7daf11fc255b6d814d7254a9683e430f957c3b5"
+    },
+    "gate_verifier": {
+      "path": "scripts/verify_world_aid_gate_0b.py",
+      "sha256": "sha256:124e1e0b7154aaddddf8fb81080a32d6d7370d9014fa83b9629b9c6bf34abd0c"
+    }
+  },
+  "selection_proposal": {
+    "direct": [
+      {
+        "name": "@worldcoin/minikit-js",
+        "version": "2.0.3",
+        "selection_status": "human-owned-unapproved"
+      },
+      {
+        "name": "abitype",
+        "version": "1.2.3",
+        "selection_status": "human-owned-unapproved"
+      },
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "selection_status": "human-owned-unapproved"
+      },
+      {
+        "name": "viem",
+        "version": "2.45.3",
+        "selection_status": "human-owned-unapproved"
+      }
+    ],
+    "closure": [
+      {
+        "location": "node_modules/@adraffy/ens-normalize",
+        "name": "@adraffy/ens-normalize",
+        "version": "1.11.1",
+        "integrity": "sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==",
+        "resolved": "https://registry.npmjs.org/@adraffy/ens-normalize/-/ens-normalize-1.11.1.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/adraffy--ens-normalize-1.11.1.tgz"
+      },
+      {
+        "location": "node_modules/@noble/ciphers",
+        "name": "@noble/ciphers",
+        "version": "1.3.0",
+        "integrity": "sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw==",
+        "resolved": "https://registry.npmjs.org/@noble/ciphers/-/ciphers-1.3.0.tgz",
+        "license": "MIT",
+        "engine_node": "^14.21.3 || >=16",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/noble--ciphers-1.3.0.tgz"
+      },
+      {
+        "location": "node_modules/@noble/curves",
+        "name": "@noble/curves",
+        "version": "1.9.1",
+        "integrity": "sha512-k11yZxZg+t+gWvBbIswW0yoJlu8cHOC7dhunwOzoWH/mXGBiYyR4YY6hAEK/3EUs4UpB8la1RfdRpeGsFHkWsA==",
+        "resolved": "https://registry.npmjs.org/@noble/curves/-/curves-1.9.1.tgz",
+        "license": "MIT",
+        "engine_node": "^14.21.3 || >=16",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/noble--curves-1.9.1.tgz"
+      },
+      {
+        "location": "node_modules/@noble/hashes",
+        "name": "@noble/hashes",
+        "version": "1.8.0",
+        "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==",
+        "resolved": "https://registry.npmjs.org/@noble/hashes/-/hashes-1.8.0.tgz",
+        "license": "MIT",
+        "engine_node": "^14.21.3 || >=16",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/noble--hashes-1.8.0.tgz"
+      },
+      {
+        "location": "node_modules/@scure/base",
+        "name": "@scure/base",
+        "version": "1.2.6",
+        "integrity": "sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg==",
+        "resolved": "https://registry.npmjs.org/@scure/base/-/base-1.2.6.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/scure--base-1.2.6.tgz"
+      },
+      {
+        "location": "node_modules/@scure/bip32",
+        "name": "@scure/bip32",
+        "version": "1.7.0",
+        "integrity": "sha512-E4FFX/N3f4B80AKWp5dP6ow+flD1LQZo/w8UnLGYZO674jS6YnYeepycOOksv+vLPSpgN35wgKgy+ybfTb2SMw==",
+        "resolved": "https://registry.npmjs.org/@scure/bip32/-/bip32-1.7.0.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/scure--bip32-1.7.0.tgz"
+      },
+      {
+        "location": "node_modules/@scure/bip39",
+        "name": "@scure/bip39",
+        "version": "1.6.0",
+        "integrity": "sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==",
+        "resolved": "https://registry.npmjs.org/@scure/bip39/-/bip39-1.6.0.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/scure--bip39-1.6.0.tgz"
+      },
+      {
+        "location": "node_modules/@worldcoin/minikit-js",
+        "name": "@worldcoin/minikit-js",
+        "version": "2.0.3",
+        "integrity": "sha512-41rhB59/MOWpAihcCidMijYmzlht5BDPTBQwRRDMhX65rC4Ac2+qEkajDgCR1xW/YWZm122Z8muJzr1pODDq1A==",
+        "resolved": "https://registry.npmjs.org/@worldcoin/minikit-js/-/minikit-js-2.0.3.tgz",
+        "license": "MIT",
+        "engine_node": ">= 16",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/worldcoin--minikit-js-2.0.3.tgz"
+      },
+      {
+        "location": "node_modules/abitype",
+        "name": "abitype",
+        "version": "1.2.3",
+        "integrity": "sha512-Ofer5QUnuUdTFsBRwARMoWKOH1ND5ehwYhJ3OJ/BQO+StkwQjHw0XyVh4vDttzHB7QOFhPHa/o413PJ82gU/Tg==",
+        "resolved": "https://registry.npmjs.org/abitype/-/abitype-1.2.3.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/abitype-1.2.3.tgz"
+      },
+      {
+        "location": "node_modules/eventemitter3",
+        "name": "eventemitter3",
+        "version": "5.0.1",
+        "integrity": "sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==",
+        "resolved": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.1.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/eventemitter3-5.0.1.tgz"
+      },
+      {
+        "location": "node_modules/isows",
+        "name": "isows",
+        "version": "1.0.7",
+        "integrity": "sha512-I1fSfDCZL5P0v33sVqeTDSpcstAg/N+wF5HS033mogOVIp4B+oHC7oOCsA3axAbBSGTJ8QubbNmnIRN/h8U7hg==",
+        "resolved": "https://registry.npmjs.org/isows/-/isows-1.0.7.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/isows-1.0.7.tgz"
+      },
+      {
+        "location": "node_modules/js-tokens",
+        "name": "js-tokens",
+        "version": "4.0.0",
+        "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==",
+        "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/js-tokens-4.0.0.tgz"
+      },
+      {
+        "location": "node_modules/loose-envify",
+        "name": "loose-envify",
+        "version": "1.4.0",
+        "integrity": "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==",
+        "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/loose-envify-1.4.0.tgz"
+      },
+      {
+        "location": "node_modules/ox",
+        "name": "ox",
+        "version": "0.12.1",
+        "integrity": "sha512-uU0llpthaaw4UJoXlseCyBHmQ3bLrQmz9rRLIAUHqv46uHuae9SE+ukYBRIPVCnlEnHKuWjDUcDFHWx9gbGNoA==",
+        "resolved": "https://registry.npmjs.org/ox/-/ox-0.12.1.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/ox-0.12.1.tgz"
+      },
+      {
+        "location": "node_modules/react",
+        "name": "react",
+        "version": "18.3.1",
+        "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
+        "resolved": "https://registry.npmjs.org/react/-/react-18.3.1.tgz",
+        "license": "MIT",
+        "engine_node": ">=0.10.0",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/react-18.3.1.tgz"
+      },
+      {
+        "location": "node_modules/viem",
+        "name": "viem",
+        "version": "2.45.3",
+        "integrity": "sha512-axOD7rIbGiDHHA1MHKmpqqTz3CMCw7YpE/FVypddQMXL5i364VkNZh9JeEJH17NO484LaZUOMueo35IXyL76Mw==",
+        "resolved": "https://registry.npmjs.org/viem/-/viem-2.45.3.tgz",
+        "license": "MIT",
+        "engine_node": "*",
+        "engine_source": "registry-not-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/viem-2.45.3.tgz"
+      },
+      {
+        "location": "node_modules/ws",
+        "name": "ws",
+        "version": "8.18.3",
+        "integrity": "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==",
+        "resolved": "https://registry.npmjs.org/ws/-/ws-8.18.3.tgz",
+        "license": "MIT",
+        "engine_node": ">=10.0.0",
+        "engine_source": "registry-declared",
+        "proposed_tarball_path": "data/worldcoin_human_aid/offline/npm/tarballs/ws-8.18.3.tgz"
+      }
+    ],
+    "minimum_runtime": true,
+    "human_decisions": {
+      "minikit": "unapproved; human Gate 0B decision required",
+      "viem": "unapproved; human Gate 0B decision required",
+      "react_peer": "unapproved; human Gate 0B decision required",
+      "closure": "unapproved; human Gate 0B decision required",
+      "runtime_toolchain": "unapproved; human Gate 0B decision required"
+    }
+  },
+  "lock_generation": {
+    "status": "controlled-unapproved-proposal-generation",
+    "performed_at": "2026-07-24",
+    "tool": "npm 10.9.8",
+    "node": "22.23.1",
+    "platform": "linux",
+    "architecture": "x64",
+    "operation": "npm install --package-lock-only --ignore-scripts --audit=false --fund=false",
+    "registry": "https://registry.npmjs.org",
+    "network_use": "official registry metadata was read to construct the unapproved lock proposal",
+    "cache": "isolated ephemeral mktemp caches; the user cache was not used for lock generation",
+    "package_execution": false,
+    "node_modules_created": false,
+    "tarballs_downloaded": false,
+    "failed_draft_observation": "a rejected agent draft ran read-only npm cache ls, found no MiniKit basis, and was fenced before validation, commit, or enqueue",
+    "validation_replay": "the G037 verifier and static tests perform no npm or Node invocation, network access, cache access, installation, package execution, or lock regeneration"
+  },
+  "supply_chain_review": {
+    "lifecycle_scripts": {
+      "proposed": [],
+      "status": "human tarball review required before Gate 0B",
+      "install_policy": "npm ci --offline --ignore-scripts"
+    },
+    "licenses": {
+      "path": "data/worldcoin_human_aid/bootstrap/siwe-licenses.json",
+      "status": "human evidence required before Gate 0B"
+    },
+    "provenance": {
+      "path": "data/worldcoin_human_aid/bootstrap/siwe-provenance.json",
+      "status": "human evidence required before Gate 0B"
+    },
+    "sbom": {
+      "path": "data/worldcoin_human_aid/bootstrap/siwe-sbom.json",
+      "status": "human evidence required before Gate 0B"
+    },
+    "vulnerability_review": {
+      "path": "data/worldcoin_human_aid/bootstrap/siwe-vulnerability-review.json",
+      "status": "human evidence required before Gate 0B"
+    },
+    "cache": {
+      "path": "data/worldcoin_human_aid/offline/npm",
+      "read_only": true,
+      "tree_sha256": null,
+      "status": "human staging and review required before Gate 0B",
+      "is_trust": false
+    },
+    "runtime_toolchain": {
+      "platform": "linux",
+      "architecture": "x86_64",
+      "archive_format": "tar.xz",
+      "archive_path": "data/worldcoin_human_aid/offline/node/node-v22.23.1-linux-x64.tar.xz",
+      "root": "node-v22.23.1-linux-x64",
+      "node_path": "node-v22.23.1-linux-x64/bin/node",
+      "node_version": "22.23.1",
+      "npm_cli_path": "node-v22.23.1-linux-x64/lib/node_modules/npm/bin/npm-cli.js",
+      "npm_version": "10.9.8",
+      "status": "not staged; exact symlink-free archive, member digests, provenance, and licenses require human Gate 0B review"
+    },
+    "tarballs": {
+      "paths": [
+        "data/worldcoin_human_aid/offline/npm/tarballs/adraffy--ens-normalize-1.11.1.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/noble--ciphers-1.3.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/noble--curves-1.9.1.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/noble--hashes-1.8.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/scure--base-1.2.6.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/scure--bip32-1.7.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/scure--bip39-1.6.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/worldcoin--minikit-js-2.0.3.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/abitype-1.2.3.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/eventemitter3-5.0.1.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/isows-1.0.7.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/js-tokens-4.0.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/loose-envify-1.4.0.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/ox-0.12.1.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/react-18.3.1.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/viem-2.45.3.tgz",
+        "data/worldcoin_human_aid/offline/npm/tarballs/ws-8.18.3.tgz"
+      ],
+      "status": "not staged; exact tarballs and sha256 digests require human Gate 0B review"
+    }
+  },
+  "constraints": {
+    "node": ">=18.20.0 <23",
+    "lockfile": "npm lockfileVersion 3",
+    "runtime_network": "G038 requires signed OS-level egress denial and a local mock; the receipt proves no successful external egress and boundary stability while attempt count remains unobserved",
+    "g038_install": "isolated npm ci --offline --ignore-scripts after signed selection only",
+    "g038_launcher": "blocked until an operator-controlled Gate-first supervisor launcher authenticates the canonical Gate, SIWE verifier, and runtime entrypoint before repository code runs"
+  },
+  "non_execution_boundary": {
+    "static_validation_performed": true,
+    "package_installation": false,
+    "package_execution": false,
+    "live_world_api_calls": false,
+    "world_chain_calls": false,
+    "token_transfers": false,
+    "approval_created": false
+  }
+}

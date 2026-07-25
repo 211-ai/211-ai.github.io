@@ -1,0 +1,123 @@
+{
+  "schema_version": "world-human-aid-gate-0b-transition/v1",
+  "gate_id": "gate-0b-transition",
+  "record_id": "REPLACE-WITH-UNIQUE-TRANSITION-RECORD-ID",
+  "decision": "pending",
+  "transition_authorized": false,
+  "runtime_authorized": false,
+  "issued_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+  "expires_at": "REPLACE-WITH-UTC-Z-TIMESTAMP",
+  "source_state": {
+    "root_commit": "REPLACE-WITH-BLOCKED-STATE-40-HEX-COMMIT",
+    "heap_id": "sha256:REPLACE-WITH-BLOCKED-HEAP-64-HEX-DIGEST",
+    "objective_heap": {
+      "path": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md",
+      "sha256": "sha256:REPLACE-WITH-BLOCKED-HEAP-64-HEX-DIGEST"
+    },
+    "board_contract": "blocked-review-v1",
+    "generated_root": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID",
+    "generated_artifacts": {
+      "taskboard": {
+        "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID/WORLDCOIN_HUMAN_AID_TODO.md",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+        "reuse_policy": "must_not_reuse"
+      },
+      "task_index": {
+        "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID/objective_bundles/todo_vector_index.json",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+        "reuse_policy": "must_not_reuse"
+      },
+      "bundle_index": {
+        "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID/objective_bundles/index.json",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+        "reuse_policy": "must_not_reuse"
+      },
+      "dependency_dag": {
+        "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID/objective_graph.json",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+        "reuse_policy": "must_not_reuse"
+      },
+      "preflight_receipt": {
+        "path": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID/preflight-receipt.json",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST",
+        "reuse_policy": "must_not_reuse"
+      }
+    }
+  },
+  "target_state": {
+    "root_commit": "REPLACE-WITH-REOPENED-STATE-40-HEX-COMMIT",
+    "heap_id": "sha256:REPLACE-WITH-REOPENED-HEAP-64-HEX-DIGEST",
+    "objective_heap": {
+      "path": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md",
+      "sha256": "sha256:REPLACE-WITH-REOPENED-HEAP-64-HEX-DIGEST"
+    },
+    "board_contract": "gate0b-selection-reopened-v1"
+  },
+  "transitions": [
+    {
+      "goal_id": "WORLDCOIN-G038",
+      "from_status": "blocked",
+      "to_status": "reopened"
+    },
+    {
+      "goal_id": "WORLDCOIN-G039",
+      "from_status": "blocked",
+      "to_status": "reopened"
+    },
+    {
+      "goal_id": "WORLDCOIN-G040",
+      "from_status": "blocked",
+      "to_status": "reopened"
+    }
+  ],
+  "controls": {
+    "external_launcher": {
+      "protocol_id": "world-aid-gate-first-launcher/v1",
+      "protocol": {
+        "path": "docs/specs/WORLD_AID_GATE_FIRST_LAUNCHER.md",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      "launcher": {
+        "path": "scripts/world_aid_gate_first_launcher.py",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      },
+      "deployment_attestation_id": "REPLACE-WITH-INDEPENDENT-DEPLOYMENT-ATTESTATION-ID",
+      "deployment_attestation": {
+        "path": "data/worldcoin_human_aid/gate_evidence/gate-0b-transition/deployment-conformance-attestation.json",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      }
+    },
+    "gate_verifier": {
+      "verifier_id": "world-aid-gate-0b-verifier/v1",
+      "artifact": {
+        "path": "scripts/verify_world_aid_gate_0b.py",
+        "sha256": "sha256:REPLACE-WITH-64-HEX-DIGEST"
+      }
+    },
+    "trust_policy": {
+      "policy_id": "world-aid-gate-first-operator-policy/v1",
+      "deployment_path": "/etc/world-aid/gate-first-policy.json",
+      "sha256": "sha256:REPLACE-WITH-INDEPENDENT-POLICY-64-HEX-DIGEST"
+    }
+  },
+  "regeneration": {
+    "required": true,
+    "mode": "fresh-post-transition",
+    "source_generated_root": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-BLOCKED-REVIEW-ID",
+    "target_generated_root": "data/worldcoin_human_aid/agent_supervisor/regenerations/REPLACE-WITH-FRESH-REOPENED-REVIEW-ID",
+    "must_not_reuse_artifact_ids": [
+      "bundle_index",
+      "dependency_dag",
+      "preflight_receipt",
+      "task_index",
+      "taskboard"
+    ],
+    "must_not_reuse_sha256": []
+  },
+  "trust": {
+    "policy_id": "world-aid-gate-0b-transition-signers/v1",
+    "signature_namespace": "world-aid-gate-0b-transition-v1",
+    "allowed_signers_sha256": "sha256:REPLACE-WITH-TRANSITION-TRUST-STORE-64-HEX-DIGEST"
+  },
+  "approvals": []
+}

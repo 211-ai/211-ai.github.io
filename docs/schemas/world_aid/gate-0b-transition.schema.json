@@ -1,0 +1,495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://211-ai.local/schemas/world-aid/gate-0b-transition.schema.json",
+  "title": "World Human Aid Gate 0B Blocked-to-Reopened Transition",
+  "description": "A multi-party signed authorization for only the exact G038/G039/G040 blocked-to-reopened source transition. It never authorizes runtime execution and requires a fresh post-transition generated board.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "gate_id",
+    "record_id",
+    "decision",
+    "transition_authorized",
+    "runtime_authorized",
+    "issued_at",
+    "expires_at",
+    "source_state",
+    "target_state",
+    "transitions",
+    "controls",
+    "regeneration",
+    "trust",
+    "approvals"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "world-human-aid-gate-0b-transition/v1"
+    },
+    "gate_id": {
+      "const": "gate-0b-transition"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^gate-0b-transition-[a-z0-9][a-z0-9._-]{7,95}$"
+    },
+    "decision": {
+      "const": "approved"
+    },
+    "transition_authorized": {
+      "const": true
+    },
+    "runtime_authorized": {
+      "const": false
+    },
+    "issued_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "expires_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "source_state": {
+      "$ref": "#/$defs/sourceState"
+    },
+    "target_state": {
+      "$ref": "#/$defs/targetState"
+    },
+    "transitions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/g038Transition"
+        },
+        {
+          "$ref": "#/$defs/g039Transition"
+        },
+        {
+          "$ref": "#/$defs/g040Transition"
+        }
+      ],
+      "items": false
+    },
+    "controls": {
+      "$ref": "#/$defs/controls"
+    },
+    "regeneration": {
+      "$ref": "#/$defs/regeneration"
+    },
+    "trust": {
+      "$ref": "#/$defs/trust"
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/approval"
+      }
+    }
+  },
+  "$defs": {
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*//)[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "generatedRoot": {
+      "type": "string",
+      "pattern": "^data/worldcoin_human_aid/agent_supervisor/regenerations/[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "heapArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "const": "docs/planning/WORLDCOIN_HUMAN_AID_OBJECTIVE_HEAP.md"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "nonReusableArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "reuse_policy"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reuse_policy": {
+          "const": "must_not_reuse"
+        }
+      }
+    },
+    "sourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_commit",
+        "heap_id",
+        "objective_heap",
+        "board_contract",
+        "generated_root",
+        "generated_artifacts"
+      ],
+      "properties": {
+        "root_commit": {
+          "$ref": "#/$defs/gitCommit"
+        },
+        "heap_id": {
+          "$ref": "#/$defs/sha256"
+        },
+        "objective_heap": {
+          "$ref": "#/$defs/heapArtifact"
+        },
+        "board_contract": {
+          "const": "blocked-review-v1"
+        },
+        "generated_root": {
+          "$ref": "#/$defs/generatedRoot"
+        },
+        "generated_artifacts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "taskboard",
+            "task_index",
+            "bundle_index",
+            "dependency_dag",
+            "preflight_receipt"
+          ],
+          "properties": {
+            "taskboard": {
+              "$ref": "#/$defs/nonReusableArtifact"
+            },
+            "task_index": {
+              "$ref": "#/$defs/nonReusableArtifact"
+            },
+            "bundle_index": {
+              "$ref": "#/$defs/nonReusableArtifact"
+            },
+            "dependency_dag": {
+              "$ref": "#/$defs/nonReusableArtifact"
+            },
+            "preflight_receipt": {
+              "$ref": "#/$defs/nonReusableArtifact"
+            }
+          }
+        }
+      }
+    },
+    "targetState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_commit",
+        "heap_id",
+        "objective_heap",
+        "board_contract"
+      ],
+      "properties": {
+        "root_commit": {
+          "$ref": "#/$defs/gitCommit"
+        },
+        "heap_id": {
+          "$ref": "#/$defs/sha256"
+        },
+        "objective_heap": {
+          "$ref": "#/$defs/heapArtifact"
+        },
+        "board_contract": {
+          "const": "gate0b-selection-reopened-v1"
+        }
+      }
+    },
+    "g038Transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_id",
+        "from_status",
+        "to_status"
+      ],
+      "properties": {
+        "goal_id": {
+          "const": "WORLDCOIN-G038"
+        },
+        "from_status": {
+          "const": "blocked"
+        },
+        "to_status": {
+          "const": "reopened"
+        }
+      }
+    },
+    "g039Transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_id",
+        "from_status",
+        "to_status"
+      ],
+      "properties": {
+        "goal_id": {
+          "const": "WORLDCOIN-G039"
+        },
+        "from_status": {
+          "const": "blocked"
+        },
+        "to_status": {
+          "const": "reopened"
+        }
+      }
+    },
+    "g040Transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_id",
+        "from_status",
+        "to_status"
+      ],
+      "properties": {
+        "goal_id": {
+          "const": "WORLDCOIN-G040"
+        },
+        "from_status": {
+          "const": "blocked"
+        },
+        "to_status": {
+          "const": "reopened"
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_launcher",
+        "gate_verifier",
+        "trust_policy"
+      ],
+      "properties": {
+        "external_launcher": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocol_id",
+            "protocol",
+            "launcher",
+            "deployment_attestation_id",
+            "deployment_attestation"
+          ],
+          "properties": {
+            "protocol_id": {
+              "const": "world-aid-gate-first-launcher/v1"
+            },
+            "protocol": {
+              "$ref": "#/$defs/artifact"
+            },
+            "launcher": {
+              "$ref": "#/$defs/artifact"
+            },
+            "deployment_attestation_id": {
+              "type": "string",
+              "pattern": "^gate-first-deployment-[a-z0-9][a-z0-9._-]{7,95}$"
+            },
+            "deployment_attestation": {
+              "$ref": "#/$defs/artifact"
+            }
+          }
+        },
+        "gate_verifier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verifier_id",
+            "artifact"
+          ],
+          "properties": {
+            "verifier_id": {
+              "const": "world-aid-gate-0b-verifier/v1"
+            },
+            "artifact": {
+              "$ref": "#/$defs/artifact"
+            }
+          }
+        },
+        "trust_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_id",
+            "deployment_path",
+            "sha256"
+          ],
+          "properties": {
+            "policy_id": {
+              "const": "world-aid-gate-first-operator-policy/v1"
+            },
+            "deployment_path": {
+              "const": "/etc/world-aid/gate-first-policy.json"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        }
+      }
+    },
+    "regeneration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "mode",
+        "source_generated_root",
+        "target_generated_root",
+        "must_not_reuse_artifact_ids",
+        "must_not_reuse_sha256"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "mode": {
+          "const": "fresh-post-transition"
+        },
+        "source_generated_root": {
+          "$ref": "#/$defs/generatedRoot"
+        },
+        "target_generated_root": {
+          "$ref": "#/$defs/generatedRoot"
+        },
+        "must_not_reuse_artifact_ids": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "prefixItems": [
+            {
+              "const": "bundle_index"
+            },
+            {
+              "const": "dependency_dag"
+            },
+            {
+              "const": "preflight_receipt"
+            },
+            {
+              "const": "task_index"
+            },
+            {
+              "const": "taskboard"
+            }
+          ],
+          "items": false
+        },
+        "must_not_reuse_sha256": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "signature_namespace",
+        "allowed_signers_sha256"
+      ],
+      "properties": {
+        "policy_id": {
+          "const": "world-aid-gate-0b-transition-signers/v1"
+        },
+        "signature_namespace": {
+          "const": "world-aid-gate-0b-transition-v1"
+        },
+        "allowed_signers_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "identity",
+        "key_fingerprint",
+        "signature_file"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "governance-owner",
+            "independent-operator",
+            "repository-maintainer",
+            "security-reviewer"
+          ]
+        },
+        "identity": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9@._+-]{2,253}$"
+        },
+        "key_fingerprint": {
+          "type": "string",
+          "pattern": "^SHA256:[A-Za-z0-9+/]{43}$"
+        },
+        "signature_file": {
+          "type": "string",
+          "pattern": "^signatures/(governance-owner|independent-operator|repository-maintainer|security-reviewer)\\.sshsig$"
+        }
+      }
+    }
+  }
+}
