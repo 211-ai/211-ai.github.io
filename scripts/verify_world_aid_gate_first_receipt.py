@@ -92,9 +92,7 @@ RUN_ID_RE = re.compile(r"^gate-first-[a-z0-9][a-z0-9._-]{7,95}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 RECORD_ID_RE = re.compile(r"^gate-0b-selection-[a-z0-9][a-z0-9._-]{7,95}$")
-TIMESTAMP_RE = re.compile(
-    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
-)
+TIMESTAMP_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
 MAX_GOAL_RESULT_BYTES = 8 * 1024 * 1024
 MAX_SIGNATURE_BYTES = 64 * 1024
@@ -153,10 +151,7 @@ def _object(value: Any, label: str) -> Mapping[str, Any]:
 def _exact_keys(value: Mapping[str, Any], expected: set[str], label: str) -> None:
     observed = set(value)
     if observed != expected:
-        _fail(
-            f"{label} keys differ: missing={sorted(expected - observed)}, "
-            f"unexpected={sorted(observed - expected)}"
-        )
+        _fail(f"{label} keys differ: missing={sorted(expected - observed)}, unexpected={sorted(observed - expected)}")
 
 
 def _string(value: Any, label: str, *, minimum: int = 1, maximum: int = 4096) -> str:
@@ -233,11 +228,7 @@ def _safe_result_path(value: Any, goal_id: str) -> str:
     text = _string(value, f"{goal_id} result_path", maximum=256)
     expected = f"goals/{goal_id}.json"
     path = PurePosixPath(text)
-    if (
-        text != expected
-        or path.is_absolute()
-        or any(part in {"", ".", ".."} for part in path.parts)
-    ):
+    if text != expected or path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
         _fail(f"{goal_id} result_path must be {expected}")
     return text
 
@@ -511,11 +502,7 @@ def _validate_g039_native_receipt(
         )
 
     repeat_hashes = native["repeat_build_hashes"]
-    if (
-        not isinstance(repeat_hashes, list)
-        or len(repeat_hashes) != 2
-        or repeat_hashes[0] != repeat_hashes[1]
-    ):
+    if not isinstance(repeat_hashes, list) or len(repeat_hashes) != 2 or repeat_hashes[0] != repeat_hashes[1]:
         _fail(f"{label} does not prove two reproducible native builds")
     for index, value in enumerate(repeat_hashes):
         _digest(value, f"{label}.repeat_build_hashes[{index}]")
@@ -594,8 +581,12 @@ def _validate_g040_second_writer(value: Any, label: str) -> None:
         not isinstance(connected, bool)
         or not isinstance(write_attempted, bool)
         or not (
-            stage == "connect" and connected is False and write_attempted is False
-            or stage == "write" and connected is True and write_attempted is True
+            stage == "connect"
+            and connected is False
+            and write_attempted is False
+            or stage == "write"
+            and connected is True
+            and write_attempted is True
         )
     ):
         _fail(f"{label} has inconsistent rejection-stage flags")
@@ -893,6 +884,8 @@ def _validate_goal_result(
     goal_id: str,
     runner_sha256: str,
     selection_approval_sha256: str,
+    aggregate_started_at: datetime,
+    aggregate_completed_at: datetime,
 ) -> Mapping[str, Any]:
     result = _load_canonical_json(raw, label=f"{goal_id} result")
     _exact_keys(
@@ -929,6 +922,10 @@ def _validate_goal_result(
     completed = _timestamp(result["completed_at"], f"{goal_id} result.completed_at")
     if completed < started:
         _fail(f"{goal_id} result completion precedes its start")
+    if started < aggregate_started_at:
+        _fail(f"{goal_id} result start precedes aggregate receipt start")
+    if completed > aggregate_completed_at:
+        _fail(f"{goal_id} result completion follows aggregate receipt completion")
     _validate_goal_evidence(
         result["evidence"],
         goal_id=goal_id,
@@ -948,9 +945,7 @@ def _parse_selection_approval(raw: bytes) -> tuple[str, str]:
     if not RECORD_ID_RE.fullmatch(record_id):
         _fail("selection approval record id is invalid")
     reviewed = _object(approval.get("reviewed_state"), "selection approval.reviewed_state")
-    root_commit = _string(
-        reviewed.get("root_commit"), "selection approval.reviewed_state.root_commit", maximum=40
-    )
+    root_commit = _string(reviewed.get("root_commit"), "selection approval.reviewed_state.root_commit", maximum=40)
     if not COMMIT_RE.fullmatch(root_commit):
         _fail("selection approval root commit is invalid")
     return record_id, root_commit
@@ -1097,9 +1092,7 @@ def verify_gate_first_receipt(
             maximum_bytes=MAX_RECEIPT_BYTES,
         )
         snapshots.append(approval)
-        selection_record_id, selection_root_commit = _parse_selection_approval(
-            approval.read_bytes()
-        )
+        selection_record_id, selection_root_commit = _parse_selection_approval(approval.read_bytes())
 
         receipt_path = policy.receipt_root / run_id / RECEIPT_FILENAME
         signature_path = policy.receipt_root / run_id / SIGNATURE_FILENAME
@@ -1226,9 +1219,7 @@ def verify_gate_first_receipt(
             },
             "receipt.boundary",
         )
-        environment_digest = _sha256_bytes(
-            canonical_json_bytes(EXPECTED_CLEAN_ENVIRONMENT)
-        )
+        environment_digest = _sha256_bytes(canonical_json_bytes(EXPECTED_CLEAN_ENVIRONMENT))
         boundary_expected = {
             "apparmor_profile": policy.apparmor_profile,
             "network_namespace": policy.network_namespace,
@@ -1268,9 +1259,7 @@ def verify_gate_first_receipt(
             if goal["runner_sha256"] != runner.sha256:
                 _fail(f"{goal_id} runner digest differs from operator policy")
             result_path = _safe_result_path(goal["result_path"], goal_id)
-            result_digest = _digest(
-                goal["result_sha256"], f"receipt.goals[{index}].result_sha256"
-            )
+            result_digest = _digest(goal["result_sha256"], f"receipt.goals[{index}].result_sha256")
             result = _secure_policy_file(
                 policy.receipt_root / run_id / result_path,
                 result_digest,
@@ -1287,6 +1276,8 @@ def verify_gate_first_receipt(
                 goal_id=goal_id,
                 runner_sha256=runner.sha256,
                 selection_approval_sha256=approval.sha256,
+                aggregate_started_at=started_at,
+                aggregate_completed_at=completed_at,
             )
             goal_result_digests[goal_id] = result.sha256
         if tuple(observed_goals) != EXPECTED_GOAL_IDS:

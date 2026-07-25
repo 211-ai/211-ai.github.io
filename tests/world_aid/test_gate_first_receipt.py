@@ -383,8 +383,7 @@ def _signed_fixture(tmp_path: Path) -> SignedReceiptFixture:
     _write_canonical(approval_path, approval_payload)
 
     runner_digests = {
-        goal_id: f"sha256:{index:064x}"
-        for index, goal_id in enumerate(launcher.EXPECTED_GOAL_IDS, start=1)
+        goal_id: f"sha256:{index:064x}" for index, goal_id in enumerate(launcher.EXPECTED_GOAL_IDS, start=1)
     }
     policy_payload = _policy_payload(operator_root, run_enabled=True)
     policy_payload["installation"]["ssh_keygen_sha256"] = _sha256(copied_ssh_keygen)
@@ -438,7 +437,9 @@ def _signed_fixture(tmp_path: Path) -> SignedReceiptFixture:
             }
         )
 
-    environment_digest = f"sha256:{hashlib.sha256(canonical_json_bytes(launcher.EXPECTED_CLEAN_ENVIRONMENT)).hexdigest()}"
+    environment_digest = (
+        f"sha256:{hashlib.sha256(canonical_json_bytes(launcher.EXPECTED_CLEAN_ENVIRONMENT)).hexdigest()}"
+    )
     aggregate = {
         "schema": receipt_verifier.RUN_RECEIPT_SCHEMA,
         "run_id": run_id,
@@ -530,6 +531,60 @@ def test_receipt_verifies_exact_signature_and_all_three_goal_results(
     assert list(summary["goal_result_sha256"]) == list(launcher.EXPECTED_GOAL_IDS)
     assert summary["offline"] is True
     assert summary["live_actions_authorized"] is False
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    (
+        (
+            "started_at",
+            "2026-07-24T11:59:59Z",
+            "result start precedes aggregate receipt start",
+        ),
+        (
+            "completed_at",
+            "2026-07-24T12:00:04Z",
+            "result completion follows aggregate receipt completion",
+        ),
+    ),
+)
+def test_receipt_rejects_goal_interval_outside_aggregate_interval(
+    tmp_path: Path,
+    field: str,
+    value: str,
+    message: str,
+) -> None:
+    fixture = _signed_fixture(tmp_path)
+
+    def replace(payload: dict[str, Any]) -> None:
+        payload[field] = value
+
+    _replace_goal_result(fixture, "WORLDCOIN-G039", replace)
+    with pytest.raises(GateFirstReceiptError, match=message):
+        verify_gate_first_receipt(
+            policy=fixture.policy,
+            run_id=fixture.run_id,
+            context=fixture.context,
+        )
+
+
+def test_receipt_accepts_goal_interval_on_exact_aggregate_boundaries(
+    tmp_path: Path,
+) -> None:
+    fixture = _signed_fixture(tmp_path)
+
+    def replace(payload: dict[str, Any]) -> None:
+        payload["started_at"] = "2026-07-24T12:00:00Z"
+        payload["completed_at"] = "2026-07-24T12:00:03Z"
+
+    _replace_goal_result(fixture, "WORLDCOIN-G039", replace)
+    summary = verify_gate_first_receipt(
+        policy=fixture.policy,
+        run_id=fixture.run_id,
+        context=fixture.context,
+    )
+
+    assert summary["status"] == "verified"
 
 
 def test_receipt_rejects_wrong_declared_key_even_if_signature_is_valid(
@@ -662,17 +717,18 @@ def test_g038_plan_and_boundary_digests_are_exact_signed_wrapper_bindings(
     assert "execution_plan_sha256" not in native
     assert "network_boundary_attestation_sha256" not in native
     assert receipt_verifier.DIGEST_RE.fullmatch(evidence["execution_plan_sha256"])
-    assert receipt_verifier.DIGEST_RE.fullmatch(
-        evidence["network_boundary_attestation_sha256"]
-    )
+    assert receipt_verifier.DIGEST_RE.fullmatch(evidence["network_boundary_attestation_sha256"])
     aggregate = json.loads(fixture.receipt_path.read_text(encoding="utf-8"))
     g038 = next(goal for goal in aggregate["goals"] if goal["goal_id"] == "WORLDCOIN-G038")
     assert g038["result_sha256"] == _sha256(result_path)
-    assert verify_gate_first_receipt(
-        policy=fixture.policy,
-        run_id=fixture.run_id,
-        context=fixture.context,
-    )["status"] == "verified"
+    assert (
+        verify_gate_first_receipt(
+            policy=fixture.policy,
+            run_id=fixture.run_id,
+            context=fixture.context,
+        )["status"]
+        == "verified"
+    )
 
 
 @pytest.mark.parametrize(
@@ -709,16 +765,12 @@ def test_g038_rejects_malformed_signed_wrapper_binding(
         ),
         (
             "WORLDCOIN-G039",
-            lambda evidence: evidence["native_receipt"].__setitem__(
-                "authorization_sha256", _fake_digest(900)
-            ),
+            lambda evidence: evidence["native_receipt"].__setitem__("authorization_sha256", _fake_digest(900)),
             "invalid authorization_sha256",
         ),
         (
             "WORLDCOIN-G039",
-            lambda evidence: evidence["native_receipt"].__setitem__(
-                "execution_plan_sha256", _fake_digest(901)
-            ),
+            lambda evidence: evidence["native_receipt"].__setitem__("execution_plan_sha256", _fake_digest(901)),
             "invalid execution_plan_sha256",
         ),
         (
@@ -730,9 +782,7 @@ def test_g038_rejects_malformed_signed_wrapper_binding(
         ),
         (
             "WORLDCOIN-G040",
-            lambda evidence: evidence["native_receipt"]["checks"].__setitem__(
-                "transaction_commit", False
-            ),
+            lambda evidence: evidence["native_receipt"]["checks"].__setitem__("transaction_commit", False),
             "transaction_commit did not pass",
         ),
     ],
