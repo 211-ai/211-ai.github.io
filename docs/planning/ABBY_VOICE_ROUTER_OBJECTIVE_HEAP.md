@@ -450,8 +450,8 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G012
 - Goal: Compose the existing Abby schema normalizer GraphRAG and ArtifactManifest APIs into one dataset manager that reconciles legacy candidates and emits deterministic missing-or-revalidate audio work.
-- Evidence: canonical normalization; deterministic audio worksets; exact legacy adapter; complete inventory-to-disposition ledger; canonical four-config bundle; explicit evaluation-support artifact decision; deterministic TTS ASR and validation work manifests; fuzzy-review quarantine
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
+- Evidence: canonical normalization; deterministic audio worksets; exact legacy adapter; complete inventory-to-disposition ledger; canonical four-config bundle; explicit evaluation-support artifact decision; deterministic TTS ASR and validation work manifests; fuzzy-review quarantine; authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py, data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
 - Bundle: abby-voice/dataset-manager
 - Parallel lane: abby-voice-data
@@ -463,13 +463,14 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/dataset_manager.py, ipfs_datasets_py/ipfs_datasets_py/voice/legacy_sources.py, ipfs_datasets_py/ipfs_datasets_py/voice/workset.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_dataset_manager.py
 - Conflict policy: call the existing normalizer and GraphRAG index rather than duplicating their policy; plural legacy audio paths are candidates, not proof; fuzzy matches are review-only
 - Gap task: Replace script-level source handling with a reusable manager that converts pinned sources into canonical rows, quarantine records, ArtifactManifests, and deterministic work specifications.
+- Objective-validation repair: `ABBY-VOICE-AUTO-012` owns this validation gate. The source scan reported `deterministic audio worksets`, `deterministic TTS ASR and validation work manifests`, and `fuzzy-review quarantine` missing because no defining G013 implementation or focused assertion was present. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md`; evidence is accepted only when it names the defining manager, exact legacy adapter, deterministic workset manifests, quarantine behavior, and focused offline assertions.
 - Acceptance gate:
   1. Every inventory object and input row receives exactly one disposition with a stable reason code and source identity.
-  2. An audio candidate auto-links only when subject and exact normalized spoken-text identity agree and downloaded bytes pass full SHA-256, size, media, and decode checks.
+  2. An audio candidate auto-links only when subject and exact normalized spoken-text identity agree and downloaded bytes pass full SHA-256, size, media, and decode checks. A fuzzy, ambiguous, truncated-hash, basename-only, or identity-mismatched candidate receives a stable review-only quarantine/disposition and never auto-links.
   3. Canonical response, template, audio, and provenance rows pass existing strict bundle and publication validation; GraphRAG serialization remains content-addressed and input-order independent.
-  4. The workset contains only missing, corrupt, stale-policy, or explicitly requested revalidation work and is byte-identical for the same pinned source manifest and policy.
+  4. The workset contains only missing, corrupt, stale-policy, or explicitly requested revalidation work; its TTS, ASR, and audio-validation manifests have deterministic full-hash identities, canonical ordering, and byte-identical serialization for the same pinned source manifest and policy.
   5. Evaluation remains a checksummed support artifact until G018 implements the promised `abby_voice_evaluation_v2` flat schema.
-- Child-goal boundary: G013 owns data-plane planning but does not submit, execute, upload, or delete anything. G014 owns the cross-package job contract.
+- Child-goal boundary: No smaller child goal is needed. Exact legacy linking, fuzzy-review quarantine, and deterministic TTS/ASR/audio-validation planning manifests are one cohesive data-plane planning boundary. G022 remains a duplicate refinement superseded by G013; G014 owns cross-package job contracts, G015 owns execution, and G017 owns result reconciliation. G013 does not submit, execute, upload, or delete anything.
 
 ## ABBY-VOICE-G014 Define audio job contracts and the datasets-to-accelerate bridge
 
