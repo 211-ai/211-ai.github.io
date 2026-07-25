@@ -16,6 +16,7 @@ import argparse
 import base64
 import binascii
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -48,26 +49,39 @@ if __package__:
         validate_isolated_interpreter,
     )
 else:
-    from world_aid_gate_first_launcher import (  # type: ignore[no-redef]
-        EXPECTED_CLEAN_ENVIRONMENT,
-        EXPECTED_GOAL_IDS,
-        FIXED_OPERATOR_POLICY_PATH,
-        ROOT_OPERATOR_CONTEXT,
-        ExternalSecurityContext,
-        GateFirstLauncherError,
-        OperatorPolicy,
-        SealedFileSnapshot,
-        _communicate_bounded,
-        _new_sealed_memfd,
-        _open_directory_no_symlink,
-        _secure_external_snapshot,
-        _sha256_bytes,
-        load_json_strict,
-        load_operator_policy,
-        snapshot_regular_file_at,
-        validate_authority_environment,
-        validate_isolated_interpreter,
+    _launcher_path = Path(__file__).with_name("world_aid_gate_first_launcher.py")
+    _launcher_spec = importlib.util.spec_from_file_location(
+        "_world_aid_gate_first_launcher_isolated",
+        _launcher_path,
     )
+    if _launcher_spec is None or _launcher_spec.loader is None:
+        raise ImportError(f"cannot load the Gate-first launcher from {_launcher_path}")
+    _launcher_module = importlib.util.module_from_spec(_launcher_spec)
+    sys.modules[_launcher_spec.name] = _launcher_module
+    try:
+        _launcher_spec.loader.exec_module(_launcher_module)
+    except BaseException:
+        sys.modules.pop(_launcher_spec.name, None)
+        raise
+
+    EXPECTED_CLEAN_ENVIRONMENT = _launcher_module.EXPECTED_CLEAN_ENVIRONMENT
+    EXPECTED_GOAL_IDS = _launcher_module.EXPECTED_GOAL_IDS
+    FIXED_OPERATOR_POLICY_PATH = _launcher_module.FIXED_OPERATOR_POLICY_PATH
+    ROOT_OPERATOR_CONTEXT = _launcher_module.ROOT_OPERATOR_CONTEXT
+    ExternalSecurityContext = _launcher_module.ExternalSecurityContext
+    GateFirstLauncherError = _launcher_module.GateFirstLauncherError
+    OperatorPolicy = _launcher_module.OperatorPolicy
+    SealedFileSnapshot = _launcher_module.SealedFileSnapshot
+    _communicate_bounded = _launcher_module._communicate_bounded
+    _new_sealed_memfd = _launcher_module._new_sealed_memfd
+    _open_directory_no_symlink = _launcher_module._open_directory_no_symlink
+    _secure_external_snapshot = _launcher_module._secure_external_snapshot
+    _sha256_bytes = _launcher_module._sha256_bytes
+    load_json_strict = _launcher_module.load_json_strict
+    load_operator_policy = _launcher_module.load_operator_policy
+    snapshot_regular_file_at = _launcher_module.snapshot_regular_file_at
+    validate_authority_environment = _launcher_module.validate_authority_environment
+    validate_isolated_interpreter = _launcher_module.validate_isolated_interpreter
 
 RUN_RECEIPT_SCHEMA = "world-aid-gate-first-run-receipt/v1"
 GOAL_RESULT_SCHEMA = "world-aid-gate-first-goal-result/v1"

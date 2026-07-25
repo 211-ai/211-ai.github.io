@@ -781,3 +781,33 @@ def test_disabled_policy_and_cli_overrides_fail_closed(tmp_path: Path) -> None:
         with pytest.raises(SystemExit) as raised:
             _build_parser().parse_args(arguments)
         assert raised.value.code == 2
+
+
+def test_direct_cli_loads_sibling_launcher_under_isolated_python(
+    tmp_path: Path,
+) -> None:
+    script_path = Path(receipt_verifier.__file__).resolve()
+    completed = subprocess.run(
+        [
+            "/usr/bin/python3",
+            "-I",
+            "-S",
+            "-B",
+            str(script_path),
+            "--help",
+        ],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        env={
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PATH": "/usr/bin:/bin",
+            "TZ": "UTC",
+        },
+        text=True,
+    )
+
+    assert completed.returncode == 0
+    assert "--run-id" in completed.stdout
+    assert completed.stderr == ""
