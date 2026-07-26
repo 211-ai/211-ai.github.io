@@ -1442,7 +1442,7 @@
 
 ## ABBY-VOICE-AUTO-029 ABBY-VOICE: Add idempotent recovery resource admission and provider batching
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
