@@ -1124,7 +1124,7 @@
 
 ## ABBY-VOICE-AUTO-023 Implement Abby voice objective: Generalize immutable Hugging Face source snapshots
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -1182,4 +1182,3 @@
 - Candidate kind: aggregate
 - Todo vector key: f8adf7d2f7468cec
 - Acceptance: Objective scan filed this gap for ABBY-VOICE-G012. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-023-objective-gap-687350d0bedd.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
-- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
