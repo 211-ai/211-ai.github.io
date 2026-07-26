@@ -1428,3 +1428,14 @@
 - Candidate kind: aggregate
 - Todo vector key: 2fcf8b67fb7299c4
 - Acceptance: Objective scan filed this gap for ABBY-VOICE-G011. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-gap-6052767b43b2.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (deterministic audio worksets, TTS/ASR execution), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-028 Resolve validation retry-budget failure for ABBY-VOICE-AUTO-016
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: ABBY-VOICE-AUTO-012, ABBY-VOICE-AUTO-015
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py, ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py, data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery
+- Validation: test -f data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in ABBY-VOICE-AUTO-016. Use evidence in data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release ABBY-VOICE-AUTO-016 from strategy blocked_tasks.
