@@ -545,7 +545,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G015
 - Goal: Make distributed voice jobs restart-safe and resource-aware by extending the existing TaskQueue ResourceScheduler and ProviderBatchScheduler rather than creating a new scheduler.
-- Evidence: submit-once queue semantics; attempt and backoff state; claim lease and heartbeat recovery; priority-aware claims; audio capability constraints; provider batch compatibility tests; resource and provider saturation tests
+- Evidence: `TaskQueue` submit-once identity, persisted attempt/backoff/lease state, owner heartbeats, expired-lease recovery, priority-aware atomic claims, and legacy DuckDB migration; `PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release; complete audio `ProviderBatchKey` compatibility, IndexTTS/Whisper batch-size-one policy, existing sibling isolation and single-flight receipts; existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions; authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py
 - Bundle: abby-voice/audio-scheduling
@@ -557,6 +557,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
 - Conflict policy: preserve existing text-task behavior and DuckDB compatibility; provider-local retry remains inside the existing Abby adapter while queue retry handles worker loss and exhausted retryable job failures
 - Gap task: Add the minimum generic reliability fields and semantics missing from TaskQueue, then configure existing resource and provider schedulers for audio.
+- Objective-validation repair: `ABBY-VOICE-AUTO-015` owns this validation gate. Its repair is restricted to the frozen output paths; the authoritative evidence map names the implementation and focused assertion for each formerly missing term.
 - Acceptance gate:
   1. Atomic submit-once, `attempt`, `max_attempts`, `next_attempt_at`, `lease_until`, and heartbeat ownership make a worker crash recoverable without duplicate provider execution.
   2. Claim order honors priority and eligibility while retaining atomic microbatch claims and safe DuckDB single-writer behavior.
@@ -564,7 +565,8 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. IndexTTS and Whisper remain batch size one until their adapters prove real batching. Cancellation, timeout, or fallback of one member does not cancel or corrupt siblings.
   5. Resource admission limits CPU, RAM, disk, GPU memory, provider concurrency/rate, and retry-after state; saturation backpressures rather than overclaims.
   6. Single-flight identical work produces one physical provider call and a content-addressed batch receipt whose integrity can be verified.
-- Child-goal boundary: G016 owns generic queue reliability and resource/provider admission. G017 owns content and speech-quality decisions.
+- Child-goal boundary: No smaller child goal is needed. Queue recovery, capability admission, provider compatibility, and saturation backpressure form one execution-control boundary. G017 owns content and speech-quality decisions.
+- Validation receipt: the exact three-file offline gate passed with 90 tests on 2026-07-26. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition.
 
 ## ABBY-VOICE-G017 Reconcile generated audio and enforce round-trip quality
 
