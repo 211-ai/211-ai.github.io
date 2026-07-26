@@ -1182,3 +1182,64 @@
 - Candidate kind: aggregate
 - Todo vector key: f8adf7d2f7468cec
 - Acceptance: Objective scan filed this gap for ABBY-VOICE-G012. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-023-objective-gap-687350d0bedd.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`, `HuggingFaceBucketStore` produces a canonical inventory digest over path, focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access, the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-024 Implement Abby voice objective: Normalize and materialize the Abby voice dataset
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-data
+- Depends on:
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
+- Bundle: abby-voice/dataset-materialization
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-dataset-materialization.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G004, ABBY-VOICE-G005
+- Graph depth: 3
+- Objective heap index: 0
+- Parallel lane: abby-voice-data
+- Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
+- Predicted files: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md, ipfs_datasets_py/ipfs_datasets_py/voice, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks, data/abby_voice/normalized, data/abby_voice/releases
+- Changed paths:
+- AST symbols: AbbyVoiceDatasetNormalizer, ArtifactManifest, VoiceAudioJobSpec, AbbyVoiceHFReleaseBuilder
+- Interfaces: ipfs_datasets_py.voice, ipfs_datasets_py ArtifactManifest, ipfs_accelerate_py p2p tasks, Hugging Face datasets and buckets
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G011
+- Canonical task key: task/v1/6ec78ea94d7880e0ad66e87e0f11941e8f6ed80210e0f77d2f7b86eeca262bab
+- Canonical task CID: baguqeeran3dy5kknpcaobllg5b7a6emud2hw5waccdqpo7jppodo5srgfovq
+- Semantic identity: objective-evidence-obligation/v1/ef5719b83ca9c68058ff10161130997cd502d289bc99cfd05c3d3b1b1cf5db41
+- Acceptance subset: deterministic audio worksets
+- Preconditions: objective goal ABBY-VOICE-G011 is schedulable
+- Effects: satisfy evidence requirement: deterministic audio worksets
+- Evidence subset: deterministic audio worksets
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G011
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/ef5719b83ca9c68058ff10161130997cd502d289bc99cfd05c3d3b1b1cf5db41
+- Missing evidence: deterministic audio worksets
+- Embedding query: immutable Hugging Face Abby voice normalization audio workset TTS ASR GraphRAG deterministic release
+- AST query: AbbyVoiceDatasetNormalizer, ArtifactManifest, VoiceAudioJobSpec, AbbyVoiceHFReleaseBuilder
+- Surplus group: objective/ABBY-VOICE-G011
+- Merge key: c62d28274eedd3c3
+- Merge family: objective/ABBY-VOICE-G011
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: b2cb5ffad6bded67
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G011. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-gap-bcd66c47e946.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (deterministic audio worksets), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
