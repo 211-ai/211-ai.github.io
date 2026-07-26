@@ -686,7 +686,7 @@
 
 ## ABBY-VOICE-AUTO-015 Implement Abby voice objective: Add idempotent recovery resource admission and provider batching
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
