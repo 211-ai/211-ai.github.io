@@ -1,7 +1,7 @@
 {
   "active_goal_count": 8,
   "completed_goal_count": 13,
-  "generated_at": "2026-07-26T18:57:33.526502+00:00",
+  "generated_at": "2026-07-26T20:22:09.795416+00:00",
   "goal_count": 29,
   "goals": [
     {
@@ -356,7 +356,8 @@
         "IndexTTS/Whisper batch-size-one policy",
         "existing sibling isolation and single-flight receipts",
         "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
-        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md"
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
+        "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md"
       ],
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
@@ -1705,6 +1706,11 @@
         "to": "evidence:7cc7d63eed8d912c"
       },
       {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:5df308299ba97d1f"
+      },
+      {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
         "to": "evidence:2a0a317bc68c26fa"
@@ -2717,6 +2723,11 @@
         "id": "evidence:7cc7d63eed8d912c"
       },
       {
+        "acceptance_criterion": "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:5df308299ba97d1f"
+      },
+      {
         "acceptance_criterion": "audio reconciliation",
         "goal_id": "ABBY-VOICE-G017",
         "id": "evidence:2a0a317bc68c26fa"
@@ -3341,7 +3352,7 @@
       },
       "ABBY-VOICE-G016": {
         "completion_evidence": {
-          "validation_receipt": "the exact three-file offline gate passed with 90 tests on 2026-07-26. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition."
+          "validation_receipt": "the exact three-file offline gate remains the daemon authority; AUTO-015 recorded 90 tests and the post-AUTO-026 residual surface re-ran the same three paths with **93 passed** including the residual-term anchor. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition."
         },
         "goal_id": "ABBY-VOICE-G016",
         "lifecycle_state": "active",
@@ -3360,7 +3371,8 @@
           "IndexTTS/Whisper batch-size-one policy",
           "existing sibling isolation and single-flight receipts",
           "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
-          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md"
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
+          "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3695,24 +3707,24 @@
       "goal_id": "ABBY-VOICE-G016",
       "graph_depth": 4,
       "heap_index": 1,
-      "output_count": 5,
+      "output_count": 7,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 12,
+      "required_evidence_count": 13,
       "sort_key": [
         8004,
         0,
-        -78,
+        -86,
         4,
         "ABBY-VOICE-G016"
       ],
       "status": "active",
       "title": "Add idempotent recovery resource admission and provider batching",
       "track": "voice-scheduling",
-      "work_surface_score": 78
+      "work_surface_score": 86
     },
     {
       "fib_priority": 8005,
@@ -3863,7 +3875,7 @@
   "objective_path": "/home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
   "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
   "thought_graph": {
-    "edge_count": 394,
+    "edge_count": 397,
     "edges": [
       {
         "from": "goal:ABBY-VOICE-G001",
@@ -5227,6 +5239,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:5df308299ba9"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
         "kind": "validated_by",
         "to": "validation:f81b964fde0a"
       },
@@ -5254,6 +5271,16 @@
         "from": "goal:ABBY-VOICE-G016",
         "kind": "touches_surface",
         "to": "code_surface:5acb52a070f2"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "touches_surface",
+        "to": "code_surface:8c89618554e8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "touches_surface",
+        "to": "code_surface:8115481545b1"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
@@ -5836,7 +5863,7 @@
         "to": "code_surface:3f73bdf93452"
       }
     ],
-    "node_count": 423,
+    "node_count": 426,
     "nodes": [
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -6196,6 +6223,13 @@
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "code_surface:8115481545b1",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G014",
         "id": "code_surface:83f2c5e39f81",
         "kind": "code_surface",
@@ -6215,6 +6249,13 @@
         "kind": "code_surface",
         "path": "data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-004-objective-validation-repair.md",
         "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-004-objective-validation-repair.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "code_surface:8c89618554e8",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G019",
@@ -7153,6 +7194,13 @@
         "kind": "evidence_requirement",
         "term": "ordered capability-aware remote/local fallback",
         "thought": "Find or create repository evidence proving `ordered capability-aware remote/local fallback`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:5df308299ba9",
+        "kind": "evidence_requirement",
+        "term": "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md`."
       },
       {
         "goal_id": "ABBY-VOICE-G009",
