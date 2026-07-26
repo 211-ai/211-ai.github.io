@@ -1,7 +1,7 @@
 {
-  "active_goal_count": 12,
-  "completed_goal_count": 9,
-  "generated_at": "2026-07-25T22:53:20.853406+00:00",
+  "active_goal_count": 21,
+  "completed_goal_count": 0,
+  "generated_at": "2026-07-26T00:14:00.375932+00:00",
   "goal_count": 29,
   "goals": [
     {
@@ -21,7 +21,7 @@
       "goal_id": "ABBY-VOICE-G001",
       "parents": [],
       "refinement_depth": "0",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Deliver a unified grounded Abby voice pipeline",
       "track": "voice-platform"
     },
@@ -44,7 +44,7 @@
         "ABBY-VOICE-G001"
       ],
       "refinement_depth": "1",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Define stable voice-turn and provider contracts",
       "track": "voice-router"
     },
@@ -68,7 +68,7 @@
         "ABBY-VOICE-G002"
       ],
       "refinement_depth": "2",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Port Abby provider fallback behavior into voice_router",
       "track": "voice-router"
     },
@@ -93,7 +93,7 @@
         "ABBY-VOICE-G001"
       ],
       "refinement_depth": "1",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Define the canonical Abby voice dataset schema",
       "track": "voice-data"
     },
@@ -117,7 +117,7 @@
         "ABBY-VOICE-G004"
       ],
       "refinement_depth": "2",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Build deterministic dataset normalization and quality gates",
       "track": "voice-data"
     },
@@ -138,7 +138,7 @@
         "ABBY-VOICE-G005"
       ],
       "refinement_depth": "3",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Produce a safe Hugging Face bucket and dataset migration plan",
       "track": "voice-data"
     },
@@ -191,7 +191,7 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "complete",
+      "status": "provisionally_complete",
       "title": "Add GraphRAG response-template ingestion and retrieval",
       "track": "voice-graphrag"
     },
@@ -230,7 +230,8 @@
         "canonical four-config bundle",
         "explicit evaluation-support artifact decision",
         "deterministic TTS ASR and validation work manifests",
-        "fuzzy-review quarantine"
+        "fuzzy-review quarantine",
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md"
       ],
       "fib_priority": 5003,
       "goal_id": "ABBY-VOICE-G013",
@@ -238,7 +239,7 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "active",
+      "status": "provisionally_complete",
       "title": "Build the Abby dataset manager and deterministic audio workset",
       "track": "voice-data"
     },
@@ -260,7 +261,7 @@
         "ABBY-VOICE-G007"
       ],
       "refinement_depth": "5",
-      "status": "complete",
+      "status": "reopened",
       "title": "Integrate GraphRAG templating into voice_router",
       "track": "voice-graphrag"
     },
@@ -293,7 +294,7 @@
         "ABBY-VOICE-G008"
       ],
       "refinement_depth": "6",
-      "status": "complete",
+      "status": "reopened",
       "title": "Establish voice safety quality and performance evaluation",
       "track": "voice-evaluation"
     },
@@ -1552,6 +1553,11 @@
         "to": "evidence:900b829052317105"
       },
       {
+        "from": "ABBY-VOICE-G013",
+        "kind": "requires_evidence",
+        "to": "evidence:a5289f3fb6af463c"
+      },
+      {
         "from": "ABBY-VOICE-G014",
         "kind": "requires_evidence",
         "to": "evidence:a0ff22d20d0d611c"
@@ -2524,6 +2530,11 @@
         "id": "evidence:900b829052317105"
       },
       {
+        "acceptance_criterion": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G013",
+        "id": "evidence:a5289f3fb6af463c"
+      },
+      {
         "acceptance_criterion": "dependency-light request and result schemas",
         "goal_id": "ABBY-VOICE-G014",
         "id": "evidence:a0ff22d20d0d611c"
@@ -2836,6 +2847,15 @@
     ],
     "lifecycle": {
       "nonterminal_goal_ids": [
+        "ABBY-VOICE-G001",
+        "ABBY-VOICE-G002",
+        "ABBY-VOICE-G003",
+        "ABBY-VOICE-G004",
+        "ABBY-VOICE-G005",
+        "ABBY-VOICE-G006",
+        "ABBY-VOICE-G007",
+        "ABBY-VOICE-G008",
+        "ABBY-VOICE-G009",
         "ABBY-VOICE-G010",
         "ABBY-VOICE-G011",
         "ABBY-VOICE-G012",
@@ -2850,6 +2870,15 @@
         "ABBY-VOICE-G021"
       ],
       "schedulable_goal_ids": [
+        "ABBY-VOICE-G001",
+        "ABBY-VOICE-G002",
+        "ABBY-VOICE-G003",
+        "ABBY-VOICE-G004",
+        "ABBY-VOICE-G005",
+        "ABBY-VOICE-G006",
+        "ABBY-VOICE-G007",
+        "ABBY-VOICE-G008",
+        "ABBY-VOICE-G009",
         "ABBY-VOICE-G010",
         "ABBY-VOICE-G011",
         "ABBY-VOICE-G012",
@@ -2864,20 +2893,12 @@
         "ABBY-VOICE-G021"
       ],
       "state_counts": {
-        "active": 12,
+        "active": 11,
         "blocked": 8,
-        "verified_complete": 9
+        "provisionally_complete": 8,
+        "reopened": 2
       },
       "terminal_goal_ids": [
-        "ABBY-VOICE-G001",
-        "ABBY-VOICE-G002",
-        "ABBY-VOICE-G003",
-        "ABBY-VOICE-G004",
-        "ABBY-VOICE-G005",
-        "ABBY-VOICE-G006",
-        "ABBY-VOICE-G007",
-        "ABBY-VOICE-G008",
-        "ABBY-VOICE-G009",
         "ABBY-VOICE-G022",
         "ABBY-VOICE-G023",
         "ABBY-VOICE-G024",
@@ -2892,7 +2913,7 @@
       "ABBY-VOICE-G001": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G001",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [],
         "required_evidence": [
           "unified VoiceTurnRequest and VoiceTurnResult contracts in `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py`",
@@ -2905,15 +2926,15 @@
           "and deterministic degradation",
           "architecture and objective-validation receipts that map every claim to a repository path"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Deliver a unified grounded Abby voice pipeline"
       },
       "ABBY-VOICE-G002": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G002",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G001"
         ],
@@ -2928,15 +2949,15 @@
           "direct compatibility tests for text_to_speech and speech_to_text",
           "ABBY-VOICE-G002 completion receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Define stable voice-turn and provider contracts"
       },
       "ABBY-VOICE-G003": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G003",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G002"
         ],
@@ -2952,15 +2973,15 @@
           "28 focused offline assertions",
           "ABBY-VOICE-G003 completion receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Port Abby provider fallback behavior into voice_router"
       },
       "ABBY-VOICE-G004": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G004",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G001"
         ],
@@ -2977,15 +2998,15 @@
           "column and release-layout contract in `docs/data/ABBY_VOICE_DATASET_SCHEMA.md`",
           "ABBY-VOICE-G004 objective-validation repair receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Define the canonical Abby voice dataset schema"
       },
       "ABBY-VOICE-G005": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G005",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G004"
         ],
@@ -3001,15 +3022,15 @@
           "16 focused offline assertions in `ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py`",
           "objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Build deterministic dataset normalization and quality gates"
       },
       "ABBY-VOICE-G006": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G006",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G004",
           "ABBY-VOICE-G005"
@@ -3022,15 +3043,15 @@
           "Dataset Viewer validation procedure",
           "ABBY-VOICE-G006 completion receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Produce a safe Hugging Face bucket and dataset migration plan"
       },
       "ABBY-VOICE-G007": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G007",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G004",
           "ABBY-VOICE-G005",
@@ -3052,15 +3073,15 @@
           "and optional-collaborator assertions",
           "ABBY-VOICE-G007 objective-validation completion receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "provisionally_complete",
+        "terminal": false,
         "title": "Add GraphRAG response-template ingestion and retrieval"
       },
       "ABBY-VOICE-G008": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G008",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "reopened",
         "parents": [
           "ABBY-VOICE-G002",
           "ABBY-VOICE-G003",
@@ -3074,15 +3095,15 @@
           "integration tests with fake GraphRAG provider",
           "ABBY-VOICE-G008 completion receipt"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "reopened",
+        "terminal": false,
         "title": "Integrate GraphRAG templating into voice_router"
       },
       "ABBY-VOICE-G009": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G009",
-        "lifecycle_state": "verified_complete",
+        "lifecycle_state": "reopened",
         "parents": [
           "ABBY-VOICE-G005",
           "ABBY-VOICE-G007",
@@ -3107,9 +3128,9 @@
           "`docs/reports/ABBY_VOICE_EVALUATION.md` is the completion receipt",
           "objective-validation repair is recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-008-objective-validation-repair.md`"
         ],
-        "schedulable": false,
-        "status": "complete",
-        "terminal": true,
+        "schedulable": true,
+        "status": "reopened",
+        "terminal": false,
         "title": "Establish voice safety quality and performance evaluation"
       },
       "ABBY-VOICE-G010": {
@@ -3191,7 +3212,7 @@
       "ABBY-VOICE-G013": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G013",
-        "lifecycle_state": "active",
+        "lifecycle_state": "provisionally_complete",
         "parents": [
           "ABBY-VOICE-G011"
         ],
@@ -3203,10 +3224,11 @@
           "canonical four-config bundle",
           "explicit evaluation-support artifact decision",
           "deterministic TTS ASR and validation work manifests",
-          "fuzzy-review quarantine"
+          "fuzzy-review quarantine",
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md"
         ],
         "schedulable": true,
-        "status": "active",
+        "status": "provisionally_complete",
         "terminal": false,
         "title": "Build the Abby dataset manager and deterministic audio workset"
       },
@@ -3532,6 +3554,15 @@
       "ABBY-VOICE-G001"
     ],
     "schedulable_goal_ids": [
+      "ABBY-VOICE-G001",
+      "ABBY-VOICE-G002",
+      "ABBY-VOICE-G003",
+      "ABBY-VOICE-G004",
+      "ABBY-VOICE-G005",
+      "ABBY-VOICE-G006",
+      "ABBY-VOICE-G007",
+      "ABBY-VOICE-G008",
+      "ABBY-VOICE-G009",
       "ABBY-VOICE-G010",
       "ABBY-VOICE-G011",
       "ABBY-VOICE-G012",
@@ -3546,20 +3577,12 @@
       "ABBY-VOICE-G021"
     ],
     "state_counts": {
-      "active": 12,
+      "active": 11,
       "blocked": 8,
-      "verified_complete": 9
+      "provisionally_complete": 8,
+      "reopened": 2
     },
     "terminal_goal_ids": [
-      "ABBY-VOICE-G001",
-      "ABBY-VOICE-G002",
-      "ABBY-VOICE-G003",
-      "ABBY-VOICE-G004",
-      "ABBY-VOICE-G005",
-      "ABBY-VOICE-G006",
-      "ABBY-VOICE-G007",
-      "ABBY-VOICE-G008",
-      "ABBY-VOICE-G009",
       "ABBY-VOICE-G022",
       "ABBY-VOICE-G023",
       "ABBY-VOICE-G024",
@@ -3572,10 +3595,128 @@
   },
   "heap_schedule": [
     {
+      "fib_priority": 1000,
+      "goal_id": "ABBY-VOICE-G001",
+      "graph_depth": 0,
+      "heap_index": 0,
+      "output_count": 4,
+      "parents": [],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 9,
+      "sort_key": [
+        1000,
+        0,
+        -63,
+        0,
+        "ABBY-VOICE-G001"
+      ],
+      "status": "provisionally_complete",
+      "title": "Deliver a unified grounded Abby voice pipeline",
+      "track": "voice-platform",
+      "work_surface_score": 63
+    },
+    {
+      "fib_priority": 2000,
+      "goal_id": "ABBY-VOICE-G002",
+      "graph_depth": 1,
+      "heap_index": 1,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G001"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 9,
+      "sort_key": [
+        2000,
+        0,
+        -53,
+        1,
+        "ABBY-VOICE-G002"
+      ],
+      "status": "provisionally_complete",
+      "title": "Define stable voice-turn and provider contracts",
+      "track": "voice-router",
+      "work_surface_score": 53
+    },
+    {
+      "fib_priority": 3000,
+      "goal_id": "ABBY-VOICE-G003",
+      "graph_depth": 2,
+      "heap_index": 2,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G002"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 10,
+      "sort_key": [
+        3000,
+        0,
+        -64,
+        2,
+        "ABBY-VOICE-G003"
+      ],
+      "status": "provisionally_complete",
+      "title": "Port Abby provider fallback behavior into voice_router",
+      "track": "voice-router",
+      "work_surface_score": 64
+    },
+    {
+      "fib_priority": 3001,
+      "goal_id": "ABBY-VOICE-G004",
+      "graph_depth": 1,
+      "heap_index": 3,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G001"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 11,
+      "sort_key": [
+        3001,
+        0,
+        -65,
+        1,
+        "ABBY-VOICE-G004"
+      ],
+      "status": "provisionally_complete",
+      "title": "Define the canonical Abby voice dataset schema",
+      "track": "voice-data",
+      "work_surface_score": 65
+    },
+    {
+      "fib_priority": 5000,
+      "goal_id": "ABBY-VOICE-G005",
+      "graph_depth": 2,
+      "heap_index": 4,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G004"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 10,
+      "sort_key": [
+        5000,
+        0,
+        -60,
+        2,
+        "ABBY-VOICE-G005"
+      ],
+      "status": "provisionally_complete",
+      "title": "Build deterministic dataset normalization and quality gates",
+      "track": "voice-data",
+      "work_surface_score": 60
+    },
+    {
       "fib_priority": 5001,
       "goal_id": "ABBY-VOICE-G011",
       "graph_depth": 3,
-      "heap_index": 0,
+      "heap_index": 5,
       "output_count": 5,
       "parents": [
         "ABBY-VOICE-G004",
@@ -3597,10 +3738,61 @@
       "work_surface_score": 64
     },
     {
+      "fib_priority": 5001,
+      "goal_id": "ABBY-VOICE-G006",
+      "graph_depth": 3,
+      "heap_index": 6,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G004",
+        "ABBY-VOICE-G005"
+      ],
+      "priority": "P1",
+      "priority_rank": 1,
+      "required_evidence_count": 6,
+      "sort_key": [
+        5001,
+        1,
+        -44,
+        3,
+        "ABBY-VOICE-G006"
+      ],
+      "status": "provisionally_complete",
+      "title": "Produce a safe Hugging Face bucket and dataset migration plan",
+      "track": "voice-data",
+      "work_surface_score": 44
+    },
+    {
+      "fib_priority": 5002,
+      "goal_id": "ABBY-VOICE-G007",
+      "graph_depth": 4,
+      "heap_index": 7,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G004",
+        "ABBY-VOICE-G005",
+        "ABBY-VOICE-G011"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 14,
+      "sort_key": [
+        5002,
+        0,
+        -80,
+        4,
+        "ABBY-VOICE-G007"
+      ],
+      "status": "provisionally_complete",
+      "title": "Add GraphRAG response-template ingestion and retrieval",
+      "track": "voice-graphrag",
+      "work_surface_score": 80
+    },
+    {
       "fib_priority": 5002,
       "goal_id": "ABBY-VOICE-G012",
       "graph_depth": 4,
-      "heap_index": 1,
+      "heap_index": 8,
       "output_count": 7,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3624,31 +3816,83 @@
       "fib_priority": 5003,
       "goal_id": "ABBY-VOICE-G013",
       "graph_depth": 4,
-      "heap_index": 2,
-      "output_count": 4,
+      "heap_index": 9,
+      "output_count": 5,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 8,
+      "required_evidence_count": 9,
       "sort_key": [
         5003,
         0,
-        -57,
+        -63,
         4,
         "ABBY-VOICE-G013"
       ],
-      "status": "active",
+      "status": "provisionally_complete",
       "title": "Build the Abby dataset manager and deterministic audio workset",
       "track": "voice-data",
-      "work_surface_score": 57
+      "work_surface_score": 63
+    },
+    {
+      "fib_priority": 8000,
+      "goal_id": "ABBY-VOICE-G008",
+      "graph_depth": 5,
+      "heap_index": 10,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G002",
+        "ABBY-VOICE-G003",
+        "ABBY-VOICE-G007"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 6,
+      "sort_key": [
+        8000,
+        0,
+        -49,
+        5,
+        "ABBY-VOICE-G008"
+      ],
+      "status": "reopened",
+      "title": "Integrate GraphRAG templating into voice_router",
+      "track": "voice-graphrag",
+      "work_surface_score": 49
+    },
+    {
+      "fib_priority": 8001,
+      "goal_id": "ABBY-VOICE-G009",
+      "graph_depth": 6,
+      "heap_index": 11,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G005",
+        "ABBY-VOICE-G007",
+        "ABBY-VOICE-G008"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 17,
+      "sort_key": [
+        8001,
+        0,
+        -92,
+        6,
+        "ABBY-VOICE-G009"
+      ],
+      "status": "reopened",
+      "title": "Establish voice safety quality and performance evaluation",
+      "track": "voice-evaluation",
+      "work_surface_score": 92
     },
     {
       "fib_priority": 8002,
       "goal_id": "ABBY-VOICE-G014",
       "graph_depth": 4,
-      "heap_index": 3,
+      "heap_index": 12,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3672,7 +3916,7 @@
       "fib_priority": 8003,
       "goal_id": "ABBY-VOICE-G015",
       "graph_depth": 4,
-      "heap_index": 4,
+      "heap_index": 13,
       "output_count": 5,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3696,7 +3940,7 @@
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
       "graph_depth": 4,
-      "heap_index": 5,
+      "heap_index": 14,
       "output_count": 5,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3720,7 +3964,7 @@
       "fib_priority": 8005,
       "goal_id": "ABBY-VOICE-G017",
       "graph_depth": 4,
-      "heap_index": 6,
+      "heap_index": 15,
       "output_count": 3,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3744,7 +3988,7 @@
       "fib_priority": 13000,
       "goal_id": "ABBY-VOICE-G010",
       "graph_depth": 7,
-      "heap_index": 7,
+      "heap_index": 16,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G008",
@@ -3769,7 +4013,7 @@
       "fib_priority": 13001,
       "goal_id": "ABBY-VOICE-G018",
       "graph_depth": 4,
-      "heap_index": 8,
+      "heap_index": 17,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3793,7 +4037,7 @@
       "fib_priority": 13002,
       "goal_id": "ABBY-VOICE-G019",
       "graph_depth": 4,
-      "heap_index": 9,
+      "heap_index": 18,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3817,7 +4061,7 @@
       "fib_priority": 21000,
       "goal_id": "ABBY-VOICE-G020",
       "graph_depth": 4,
-      "heap_index": 10,
+      "heap_index": 19,
       "output_count": 3,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3841,7 +4085,7 @@
       "fib_priority": 21001,
       "goal_id": "ABBY-VOICE-G021",
       "graph_depth": 4,
-      "heap_index": 11,
+      "heap_index": 20,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3865,7 +4109,7 @@
   "objective_path": "/home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
   "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
   "thought_graph": {
-    "edge_count": 382,
+    "edge_count": 384,
     "edges": [
       {
         "from": "goal:ABBY-VOICE-G001",
@@ -4954,6 +5198,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G013",
+        "kind": "requires_evidence",
+        "to": "evidence:a5289f3fb6af"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G013",
         "kind": "validated_by",
         "to": "validation:532a6a1edccf"
       },
@@ -4976,6 +5225,11 @@
         "from": "goal:ABBY-VOICE-G013",
         "kind": "touches_surface",
         "to": "code_surface:feb8cdfbc0ac"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G013",
+        "kind": "touches_surface",
+        "to": "code_surface:aa2687f9d887"
       },
       {
         "from": "goal:ABBY-VOICE-G013",
@@ -5778,7 +6032,7 @@
         "to": "code_surface:3f73bdf93452"
       }
     ],
-    "node_count": 411,
+    "node_count": 413,
     "nodes": [
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -6241,6 +6495,13 @@
         "kind": "code_surface",
         "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G013",
+        "id": "code_surface:aa2687f9d887",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G022",
@@ -7461,6 +7722,13 @@
         "thought": "Find or create repository evidence proving `publication-policy`."
       },
       {
+        "goal_id": "ABBY-VOICE-G013",
+        "id": "evidence:a5289f3fb6af",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "evidence:a58448bed3bb",
         "kind": "evidence_requirement",
@@ -7962,7 +8230,7 @@
         "id": "goal:ABBY-VOICE-G001",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Deliver a reusable voice turn pipeline that transcribes caller audio, retrieves grounded 211 evidence and reusable response frames, renders safe spoken text, synthesizes audio, and returns provenance and fallback metadata.",
         "title": "Deliver a unified grounded Abby voice pipeline",
         "track": "voice-platform"
@@ -7972,7 +8240,7 @@
         "id": "goal:ABBY-VOICE-G002",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Replace byte-or-string-only routing with typed request result capability and trace contracts while preserving the existing public TTS and STT functions.",
         "title": "Define stable voice-turn and provider contracts",
         "track": "voice-router"
@@ -7982,7 +8250,7 @@
         "id": "goal:ABBY-VOICE-G003",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Make the Python voice router capable of the same ordered remote local and degraded behaviors used by the wallet voice assistant without importing UI-specific code.",
         "title": "Port Abby provider fallback behavior into voice_router",
         "track": "voice-router"
@@ -7992,7 +8260,7 @@
         "id": "goal:ABBY-VOICE-G004",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Define a flat versioned dataset contract that ipfs_datasets_py and Hugging Face Dataset Viewer can load without interpreting indexes or manifests as response rows.",
         "title": "Define the canonical Abby voice dataset schema",
         "track": "voice-data"
@@ -8002,7 +8270,7 @@
         "id": "goal:ABBY-VOICE-G005",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Convert the existing manifests and response corpus into canonical rows while detecting low-value vocabulary fragments malformed spoken text duplicates ungrounded claims missing audio and inconsistent slots.",
         "title": "Build deterministic dataset normalization and quality gates",
         "track": "voice-data"
@@ -8012,7 +8280,7 @@
         "id": "goal:ABBY-VOICE-G006",
         "kind": "goal",
         "priority": "P1",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Separate mutable run artifacts from curated Dataset Viewer data and prepare a reviewable migration without changing remote state.",
         "title": "Produce a safe Hugging Face bucket and dataset migration plan",
         "track": "voice-data"
@@ -8022,7 +8290,7 @@
         "id": "goal:ABBY-VOICE-G007",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "provisionally_complete",
         "thought": "Ingest canonical response frames evidence links and slot relationships into ipfs_datasets_py and retrieve them as response plans rather than uncited final answers.",
         "title": "Add GraphRAG response-template ingestion and retrieval",
         "track": "voice-graphrag"
@@ -8032,7 +8300,7 @@
         "id": "goal:ABBY-VOICE-G008",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "reopened",
         "thought": "Add an optional template provider to process_voice_turn that can retrieve a response plan bind only grounded facts normalize spoken text and synthesize the final response.",
         "title": "Integrate GraphRAG templating into voice_router",
         "track": "voice-graphrag"
@@ -8042,7 +8310,7 @@
         "id": "goal:ABBY-VOICE-G009",
         "kind": "goal",
         "priority": "P0",
-        "status": "complete",
+        "status": "reopened",
         "thought": "Prevent autonomous optimization from trading away grounding privacy accessibility or emergency behavior for latency or response reuse.",
         "title": "Establish voice safety quality and performance evaluation",
         "track": "voice-evaluation"
@@ -8082,7 +8350,7 @@
         "id": "goal:ABBY-VOICE-G013",
         "kind": "goal",
         "priority": "P0",
-        "status": "active",
+        "status": "provisionally_complete",
         "thought": "Compose the existing Abby schema normalizer GraphRAG and ArtifactManifest APIs into one dataset manager that reconciles legacy candidates and emits deterministic missing-or-revalidate audio work.",
         "title": "Build the Abby dataset manager and deterministic audio workset",
         "track": "voice-data"

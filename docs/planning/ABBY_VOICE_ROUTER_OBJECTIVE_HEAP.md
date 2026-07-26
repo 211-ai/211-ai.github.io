@@ -74,7 +74,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G001 Deliver a unified grounded Abby voice pipeline
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 1000
 - Priority: P0
 - Track: voice-platform
@@ -100,10 +100,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. An STT failure returns status `failed`, skips retrieval/rendering, and synthesizes a deterministic safe handoff when TTS is available. A total TTS failure preserves grounded text and provenance with status `text_only` and no false audio.
   6. `python -m pytest -q tests/voice/test_abby_voice_pipeline.py` passes and the result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no additional child goal is needed for this repair. G002 owns typed contracts, G003 provider fallback, G004/G005/G011 curated data, G007 retrieval, G008 router/template composition, and G009 safety evaluation. G001 owns only their offline integration gate and evidence receipt; it does not mark those independently active goals complete.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-0bd6a404789669af07e702660bda4861
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["unified VoiceTurnRequest and VoiceTurnResult contracts in `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py`","an injected GraphRAG response-template retrieval boundary","one offline test that proves transcription","grounded template rendering","synthesis","provenance","stage trace","and deterministic degradation","architecture and objective-validation receipts that map every claim to a repository path"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G002 Define stable voice-turn and provider contracts
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 2000
 - Priority: P0
 - Track: voice-router
@@ -130,10 +141,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. Importing `ipfs_accelerate_py.voice_router` remains optional-dependency safe. The established keyword-only signatures and bytes/string returns of `text_to_speech` and `speech_to_text`, provider injection, arbitrary provider kwargs, response caching, and `output_path` behavior remain compatible.
   6. `python -m pytest -q ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_voice_router_integration.py` passes and its result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no additional child goal is needed. G002 owns typed contracts, capability metadata, identity isolation, and compatibility only. G003 remains responsible for provider adapters and production fallback policy; G008 remains responsible for GraphRAG template composition and orchestration behavior.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-1b1ac90923c14b587ed053618aab0610
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["versioned and privacy-safe VoiceTurnRequest serialization","validated VoiceTurnResult","VoiceTurnProvenance","and VoiceStageTrace receipts","serializable VoiceProviderCapabilities and ProviderInfo metadata","capability-aware registry routing","complete cache identities","direct compatibility tests for text_to_speech and speech_to_text","ABBY-VOICE-G002 completion receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G003 Port Abby provider fallback behavior into voice_router
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 3000
 - Priority: P0
 - Track: voice-router
@@ -163,10 +185,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   8. Unexpected coroutine results are closed and rejected at the synchronous `VoiceProvider` boundary, allowing the next fallback without an unawaited-coroutine leak. Existing `text_to_speech` and `speech_to_text` signatures and bytes/string returns remain unchanged.
   9. `python -m pytest -q ipfs_accelerate_py/test/test_abby_voice_providers.py` passes offline and the result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. G003 owns dependency-light remote adapters, resilience, capability-aware provider order, and adapter/degraded receipt evidence. G008 owns GraphRAG template retrieval and grounded turn composition; G010 owns wallet/UI adoption.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-f979c81d46d4961ffae320b2ae1c83f7
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["dependency-light `IndexTTSHTTPProvider` and `HuggingFaceWhisperHTTPProvider` adapters with injected stdlib transports","lazy `abby_indextts` and `abby_whisper` router capabilities and aliases","ordered capability-aware remote/local fallback","bounded transient retry","timeout","backoff","and per-endpoint circuit breakers","privacy-safe `AbbyProviderReceipt` attempt history embedded in structured degraded `VoiceTurnResult` traces","28 focused offline assertions","ABBY-VOICE-G003 completion receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G004 Define the canonical Abby voice dataset schema
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 3001
 - Priority: P0
 - Track: voice-data
@@ -194,10 +227,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   6. Lazy Hugging Face and PyArrow schema adapters expose fixed feature types without making either optional dependency an import-time requirement. Focused Arrow/Parquet fixtures preserve nullable scalars and empty typed lists.
   7. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py` passes and the result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. G004 owns the cohesive row-contract and focused validation gate. G005 owns batch normalization, de-duplication, and quarantine; G011 owns curated materialization and Dataset Viewer/Parquet output; G006 owns the review-only remote migration plan.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-a77c1f04928c92a3c4bce9b38c7bf94b
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["`abby_voice_response_v2`","`abby_voice_template_v2`","`abby_voice_audio_v2`","and `abby_voice_provenance_v2` definitions and typed rows in `ipfs_datasets_py/ipfs_datasets_py/voice/schema.py`","strict schema","migration","bundle-reference","publication-policy","and Arrow/Parquet round-trip fixtures in `ipfs_datasets_py/tests/unit/voice/test_abby_voice_schema.py`","column and release-layout contract in `docs/data/ABBY_VOICE_DATASET_SCHEMA.md`","ABBY-VOICE-G004 objective-validation repair receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G005 Build deterministic dataset normalization and quality gates
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 5000
 - Priority: P0
 - Track: voice-data
@@ -227,10 +271,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   8. The CLI is offline and non-destructive, accepts manifests/directories/JSONL, supports strict audio/grounding/quarantine gates, validates bundle references and checksums with `--check`, and proves byte-identical reruns with `--check-idempotence`; it performs no remote bucket or Hugging Face mutation.
   9. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py` passes and the result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. G005 owns the reusable normalization API, deterministic de-duplication/quality evidence, quarantine policy, local JSONL builder, and focused unit gate. G011 owns immutable remote-source inventory, full curated materialization, Parquet/Dataset Viewer compatibility, and byte-identical release artifacts. G006 owns the human-reviewed remote migration plan, and G007 owns searchable GraphRAG ingestion/retrieval.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-161d13fb0a2ef915e4888e7efbafe3f5
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["dependency-light `AbbyVoiceDatasetNormalizer`","stable source references/content IDs/splits","canonical response/template/audio/provenance output","text/audio duplicate winner ledger","`normalize_indextts_spoken_text` corruption checks","grounded slot-fidelity and factual-claim gates","lossless quarantine records","deterministic quality/build manifests in `ipfs_datasets_py/ipfs_datasets_py/voice/normalize.py` and `scripts/build_abby_voice_dataset_v2.py`","16 focused offline assertions in `ipfs_datasets_py/tests/unit/voice/test_abby_voice_normalize.py`","objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G006 Produce a safe Hugging Face bucket and dataset migration plan
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 5001
 - Priority: P1
 - Track: voice-data
@@ -258,10 +313,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. The Dataset Viewer procedure validates schema columns, Parquet readability, split isolation, row counts, checksums, and a smoke load before any human-approved remote publication. Rollback is by selecting the previous immutable release/revision; it never deletes or rewrites the legacy source.
   6. `python -m pytest -q tests/voice/test_abby_voice_hf_migration.py` passes offline and records the required evidence mapping in the repair receipt. No focused assertion calls Hugging Face, requires credentials, or mutates a remote source.
 - Child-goal boundary: no smaller child goal is needed. G006 owns the human-reviewed migration plan and safety gate; G011 owns immutable inventory plus complete curated Parquet materialization, and G009 owns evaluation fixture content. G006 does not claim that remote inventory or publication has occurred.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-89a2e695e0f288ef980145f020996d56
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["bucket inventory summary","proposed canonical prefix layout","Hugging Face dataset YAML with separate configs and splits","dry-run copy upload and delete plan","Dataset Viewer validation procedure","ABBY-VOICE-G006 completion receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G007 Add GraphRAG response-template ingestion and retrieval
 
-- Status: complete
+- Status: provisionally_complete
 - Fib priority: 5002
 - Priority: P0
 - Track: voice-graphrag
@@ -290,10 +356,21 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   7. `IPLDKnowledgeGraph`, `IPLDVectorStore`, and `GraphRAGLLMProcessor` integrations remain injected and optional. Importing the module loads no model/vector/IPLD extras or network client; query expansion can affect retrieval text only and cannot provide a slot or final answer.
   8. `python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py` passes offline and the exact result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. G007 owns canonical response-frame graph ingestion, deterministic hybrid template retrieval, and current-evidence binding. G008 owns router rendering and voice-turn orchestration, G009 owns cross-pipeline safety/performance evaluation, and G011 owns immutable inventory plus complete curated dataset materialization. G007 depends on the G004 schema and G005 normalization policy but does not wait for G011 to ingest already canonical rows.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-a926d34aa1aef9fe0b35a916ce8dbf41
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; verification_evidence_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["dependency-light `GraphRAGVoiceTemplateProvider` and `SlottedResponseIndex`","deterministic CID-addressed intent/template/slot/evidence/response/audio/provenance graph with injected `IPLDKnowledgeGraph` publication","lexical","sparse-vector","injected `IPLDVectorStore`","and graph hybrid ranking","fail-closed current-evidence slot binding that never uses historical response values as facts","19 focused offline ingestion","safety","ranking","provenance","serialization","and optional-collaborator assertions","ABBY-VOICE-G007 objective-validation completion receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G008 Integrate GraphRAG templating into voice_router
 
-- Status: complete
+- Status: reopened
 - Fib priority: 8000
 - Priority: P0
 - Track: voice-graphrag
@@ -320,10 +397,23 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. `ipfs_accelerate_py/test/test_voice_router_graphrag.py` covers canonical prompt construction/non-mutation, citation normalization, STT-to-TTS ordering, opt-in GraphRAG prompt delivery, safe slot rejection, deterministic retrieval fallback, TTS text-only degradation, and template-expression rejection using only in-memory fakes.
   6. `python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py` passes offline. No focused assertion calls a remote speech service, GraphRAG deployment, IPFS node, or Hugging Face API.
 - Child-goal boundary: no smaller child goal is needed. G008 owns the router-side prompt envelope, response-plan rendering, citation stripping, fallback orchestration, and focused gate. G007 owns canonical GraphRAG ingestion/retrieval, G009 owns evaluation, and G010 owns downstream wallet adoption.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-d7288c3151880fa3f502e46df517698e
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; tasks_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["optional VoiceTemplateProvider protocol","grounded slot binding implementation","citation stripping with retained machine provenance","deterministic fallback response","integration tests with fake GraphRAG provider","ABBY-VOICE-G008 completion receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: ["missing_criterion_evidence","coverage_missing","validation_evidence_incomplete","analyzer_health_missing","exhaustion_quorum_missing","child_reopened","tasks_incomplete"]
+- State transitioned at: 2026-07-26T00:05:01.870848+00:00
+- State transition reason: Produce completion evidence for: optional VoiceTemplateProvider protocol; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Every descendant must remain verified with all proof requirements fresh, conclusive, uncontradicted, and satisfied.; Complete the remaining producing tasks before requesting verification.
 
 ## ABBY-VOICE-G009 Establish voice safety quality and performance evaluation
 
-- Status: complete
+- Status: reopened
 - Fib priority: 8001
 - Priority: P0
 - Track: voice-evaluation
@@ -350,6 +440,19 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. The offline benchmark enforces cache reuse, visible fallback receipts, route/fallback p95 <= 1000 ms, and all safety checks without network, credentials, model downloads, or mutable data.
   5. `python -m pytest -q tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check` passes, with the exact result recorded in the objective-validation repair receipt and evaluation report.
 - Child-goal boundary: no smaller child goal is needed. G009 owns the cohesive evaluation gate; G010 remains responsible for wallet adoption and production/provider-specific latency measurement.
+- Goal completion schema version: 1
+- Legacy completion state: complete
+- Completion migration id: goal-migration-9c2ca4cc4e534c6b88cd57a846776e90
+- Completion migrated at: 2026-07-26T00:00:12.304973+00:00
+- Completion migration reason: legacy_completion_unverified; missing_criterion_evidence; coverage_missing; validation_evidence_incomplete; analyzer_health_missing; exhaustion_quorum_missing; child_unverified; tasks_incomplete
+- Completion confidence: 0.083333
+- Uncovered criteria: ["`data/abby_voice/eval/golden_voice_turns.jsonl` provides eight synthetic","schema-versioned voice turns","`tests/voice/test_abby_voice_safety.py` provides eleven offline assertions for WER","retrieval","slot fidelity","grounded factuality","crisis routing","accessibility/readability","privacy-safe receipts","fallback","GraphRAG prompt handling","legacy STT","stage traces","and cache reuse","`benchmarks/bench_abby_voice_router.py` provides the offline latency/cache/fallback gate","`docs/reports/ABBY_VOICE_EVALUATION.md` is the completion receipt","objective-validation repair is recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-008-objective-validation-repair.md`"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: ["missing_criterion_evidence","coverage_missing","validation_evidence_incomplete","analyzer_health_missing","exhaustion_quorum_missing","child_unverified","tasks_incomplete"]
+- State transitioned at: 2026-07-26T00:05:01.870848+00:00
+- State transition reason: Produce completion evidence for: `data/abby_voice/eval/golden_voice_turns.jsonl` provides eight synthetic; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Every descendant must remain verified with all proof requirements fresh, conclusive, uncontradicted, and satisfied.; Complete the remaining producing tasks before requesting verification.
 
 ## ABBY-VOICE-G010 Adopt the unified router in wallet_interface
 
@@ -380,6 +483,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. `ClientAudioReplyService`, `RemoteSpeechToTextResult`, and `AgentAudioChatSurface` continue to retain remote endpoint fallback, browser SpeechRecognition, local WebGPU, and browser speech-synthesis paths when the unified receipt is unavailable, degraded, or text-only.
   5. `python -m pytest -q wallet_interface/tests` and `npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts` pass offline, and `docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md` defines a reversible canary/rollback procedure.
 - Child-goal boundary: no smaller child goal is needed. G010 is the cohesive wallet/UI adoption and rollout-validation boundary; G008 owns router/template composition and G009 owns safety/performance evaluation.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["the lazy","opt-in wallet adapter delegates to `process_voice_turn` and serializes the canonical `VoiceTurnResult`","the UI normalizer consumes that receipt while preserving legacy payloads","focused tests cover provenance","stage ordering","audio decoding","text-only degradation","and legacy rejection","`AgentAudioChatSurface` retains browser SpeechRecognition","local WebGPU","and browser speech fallback branches","the rollout runbook defines canary receipts and flag-off rollback","the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G011 Normalize and materialize the Abby voice dataset
 
@@ -410,6 +520,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. DuckDB tasks and receipts contain descriptors and hashes rather than raw or base64 audio, credentials, private caller transcripts, or arbitrary local paths.
   6. The focused dataset, queue, provider, GraphRAG, safety, and release validation suites pass with an evidence receipt tied to the exact repository trees.
 - Child-goal boundary: G012-G013 own immutable source management and normalization; G014-G016 own job contracts and execution; G017 owns reconciliation and audio quality; G018 owns release construction; G019 owns runtime resolution; G020 owns end-to-end verification; G021 alone owns human-gated remote publication.
+- Goal completion schema version: 1
+- Completion confidence: 0.083333
+- Uncovered criteria: ["immutable inventory","canonical normalization","deterministic audio worksets","TTS/ASR execution","audio reconciliation","deterministic release construction","runtime resolution","post-publication verification"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G012 Generalize immutable Hugging Face source snapshots
 
@@ -440,10 +557,17 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Network and CLI clients are injected and imports have no network or credential side effects. A focused cache-hit test first populates with an injected fetcher, then reopens with a fetcher and network function that both fail if invoked, proving verified bytes are returned without either path; a true offline miss raises the typed cache-miss error.
   5. Remote write, delete, move, overwrite, and release-pointer operations are absent. The exact command `python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py` passes and its result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. The generic API, legacy compatibility, tamper/mutable-ref rejection, and no-network cache hit exercise one cohesive source-identity and verified-cache boundary. G013 owns Abby row interpretation and workset construction; G021 owns publication.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`","`SkillCenterSnapshotCache`","and `HuggingFaceSkillCenterFetcher` imports remain compatible","`HuggingFaceRepository` records a pinned dataset commit","`HuggingFaceBucketStore` produces a canonical inventory digest over path","size","full SHA-256","ETag","and media type","focused tests reject tampered bytes and mutable refs and prove a verified cache hit performs no fetch or network access","the authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G013 Build the Abby dataset manager and deterministic audio workset
 
-- Status: active
+- Status: provisionally_complete
 - Fib priority: 5003
 - Priority: P0
 - Track: voice-data
@@ -471,6 +595,16 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. The workset contains only missing, corrupt, stale-policy, or explicitly requested revalidation work; its TTS, ASR, and audio-validation manifests have deterministic full-hash identities, canonical ordering, and byte-identical serialization for the same pinned source manifest and policy.
   5. Evaluation remains a checksummed support artifact until G018 implements the promised `abby_voice_evaluation_v2` flat schema.
 - Child-goal boundary: No smaller child goal is needed. Exact legacy linking, fuzzy-review quarantine, and deterministic TTS/ASR/audio-validation planning manifests are one cohesive data-plane planning boundary. G022 remains a duplicate refinement superseded by G013; G014 owns cross-package job contracts, G015 owns execution, and G017 owns result reconciliation. G013 does not submit, execute, upload, or delete anything.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["canonical normalization","deterministic audio worksets","exact legacy adapter","complete inventory-to-disposition ledger","canonical four-config bundle","explicit evaluation-support artifact decision","deterministic TTS ASR and validation work manifests","fuzzy-review quarantine","authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
+- State transitioned at: 2026-07-26T00:05:01.870848+00:00
+- State transition reason: Produce completion evidence for: canonical normalization; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-26T00:05:01.870848+00:00
 
 ## ABBY-VOICE-G014 Define audio job contracts and the datasets-to-accelerate bridge
 
@@ -500,6 +634,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Replaying one request returns the same task or terminal receipt and causes at most one physical artifact/provider execution.
   5. Results contain immutable artifact descriptors, integer quality metrics, privacy-safe provider receipts, lineage, and typed retryable or terminal errors; no task row contains raw/base64 audio, secrets, private transcript text, or arbitrary paths.
 - Child-goal boundary: G014 owns contracts, deterministic identity, and bridge behavior only. G015 executes the jobs; G017 interprets their quality receipts.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["dependency-light request and result schemas","full-hash deterministic task IDs","submit-once behavior","lineage propagation","no-audio-in-DuckDB assertions","datasets bridge integration tests"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G015 Add durable voice workers and repair backend routing
 
@@ -530,6 +671,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. STT reads its own device setting rather than the TTS device setting.
   6. URI scheme/root allowlists, checksum/size/duration limits, decompression protection, and SSRF/path-traversal rejection are tested offline.
 - Child-goal boundary: G015 owns executable handlers and routing correctness. G016 owns queue recovery, resource admission, and provider batching.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["TTS/ASR execution","shared task alias registry","worker and service capability parity","voice handlers","backend-manager API regression fix","independent TTS/STT device controls","allowed-artifact resolver","offline worker and mesh tests"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G016 Add idempotent recovery resource admission and provider batching
 
@@ -560,6 +708,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. Resource admission limits CPU, RAM, disk, GPU memory, provider concurrency/rate, and retry-after state; saturation backpressures rather than overclaims.
   6. Single-flight identical work produces one physical provider call and a content-addressed batch receipt whose integrity can be verified.
 - Child-goal boundary: G016 owns generic queue reliability and resource/provider admission. G017 owns content and speech-quality decisions.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["submit-once queue semantics","attempt and backoff state","claim lease and heartbeat recovery","priority-aware claims","audio capability constraints","provider batch compatibility tests","resource and provider saturation tests"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G017 Reconcile generated audio and enforce round-trip quality
 
@@ -590,6 +745,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Missing, corrupt, hash-mismatched, stale-policy, low-quality, nonconsensual, or slot-incorrect artifacts receive stable terminal or retryable reason codes and never silently fall back to a nearby row.
   5. All response/template/audio/provenance references remain reciprocal and every source subject ends linked, synthesized, quarantined, or intentionally text-only.
 - Child-goal boundary: G017 owns artifact admission and quality. G018 owns release packaging, not speech generation.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["audio reconciliation","receipt-to-audio-row reconciler","decode and acoustic validator","TTS-to-ASR round-trip evaluation","exact critical-slot checks","terminal quarantine reason taxonomy","complete row disposition report"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G018 Build and validate deterministic Hugging Face releases
 
@@ -620,6 +782,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Two builds from the same pinned source and policy are byte-identical and contain no timestamps, local paths, mutable `/resolve/main/` URLs, truncated hashes, or unordered runtime observations in identity-bearing files.
   5. Runtime observations, job timing, and provider utilization remain non-identity evidence artifacts.
 - Child-goal boundary: G018 builds and validates locally. Only G021 can publish or promote a release.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["deterministic release construction","extracted generic release helpers","five flat Abby configs including evaluation","sharded ZSTD Parquet descriptors","GraphRAG support-index artifact","byte-identical rebuild","exhaustive local release validator"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G019 Load pinned releases and resolve precomputed audio safely
 
@@ -649,6 +818,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Missing or invalid audio records a deterministic resolver reason and falls through to live TTS or text-only behavior without weakening GraphRAG provenance.
   5. Runtime caller audio and transcripts are neither cached into the public release nor written into ordinary receipts.
 - Child-goal boundary: G019 owns pinned runtime loading and exact audio reuse. G010 owns wallet rollout; G020 owns deployed-like end-to-end gates.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["runtime resolution","revision-pinned streaming/release loader","content-addressed GraphRAG restore","exact audio resolver","stale-slot regression test","text-only or live-TTS fallback receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G020 Prove the distributed dataset-to-voice pipeline end to end
 
@@ -680,6 +856,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   5. Logs, DuckDB state, receipts, and artifacts pass a secret/private-audio/private-transcript scan.
   6. Any real-provider canary is separately human-approved, bounded by item count and cost, uses non-sensitive rows, and writes only to a staging prefix.
 - Child-goal boundary: G020 owns verification and canary evidence. G021 owns the remote release transaction and promotion decision.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["offline deterministic fixture","DuckDB TTS-to-validate-to-ASR workflow receipt","worker-crash recovery test","capability/resource backpressure test","real-provider canary protocol","privacy and lineage audit"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G021 Publish and promote an immutable Hugging Face release
 
@@ -710,6 +893,13 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Consumer promotion is a separate reviewed step with a bounded canary. Rollback restores the previous pinned manifest/commit and never deletes the failed release.
   5. Tokens are never persisted in task rows, manifests, logs, receipts, or source control.
 - Child-goal boundary: G021 is the sole owner of remote writes and consumer-pointer changes; failure to obtain approval is a valid blocked state, not permission for an autonomous workaround.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["post-publication verification","signed reviewed release manifest","dry-run diff and cost receipt","approval record","append-only commit receipt","pinned redownload validation","canary and rollback receipt"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## ABBY-VOICE-G022 Prove deterministic audio worksets for Normalize and materialize the Abby voice dataset
 
