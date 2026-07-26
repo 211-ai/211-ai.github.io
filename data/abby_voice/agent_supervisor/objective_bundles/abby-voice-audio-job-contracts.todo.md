@@ -6,7 +6,7 @@ Conflict policy: keep edits inside this bundle when possible; use the LLM merge 
 
 ## ABBY-VOICE-AUTO-013 Implement Abby voice objective: Define audio job contracts and the datasets-to-accelerate bridge
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false

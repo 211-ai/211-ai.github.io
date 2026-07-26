@@ -625,15 +625,15 @@
 
 ## ABBY-VOICE-AUTO-014 Implement Abby voice objective: Add durable voice workers and repair backend routing
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
 - Priority: P0
 - Track: voice-scheduling
 - Depends on: ABBY-VOICE-AUTO-004, ABBY-VOICE-AUTO-013
-- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
-- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Outputs: data/abby_voice/agent_supervisor/discovery, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py ipfs_accelerate_py/test/test_voice_job_contracts.py
 - Bundle: abby-voice/audio-workers
 - Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-workers.todo.md
 - Bundle strategy: explicit
@@ -642,10 +642,10 @@
 - Objective heap index: 4
 - Parallel lane: abby-voice-scheduling
 - Conflict policy: handlers call `voice_router.text_to_speech` and `speech_to_text` or injected equivalents; do not reimplement Abby HTTP retry/circuit-breaker behavior; preserve legacy router APIs
-- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
 - Changed paths:
 - AST symbols: execute_voice_tts_job, execute_voice_asr_job, execute_voice_audio_validation_job, execute_task, text_to_speech, speech_to_text
-- Interfaces: P2P worker handlers, voice_router, voice_providers.abby, InferenceBackendManager
+- Interfaces: P2P worker handlers, VoiceJobResult, voice_router, voice_providers.abby, InferenceBackendManager
 - Submodules: ipfs_accelerate_py
 - Generated artifacts:
 - Allow concurrent with:
@@ -1246,13 +1246,15 @@
 
 ## ABBY-VOICE-AUTO-025 Implement Abby voice objective: Load pinned releases and resolve precomputed audio safely
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
+- Is schedulable: false
 - Review only: false
 - Priority: P0
 - Track: voice-integration
 - Depends on: ABBY-VOICE-AUTO-007, ABBY-VOICE-AUTO-018
+- Blocked reason: Duplicate objective refill generated after the interrupted supervisor run; ABBY-VOICE-AUTO-019 already owns the complete G019 runtime-release evidence set.
+- Superseded by: ABBY-VOICE-AUTO-019
 - Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
 - Bundle: abby-voice/runtime-release

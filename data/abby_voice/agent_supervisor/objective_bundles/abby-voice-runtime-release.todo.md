@@ -67,13 +67,15 @@ Conflict policy: keep edits inside this bundle when possible; use the LLM merge 
 
 ## ABBY-VOICE-AUTO-025 Implement Abby voice objective: Load pinned releases and resolve precomputed audio safely
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
+- Is schedulable: false
 - Review only: false
 - Priority: P0
 - Track: voice-integration
 - Depends on: ABBY-VOICE-AUTO-007, ABBY-VOICE-AUTO-018
+- Blocked reason: Duplicate objective refill generated after the interrupted supervisor run; ABBY-VOICE-AUTO-019 already owns the complete G019 runtime-release evidence set.
+- Superseded by: ABBY-VOICE-AUTO-019
 - Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
 - Bundle: abby-voice/runtime-release

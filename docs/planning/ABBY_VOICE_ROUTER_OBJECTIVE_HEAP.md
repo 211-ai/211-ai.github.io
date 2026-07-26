@@ -476,7 +476,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G014 Define audio job contracts and the datasets-to-accelerate bridge
 
-- Status: active
+- Status: complete
 - Fib priority: 8002
 - Priority: P0
 - Track: voice-scheduling
@@ -502,36 +502,39 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Replaying one request returns the same task or terminal receipt and causes at most one physical artifact/provider execution.
   5. Results contain immutable artifact descriptors, integer quality metrics, privacy-safe provider receipts, lineage, and typed retryable or terminal errors; no task row contains raw/base64 audio, secrets, private transcript text, or arbitrary paths.
 - Child-goal boundary: G014 owns contracts, deterministic identity, and bridge behavior only. G015 executes the jobs; G017 interprets their quality receipts.
+- Completion receipt: `ABBY-VOICE-AUTO-013` is completed at accelerator commit `24c34d24` and datasets commit `5ccfe1da`. The combined offline contract and bridge gate passed with 45 tests on 2026-07-26, as recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-013-objective-validation-repair.md`.
 
 ## ABBY-VOICE-G015 Add durable voice workers and repair backend routing
 
-- Status: active
+- Status: complete
 - Fib priority: 8003
 - Priority: P0
 - Track: voice-scheduling
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G003, ABBY-VOICE-G014
 - Goal: Add advertised TTS ASR and audio-validation handlers to the existing P2P worker and execute model work through the established voice_router providers.
-- Evidence: TTS/ASR execution; shared task alias registry; worker and service capability parity; voice handlers; backend-manager API regression fix; independent TTS/STT device controls; allowed-artifact resolver; offline worker and mesh tests
-- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
-- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py
+- Evidence: TTS/ASR execution; shared task alias registry; worker and service capability parity; voice handlers; canonical VoiceJobResult round trips; backend-manager API regression fix; independent TTS/STT device controls; allowed-artifact resolver; offline worker and mesh tests; authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py ipfs_accelerate_py/test/test_voice_job_contracts.py
 - Bundle: abby-voice/audio-workers
 - Parallel lane: abby-voice-scheduling
 - Embedding query: P2P worker voice TTS ASR STT capability voice_router backend manager artifact
 - AST query: execute_voice_tts_job, execute_voice_asr_job, execute_voice_audio_validation_job, execute_task, text_to_speech, speech_to_text
-- Interfaces: P2P worker handlers, voice_router, voice_providers.abby, InferenceBackendManager
+- Interfaces: P2P worker handlers, VoiceJobResult, voice_router, voice_providers.abby, InferenceBackendManager
 - Submodules: ipfs_accelerate_py
-- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/worker.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/service.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_job_worker.py
 - Conflict policy: handlers call `voice_router.text_to_speech` and `speech_to_text` or injected equivalents; do not reimplement Abby HTTP retry/circuit-breaker behavior; preserve legacy router APIs
 - Gap task: Register and advertise real audio handlers, repair the drifted backend-manager adapter to the current async API, and fix STT device configuration before distributed routing.
+- Objective-validation repair: `ABBY-VOICE-AUTO-014` owns this validation gate. The authoritative evidence map is `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md`; evidence is accepted only when canonical jobs execute through the established provider boundary and the returned payload round-trips exactly through the G014 `VoiceJobResult` contract.
 - Acceptance gate:
   1. Worker, service, orchestrator, and capability registry use one task-name normalization function and advertise the same supported audio operations.
   2. Claims reject workers that lack the requested provider, model, voice, codec, locale, device, memory, or artifact-access capability.
-  3. TTS and ASR handlers call existing router/provider APIs, verify input descriptors before decoding, persist output outside DuckDB, rehash the stored bytes, and return only a descriptor and receipt.
+  3. TTS and ASR handlers call existing router/provider APIs, verify input descriptors before decoding, persist output outside DuckDB, rehash the stored bytes, and return an exact canonical `VoiceJobResult` whose artifacts, lineage, receipt, metrics, status, and error fields round-trip through the G014 contract.
   4. The backend-manager adapter uses current `BackendInfo` and async `execute_task` contracts; focused tests fail on the previously drifted `protocol`, mapping, and `execute_inference` calls.
   5. STT reads its own device setting rather than the TTS device setting.
   6. URI scheme/root allowlists, checksum/size/duration limits, decompression protection, and SSRF/path-traversal rejection are tested offline.
 - Child-goal boundary: G015 owns executable handlers and routing correctness. G016 owns queue recovery, resource admission, and provider batching.
+- Completion receipt: `ABBY-VOICE-AUTO-014` is completed. The exact offline validation gate passed with 115 tests on 2026-07-26, as recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md`.
 
 ## ABBY-VOICE-G016 Add idempotent recovery resource admission and provider batching
 
