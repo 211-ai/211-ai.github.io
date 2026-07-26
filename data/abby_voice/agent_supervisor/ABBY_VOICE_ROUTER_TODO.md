@@ -1565,3 +1565,66 @@
 - Candidate kind: aggregate
 - Todo vector key: fe32db5e42217c7b
 - Acceptance: Objective scan filed this gap for ABBY-VOICE-G021. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-030-objective-gap-70fa4f3c36c1.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (post-publication verification, pinned redownload validation), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## ABBY-VOICE-AUTO-031 ABBY-VOICE: Add idempotent recovery resource admission and provider batching
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: voice-scheduling
+- Depends on: ABBY-VOICE-AUTO-014
+- Outputs: data/abby_voice/agent_supervisor/discovery, docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_recovery.py ipfs_accelerate_py/test/api/test_agent_supervisor_provider_batch_scheduler.py ipfs_accelerate_py/test/api/test_agent_supervisor_resource_scheduler.py
+- Bundle: abby-voice/audio-scheduling
+- Bundle shard: data/abby_voice/agent_supervisor/objective_bundles/abby-voice-audio-scheduling.todo.md
+- Bundle strategy: explicit
+- Graph parents: ABBY-VOICE-G011
+- Graph depth: 4
+- Objective heap index: 1
+- Parallel lane: abby-voice-scheduling
+- Conflict policy: preserve existing text-task behavior and DuckDB compatibility; provider-local retry remains inside the existing Abby adapter while queue retry handles worker loss and exhausted retryable job failures
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md
+- Changed paths:
+- AST symbols: TaskQueue, TaskOrchestrator, PeerCapabilityRegistry, ProviderBatchScheduler, ResourceScheduler
+- Interfaces: DuckDB TaskQueue, capability registry, ResourceScheduler, ProviderBatchScheduler
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: ABBY-VOICE-G016
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/1786633f785121880049bcc9175e506aeeb697e512b0e3bbe07dd3db63dae112
+- Canonical task CID: baguqeerac6dggp3ykeqyqacjxteroxsqnlxlnf7fckyoho7apxj5wy624eja
+- Semantic identity: objective-evidence-obligation/v1/0f769af1abf7d98a3b28c03cdf4961a51eda2e99cd5a1e04e48222b2aec5a9e8
+- Acceptance subset: objective validation repair
+- Preconditions: objective goal ABBY-VOICE-G016 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/ABBY-VOICE-G016
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/0f769af1abf7d98a3b28c03cdf4961a51eda2e99cd5a1e04e48222b2aec5a9e8
+- Missing evidence: objective validation repair
+- Embedding query: DuckDB voice task lease heartbeat retry idempotent GPU resource provider batch singleflight
+- AST query: TaskQueue, TaskOrchestrator, PeerCapabilityRegistry, ProviderBatchScheduler, ResourceScheduler
+- Surplus group: objective/ABBY-VOICE-G016
+- Merge key: 4f3ffbf9d13ffdfa
+- Merge family: objective/ABBY-VOICE-G016
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 6fa1c7a02eedfad2
+- Acceptance: Objective scan filed this gap for ABBY-VOICE-G016. Use evidence in /home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-gap-b111dca2a10b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
