@@ -557,7 +557,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_queue.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/capability_registry.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/provider_batch_scheduler.py, ipfs_accelerate_py/test/test_voice_job_recovery.py
 - Conflict policy: preserve existing text-task behavior and DuckDB compatibility; provider-local retry remains inside the existing Abby adapter while queue retry handles worker loss and exhausted retryable job failures
 - Gap task: Add the minimum generic reliability fields and semantics missing from TaskQueue, then configure existing resource and provider schedulers for audio.
-- Objective-validation repair: `ABBY-VOICE-AUTO-015` owns the implementation validation gate and remains the authoritative evidence map. `ABBY-VOICE-AUTO-026` owns residual scan discoverability for the same frozen terms and paths; it does not split the execution-control boundary or invent a second scheduler.
+- Objective-validation repair: `ABBY-VOICE-AUTO-015` owns the implementation validation gate and remains the authoritative evidence map. `ABBY-VOICE-AUTO-026` owns residual scan discoverability for the same frozen terms and paths. `ABBY-VOICE-AUTO-029` owns residual scan closure of the AUTO-026 repair receipt so objective scans re-find that path as exact evidence; none of these repairs split the execution-control boundary or invent a second scheduler.
 - Acceptance gate:
   1. Atomic submit-once, `attempt`, `max_attempts`, `next_attempt_at`, `lease_until`, and heartbeat ownership make a worker crash recoverable without duplicate provider execution.
   2. Claim order honors priority and eligibility while retaining atomic microbatch claims and safe DuckDB single-writer behavior.
@@ -565,8 +565,8 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. IndexTTS and Whisper remain batch size one until their adapters prove real batching. Cancellation, timeout, or fallback of one member does not cancel or corrupt siblings.
   5. Resource admission limits CPU, RAM, disk, GPU memory, provider concurrency/rate, and retry-after state; saturation backpressures rather than overclaims.
   6. Single-flight identical work produces one physical provider call and a content-addressed batch receipt whose integrity can be verified.
-- Child-goal boundary: No smaller child goal is needed. Queue recovery, capability admission, provider compatibility, and saturation backpressure form one execution-control boundary. Residual AUTO-026 terms describe that same boundary. G017 owns content and speech-quality decisions.
-- Validation receipt: the exact three-file offline gate remains the daemon authority; AUTO-015 recorded 90 tests and the post-AUTO-026 residual surface re-ran the same three paths with **93 passed** including the residual-term anchor. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition.
+- Child-goal boundary: No smaller child goal is needed. Queue recovery, capability admission, provider compatibility, and saturation backpressure form one execution-control boundary. Residual AUTO-026 terms and AUTO-029 residual scan closure describe that same boundary. G017 owns content and speech-quality decisions.
+- Validation receipt: the exact three-file offline gate remains the daemon authority; AUTO-015 recorded 90 tests, the post-AUTO-026 residual surface re-ran the same three paths with **93 passed**, and AUTO-029 re-anchored residual scan closure on the same gate with **94 passed**. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition.
 
 ## ABBY-VOICE-G017 Reconcile generated audio and enforce round-trip quality
 
