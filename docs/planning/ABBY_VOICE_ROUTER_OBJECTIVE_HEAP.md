@@ -413,7 +413,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G012 Generalize immutable Hugging Face source snapshots
 
-- Status: active
+- Status: complete
 - Fib priority: 5002
 - Priority: P0
 - Track: voice-data
@@ -440,10 +440,11 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Network and CLI clients are injected and imports have no network or credential side effects. A focused cache-hit test first populates with an injected fetcher, then reopens with a fetcher and network function that both fail if invoked, proving verified bytes are returned without either path; a true offline miss raises the typed cache-miss error.
   5. Remote write, delete, move, overwrite, and release-pointer operations are absent. The exact command `python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py` passes and its result is recorded in the objective-validation repair receipt.
 - Child-goal boundary: no smaller child goal is needed. The generic API, legacy compatibility, tamper/mutable-ref rejection, and no-network cache hit exercise one cohesive source-identity and verified-cache boundary. G013 owns Abby row interpretation and workset construction; G021 owns publication.
+- Completion receipt: `ABBY-VOICE-AUTO-011` is completed. The exact offline validation gate passed with 56 tests on 2026-07-25, as recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-011-objective-validation-repair.md`.
 
 ## ABBY-VOICE-G013 Build the Abby dataset manager and deterministic audio workset
 
-- Status: active
+- Status: complete
 - Fib priority: 5003
 - Priority: P0
 - Track: voice-data
@@ -471,6 +472,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. The workset contains only missing, corrupt, stale-policy, or explicitly requested revalidation work; its TTS, ASR, and audio-validation manifests have deterministic full-hash identities, canonical ordering, and byte-identical serialization for the same pinned source manifest and policy.
   5. Evaluation remains a checksummed support artifact until G018 implements the promised `abby_voice_evaluation_v2` flat schema.
 - Child-goal boundary: No smaller child goal is needed. Exact legacy linking, fuzzy-review quarantine, and deterministic TTS/ASR/audio-validation planning manifests are one cohesive data-plane planning boundary. G022 remains a duplicate refinement superseded by G013; G014 owns cross-package job contracts, G015 owns execution, and G017 owns result reconciliation. G013 does not submit, execute, upload, or delete anything.
+- Completion receipt: `ABBY-VOICE-AUTO-012` and its retry-budget repair `ABBY-VOICE-AUTO-022` are completed. The exact offline validation gate passed with 115 tests and one optional PyArrow skip on 2026-07-25, as recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md`.
 
 ## ABBY-VOICE-G014 Define audio job contracts and the datasets-to-accelerate bridge
 
