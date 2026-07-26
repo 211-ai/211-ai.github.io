@@ -1,7 +1,7 @@
 {
-  "active_goal_count": 10,
-  "completed_goal_count": 11,
-  "generated_at": "2026-07-26T01:47:22.895136+00:00",
+  "active_goal_count": 8,
+  "completed_goal_count": 13,
+  "generated_at": "2026-07-26T18:57:33.526502+00:00",
   "goal_count": 29,
   "goals": [
     {
@@ -314,7 +314,7 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "active",
+      "status": "complete",
       "title": "Define audio job contracts and the datasets-to-accelerate bridge",
       "track": "voice-scheduling"
     },
@@ -325,10 +325,12 @@
         "shared task alias registry",
         "worker and service capability parity",
         "voice handlers",
+        "canonical VoiceJobResult round trips",
         "backend-manager API regression fix",
         "independent TTS/STT device controls",
         "allowed-artifact resolver",
-        "offline worker and mesh tests"
+        "offline worker and mesh tests",
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md"
       ],
       "fib_priority": 8003,
       "goal_id": "ABBY-VOICE-G015",
@@ -336,20 +338,25 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "active",
+      "status": "complete",
       "title": "Add durable voice workers and repair backend routing",
       "track": "voice-scheduling"
     },
     {
       "bundle": "abby-voice/audio-scheduling",
       "evidence": [
-        "submit-once queue semantics",
-        "attempt and backoff state",
-        "claim lease and heartbeat recovery",
-        "priority-aware claims",
-        "audio capability constraints",
-        "provider batch compatibility tests",
-        "resource and provider saturation tests"
+        "`TaskQueue` submit-once identity",
+        "persisted attempt/backoff/lease state",
+        "owner heartbeats",
+        "expired-lease recovery",
+        "priority-aware atomic claims",
+        "and legacy DuckDB migration",
+        "`PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release",
+        "complete audio `ProviderBatchKey` compatibility",
+        "IndexTTS/Whisper batch-size-one policy",
+        "existing sibling isolation and single-flight receipts",
+        "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md"
       ],
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
@@ -1610,6 +1617,11 @@
       {
         "from": "ABBY-VOICE-G015",
         "kind": "requires_evidence",
+        "to": "evidence:82de7b5001e7675c"
+      },
+      {
+        "from": "ABBY-VOICE-G015",
+        "kind": "requires_evidence",
         "to": "evidence:477e7635707846d1"
       },
       {
@@ -1628,39 +1640,69 @@
         "to": "evidence:d6039b931b19f145"
       },
       {
-        "from": "ABBY-VOICE-G016",
+        "from": "ABBY-VOICE-G015",
         "kind": "requires_evidence",
-        "to": "evidence:a28879f44fb2e6a5"
+        "to": "evidence:34bbcb0e9e6179fa"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:8b36c56e8dbd38c5"
+        "to": "evidence:d66834f5b5440f31"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:ffd1c914f030fbdb"
+        "to": "evidence:b75bfd52490b56f2"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:a26c396493281dbd"
+        "to": "evidence:bbc0d41fdc2bbd6e"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:495591d9385cf99e"
+        "to": "evidence:da75387cd1fee6cc"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:8bec4c5302d1a5dd"
+        "to": "evidence:c9be076c5bcdc7fe"
       },
       {
         "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:f8de477ca9999905"
+        "to": "evidence:05a3d6a0ed271777"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:8f5c116c30484be3"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:a23b702122d0e383"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:d8d0c7ff0d7560b3"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:b97688bcfc9e3524"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:00ccbd19f971584d"
+      },
+      {
+        "from": "ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:7cc7d63eed8d912c"
       },
       {
         "from": "ABBY-VOICE-G017",
@@ -2585,6 +2627,11 @@
         "id": "evidence:5344fe2ac8a63205"
       },
       {
+        "acceptance_criterion": "canonical VoiceJobResult round trips",
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "evidence:82de7b5001e7675c"
+      },
+      {
         "acceptance_criterion": "backend-manager API regression fix",
         "goal_id": "ABBY-VOICE-G015",
         "id": "evidence:477e7635707846d1"
@@ -2605,39 +2652,69 @@
         "id": "evidence:d6039b931b19f145"
       },
       {
-        "acceptance_criterion": "submit-once queue semantics",
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:a28879f44fb2e6a5"
+        "acceptance_criterion": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "evidence:34bbcb0e9e6179fa"
       },
       {
-        "acceptance_criterion": "attempt and backoff state",
+        "acceptance_criterion": "`TaskQueue` submit-once identity",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:8b36c56e8dbd38c5"
+        "id": "evidence:d66834f5b5440f31"
       },
       {
-        "acceptance_criterion": "claim lease and heartbeat recovery",
+        "acceptance_criterion": "persisted attempt/backoff/lease state",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:ffd1c914f030fbdb"
+        "id": "evidence:b75bfd52490b56f2"
       },
       {
-        "acceptance_criterion": "priority-aware claims",
+        "acceptance_criterion": "owner heartbeats",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:a26c396493281dbd"
+        "id": "evidence:bbc0d41fdc2bbd6e"
       },
       {
-        "acceptance_criterion": "audio capability constraints",
+        "acceptance_criterion": "expired-lease recovery",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:495591d9385cf99e"
+        "id": "evidence:da75387cd1fee6cc"
       },
       {
-        "acceptance_criterion": "provider batch compatibility tests",
+        "acceptance_criterion": "priority-aware atomic claims",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:8bec4c5302d1a5dd"
+        "id": "evidence:c9be076c5bcdc7fe"
       },
       {
-        "acceptance_criterion": "resource and provider saturation tests",
+        "acceptance_criterion": "and legacy DuckDB migration",
         "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:f8de477ca9999905"
+        "id": "evidence:05a3d6a0ed271777"
+      },
+      {
+        "acceptance_criterion": "`PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:8f5c116c30484be3"
+      },
+      {
+        "acceptance_criterion": "complete audio `ProviderBatchKey` compatibility",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:a23b702122d0e383"
+      },
+      {
+        "acceptance_criterion": "IndexTTS/Whisper batch-size-one policy",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:d8d0c7ff0d7560b3"
+      },
+      {
+        "acceptance_criterion": "existing sibling isolation and single-flight receipts",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:b97688bcfc9e3524"
+      },
+      {
+        "acceptance_criterion": "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:00ccbd19f971584d"
+      },
+      {
+        "acceptance_criterion": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:7cc7d63eed8d912c"
       },
       {
         "acceptance_criterion": "audio reconciliation",
@@ -2849,8 +2926,6 @@
       "nonterminal_goal_ids": [
         "ABBY-VOICE-G010",
         "ABBY-VOICE-G011",
-        "ABBY-VOICE-G014",
-        "ABBY-VOICE-G015",
         "ABBY-VOICE-G016",
         "ABBY-VOICE-G017",
         "ABBY-VOICE-G018",
@@ -2861,8 +2936,6 @@
       "schedulable_goal_ids": [
         "ABBY-VOICE-G010",
         "ABBY-VOICE-G011",
-        "ABBY-VOICE-G014",
-        "ABBY-VOICE-G015",
         "ABBY-VOICE-G016",
         "ABBY-VOICE-G017",
         "ABBY-VOICE-G018",
@@ -2871,9 +2944,9 @@
         "ABBY-VOICE-G021"
       ],
       "state_counts": {
-        "active": 10,
+        "active": 8,
         "blocked": 8,
-        "verified_complete": 11
+        "verified_complete": 13
       },
       "terminal_goal_ids": [
         "ABBY-VOICE-G001",
@@ -2887,6 +2960,8 @@
         "ABBY-VOICE-G009",
         "ABBY-VOICE-G012",
         "ABBY-VOICE-G013",
+        "ABBY-VOICE-G014",
+        "ABBY-VOICE-G015",
         "ABBY-VOICE-G022",
         "ABBY-VOICE-G023",
         "ABBY-VOICE-G024",
@@ -3223,7 +3298,7 @@
       "ABBY-VOICE-G014": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G014",
-        "lifecycle_state": "active",
+        "lifecycle_state": "verified_complete",
         "parents": [
           "ABBY-VOICE-G011"
         ],
@@ -3235,15 +3310,15 @@
           "no-audio-in-DuckDB assertions",
           "datasets bridge integration tests"
         ],
-        "schedulable": true,
-        "status": "active",
-        "terminal": false,
+        "schedulable": false,
+        "status": "complete",
+        "terminal": true,
         "title": "Define audio job contracts and the datasets-to-accelerate bridge"
       },
       "ABBY-VOICE-G015": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G015",
-        "lifecycle_state": "active",
+        "lifecycle_state": "verified_complete",
         "parents": [
           "ABBY-VOICE-G011"
         ],
@@ -3252,31 +3327,40 @@
           "shared task alias registry",
           "worker and service capability parity",
           "voice handlers",
+          "canonical VoiceJobResult round trips",
           "backend-manager API regression fix",
           "independent TTS/STT device controls",
           "allowed-artifact resolver",
-          "offline worker and mesh tests"
+          "offline worker and mesh tests",
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md"
         ],
-        "schedulable": true,
-        "status": "active",
-        "terminal": false,
+        "schedulable": false,
+        "status": "complete",
+        "terminal": true,
         "title": "Add durable voice workers and repair backend routing"
       },
       "ABBY-VOICE-G016": {
-        "completion_evidence": {},
+        "completion_evidence": {
+          "validation_receipt": "the exact three-file offline gate passed with 90 tests on 2026-07-26. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition."
+        },
         "goal_id": "ABBY-VOICE-G016",
         "lifecycle_state": "active",
         "parents": [
           "ABBY-VOICE-G011"
         ],
         "required_evidence": [
-          "submit-once queue semantics",
-          "attempt and backoff state",
-          "claim lease and heartbeat recovery",
-          "priority-aware claims",
-          "audio capability constraints",
-          "provider batch compatibility tests",
-          "resource and provider saturation tests"
+          "`TaskQueue` submit-once identity",
+          "persisted attempt/backoff/lease state",
+          "owner heartbeats",
+          "expired-lease recovery",
+          "priority-aware atomic claims",
+          "and legacy DuckDB migration",
+          "`PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release",
+          "complete audio `ProviderBatchKey` compatibility",
+          "IndexTTS/Whisper batch-size-one policy",
+          "existing sibling isolation and single-flight receipts",
+          "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3544,8 +3628,6 @@
     "schedulable_goal_ids": [
       "ABBY-VOICE-G010",
       "ABBY-VOICE-G011",
-      "ABBY-VOICE-G014",
-      "ABBY-VOICE-G015",
       "ABBY-VOICE-G016",
       "ABBY-VOICE-G017",
       "ABBY-VOICE-G018",
@@ -3554,9 +3636,9 @@
       "ABBY-VOICE-G021"
     ],
     "state_counts": {
-      "active": 10,
+      "active": 8,
       "blocked": 8,
-      "verified_complete": 11
+      "verified_complete": 13
     },
     "terminal_goal_ids": [
       "ABBY-VOICE-G001",
@@ -3570,6 +3652,8 @@
       "ABBY-VOICE-G009",
       "ABBY-VOICE-G012",
       "ABBY-VOICE-G013",
+      "ABBY-VOICE-G014",
+      "ABBY-VOICE-G015",
       "ABBY-VOICE-G022",
       "ABBY-VOICE-G023",
       "ABBY-VOICE-G024",
@@ -3607,82 +3691,34 @@
       "work_surface_score": 64
     },
     {
-      "fib_priority": 8002,
-      "goal_id": "ABBY-VOICE-G014",
-      "graph_depth": 4,
-      "heap_index": 1,
-      "output_count": 4,
-      "parents": [
-        "ABBY-VOICE-G011"
-      ],
-      "priority": "P0",
-      "priority_rank": 0,
-      "required_evidence_count": 6,
-      "sort_key": [
-        8002,
-        0,
-        -52,
-        4,
-        "ABBY-VOICE-G014"
-      ],
-      "status": "active",
-      "title": "Define audio job contracts and the datasets-to-accelerate bridge",
-      "track": "voice-scheduling",
-      "work_surface_score": 52
-    },
-    {
-      "fib_priority": 8003,
-      "goal_id": "ABBY-VOICE-G015",
-      "graph_depth": 4,
-      "heap_index": 2,
-      "output_count": 5,
-      "parents": [
-        "ABBY-VOICE-G011"
-      ],
-      "priority": "P0",
-      "priority_rank": 0,
-      "required_evidence_count": 8,
-      "sort_key": [
-        8003,
-        0,
-        -63,
-        4,
-        "ABBY-VOICE-G015"
-      ],
-      "status": "active",
-      "title": "Add durable voice workers and repair backend routing",
-      "track": "voice-scheduling",
-      "work_surface_score": 63
-    },
-    {
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
       "graph_depth": 4,
-      "heap_index": 3,
+      "heap_index": 1,
       "output_count": 5,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 7,
+      "required_evidence_count": 12,
       "sort_key": [
         8004,
         0,
-        -58,
+        -78,
         4,
         "ABBY-VOICE-G016"
       ],
       "status": "active",
       "title": "Add idempotent recovery resource admission and provider batching",
       "track": "voice-scheduling",
-      "work_surface_score": 58
+      "work_surface_score": 78
     },
     {
       "fib_priority": 8005,
       "goal_id": "ABBY-VOICE-G017",
       "graph_depth": 4,
-      "heap_index": 4,
+      "heap_index": 2,
       "output_count": 3,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3706,7 +3742,7 @@
       "fib_priority": 13000,
       "goal_id": "ABBY-VOICE-G010",
       "graph_depth": 7,
-      "heap_index": 5,
+      "heap_index": 3,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G008",
@@ -3731,7 +3767,7 @@
       "fib_priority": 13001,
       "goal_id": "ABBY-VOICE-G018",
       "graph_depth": 4,
-      "heap_index": 6,
+      "heap_index": 4,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3755,7 +3791,7 @@
       "fib_priority": 13002,
       "goal_id": "ABBY-VOICE-G019",
       "graph_depth": 4,
-      "heap_index": 7,
+      "heap_index": 5,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3779,7 +3815,7 @@
       "fib_priority": 21000,
       "goal_id": "ABBY-VOICE-G020",
       "graph_depth": 4,
-      "heap_index": 8,
+      "heap_index": 6,
       "output_count": 3,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3803,7 +3839,7 @@
       "fib_priority": 21001,
       "goal_id": "ABBY-VOICE-G021",
       "graph_depth": 4,
-      "heap_index": 9,
+      "heap_index": 7,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3827,7 +3863,7 @@
   "objective_path": "/home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
   "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
   "thought_graph": {
-    "edge_count": 384,
+    "edge_count": 394,
     "edges": [
       {
         "from": "goal:ABBY-VOICE-G001",
@@ -5047,6 +5083,11 @@
       {
         "from": "goal:ABBY-VOICE-G015",
         "kind": "requires_evidence",
+        "to": "evidence:82de7b5001e7"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G015",
+        "kind": "requires_evidence",
         "to": "evidence:477e76357078"
       },
       {
@@ -5066,13 +5107,28 @@
       },
       {
         "from": "goal:ABBY-VOICE-G015",
+        "kind": "requires_evidence",
+        "to": "evidence:34bbcb0e9e61"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G015",
         "kind": "validated_by",
-        "to": "validation:81e80b07f295"
+        "to": "validation:ea74aa387f15"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G015",
+        "kind": "touches_surface",
+        "to": "code_surface:193a721347ce"
       },
       {
         "from": "goal:ABBY-VOICE-G015",
         "kind": "touches_surface",
         "to": "code_surface:8fb623b41201"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G015",
+        "kind": "touches_surface",
+        "to": "code_surface:c96f9384a003"
       },
       {
         "from": "goal:ABBY-VOICE-G015",
@@ -5096,6 +5152,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G015",
+        "kind": "touches_surface",
+        "to": "code_surface:cb94000f8d2c"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G015",
         "kind": "targets_interoperability",
         "to": "interoperability_pair:e623b0364ca4"
       },
@@ -5107,37 +5168,62 @@
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:a28879f44fb2"
+        "to": "evidence:d66834f5b544"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:8b36c56e8dbd"
+        "to": "evidence:b75bfd52490b"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:ffd1c914f030"
+        "to": "evidence:bbc0d41fdc2b"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:a26c39649328"
+        "to": "evidence:da75387cd1fe"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:495591d9385c"
+        "to": "evidence:c9be076c5bcd"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:8bec4c5302d1"
+        "to": "evidence:05a3d6a0ed27"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:f8de477ca999"
+        "to": "evidence:8f5c116c3048"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:a23b702122d0"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:d8d0c7ff0d75"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:b97688bcfc9e"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:00ccbd19f971"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:7cc7d63eed8d"
       },
       {
         "from": "goal:ABBY-VOICE-G016",
@@ -5750,7 +5836,7 @@
         "to": "code_surface:3f73bdf93452"
       }
     ],
-    "node_count": 413,
+    "node_count": 423,
     "nodes": [
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -5800,6 +5886,13 @@
         "kind": "code_surface",
         "path": "scripts/publish_abby_voice_release.py",
         "thought": "Inspect or modify `scripts/publish_abby_voice_release.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "code_surface:193a721347ce",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/__init__.py` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G007",
@@ -6355,6 +6448,13 @@
         "thought": "Inspect or modify `docs/data/ABBY_VOICE_HF_MIGRATION_PLAN.md` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "code_surface:c96f9384a003",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/task_types.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G024",
         "id": "code_surface:cac7d2d70156",
         "kind": "code_surface",
@@ -6367,6 +6467,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py",
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "code_surface:cb94000f8d2c",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G001",
@@ -6586,6 +6693,13 @@
         "thought": "Find or create repository evidence proving `bucket inventory summary`."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:00ccbd19f971",
+        "kind": "evidence_requirement",
+        "term": "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
+        "thought": "Find or create repository evidence proving `existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G025",
         "id": "evidence:02903f911138",
         "kind": "evidence_requirement",
@@ -6605,6 +6719,13 @@
         "kind": "evidence_requirement",
         "term": "content-addressed GraphRAG restore",
         "thought": "Find or create repository evidence proving `content-addressed GraphRAG restore`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:05a3d6a0ed27",
+        "kind": "evidence_requirement",
+        "term": "and legacy DuckDB migration",
+        "thought": "Find or create repository evidence proving `and legacy DuckDB migration`."
       },
       {
         "goal_id": "ABBY-VOICE-G015",
@@ -6831,6 +6952,13 @@
         "thought": "Find or create repository evidence proving `canonical four-config bundle`."
       },
       {
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "evidence:34bbcb0e9e61",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G021",
         "id": "evidence:34c87401d12c",
         "kind": "evidence_requirement",
@@ -6920,13 +7048,6 @@
         "kind": "evidence_requirement",
         "term": "backend-manager API regression fix",
         "thought": "Find or create repository evidence proving `backend-manager API regression fix`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:495591d9385c",
-        "kind": "evidence_requirement",
-        "term": "audio capability constraints",
-        "thought": "Find or create repository evidence proving `audio capability constraints`."
       },
       {
         "goal_id": "ABBY-VOICE-G004",
@@ -7174,6 +7295,13 @@
         "thought": "Find or create repository evidence proving `real-provider canary protocol`."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:7cc7d63eed8d",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G012",
         "id": "evidence:7df5d49a0728",
         "kind": "evidence_requirement",
@@ -7216,6 +7344,13 @@
         "thought": "Find or create repository evidence proving `signed reviewed release manifest`."
       },
       {
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "evidence:82de7b5001e7",
+        "kind": "evidence_requirement",
+        "term": "canonical VoiceJobResult round trips",
+        "thought": "Find or create repository evidence proving `canonical VoiceJobResult round trips`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "evidence:85a5774122fe",
         "kind": "evidence_requirement",
@@ -7251,20 +7386,6 @@
         "thought": "Find or create repository evidence proving `accessibility/readability`."
       },
       {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:8b36c56e8dbd",
-        "kind": "evidence_requirement",
-        "term": "attempt and backoff state",
-        "thought": "Find or create repository evidence proving `attempt and backoff state`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:8bec4c5302d1",
-        "kind": "evidence_requirement",
-        "term": "provider batch compatibility tests",
-        "thought": "Find or create repository evidence proving `provider batch compatibility tests`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G011",
         "id": "evidence:8eba01aaaba7",
         "kind": "evidence_requirement",
@@ -7284,6 +7405,13 @@
         "kind": "evidence_requirement",
         "term": "and `abby_voice_provenance_v2` definitions and typed rows in `ipfs_datasets_py/ipfs_datasets_py/voice/schema.py`",
         "thought": "Find or create repository evidence proving `and `abby_voice_provenance_v2` definitions and typed rows in `ipfs_datasets_py/ipfs_datasets_py/voice/schema.py``."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:8f5c116c3048",
+        "kind": "evidence_requirement",
+        "term": "`PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release",
+        "thought": "Find or create repository evidence proving ``PeerCapabilityRegistry` plus `TaskOrchestrator` audio capability rejection and safe remote-lease release`."
       },
       {
         "goal_id": "ABBY-VOICE-G006",
@@ -7391,25 +7519,18 @@
         "thought": "Find or create repository evidence proving `append-only commit receipt`."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:a23b702122d0",
+        "kind": "evidence_requirement",
+        "term": "complete audio `ProviderBatchKey` compatibility",
+        "thought": "Find or create repository evidence proving `complete audio `ProviderBatchKey` compatibility`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G004",
         "id": "evidence:a2648c8c0f28",
         "kind": "evidence_requirement",
         "term": "`abby_voice_response_v2`",
         "thought": "Find or create repository evidence proving ``abby_voice_response_v2``."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:a26c39649328",
-        "kind": "evidence_requirement",
-        "term": "priority-aware claims",
-        "thought": "Find or create repository evidence proving `priority-aware claims`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:a28879f44fb2",
-        "kind": "evidence_requirement",
-        "term": "submit-once queue semantics",
-        "thought": "Find or create repository evidence proving `submit-once queue semantics`."
       },
       {
         "goal_id": "ABBY-VOICE-G019",
@@ -7559,11 +7680,32 @@
         "thought": "Find or create repository evidence proving `and optional-collaborator assertions`."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:b75bfd52490b",
+        "kind": "evidence_requirement",
+        "term": "persisted attempt/backoff/lease state",
+        "thought": "Find or create repository evidence proving `persisted attempt/backoff/lease state`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:b97688bcfc9e",
+        "kind": "evidence_requirement",
+        "term": "existing sibling isolation and single-flight receipts",
+        "thought": "Find or create repository evidence proving `existing sibling isolation and single-flight receipts`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G005",
         "id": "evidence:bba9ef640f25",
         "kind": "evidence_requirement",
         "term": "objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md`",
         "thought": "Find or create repository evidence proving `objective-validation receipt in `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-005-objective-validation-repair.md``."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:bbc0d41fdc2b",
+        "kind": "evidence_requirement",
+        "term": "owner heartbeats",
+        "thought": "Find or create repository evidence proving `owner heartbeats`."
       },
       {
         "goal_id": "ABBY-VOICE-G011",
@@ -7634,6 +7776,13 @@
         "kind": "evidence_requirement",
         "term": "serialization",
         "thought": "Find or create repository evidence proving `serialization`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:c9be076c5bcd",
+        "kind": "evidence_requirement",
+        "term": "priority-aware atomic claims",
+        "thought": "Find or create repository evidence proving `priority-aware atomic claims`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7713,6 +7862,13 @@
         "thought": "Find or create repository evidence proving `offline worker and mesh tests`."
       },
       {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:d66834f5b544",
+        "kind": "evidence_requirement",
+        "term": "`TaskQueue` submit-once identity",
+        "thought": "Find or create repository evidence proving ``TaskQueue` submit-once identity`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G001",
         "id": "evidence:d68e8b435e83",
         "kind": "evidence_requirement",
@@ -7732,6 +7888,13 @@
         "kind": "evidence_requirement",
         "term": "complete cache identities",
         "thought": "Find or create repository evidence proving `complete cache identities`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:d8d0c7ff0d75",
+        "kind": "evidence_requirement",
+        "term": "IndexTTS/Whisper batch-size-one policy",
+        "thought": "Find or create repository evidence proving `IndexTTS/Whisper batch-size-one policy`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7760,6 +7923,13 @@
         "kind": "evidence_requirement",
         "term": "shared task alias registry",
         "thought": "Find or create repository evidence proving `shared task alias registry`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:da75387cd1fe",
+        "kind": "evidence_requirement",
+        "term": "expired-lease recovery",
+        "thought": "Find or create repository evidence proving `expired-lease recovery`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7888,13 +8058,6 @@
         "thought": "Find or create repository evidence proving `optional VoiceTemplateProvider protocol`."
       },
       {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:f8de477ca999",
-        "kind": "evidence_requirement",
-        "term": "resource and provider saturation tests",
-        "thought": "Find or create repository evidence proving `resource and provider saturation tests`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G010",
         "id": "evidence:fa81453a73f4",
         "kind": "evidence_requirement",
@@ -7935,13 +8098,6 @@
         "kind": "evidence_requirement",
         "term": "pinned redownload validation",
         "thought": "Find or create repository evidence proving `pinned redownload validation`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G016",
-        "id": "evidence:ffd1c914f030",
-        "kind": "evidence_requirement",
-        "term": "claim lease and heartbeat recovery",
-        "thought": "Find or create repository evidence proving `claim lease and heartbeat recovery`."
       },
       {
         "goal_id": "ABBY-VOICE-G001",
@@ -8078,7 +8234,7 @@
         "id": "goal:ABBY-VOICE-G014",
         "kind": "goal",
         "priority": "P0",
-        "status": "active",
+        "status": "complete",
         "thought": "Define versioned TTS ASR and audio-validation job contracts and submit them through the existing ipfs_datasets_py accelerate integration into the canonical DuckDB P2P TaskQueue.",
         "title": "Define audio job contracts and the datasets-to-accelerate bridge",
         "track": "voice-scheduling"
@@ -8088,7 +8244,7 @@
         "id": "goal:ABBY-VOICE-G015",
         "kind": "goal",
         "priority": "P0",
-        "status": "active",
+        "status": "complete",
         "thought": "Add advertised TTS ASR and audio-validation handlers to the existing P2P worker and execute model work through the established voice_router providers.",
         "title": "Add durable voice workers and repair backend routing",
         "track": "voice-scheduling"
@@ -8712,13 +8868,6 @@
         "thought": "Run this validation before closing the goal."
       },
       {
-        "command": "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py",
-        "goal_id": "ABBY-VOICE-G015",
-        "id": "validation:81e80b07f295",
-        "kind": "validation_strategy",
-        "thought": "Run this validation before closing the goal."
-      },
-      {
         "command": "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts",
         "goal_id": "ABBY-VOICE-G010",
         "id": "validation:854345f277f3",
@@ -8799,6 +8948,13 @@
         "command": "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run",
         "goal_id": "ABBY-VOICE-G021",
         "id": "validation:daf63f314d46",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
+        "command": "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_accelerate_py/test/test_voice_router_contracts.py ipfs_accelerate_py/test/test_abby_voice_providers.py ipfs_accelerate_py/test/test_voice_job_contracts.py",
+        "goal_id": "ABBY-VOICE-G015",
+        "id": "validation:ea74aa387f15",
         "kind": "validation_strategy",
         "thought": "Run this validation before closing the goal."
       },
