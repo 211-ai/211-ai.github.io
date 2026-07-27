@@ -728,6 +728,8 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Consumer promotion is a separate reviewed step with a bounded canary. Rollback restores the previous pinned manifest/commit and never deletes the failed release.
   5. Tokens are never persisted in task rows, manifests, logs, receipts, or source control.
 - Child-goal boundary: G021 is the sole owner of remote writes and consumer-pointer changes; failure to obtain approval is a valid blocked state, not permission for an autonomous workaround.
+- Authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-021-objective-validation-repair.md
+- Residual evidence closure (offline): dry-run diff and cost receipt, post-publication verification, and pinned redownload validation are implemented and unit-tested on the authorized publisher/CLI/runbook/receipt paths. Live remote write remains human-gated behind PublicationApproval; autonomous default stops after dry-run.
 
 ## ABBY-VOICE-G022 Prove deterministic audio worksets for Normalize and materialize the Abby voice dataset
 
