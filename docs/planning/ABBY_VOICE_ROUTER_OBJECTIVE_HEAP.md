@@ -637,15 +637,15 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G019 Load pinned releases and resolve precomputed audio safely
 
-- Status: active
+- Status: complete
 - Fib priority: 13002
 - Priority: P0
 - Track: voice-integration
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G008, ABBY-VOICE-G018
 - Goal: Load an immutable Abby release into the GraphRAG template provider and resolve precomputed audio only when the rendered spoken text and complete synthesis identity match.
-- Evidence: runtime resolution; revision-pinned streaming/release loader; content-addressed GraphRAG restore; exact audio resolver; stale-slot regression test; text-only or live-TTS fallback receipt
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
+- Evidence: runtime resolution via `process_voice_turn(..., audio_resolver=PrecomputedVoiceAudioResolver)`; revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA, descriptor validation, content-addressed GraphRAG restore, Hub streaming pinned through `HuggingFaceStreamingLoader`); exact audio resolver matching spoken-text SHA-256 plus full synthesis identity; stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes; text-only or live-TTS fallback receipt; ABBY-VOICE-G019 objective-validation repair receipt
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-019-objective-validation-repair.md
 - Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
 - Bundle: abby-voice/runtime-release
 - Parallel lane: abby-voice-integration
@@ -656,13 +656,15 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_audio_resolver.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py
 - Conflict policy: add revision support to the existing streaming loader; resolver failure falls through to live TTS or text-only output and never serves a near or stale match
 - Gap task: Connect curated rows to runtime retrieval and remove identifier-only precomputed-audio matching.
+- Objective-validation repair: `ABBY-VOICE-AUTO-019` owns this validation gate. The source discovery scan attributed runtime/precomputed terms to unrelated embedding docs and residual IndexTTS batch JSON through token coincidence. Those artifacts are not G019 evidence. The authoritative evidence map and focused validation result are recorded in `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-019-objective-validation-repair.md`.
 - Acceptance gate:
   1. The loader requires a release manifest plus immutable dataset commit SHA, downloads only the manifest, relevant indexes, and selected Parquet shards, and validates descriptors before use.
   2. A precomputed artifact matches only the exact rendered spoken-text SHA-256 and the full provider/model/voice/version/locale/reference/codec/rate/channel/generation identity.
   3. Changing a grounded phone, address, ZIP, hours, eligibility, amount, or emergency slot invalidates stale audio even if the template or slotted-response identifier is unchanged.
   4. Missing or invalid audio records a deterministic resolver reason and falls through to live TTS or text-only behavior without weakening GraphRAG provenance.
   5. Runtime caller audio and transcripts are neither cached into the public release nor written into ordinary receipts.
-- Child-goal boundary: G019 owns pinned runtime loading and exact audio reuse. G010 owns wallet rollout; G020 owns deployed-like end-to-end gates.
+  6. `python -m pytest -q ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_accelerate_py/test/test_voice_router_graphrag.py` passes offline and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: G019 owns pinned runtime loading and exact audio reuse. G010 owns wallet rollout; G020 owns deployed-like end-to-end gates. No smaller child goal is needed.
 
 ## ABBY-VOICE-G020 Prove the distributed dataset-to-voice pipeline end to end
 
