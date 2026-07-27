@@ -668,15 +668,15 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 
 ## ABBY-VOICE-G020 Prove the distributed dataset-to-voice pipeline end to end
 
-- Status: active
+- Status: complete
 - Fib priority: 21000
 - Priority: P0
 - Track: voice-evaluation
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G009, ABBY-VOICE-G016, ABBY-VOICE-G018, ABBY-VOICE-G019
 - Goal: Demonstrate a restart-safe fixture and approved canary flow from pinned source inventory through TTS validation ASR release loading GraphRAG slotting and final voice output.
-- Evidence: offline deterministic fixture; DuckDB TTS-to-validate-to-ASR workflow receipt; worker-crash recovery test; capability/resource backpressure test; real-provider canary protocol; privacy and lineage audit
-- Outputs: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Evidence: offline deterministic fixture; DuckDB TTS-to-validate-to-ASR workflow receipt; worker-crash recovery test; capability/resource backpressure test; real-provider canary protocol; privacy and lineage audit; ABBY-VOICE-G020 completion and objective-validation repair receipt
+- Outputs: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md, data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-020-objective-validation-repair.md
 - Validation: python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check
 - Bundle: abby-voice/end-to-end
 - Parallel lane: abby-voice-evaluation
@@ -688,6 +688,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Predicted files: tests/voice/test_abby_voice_distributed_pipeline.py, docs/runbooks/ABBY_VOICE_AUDIO_JOBS.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
 - Conflict policy: offline gates use fakes and tiny public fixtures; real provider and remote read canaries require explicit scope credentials cost limit and retention approval
 - Gap task: Verify the complete control-plane and execution-plane contract including failure recovery and exact factual slot audio.
+- Objective-validation repair: `ABBY-VOICE-AUTO-020` owns this validation gate. The source discovery scan found the phrases `offline deterministic fixture`, `worker-crash recovery test`, and `capability/resource backpressure test` missing from an authorized distributed path and attributed nearby DuckDB/canary evidence to unrelated benchmark and legal-data documents by embedding coincidence. The authoritative replacement is `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-020-objective-validation-repair.md`; evidence is valid only when it names the defining or asserting source path.
 - Acceptance gate:
   1. The fixture runs pinned inventory to normalization to deterministic tasks to TTS to audio validation to ASR to reconciliation to release to GraphRAG voice turn with complete lineage and no network.
   2. Replaying after process termination recovers expired leases, reuses completed identities, and produces no duplicate provider call or conflicting artifact.
@@ -695,7 +696,8 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Critical factual slots are exact in rendered text, admitted audio ASR, and the final runtime response; citations remain machine provenance and are absent from spoken output.
   5. Logs, DuckDB state, receipts, and artifacts pass a secret/private-audio/private-transcript scan.
   6. Any real-provider canary is separately human-approved, bounded by item count and cost, uses non-sensitive rows, and writes only to a staging prefix.
-- Child-goal boundary: G020 owns verification and canary evidence. G021 owns the remote release transaction and promotion decision.
+  7. `python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py && python benchmarks/bench_abby_voice_router.py --offline --check` passes and the result is recorded in the objective-validation repair receipt.
+- Child-goal boundary: G020 owns verification and canary evidence. G021 owns the remote release transaction and promotion decision. No smaller child goal is needed for this repair.
 
 ## ABBY-VOICE-G021 Publish and promote an immutable Hugging Face release
 
