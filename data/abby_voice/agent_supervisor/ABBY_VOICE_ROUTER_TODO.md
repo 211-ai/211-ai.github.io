@@ -991,7 +991,7 @@
 
 ## ABBY-VOICE-AUTO-020 Implement Abby voice objective: Prove the distributed dataset-to-voice pipeline end to end
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
