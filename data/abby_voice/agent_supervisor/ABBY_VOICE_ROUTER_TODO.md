@@ -747,7 +747,7 @@
 
 ## ABBY-VOICE-AUTO-016 Implement Abby voice objective: Reconcile generated audio and enforce round-trip quality
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
