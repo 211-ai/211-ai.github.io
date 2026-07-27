@@ -37,19 +37,9 @@
       "sha256": "10ba997f072ab2625a6e5366e31514f2dcb646daa7968bb46fd34e1b5e26b413"
     },
     {
-      "byte_length": 3367,
-      "path": "manifest.json",
-      "sha256": "8ad3a27e4f623826fca385ecb5cdafdf34bf5d577d9f848ccb863c43d7ba41a3"
-    },
-    {
       "byte_length": 1562,
       "path": "provenance.jsonl",
       "sha256": "8ee474a644d1de71e9118fcef6fd812c317d198a678a23a1759dd26460a5d460"
-    },
-    {
-      "byte_length": 1449,
-      "path": "quality-report.json",
-      "sha256": "a0267cef829aaf8180e620b468f1308bb1855ec0cb96988d0f82b97f9bc43579"
     },
     {
       "byte_length": 0,
@@ -138,12 +128,18 @@
   "repository_commit": "commit:abby-voice-g011-offline-fixture",
   "residual_parent_repair": {
     "acceptance_subset": [
-      "deterministic audio worksets"
+      "deterministic audio worksets",
+      "TTS/ASR execution"
     ],
-    "authoritative_map": "data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+    "authoritative_maps": {
+      "deterministic audio worksets": "data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+      "TTS/ASR execution": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md"
+    },
     "goal_id": "ABBY-VOICE-G011",
-    "residual_receipt": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
-    "task_id": "ABBY-VOICE-AUTO-024"
+    "residual_receipt": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md",
+    "retry_budget_receipt": "data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md",
+    "task_id": "ABBY-VOICE-AUTO-027",
+    "retry_budget_task_id": "ABBY-VOICE-AUTO-032"
   },
   "schema_version": "abby_voice_local_release_manifest_v1",
   "source_manifest_id": "abby-voice-source-set:sha256:ce855e5d2e087e3f785abf4ab540d0668451914f095ba3d724553647d49f0ef1",
