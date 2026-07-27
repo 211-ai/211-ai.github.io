@@ -1052,7 +1052,7 @@
 
 ## ABBY-VOICE-AUTO-021 Implement Abby voice objective: Publish and promote an immutable Hugging Face release
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
