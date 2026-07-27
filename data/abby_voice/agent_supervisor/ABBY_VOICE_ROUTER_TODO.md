@@ -1185,7 +1185,7 @@
 
 ## ABBY-VOICE-AUTO-024 Implement Abby voice objective: Normalize and materialize the Abby voice dataset
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
