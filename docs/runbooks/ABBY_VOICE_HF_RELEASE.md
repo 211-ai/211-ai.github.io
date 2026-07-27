@@ -158,18 +158,29 @@ against that layout. The delete plan stays empty.
 
 ## Evidence map
 
-Authoritative residual evidence map:
+Authoritative residual evidence map (full G021 boundary):
 
 `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-021-objective-validation-repair.md`
+
+Residual scan closure for **post-publication verification** and **pinned
+redownload validation** (AUTO-030 subset):
+
+`data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-030-objective-validation-repair.md`
 
 | Evidence term | Where proven |
 | --- | --- |
 | dry-run diff and cost receipt | `plan_dry_run` / CLI `--dry-run` / publication receipt |
-| post-publication verification | `verify_post_publication` + unit tests |
-| pinned redownload validation | `redownload_and_validate_pinned` + unit tests |
+| post-publication verification | `verify_post_publication` + integrated `publish_abby_voice_release` post-commit path + unit tests |
+| pinned redownload validation | `redownload_and_validate_pinned` + integrated `publish_abby_voice_release` post-commit path + unit tests |
 | append-only commit receipt | `publish_append_only` + `PublicationCommitReceipt` |
 | canary and rollback receipt | `canary_promote_pointer` / `rollback_pointer` |
 | approval record | `PublicationApproval` required for `--execute` |
+
+After an approved `--execute`, the publisher fail-closes through
+post-publication verification (returned commit SHA + digests) and pinned
+redownload validation (empty verified cache, pinned SHA only) before the
+receipt may claim those evidence flags. Promotion remains a separate reviewed
+step.
 
 ## Supervisor alignment
 

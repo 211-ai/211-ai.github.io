@@ -730,6 +730,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Child-goal boundary: G021 is the sole owner of remote writes and consumer-pointer changes; failure to obtain approval is a valid blocked state, not permission for an autonomous workaround.
 - Authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-021-objective-validation-repair.md
 - Residual evidence closure (offline): dry-run diff and cost receipt, post-publication verification, and pinned redownload validation are implemented and unit-tested on the authorized publisher/CLI/runbook/receipt paths. Live remote write remains human-gated behind PublicationApproval; autonomous default stops after dry-run.
+- Residual scan closure (AUTO-030): post-publication verification and pinned redownload validation are fail-closed on the integrated `publish_abby_voice_release` path after approved append-only commit; residual map is `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-030-objective-validation-repair.md`.
 
 ## ABBY-VOICE-G022 Prove deterministic audio worksets for Normalize and materialize the Abby voice dataset
 
