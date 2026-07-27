@@ -808,7 +808,7 @@
 
 ## ABBY-VOICE-AUTO-017 Implement Abby voice objective: Adopt the unified router in wallet_interface
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -1370,7 +1370,7 @@
 
 ## ABBY-VOICE-AUTO-027 Implement Abby voice objective: Normalize and materialize the Abby voice dataset
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
