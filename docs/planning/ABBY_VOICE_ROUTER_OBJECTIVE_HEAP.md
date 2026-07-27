@@ -613,7 +613,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parents: ABBY-VOICE-G011
 - Depends on: ABBY-VOICE-G007, ABBY-VOICE-G017
 - Goal: Reuse the generic ArtifactManifest and SkillCenter Parquet release patterns to create a deterministic Abby release that Hugging Face Dataset Viewer can load by immutable revision.
-- Evidence: deterministic release construction; extracted generic release helpers; five flat Abby configs including evaluation; sharded ZSTD Parquet descriptors; GraphRAG support-index artifact; byte-identical rebuild; exhaustive local release validator
+- Evidence: deterministic release construction; extracted generic release helpers; five flat Abby configs including evaluation; sharded ZSTD Parquet descriptors; GraphRAG support-index artifact; byte-identical rebuild; exhaustive local release validator; authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py tests/voice/test_abby_voice_hf_migration.py
 - Bundle: abby-voice/hf-release
@@ -624,8 +624,9 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Submodules: ipfs_datasets_py
 - Generated artifacts: data/abby_voice/releases/release-manifest.json, data/abby_voice/releases/README.md
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice/evaluation_schema.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py
-- Conflict policy: extract generic atomic Parquet descriptor helpers without copying the SkillCenter builder; manifests and indexes are support artifacts, never mixed into row configs
+- Conflict policy: extract generic atomic Parquet descriptor helpers without copying the SkillCenter builder; manifests and indexes are support artifacts, never mixed into row configs; do not mutate package-root huggingface/__init__.py or voice/__init__.py (outside task-owned scope)
 - Gap task: Resolve the documented four-versus-five config mismatch and build a voice-specific release wrapper over shared hashing sharding and validation helpers.
+- Objective-validation repair: `ABBY-VOICE-AUTO-018` owns this validation gate. Attempt 1 failed proposal admission with `path_outside_scope` after editing package-root `__init__.py` export surfaces. The scope-safe recovery lands defining symbols only on the predicted modules and records the authoritative map at `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md`.
 - Acceptance gate:
   1. `abby_voice_response_v2`, `abby_voice_template_v2`, `abby_voice_audio_v2`, `abby_voice_provenance_v2`, and a newly defined flat `abby_voice_evaluation_v2` each have isolated schema-stable Parquet paths and split mappings.
   2. Every file descriptor carries relative path, byte length, SHA-256, content CID, media/schema type, producer/config digest, parents, license/consent, and review/trust metadata where applicable.
