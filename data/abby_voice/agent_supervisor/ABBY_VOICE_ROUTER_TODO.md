@@ -869,7 +869,7 @@
 
 ## ABBY-VOICE-AUTO-018 Implement Abby voice objective: Build and validate deterministic Hugging Face releases
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
