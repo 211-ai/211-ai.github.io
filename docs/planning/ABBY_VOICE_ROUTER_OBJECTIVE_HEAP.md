@@ -389,19 +389,20 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Track: voice-data
 - Parents: ABBY-VOICE-G004, ABBY-VOICE-G005
 - Goal: Coordinate the reuse-first dataset and audio-job goals that turn immutable Abby source snapshots into a verified, schema-stable, GraphRAG-ready Hugging Face release.
-- Evidence: immutable inventory; canonical normalization; deterministic audio worksets; TTS/ASR execution; audio reconciliation; deterministic release construction; runtime resolution; post-publication verification
+- Evidence: immutable inventory; canonical normalization; deterministic audio worksets; TTS/ASR execution; audio reconciliation; deterministic release construction; runtime resolution; post-publication verification; authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md; residual parent-term repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md
 - Outputs: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check
 - Bundle: abby-voice/dataset-materialization
 - Parallel lane: abby-voice-data
 - Embedding query: immutable Hugging Face Abby voice normalization audio workset TTS ASR GraphRAG deterministic release
-- AST query: AbbyVoiceDatasetNormalizer, ArtifactManifest, VoiceAudioJobSpec, AbbyVoiceHFReleaseBuilder
+- AST query: AbbyVoiceDatasetNormalizer, ArtifactManifest, VoiceAudioJobSpec, AbbyVoiceHFReleaseBuilder, VoiceAudioWorkset
 - Interfaces: ipfs_datasets_py.voice, ipfs_datasets_py ArtifactManifest, ipfs_accelerate_py p2p tasks, Hugging Face datasets and buckets
 - Submodules: ipfs_datasets_py, ipfs_accelerate_py
-- Generated artifacts: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json
+- Generated artifacts: data/abby_voice/normalized/manifest.json, data/abby_voice/normalized/quality-report.json, data/abby_voice/normalized/quarantine.jsonl, data/abby_voice/releases/release-manifest.json, data/abby_voice/normalized/audio-workset.jsonl
 - Predicted files: ipfs_datasets_py/ipfs_datasets_py/voice, ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks, data/abby_voice/normalized, data/abby_voice/releases
 - Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
 - Gap task: Integrate and verify G012 through G021 without replacing the existing schema normalizer GraphRAG router providers TaskQueue resource scheduler or provider batch scheduler.
+- Objective-validation repair: `ABBY-VOICE-AUTO-024` owns residual parent-goal discoverability for the acceptance subset `deterministic audio worksets`. The source scan reported that term missing on G011 because it matched unrelated embedding surfaces rather than the G013 workset planner. The authoritative implementation map remains `data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md`; the residual parent repair is `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md`. Evidence for this subset is accepted only when it names `VoiceAudioWorkset`/`AudioWorkManifest`, the offline workset fixture, and the residual G011 receipts. This residual repair intentionally stays on frozen G011 outputs and does not re-edit G013 package sources.
 - Acceptance gate:
   1. G012 through G020 are verified complete and G021 has either a human-approved publication receipt or remains explicitly blocked at its remote-write gate.
   2. Every discovered source row is classified as linked, synthesized, quarantined, or intentionally text-only; no unresolved row is silently omitted.
@@ -409,7 +410,9 @@ rows, supervisor evidence, logs, or ordinary router receipts.
   4. Rebuilding the same pinned inputs produces byte-identical canonical rows, GraphRAG index identity, Parquet shards, and release manifest.
   5. DuckDB tasks and receipts contain descriptors and hashes rather than raw or base64 audio, credentials, private caller transcripts, or arbitrary local paths.
   6. The focused dataset, queue, provider, GraphRAG, safety, and release validation suites pass with an evidence receipt tied to the exact repository trees.
-- Child-goal boundary: G012-G013 own immutable source management and normalization; G014-G016 own job contracts and execution; G017 owns reconciliation and audio quality; G018 owns release construction; G019 owns runtime resolution; G020 owns end-to-end verification; G021 alone owns human-gated remote publication.
+  7. Residual parent-term `deterministic audio worksets` remains discoverable via the G013 authoritative map, the AUTO-024 residual repair, the offline `audio-workset.jsonl` fixture, and the G011 partial completion receipt; G022 stays blocked as a duplicate of G013.
+- Child-goal boundary: G012-G013 own immutable source management and normalization; G014-G016 own job contracts and execution; G017 owns reconciliation and audio quality; G018 owns release construction; G019 owns runtime resolution; G020 owns end-to-end verification; G021 alone owns human-gated remote publication. No smaller child goal is needed for deterministic audio worksets: G013 already owns that planning boundary and G022 remains a blocked duplicate refinement.
+- Partial completion receipt: `ABBY-VOICE-AUTO-024` closed the residual acceptance subset `deterministic audio worksets` on 2026-07-26. Progress and remaining child obligations are recorded in `data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md`.
 
 ## ABBY-VOICE-G012 Generalize immutable Hugging Face source snapshots
 
@@ -740,6 +743,7 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parallel lane: abby-voice-data
 - Conflict policy: treat all source bucket and dataset objects as immutable; perform no remote writes moves or deletes; make every transformation deterministic and preserve source URI revision checksum and rejection reason for audit and rollback
 - Gap task: Close the missing objective evidence `deterministic audio worksets` with a narrow, verifiable change.
+- Residual parent closure: `ABBY-VOICE-AUTO-024` re-anchored the parent G011 acceptance subset to the G013 authoritative map without unblocking this duplicate goal. See `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md` and `data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G011-completion.md`.
 
 ## ABBY-VOICE-G023 Prove TTS/ASR execution for Normalize and materialize the Abby voice dataset
 
