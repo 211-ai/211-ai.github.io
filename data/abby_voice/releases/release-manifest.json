@@ -1,0 +1,151 @@
+{
+  "deterministic": true,
+  "evidence": {
+    "deterministic_audio_worksets": true,
+    "tts_asr_execution": true
+  },
+  "execution_receipt_count": 4,
+  "files": [
+    {
+      "byte_length": 12783,
+      "path": "artifact-manifest.json",
+      "sha256": "2eee8868d235aff8baf83c0e51f7826720b71c85d3ef431c065e4626076bae0e"
+    },
+    {
+      "byte_length": 1550,
+      "path": "asr-work-manifest.json",
+      "sha256": "2c0659d1833af53caedd4d6c22d24189860c62e1dfed68019256f63df134dcd5"
+    },
+    {
+      "byte_length": 1589,
+      "path": "audio-validation-work-manifest.json",
+      "sha256": "1f9ef25398dec68e57fdddb7b6166b0ceb54ec3b6ba4edf26a05cdc24ffe7345"
+    },
+    {
+      "byte_length": 4920,
+      "path": "audio-workset.jsonl",
+      "sha256": "9315489a2f90c789145499d45c886700eddb4b25b8cdac6dc6d9c1fa4705748f"
+    },
+    {
+      "byte_length": 0,
+      "path": "audio.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 684,
+      "path": "disposition.jsonl",
+      "sha256": "10ba997f072ab2625a6e5366e31514f2dcb646daa7968bb46fd34e1b5e26b413"
+    },
+    {
+      "byte_length": 3367,
+      "path": "manifest.json",
+      "sha256": "8ad3a27e4f623826fca385ecb5cdafdf34bf5d577d9f848ccb863c43d7ba41a3"
+    },
+    {
+      "byte_length": 1562,
+      "path": "provenance.jsonl",
+      "sha256": "8ee474a644d1de71e9118fcef6fd812c317d198a678a23a1759dd26460a5d460"
+    },
+    {
+      "byte_length": 1449,
+      "path": "quality-report.json",
+      "sha256": "a0267cef829aaf8180e620b468f1308bb1855ec0cb96988d0f82b97f9bc43579"
+    },
+    {
+      "byte_length": 0,
+      "path": "quarantine.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1310,
+      "path": "responses.jsonl",
+      "sha256": "1d6f4c0fd247640b00743ddf80583af358404795e0387b18bcf539bf6c4cc0c9"
+    },
+    {
+      "byte_length": 0,
+      "path": "templates.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1824,
+      "path": "tts-asr-execution-receipts.jsonl",
+      "sha256": "4c081e9aa96036a5616148601b6ab2a38a0516308ac7b2109271860e597a379c"
+    },
+    {
+      "byte_length": 1372,
+      "path": "tts-work-manifest.json",
+      "sha256": "abe019957f6c8e417487fa5f1e9eed9a5bcbc6fc5a477038eff05b8f4bbf6c8b"
+    },
+    {
+      "byte_length": 4118,
+      "path": "voice-audio-job-specs.jsonl",
+      "sha256": "70d969706dc75ed042885d285ee1c4a524580fa4433a20e7e8297c6fbd84702f"
+    }
+  ],
+  "job_spec_count": 6,
+  "publication_status": "local_only_pending_g018_g021",
+  "quality_summary": {
+    "accepted": {
+      "audio": 0,
+      "provenance": 2,
+      "responses": 2,
+      "templates": 0
+    },
+    "accepted_record_count": 4,
+    "deduplication": {
+      "audio_duplicates_removed": 0,
+      "audio_groups": 0,
+      "text_duplicates_removed": 0,
+      "text_groups": 0
+    },
+    "input_record_count": 2,
+    "normalization_version": "2.0.0",
+    "policy": {
+      "consent_status": "unknown",
+      "license_id": "NOASSERTION",
+      "locale": "en-US",
+      "maximum_spoken_characters": 5000,
+      "minimum_alphanumeric_characters": 2,
+      "quarantine_duplicates": true,
+      "reject_bm25_only_vocabulary": true,
+      "require_audio": false,
+      "require_grounding_for_claims": true,
+      "split": {
+        "salt": "abby-voice-v2",
+        "test": 1000,
+        "train": 8000,
+        "validation": 1000
+      }
+    },
+    "quarantined_source_count": 0,
+    "reason_counts": {
+      "missing_audio": 2
+    },
+    "reconciliation": {
+      "quarantine_is_non_destructive": true,
+      "source_rows_accounted_for": 2
+    },
+    "schema_version": "abby_voice_quality_v2",
+    "source_manifest_count": 1,
+    "split_counts": {
+      "train": 4
+    },
+    "warning_source_count": 2
+  },
+  "release_id": "abby-voice-local-release:sha256:1b52b1675acab4be14171785fa5ada25f3d1605714c95349642fec2f62a10692",
+  "release_sha256": "1b52b1675acab4be14171785fa5ada25f3d1605714c95349642fec2f62a10692",
+  "remote_writes": false,
+  "repository_commit": "commit:abby-voice-g011-offline-fixture",
+  "residual_parent_repair": {
+    "acceptance_subset": [
+      "deterministic audio worksets"
+    ],
+    "authoritative_map": "data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+    "goal_id": "ABBY-VOICE-G011",
+    "residual_receipt": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
+    "task_id": "ABBY-VOICE-AUTO-024"
+  },
+  "schema_version": "abby_voice_local_release_manifest_v1",
+  "source_manifest_id": "abby-voice-source-set:sha256:ce855e5d2e087e3f785abf4ab540d0668451914f095ba3d724553647d49f0ef1",
+  "workset_id": "abby-voice-workset:sha256:dda8c8e477463b8a29a23442d8af24af031b63160c851404f26ef31c496ad505"
+}
