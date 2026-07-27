@@ -65,6 +65,10 @@ from ipfs_datasets_py.voice.bucket_audio_inventory import (  # noqa: E402
     build_bucket_audio_inventory,
     discover_production_run_ids,
 )
+from ipfs_datasets_py.voice.bucket_audio_normalize import (  # noqa: E402
+    AbbyVoiceBucketAudioNormalizedBundle,
+    normalize_bucket_audio_entries,
+)
 from ipfs_datasets_py.voice.bucket_audio_plan import (  # noqa: E402
     AbbyVoiceBucketAudioPlan,
     plan_abby_voice_bucket_audio,
@@ -116,8 +120,14 @@ REVALIDATION_ARTIFACT_MANIFEST_SCHEMA_VERSION = (
 ADMISSION_ARTIFACT_MANIFEST_SCHEMA_VERSION = (
     "abby_voice_bucket_audio_admission_artifacts_v1"
 )
+NORMALIZED_ARTIFACT_MANIFEST_SCHEMA_VERSION = (
+    "abby_voice_bucket_audio_normalized_artifacts_v1"
+)
 DEFAULT_ACCELERATOR_ARTIFACT_DIR = (
     DEFAULT_CACHE_DIR / "accelerator-artifacts"
+)
+DEFAULT_NORMALIZED_OUTPUT_DIR = (
+    DEFAULT_CACHE_DIR / "normalized-bucket-audio"
 )
 DEFAULT_REVALIDATION_OUTPUT_DIR = (
     DEFAULT_CACHE_DIR / "revalidation-plans"
@@ -439,10 +449,16 @@ def write_plan_artifacts(
     ):
         raise ValueError("inventory does not bind the discovered listing")
     selected_bytes = sum(item.selected.size_bytes for item in plan.selections)
+    normalized = normalize_bucket_audio_entries(
+        inventory=inventory,
+        plan=plan,
+        plan_id=plan.plan_id,
+    )
     summary = {
         **plan.summary(),
         "estimated_selected_bytes": selected_bytes,
         "inventory": inventory.summary(),
+        "normalized_bucket_audio": normalized.summary(),
         "normalization": normalization.quality_summary(),
         "plan_id": plan.plan_id,
         "source_sha256": source_sha256,
@@ -451,6 +467,8 @@ def write_plan_artifacts(
     artifacts = {
         "bucket-audio-inventory.json": inventory.canonical_bytes() + b"\n",
         "bucket-audio-inventory.jsonl": inventory.to_jsonl_bytes(),
+        "bucket-audio-normalized.json": normalized.canonical_bytes() + b"\n",
+        "bucket-audio-normalized.jsonl": normalized.to_jsonl_bytes(),
         "bucket-listing.json": listing.canonical_bytes() + b"\n",
         "recovery-plan.json": plan.canonical_bytes() + b"\n",
         "recovery-plan-summary.json": _json_bytes(summary),
@@ -527,27 +545,37 @@ def load_plan_artifacts(
     ):
         raise ValueError("plan artifact checksum manifest is not canonical")
     raw_files = manifest["files"]
-    expected_names = frozenset(
-        {
-            "bucket-audio-inventory.json",
-            "bucket-audio-inventory.jsonl",
-            "bucket-listing.json",
-            "recovery-plan.json",
-            "recovery-plan-summary.json",
-        }
-    )
-    # Accept both current inventory-bearing bundles and older three-file plans.
-    legacy_names = frozenset(
-        {
-            "bucket-listing.json",
-            "recovery-plan.json",
-            "recovery-plan-summary.json",
-        }
-    )
-    if not isinstance(raw_files, Mapping) or frozenset(raw_files) not in {
-        expected_names,
-        legacy_names,
-    }:
+    # Accept plan bundles with progressive artifact sets.
+    allowed_file_sets = {
+        frozenset(
+            {
+                "bucket-audio-inventory.json",
+                "bucket-audio-inventory.jsonl",
+                "bucket-audio-normalized.json",
+                "bucket-audio-normalized.jsonl",
+                "bucket-listing.json",
+                "recovery-plan.json",
+                "recovery-plan-summary.json",
+            }
+        ),
+        frozenset(
+            {
+                "bucket-audio-inventory.json",
+                "bucket-audio-inventory.jsonl",
+                "bucket-listing.json",
+                "recovery-plan.json",
+                "recovery-plan-summary.json",
+            }
+        ),
+        frozenset(
+            {
+                "bucket-listing.json",
+                "recovery-plan.json",
+                "recovery-plan-summary.json",
+            }
+        ),
+    }
+    if not isinstance(raw_files, Mapping) or frozenset(raw_files) not in allowed_file_sets:
         raise ValueError("plan artifact checksum manifest has an invalid file set")
     expected_names = set(raw_files)
     if {item.name for item in resolved.iterdir()} != {
@@ -1325,6 +1353,92 @@ def _source_uri(path: Path, digest: str) -> str:
     return f"repo://211-AI/{relative}@sha256:{digest}"
 
 
+def write_normalized_artifacts(
+    *,
+    output_dir: Path,
+    normalized: AbbyVoiceBucketAudioNormalizedBundle,
+) -> dict[str, Any]:
+    """Publish an immutable full-bucket normalized entry bundle."""
+
+    summary = {
+        **normalized.summary(),
+        "stage": "normalized_all_bucket_entries",
+    }
+    artifacts = {
+        "bucket-audio-normalized.json": normalized.canonical_bytes() + b"\n",
+        "bucket-audio-normalized.jsonl": normalized.to_jsonl_bytes(),
+        "normalized-summary.json": _json_bytes(summary),
+    }
+    manifest_bytes = _json_bytes(
+        {
+            "schema_version": NORMALIZED_ARTIFACT_MANIFEST_SCHEMA_VERSION,
+            "normalized_id": normalized.normalized_id,
+            "bucket_id": normalized.bucket_id,
+            "listing_sha256": normalized.listing_sha256,
+            "plan_id": normalized.plan_id,
+            "files": {
+                name: {
+                    "byte_length": len(content),
+                    "sha256": sha256(content).hexdigest(),
+                }
+                for name, content in sorted(artifacts.items())
+            },
+        }
+    )
+    root = output_dir.expanduser().resolve()
+    bundle_dir, published = _publish_immutable_bundle(
+        root=root,
+        plan_id=normalized.normalized_id,
+        artifacts=artifacts,
+        manifest_bytes=manifest_bytes,
+    )
+    return {
+        **summary,
+        "artifact_root": str(root),
+        "output_dir": str(bundle_dir),
+        "published": published,
+        "idempotent": not published,
+        "checksum_manifest": {
+            "path": str(bundle_dir / PLAN_ARTIFACT_MANIFEST_NAME),
+            "sha256": sha256(manifest_bytes).hexdigest(),
+        },
+    }
+
+
+def _normalize_command(args: argparse.Namespace) -> int:
+    """Normalize every object from a sealed plan listing under entry schema v1."""
+
+    listing, plan = load_plan_artifacts(args.plan_dir)
+    plan_dir = args.plan_dir.expanduser().resolve()
+    inventory_path = plan_dir / "bucket-audio-inventory.json"
+    if inventory_path.is_file() and not inventory_path.is_symlink():
+        inventory = AbbyVoiceBucketAudioInventory.from_dict(
+            json.loads(inventory_path.read_text(encoding="utf-8"))
+        )
+        if (
+            inventory.bucket_id != listing.bucket_id
+            or inventory.listing_sha256 != listing.listing_sha256
+        ):
+            raise ValueError("plan inventory does not bind the sealed listing")
+    else:
+        inventory = build_bucket_audio_inventory(
+            listing.objects,
+            bucket_id=listing.bucket_id,
+            listing_sha256=listing.listing_sha256,
+        )
+    normalized = normalize_bucket_audio_entries(
+        inventory=inventory,
+        plan=plan,
+        plan_id=plan.plan_id,
+    )
+    result = write_normalized_artifacts(
+        output_dir=args.output_dir,
+        normalized=normalized,
+    )
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+    return 0
+
+
 def _plan_command(args: argparse.Namespace) -> int:
     payload, _source_bytes, source_digest = _load_source(
         args.source,
@@ -1894,6 +2008,28 @@ def build_parser() -> argparse.ArgumentParser:
         default="not_required",
     )
     plan.set_defaults(handler=_plan_command)
+
+    normalize = subparsers.add_parser(
+        "normalize",
+        help=(
+            "Normalize every sealed-plan bucket object (all ~30k+ paths) into "
+            "abby_voice_bucket_audio_entry_v1 rows, including unmapped "
+            "response-linkable audio and non-response orphans."
+        ),
+    )
+    normalize.add_argument(
+        "--plan-dir",
+        type=Path,
+        required=True,
+        help="Immutable plan bundle produced by the plan command.",
+    )
+    normalize.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_NORMALIZED_OUTPUT_DIR,
+        help="Root for immutable full-bucket normalized entry bundles.",
+    )
+    normalize.set_defaults(handler=_normalize_command)
 
     fetch = subparsers.add_parser(
         "fetch",

@@ -312,6 +312,8 @@ def test_plan_artifact_checksums_cover_every_payload_and_latest_pointer(
     assert set(checksum_manifest["files"]) == {
         "bucket-audio-inventory.json",
         "bucket-audio-inventory.jsonl",
+        "bucket-audio-normalized.json",
+        "bucket-audio-normalized.jsonl",
         "bucket-listing.json",
         "recovery-plan.json",
         "recovery-plan-summary.json",
