@@ -930,7 +930,7 @@
 
 ## ABBY-VOICE-AUTO-019 Implement Abby voice objective: Load pinned releases and resolve precomputed audio safely
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
