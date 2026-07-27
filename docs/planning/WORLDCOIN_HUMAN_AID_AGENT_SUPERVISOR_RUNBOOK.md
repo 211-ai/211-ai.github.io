@@ -219,8 +219,11 @@ Required before the full implementation command containing `--start`:
   reused or edited;
 - every product, security/privacy, program-policy, accessibility, dependency,
   and repository-maintainer decision above remains current;
-- successful immutable G038, G039, and G040 receipts match the selection
-  record exactly;
+- the operator-controlled Gate 0B workflow has transitioned G038, G039, and
+  G040 out of `blocked`, regenerated every board/profile artifact, and obtained
+  new signatures; the current blocked review profile is not reused;
+- successful immutable receipts from that future, regenerated execution profile
+  match the selection record exactly;
 - the deterministic network-spy/deny fixture passes and its deliberate egress
   canary proves that an unexpected request is blocked and reported;
 - security verifies the externally enforced egress receipt and absence of live
@@ -682,10 +685,10 @@ add `--submit-bundles` during planning.
 
 The objective daemon defines `--force-goal-id` with repeatable append semantics.
 These explicit flags are required here because broad evidence matches can
-otherwise suppress every finding and produce a zero-task board even though the
-goals remain active. Whenever an active goal is added, add its exact ID to this
-list before regenerating. A forced rescan does not weaken acceptance criteria,
-grant a human gate, submit a bundle, or start a worker. Never add
+otherwise suppress schedulable findings or required blocked review records and
+produce an incomplete board. Whenever an active goal is added, add its exact ID
+to this list before regenerating. A forced rescan does not weaken acceptance
+criteria, grant a human gate, submit a bundle, or start a worker. Never add
 `--repeat-existing`, `--submit-bundles`, `--generate-plan-branches`, or
 `--start` to this generation command.
 
@@ -693,7 +696,8 @@ The forced list intentionally omits G035 and G036, which are
 supervisor-terminal `blocked` human gates. It includes G038, G039, and G040
 only so the no-submit, no-start planning command can materialize the exact
 selection-review profiles; those three runtime goals remain terminally
-`blocked` and unschedulable. A signed approval or repository-controlled
+`blocked`, unschedulable, and impossible to claim, submit, lease, or launch
+from the current profiles. A signed approval or repository-controlled
 environment flag is necessary but cannot open their literal-false runtime
 fences. Each runtime requires an operator-controlled Gate-first supervisor
 launcher that authenticates the exact selection-bound entrypoint and verifier
@@ -730,7 +734,8 @@ The review must confirm:
   may be dropped);
 - generated task, dependency-DAG, and bundle task ID/CID sets are identical;
   blocked human gates G035 and G036 appear in none of them, while G038-G040
-  appear only as `blocked` review records and never as claimable work;
+  appear only as `status: blocked` review records and can never be claimable,
+  submitted, leased, or launched;
 - dependency direction matches the objective heap;
 - live World calls, chain broadcasts, contract deployment, allowance changes,
   and transfers are not validation commands;
@@ -752,11 +757,13 @@ The review must confirm:
 
 The following preflight is read-only, makes no network calls, and fails on
 missing artifacts, malformed source goals or generated task blocks, lost
-acceptance criteria, missing review-board records, review-only status or
-scheduling-flag drift, claimable blocked tasks, malformed bundle entries,
-dangling dependency CIDs, self-dependencies, dependency cycles, bundle tasks
-absent from the dependency graph, or any CID the planner has classified as
-invalid.
+acceptance criteria, a source blocked set other than G035/G036/G038-G040,
+anything other than 37 schedulable goals plus the three blocked review records,
+materialized G035/G036 tasks, non-blocked G038-G040 review records, a blocked
+review CID declared claimable, missing or permissive review-only scheduling
+flags, malformed bundle entries, dangling dependency CIDs, self-dependencies,
+dependency cycles, bundle tasks absent from the dependency graph, or any CID
+the planner has classified as invalid.
 
 ```bash
 env \
@@ -853,12 +860,16 @@ if blocked_goal_ids != expected_blocked_goal_ids:
         f"expected={sorted(expected_blocked_goal_ids)}, "
         f"actual={sorted(blocked_goal_ids)}"
     )
-review_board_goal_ids = schedulable_goal_ids | review_only_goal_ids
-if len(schedulable_goal_ids) != 37 or len(review_board_goal_ids) != 40:
+if len(schedulable_goal_ids) != 37:
     problems.append(
-        "reviewed goal counts drifted: "
-        f"schedulable={len(schedulable_goal_ids)}, "
-        f"review_board={len(review_board_goal_ids)}"
+        "source schedulable-goal count differs from the reviewed set: "
+        f"expected=37, actual={len(schedulable_goal_ids)}"
+    )
+review_board_goal_ids = schedulable_goal_ids | review_only_goal_ids
+if len(review_board_goal_ids) != 40:
+    problems.append(
+        "review-board goal count differs from the reviewed set: "
+        f"expected=40, actual={len(review_board_goal_ids)}"
     )
 
 def normalized_acceptance(value):
@@ -901,7 +912,8 @@ if len(task_blocks) != len(headers):
     )
 if len(task_blocks) != 40:
     problems.append(
-        f"canonical review board must contain exactly 40 records, got {len(task_blocks)}"
+        "generated review board must contain exactly 40 task blocks: "
+        f"actual={len(task_blocks)}"
     )
 
 generated_goal_ids = set()
@@ -932,7 +944,8 @@ for task_id, _title, source_line, fields in task_blocks:
         continue
     if goal_id in never_materialized_goal_ids:
         problems.append(
-            f"{location} illegally materializes blocked human gate {goal_id!r}"
+            f"{location} illegally materializes never-materialized human gate "
+            f"{goal_id!r}"
         )
         continue
     if goal_id in review_only_goal_ids:
@@ -944,6 +957,13 @@ for task_id, _title, source_line, fields in task_blocks:
         check_review_flags(fields, location, json_booleans=False)
         if task_cid:
             review_only_task_cids.add(task_cid)
+    elif goal_id not in schedulable_goal_ids:
+        problems.append(
+            f"{location} references a non-schedulable, non-review goal {goal_id!r}"
+        )
+        continue
+    if goal_id in generated_goal_ids:
+        problems.append(f"{location} duplicates generated goal {goal_id!r}")
 
     generated_goal_ids.add(goal_id)
     exact_criteria = source_acceptance.get(goal_id, "")
@@ -1017,14 +1037,18 @@ for name, dag in dags.items():
             f"extra={sorted(nodes - canonical_nodes)}"
         )
 
+    dag_goal_ids = set()
     for cid, record in nodes_map.items():
         if not isinstance(record, dict):
             continue
         node_goal_id = str(record.get("goal_id") or "").strip()
         node_status = str(record.get("status") or "").strip().lower().replace("-", "_")
+        if node_goal_id:
+            dag_goal_ids.add(node_goal_id)
         if node_goal_id in never_materialized_goal_ids:
             problems.append(
-                f"{name} node {cid!r} illegally references blocked human gate "
+                f"{name} node {cid!r} illegally references never-materialized "
+                "human gate "
                 f"{node_goal_id!r}"
             )
         if node_goal_id in review_only_goal_ids and node_status != "blocked":
@@ -1044,6 +1068,12 @@ for name, dag in dags.items():
                 problems.append(
                     f"{name} node {cid!r} has no review-only metadata object"
                 )
+    if dag_goal_ids != review_board_goal_ids:
+        problems.append(
+            f"{name} goal set differs from the 40-record review universe: "
+            f"missing={sorted(review_board_goal_ids - dag_goal_ids)}, "
+            f"unexpected={sorted(dag_goal_ids - review_board_goal_ids)}"
+        )
 
     invalid = sorted(set(dag.get("invalid_task_cids") or []))
     if invalid:
@@ -1092,6 +1122,7 @@ for name, dag in dags.items():
 
 bundle_task_ids = set()
 bundle_task_cids = set()
+bundle_goal_ids = set()
 for bundle_key, bundle in sorted(bundles.items()):
     if not isinstance(bundle, dict):
         problems.append(f"bundle {bundle_key!r} is not an object")
@@ -1122,15 +1153,19 @@ for bundle_key, bundle in sorted(bundles.items()):
         cid = str(task.get("canonical_task_cid") or task.get("task_cid") or "")
         task_id = str(task.get("task_id") or "")
         goal_id = str(task.get("goal_id") or "").strip()
-        task_status = str(task.get("status") or "").strip().lower().replace("-", "_")
+        task_status = (
+            str(task.get("status") or "").strip().lower().replace("-", "_")
+        )
         if task_id:
             bundle_task_ids.add(task_id)
         if cid:
             bundle_task_cids.add(cid)
+        if goal_id:
+            bundle_goal_ids.add(goal_id)
         if goal_id in never_materialized_goal_ids:
             problems.append(
                 f"bundle {bundle_key!r} task {task_id!r} illegally references "
-                f"blocked human gate {goal_id!r}"
+                f"never-materialized human gate {goal_id!r}"
             )
         if goal_id in review_only_goal_ids:
             if task_status != "blocked":
@@ -1174,6 +1209,12 @@ if canonical_dag_task_ids and canonical_dag_task_ids != todo_task_ids:
         f"dag_only={sorted(canonical_dag_task_ids - todo_task_ids)}, "
         f"todo_only={sorted(todo_task_ids - canonical_dag_task_ids)}"
     )
+if bundle_goal_ids != review_board_goal_ids:
+    problems.append(
+        "bundle goal IDs differ from the 40-record review universe: "
+        f"missing={sorted(review_board_goal_ids - bundle_goal_ids)}, "
+        f"unexpected={sorted(bundle_goal_ids - review_board_goal_ids)}"
+    )
 
 if problems:
     print("WORLDCOIN supervisor preflight FAILED:", file=sys.stderr)
@@ -1184,12 +1225,16 @@ if problems:
 claimable = set()
 for dag in dags.values():
     claimable.update(dag.get("claimable_task_cids") or [])
-if claimable & review_only_task_cids:
-    raise SystemExit("blocked review-only tasks unexpectedly became claimable")
+blocked_claimable = sorted(claimable & review_only_task_cids)
+if blocked_claimable:
+    raise SystemExit(
+        f"blocked review tasks became claimable after validation: {blocked_claimable}"
+    )
 print(
     "WORLDCOIN supervisor preflight passed: "
-    f"{len(source_goals)} source goals, {len(schedulable_goal_ids)} schedulable, "
-    f"{len(headers)} review-board tasks, "
+    f"{len(source_goals)} source goals, {len(headers)} tasks, "
+    f"{len(schedulable_goal_ids)} schedulable goals, "
+    f"{len(review_board_goal_ids)} review-board tasks, "
     f"{len(bundles)} bundles, "
     f"{len(canonical_nodes)} dependency nodes, {len(claimable)} claimable roots, "
     "0 invalid dependency CIDs"
@@ -1209,8 +1254,9 @@ python scripts/verify_world_aid_generated_board.py \
 ```
 
 It fails on stale validation commands, parent/output drift, duplicate or
-missing schedulable goals, missing/mutable blocked review records, missing or
-permissive review-only scheduling flags, claimable blocked tasks,
+missing schedulable goals, absent, mutable, or mis-statused blocked review
+records, missing or permissive review-only scheduling flags, materialized
+never-materialized goals, claimable blocked review CIDs,
 TODO/index/DAG/CID disagreement, invalid CIDs, and shard bodies that do not
 exactly match the canonical generated task.
 
@@ -1233,8 +1279,9 @@ predicted to overwrite an unreviewed dirty path.
 
 The canonical index remains the reviewed source. The scheduler has no
 goal/bundle include flag, and `--max-lanes` limits concurrency rather than
-scope. Create four paired JSON/DuckDB indexes with native
-`excluded_bundle_keys` fences:
+scope. The canonical review universe contains 40 records: 37 schedulable goals
+plus blocked review-only G038-G040; G035/G036 never materialize. Create four
+paired JSON/DuckDB indexes with native `excluded_bundle_keys` fences:
 
 - Gate 0A permits only G002;
 - Gate 0B preparation permits only G037, G041, and G042 after a reviewed G002
@@ -1263,7 +1310,8 @@ never converted to completed placeholders. Never use a later-stage profile
 until its
 `receipt_backed_completed_goal_ids` have matching immutable successful-merge
 receipts and the applicable human gate binds those receipts. Never hand-edit
-only the JSON representation.
+only the JSON representation. The empty G038-G040 review projection is not
+signable as an execution profile and cannot be claimed, submitted, or launched.
 
 Although the current implementation profile exposes the future 33-goal
 execution projection for review, it is deliberately incomplete and
@@ -1386,6 +1434,12 @@ for filename, (
         raise SystemExit(f"profile completes an allowed goal: {filename}")
     if not projected_review_goal_ids <= review_only:
         raise SystemExit(f"profile projects a non-review goal: {filename}")
+    if not projected_review_goal_ids.isdisjoint(
+        allowed_goal_ids | completed_goal_ids
+    ):
+        raise SystemExit(f"profile executes/completes a review-only goal: {filename}")
+    if not review_only.isdisjoint(allowed_goal_ids | completed_goal_ids):
+        raise SystemExit(f"profile executes/completes a blocked review goal: {filename}")
     allowed_bundles = {goal_to_bundle[goal_id] for goal_id in allowed_goal_ids}
     review_bundles = {goal_to_bundle[goal_id] for goal_id in review_only}
     if allowed_bundles & review_bundles:
@@ -1403,6 +1457,7 @@ for filename, (
         for task in bundle.get("tasks") or ():
             task_goal_id = str(task.get("goal_id") or "")
             if task_goal_id in review_only:
+                task["status"] = "blocked"
                 task["execution_authority"] = "operator-gate-first/v1"
                 external_authority = True
             if task_goal_id in completed_goal_ids:
@@ -1440,6 +1495,16 @@ for filename, (
         raise SystemExit(f"{filename} lost its native exclusion fence")
     if set(rendered.get("receipt_backed_completed_task_ids") or ()) != completed_task_ids:
         raise SystemExit(f"{filename} lost its receipt-backed task set")
+    if (
+        set(rendered.get("receipt_backed_completed_goal_ids") or ())
+        != completed_goal_ids
+    ):
+        raise SystemExit(f"{filename} lost its receipt-backed goal set")
+    if (
+        set(rendered.get("receipt_backed_completed_task_cids") or ())
+        != completed_task_cids
+    ):
+        raise SystemExit(f"{filename} lost its receipt-backed task CID set")
     rendered_review_status = {
         str(task.get("goal_id") or ""): (
             str(task.get("status") or "").strip().lower().replace("-", "_")
@@ -1658,9 +1723,10 @@ PY
 Assert the remaining three stage profiles through the real lane planner. This
 also proves that the completed-prerequisite statuses were available before the
 native exclusion fence removed their bundles and that the G038-G040 review
-profile plans zero lanes. The current implementation-profile result is only a
-future-projection review; it is not a signable launch plan because three
-required bootstrap receipts do not yet exist:
+profile has zero lanes, zero execution goals, and zero allowed bundles. The
+current implementation-profile result is only a future-projection review; it
+is not a signable launch plan because three required bootstrap receipts do not
+yet exist:
 
 ```bash
 env \
@@ -1694,33 +1760,57 @@ bootstrap = {
     "WORLDCOIN-G041",
     "WORLDCOIN-G042",
 }
+preparation_predecessors = {
+    "WORLDCOIN-G002",
+    "WORLDCOIN-G037",
+    "WORLDCOIN-G041",
+    "WORLDCOIN-G042",
+}
 profiles = {
     "gate0b-preparation.index.duckdb": (
         {"WORLDCOIN-G037", "WORLDCOIN-G041", "WORLDCOIN-G042"},
         set(),
+        {"WORLDCOIN-G002"},
     ),
-    "g038-g040.index.duckdb": (set(), review_only),
-    "implementation.index.duckdb": (schedulable - bootstrap, set()),
+    "g038-g040.index.duckdb": (
+        set(),
+        review_only,
+        preparation_predecessors,
+    ),
+    "implementation.index.duckdb": (
+        schedulable - bootstrap,
+        set(),
+        preparation_predecessors,
+    ),
 }
-for filename, (expected_goals, expected_review_goals) in profiles.items():
+for filename, (
+    expected_execution_goals,
+    expected_review_projection,
+    expected_completed_goals,
+) in profiles.items():
     index_path = base / "launch_profiles" / filename
     profile = read_bundle_index_artifact(index_path)
-    if set(profile.get("execution_goal_ids") or ()) != expected_goals:
-        raise SystemExit(f"{filename} execution metadata drifted")
-    if set(profile.get("review_projection_goal_ids") or ()) != expected_review_goals:
-        raise SystemExit(f"{filename} review metadata drifted")
+    if set(profile.get("execution_goal_ids") or ()) != expected_execution_goals:
+        raise SystemExit(f"{filename} execution-goal metadata drifted")
     if set(profile.get("review_only_goal_ids") or ()) != review_only:
-        raise SystemExit(f"{filename} lost the global blocked review set")
-    review_status = {
-        str(task.get("goal_id") or ""): (
-            str(task.get("status") or "").strip().lower().replace("-", "_")
-        )
+        raise SystemExit(f"{filename} global review-only metadata drifted")
+    if set(profile.get("review_projection_goal_ids") or ()) != expected_review_projection:
+        raise SystemExit(f"{filename} review projection drifted")
+    if (
+        set(profile.get("receipt_backed_completed_goal_ids") or ())
+        != expected_completed_goals
+    ):
+        raise SystemExit(f"{filename} receipt-backed completion metadata drifted")
+    review_statuses = {
+        str(task.get("goal_id") or ""): str(task.get("status") or "").casefold()
         for bundle in (profile.get("bundles") or {}).values()
         for task in bundle.get("tasks") or ()
         if str(task.get("goal_id") or "") in review_only
     }
-    if review_status != {goal_id: "blocked" for goal_id in review_only}:
-        raise SystemExit(f"{filename} contains a non-blocked review task")
+    if review_statuses != {
+        goal_id: "blocked" for goal_id in review_only
+    }:
+        raise SystemExit(f"{filename} changed a blocked review record")
     lanes = plan_bundle_lanes(
         bundle_index_path=index_path,
         repo_root=repo_root,
@@ -1737,18 +1827,23 @@ for filename, (expected_goals, expected_review_goals) in profiles.items():
         for task in (lane.queue_payload or {}).get("tasks") or ()
     }
     observed_bundles = {lane.bundle_key for lane in lanes}
-    if observed_goals != expected_goals:
+    if observed_goals != expected_execution_goals:
         raise SystemExit(
             f"{filename} lane goals differ: "
-            f"missing={sorted(expected_goals - observed_goals)}, "
-            f"unexpected={sorted(observed_goals - expected_goals)}"
+            f"missing={sorted(expected_execution_goals - observed_goals)}, "
+            f"unexpected={sorted(observed_goals - expected_execution_goals)}"
         )
-    if expected_review_goals:
-        if lanes or profile.get("execution_allowlist"):
-            raise SystemExit(f"{filename} blocked review profile planned execution")
+    if expected_review_projection:
+        if (
+            lanes
+            or profile.get("execution_allowlist")
+            or set(profile.get("excluded_bundle_keys") or ())
+            != set((profile.get("bundles") or {}))
+        ):
+            raise SystemExit(f"{filename} blocked review projection became executable")
     elif (
-        len(observed_bundles) != len(lanes)
-        or not lanes
+        not lanes
+        or len(observed_bundles) != len(lanes)
         or not all(lane.task_ids for lane in lanes)
     ):
         raise SystemExit(f"{filename} has duplicate or empty lane projections")
@@ -1756,6 +1851,7 @@ for filename, (expected_goals, expected_review_goals) in profiles.items():
         "profile": filename,
         "lane_count": len(lanes),
         "goal_ids": sorted(observed_goals),
+        "review_projection_goal_ids": sorted(expected_review_projection),
         "claimable_count": sum(lane.claimable for lane in lanes),
     })
 PY
@@ -2059,8 +2155,9 @@ non-signable, and a preparation worker cannot create or satisfy that approval.
 
 The current G038-G040 profile is a non-signable review artifact, not an
 execution profile. The existing Gate 0B-selection verifier must reject it
-because it has no execution goals or allowlist. Verify the immutable preflight
-receipt, then prove that the paired profile plans zero lanes:
+because it has no execution goals or allowlist. It cannot be promoted into a
+launch profile. Verify the immutable preflight receipt, then prove that the
+paired profile plans zero lanes:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 \
@@ -2104,60 +2201,71 @@ python -m ipfs_accelerate_py.agent_supervisor.bundle_supervisor \
 ```
 
 ```bash
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  PYTHONPATH=ipfs_accelerate_py \
 python - <<'PY'
 from pathlib import Path
 import json
 import os
 
+from ipfs_accelerate_py.agent_supervisor.artifact_store import (
+    read_bundle_index_artifact,
+)
+
 repo_root = Path.cwd().resolve()
 base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
 index_path = base / "launch_profiles/g038-g040.index.duckdb"
-profile_path = base / "launch_profiles/g038-g040.index.json"
 manifest_path = base / "gate0b-restricted/dry_run/lane-manifest.json"
-profile = json.loads(profile_path.read_text(encoding="utf-8"))
+profile = read_bundle_index_artifact(index_path)
 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-expected_review_goals = {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
-lanes = manifest.get("lanes")
-if not isinstance(lanes, list):
-    raise SystemExit("restricted dry run omitted lanes")
-observed_goals = {
-    str(task.get("goal_id") or "")
-    for lane in lanes
-    for task in ((lane.get("queue_payload") or {}).get("tasks") or ())
-    if isinstance(task, dict)
+expected_review_goals = {
+    "WORLDCOIN-G038",
+    "WORLDCOIN-G039",
+    "WORLDCOIN-G040",
 }
-expected_index = index_path.relative_to(repo_root).as_posix()
-assert manifest.get("schema") == "ipfs_accelerate_py.agent_supervisor.bundle_supervisor"
-assert manifest.get("bundle_index_path") == expected_index
-assert set(profile.get("execution_goal_ids") or ()) == set()
-assert set(profile.get("execution_allowlist") or ()) == set()
-assert set(profile.get("review_projection_goal_ids") or ()) == expected_review_goals
-assert set(profile.get("excluded_bundle_keys") or ()) == set(
-    (profile.get("bundles") or {}).keys()
-)
-review_status = {
-    str(task.get("goal_id") or ""): (
-        str(task.get("status") or "").strip().lower().replace("-", "_")
-    )
+review_statuses = {
+    str(task.get("goal_id") or ""): str(task.get("status") or "").casefold()
     for bundle in (profile.get("bundles") or {}).values()
     for task in bundle.get("tasks") or ()
     if str(task.get("goal_id") or "") in expected_review_goals
 }
-assert review_status == {goal_id: "blocked" for goal_id in expected_review_goals}
-assert observed_goals == set()
-assert int(manifest.get("planned_count") or 0) == len(lanes) == 0
-assert int(manifest.get("claimable_count") or 0) == 0
-assert int(manifest.get("ready_count") or 0) == 0
-for key in ("started_count", "running_count", "active_worker_count"):
+lanes = manifest.get("lanes")
+if not isinstance(lanes, list):
+    raise SystemExit("blocked review dry run omitted lanes")
+expected_index = index_path.relative_to(repo_root).as_posix()
+assert manifest.get("schema") == "ipfs_accelerate_py.agent_supervisor.bundle_supervisor"
+assert manifest.get("bundle_index_path") == expected_index
+assert set(profile.get("review_only_goal_ids") or ()) == expected_review_goals
+assert set(profile.get("review_projection_goal_ids") or ()) == expected_review_goals
+assert not (profile.get("execution_goal_ids") or [])
+assert not (profile.get("execution_allowlist") or [])
+assert set(profile.get("excluded_bundle_keys") or ()) == set(
+    (profile.get("bundles") or {})
+)
+assert review_statuses == {
+    goal_id: "blocked" for goal_id in expected_review_goals
+}
+assert lanes == []
+for key in (
+    "planned_count",
+    "claimable_count",
+    "ready_count",
+    "started_count",
+    "running_count",
+    "active_worker_count",
+):
     assert int(manifest.get(key) or 0) == 0
 for key in ("started", "launched_task_cids", "active_worker_pids"):
     assert not (manifest.get(key) or [])
-assert not any(lane.get("pid") for lane in lanes)
 print({
     "profile": expected_index,
-    "planned": 0,
     "review_goal_ids": sorted(expected_review_goals),
     "execution_goal_ids": [],
+    "planned": 0,
+    "claimable": 0,
     "started": 0,
 })
 PY
@@ -2165,10 +2273,10 @@ PY
 
 ## No current G038-G040 launch
 
-Do not add `--start`, `--implement`, an execution allowlist, or ready status to
-the blocked review profile. A selection signature, environment flag, or
-agent-authored receipt cannot open it. There is intentionally no launch command
-for G038-G040 in this runbook.
+Do not add `--start`, `--implement`, submit, claim, lease, an execution
+allowlist, or ready status to the blocked review profile. A selection
+signature, environment flag, or agent-authored receipt cannot open it. There
+is intentionally no launch command for G038-G040 in this runbook.
 
 The repository now contains reviewable reference code for the Gate-first
 verify-only launcher, receipt verifier, selection-profile builder, and
@@ -2294,17 +2402,26 @@ Confirm the exact implementation goal/CID/bundle projection and prove that the
 review-only dry run started nothing:
 
 ```bash
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  IPFS_ACCEL_SKIP_CORE=1 \
+  IPFS_KIT_DISABLE=1 \
+  PYTHONPATH=ipfs_accelerate_py \
 python - <<'PY'
 import json
 import os
 from pathlib import Path
+
+from ipfs_accelerate_py.agent_supervisor.artifact_store import (
+    read_bundle_index_artifact,
+)
 
 repo_root = Path.cwd().resolve()
 base = Path(os.environ["WORLD_AID_GENERATED_ROOT"]).resolve()
 profile_path = base / "launch_profiles/implementation.index.json"
 index_path = profile_path.with_suffix(".duckdb")
 manifest_path = base / "dry_run/lane-manifest.json"
-profile = json.loads(profile_path.read_text(encoding="utf-8"))
+profile = read_bundle_index_artifact(index_path)
 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
 review_only = {"WORLDCOIN-G038", "WORLDCOIN-G039", "WORLDCOIN-G040"}
@@ -2354,6 +2471,16 @@ review_status = {
 if review_status != {goal_id: "blocked" for goal_id in review_only}:
     raise SystemExit("implementation profile mutated a blocked review-only task")
 expected_bundles = set(profile.get("execution_allowlist") or ())
+review_bundles = {
+    str(bundle_key)
+    for bundle_key, bundle in (profile.get("bundles") or {}).items()
+    if any(
+        str(task.get("goal_id") or "") in review_only
+        for task in bundle.get("tasks") or ()
+    )
+}
+if expected_bundles & review_bundles:
+    raise SystemExit("implementation allowlist leaks a blocked review bundle")
 expected_records = {
     (
         str(bundle_key),
