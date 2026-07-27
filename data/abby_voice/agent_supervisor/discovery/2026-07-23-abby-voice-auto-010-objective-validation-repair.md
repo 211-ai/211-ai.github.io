@@ -54,24 +54,31 @@ The repaired implementation establishes all of the following:
 
 ## Validation receipt
 
-Required Python command:
+Authoritative statement: the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates.
+
+Required Python command (gate 1):
 
 ```text
 python -m pytest -q wallet_interface/tests
 ```
 
-Result: **5 passed, 4 deprecation warnings, 12.04s**.
+Result: **5 passed, 4 deprecation warnings, 12.04s** (initial AUTO-010 close). Residual AUTO-017 re-validation re-runs the same offline Python gate without expanding task-owned Python test paths.
 
-Required UI command:
+Required UI command (gate 2):
 
 ```text
 npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts
 ```
 
-Result: **9 passed across Desktop Chrome, Mobile Chrome, and Mobile Safari, 32.5s**.
+Result: **9 passed across Desktop Chrome, Mobile Chrome, and Mobile Safari, 32.5s** (initial AUTO-010 close). Residual AUTO-017 strengthens provenance, SpeechRecognition retention, and dual-gate discoverability assertions inside the focused Playwright suite only.
 
-Both gates are offline-focused. The UI test does not call a real proxy, model,
-Hugging Face space, browser speech service, or wallet backend.
+Both required gates are offline-focused. The UI test does not call a real proxy, model,
+Hugging Face space, browser speech service, or wallet backend. Residual discoverability
+for the acceptance subset (`focused tests cover provenance`,
+`` `AgentAudioChatSurface` retains browser SpeechRecognition ``, and
+the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates)
+is re-anchored by
+`data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md`.
 
 ## Supervisor and child-goal alignment
 

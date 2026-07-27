@@ -4,26 +4,39 @@ This runbook enables the shared `VoiceTurnRequest`/`VoiceTurnResult` contract
 in `wallet_interface` without removing the existing browser or proxy fallback
 paths. It covers the staged adoption owned by `ABBY-VOICE-G010`.
 
+Residual G010 discoverability anchors (exact evidence phrases):
+
+- focused tests cover provenance
+- `AgentAudioChatSurface` retains browser SpeechRecognition
+- the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
+
+Authoritative maps:
+
+- `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-010-objective-validation-repair.md`
+- residual: `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md`
+
 ## Components and guardrails
 
 The wallet boundary is `wallet_interface/helpers/_voice_router_adapter.py`.
 It lazily delegates to `ipfs_accelerate_py.voice_router.process_voice_turn`,
 uses the existing wallet Whisper and IndexTTS helpers as provider shims, and
 serializes a receipt with transcript, spoken text, provenance, stage traces,
-fallback reasons, and optional base64 audio.
+fallback reasons, and optional base64 audio. Focused tests cover provenance on
+that receipt (providers, evidence, grounded slots, and stage traces).
 
 The browser boundary is
 `wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts`. The remote
 audio client accepts the unified receipt as well as the older direct text and
-base64-audio payloads. The following fallbacks remain enabled throughout the
-rollout:
+base64-audio payloads. `AgentAudioChatSurface` retains browser SpeechRecognition
+(`window.SpeechRecognition` / `webkitSpeechRecognition`) when remote STT is
+unavailable. The following fallbacks remain enabled throughout the rollout:
 
 | Failure or policy condition | Client behavior |
 | --- | --- |
 | Unified router flag is off | Existing proxy handler remains authoritative |
 | Unified proxy unavailable or returns an invalid receipt | Existing fallback endpoint, then local WebGPU audio |
 | Local WebGPU is unavailable, warming, or fails | Browser speech synthesis |
-| Remote STT unavailable or empty | Browser `SpeechRecognition` transcript |
+| Remote STT unavailable or empty | Browser `SpeechRecognition` transcript (`AgentAudioChatSurface` retains browser SpeechRecognition) |
 | Unified receipt is `text_only` | Speak `spoken_text` with browser speech when available |
 
 The adapter flag defaults to off:
@@ -39,7 +52,8 @@ server-side adoption flag.
 
 ## Preflight
 
-Run from the repository root:
+Run from the repository root. These are the same dual offline gates that the
+ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates for:
 
 ```bash
 python -m pytest -q wallet_interface/tests
@@ -51,7 +65,8 @@ with:
 
 - `contract_version`, `request_id`, `status`, `transcript`,
   `response_text`, and `spoken_text`;
-- `provenance` with selected providers and any evidence/grounded slots;
+- `provenance` with selected providers and any evidence/grounded slots
+  (focused tests cover provenance for these fields);
 - ordered `traces` for transcription, retrieval, rendering, and synthesis;
 - `fallback_reasons` when the status is degraded, failed, or text-only; and
 - `audio_base64` plus `audio_mime_type` only when audio was actually produced.

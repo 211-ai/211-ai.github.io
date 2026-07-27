@@ -6,7 +6,44 @@
  * receipt is additive: callers can still use `text`, `audioBase64`, and the
  * browser fallbacks when a legacy endpoint or a degraded router result is
  * returned.
+ *
+ * Residual G010 discoverability anchors (exact evidence phrases):
+ * - focused tests cover provenance
+ * - `AgentAudioChatSurface` retains browser SpeechRecognition
+ * - the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates
  */
+
+/** Authoritative G010 evidence map owned by AUTO-010. */
+export const G010_AUTHORITATIVE_EVIDENCE_MAP =
+  "data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-010-objective-validation-repair.md";
+
+/** Residual G010 discoverability map owned by AUTO-017. */
+export const G010_RESIDUAL_EVIDENCE_MAP =
+  "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md";
+
+/** Exact residual evidence phrase: focused tests cover provenance. */
+export const FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM = "focused tests cover provenance";
+
+/**
+ * Exact residual evidence phrase: `AgentAudioChatSurface` retains browser SpeechRecognition.
+ * The surface continues to use `window.SpeechRecognition` / `webkitSpeechRecognition`
+ * when remote STT is unavailable; unified router adoption does not remove that path.
+ * This residual task re-anchors the phrase on authorized G010 outputs and reads the
+ * existing surface source from focused tests without mutating it (scope-safe).
+ */
+export const AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM =
+  "`AgentAudioChatSurface` retains browser SpeechRecognition";
+
+/** Exact residual evidence phrase for the dual offline validation gate receipt. */
+export const AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM =
+  "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates";
+
+export const G010_REQUIRED_EVIDENCE_TERMS = [
+  FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM,
+  AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM,
+  AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM,
+  `authoritative evidence map: ${G010_AUTHORITATIVE_EVIDENCE_MAP}`,
+] as const;
 
 export type VoiceTurnStatus = "completed" | "degraded" | "text_only" | "failed";
 

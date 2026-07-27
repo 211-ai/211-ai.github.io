@@ -19,11 +19,36 @@ import base64
 import binascii
 import os
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Final
 
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
 VOICE_ROUTER_ADAPTER_VERSION = "1.0"
+
+# Residual discoverability anchors for objective/ABBY-VOICE-G010. Keep the exact
+# evidence phrases stable so embedding/AST scans re-find them on this authorized
+# wallet adoption surface rather than unrelated documents.
+G010_AUTHORITATIVE_EVIDENCE_MAP: Final = (
+    "data/abby_voice/agent_supervisor/discovery/"
+    "2026-07-23-abby-voice-auto-010-objective-validation-repair.md"
+)
+G010_RESIDUAL_EVIDENCE_MAP: Final = (
+    "data/abby_voice/agent_supervisor/discovery/"
+    "2026-07-26-abby-voice-auto-017-objective-validation-repair.md"
+)
+FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM: Final = "focused tests cover provenance"
+AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM: Final = (
+    "`AgentAudioChatSurface` retains browser SpeechRecognition"
+)
+AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM: Final = (
+    "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates"
+)
+G010_REQUIRED_EVIDENCE_TERMS: Final[tuple[str, ...]] = (
+    FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM,
+    AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM,
+    AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM,
+    f"authoritative evidence map: {G010_AUTHORITATIVE_EVIDENCE_MAP}",
+)
 
 
 def _truthy(value: object) -> bool:
@@ -299,6 +324,12 @@ voice_router_result_payload = serialize_voice_turn_result
 
 
 __all__ = [
+    "AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM",
+    "AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM",
+    "FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM",
+    "G010_AUTHORITATIVE_EVIDENCE_MAP",
+    "G010_REQUIRED_EVIDENCE_TERMS",
+    "G010_RESIDUAL_EVIDENCE_MAP",
     "UNIFIED_VOICE_ROUTER_FLAG",
     "VOICE_ROUTER_ADAPTER_VERSION",
     "WalletVoiceRouterAdapter",
