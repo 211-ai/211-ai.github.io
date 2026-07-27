@@ -1505,7 +1505,7 @@
 
 ## ABBY-VOICE-AUTO-030 ABBY-VOICE: Publish and promote an immutable Hugging Face release
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
