@@ -67,7 +67,17 @@ from ipfs_datasets_py.voice.bucket_audio_inventory import (  # noqa: E402
 )
 from ipfs_datasets_py.voice.bucket_audio_normalize import (  # noqa: E402
     AbbyVoiceBucketAudioNormalizedBundle,
+    BucketAudioMappingMethod,
+    BucketAudioMappingStatus,
+    BucketAudioSubjectKind,
     normalize_bucket_audio_entries,
+)
+from ipfs_datasets_py.voice.bucket_audio_rescue import (  # noqa: E402
+    AsrRescueCandidate,
+    load_text_hash_catalog,
+    preferred_unmapped_for_asr,
+    rescue_unmapped_by_asr,
+    rescue_unmapped_by_text_hash,
 )
 from ipfs_datasets_py.voice.bucket_audio_plan import (  # noqa: E402
     AbbyVoiceBucketAudioPlan,
@@ -1405,6 +1415,188 @@ def write_normalized_artifacts(
     }
 
 
+def _load_normalized_bundle(path: Path) -> AbbyVoiceBucketAudioNormalizedBundle:
+    raw = path.expanduser().resolve()
+    if raw.is_dir():
+        candidate = raw / "bucket-audio-normalized.json"
+        if not candidate.is_file():
+            raise ValueError(f"normalized bundle json missing in {raw}")
+        raw = candidate
+    if raw.is_symlink() or not raw.is_file():
+        raise ValueError(f"normalized bundle is not a regular file: {raw}")
+    payload = json.loads(raw.read_text(encoding="utf-8"))
+    return AbbyVoiceBucketAudioNormalizedBundle.from_dict(payload)
+
+
+def _rescue_command(args: argparse.Namespace) -> int:
+    """Map unmapped linkable audio via BM25/vocab/quarantine hashes, then ASR."""
+
+    bundle = _load_normalized_bundle(args.normalized_dir)
+    catalogs: list[
+        tuple[
+            dict[str, Any],
+            BucketAudioMappingStatus,
+            BucketAudioMappingMethod,
+        ]
+    ] = []
+    if args.bm25_manifest is not None and args.bm25_manifest.exists():
+        catalogs.append(
+            (
+                load_text_hash_catalog(
+                    args.bm25_manifest,
+                    catalog_name="bm25",
+                    subject_kind=BucketAudioSubjectKind.BM25_TERM,
+                ),
+                BucketAudioMappingStatus.MAPPED_TO_VOCABULARY,
+                BucketAudioMappingMethod.BM25_TEXT_HASH,
+            )
+        )
+    if args.vocabulary_manifest is not None and args.vocabulary_manifest.exists():
+        catalogs.append(
+            (
+                load_text_hash_catalog(
+                    args.vocabulary_manifest,
+                    catalog_name="vocabulary",
+                    subject_kind=BucketAudioSubjectKind.VOCABULARY,
+                ),
+                BucketAudioMappingStatus.MAPPED_TO_VOCABULARY,
+                BucketAudioMappingMethod.VOCABULARY_TEXT_HASH,
+            )
+        )
+    if args.include_quarantined_responses and args.response_manifest.exists():
+        catalogs.append(
+            (
+                load_text_hash_catalog(
+                    args.response_manifest,
+                    catalog_name="response-quarantine",
+                    subject_kind=BucketAudioSubjectKind.RESPONSE,
+                ),
+                BucketAudioMappingStatus.MAPPED_TO_QUARANTINED_RESPONSE,
+                BucketAudioMappingMethod.QUARANTINED_SOURCE_HASH,
+            )
+        )
+    if not catalogs:
+        raise ValueError("no rescue catalogs available; pass BM25/vocabulary manifests")
+
+    rescued, hash_stats = rescue_unmapped_by_text_hash(bundle, catalogs)
+    asr_stats: dict[str, Any] = {
+        "requested": bool(args.asr_limit and args.asr_limit > 0),
+        "attempted": 0,
+        "matched": 0,
+        "unmatched": 0,
+        "provider_errors": 0,
+    }
+    if args.asr_limit and args.asr_limit > 0:
+        accelerate_root = REPO_ROOT / "ipfs_accelerate_py"
+        if str(accelerate_root) not in sys.path:
+            sys.path.insert(0, str(accelerate_root))
+        from ipfs_datasets_py.huggingface.bucket import (
+            HuggingFaceBucketHttpClient,
+            HuggingFaceBucketListingObject,
+            HuggingFaceBucketStore,
+        )
+        from ipfs_accelerate_py.voice_router import speech_to_text
+
+        targets = preferred_unmapped_for_asr(rescued, limit=args.asr_limit)
+        token = os.environ.get(args.token_env) if args.token_env else None
+        client = HuggingFaceBucketHttpClient(
+            endpoint=args.endpoint,
+            token=token,
+            timeout_seconds=args.timeout_seconds,
+        )
+        store = HuggingFaceBucketStore(rescued.bucket_id, client=client)
+        cache_root = args.cache_dir.expanduser().resolve()
+        cache_root.mkdir(parents=True, exist_ok=True)
+        asr_candidates: list[AsrRescueCandidate] = []
+        response_texts: dict[str, tuple[str, str]] = {}
+        vocabulary_texts: dict[str, tuple[str, str]] = {}
+        for catalog, _status, _method in catalogs:
+            for entry in catalog.values():
+                if entry.subject_kind is BucketAudioSubjectKind.RESPONSE:
+                    response_texts[entry.subject_id] = (entry.text, entry.text)
+                else:
+                    vocabulary_texts[entry.subject_id] = (entry.text, entry.text)
+        if args.plan_dir is not None:
+            _listing, plan = load_plan_artifacts(args.plan_dir)
+            for alias in plan.aliases:
+                try:
+                    record = alias.source_record
+                    spoken = str(record.get("text") or record.get("spoken_text") or "")
+                except Exception:
+                    spoken = ""
+                if spoken:
+                    response_texts[alias.response_id] = (spoken, spoken)
+
+        for target in targets:
+            asr_stats["attempted"] += 1
+            if not target.xet_hash:
+                asr_stats["provider_errors"] += 1
+                continue
+            dest = (
+                cache_root
+                / "rescue"
+                / f"{target.legacy_text_hash or target.entry_id[-16:]}.audio"
+            )
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                if dest.exists() or dest.is_symlink():
+                    dest.unlink()
+                listing = HuggingFaceBucketListingObject(
+                    path=target.path,
+                    size_bytes=target.size_bytes,
+                    xet_hash=target.xet_hash,
+                    media_type=(
+                        "audio/mpeg"
+                        if (target.media_extension or "mp3") == "mp3"
+                        else "audio/wav"
+                    ),
+                )
+                store.fetch_discovered(listing, dest)
+                audio_bytes = dest.read_bytes()
+                transcript = speech_to_text(
+                    audio_bytes,
+                    model_name=args.asr_model,
+                    language="en",
+                    provider=args.asr_provider,
+                )
+                if not isinstance(transcript, str) or not transcript.strip():
+                    asr_stats["provider_errors"] += 1
+                    continue
+                asr_candidates.append(
+                    AsrRescueCandidate(
+                        path=target.path,
+                        transcript=transcript,
+                        entry_id=target.entry_id,
+                    )
+                )
+            except Exception:
+                asr_stats["provider_errors"] += 1
+                continue
+        if asr_candidates:
+            rescued, asr_apply = rescue_unmapped_by_asr(
+                rescued,
+                asr_candidates,
+                response_texts=response_texts,
+                vocabulary_texts=vocabulary_texts,
+                max_wer_bp=args.max_wer_bp,
+            )
+            asr_stats["matched"] = asr_apply.get("matched", 0)
+            asr_stats["unmatched"] = asr_apply.get("unmatched", 0)
+
+    result = write_normalized_artifacts(
+        output_dir=args.output_dir,
+        normalized=rescued,
+    )
+    result["rescue"] = {
+        "hash_join": hash_stats,
+        "asr": asr_stats,
+        "mapping_status_counts": rescued.summary().get("mapping_status_counts"),
+        "unmapped_linkable_count": rescued.summary().get("unmapped_linkable_count"),
+    }
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+    return 0
+
+
 def _normalize_command(args: argparse.Namespace) -> int:
     """Normalize every object from a sealed plan listing under entry schema v1."""
 
@@ -2030,6 +2222,69 @@ def build_parser() -> argparse.ArgumentParser:
         help="Root for immutable full-bucket normalized entry bundles.",
     )
     normalize.set_defaults(handler=_normalize_command)
+
+    rescue = subparsers.add_parser(
+        "rescue",
+        help=(
+            "Remap unmapped_linkable audio via BM25/vocabulary/quarantine "
+            "textHash joins, optionally ASR-matching the residual set."
+        ),
+    )
+    rescue.add_argument(
+        "--normalized-dir",
+        type=Path,
+        required=True,
+        help="Normalized bundle directory or bucket-audio-normalized.json path.",
+    )
+    rescue.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_NORMALIZED_OUTPUT_DIR,
+    )
+    rescue.add_argument(
+        "--bm25-manifest",
+        type=Path,
+        default=REPO_ROOT / "docs" / "pregenerated_text_audio_bm25_manifest.json",
+    )
+    rescue.add_argument(
+        "--vocabulary-manifest",
+        type=Path,
+        default=REPO_ROOT / "docs" / "pregenerated_text_audio_vocabulary_manifest.json",
+    )
+    rescue.add_argument(
+        "--response-manifest",
+        type=Path,
+        default=DEFAULT_SOURCE,
+    )
+    rescue.add_argument(
+        "--include-quarantined-responses",
+        action="store_true",
+        help="Also bind unmapped hashes that match quarantined response rows.",
+    )
+    rescue.add_argument(
+        "--plan-dir",
+        type=Path,
+        default=None,
+        help="Optional sealed plan for accepted-response ASR match indexes.",
+    )
+    rescue.add_argument(
+        "--asr-limit",
+        type=int,
+        default=0,
+        help="If >0, ASR-rescue this many still-unmapped hashes after hash join.",
+    )
+    rescue.add_argument("--asr-provider", default="huggingface")
+    rescue.add_argument("--asr-model", default="openai/whisper-base.en")
+    rescue.add_argument("--max-wer-bp", type=int, default=2500)
+    rescue.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=DEFAULT_CACHE_DIR / "objects",
+    )
+    rescue.add_argument("--endpoint", default="https://huggingface.co")
+    rescue.add_argument("--token-env", default="HF_TOKEN")
+    rescue.add_argument("--timeout-seconds", type=float, default=120.0)
+    rescue.set_defaults(handler=_rescue_command)
 
     fetch = subparsers.add_parser(
         "fetch",
