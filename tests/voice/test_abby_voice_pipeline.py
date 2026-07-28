@@ -334,6 +334,34 @@ def test_retrieval_failure_is_deterministic_visible_and_still_synthesized(
     assert second_tts.calls[-1][1]["text"] == DEFAULT_GROUNDED_FALLBACK
 
 
+def test_graphrag_miss_uses_fallback_llm_slotted_plan_before_tts() -> None:
+    """Fallback LLM providers must return the same grounded slotted plan shape."""
+
+    primary = RecordingTemplateProvider(plan=None)
+    fallback = RecordingTemplateProvider(
+        plan=_grounded_plan(),
+        provider_name="fallback-llm-slotted-template",
+    )
+    tts = RecordingSpeechProvider("abby-tts")
+
+    result = process_voice_turn(
+        VoiceTurnRequest(transcript="food", request_id="turn-fallback-llm-1"),
+        template_provider=primary,
+        fallback_template_provider=fallback,
+        tts_provider=tts,
+    )
+
+    assert result.status == "degraded"
+    assert result.response_text == "Community Food Network can help. Call 503-555-0111."
+    assert result.provenance.template_provider == "fallback-llm-slotted-template"
+    assert result.provenance.template_id == "food-frame-v2"
+    assert result.provenance.grounded_slots
+    assert "template_retrieval_failed" in _fallback_codes(result)
+    assert "fallback_template_provider_used" in _fallback_codes(result)
+    assert _trace_status(result, "fallback_retrieval") == "succeeded"
+    assert tts.calls[-1][1]["text"] == result.response_text
+
+
 def test_tts_failure_returns_text_only_degradation_without_false_audio() -> None:
     tts = RecordingSpeechProvider(
         "tts-down",

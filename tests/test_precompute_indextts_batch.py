@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import re
 import zipfile
 from collections.abc import Mapping
 from pathlib import Path
@@ -287,6 +288,79 @@ def test_normalize_slot_value_text_keeps_address_digits_spaced_and_ordinals_inta
     assert "nine seven three three zero" in normalized
     assert "fivethreezero" not in normalized
     assert "twoseventh" not in normalized
+
+
+def test_phone_text_normalization_removes_parentheses_and_negative_prone_hyphens() -> None:
+    normalized = precompute.normalize_indextts_spoken_text(
+        "Call (503) 771-7914 ext. 42. Backup: 5-4-1, 9-6-7, 8-6-3-0. "
+        "Other: 5 4 1, 6 8 2, 1 0 0 1. Main: 503, 236, 4580. "
+        "Dots: 503. 988. 338. 7. Commas: 50, 33, 68, 98, 95. Dash: 5 4 1 — 6 8 9 — 3 1 1 1."
+    )
+
+    assert "five zero three, seven seven one, seven nine one four" in normalized
+    assert "extension four two" in normalized
+    assert "five four one, nine six seven, eight six three zero" in normalized
+    assert "five four one, six eight two, one zero zero one" in normalized
+    assert "five zero three, two three six, four five eight zero" in normalized
+    assert "five zero three, nine eight eight, three three eight seven" in normalized
+    assert "five zero three, three six eight, nine eight nine five" in normalized
+    assert "five four one, six eight nine, three one one one" in normalized
+    assert "(" not in normalized
+    assert ")" not in normalized
+    assert "-" not in normalized
+
+
+def test_phone_slot_value_normalization_uses_words_not_punctuation() -> None:
+    normalized = precompute.normalize_slot_value_text("phone", "+1 (503) 555-0100")
+
+    assert normalized == "five zero three, five five five, zero one zero zero"
+    assert "negative" not in normalized
+    assert "(" not in normalized
+    assert "-" not in normalized
+
+
+def test_range_and_parenthetical_normalization_removes_tts_punctuation_traps() -> None:
+    normalized = precompute.normalize_indextts_spoken_text(
+        "Emergency Diaper Closet serves families with kids ages 0–5 (Lane County Diaper Bank). "
+        "The address was rendered as 5-0-thirteenth Street. "
+        "Choose Downtown clinic at 11-32 Southwest thirteenth Avenue or East Burnside clinic at 16-144 East Burnside Street."
+    )
+
+    assert "ages zero to five" in normalized
+    assert "Lane County Diaper Bank" in normalized
+    assert "five zero thirteenth Street" in normalized
+    assert re.search(
+        r"one one three two South(?:west| West) thirteenth Avenue",
+        normalized,
+    )
+    assert "one six one four four East Burnside Street" in normalized
+    assert "(" not in normalized
+    assert ")" not in normalized
+    assert "0–5" not in normalized
+    assert "5-0-thirteenth" not in normalized
+    assert "11-32" not in normalized
+    assert "16-144" not in normalized
+
+
+@pytest.mark.parametrize(
+    "raw_address",
+    (
+        "11-32 Southwest 13th Avenue, Portland, OR 97205",
+        "11-32 SW 13th Ave, Portland, OR 97205",
+    ),
+)
+def test_address_slot_normalization_removes_hyphens_with_abbreviated_tokens(
+    raw_address: str,
+) -> None:
+    normalized = precompute.normalize_slot_value_text("address", raw_address)
+
+    assert re.search(
+        r"one one three two South(?:west| West) thirteenth Avenue",
+        normalized,
+    )
+    assert "11-32" not in normalized
+    assert "-32" not in normalized
+    assert "-" not in normalized
 
 
 def test_batch_audio_references_prefers_generated_file_list() -> None:

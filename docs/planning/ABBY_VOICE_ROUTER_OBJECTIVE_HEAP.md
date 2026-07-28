@@ -901,3 +901,168 @@ rows, supervisor evidence, logs, or ordinary router receipts.
 - Parallel lane: abby-voice-data
 - Conflict policy: prohibit remote writes moves and deletes; only emit a local dry-run plan with checksums counts costs and rollback notes for human approval
 - Gap task: Close the missing objective evidence `ABBY-VOICE-G006 completion receipt` with a narrow, verifiable change.
+
+## ABBY-VOICE-G030 Regenerate queued Abby audio and validate the multi-surface voice runtime
+
+- Status: active
+- Fib priority: 34000
+- Priority: P0
+- Track: voice-regeneration
+- Parents: ABBY-VOICE-G001
+- Depends on: ABBY-VOICE-G015, ABBY-VOICE-G018, ABBY-VOICE-G019, ABBY-VOICE-G020
+- Goal: Regenerate the deterministic phone and address repair queue through the package-owned voice job stack, validate website and telephone multi-turn behavior, and produce an append-only response-DAG candidate for every cache miss.
+- Evidence: endpoint contract probe; deterministic 3908-row regeneration workset; canary regeneration receipt; cache-miss event receipt; append-only response-DAG dry-run candidate; website multi-turn hit/miss report; telephone multi-turn hit/miss report; Whisper round-trip validation; package ownership and thin-wrapper validation
+- Outputs: docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md, ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs, ipfs_datasets_py/ipfs_datasets_py/voice, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, tests/voice, data/abby_voice/agent_supervisor/discovery
+- Validation: python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py
+- Bundle: abby-voice/regeneration-runtime
+- Parallel lane: abby-voice-regeneration
+- Embedding query: Abby voice regeneration queue Hugging Face endpoint cache miss append response DAG website telephone multi-turn hit miss ratio voice_router
+- AST query: process_voice_turn, PrecomputedVoiceAudioResolver, VoiceTTSJob, VoiceJobBridge, AbbyVoiceHFReleaseBuilder, HuggingFaceReleasePublisher
+- Interfaces: Abby IndexTTS endpoint contract, VoiceTurnResult, exact precomputed audio resolver, response DAG append candidate, Hugging Face append-only release dry-run APIs, website voice proxy, telephone voice webhook
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts: tmp_assets/hf-abby-tts-canonical-dataset/metadata/abby_tts_regeneration_queue.jsonl, data/abby_voice/agent_supervisor/discovery
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/voice, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, scripts/precompute_indextts_responses.py, scripts/audit_abby_tts_slot_audio.py, tests/voice
+- Conflict policy: reusable behavior belongs in ipfs_accelerate_py and ipfs_datasets_py; repository scripts and website or telephone adapters stay thin; this local goal stops at deterministic dry-run publication artifacts and never performs a remote Hugging Face mutation
+- Gap task: Implement the regeneration runner, cache-miss response-DAG candidate path, and website and telephone multi-turn evaluation described in the Abby voice regeneration runtime improvement plan.
+- Acceptance gate:
+  1. The current IndexTTS endpoint contract is probed without a remote write and a bounded non-sensitive canary produces a content-addressed audio artifact and provider receipt.
+  2. The 3908-row repair queue is converted into deterministic idempotent work items with retry, resume, quarantine, and Whisper round-trip validation.
+  3. Cache misses emit a deterministic append-only response-DAG candidate and local receipt; G021 remains the sole authority for any remote commit or pointer promotion.
+  4. Website and telephone fixtures execute multi-turn ASR-injected conversations and report exact cache hit, template hit, GraphRAG hit, fallback, and miss ratios.
+  5. Phone and address slots contain no negative markers, spoken parentheses, or address hyphenation, and failed alternatives are selected or marked for regeneration.
+  6. Reusable runtime, job, release, and evaluation behavior is package-owned; repository entry points remain thin compatibility wrappers.
+  7. The declared validation command passes and its result is recorded under data/abby_voice/agent_supervisor/discovery.
+- Child-goal boundary: G030 is the local integration and completion gate for G031 through G035. G021 alone owns an approved remote Hugging Face append, immutable commit verification, and consumer promotion.
+
+## ABBY-VOICE-G031 Build the endpoint-safe Abby regeneration runner
+
+- Status: active
+- Fib priority: 34001
+- Priority: P0
+- Track: voice-regeneration
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G015, ABBY-VOICE-G016, ABBY-VOICE-G018, ABBY-VOICE-G019
+- Goal: Convert the audited repair queue into deterministic idempotent voice jobs and provide a resumable Hugging Face IndexTTS runner with a bounded, explicitly approved live-canary boundary.
+- Evidence: endpoint contract probe; deterministic regeneration workset; retry and resume receipt; fake-provider integration test; quarantine receipt; live-canary dry-run manifest
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs, ipfs_datasets_py/ipfs_datasets_py/voice/regeneration.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, scripts/precompute_indextts_responses.py, tests/voice
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_regeneration.py tests/test_precompute_indextts_batch.py
+- Bundle: abby-voice/regeneration-endpoint
+- Parallel lane: abby-voice-regeneration
+- Embedding query: Abby IndexTTS endpoint regeneration workset retry resume quarantine dry run
+- AST query: VoiceTTSJob, VoiceJobBridge, execute_voice_tts_job, HFSpaceClient
+- Interfaces: IndexTTS endpoint contract, VoiceTTSJob, VoiceJobBridge, provider receipt
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py, ipfs_datasets_py/ipfs_datasets_py/voice/regeneration.py, ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py, scripts/precompute_indextts_responses.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_regeneration.py, tests/test_precompute_indextts_batch.py
+- Conflict policy: no live generation or paid endpoint dispatch occurs without an item and cost bound; retries are idempotent and never overwrite a validated artifact
+- Gap task: Implement and test the package-owned queue runner and leave a deterministic canary dispatch manifest for operator approval.
+
+## ABBY-VOICE-G032 Append cache-miss response-DAG candidates locally
+
+- Status: active
+- Fib priority: 34002
+- Priority: P0
+- Track: voice-data
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G007, ABBY-VOICE-G018, ABBY-VOICE-G019
+- Goal: Turn every validated live-TTS cache miss into a deterministic append-only response-DAG candidate containing its slotted template, vocabulary, lineage, and audio descriptor.
+- Evidence: cache-miss event contract; deterministic response-DAG candidate; slotted template and vocabulary rows; duplicate-event idempotency test; Hugging Face publication dry-run receipt
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_cache_miss.py, ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, tests/voice
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_voice_cache_miss.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_response_dag.py tests/voice/test_abby_voice_pipeline.py
+- Bundle: abby-voice/cache-miss-response-dag
+- Parallel lane: abby-voice-data
+- Embedding query: Abby voice cache miss response DAG slotted template vocabulary append only dry run
+- AST query: process_voice_turn, SlottedResponseIndex, AbbyVoiceHFReleaseBuilder, HuggingFaceReleasePublisher
+- Interfaces: voice cache-miss event, response DAG candidate, slotted template row, vocabulary row, release dry-run
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, ipfs_accelerate_py/ipfs_accelerate_py/voice_cache_miss.py, ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py, ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py, ipfs_accelerate_py/test/test_voice_cache_miss.py, ipfs_datasets_py/tests/unit/voice/test_abby_voice_response_dag.py, tests/voice/test_abby_voice_pipeline.py
+- Conflict policy: the task may materialize local immutable candidates and publication plans only; G021 remains the sole remote commit and promotion authority
+- Gap task: Add the cache-miss event and deterministic package-owned response-DAG candidate path with template and vocabulary reuse.
+
+## ABBY-VOICE-G033 Validate the website multi-turn voice agent
+
+- Status: active
+- Fib priority: 34003
+- Priority: P0
+- Track: voice-web
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G008, ABBY-VOICE-G010, ABBY-VOICE-G019
+- Goal: Exercise the website voice adapter through deterministic multi-turn ASR-injected conversations and verify exact resolver, GraphRAG, fallback, and audio-result behavior.
+- Evidence: website adapter contract; multi-turn browser fixture; ASR injection fixture; exact hit and miss trace; text-only degradation assertion
+- Outputs: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent, wallet_interface/ui/tests, tests/voice
+- Validation: python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py
+- Bundle: abby-voice/web-multiturn-runtime
+- Parallel lane: abby-voice-web
+- Embedding query: Abby website voice adapter browser multi turn ASR injected GraphRAG cache hit miss
+- AST query: process_voice_turn, VoiceTurnResult, voice_router_adapter
+- Interfaces: website voice proxy, VoiceTurnResult, browser audio result
+- Submodules: ipfs_accelerate_py
+- Predicted files: wallet_interface/helpers/_voice_router_adapter.py, wallet_interface/ui/src/features/agent, wallet_interface/ui/tests, tests/voice/test_abby_voice_multiturn_e2e.py
+- Conflict policy: preserve browser speech and text-only fallbacks; fixtures contain no private caller audio or credentials
+- Gap task: Add deterministic website multi-turn integration coverage and emit per-turn resolver traces.
+
+## ABBY-VOICE-G034 Validate the telephone multi-turn support line
+
+- Status: active
+- Fib priority: 34004
+- Priority: P0
+- Track: voice-telephone
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G003, ABBY-VOICE-G008, ABBY-VOICE-G019
+- Goal: Exercise the telephone webhook or SIP adapter through deterministic multi-turn calls while preserving normalized phone and address speech, barge-in state, and text-only escalation behavior.
+- Evidence: telephone adapter contract; multi-turn call fixture; normalized phone and address slot assertions; provider timeout and retry fixture; escalation trace
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice, docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md
+- Validation: python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_safety.py tests/test_precompute_indextts_batch.py
+- Bundle: abby-voice/telephone-multiturn-runtime
+- Parallel lane: abby-voice-telephone
+- Embedding query: Abby telephone support line webhook SIP multi turn phone address normalized speech retry escalation
+- AST query: process_voice_turn, VoiceTurnResult, normalize_indextts_spoken_text
+- Interfaces: telephone voice webhook, SIP or telephony turn state, VoiceTurnResult
+- Submodules: ipfs_accelerate_py
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py, tests/voice/test_abby_voice_multiturn_e2e.py, tests/voice/test_abby_voice_safety.py, tests/test_precompute_indextts_batch.py
+- Conflict policy: use synthetic caller fixtures only; preserve emergency and human-escalation behavior and never persist private caller audio
+- Gap task: Add deterministic telephone multi-turn integration coverage for normalized factual slots and provider failures.
+
+## ABBY-VOICE-G035 Measure multi-turn cache and audio quality
+
+- Status: active
+- Fib priority: 34005
+- Priority: P0
+- Track: voice-evaluation
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G009, ABBY-VOICE-G020, ABBY-VOICE-G033, ABBY-VOICE-G034
+- Goal: Score website and telephone conversation fixtures for exact cache hits, template and GraphRAG hits, fallback misses, response-DAG candidates, and Whisper round-trip quality.
+- Evidence: deterministic conversation corpus; hit and miss metric schema; website and telephone reports; Whisper normalized transcript comparison; threshold gate; privacy-safe failure samples
+- Outputs: tests/voice, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md, data/abby_voice/agent_supervisor/discovery
+- Validation: python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py
+- Bundle: abby-voice/regeneration-evaluation
+- Parallel lane: abby-voice-evaluation
+- Embedding query: Abby multi turn cache hit miss ratio Whisper audio expected text website telephone evaluation
+- AST query: process_voice_turn, VoiceStageTrace, speech_to_text
+- Interfaces: multi-turn evaluation receipt, Whisper transcript comparison, hit and miss metrics
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Predicted files: tests/voice/test_abby_voice_multiturn_e2e.py, tests/voice/test_abby_voice_distributed_pipeline.py, tests/voice/test_abby_voice_safety.py, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md
+- Conflict policy: offline deterministic fixtures are the blocking gate; live endpoint results are optional separately approved evidence and never contain private audio
+- Gap task: Add the shared metric schema, deterministic simulator, and Whisper round-trip quality report for both runtime surfaces.
+
+## ABBY-VOICE-G036 Complete the local Abby regeneration runtime integration gate
+
+- Status: active
+- Fib priority: 34006
+- Priority: P0
+- Track: voice-integration
+- Parents: ABBY-VOICE-G030
+- Depends on: ABBY-VOICE-G031, ABBY-VOICE-G032, ABBY-VOICE-G033, ABBY-VOICE-G034, ABBY-VOICE-G035
+- Goal: Verify current-tree-bound completion receipts for all regeneration runtime subgoals, run the local end-to-end gate, and prove that no remote Hugging Face mutation occurred.
+- Evidence: child completion receipts; end-to-end local validation; website and telephone metric report; Whisper quality report; no-remote-write audit
+- Outputs: docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md
+- Validation: python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py
+- Bundle: abby-voice/regeneration-runtime
+- Parallel lane: abby-voice-regeneration
+- Embedding query: Abby voice regeneration integration completion child receipts website telephone evaluation no remote write
+- AST query: process_voice_turn, VoiceTurnResult, VoiceStageTrace
+- Interfaces: regeneration receipt, response DAG candidate receipt, website multi-turn report, telephone multi-turn report, Whisper quality report
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts: data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md
+- Predicted files: docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md, docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md, data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md
+- Conflict policy: integrate only receipt-backed child outputs; remote Hugging Face mutation remains outside this local completion goal
+- Gap task: Run the final local integration gate after G031 through G035 complete and record the current-tree-bound completion receipt.

@@ -134,6 +134,17 @@ def fetch_entry(
     return dest
 
 
+def _append_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(
+                json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                + "\n"
+            )
+            handle.flush()
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--normalized-dir", type=Path, required=True)
@@ -148,6 +159,20 @@ def main(argv: list[str] | None = None) -> int:
         default=REPO_ROOT / "tmp_assets" / "abby-voice-audio-recovery" / "objects",
     )
     parser.add_argument("--limit", type=int, default=0, help="0 = all preferred BM25 clips")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Resume a prior interrupted batch from its JSONL checkpoints. "
+            "Only rows whose bucket_path remains in the current normalized "
+            "bundle are reused."
+        ),
+    )
+    parser.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="With --resume, discard only prior failed rows and retry them.",
+    )
     parser.add_argument("--asr-open-limit", type=int, default=20, help="Also ASR residual unmapped")
     parser.add_argument("--model", default=os.getenv("IPFS_ACCELERATE_PY_STT_MODEL", "openai/whisper-base"))
     parser.add_argument("--device", default=None)
@@ -184,20 +209,132 @@ def main(argv: list[str] | None = None) -> int:
     cache_root = args.cache_dir.expanduser().resolve()
     cache_root.mkdir(parents=True, exist_ok=True)
 
+    out_root = args.output_dir.expanduser().resolve()
+    out_root.mkdir(parents=True, exist_ok=True)
+    results_path = out_root / "bm25-batch-validation-results.jsonl"
+    preferred_by_path = {entry.path: entry for entry in preferred}
+    completed_paths: set[str] = set()
+    results: list[dict[str, Any]] = []
+    matched = 0
+    mismatched = 0
+    failed = 0
+    retried_failure_count = 0
+    if args.resume and results_path.is_file():
+        for line_number, line in enumerate(
+            results_path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError as exc:
+                raise ValueError(
+                    f"invalid resume checkpoint row {line_number}: {exc}"
+                ) from exc
+            bucket_path = row.get("bucket_path")
+            if not isinstance(bucket_path, str) or bucket_path not in preferred_by_path:
+                raise ValueError(
+                    "resume checkpoint row does not bind a current preferred "
+                    f"bucket path at line {line_number}"
+                )
+            if bucket_path in completed_paths:
+                raise ValueError(
+                    f"duplicate resume checkpoint for {bucket_path!r}"
+                )
+            if args.retry_failed and not row.get("ok"):
+                retried_failure_count += 1
+                continue
+            completed_paths.add(bucket_path)
+            results.append(row)
+            if not row.get("ok"):
+                failed += 1
+            elif row.get("matched"):
+                matched += 1
+            else:
+                mismatched += 1
+        if retried_failure_count:
+            _atomic_write(
+                results_path,
+                b"".join(
+                    json.dumps(
+                        row,
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode("utf-8")
+                    + b"\n"
+                    for row in results
+                ),
+            )
+    elif results_path.exists():
+        # Fresh results file for a new run (cache still resumes fetches).
+        results_path.unlink()
+
+    remaining_preferred = [
+        entry for entry in preferred if entry.path not in completed_paths
+    ]
+    if args.resume:
+        print(
+            json.dumps(
+                {
+                    "resume_checkpoint_count": len(completed_paths),
+                    "retried_failure_count": retried_failure_count,
+                    "remaining_count": len(remaining_preferred),
+                },
+                indent=2,
+            ),
+            flush=True,
+        )
+
     local_paths: list[str] = []
     expected: dict[str, str] = {}
     fetch_errors: list[dict[str, str]] = []
     path_to_entry: dict[str, Any] = {}
-    for index, entry in enumerate(preferred, start=1):
+    cached_hits = 0
+    for index, entry in enumerate(remaining_preferred, start=1):
         try:
-            dest = fetch_entry(store, entry, cache_root)
+            dest = (
+                cache_root
+                / "bm25"
+                / f"{entry.legacy_text_hash}.{(entry.media_extension or 'mp3')}"
+            )
+            if (
+                dest.is_file()
+                and not dest.is_symlink()
+                and dest.stat().st_size == entry.size_bytes
+            ):
+                cached_hits += 1
+            else:
+                dest = fetch_entry(store, entry, cache_root)
             local_paths.append(str(dest))
             expected[str(dest)] = entry.source_text or ""
             path_to_entry[str(dest)] = entry
-            if index % 250 == 0 or index == len(preferred):
-                print(f"fetched {index}/{len(preferred)}", flush=True)
+            if index % 100 == 0 or index == len(remaining_preferred):
+                print(
+                    f"fetched {index}/{len(remaining_preferred)} cached_hits={cached_hits} errors={len(fetch_errors)}",
+                    flush=True,
+                )
         except Exception as exc:
             fetch_errors.append({"path": entry.path, "error": str(exc)[:300]})
+            if index % 100 == 0 or index == len(remaining_preferred):
+                print(
+                    f"fetched {index}/{len(remaining_preferred)} cached_hits={cached_hits} errors={len(fetch_errors)}",
+                    flush=True,
+                )
+
+    print(
+        json.dumps(
+            {
+                "fetch_complete": True,
+                "local_paths": len(local_paths),
+                "resumed_rows": len(completed_paths),
+                "cached_hits": cached_hits,
+                "fetch_errors": len(fetch_errors),
+            },
+            indent=2,
+        ),
+        flush=True,
+    )
 
     session = LocalWhisperBatchSession(
         model_name=args.model,
@@ -205,44 +342,45 @@ def main(argv: list[str] | None = None) -> int:
         language="en",
         provider_name="huggingface",
     )
-    results = []
-    matched = 0
-    mismatched = 0
-    failed = 0
+    pending_rows: list[dict[str, Any]] = []
     for index, item in enumerate(
         session.transcribe_paths(
             local_paths,
             expected_by_path=expected,
             max_wer_bp=args.max_wer_bp,
         ),
-        start=1,
+        start=len(completed_paths) + 1,
     ):
-        results.append(
-            {
-                "path": item.path,
-                "bucket_path": getattr(path_to_entry.get(item.path), "path", None),
-                "legacy_text_hash": getattr(
-                    path_to_entry.get(item.path), "legacy_text_hash", None
-                ),
-                "expected_text": item.expected_text,
-                "transcript": item.transcript,
-                "ok": item.ok,
-                "matched": item.matched,
-                "wer_bp": item.wer_bp,
-                "error": item.error,
-            }
-        )
+        row = {
+            "path": item.path,
+            "bucket_path": getattr(path_to_entry.get(item.path), "path", None),
+            "legacy_text_hash": getattr(
+                path_to_entry.get(item.path), "legacy_text_hash", None
+            ),
+            "expected_text": item.expected_text,
+            "transcript": item.transcript,
+            "ok": item.ok,
+            "matched": item.matched,
+            "wer_bp": item.wer_bp,
+            "error": item.error,
+        }
+        results.append(row)
+        pending_rows.append(row)
         if not item.ok:
             failed += 1
         elif item.matched:
             matched += 1
         else:
             mismatched += 1
-        if index % 250 == 0 or index == len(local_paths):
+        if index % 50 == 0 or index == len(preferred):
+            _append_jsonl(results_path, pending_rows)
+            pending_rows.clear()
             print(
-                f"transcribed {index}/{len(local_paths)} matched={matched} mismatched={mismatched} failed={failed}",
+                f"transcribed {index}/{len(preferred)} matched={matched} mismatched={mismatched} failed={failed}",
                 flush=True,
             )
+    if pending_rows:
+        _append_jsonl(results_path, pending_rows)
 
     # Residual unmapped / asr_unmatched rescue via same warm session.
     open_entries = [
@@ -316,18 +454,21 @@ def main(argv: list[str] | None = None) -> int:
         residual_stats["unmatched"] = apply_stats.get("unmatched", 0)
         residual_stats["propagated"] = apply_stats.get("propagated", 0)
 
-    out_root = args.output_dir.expanduser().resolve()
-    out_root.mkdir(parents=True, exist_ok=True)
     report = {
         "preferred_count": len(preferred),
-        "fetched": len(local_paths),
-        "fetch_errors": fetch_errors,
+        "fetched": len(completed_paths) + len(local_paths),
+        "resumed_rows": len(completed_paths),
+        "retried_failure_count": retried_failure_count,
+        "cached_hits": cached_hits,
+        "fetch_errors": fetch_errors[:50],
+        "fetch_error_count": len(fetch_errors),
         "batch_asr": {
             "matched": matched,
             "mismatched": mismatched,
             "failed": failed,
             "max_wer_bp": args.max_wer_bp,
             "model": args.model,
+            "device": args.device or "auto",
         },
         "residual_asr": residual_stats,
         "final_mapping_status_counts": updated_bundle.summary().get(
@@ -339,17 +480,6 @@ def main(argv: list[str] | None = None) -> int:
     }
     report_path = out_root / "bm25-batch-validation-report.json"
     _atomic_write(report_path, _json_bytes(report))
-    results_path = out_root / "bm25-batch-validation-results.jsonl"
-    _atomic_write(
-        results_path,
-        b"".join(
-            (
-                json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-                + "\n"
-            ).encode("utf-8")
-            for item in results
-        ),
-    )
     # Write updated normalized bundle JSON next to the report.
     bundle_dir = out_root / "normalized-bundle"
     bundle_dir.mkdir(parents=True, exist_ok=True)
@@ -373,7 +503,7 @@ def main(argv: list[str] | None = None) -> int:
         "normalized_bundle_dir": str(bundle_dir),
         "normalized_id": updated_bundle.normalized_id,
     }
-    print(json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2))
+    print(json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
     # Non-zero only when batch validation itself fails hard.
     return 0 if failed < max(1, len(local_paths) // 2) else 3
 

@@ -30,7 +30,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ipfs_accelerate_py.hf_space_inference import HFBucketBackend, HFSpaceClient
+try:
+    from ipfs_accelerate_py.hf_space_inference import HFBucketBackend, HFSpaceClient
+except ModuleNotFoundError:  # pragma: no cover - exercised in lean local test envs
+    class HFBucketBackend:  # type: ignore[no-redef]
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            raise RuntimeError("ipfs_accelerate_py.hf_space_inference is unavailable")
+
+    class HFSpaceClient:  # type: ignore[no-redef]
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            raise RuntimeError("ipfs_accelerate_py.hf_space_inference is unavailable")
 
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
@@ -516,6 +525,19 @@ def _strip_scraped_page_chrome(text: str) -> str:
 
 
 def _normalize_phone_numbers(text: str) -> str:
+    digit_word = {
+        "0": "zero",
+        "1": "one",
+        "2": "two",
+        "3": "three",
+        "4": "four",
+        "5": "five",
+        "6": "six",
+        "7": "seven",
+        "8": "eight",
+        "9": "nine",
+    }
+
     def replace_phone(match: re.Match[str]) -> str:
         digits = re.sub(r"\D", "", match.group(0))
         if len(digits) == 11 and digits.startswith("1"):
@@ -524,10 +546,39 @@ def _normalize_phone_numbers(text: str) -> str:
             return match.group(0)
         return f"{_digits_to_words(digits[:3])}, {_digits_to_words(digits[3:6])}, {_digits_to_words(digits[6:])}"
 
-    return re.sub(
-        r"(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b",
+    normalized = re.sub(
+        r"(?:\+?1[\s,.\-–—]*)?(?:\(\d{3}\)|\d{3})[\s,.\-–—]*\d{3}[\s,.\-–—]*\d{4}\b",
         replace_phone,
         text,
+    )
+
+    def replace_long_digit_run(match: re.Match[str]) -> str:
+        digits = re.sub(r"\D", "", match.group(0))
+        if len(digits) == 11 and digits.startswith("1"):
+            digits = digits[1:]
+        if len(digits) == 10:
+            return f"{_digits_to_words(digits[:3])}, {_digits_to_words(digits[3:6])}, {_digits_to_words(digits[6:])}"
+        return _digits_to_words(digits)
+
+    normalized = re.sub(
+        r"(?<!\d)(?:\d[\s,.;:\-–—]+){6,}\d(?!\d)",
+        replace_long_digit_run,
+        normalized,
+    )
+    normalized = re.sub(
+        r"(?<!\d)(?:\d{1,4}[\s,.;:\-–—]+){2,}\d{1,4}(?!\d)",
+        lambda match: replace_long_digit_run(match)
+        if 7 <= len(re.sub(r"\D", "", match.group(0))) <= 11
+        else match.group(0),
+        normalized,
+    )
+    # Prior generation sometimes emitted already-chunked phone numbers as
+    # digit-by-digit strings with hyphens (``5-0-3, 7-7-1, 7-9-1-4``).  Whisper
+    # can hear the hyphens as "negative"; remove that acoustic trap before TTS.
+    return re.sub(
+        r"(?<!\d)(?:\d\s*[-–—]\s*){2,}\d(?!\d)",
+        lambda match: " ".join(digit_word[char] for char in re.sub(r"\D", "", match.group(0))),
+        normalized,
     )
 
 
@@ -538,6 +589,68 @@ def _normalize_phone_extensions(text: str) -> str:
         text,
         flags=re.IGNORECASE,
     )
+
+
+def _normalize_range_and_parenthetical_punctuation(text: str) -> str:
+    ordinal_word_pattern = (
+        "first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|"
+        "eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|"
+        "seventeenth|eighteenth|nineteenth|twentieth|thirtieth|fortieth|"
+        "fiftieth|sixtieth|seventieth|eightieth|ninetieth|[A-Za-z]+th"
+    )
+    direction_word_pattern = (
+        r"N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.|"
+        r"North|South|East|West|Northeast|Northwest|Southeast|Southwest|"
+        r"North\s+East|North\s+West|South\s+East|South\s+West"
+    )
+    suffix_pattern = "|".join(
+        sorted(
+            (re.escape(value) for value in set(_STREET_SUFFIX_WORDS) | set(_STREET_SUFFIX_WORDS.values())),
+            key=len,
+            reverse=True,
+        )
+    )
+    street_token_pattern = (
+        r"(?:\d{1,3}(?:st|nd|rd|th)?|"
+        r"(?:[A-Za-z]+\s+){0,3}[A-Za-z]+)"
+    )
+
+    def replace_mixed_digit_ordinal(match: re.Match[str]) -> str:
+        digits = re.sub(r"\D", "", match.group("digits"))
+        return f"{_digits_to_words(digits)} {match.group('ordinal')}"
+
+    def replace_address_number_hyphenation(match: re.Match[str]) -> str:
+        return _digits_to_words(re.sub(r"\D", "", match.group("number")))
+
+    normalized = re.sub(
+        r"\b(?P<label>ages?\s+)(?P<start>\d{1,2})\s*[-–—]\s*(?P<end>\d{1,2})\b",
+        lambda match: (
+            f"{match.group('label')}"
+            f"{_number_to_words(int(match.group('start')))} to {_number_to_words(int(match.group('end')))}"
+        ),
+        text,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        rf"(?<!\w)(?P<digits>\d(?:\s*[-–—]\s*\d)+)\s*[-–—]\s*(?P<ordinal>{ordinal_word_pattern})\b",
+        replace_mixed_digit_ordinal,
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        rf"\b(?P<number>\d{{1,5}}(?:\s*[-–—]\s*\d{{1,5}})+)"
+        rf"(?=\s+(?:(?:{direction_word_pattern})\s+)?"
+        rf"(?:{street_token_pattern})\s+(?:{suffix_pattern})\b)",
+        replace_address_number_hyphenation,
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        r"\((?P<content>[^()]*)\)",
+        lambda match: f", {match.group('content').strip()}, " if match.group("content").strip() else " ",
+        normalized,
+    )
+    return normalized
 
 
 def _title_case_program_name(value: str) -> str:
@@ -838,6 +951,7 @@ def normalize_indextts_spoken_text(text: str) -> str:
     spoken = _normalize_urls_for_speech(spoken)
     spoken = _normalize_phone_numbers(spoken)
     spoken = _normalize_phone_extensions(spoken)
+    spoken = _normalize_range_and_parenthetical_punctuation(spoken)
     spoken = _normalize_percentages_and_currency(spoken)
     spoken = _normalize_hours_and_separators(spoken)
     spoken = re.sub(r"\bST\s+(?=[A-Z])", "Saint ", spoken)

@@ -21,6 +21,10 @@ PRECOMPUTE_SCRIPT = REPO_ROOT / "scripts" / "precompute_indextts_responses.py"
 DEFAULT_REPO_ID = os.getenv("ABBY_TTS_HF_REPO_ID", "Publicus/211-abby-tts")
 DEFAULT_REMOTE_PREFIX = "audio/abby-tts/current"
 DEFAULT_STAGE_DIR = REPO_ROOT / "tmp_assets" / "hf-abby-tts-dataset"
+DEFAULT_BUCKET_AUDIO_CACHE_ROOT = REPO_ROOT / "tmp_assets" / "abby-voice-audio-recovery" / "accelerator-artifacts"
+DEFAULT_TEMPLATE_METADATA_PATHS = (
+    REPO_ROOT / "docs" / "phone_dialog_generation" / "slotted_response_dag.json",
+)
 DEFAULT_AUDIO_ROOTS = (
     REPO_ROOT / "wallet_interface" / "ui" / "public" / "assets" / "audio" / "precomputed",
 )
@@ -59,7 +63,22 @@ LIST_FIELDS = (
     "preferredManifestAudioPaths",
     "audioLocalPaths",
     "audioMimeTypes",
+    "bucketAudioPaths",
+    "bucketMappingStatuses",
+    "bucketRecoveryRecordIds",
 )
+BUCKET_RESPONSE_AUDIO_STATUSES = frozenset({"selected_for_response"})
+BUCKET_VOCABULARY_STATUSES = frozenset({"mapped_to_vocabulary", "asr_rescued_vocabulary"})
+DEFAULT_SYNTHESIS_IDENTITY = {
+    "provider": "abby_indextts",
+    "model": "index-tts-v1",
+    "voice": "abby",
+    "provider_version": "1.0.0",
+    "locale": "en-US",
+    "sample_rate_hz": 22050,
+    "channels": 1,
+    "generation_settings": {"temperature": 0.0},
+}
 
 
 def utc_now() -> str:
@@ -96,6 +115,10 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def sha256_full_text(value: str) -> str:
+    return hashlib.sha256(str(value or "").strip().encode("utf-8")).hexdigest()
 
 
 def safe_relative_path(path: Path, root: Path) -> str:
@@ -231,6 +254,11 @@ def initial_record(text_hash: str, raw_id: str = "") -> dict[str, Any]:
         "preferredManifestAudioPaths": [],
         "audioLocalPaths": [],
         "audioMimeTypes": [],
+        "bucketAudioPaths": [],
+        "bucketMappingStatuses": [],
+        "bucketRecoveryRecordIds": [],
+        "bucketXetHashes": [],
+        "bucketRawSha256s": [],
         "priorityScore": 0.0,
         "priorityRank": None,
         "latencyMs": None,
@@ -346,6 +374,185 @@ def scan_audio_files(repo_root: Path, audio_roots: Sequence[Path], records: dict
                 record["preferredMimeType"] = "audio/wav"
 
 
+def load_bucket_recovery_index(path: Path | None) -> dict[str, dict[str, Any]]:
+    if path is None or not path.exists():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    rows = payload.get("records") if isinstance(payload, Mapping) else None
+    if not isinstance(rows, list):
+        return {}
+    index: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, Mapping):
+            continue
+        bucket_path = collapse_text(row.get("bucket_path"))
+        if bucket_path:
+            index[bucket_path] = dict(row)
+    return index
+
+
+def bucket_cache_audio_path(cache_root: Path, raw_sha256: str, extension: str) -> Path | None:
+    raw_sha = collapse_text(raw_sha256).lower()
+    suffix = collapse_text(extension).lower().lstrip(".") or "mp3"
+    if not re.fullmatch(r"[0-9a-f]{64}", raw_sha):
+        return None
+    return cache_root / raw_sha[:2] / f"{raw_sha}.{suffix}"
+
+
+def compact_bucket_row(
+    row: Mapping[str, Any],
+    *,
+    recovery: Mapping[str, Any] | None = None,
+    dataset_record_id: str = "",
+) -> dict[str, Any]:
+    raw_sha256 = collapse_text((recovery or {}).get("raw_sha256"))
+    return {
+        "bucketPath": collapse_text(row.get("path")),
+        "mappingStatus": collapse_text(row.get("mapping_status")),
+        "mappingMethod": collapse_text(row.get("mapping_method")),
+        "objectClass": collapse_text(row.get("object_class")),
+        "mediaExtension": collapse_text(row.get("media_extension")),
+        "mediaType": collapse_text((recovery or {}).get("media_type")),
+        "sizeBytes": int(row.get("size_bytes") or (recovery or {}).get("verified_size_bytes") or 0),
+        "xetHash": collapse_text(row.get("xet_hash")),
+        "rawSha256": raw_sha256,
+        "legacyTextHash": collapse_text(row.get("legacy_text_hash")),
+        "canonicalTextSha256": collapse_text(row.get("canonical_text_sha256")),
+        "responseId": collapse_text(row.get("response_id")),
+        "subjectKind": collapse_text(row.get("subject_kind")),
+        "subjectId": collapse_text(row.get("subject_id")),
+        "sourceText": collapse_text((recovery or {}).get("spoken_text") or row.get("source_text")),
+        "alternateRank": row.get("alternate_rank"),
+        "asrWerBp": row.get("asr_wer_bp"),
+        "datasetRecordId": dataset_record_id,
+        "recoveryRecordId": collapse_text((recovery or {}).get("record_id")),
+        "sourceRef": collapse_text(row.get("source_ref") or (recovery or {}).get("source_ref")),
+    }
+
+
+def merge_bucket_normalized_records(
+    *,
+    repo_root: Path,
+    records: dict[str, dict[str, Any]],
+    normalized_jsonl_path: Path | None,
+    recovery_json_path: Path | None,
+    bucket_audio_cache_root: Path,
+) -> dict[str, Any]:
+    if normalized_jsonl_path is None:
+        return {
+            "bucketRows": [],
+            "vocabularyRows": [],
+            "bucketStatusCounts": {},
+            "bucketSelectedAudioLinkedCount": 0,
+            "bucketSelectedAudioMissingCount": 0,
+            "bucketRecoveryRecordCount": 0,
+        }
+    if not normalized_jsonl_path.exists():
+        raise FileNotFoundError(f"bucket normalized JSONL does not exist: {normalized_jsonl_path}")
+
+    recovery_index = load_bucket_recovery_index(recovery_json_path)
+    bucket_rows: list[dict[str, Any]] = []
+    vocabulary: dict[str, dict[str, Any]] = {}
+    status_counter: Counter[str] = Counter()
+    audio_linked = 0
+    audio_missing = 0
+
+    with normalized_jsonl_path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if not isinstance(row, Mapping) or row.get("object_class") != "response_linkable":
+                continue
+            status = collapse_text(row.get("mapping_status"))
+            status_counter[status] += 1
+            bucket_path = collapse_text(row.get("path"))
+            recovery = recovery_index.get(bucket_path)
+            dataset_record_id = ""
+
+            if status in BUCKET_RESPONSE_AUDIO_STATUSES:
+                text_hash = extract_text_hash(
+                    raw_id=row.get("legacy_text_hash"),
+                    text_hash=row.get("legacy_text_hash"),
+                    text=(recovery or {}).get("spoken_text"),
+                )
+                if not text_hash:
+                    raise ValueError(f"selected bucket row has no text hash at line {line_number}")
+                record = records.setdefault(text_hash, initial_record(text_hash, f"bucket:{bucket_path}"))
+                record["id"] = f"abby-tts-{text_hash}"
+                dataset_record_id = record["id"]
+                spoken_text = collapse_text((recovery or {}).get("spoken_text"))
+                if spoken_text:
+                    record["text"] = spoken_text
+                    merge_list_field(record, "originalTexts", [spoken_text])
+                merge_list_field(record, "manifestIds", [row.get("response_id"), f"bucket:{bucket_path}"])
+                merge_list_field(record, "manifestPaths", [safe_relative_path(normalized_jsonl_path, repo_root)])
+                merge_list_field(record, "manifestKinds", ["bucket-normalized"])
+                merge_list_field(record, "statuses", [status])
+                merge_list_field(record, "sourceTypes", ["bucket.selected_response"])
+                merge_list_field(record, "sourceIds", [row.get("response_id"), row.get("source_id")])
+                merge_list_field(record, "bucketAudioPaths", [bucket_path])
+                merge_list_field(record, "bucketMappingStatuses", [status])
+                merge_list_field(record, "bucketRecoveryRecordIds", [(recovery or {}).get("record_id")])
+                merge_list_field(record, "bucketXetHashes", [row.get("xet_hash")])
+                raw_sha256 = collapse_text((recovery or {}).get("raw_sha256"))
+                merge_list_field(record, "bucketRawSha256s", [raw_sha256])
+                cache_path = bucket_cache_audio_path(
+                    bucket_audio_cache_root,
+                    raw_sha256,
+                    collapse_text(row.get("media_extension")) or "mp3",
+                )
+                if cache_path is not None and cache_path.exists():
+                    relative_cache_path = safe_relative_path(cache_path, repo_root)
+                    merge_list_field(record, "audioLocalPaths", [relative_cache_path])
+                    merge_list_field(record, "preferredManifestAudioPaths", [relative_cache_path])
+                    merge_list_field(record, "audioMimeTypes", [(recovery or {}).get("media_type") or "audio/mpeg"])
+                    if not record.get("preferredMimeType"):
+                        record["preferredMimeType"] = (recovery or {}).get("media_type") or "audio/mpeg"
+                    audio_linked += 1
+                else:
+                    audio_missing += 1
+
+            if status in BUCKET_VOCABULARY_STATUSES:
+                canonical_text_sha = collapse_text(row.get("canonical_text_sha256"))
+                vocab_id = collapse_text(row.get("subject_id")) or (
+                    f"abby-tts-vocab-{canonical_text_sha[:20]}" if canonical_text_sha else f"abby-tts-vocab-unresolved-{line_number}"
+                )
+                vocab_row = vocabulary.setdefault(
+                    vocab_id,
+                    {
+                        "id": vocab_id,
+                        "subjectKind": collapse_text(row.get("subject_kind")) or "vocabulary",
+                        "text": collapse_text(row.get("source_text")),
+                        "canonicalTextSha256": canonical_text_sha,
+                        "legacyTextHashes": [],
+                        "bucketAudioPaths": [],
+                        "mappingStatuses": [],
+                        "mappingMethods": [],
+                        "xetHashes": [],
+                        "asrWerBp": row.get("asr_wer_bp"),
+                    },
+                )
+                if not vocab_row.get("text") and collapse_text(row.get("source_text")):
+                    vocab_row["text"] = collapse_text(row.get("source_text"))
+                merge_list_field(vocab_row, "legacyTextHashes", [row.get("legacy_text_hash")])
+                merge_list_field(vocab_row, "bucketAudioPaths", [bucket_path])
+                merge_list_field(vocab_row, "mappingStatuses", [status])
+                merge_list_field(vocab_row, "mappingMethods", [row.get("mapping_method")])
+                merge_list_field(vocab_row, "xetHashes", [row.get("xet_hash")])
+
+            bucket_rows.append(compact_bucket_row(row, recovery=recovery, dataset_record_id=dataset_record_id))
+
+    return {
+        "bucketRows": bucket_rows,
+        "vocabularyRows": sorted(vocabulary.values(), key=lambda item: item["id"]),
+        "bucketStatusCounts": dict(sorted(status_counter.items())),
+        "bucketSelectedAudioLinkedCount": audio_linked,
+        "bucketSelectedAudioMissingCount": audio_missing,
+        "bucketRecoveryRecordCount": len(recovery_index),
+    }
+
+
 def resolve_existing_audio_paths(repo_root: Path, values: Iterable[Any]) -> list[Path]:
     resolved: list[Path] = []
     seen: set[Path] = set()
@@ -416,6 +623,64 @@ def write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> Path:
         for row in rows:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
     return path
+
+
+def write_template_metadata(stage_dir: Path, template_paths: Sequence[Path]) -> dict[str, Any]:
+    response_frame_count = 0
+    intent_count = 0
+    copied: list[str] = []
+    for template_path in template_paths:
+        if not template_path.exists() or not template_path.is_file():
+            continue
+        payload = json.loads(template_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, Mapping):
+            continue
+        nodes = payload.get("nodes") if isinstance(payload.get("nodes"), Mapping) else {}
+        response_frames = nodes.get("responseFrames") if isinstance(nodes, Mapping) else []
+        intents = nodes.get("intents") if isinstance(nodes, Mapping) else []
+        if isinstance(response_frames, list):
+            compact_frames = []
+            for item in response_frames:
+                if not isinstance(item, Mapping):
+                    continue
+                compact_frames.append(
+                    {
+                        "id": item.get("id"),
+                        "type": item.get("type"),
+                        "responseSignature": item.get("responseSignature"),
+                        "reuseCount": item.get("reuseCount"),
+                        "routes": item.get("routes") if isinstance(item.get("routes"), Mapping) else {},
+                        "responseSlotKinds": item.get("responseSlotKinds") if isinstance(item.get("responseSlotKinds"), Mapping) else {},
+                        "recordIds": item.get("recordIds") or [],
+                        "evidenceDocIds": item.get("evidenceDocIds") or [],
+                    }
+                )
+            write_jsonl(stage_dir / "metadata" / "abby_tts_slotted_response_frames.jsonl", compact_frames)
+            response_frame_count += len(compact_frames)
+        if isinstance(intents, list):
+            compact_intents = []
+            for item in intents:
+                if not isinstance(item, Mapping):
+                    continue
+                compact_intents.append(
+                    {
+                        "id": item.get("id"),
+                        "type": item.get("type"),
+                        "canonicalQueryTemplate": item.get("canonicalQueryTemplate"),
+                        "reuseCount": item.get("reuseCount"),
+                        "routes": item.get("routes") if isinstance(item.get("routes"), Mapping) else {},
+                        "recordIds": item.get("recordIds") or [],
+                    }
+                )
+            write_jsonl(stage_dir / "metadata" / "abby_tts_slotted_intents.jsonl", compact_intents)
+            intent_count += len(compact_intents)
+        copied.append(template_path.name)
+    return {
+        "templateSourceCount": len(copied),
+        "slottedResponseFrameCount": response_frame_count,
+        "slottedIntentCount": intent_count,
+        "templateSources": copied,
+    }
 
 
 def flat_parquet_rows(records: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -548,6 +813,47 @@ def build_runtime_manifest(records: Sequence[Mapping[str, Any]]) -> dict[str, An
     }
 
 
+def build_precomputed_audio_resolver_rows(records: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for record in records:
+        if not record.get("audioAvailable"):
+            continue
+        spoken_text = collapse_text(record.get("text"))
+        content_sha256 = collapse_text(record.get("audioSha256")).lower()
+        if not spoken_text or not re.fullmatch(r"[0-9a-f]{64}", content_sha256):
+            continue
+        mime_type = collapse_text(record.get("preferredMimeType")) or "audio/mpeg"
+        codec = "mp3" if mime_type == "audio/mpeg" else mime_type.split("/")[-1]
+        identity = {**DEFAULT_SYNTHESIS_IDENTITY, "codec": codec}
+        response_ids = [
+            value
+            for value in (record.get("sourceIds") or []) + (record.get("manifestIds") or [])
+            if str(value).startswith("response-")
+        ]
+        rows.append(
+            {
+                "audio_id": record.get("id"),
+                "spoken_text": spoken_text,
+                "text_sha256": sha256_full_text(spoken_text),
+                "content_sha256": content_sha256,
+                "uri": record.get("datasetAudioUrl") or "",
+                "mime_type": mime_type,
+                "byte_length": int(record.get("audioBytes") or 0),
+                "template_id": (record.get("slottedResponseFrameIds") or [None])[0],
+                "response_id": response_ids[0] if response_ids else None,
+                **identity,
+                "metadata": {
+                    "dataset_audio_path": record.get("datasetAudioPath") or "",
+                    "bucket_audio_paths": record.get("bucketAudioPaths") or [],
+                    "routes": record.get("routes") or [],
+                    "source_types": record.get("sourceTypes") or [],
+                },
+            }
+        )
+    rows.sort(key=lambda item: str(item.get("audio_id") or ""))
+    return rows
+
+
 def render_dataset_card(summary: Mapping[str, Any]) -> str:
     return "\n".join(
         [
@@ -569,7 +875,12 @@ def render_dataset_card(summary: Mapping[str, Any]) -> str:
             "",
             "- `audio/`: canonical audio objects named by `abby-tts-{textHash}`.",
             "- `metadata/abby_tts_runtime_manifest.json`: browser-sized audio-backed manifest for Abby prerender lookup.",
+            "- `metadata/abby_tts_precomputed_audio_resolver.jsonl`: exact-match rows for `voice_router` precomputed audio resolution.",
             "- `metadata/abby_tts_responses.jsonl`: full-fidelity searchable response records.",
+            "- `metadata/abby_tts_bucket_audio_objects.jsonl`: normalized Hugging Face bucket audio objects, including selected, alternate, vocabulary, quarantine, and unresolved rows.",
+            "- `metadata/abby_tts_vocabulary.jsonl`: reusable vocabulary clips and terms recovered from hash joins and ASR.",
+            "- `metadata/abby_tts_slotted_response_frames.jsonl`: compact slotted response-frame templates for future generated answers.",
+            "- `metadata/abby_tts_slotted_intents.jsonl`: compact slotted intent query templates for GraphRAG retrieval.",
             "- `metadata/abby_tts_responses.parquet`: flattened table for fast filtering when pandas/pyarrow is available.",
             "- `metadata/abby_tts_query_index.json`: exact-match indexes by text hash, route, tags, source type, status, and manifest.",
             "- `metadata/summary.json`: aggregate counts and source coverage.",
@@ -580,6 +891,10 @@ def render_dataset_card(summary: Mapping[str, Any]) -> str:
             f"- Records: {summary.get('recordCount', 0)}",
             f"- Audio-backed records: {summary.get('audioAvailableCount', 0)}",
             f"- Planned-only records: {summary.get('plannedOnlyCount', 0)}",
+            f"- Bucket linkable objects: {len(summary.get('bucketRows', [])) if isinstance(summary.get('bucketRows'), list) else sum((summary.get('bucketStatusCounts') or {}).values())}",
+            f"- Reusable vocabulary rows: {len(summary.get('vocabularyRows', [])) if isinstance(summary.get('vocabularyRows'), list) else summary.get('bucketStatusCounts', {}).get('mapped_to_vocabulary', 0) + summary.get('bucketStatusCounts', {}).get('asr_rescued_vocabulary', 0) if isinstance(summary.get('bucketStatusCounts'), Mapping) else 0}",
+            f"- Slotted response frames: {summary.get('slottedResponseFrameCount', 0)}",
+            f"- Exact precomputed resolver rows: {summary.get('precomputedAudioResolverRowCount', 0)}",
             f"- Manifest files copied: {summary.get('manifestCount', 0)}",
             "",
             "## Core Fields",
@@ -616,9 +931,20 @@ def stage_abby_tts_dataset(
     repo_id: str,
     remote_prefix: str,
     write_parquet_files: bool,
+    bucket_normalized_jsonl_path: Path | None = None,
+    bucket_recovery_json_path: Path | None = None,
+    bucket_audio_cache_root: Path | None = None,
+    template_metadata_paths: Sequence[Path] = (),
 ) -> dict[str, Any]:
     records = load_manifest_records(repo_root, manifest_paths)
     scan_audio_files(repo_root, audio_roots, records)
+    bucket_result = merge_bucket_normalized_records(
+        repo_root=repo_root,
+        records=records,
+        normalized_jsonl_path=bucket_normalized_jsonl_path,
+        recovery_json_path=bucket_recovery_json_path,
+        bucket_audio_cache_root=bucket_audio_cache_root or DEFAULT_BUCKET_AUDIO_CACHE_ROOT,
+    )
 
     if stage_dir.exists():
         shutil.rmtree(stage_dir)
@@ -664,10 +990,18 @@ def stage_abby_tts_dataset(
         "audioRootCount": len(audio_roots),
         "sourceTypeCounts": dict(sorted(source_type_counter.items())),
         "manifestRecordCounts": dict(sorted(manifest_counter.items())),
+        **{key: value for key, value in bucket_result.items() if key not in {"bucketRows", "vocabularyRows"}},
     }
     runtime_manifest = build_runtime_manifest(record_rows)
+    precomputed_audio_rows = build_precomputed_audio_resolver_rows(record_rows)
+    summary["precomputedAudioResolverRowCount"] = len(precomputed_audio_rows)
 
     write_jsonl(stage_dir / "metadata" / "abby_tts_responses.jsonl", record_rows)
+    write_jsonl(stage_dir / "metadata" / "abby_tts_bucket_audio_objects.jsonl", bucket_result["bucketRows"])
+    write_jsonl(stage_dir / "metadata" / "abby_tts_vocabulary.jsonl", bucket_result["vocabularyRows"])
+    write_jsonl(stage_dir / "metadata" / "abby_tts_precomputed_audio_resolver.jsonl", precomputed_audio_rows)
+    template_result = write_template_metadata(stage_dir, template_metadata_paths)
+    summary.update(template_result)
     parquet_path = write_parquet(stage_dir / "metadata" / "abby_tts_responses.parquet", record_rows) if write_parquet_files else None
     write_json(stage_dir / "metadata" / "abby_tts_runtime_manifest.json", runtime_manifest)
     write_json(stage_dir / "metadata" / "abby_tts_query_index.json", build_query_index(record_rows))
@@ -722,6 +1056,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--manifest-glob", action="append", dest="manifest_globs", default=[])
     parser.add_argument("--provenance-glob", action="append", dest="provenance_globs", default=[])
     parser.add_argument("--audio-root", type=Path, action="append", dest="audio_roots", default=[])
+    parser.add_argument("--bucket-normalized-jsonl", type=Path)
+    parser.add_argument("--bucket-recovery-json", type=Path)
+    parser.add_argument("--bucket-audio-cache-root", type=Path, default=DEFAULT_BUCKET_AUDIO_CACHE_ROOT)
+    parser.add_argument("--template-metadata", type=Path, action="append", dest="template_metadata_paths", default=[])
     parser.add_argument("--skip-parquet", action="store_true")
     parser.add_argument("--upload", action="store_true")
     parser.add_argument("--force-upload", action="store_true")
@@ -748,6 +1086,10 @@ def main() -> None:
         repo_id=args.repo_id,
         remote_prefix=args.remote_prefix,
         write_parquet_files=not bool(args.skip_parquet),
+        bucket_normalized_jsonl_path=args.bucket_normalized_jsonl,
+        bucket_recovery_json_path=args.bucket_recovery_json,
+        bucket_audio_cache_root=args.bucket_audio_cache_root,
+        template_metadata_paths=args.template_metadata_paths or list(DEFAULT_TEMPLATE_METADATA_PATHS),
     )
     payload: dict[str, Any] = {"stage": stage_result}
     if args.upload or args.force_upload:
