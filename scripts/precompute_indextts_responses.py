@@ -1735,6 +1735,209 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
     return summary
 
 
+def probe_indextts_endpoint_contract(
+    *,
+    client: Any | None = None,
+    config: Mapping[str, Any] | None = None,
+    expected_api_name: str = "/gen_single",
+    expected_fn_index: int = 6,
+    expected_input_count: int = 24,
+    require_match: bool = True,
+) -> dict[str, Any]:
+    """Return a canonical receipt for a read-only IndexTTS config probe.
+
+    Only ``get_config`` is invoked.  The receipt contains a digest of the
+    public config instead of the config or headers themselves, and exact API
+    name, function index, and input arity drift is rejected by default.
+    """
+
+    if (
+        isinstance(expected_fn_index, bool)
+        or not isinstance(expected_fn_index, int)
+        or expected_fn_index < 0
+    ):
+        raise ValueError("expected_fn_index must be a non-negative integer")
+    if (
+        isinstance(expected_input_count, bool)
+        or not isinstance(expected_input_count, int)
+        or expected_input_count <= 0
+    ):
+        raise ValueError("expected_input_count must be a positive integer")
+    normalized_expected_api = "/" + str(expected_api_name or "").strip().lstrip("/")
+    if normalized_expected_api == "/":
+        raise ValueError("expected_api_name is required")
+
+    active_client = client
+    if config is None:
+        active_client = active_client or indextts_space_client()
+        observed_config = active_client.get_config()
+    else:
+        observed_config = config
+    if not isinstance(observed_config, Mapping):
+        raise ValueError("IndexTTS config probe did not return a mapping")
+
+    dependencies = observed_config.get("dependencies")
+    if not isinstance(dependencies, list):
+        dependencies = []
+    observed_dependency: Mapping[str, Any] | None = None
+    registered_api_names: list[str] = []
+    for dependency in dependencies:
+        if not isinstance(dependency, Mapping):
+            continue
+        raw_api_name = dependency.get("api_name")
+        if not isinstance(raw_api_name, str) or not raw_api_name.strip():
+            continue
+        api_name = "/" + raw_api_name.strip().lstrip("/")
+        registered_api_names.append(api_name)
+        if api_name == normalized_expected_api:
+            observed_dependency = dependency
+
+    observed_fn_index: int | None = None
+    observed_input_count: int | None = None
+    if observed_dependency is not None:
+        raw_id = observed_dependency.get("id")
+        if isinstance(raw_id, int) and not isinstance(raw_id, bool):
+            observed_fn_index = raw_id
+        elif isinstance(raw_id, str) and raw_id.strip().isdigit():
+            observed_fn_index = int(raw_id.strip())
+        inputs = observed_dependency.get("inputs")
+        if isinstance(inputs, list):
+            observed_input_count = len(inputs)
+
+    drift_reasons: list[str] = []
+    if observed_dependency is None:
+        drift_reasons.append("api_name_not_registered")
+    if observed_fn_index != expected_fn_index:
+        drift_reasons.append("function_index_mismatch")
+    if observed_input_count != expected_input_count:
+        drift_reasons.append("input_count_mismatch")
+
+    api_names = sorted(set(registered_api_names))
+    batch_registered = "/gen_batch" in api_names
+    batch_upload_registered = "/gen_batch_with_upload" in api_names
+    result_upload_registered = any(
+        name in api_names
+        for name in (
+            "/upload_generated_results",
+            "/maybe_auto_upload_generated_results",
+        )
+    )
+    if batch_upload_registered and result_upload_registered:
+        recommended_mode = "gen_batch_with_upload"
+    elif batch_registered:
+        recommended_mode = "gen_batch-local-sync-fallback"
+    else:
+        recommended_mode = "parallel-gen-single"
+
+    canonical_config = json.dumps(
+        observed_config,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    endpoint_url = str(
+        getattr(active_client, "space_url", "") if active_client is not None else ""
+    ).strip().rstrip("/") or str(
+        indextts_base_url()
+    ).strip().rstrip("/")
+    identity = {
+        "api_name": normalized_expected_api,
+        "config_sha256": hashlib.sha256(canonical_config).hexdigest(),
+        "endpoint_url": endpoint_url,
+        "function_index": observed_fn_index,
+        "generation_request_count": 0,
+        "input_count": observed_input_count,
+        "read_only": True,
+        "recommended_mode": recommended_mode,
+        "schema_version": "abby_voice_endpoint_contract_probe_v1",
+        "upload_request_count": 0,
+    }
+    contract_id = (
+        "abby-voice-endpoint-contract:sha256:"
+        + hashlib.sha256(
+            json.dumps(
+                identity,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest()
+    )
+    receipt = {
+        **identity,
+        "compatible": not drift_reasons,
+        "contract_id": contract_id,
+        "drift_reasons": drift_reasons,
+        "expected": {
+            "api_name": normalized_expected_api,
+            "function_index": expected_fn_index,
+            "input_count": expected_input_count,
+        },
+        "probe_method": "GET config",
+        "registered_api_names": api_names,
+    }
+    if require_match and drift_reasons:
+        raise RuntimeError(
+            "IndexTTS endpoint contract drift: " + ", ".join(drift_reasons)
+        )
+    return receipt
+
+
+def build_canary_dispatch_manifest(
+    regeneration_plan: Any,
+    endpoint_contract: Mapping[str, Any],
+    *,
+    max_items: int = 12,
+    max_attempts_per_item: int = 2,
+    max_provider_requests: int | None = None,
+    cost_microusd_per_request: int = 1,
+    max_cost_microusd: int | None = None,
+) -> dict[str, Any]:
+    """Adapt a package regeneration plan to its canonical canary manifest.
+
+    This thin wrapper never constructs a provider or queue.  Canonical TTS task
+    IDs, workset lineage, ordering, limits, and manifest identity are all owned
+    by the two packages rather than duplicated in this CLI.
+    """
+
+    from ipfs_accelerate_py.voice_jobs.regeneration import (
+        RegenerationEndpointContract,
+        RegenerationRunnerPolicy,
+    )
+    from ipfs_datasets_py.voice.regeneration import AbbyVoiceRegenerationPlan
+
+    if not isinstance(regeneration_plan, AbbyVoiceRegenerationPlan):
+        raise TypeError("regeneration_plan must be AbbyVoiceRegenerationPlan")
+    request_bound = (
+        max_items * max_attempts_per_item
+        if max_provider_requests is None
+        else max_provider_requests
+    )
+    cost_bound = (
+        request_bound * cost_microusd_per_request
+        if max_cost_microusd is None
+        else max_cost_microusd
+    )
+    if endpoint_contract.get("compatible") is not True:
+        raise ValueError("canary requires a compatible endpoint contract receipt")
+    contract = RegenerationEndpointContract.from_mapping(endpoint_contract)
+    policy = RegenerationRunnerPolicy(
+        max_items=max_items,
+        max_attempts_per_item=max_attempts_per_item,
+        max_provider_requests=request_bound,
+        cost_microusd_per_request=cost_microusd_per_request,
+        max_cost_microusd=cost_bound,
+    )
+    manifest = regeneration_plan.canary_dispatch_manifest(
+        endpoint_contract=contract,
+        size=max_items,
+        runner_policy=policy,
+    )
+    return manifest.to_dict()
+
+
 def ensure_upload_capable_batch_contract(config: Mapping[str, Any], single_fn_index: int | None = None) -> dict[str, Any]:
     summary = indextts_contract_summary(config, single_fn_index)
     if summary.get("remoteBucketPipelineReady"):
@@ -2731,6 +2934,34 @@ def write_progress(path: Path | None, entries: list[dict[str, Any]], total: int,
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def write_json_atomic(path: Path, payload: Mapping[str, Any]) -> None:
+    """Atomically replace one local JSON receipt."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(
+                payload,
+                handle,
+                ensure_ascii=False,
+                sort_keys=True,
+                indent=2,
+                allow_nan=False,
+            )
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -2826,6 +3057,26 @@ def parse_args() -> argparse.Namespace:
         help="Fetch the live IndexTTS Gradio config, print the detected single/batch contract summary, and exit.",
     )
     parser.add_argument(
+        "--regeneration-plan",
+        type=Path,
+        default=None,
+        help="Canonical package-owned regeneration plan used with --canary-dispatch-manifest.",
+    )
+    parser.add_argument(
+        "--canary-dispatch-manifest",
+        type=Path,
+        default=None,
+        help="Write a bounded no-dispatch canary manifest and exit after a read-only contract probe.",
+    )
+    parser.add_argument("--canary-size", type=int, default=12)
+    parser.add_argument("--canary-max-attempts-per-item", type=int, default=2)
+    parser.add_argument("--canary-max-provider-requests", type=int, default=None)
+    parser.add_argument("--canary-cost-microusd-per-request", type=int, default=1)
+    parser.add_argument("--canary-max-cost-microusd", type=int, default=None)
+    parser.add_argument("--expected-single-api-name", default="/gen_single")
+    parser.add_argument("--expected-single-fn-index", type=int, default=6)
+    parser.add_argument("--expected-single-input-count", type=int, default=24)
+    parser.add_argument(
         "--bucket-uri",
         default=os.getenv("WALLET_INDEXTTS_BUCKET_URI", "").strip(),
         help="If set, sync generated audio to <bucket-uri>/audio and local manifests to <bucket-uri>/metadata using the hf CLI.",
@@ -2863,12 +3114,42 @@ def main() -> None:
     if args.print_indextts_contract:
         load_secret_env()
         print(f"IndexTTS auth: {describe_indextts_auth()}")
-        config = indextts_config()
-        fn_index = indextts_fn_index(config)
-        summary = indextts_contract_summary(config, fn_index)
-        print(json.dumps(summary, indent=2))
+        summary = probe_indextts_endpoint_contract(
+            expected_api_name=args.expected_single_api_name,
+            expected_fn_index=args.expected_single_fn_index,
+            expected_input_count=args.expected_single_input_count,
+        )
+        print(json.dumps(summary, indent=2, sort_keys=True))
         if args.require_upload_capable_batch:
+            config = indextts_config()
+            fn_index = indextts_fn_index(config)
             ensure_upload_capable_batch_contract(config, fn_index)
+        return
+    if args.canary_dispatch_manifest is not None:
+        if args.regeneration_plan is None:
+            raise ValueError(
+                "--canary-dispatch-manifest requires --regeneration-plan"
+            )
+        from ipfs_datasets_py.voice.regeneration import read_regeneration_plan
+
+        load_secret_env()
+        endpoint_contract = probe_indextts_endpoint_contract(
+            expected_api_name=args.expected_single_api_name,
+            expected_fn_index=args.expected_single_fn_index,
+            expected_input_count=args.expected_single_input_count,
+        )
+        plan = read_regeneration_plan(args.regeneration_plan)
+        canary_manifest = build_canary_dispatch_manifest(
+            plan,
+            endpoint_contract,
+            max_items=args.canary_size,
+            max_attempts_per_item=args.canary_max_attempts_per_item,
+            max_provider_requests=args.canary_max_provider_requests,
+            cost_microusd_per_request=args.canary_cost_microusd_per_request,
+            max_cost_microusd=args.canary_max_cost_microusd,
+        )
+        write_json_atomic(args.canary_dispatch_manifest, canary_manifest)
+        print(f"Wrote {args.canary_dispatch_manifest}")
         return
     if args.response_manifest is not None:
         responses = load_audio_responses_from_manifest(
