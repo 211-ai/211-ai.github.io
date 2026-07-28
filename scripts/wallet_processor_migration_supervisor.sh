@@ -92,11 +92,45 @@ daemon_pid_file_for() {
   printf '%s/%s_managed_daemon.pid\n' "${state_dir}" "${state_prefix}"
 }
 
+supervisor_status_file_for() {
+  local state_dir="$1"
+  local state_prefix="$2"
+  printf '%s/%s_supervisor_status.json\n' "${state_dir}" "${state_prefix}"
+}
+
 read_live_pid() {
   local path="$1"
   local pid=""
   if [[ -f "${path}" ]]; then
     pid="$(tr -cd '0-9' < "${path}")"
+  fi
+  if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
+    printf '%s\n' "${pid}"
+    return 0
+  fi
+  return 1
+}
+
+read_live_supervisor_pid() {
+  local state_dir="$1"
+  local state_prefix="$2"
+  local pid_path
+  local status_path
+  local pid=""
+
+  pid_path="$(pid_file_for "${state_dir}" "${state_prefix}")"
+  if pid="$(read_live_pid "${pid_path}")"; then
+    printf '%s\n' "${pid}"
+    return 0
+  fi
+
+  status_path="$(supervisor_status_file_for "${state_dir}" "${state_prefix}")"
+  if [[ -f "${status_path}" ]]; then
+    pid="$(
+      sed -n \
+        's/^[[:space:]]*"supervisor_pid":[[:space:]]*\([0-9][0-9]*\),\{0,1\}[[:space:]]*$/\1/p' \
+        "${status_path}" | head -n 1
+    )"
   fi
   if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
     printf '%s\n' "${pid}"
@@ -199,11 +233,9 @@ common_supervisor_args() {
 }
 
 start_codex_lane() {
-  local pid_path
   local -a args
-  pid_path="$(pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")"
-  if read_live_pid "${pid_path}" >/dev/null; then
-    echo "Codex supervisor is already running (pid $(read_live_pid "${pid_path}"))."
+  if read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" >/dev/null; then
+    echo "Codex supervisor is already running (pid $(read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}"))."
     return 0
   fi
   require_executable "${CODEX_BIN}"
@@ -245,11 +277,9 @@ start_codex_lane() {
 }
 
 start_grok_lane() {
-  local pid_path
   local -a args
-  pid_path="$(pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")"
-  if read_live_pid "${pid_path}" >/dev/null; then
-    echo "Grok supervisor is already running (pid $(read_live_pid "${pid_path}"))."
+  if read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" >/dev/null; then
+    echo "Grok supervisor is already running (pid $(read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}"))."
     return 0
   fi
   require_executable "${GROK_BIN}"
@@ -275,15 +305,13 @@ wait_for_lane() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
-  local supervisor_pid_path
   local daemon_pid_path
   local attempt
-  supervisor_pid_path="$(pid_file_for "${state_dir}" "${state_prefix}")"
   daemon_pid_path="$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"
   for attempt in {1..60}; do
-    if read_live_pid "${supervisor_pid_path}" >/dev/null \
+    if read_live_supervisor_pid "${state_dir}" "${state_prefix}" >/dev/null \
       && read_live_pid "${daemon_pid_path}" >/dev/null; then
-      echo "${label} supervisor started with pid $(read_live_pid "${supervisor_pid_path}") and managed daemon pid $(read_live_pid "${daemon_pid_path}")."
+      echo "${label} supervisor started with pid $(read_live_supervisor_pid "${state_dir}" "${state_prefix}") and managed daemon pid $(read_live_pid "${daemon_pid_path}")."
       return 0
     fi
     sleep 1
@@ -309,13 +337,11 @@ show_lane_status() {
   local state_dir="$2"
   local state_prefix="$3"
   local failed=0
-  local supervisor_pid_path
   local daemon_pid_path
   local supervisor_pid=""
   local daemon_pid=""
-  supervisor_pid_path="$(pid_file_for "${state_dir}" "${state_prefix}")"
   daemon_pid_path="$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"
-  if supervisor_pid="$(read_live_pid "${supervisor_pid_path}")"; then
+  if supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
     echo "${label} supervisor: running (pid ${supervisor_pid})"
     ps -p "${supervisor_pid}" -o pid=,etime=,stat=,args=
   else
@@ -345,13 +371,13 @@ write_health_snapshot() {
   local pid=""
   local tmp_path="${RUNTIME_ROOT}/supervisor-health.json.tmp.$$"
 
-  if pid="$(read_live_pid "$(pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")")"; then
+  if pid="$(read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")"; then
     codex_supervisor_pid="${pid}"
   fi
   if pid="$(read_live_pid "$(daemon_pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")")"; then
     codex_daemon_pid="${pid}"
   fi
-  if pid="$(read_live_pid "$(pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")")"; then
+  if pid="$(read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")"; then
     grok_supervisor_pid="${pid}"
   fi
   if pid="$(read_live_pid "$(daemon_pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")")"; then
@@ -395,14 +421,15 @@ stop_lane() {
   local state_prefix="$3"
   local path
   local pid=""
-  for path in \
-    "$(pid_file_for "${state_dir}" "${state_prefix}")" \
-    "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"; do
-    if pid="$(read_live_pid "${path}")"; then
-      echo "Stopping ${label} process ${pid}."
-      kill "${pid}"
-    fi
-  done
+  if pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
+    echo "Stopping ${label} supervisor ${pid}."
+    kill "${pid}"
+  fi
+  path="$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"
+  if pid="$(read_live_pid "${path}")"; then
+    echo "Stopping ${label} managed daemon ${pid}."
+    kill "${pid}"
+  fi
 }
 
 stop_supervisors() {
