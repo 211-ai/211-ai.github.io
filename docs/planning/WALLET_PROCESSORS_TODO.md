@@ -283,13 +283,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-005 Implement wallet processor migration objective packet: WALPROC-G030, WALPROC-G040
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
 - Priority: P0
 - Track: shared-contracts
-- Depends on: WALPROC-002, WALPROC-G030
+- Depends on:
 - Outputs: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/errors.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -354,7 +355,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: shared-contracts
-- Depends on: WALPROC-005
+- Depends on: WALPROC-007
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -478,13 +479,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-008 Implement wallet processor migration objective packet: WALPROC-G060, WALPROC-G070, WALPROC-G080
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
 - Priority: P0
 - Track: shared-runtime
-- Depends on: WALPROC-005, WALPROC-007, WALPROC-006, WALPROC-G060, WALPROC-G070
+- Depends on:
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -549,7 +551,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: shared-runtime
-- Depends on: WALPROC-005, WALPROC-007, WALPROC-006
+- Depends on: WALPROC-007, WALPROC-006
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -679,7 +681,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: shared-runtime
-- Depends on: WALPROC-008, WALPROC-009, WALPROC-G070
+- Depends on: WALPROC-009, WALPROC-012
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -744,7 +746,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: shared-runtime
-- Depends on: WALPROC-006, WALPROC-008, WALPROC-009
+- Depends on: WALPROC-006, WALPROC-009
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -874,7 +876,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: worldcoin
-- Depends on: WALPROC-006, WALPROC-012, WALPROC-G100
+- Depends on: WALPROC-006, WALPROC-012, WALPROC-016
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -933,13 +935,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-015 Implement wallet processor migration objective packet: WALPROC-G100, WALPROC-G120
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
 - Priority: P0
 - Track: worldcoin
-- Depends on: WALPROC-003, WALPROC-005, WALPROC-007, WALPROC-006, WALPROC-010, WALPROC-008, WALPROC-009, WALPROC-G100, WALPROC-G300
+- Depends on:
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1004,7 +1007,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: worldcoin
-- Depends on: WALPROC-003, WALPROC-005, WALPROC-007, WALPROC-006, WALPROC-010, WALPROC-008, WALPROC-009
+- Depends on: WALPROC-003, WALPROC-007, WALPROC-006, WALPROC-010, WALPROC-009
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1069,7 +1072,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: xrpl
-- Depends on: WALPROC-006, WALPROC-008, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/xrpl ipfs_datasets_py/tests/contract/processors/wallets/test_xrpl_conformance.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1134,7 +1137,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: ethereum
-- Depends on: WALPROC-006, WALPROC-008, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/ethereum ipfs_datasets_py/tests/contract/processors/wallets/test_ethereum_conformance.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1199,7 +1202,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: bitcoin
-- Depends on: WALPROC-006, WALPROC-008, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/bitcoin ipfs_datasets_py/tests/contract/processors/wallets/test_bitcoin_conformance.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1264,7 +1267,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: solana
-- Depends on: WALPROC-006, WALPROC-008, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/solana ipfs_datasets_py/tests/contract/processors/wallets/test_solana_conformance.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1394,7 +1397,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P1
 - Track: worldcoin
-- Depends on: WALPROC-015, WALPROC-016, WALPROC-018
+- Depends on: WALPROC-016, WALPROC-018
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1459,7 +1462,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: worldcoin-cutover
-- Depends on: WALPROC-015, WALPROC-016, WALPROC-014, WALPROC-022
+- Depends on: WALPROC-016, WALPROC-014, WALPROC-022
 - Outputs: wallet_interface/world_id.py, wallet_interface/app_service.py, wallet_interface/ops.py, tests/test_world_id_wrapper_ownership.py, tests/test_world_id_wallet.py, tests/test_world_id_wallet_api.py
 - Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1518,13 +1521,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-024 Implement wallet processor migration objective packet: WALPROC-G600, WALPROC-G610
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
 - Priority: P1
 - Track: integration
-- Depends on: WALPROC-005, WALPROC-007, WALPROC-015, WALPROC-016, WALPROC-017, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-011, WALPROC-G600
+- Depends on:
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1589,7 +1593,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P1
 - Track: integration
-- Depends on: WALPROC-005, WALPROC-007, WALPROC-015, WALPROC-016, WALPROC-017, WALPROC-018, WALPROC-019, WALPROC-020
+- Depends on: WALPROC-007, WALPROC-016, WALPROC-017, WALPROC-018, WALPROC-019, WALPROC-020
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1719,7 +1723,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: validation
-- Depends on: WALPROC-014, WALPROC-022, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-024, WALPROC-025
+- Depends on: WALPROC-014, WALPROC-022, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-025
 - Outputs: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1784,7 +1788,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security
-- Depends on: WALPROC-008, WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020
 - Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1849,7 +1853,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P1
 - Track: integration
-- Depends on: WALPROC-011, WALPROC-024, WALPROC-025
+- Depends on: WALPROC-011, WALPROC-025
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -1908,13 +1912,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-030 Implement wallet processor migration objective packet: WALPROC-G710, WALPROC-G700
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
 - Priority: P0
 - Track: release
-- Depends on: WALPROC-023, WALPROC-027, WALPROC-028, WALPROC-G640, WALPROC-G700, WALPROC-010, WALPROC-029
+- Depends on:
 - Outputs: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py, ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
 - Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py && npm --prefix wallet_interface/ui test -- --runInBand
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery

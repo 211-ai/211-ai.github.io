@@ -1,0 +1,4899 @@
+{
+  "schema": "wallet_processor_migration/import-map@1",
+  "schema_version": 1,
+  "goal_id": "WALPROC-G010",
+  "task_id": "WALPROC-002",
+  "generated_at": "2026-07-28T22:07:07Z",
+  "purpose": "Machine-readable import and call graph freeze for World ID, wallet domain, generic processors, and Xaman formal assets.",
+  "edges": [
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "json",
+      "kind": "python_import",
+      "symbols": [
+        "json"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "os",
+      "kind": "python_import",
+      "symbols": [
+        "os"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "secrets",
+      "kind": "python_import",
+      "symbols": [
+        "secrets"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "time",
+      "kind": "python_import",
+      "symbols": [
+        "time"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "collections.abc.Callable",
+      "kind": "python_import",
+      "symbols": [
+        "Callable"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "collections.abc.Mapping",
+      "kind": "python_import",
+      "symbols": [
+        "Mapping"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "dataclasses.dataclass",
+      "kind": "python_import",
+      "symbols": [
+        "dataclass"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "dataclasses.field",
+      "kind": "python_import",
+      "symbols": [
+        "field"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "urllib.error",
+      "kind": "python_import",
+      "symbols": [
+        "error"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "urllib.parse",
+      "kind": "python_import",
+      "symbols": [
+        "parse"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "urllib.request",
+      "kind": "python_import",
+      "symbols": [
+        "request"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "urllib.parse.urlparse",
+      "kind": "python_import",
+      "symbols": [
+        "urlparse"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "relative(level=1):_vendor.ensure_ipfs_datasets_py_path",
+      "kind": "python_import",
+      "symbols": [
+        "ensure_ipfs_datasets_py_path"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/world_id.py",
+      "target": "ipfs_datasets_py.utils.secrets.resolve_secret",
+      "kind": "python_import",
+      "symbols": [
+        "resolve_secret"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "hashlib",
+      "kind": "python_import",
+      "symbols": [
+        "hashlib"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "json",
+      "kind": "python_import",
+      "symbols": [
+        "json"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "os",
+      "kind": "python_import",
+      "symbols": [
+        "os"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "collections.abc.Mapping",
+      "kind": "python_import",
+      "symbols": [
+        "Mapping"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "collections.abc.Sequence",
+      "kind": "python_import",
+      "symbols": [
+        "Sequence"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "datetime.UTC",
+      "kind": "python_import",
+      "symbols": [
+        "UTC"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "datetime.datetime",
+      "kind": "python_import",
+      "symbols": [
+        "datetime"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "pathlib.Path",
+      "kind": "python_import",
+      "symbols": [
+        "Path"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "uuid.uuid4",
+      "kind": "python_import",
+      "symbols": [
+        "uuid4"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):_vendor.ensure_ipfs_datasets_py_path",
+      "kind": "python_import",
+      "symbols": [
+        "ensure_ipfs_datasets_py_path"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):schemas.app_schemas.SavedServiceRecord",
+      "kind": "python_import",
+      "symbols": [
+        "SavedServiceRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):schemas.app_schemas.ServiceInteractionRecord",
+      "kind": "python_import",
+      "symbols": [
+        "ServiceInteractionRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):schemas.app_schemas.ServicePlanRecord",
+      "kind": "python_import",
+      "symbols": [
+        "ServicePlanRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):service_matching.ServiceMatch",
+      "kind": "python_import",
+      "symbols": [
+        "ServiceMatch"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):service_matching.ServiceRecord",
+      "kind": "python_import",
+      "symbols": [
+        "ServiceRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):service_matching.load_services_jsonl",
+      "kind": "python_import",
+      "symbols": [
+        "load_services_jsonl"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):service_matching.match_services",
+      "kind": "python_import",
+      "symbols": [
+        "match_services"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):services.HmisDomainServiceMixin",
+      "kind": "python_import",
+      "symbols": [
+        "HmisDomainServiceMixin"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):services.InteractionDomainServiceMixin",
+      "kind": "python_import",
+      "symbols": [
+        "InteractionDomainServiceMixin"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):services.RecordDomainServiceMixin",
+      "kind": "python_import",
+      "symbols": [
+        "RecordDomainServiceMixin"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):services.WalletDomainServiceMixin",
+      "kind": "python_import",
+      "symbols": [
+        "WalletDomainServiceMixin"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.DeterministicLocationDistanceProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "DeterministicLocationDistanceProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.DeterministicLocationRegionProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "DeterministicLocationRegionProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.LocalWalletRepository",
+      "kind": "python_import",
+      "symbols": [
+        "LocalWalletRepository"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.ProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "ProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.SimulatedProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "SimulatedProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.WalletService",
+      "kind": "python_import",
+      "symbols": [
+        "WalletService"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.create_encrypted_blob_store",
+      "kind": "python_import",
+      "symbols": [
+        "create_encrypted_blob_store"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.audit.append_audit_event",
+      "kind": "python_import",
+      "symbols": [
+        "append_audit_event"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.ucan.resource_for_location",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_location"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.ucan.resource_for_wallet",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_wallet"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):proof_backends.HttpLocationRegionProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "HttpLocationRegionProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.WorldIdConfig",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdConfig"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.WorldIdRequestJson",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdRequestJson"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.WorldIdVerificationError",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdVerificationError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.load_world_id_config",
+      "kind": "python_import",
+      "symbols": [
+        "load_world_id_config"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.normalize_world_id_idkit_response",
+      "kind": "python_import",
+      "symbols": [
+        "normalize_world_id_idkit_response"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.redact_world_id_payload",
+      "kind": "python_import",
+      "symbols": [
+        "redact_world_id_payload"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.sign_world_id_request_from_config",
+      "kind": "python_import",
+      "symbols": [
+        "sign_world_id_request_from_config"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "relative(level=1):world_id.verify_world_id_proof_from_config",
+      "kind": "python_import",
+      "symbols": [
+        "verify_world_id_proof_from_config"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "argparse",
+      "kind": "python_import",
+      "symbols": [
+        "argparse"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "json",
+      "kind": "python_import",
+      "symbols": [
+        "json"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "os",
+      "kind": "python_import",
+      "symbols": [
+        "os"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "sys",
+      "kind": "python_import",
+      "symbols": [
+        "sys"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "tempfile",
+      "kind": "python_import",
+      "symbols": [
+        "tempfile"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "time",
+      "kind": "python_import",
+      "symbols": [
+        "time"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "collections.abc.Callable",
+      "kind": "python_import",
+      "symbols": [
+        "Callable"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "collections.abc.Mapping",
+      "kind": "python_import",
+      "symbols": [
+        "Mapping"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "collections.abc.Sequence",
+      "kind": "python_import",
+      "symbols": [
+        "Sequence"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "dataclasses.dataclass",
+      "kind": "python_import",
+      "symbols": [
+        "dataclass"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "dataclasses.field",
+      "kind": "python_import",
+      "symbols": [
+        "field"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "datetime.UTC",
+      "kind": "python_import",
+      "symbols": [
+        "UTC"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "datetime.datetime",
+      "kind": "python_import",
+      "symbols": [
+        "datetime"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "pathlib.Path",
+      "kind": "python_import",
+      "symbols": [
+        "Path"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "typing.IO",
+      "kind": "python_import",
+      "symbols": [
+        "IO"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "urllib.request",
+      "kind": "python_import",
+      "symbols": [
+        "request"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):app_service.WalletInterfaceService",
+      "kind": "python_import",
+      "symbols": [
+        "WalletInterfaceService"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):schemas.base.BaseModel",
+      "kind": "python_import",
+      "symbols": [
+        "BaseModel"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):schemas.base.Field",
+      "kind": "python_import",
+      "symbols": [
+        "Field"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):world_id.WorldIdConfigError",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdConfigError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):world_id.WorldIdPayloadError",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdPayloadError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):world_id.WorldIdSignatureError",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdSignatureError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "relative(level=2):world_id.WorldIdVerificationError",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdVerificationError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "json",
+      "kind": "python_import",
+      "symbols": [
+        "json"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "hashlib",
+      "kind": "python_import",
+      "symbols": [
+        "hashlib"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "hmac",
+      "kind": "python_import",
+      "symbols": [
+        "hmac"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "re",
+      "kind": "python_import",
+      "symbols": [
+        "re"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "tempfile",
+      "kind": "python_import",
+      "symbols": [
+        "tempfile"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "uuid",
+      "kind": "python_import",
+      "symbols": [
+        "uuid"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "datetime.datetime",
+      "kind": "python_import",
+      "symbols": [
+        "datetime"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "pathlib.Path",
+      "kind": "python_import",
+      "symbols": [
+        "Path"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "typing.Dict",
+      "kind": "python_import",
+      "symbols": [
+        "Dict"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "typing.List",
+      "kind": "python_import",
+      "symbols": [
+        "List"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "typing.Mapping",
+      "kind": "python_import",
+      "symbols": [
+        "Mapping"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "typing.Optional",
+      "kind": "python_import",
+      "symbols": [
+        "Optional"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):analytics.aggregate_count",
+      "kind": "python_import",
+      "symbols": [
+        "aggregate_count"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):analytics.aggregate_count_by_fields",
+      "kind": "python_import",
+      "symbols": [
+        "aggregate_count_by_fields"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):analytics.contribution_nullifier",
+      "kind": "python_import",
+      "symbols": [
+        "contribution_nullifier"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):analytics.make_contribution",
+      "kind": "python_import",
+      "symbols": [
+        "make_contribution"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):audit.append_audit_event",
+      "kind": "python_import",
+      "symbols": [
+        "append_audit_event"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.ENCRYPTION_SUITE",
+      "kind": "python_import",
+      "symbols": [
+        "ENCRYPTION_SUITE"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.KEY_WRAP_ALGORITHM",
+      "kind": "python_import",
+      "symbols": [
+        "KEY_WRAP_ALGORITHM"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.EncryptedBlob",
+      "kind": "python_import",
+      "symbols": [
+        "EncryptedBlob"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.b64decode",
+      "kind": "python_import",
+      "symbols": [
+        "b64decode"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.b64encode",
+      "kind": "python_import",
+      "symbols": [
+        "b64encode"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.decrypt_bytes",
+      "kind": "python_import",
+      "symbols": [
+        "decrypt_bytes"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.encrypt_bytes",
+      "kind": "python_import",
+      "symbols": [
+        "encrypt_bytes"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.random_key",
+      "kind": "python_import",
+      "symbols": [
+        "random_key"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.sha256_hex",
+      "kind": "python_import",
+      "symbols": [
+        "sha256_hex"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.unwrap_key",
+      "kind": "python_import",
+      "symbols": [
+        "unwrap_key"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):crypto.wrap_key",
+      "kind": "python_import",
+      "symbols": [
+        "wrap_key"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):exceptions.AccessDeniedError",
+      "kind": "python_import",
+      "symbols": [
+        "AccessDeniedError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):exceptions.ApprovalRequiredError",
+      "kind": "python_import",
+      "symbols": [
+        "ApprovalRequiredError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):exceptions.DataWalletError",
+      "kind": "python_import",
+      "symbols": [
+        "DataWalletError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):exceptions.GrantError",
+      "kind": "python_import",
+      "symbols": [
+        "GrantError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):exceptions.MissingRecordError",
+      "kind": "python_import",
+      "symbols": [
+        "MissingRecordError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):location.distance_membership_statement",
+      "kind": "python_import",
+      "symbols": [
+        "distance_membership_statement"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):location.haversine_distance_km",
+      "kind": "python_import",
+      "symbols": [
+        "haversine_distance_km"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):location.make_coarse_location_claim",
+      "kind": "python_import",
+      "symbols": [
+        "make_coarse_location_claim"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):location.region_membership_statement",
+      "kind": "python_import",
+      "symbols": [
+        "region_membership_statement"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):location.serialize_location",
+      "kind": "python_import",
+      "symbols": [
+        "serialize_location"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):manifest.canonical_bytes",
+      "kind": "python_import",
+      "symbols": [
+        "canonical_bytes"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):manifest.canonical_dumps",
+      "kind": "python_import",
+      "symbols": [
+        "canonical_dumps"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AggregateResult",
+      "kind": "python_import",
+      "symbols": [
+        "AggregateResult"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AccessRequest",
+      "kind": "python_import",
+      "symbols": [
+        "AccessRequest"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AnalyticsConsent",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsConsent"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AnalyticsContribution",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsContribution"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AnalyticsTemplate",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsTemplate"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.ApprovalRequest",
+      "kind": "python_import",
+      "symbols": [
+        "ApprovalRequest"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.AuditEvent",
+      "kind": "python_import",
+      "symbols": [
+        "AuditEvent"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.DataRecord",
+      "kind": "python_import",
+      "symbols": [
+        "DataRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.DataVersion",
+      "kind": "python_import",
+      "symbols": [
+        "DataVersion"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.DerivedArtifact",
+      "kind": "python_import",
+      "symbols": [
+        "DerivedArtifact"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.Grant",
+      "kind": "python_import",
+      "symbols": [
+        "Grant"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.GrantReceipt",
+      "kind": "python_import",
+      "symbols": [
+        "GrantReceipt"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.KeyWrap",
+      "kind": "python_import",
+      "symbols": [
+        "KeyWrap"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.LocationClaim",
+      "kind": "python_import",
+      "symbols": [
+        "LocationClaim"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.MissingPersonDeadDropRecord",
+      "kind": "python_import",
+      "symbols": [
+        "MissingPersonDeadDropRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.ProofReceipt",
+      "kind": "python_import",
+      "symbols": [
+        "ProofReceipt"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.SavedServiceRecord",
+      "kind": "python_import",
+      "symbols": [
+        "SavedServiceRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.ServiceInteractionRecord",
+      "kind": "python_import",
+      "symbols": [
+        "ServiceInteractionRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.ServicePlanRecord",
+      "kind": "python_import",
+      "symbols": [
+        "ServicePlanRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.ServicePlanShareGrantResult",
+      "kind": "python_import",
+      "symbols": [
+        "ServicePlanShareGrantResult"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.StorageHealthReport",
+      "kind": "python_import",
+      "symbols": [
+        "StorageHealthReport"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.StorageRef",
+      "kind": "python_import",
+      "symbols": [
+        "StorageRef"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.StorageReplicaStatus",
+      "kind": "python_import",
+      "symbols": [
+        "StorageReplicaStatus"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.Wallet",
+      "kind": "python_import",
+      "symbols": [
+        "Wallet"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.WalletRecordMetadataRecord",
+      "kind": "python_import",
+      "symbols": [
+        "WalletRecordMetadataRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.WalletRecoveryBundleRecord",
+      "kind": "python_import",
+      "symbols": [
+        "WalletRecoveryBundleRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.WalletStorageHealthReport",
+      "kind": "python_import",
+      "symbols": [
+        "WalletStorageHealthReport"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.WalletInvocation",
+      "kind": "python_import",
+      "symbols": [
+        "WalletInvocation"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.WorldIdBinding",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdBinding"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):models.utc_now",
+      "kind": "python_import",
+      "symbols": [
+        "utc_now"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):multisig.approve_request",
+      "kind": "python_import",
+      "symbols": [
+        "approve_request"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):multisig.create_approval_request",
+      "kind": "python_import",
+      "symbols": [
+        "create_approval_request"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):multisig.normalize_governance_policy",
+      "kind": "python_import",
+      "symbols": [
+        "normalize_governance_policy"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):multisig.operation_requires_approval",
+      "kind": "python_import",
+      "symbols": [
+        "operation_requires_approval"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):multisig.verify_approval",
+      "kind": "python_import",
+      "symbols": [
+        "verify_approval"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):proofs.ProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "ProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):proofs.SimulatedProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "SimulatedProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):proofs.create_simulated_proof_receipt",
+      "kind": "python_import",
+      "symbols": [
+        "create_simulated_proof_receipt"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):proofs.verifier_digest",
+      "kind": "python_import",
+      "symbols": [
+        "verifier_digest"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):storage.EncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "EncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):storage.LocalEncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "LocalEncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.assert_grant_allows",
+      "kind": "python_import",
+      "symbols": [
+        "assert_grant_allows"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.assert_invocation_allows",
+      "kind": "python_import",
+      "symbols": [
+        "assert_invocation_allows"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.create_invocation",
+      "kind": "python_import",
+      "symbols": [
+        "create_invocation"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.is_expired",
+      "kind": "python_import",
+      "symbols": [
+        "is_expired"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.record_id_from_resource",
+      "kind": "python_import",
+      "symbols": [
+        "record_id_from_resource"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.resource_for_export",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_export"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.resource_for_location",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_location"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.resource_for_record",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_record"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "relative(level=1):ucan.resource_for_wallet",
+      "kind": "python_import",
+      "symbols": [
+        "resource_for_wallet"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "dataclasses.asdict",
+      "kind": "python_import",
+      "symbols": [
+        "asdict"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "dataclasses.dataclass",
+      "kind": "python_import",
+      "symbols": [
+        "dataclass"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "dataclasses.field",
+      "kind": "python_import",
+      "symbols": [
+        "field"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "datetime.datetime",
+      "kind": "python_import",
+      "symbols": [
+        "datetime"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "datetime.timezone",
+      "kind": "python_import",
+      "symbols": [
+        "timezone"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "typing.Any",
+      "kind": "python_import",
+      "symbols": [
+        "Any"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "typing.Dict",
+      "kind": "python_import",
+      "symbols": [
+        "Dict"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "typing.List",
+      "kind": "python_import",
+      "symbols": [
+        "List"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "target": "typing.Optional",
+      "kind": "python_import",
+      "symbols": [
+        "Optional"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "__future__.annotations",
+      "kind": "python_import",
+      "symbols": [
+        "annotations"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.AccessDeniedError",
+      "kind": "python_import",
+      "symbols": [
+        "AccessDeniedError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.ApprovalRequiredError",
+      "kind": "python_import",
+      "symbols": [
+        "ApprovalRequiredError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.DataWalletError",
+      "kind": "python_import",
+      "symbols": [
+        "DataWalletError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.DecryptionError",
+      "kind": "python_import",
+      "symbols": [
+        "DecryptionError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.GrantError",
+      "kind": "python_import",
+      "symbols": [
+        "GrantError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):exceptions.MissingRecordError",
+      "kind": "python_import",
+      "symbols": [
+        "MissingRecordError"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AggregateResult",
+      "kind": "python_import",
+      "symbols": [
+        "AggregateResult"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AccessRequest",
+      "kind": "python_import",
+      "symbols": [
+        "AccessRequest"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AnalyticsConsent",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsConsent"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AnalyticsContribution",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsContribution"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AnalyticsTemplate",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsTemplate"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.ApprovalRequest",
+      "kind": "python_import",
+      "symbols": [
+        "ApprovalRequest"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.AuditEvent",
+      "kind": "python_import",
+      "symbols": [
+        "AuditEvent"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.DataRecord",
+      "kind": "python_import",
+      "symbols": [
+        "DataRecord"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.DataVersion",
+      "kind": "python_import",
+      "symbols": [
+        "DataVersion"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.DerivedArtifact",
+      "kind": "python_import",
+      "symbols": [
+        "DerivedArtifact"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.Grant",
+      "kind": "python_import",
+      "symbols": [
+        "Grant"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.GrantReceipt",
+      "kind": "python_import",
+      "symbols": [
+        "GrantReceipt"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.KeyWrap",
+      "kind": "python_import",
+      "symbols": [
+        "KeyWrap"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.LocationClaim",
+      "kind": "python_import",
+      "symbols": [
+        "LocationClaim"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.ProofReceipt",
+      "kind": "python_import",
+      "symbols": [
+        "ProofReceipt"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.StorageHealthReport",
+      "kind": "python_import",
+      "symbols": [
+        "StorageHealthReport"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.StorageRef",
+      "kind": "python_import",
+      "symbols": [
+        "StorageRef"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.StorageReplicaStatus",
+      "kind": "python_import",
+      "symbols": [
+        "StorageReplicaStatus"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.Wallet",
+      "kind": "python_import",
+      "symbols": [
+        "Wallet"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.WalletStorageHealthReport",
+      "kind": "python_import",
+      "symbols": [
+        "WalletStorageHealthReport"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.WalletInvocation",
+      "kind": "python_import",
+      "symbols": [
+        "WalletInvocation"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):models.WorldIdBinding",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdBinding"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):multisig.operation_requires_approval",
+      "kind": "python_import",
+      "symbols": [
+        "operation_requires_approval"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):privacy.AnalyticsPrivacyPolicy",
+      "kind": "python_import",
+      "symbols": [
+        "AnalyticsPrivacyPolicy"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):proofs.DeterministicLocationDistanceProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "DeterministicLocationDistanceProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):proofs.DeterministicLocationRegionProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "DeterministicLocationRegionProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):proofs.ProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "ProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):proofs.ProofBackendRegistry",
+      "kind": "python_import",
+      "symbols": [
+        "ProofBackendRegistry"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):proofs.SimulatedProofBackend",
+      "kind": "python_import",
+      "symbols": [
+        "SimulatedProofBackend"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):repository.LocalWalletRepository",
+      "kind": "python_import",
+      "symbols": [
+        "LocalWalletRepository"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):service.DataWalletService",
+      "kind": "python_import",
+      "symbols": [
+        "DataWalletService"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.FilecoinEncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "FilecoinEncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.IPFSEncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "IPFSEncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.LocalEncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "LocalEncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.ReplicatedEncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "ReplicatedEncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.S3EncryptedBlobStore",
+      "kind": "python_import",
+      "symbols": [
+        "S3EncryptedBlobStore"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.WalletStorageBackendConfig",
+      "kind": "python_import",
+      "symbols": [
+        "WalletStorageBackendConfig"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.WalletStorageConfig",
+      "kind": "python_import",
+      "symbols": [
+        "WalletStorageConfig"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):storage.create_encrypted_blob_store",
+      "kind": "python_import",
+      "symbols": [
+        "create_encrypted_blob_store"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_CONFORMANCE_FIXTURE_ID",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_CONFORMANCE_FIXTURE_ID"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_EXTERNAL_ADAPTER_ID",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_EXTERNAL_ADAPTER_ID"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_EXTERNAL_ADAPTER_KEY",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_EXTERNAL_ADAPTER_KEY"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_EXTERNAL_BLOCK_CODEC",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_EXTERNAL_BLOCK_CODEC"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_EXTERNAL_STACK_ID",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_EXTERNAL_STACK_ID"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_PROFILE_ID",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_PROFILE_ID"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.WALLET_UCAN_TOKEN_PREFIX",
+      "kind": "python_import",
+      "symbols": [
+        "WALLET_UCAN_TOKEN_PREFIX"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.validate_wallet_ucan_external_adapter_fixture",
+      "kind": "python_import",
+      "symbols": [
+        "validate_wallet_ucan_external_adapter_fixture"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.wallet_ucan_external_adapter_fixture",
+      "kind": "python_import",
+      "symbols": [
+        "wallet_ucan_external_adapter_fixture"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.wallet_ucan_external_adapter_profile",
+      "kind": "python_import",
+      "symbols": [
+        "wallet_ucan_external_adapter_profile"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.invocation_to_ucan_profile_payload",
+      "kind": "python_import",
+      "symbols": [
+        "invocation_to_ucan_profile_payload"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.validate_ucan_profile_payload",
+      "kind": "python_import",
+      "symbols": [
+        "validate_ucan_profile_payload"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.validate_wallet_ucan_conformance_fixture",
+      "kind": "python_import",
+      "symbols": [
+        "validate_wallet_ucan_conformance_fixture"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.wallet_ucan_conformance_fixture",
+      "kind": "python_import",
+      "symbols": [
+        "wallet_ucan_conformance_fixture"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.wallet_ucan_profile",
+      "kind": "python_import",
+      "symbols": [
+        "wallet_ucan_profile"
+      ],
+      "notes": null
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "target": "relative(level=1):ucan.wallet_ucan_reference_conformance_fixture",
+      "kind": "python_import",
+      "symbols": [
+        "wallet_ucan_reference_conformance_fixture"
+      ],
+      "notes": null
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "wallet_interface/world_id.py",
+      "kind": "calls",
+      "symbols": [
+        "load_world_id_config",
+        "sign_world_id_request",
+        "verify_world_id_proof",
+        "normalize_world_id_idkit_response",
+        "redact_world_id_payload",
+        "WorldIdConfig"
+      ],
+      "notes": "Service orchestration uses protocol module directly today."
+    },
+    {
+      "source": "wallet_interface/ops.py",
+      "target": "wallet_interface/world_id.py",
+      "kind": "calls",
+      "symbols": [
+        "load_world_id_config",
+        "redact_world_id_payload",
+        "sign_world_id_request"
+      ],
+      "notes": "Ops readiness uses world_id config and redaction helpers."
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "wallet_interface/app_service.py",
+      "kind": "calls",
+      "symbols": [
+        "create_world_id_rp_signature",
+        "register_world_id_verification",
+        "get_world_id_status"
+      ],
+      "notes": "HTTP routes delegate to WalletInterfaceService."
+    },
+    {
+      "source": "wallet_interface/app_service.py",
+      "target": "ipfs_datasets_py.wallet.service.DataWalletService",
+      "kind": "calls",
+      "symbols": [
+        "add_world_id_binding",
+        "get_world_id_binding",
+        "list_world_id_bindings",
+        "revoke via service"
+      ],
+      "notes": "Binding persistence goes through DataWalletService."
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "target": "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "kind": "uses",
+      "symbols": [
+        "WorldIdBinding",
+        "ProofReceipt",
+        "Wallet"
+      ],
+      "notes": "Binding and proof receipt models."
+    },
+    {
+      "source": "tests/test_world_id_wallet.py",
+      "target": "wallet_interface/world_id.py",
+      "kind": "tests",
+      "symbols": [
+        "load_world_id_config",
+        "sign_world_id_request",
+        "verify_world_id_proof",
+        "normalize_idkit_response"
+      ],
+      "notes": "Primary unit/integration coverage for protocol module."
+    },
+    {
+      "source": "tests/test_world_id_wallet_api.py",
+      "target": "wallet_interface",
+      "kind": "tests",
+      "symbols": [
+        "API routes",
+        "load_world_id_config"
+      ],
+      "notes": "API-level World ID coverage."
+    },
+    {
+      "source": "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+      "target": "wallet_interface/routes/world_id.py",
+      "kind": "http_client",
+      "symbols": [
+        "World ID RP signature",
+        "verification",
+        "status endpoints"
+      ],
+      "notes": "TypeScript client of World ID HTTP surface."
+    },
+    {
+      "source": "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+      "target": "IDKit (external)",
+      "kind": "client_sdk",
+      "symbols": [
+        "IDKit widget"
+      ],
+      "notes": "Browser IDKit integration; not server protocol."
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/*",
+      "target": "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+      "kind": "implements",
+      "symbols": [
+        "can_process"
+      ],
+      "notes": "Legacy generic processor adapters."
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/processors/core/*",
+      "target": "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+      "kind": "implements",
+      "symbols": [
+        "can_handle"
+      ],
+      "notes": "Core generic processor surface."
+    },
+    {
+      "source": "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/xaman/adapter.py",
+      "target": "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange",
+      "kind": "projects",
+      "symbols": [
+        "xaman formal IR"
+      ],
+      "notes": "Assurance path; not runtime wallet processor."
+    }
+  ],
+  "callers_by_symbol": {
+    "world_id_module_import": [
+      "tests/contract/test_wallet_api_contract.py",
+      "tests/test_world_id_wallet_api.py",
+      "scripts/hmis_reconciliation_job.py",
+      "tests/test_hmis_end_to_end.py",
+      "tests/test_hmis_reconciliation.py",
+      "tests/test_wallet_interface.py",
+      "tests/test_wallet_interface_api.py",
+      "tests/test_wallet_interface_hmis_api.py",
+      "tests/test_wallet_interface_ops.py",
+      "tests/test_world_id_wallet.py",
+      "wallet_interface/app_service.py",
+      "wallet_interface/ops.py"
+    ],
+    "load_world_id_config": [
+      "tests/test_world_id_wallet.py",
+      "tests/test_world_id_wallet_api.py",
+      "wallet_interface/app_service.py",
+      "wallet_interface/ops.py",
+      "tests/world_aid/test_integration_audit_contract.py",
+      "wallet_interface/world_id.py"
+    ],
+    "WorldIdBinding_import": [
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+      "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts",
+      "ipfs_datasets_py/tests/unit/test_data_wallet.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "ipfs_datasets_py/tests/unit/test_wallet_canonical_imports.py",
+      "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_tools/_helpers.py",
+      "ipfs_datasets_py/ipfs_datasets_py/tests/wallet/test_wallet_cli.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/cli.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py",
+      "ipfs_datasets_py/tests/unit/test_wallet_api_adapter.py",
+      "ipfs_datasets_py/tests/unit/test_wallet_repository.py",
+      "tests/contract/test_wallet_api_contract.py",
+      "tests/test_wallet_interface_api.py",
+      "wallet_interface/app_service.py",
+      "wallet_interface/proof_backends.py",
+      "wallet_interface/ui/tests/agent-unit.spec.ts"
+    ],
+    "normalize_world_id_idkit_response": [
+      "tests/test_world_id_wallet.py",
+      "wallet_interface/world_id.py",
+      "wallet_interface/app_service.py"
+    ],
+    "sign_world_id_request": [
+      "tests/test_world_id_wallet.py",
+      "wallet_interface/world_id.py",
+      "wallet_interface/app_service.py",
+      "wallet_interface/ops.py"
+    ],
+    "verify_world_id_proof": [
+      "tests/test_world_id_wallet.py",
+      "wallet_interface/world_id.py",
+      "wallet_interface/app_service.py"
+    ],
+    "redact_world_id_payload": [
+      "wallet_interface/world_id.py",
+      "wallet_interface/app_service.py",
+      "tests/test_world_id_wallet.py",
+      "wallet_interface/ops.py"
+    ],
+    "_world_id_production_readiness_checks": [
+      "wallet_interface/ops.py"
+    ],
+    "WorldIdConfig": [
+      "wallet_interface/world_id.py",
+      "wallet_interface/app_service.py"
+    ],
+    "DataWalletService": [
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/repository.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "ipfs_datasets_py/tests/unit/test_wallet_canonical_imports.py"
+    ],
+    "WorldIdBinding": [
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py",
+      "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+      "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py",
+      "ipfs_datasets_py/tests/unit/test_data_wallet.py",
+      "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py"
+    ],
+    "ProcessorRegistry": [
+      "ipfs_datasets_py/tests/unit/processors/core/test_processor_registry.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/registry.py",
+      "ipfs_datasets_py/tests/unit/test_monitoring.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/processor_registry.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/registry.py",
+      "ipfs_datasets_py/tests/integration/processors/test_async_integration.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/auto_register.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/universal_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/universal_processor.py",
+      "ipfs_datasets_py/scripts/benchmarks/processor_benchmarks.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/infrastructure/monitoring.py",
+      "ipfs_datasets_py/tests/integration/processors/test_engines_facade.py",
+      "ipfs_datasets_py/tests/integration/processors/test_structure_lightweight.py"
+    ],
+    "ProcessorProtocol": [
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/registry.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/processor_registry.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/universal_processor.py",
+      "ipfs_datasets_py/tests/unit/processors/test_protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/batch_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/file_converter_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/graphrag_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/multimedia_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/pdf_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/web_archive_adapter.py",
+      "ipfs_datasets_py/tests/unit/processors/core/test_protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/specialized_scraper_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/__init__.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/universal_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/ipfs_adapter.py",
+      "ipfs_datasets_py/scripts/benchmarks/processor_benchmarks.py",
+      "ipfs_datasets_py/tests/integration/test_processor_refactoring.py",
+      "ipfs_datasets_py/tests/unit/processors/core/test_processor_registry.py"
+    ],
+    "can_process_method": [
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/_tests/unit_tests/processors_/by_mime_type_/test_docx_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/_tests/unit_tests/processors_/by_mime_type_/test_pdf_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/tests_pytest/unit_tests/processors_/by_mime_type_/test_docx_processor.py",
+      "ipfs_datasets_py/tests/unit/test_ipfs_processor_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/_tests/unit_tests/processors_/by_mime_type_/test_xlsx_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/tests_pytest/unit_tests/processors_/by_mime_type_/test_pdf_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/tests_pytest/unit_tests/processors_/by_mime_type_/test_xlsx_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/_tests/unit_tests/processors_/test_processor_factory.py",
+      "ipfs_datasets_py/tests/unit/processors/test_batch_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/batch_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/file_converter_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/graphrag_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/ipfs_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/multimedia_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/pdf_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/web_archive_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/specialized_scraper_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_ability/_audio_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_ability/_image_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_ability/_ocr_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_ability/_video_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_dependency/_pypdf2_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_dependency/_pytesseract_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_dependency/_skeleton_vllm_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_mime_type/_pdf_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_mime_type/_text_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/by_mime_type/_xlsx_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/processors/processor_factory.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/protocols.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/tests_pytest/unit_tests/processors_/test_processor_factory.py",
+      "ipfs_datasets_py/scripts/benchmarks/processor_benchmarks.py",
+      "ipfs_datasets_py/tests/unit/processors/test_protocol.py",
+      "ipfs_datasets_py/tests/unit/test_monitoring.py"
+    ],
+    "xaman_symbol": [
+      "ipfs_datasets_py/scripts/ops/security_verification/project_xaman_testnet_security_model.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_protocol_projection.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_security_model_ir.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_runtime_conformance.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_xrpl_transaction_coverage.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/xaman/adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_disproof_suite.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_protocol.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_payload_lifecycle.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_source_claim_coverage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_source_claim_coverage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_xrpl_transaction_model.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_wallet_auth_model.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_assurance_packet.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_kernel_proofs.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_fuzzing.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_device_trial.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_proof_consumer.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/extractors/xaman_runtime_trace_ingestor.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_security_claims.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/extractors/xaman_source_extractor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_native_vault_assessment.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_production_blocker_bridge.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_vendor_evidence.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/xaman_firebase_disabled_testnet.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_counterexample_triage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_transaction_trial.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_leanstral.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_tla_workflow.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/prepare_xaman_self_hosted_endpoint_rebind.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_assessment.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_network_selection.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_xrpl_transaction_coverage.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/xaman/test_adapter.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_apalache.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_code_to_ir_coverage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_model.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_smt_worker.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_counterexample_triage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_network_selection.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_native_vault_state_fuzz.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/fetch_xaman_corpus.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/restore_crypto_exchange_security_tree.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_disproof_vectors.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_device_trial.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/xaman/config.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_gap_remediation_workflow.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_protocol_projection.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_refresh.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_security_model_ir.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_transaction_trial.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_environment_probe.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_firebase_disabled_testnet.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_gap_remediation_status.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_vault_ios_preflight.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_source_extractor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/ir/examples.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_public_build_reproduction.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_solver_portfolio.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_self_hosted_endpoint_rebind.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_vendor_evidence.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_public_source_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_smt_results.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/audit_xaman_native_firebase_boundary.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_public_source_assessment.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_protocol_solver_lanes.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/run_gap_remediation_workflow.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/test_result_authority.py",
+      "ipfs_datasets_py/tests/unit/tools/test_security_ir_artifact_inventory.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_native_vault_ios_preflight.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_self_hosted_review.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_counterexample_triage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_leanstral_proof_assistant.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_xaman_environment.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_proof_consumer_invariants.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_hydration.py",
+      "ipfs_datasets_py/tests/unit/logic/security_models/crypto_exchange/test_public_api_freeze.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/results.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_gap_remediation_status.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_native_vault_fault_injection.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_self_hosted_resolution_protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_self_hosted_runtime_trace.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_code_first_formalization_profile.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_gap_remediation_status.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/hydrate_xaman_public_source.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_coq_solver_lane.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_lean_solver_lane.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_xaman_native_vault_ios_host.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_corpus_manifest.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_vault_android_preflight.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_vault_assessment.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_runtime_trace_ingestor.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_tla_workflow.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_vendor_evidence_request.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/compilers/to_smtlib.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_native_vault_android_preflight.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/check_crypto_exchange_artifact_retention.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/prepare_xaman_native_vault_fault_injection.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_opam_proof_toolchain.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/provision_xaman_self_hosted_testnet.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/validate_xaman_self_hosted_runtime_trace.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_opam_proof_toolchain.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_assurance_packet.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_vault_fault_injection.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_production_blocker_bridge.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/test_artifact_migration.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/ir/schema.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/runners/cvc5_runner.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_testnet_protocol.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_lean_solver_lane.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_firebase_boundary.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_smt_differential.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_apalache.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_fuzzing.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_smt_results.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/external_provers/test_lazy_native_solver_installation.py",
+      "ipfs_datasets_py/tools/security_ir/inventory_artifacts.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/__init__.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_native_vault_assessment.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_self_hosted_review_packet.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_disproof_vectors.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_protocol_projection.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_testnet_apalache.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_tla_workflow.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/lock_xaman_testnet_smt_worker.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/plan_gap_remediation_from_triage.py",
+      "ipfs_datasets_py/tests/integration/logic/test_ir_compatibility_exports.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_crypto_exchange_artifact_retention.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_protocol_solver_lanes.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_native_vault_state_fuzz.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_disclosure_routing.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_self_hosted_review.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_self_hosted_runtime_trace.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_kernel_proofs.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_leanstral.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_runtime_conformance.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_smt_worker.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/exchange/test_adapter.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/test_formalization_adapter.py",
+      "ipfs_datasets_py/tests/unit/logic/security_ir/test_legacy_adapter.py",
+      "ipfs_datasets_py/tests/unit/logic/security_models/crypto_exchange/test_legacy_golden_contract.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/ir/canonicalize.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/submodule_registry.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_vendor_evidence_packet.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_production_blocker_evidence_packets.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_proof_consumer_report.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_public_source_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_testnet_leanstral.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_apalache_solver_lane.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_tamarin_runtime.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/probe_xaman_native_vault_android_host.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/prove_xaman_testnet_smt_claims.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/reproduce_xaman_public_testnet_build.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/run_xaman_testnet_fuzzing.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/run_xaman_testnet_solver_portfolio.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/validate_xaman_testnet_runtime_conformance.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_production_blocker_evidence_packets.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_code_first_formalization_profile.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_adversarial_fuzzing.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_protocol.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_public_build_reproduction.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_solver_portfolio.py"
+    ],
+    "can_handle_method": [
+      "ipfs_datasets_py/tests/unit/processors/core/test_processor_registry.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/test_dashboard_profiler_strategies_session35.py",
+      "ipfs_datasets_py/tests/unit/processors/core/test_protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/legal_scrapers/registry.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/strategies/test_modal_tableaux.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/strategies/test_strategy_selector.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/TDFOL/strategies/base.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/TDFOL/strategies/cec_delegate.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/TDFOL/strategies/strategy_selector.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/_content_extractor.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/strategies/test_base.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/test_strategies_session40.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/TDFOL/strategies/forward_chaining.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/TDFOL/strategies/modal_tableaux.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/processor_registry.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/core/universal_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/file_converter/audio_processor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/handlers/_application_handler.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/handlers/_audio_handler.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/handlers/_image_handler.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/handlers/_text_handler.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/core/content_extractor/handlers/_video_handler.py",
+      "ipfs_datasets_py/ipfs_datasets_py/processors/multimedia/omni_converter_mk2/utils/handlers/_can_handle.py",
+      "ipfs_datasets_py/tests/integration/processors/test_async_integration.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/strategies/test_cec_delegate.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/TDFOL/strategies/test_forward_chaining.py",
+      "ipfs_datasets_py/tests/unit_tests/logic/test_v13_tdfol_strategy_coverage.py"
+    ],
+    "xrpl_symbol": [
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_xrpl_transaction_coverage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_xrpl_transaction_model.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_device_trial.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_network_selection.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/project_xaman_testnet_security_model.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_xrpl_transaction_coverage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_security_model_ir.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/extractors/xaman_runtime_trace_ingestor.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/prepare_xaman_self_hosted_endpoint_rebind.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_disproof_suite.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_network_selection.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_self_hosted_endpoint_rebind.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_fuzzing.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_runtime_conformance.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/xaman/config.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_protocol_projection.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_solver_portfolio.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_refresh.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/ir/examples.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_counterexample_triage.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_public_build_reproduction.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_code_first_formalization_profile.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_counterexample_triage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_vendor_evidence_request.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_public_source_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_protocol.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_source_claim_coverage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/capture_xaman_testnet_transaction_trial.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/xaman_firebase_disabled_testnet.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_assessment.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_public_source_hydration.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_source_claim_coverage.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_source_extractor.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_transaction_trial.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/extractors/xaman_source_extractor.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_production_blocker_bridge.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_apalache.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_testnet_kernel_proofs.py",
+      "ipfs_datasets_py/ipfs_datasets_py/logic/security_models/crypto_exchange/reports/xaman_tla_workflow.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_counterexample_triage.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/build_xaman_public_source_assessment.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/fetch_xaman_corpus.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_disproof_vectors.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/generate_xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/provision_xaman_self_hosted_testnet.py",
+      "ipfs_datasets_py/scripts/ops/security_verification/restore_crypto_exchange_security_tree.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_corpus_manifest.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_environment_probe.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_firebase_disabled_testnet.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_payload_lifecycle.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_security_claims.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_self_hosted_testnet_provisioner.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_assurance_verdict.py",
+      "ipfs_datasets_py/tests/logic/security_models/crypto_exchange/test_xaman_testnet_device_trial.py"
+    ]
+  },
+  "python_direct_world_id_callers": [
+    "wallet_interface/app_service.py",
+    "wallet_interface/ops.py",
+    "tests/test_world_id_wallet.py",
+    "tests/test_world_id_wallet_api.py",
+    "tests/contract/test_wallet_api_contract.py",
+    "tests/test_wallet_interface.py",
+    "tests/test_wallet_interface_api.py",
+    "tests/test_wallet_interface_ops.py",
+    "tests/test_wallet_interface_hmis_api.py",
+    "tests/test_hmis_end_to_end.py",
+    "tests/test_hmis_reconciliation.py",
+    "scripts/hmis_reconciliation_job.py",
+    "tests/world_aid/test_integration_audit_contract.py"
+  ],
+  "typescript_ui_callers": [
+    "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+    "wallet_interface/ui/src/features/wallet/lib/walletProofReview.ts",
+    "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+    "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx",
+    "wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx",
+    "wallet_interface/ui/src/shared/lib/runtimeConfig.ts",
+    "wallet_interface/ui/src/features/wallet/components/ProofCenterScreen.tsx",
+    "wallet_interface/ui/src/features/wallet/components/RegistrationScreen.tsx",
+    "wallet_interface/ui/src/features/wallet/components/SettingsScreen.tsx",
+    "wallet_interface/ui/src/features/wallet/components/UploadsScreen.tsx",
+    "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts",
+    "wallet_interface/ui/tests/world-id.spec.ts",
+    "wallet_interface/ui/tests/world-id-ux.spec.ts",
+    "wallet_interface/ui/tests/world-id-fullstack.spec.ts",
+    "wallet_interface/services/world_siwe_verifier/index.mjs"
+  ],
+  "module_imports": {
+    "wallet_interface/world_id.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "json",
+        "name": "json",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "os",
+        "name": "os",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "secrets",
+        "name": "secrets",
+        "asname": "random_secrets",
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "time",
+        "name": "time",
+        "asname": null,
+        "lineno": 8,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Callable",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Mapping",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "dataclass",
+        "asname": null,
+        "lineno": 10,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "field",
+        "asname": null,
+        "lineno": 10,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "urllib",
+        "name": "error",
+        "asname": "urllib_error",
+        "lineno": 12,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "urllib",
+        "name": "parse",
+        "asname": "urllib_parse",
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "urllib",
+        "name": "request",
+        "asname": "urllib_request",
+        "lineno": 14,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "urllib.parse",
+        "name": "urlparse",
+        "asname": null,
+        "lineno": 15,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "_vendor",
+        "name": "ensure_ipfs_datasets_py_path",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.utils.secrets",
+        "name": "resolve_secret",
+        "asname": null,
+        "lineno": 21,
+        "level": 0
+      }
+    ],
+    "wallet_interface/app_service.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "hashlib",
+        "name": "hashlib",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "json",
+        "name": "json",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "os",
+        "name": "os",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Mapping",
+        "asname": null,
+        "lineno": 8,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Sequence",
+        "asname": null,
+        "lineno": 8,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "UTC",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "datetime",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "pathlib",
+        "name": "Path",
+        "asname": null,
+        "lineno": 10,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "uuid",
+        "name": "uuid4",
+        "asname": null,
+        "lineno": 12,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "_vendor",
+        "name": "ensure_ipfs_datasets_py_path",
+        "asname": null,
+        "lineno": 14,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "schemas.app_schemas",
+        "name": "SavedServiceRecord",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "schemas.app_schemas",
+        "name": "ServiceInteractionRecord",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "schemas.app_schemas",
+        "name": "ServicePlanRecord",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "service_matching",
+        "name": "ServiceMatch",
+        "asname": null,
+        "lineno": 16,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "service_matching",
+        "name": "ServiceRecord",
+        "asname": null,
+        "lineno": 16,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "service_matching",
+        "name": "load_services_jsonl",
+        "asname": null,
+        "lineno": 16,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "service_matching",
+        "name": "match_services",
+        "asname": null,
+        "lineno": 16,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "services",
+        "name": "HmisDomainServiceMixin",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "services",
+        "name": "InteractionDomainServiceMixin",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "services",
+        "name": "RecordDomainServiceMixin",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "services",
+        "name": "WalletDomainServiceMixin",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "DeterministicLocationDistanceProofBackend",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "DeterministicLocationRegionProofBackend",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "LocalWalletRepository",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "ProofBackend",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "SimulatedProofBackend",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "WalletService",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet",
+        "name": "create_encrypted_blob_store",
+        "asname": null,
+        "lineno": 26,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet.audit",
+        "name": "append_audit_event",
+        "asname": null,
+        "lineno": 35,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet.ucan",
+        "name": "resource_for_location",
+        "asname": null,
+        "lineno": 36,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "ipfs_datasets_py.wallet.ucan",
+        "name": "resource_for_wallet",
+        "asname": null,
+        "lineno": 36,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "proof_backends",
+        "name": "HttpLocationRegionProofBackend",
+        "asname": null,
+        "lineno": 41,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdConfig",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdRequestJson",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdVerificationError",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "load_world_id_config",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "normalize_world_id_idkit_response",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "redact_world_id_payload",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "sign_world_id_request_from_config",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "verify_world_id_proof_from_config",
+        "asname": null,
+        "lineno": 42,
+        "level": 1
+      }
+    ],
+    "wallet_interface/ops.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "argparse",
+        "name": "argparse",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "json",
+        "name": "json",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "os",
+        "name": "os",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "sys",
+        "name": "sys",
+        "asname": null,
+        "lineno": 8,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "tempfile",
+        "name": "tempfile",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "time",
+        "name": "time",
+        "asname": null,
+        "lineno": 10,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Callable",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Mapping",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "collections.abc",
+        "name": "Sequence",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "dataclass",
+        "asname": null,
+        "lineno": 12,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "field",
+        "asname": null,
+        "lineno": 12,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "UTC",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "datetime",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "pathlib",
+        "name": "Path",
+        "asname": null,
+        "lineno": 14,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "IO",
+        "asname": null,
+        "lineno": 15,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 15,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "urllib",
+        "name": "request",
+        "asname": "urllib_request",
+        "lineno": 16,
+        "level": 0
+      }
+    ],
+    "wallet_interface/routes/world_id.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "app_service",
+        "name": "WalletInterfaceService",
+        "asname": null,
+        "lineno": 18,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "schemas.base",
+        "name": "BaseModel",
+        "asname": null,
+        "lineno": 19,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "schemas.base",
+        "name": "Field",
+        "asname": null,
+        "lineno": 19,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdConfigError",
+        "asname": null,
+        "lineno": 20,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdPayloadError",
+        "asname": null,
+        "lineno": 20,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdSignatureError",
+        "asname": null,
+        "lineno": 20,
+        "level": 2
+      },
+      {
+        "kind": "import_from",
+        "module": "world_id",
+        "name": "WorldIdVerificationError",
+        "asname": null,
+        "lineno": 20,
+        "level": 2
+      }
+    ],
+    "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "json",
+        "name": "json",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "hashlib",
+        "name": "hashlib",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "hmac",
+        "name": "hmac",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "re",
+        "name": "re",
+        "asname": null,
+        "lineno": 8,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "tempfile",
+        "name": "tempfile",
+        "asname": null,
+        "lineno": 9,
+        "level": 0
+      },
+      {
+        "kind": "import",
+        "module": "uuid",
+        "name": "uuid",
+        "asname": null,
+        "lineno": 10,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "datetime",
+        "asname": null,
+        "lineno": 11,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "pathlib",
+        "name": "Path",
+        "asname": null,
+        "lineno": 12,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Dict",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "List",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Mapping",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Optional",
+        "asname": null,
+        "lineno": 13,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "analytics",
+        "name": "aggregate_count",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "analytics",
+        "name": "aggregate_count_by_fields",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "analytics",
+        "name": "contribution_nullifier",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "analytics",
+        "name": "make_contribution",
+        "asname": null,
+        "lineno": 15,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "audit",
+        "name": "append_audit_event",
+        "asname": null,
+        "lineno": 16,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "ENCRYPTION_SUITE",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "KEY_WRAP_ALGORITHM",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "EncryptedBlob",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "b64decode",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "b64encode",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "decrypt_bytes",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "encrypt_bytes",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "random_key",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "sha256_hex",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "unwrap_key",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "crypto",
+        "name": "wrap_key",
+        "asname": null,
+        "lineno": 17,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "AccessDeniedError",
+        "asname": null,
+        "lineno": 30,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "ApprovalRequiredError",
+        "asname": null,
+        "lineno": 30,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "DataWalletError",
+        "asname": null,
+        "lineno": 30,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "GrantError",
+        "asname": null,
+        "lineno": 30,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "MissingRecordError",
+        "asname": null,
+        "lineno": 30,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "location",
+        "name": "distance_membership_statement",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "location",
+        "name": "haversine_distance_km",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "location",
+        "name": "make_coarse_location_claim",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "location",
+        "name": "region_membership_statement",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "location",
+        "name": "serialize_location",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "manifest",
+        "name": "canonical_bytes",
+        "asname": null,
+        "lineno": 44,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "manifest",
+        "name": "canonical_dumps",
+        "asname": null,
+        "lineno": 44,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AggregateResult",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AccessRequest",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsConsent",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsContribution",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsTemplate",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ApprovalRequest",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AuditEvent",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DataRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DataVersion",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DerivedArtifact",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "Grant",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "GrantReceipt",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "KeyWrap",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "LocationClaim",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "MissingPersonDeadDropRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ProofReceipt",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "SavedServiceRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ServiceInteractionRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ServicePlanRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ServicePlanShareGrantResult",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageHealthReport",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageRef",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageReplicaStatus",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "Wallet",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletRecordMetadataRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletRecoveryBundleRecord",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletStorageHealthReport",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletInvocation",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WorldIdBinding",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "utc_now",
+        "asname": null,
+        "lineno": 45,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "approve_request",
+        "asname": null,
+        "lineno": 77,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "create_approval_request",
+        "asname": null,
+        "lineno": 77,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "normalize_governance_policy",
+        "asname": null,
+        "lineno": 77,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "operation_requires_approval",
+        "asname": null,
+        "lineno": 77,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "verify_approval",
+        "asname": null,
+        "lineno": 77,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "ProofBackend",
+        "asname": null,
+        "lineno": 84,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "SimulatedProofBackend",
+        "asname": null,
+        "lineno": 84,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "create_simulated_proof_receipt",
+        "asname": null,
+        "lineno": 84,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "verifier_digest",
+        "asname": null,
+        "lineno": 84,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "EncryptedBlobStore",
+        "asname": null,
+        "lineno": 85,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "LocalEncryptedBlobStore",
+        "asname": null,
+        "lineno": 85,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "assert_grant_allows",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "assert_invocation_allows",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "create_invocation",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "is_expired",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "record_id_from_resource",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "resource_for_export",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "resource_for_location",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "resource_for_record",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "resource_for_wallet",
+        "asname": null,
+        "lineno": 86,
+        "level": 1
+      }
+    ],
+    "ipfs_datasets_py/ipfs_datasets_py/wallet/models.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "asdict",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "dataclass",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "dataclasses",
+        "name": "field",
+        "asname": null,
+        "lineno": 5,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "datetime",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "datetime",
+        "name": "timezone",
+        "asname": null,
+        "lineno": 6,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Any",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Dict",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "List",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "typing",
+        "name": "Optional",
+        "asname": null,
+        "lineno": 7,
+        "level": 0
+      }
+    ],
+    "ipfs_datasets_py/ipfs_datasets_py/wallet/__init__.py": [
+      {
+        "kind": "import_from",
+        "module": "__future__",
+        "name": "annotations",
+        "asname": null,
+        "lineno": 3,
+        "level": 0
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "AccessDeniedError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "ApprovalRequiredError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "DataWalletError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "DecryptionError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "GrantError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "exceptions",
+        "name": "MissingRecordError",
+        "asname": null,
+        "lineno": 5,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AggregateResult",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AccessRequest",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsConsent",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsContribution",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AnalyticsTemplate",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ApprovalRequest",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "AuditEvent",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DataRecord",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DataVersion",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "DerivedArtifact",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "Grant",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "GrantReceipt",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "KeyWrap",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "LocationClaim",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "ProofReceipt",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageHealthReport",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageRef",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "StorageReplicaStatus",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "Wallet",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletStorageHealthReport",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WalletInvocation",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "models",
+        "name": "WorldIdBinding",
+        "asname": null,
+        "lineno": 13,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "multisig",
+        "name": "operation_requires_approval",
+        "asname": null,
+        "lineno": 37,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "privacy",
+        "name": "AnalyticsPrivacyPolicy",
+        "asname": null,
+        "lineno": 38,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "DeterministicLocationDistanceProofBackend",
+        "asname": null,
+        "lineno": 39,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "DeterministicLocationRegionProofBackend",
+        "asname": null,
+        "lineno": 39,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "ProofBackend",
+        "asname": null,
+        "lineno": 39,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "ProofBackendRegistry",
+        "asname": null,
+        "lineno": 39,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "proofs",
+        "name": "SimulatedProofBackend",
+        "asname": null,
+        "lineno": 39,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "repository",
+        "name": "LocalWalletRepository",
+        "asname": null,
+        "lineno": 46,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "service",
+        "name": "DataWalletService",
+        "asname": null,
+        "lineno": 47,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "FilecoinEncryptedBlobStore",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "IPFSEncryptedBlobStore",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "LocalEncryptedBlobStore",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "ReplicatedEncryptedBlobStore",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "S3EncryptedBlobStore",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "WalletStorageBackendConfig",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "WalletStorageConfig",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "storage",
+        "name": "create_encrypted_blob_store",
+        "asname": null,
+        "lineno": 48,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_CONFORMANCE_FIXTURE_ID",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_EXTERNAL_ADAPTER_ID",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_EXTERNAL_ADAPTER_KEY",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_EXTERNAL_BLOCK_CODEC",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_EXTERNAL_STACK_ID",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_PROFILE_ID",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "WALLET_UCAN_TOKEN_PREFIX",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "validate_wallet_ucan_external_adapter_fixture",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "wallet_ucan_external_adapter_fixture",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "wallet_ucan_external_adapter_profile",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "invocation_to_ucan_profile_payload",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "validate_ucan_profile_payload",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "validate_wallet_ucan_conformance_fixture",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "wallet_ucan_conformance_fixture",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "wallet_ucan_profile",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      },
+      {
+        "kind": "import_from",
+        "module": "ucan",
+        "name": "wallet_ucan_reference_conformance_fixture",
+        "asname": null,
+        "lineno": 58,
+        "level": 1
+      }
+    ]
+  },
+  "planned_import_rewrites_after_move": [
+    {
+      "from": "wallet_interface.world_id",
+      "to": "ipfs_datasets_py.processors.wallets.worldcoin.*",
+      "compatibility": "wallet_interface.world_id becomes thin re-export/wrapper (WALPROC-G710)",
+      "status": "planned"
+    },
+    {
+      "from": "wallet_interface.app_service World ID helpers",
+      "to": "delegate to processors.wallets.worldcoin + DataWalletService bindings",
+      "status": "planned"
+    },
+    {
+      "from": "none (xaman runtime)",
+      "to": "ipfs_datasets_py.processors.wallets.xaman",
+      "status": "create",
+      "notes": "No existing runtime import path to preserve for production XRPL processor."
+    }
+  ],
+  "incompatible_generic_processor_surfaces": [
+    {
+      "id": "legacy-processor-protocol",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+      "class": "ProcessorProtocol",
+      "dispatch_method": "can_process",
+      "dispatch_signature": "async def can_process(self, input_source: Union[str, Path]) -> bool",
+      "compatible_with": "can_process adapters under processors/adapters/*",
+      "decision": "retain_generic_do_not_use_for_wallets",
+      "owner": "ipfs_datasets_py/processors (existing generic media/document processors)",
+      "notes": "Incompatible with core can_handle surface. Wallet domain must not pick this by accident."
+    },
+    {
+      "id": "core-processor-protocol",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+      "class": "ProcessorProtocol",
+      "dispatch_method": "can_handle",
+      "dispatch_signature": "async def can_handle(self, context: ProcessingContext) -> bool",
+      "registry_path": "ipfs_datasets_py/ipfs_datasets_py/processors/core/registry.py",
+      "registry_class": "ProcessorRegistry",
+      "compatible_with": "processors/core/universal_processor.py, processors/core/processor_registry.py",
+      "decision": "retain_generic_do_not_use_for_wallets_directly",
+      "owner": "ipfs_datasets_py/processors/core",
+      "notes": "Incompatible with legacy can_process. Wallet processors define domain protocols; at most one reviewed adapter later (WALPROC-G030/G600)."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BLOCKER-WALPROC-G010-001",
+      "severity": "high",
+      "title": "No single owner yet for which generic ProcessorProtocol adapter wallets will bind to",
+      "detail": "Both processors/protocol.py (can_process) and processors/core/protocol.py (can_handle) exist and are incompatible. WALPROC-G030 must produce an ADR permitting exactly one later compatibility adapter. Until then, ownership of the adapter symbol is unresolved; do not implement an opportunistic adapter.",
+      "related_paths": [
+        "ipfs_datasets_py/ipfs_datasets_py/processors/protocol.py",
+        "ipfs_datasets_py/ipfs_datasets_py/processors/core/protocol.py",
+        "ipfs_datasets_py/ipfs_datasets_py/processors/core/registry.py"
+      ],
+      "resolving_goal": "WALPROC-G030",
+      "guessed": false
+    }
+  ]
+}
