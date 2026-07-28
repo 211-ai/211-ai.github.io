@@ -324,7 +324,7 @@ Program invariants:
 - Embedding query: world id idkit developer portal rp signing hash to field redaction migration
 - AST query: WorldIdConfig WorldIdRpSignature sign_world_id_request normalize_idkit_response verify_world_id_proof
 - Goal completion schema version: 1
-- Completion confidence: 0.166667
+- Completion confidence: 0.083333
 - Uncovered criteria: ["Existing official vectors are byte-identical","safe defaults reject legacy evidence unless explicitly permitted","v3/v4/session labels remain accurate","injected transport and endpoint policy are bounded","config serializes secret references only","raw proof/nullifier/upstream payload cannot enter logs/errors/public dicts","package import has no I/O."]
 - Stale evidence: []
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
@@ -454,7 +454,7 @@ Program invariants:
 - Embedding query: xaman payload lifecycle xrpl wallet account activity settlement validation redacted export
 - AST query: XamanWalletProcessor XamanPayload PayloadStatus
 - Goal completion schema version: 1
-- Completion confidence: 0.166667
+- Completion confidence: 0.083333
 - Uncovered criteria: ["Created/opened/signed/rejected/expired/cancelled/submitted/validated/failed/unknown states remain distinct","Xaman API success is never settlement","transaction facts are verified through XRPL","network/account/payload identity is bound","memos and payload content follow redaction/size policy","processor cannot approve, sign, or submit."]
 - Stale evidence: []
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
@@ -714,7 +714,7 @@ Program invariants:
 - Embedding query: wallet processors documentation examples schema migration compatibility rollback worldcoin xaman
 - AST query: __all__
 - Goal completion schema version: 1
-- Completion confidence: 0.166667
+- Completion confidence: 0.083333
 - Uncovered criteria: ["Docs distinguish World ID/World Chain/WLD and Xaman/XRPL","examples are offline or require explicit network opt-in","import and schema migration windows are stated","extras and capability gaps are documented","no example signs/broadcasts or embeds a real address/key","rollback covers target package version and outer gitlink/wrapper."]
 - Stale evidence: []
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
@@ -1415,6 +1415,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G120` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G120"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G826 Prove WALPROC-G130 for Goal packet aggregate for WALPROC-G000, WALPROC-G801, WALPROC-G802, WALPROC-G803, WALPROC-G804, WALPROC-G805, WALPROC-G806, WALPROC-G807, WALPROC-G808, WALPROC-G809
 
@@ -1434,6 +1441,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G130` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G130"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G827 Prove WALPROC-G200 for Goal packet aggregate for WALPROC-G000, WALPROC-G801, WALPROC-G802, WALPROC-G803, WALPROC-G804, WALPROC-G805, WALPROC-G806, WALPROC-G807, WALPROC-G808, WALPROC-G809
 
@@ -1453,6 +1467,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G200` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G200"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G828 Prove WALPROC-G210 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1472,6 +1493,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G210` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G210"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G829 Prove WALPROC-G220 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1491,6 +1519,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G220` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G220"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G830 Prove WALPROC-G610 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1510,6 +1545,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G610` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G610"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G831 Prove WALPROC-G620 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1529,6 +1571,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G620` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G620"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G832 Prove WALPROC-G630 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1548,6 +1597,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G630` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G630"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G833 Prove WALPROC-G640 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1567,6 +1623,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G640` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G640"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G834 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py for Migrate World ID pure protocol code
 
@@ -1586,6 +1649,13 @@ Program invariants:
 - Parallel lane: wallet-processors/worldcoin
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G835 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signin... for Migrate World ID pure protocol code
 
@@ -1605,6 +1675,13 @@ Program invariants:
 - Parallel lane: wallet-processors/worldcoin
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G836 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py for Migrate World ID pure protocol code
 
@@ -1624,6 +1701,13 @@ Program invariants:
 - Parallel lane: wallet-processors/worldcoin
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G837 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/develo... for Migrate World ID pure protocol code
 
@@ -1643,6 +1727,13 @@ Program invariants:
 - Parallel lane: wallet-processors/worldcoin
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G838 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman for Implement Xaman wallet and payload processing over XRPL
 
@@ -1662,6 +1753,13 @@ Program invariants:
 - Parallel lane: wallet-processors/xaman
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G839 Prove ipfs_datasets_py/tests/unit/processors/wallets/xaman for Implement Xaman wallet and payload processing over XRPL
 
@@ -1681,6 +1779,13 @@ Program invariants:
 - Parallel lane: wallet-processors/xaman
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/xaman` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/tests/unit/processors/wallets/xaman"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G840 Prove ipfs_datasets_py/docs/wallet_processors/README.md for Finish packaging, schemas, examples, and migration documentation
 
@@ -1700,6 +1805,13 @@ Program invariants:
 - Parallel lane: wallet-processors/release
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/docs/wallet_processors/README.md` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/docs/wallet_processors/README.md"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G841 Prove ipfs_datasets_py/examples/wallet_processors for Finish packaging, schemas, examples, and migration documentation
 
@@ -1719,3 +1831,86 @@ Program invariants:
 - Parallel lane: wallet-processors/release
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/examples/wallet_processors` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/examples/wallet_processors"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
+
+## WALPROC-G842 Prove WALPROC-G700 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3000
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G700`.
+- Evidence: WALPROC-G700
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G700
+- AST query: WALPROC-G700
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G700` with a narrow, verifiable change.
+
+## WALPROC-G843 Prove WALPROC-G710 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3001
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G710`.
+- Evidence: WALPROC-G710
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G710
+- AST query: WALPROC-G710
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G710` with a narrow, verifiable change.
+
+## WALPROC-G844 Prove WALPROC-G800 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3002
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G800`.
+- Evidence: WALPROC-G800
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G800
+- AST query: WALPROC-G800
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G800` with a narrow, verifiable change.
+
+## WALPROC-G845 Prove ipfs_datasets_py/tests/unit/processors/wallets/worldcoin for Migrate World ID pure protocol code
+
+- Status: active
+- Parent: WALPROC-G100
+- Fib priority: 5000
+- Track: worldcoin
+- Priority: P0
+- Bundle: wallet-processors/worldcoin
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/unit/processors/wallets/worldcoin`.
+- Evidence: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- AST query: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Parallel lane: wallet-processors/worldcoin
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/worldcoin` with a narrow, verifiable change.
