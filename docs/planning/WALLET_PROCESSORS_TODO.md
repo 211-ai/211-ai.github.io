@@ -153,7 +153,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-003 Implement wallet processor migration objective: Freeze compatibility, security, and fixture baselines
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
