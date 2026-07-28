@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import io
+import json
 import re
+import wave
 import zipfile
 from collections.abc import Mapping
 from pathlib import Path
@@ -10,6 +12,51 @@ from types import SimpleNamespace
 import pytest
 
 from scripts import precompute_indextts_responses as precompute
+
+from ipfs_accelerate_py.voice_jobs.executor import (
+    ArtifactPolicy,
+    VoiceJobExecutionError,
+)
+from ipfs_accelerate_py.voice_jobs.regeneration import (
+    RegenerationEndpointContract,
+    RegenerationRunnerPolicy,
+    VoiceRegenerationError,
+    VoiceRegenerationRunner,
+)
+from ipfs_datasets_py.voice.regeneration import (
+    AbbyVoiceRegenerationError,
+    AbbyVoiceRegenerationPlan,
+    read_regeneration_plan,
+)
+
+
+def _runner_wav_bytes() -> bytes:
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(24_000)
+        audio.writeframes(b"\x01\x00" * 240)
+    return buffer.getvalue()
+
+
+def _regeneration_plan() -> AbbyVoiceRegenerationPlan:
+    records = [
+        {
+            "audioId": f"audio-{name}",
+            "responseId": f"response-{name}",
+            "selectedDatasetAudioPath": f"audio/{name}.wav",
+            "selectedText": text,
+            "normalizedRepairText": text,
+            "riskReasons": ["historical_tts_artifact"],
+        }
+        for name, text in (
+            ("retry", "Retry this safe response."),
+            ("quarantine", "Quarantine this unsafe response."),
+            ("exhaust", "Exhaust this unavailable response."),
+        )
+    ]
+    return AbbyVoiceRegenerationPlan.from_records(records)
 
 
 def test_indextts_batch_fn_index_discovers_configured_api(monkeypatch) -> None:
@@ -262,6 +309,306 @@ def test_indextts_contract_summary_reports_registered_batch_alias(monkeypatch) -
     assert summary["uploadResultsRegistered"] is True
     assert summary["remoteBucketPipelineReady"] is True
     assert summary["recommendedMode"] == "gen_batch_with_upload"
+
+
+def test_endpoint_contract_probe_is_read_only_and_fails_closed_on_drift() -> None:
+    calls: list[str] = []
+
+    class FakeClient:
+        space_url = "https://fixture-indextts.example"
+
+        def get_config(self) -> dict[str, object]:
+            calls.append("get_config")
+            return {
+                "dependencies": [
+                    {
+                        "id": 6,
+                        "api_name": "/gen_single",
+                        "inputs": list(range(24)),
+                    }
+                ]
+            }
+
+        def queue_join(self, *_args: object, **_kwargs: object) -> str:
+            raise AssertionError("read-only probe attempted generation")
+
+        def upload_file(self, *_args: object, **_kwargs: object) -> object:
+            raise AssertionError("read-only probe attempted upload")
+
+    receipt = precompute.probe_indextts_endpoint_contract(client=FakeClient())
+
+    assert calls == ["get_config"]
+    assert receipt["compatible"] is True
+    assert receipt["read_only"] is True
+    assert receipt["generation_request_count"] == 0
+    assert receipt["upload_request_count"] == 0
+    assert receipt["api_name"] == "/gen_single"
+    assert receipt["function_index"] == 6
+    assert receipt["input_count"] == 24
+    assert (
+        RegenerationEndpointContract.from_mapping(receipt).contract_id
+        == receipt["contract_id"]
+    )
+    serialized = json.dumps(receipt, sort_keys=True)
+    assert "authorization" not in serialized.casefold()
+    assert "token" not in serialized.casefold()
+
+    with pytest.raises(RuntimeError, match="input_count_mismatch"):
+        precompute.probe_indextts_endpoint_contract(
+            client=FakeClient(),
+            expected_input_count=25,
+        )
+
+
+def test_package_canary_manifest_is_deterministic_bounded_and_no_dispatch(
+    monkeypatch,
+) -> None:
+    provider_touched = False
+
+    def forbidden_provider(*_args: object, **_kwargs: object) -> bytes:
+        nonlocal provider_touched
+        provider_touched = True
+        raise AssertionError("manifest construction attempted provider dispatch")
+
+    monkeypatch.setattr(precompute, "synthesize", forbidden_provider)
+    contract = precompute.probe_indextts_endpoint_contract(
+        client=type(
+            "FakeClient",
+            (),
+            {
+                "space_url": "https://fixture-indextts.example",
+                "get_config": lambda self: {
+                    "dependencies": [
+                        {
+                            "id": 6,
+                            "api_name": "/gen_single",
+                            "inputs": list(range(24)),
+                        }
+                    ]
+                },
+            },
+        )()
+    )
+    plan = _regeneration_plan()
+
+    first = precompute.build_canary_dispatch_manifest(
+        plan,
+        contract,
+        max_items=2,
+        max_attempts_per_item=2,
+        max_provider_requests=4,
+        cost_microusd_per_request=7,
+        max_cost_microusd=28,
+    )
+    second = precompute.build_canary_dispatch_manifest(
+        AbbyVoiceRegenerationPlan(items=tuple(reversed(plan.items))),
+        contract,
+        max_items=2,
+        max_attempts_per_item=2,
+        max_provider_requests=4,
+        cost_microusd_per_request=7,
+        max_cost_microusd=28,
+    )
+
+    assert first == second
+    assert provider_touched is False
+    assert first["schema_version"] == "abby_voice_regeneration_dispatch_v1"
+    assert first["dispatch_authorized"] is False
+    assert first["remote_mutation_authority"] is False
+    assert first["provider_request_count"] == 0
+    assert first["state"] == "awaiting_operator_approval"
+    assert first["item_count"] == 2
+    assert first["limits"]["max_provider_requests"] == 4
+    assert first["limits"]["max_cost_microusd"] == 28
+    assert all(len(item["task_id"]) == 64 for item in first["items"])
+
+
+def test_regeneration_plan_file_round_trip_is_canonical(tmp_path: Path) -> None:
+    plan = _regeneration_plan()
+    plan_path = tmp_path / "regeneration-plan.json"
+    plan_path.write_text(json.dumps(plan.to_dict()), encoding="utf-8")
+
+    loaded = read_regeneration_plan(plan_path)
+
+    assert loaded.canonical_bytes() == plan.canonical_bytes()
+    assert loaded.plan_id == plan.plan_id
+
+    tampered = plan.to_dict()
+    tampered["item_count"] += 1
+    plan_path.write_text(json.dumps(tampered), encoding="utf-8")
+    with pytest.raises(
+        AbbyVoiceRegenerationError,
+        match="not its canonical serialized representation",
+    ):
+        read_regeneration_plan(plan_path)
+
+
+def test_fake_provider_runner_retries_quarantines_exhausts_and_resumes(
+    tmp_path: Path,
+) -> None:
+    contract = RegenerationEndpointContract(
+        endpoint_url="https://fixture-indextts.example",
+        api_name="/gen_single",
+        function_index=6,
+        input_count=24,
+        recommended_mode="parallel-gen-single",
+        config_sha256="a" * 64,
+    )
+    policy = RegenerationRunnerPolicy(
+        max_items=3,
+        max_attempts_per_item=2,
+        max_provider_requests=6,
+        cost_microusd_per_request=5,
+        max_cost_microusd=30,
+    )
+    manifest = _regeneration_plan().canary_dispatch_manifest(
+        endpoint_contract=contract,
+        size=3,
+        runner_policy=policy,
+    )
+    calls: dict[str, int] = {}
+
+    def fake_provider(text: str, **_kwargs: object) -> bytes:
+        calls[text] = calls.get(text, 0) + 1
+        if text.startswith("Retry") and calls[text] == 1:
+            raise VoiceJobExecutionError("provider_timeout", retryable=True)
+        if text.startswith("Quarantine"):
+            raise VoiceJobExecutionError("unsafe_spoken_text", retryable=False)
+        if text.startswith("Exhaust"):
+            raise VoiceJobExecutionError("provider_unavailable", retryable=True)
+        return _runner_wav_bytes()
+
+    checkpoint = tmp_path / "run-receipt.json"
+    runner = VoiceRegenerationRunner(
+        provider=fake_provider,
+        contract_probe=lambda: contract,
+        checkpoint_path=checkpoint,
+        artifact_policy=ArtifactPolicy(output_root=tmp_path / "artifacts"),
+        sleep=lambda _seconds: None,
+    )
+
+    with pytest.raises(VoiceRegenerationError, match="dispatch_authorized"):
+        runner.run(manifest)
+    assert calls == {}
+
+    receipt = runner.run(manifest, dispatch_authorized=True)
+
+    assert receipt["summary"] == {
+        "pending": 0,
+        "provider_exhausted": 1,
+        "quarantined": 1,
+        "regenerated": 1,
+    }
+    assert receipt["provider_request_count"] == 5
+    assert receipt["cost_microusd_spent"] == 25
+    assert sorted(calls.values()) == [1, 2, 2]
+    statuses = {item["status"] for item in receipt["items"]}
+    assert statuses == {"regenerated", "quarantined", "provider_exhausted"}
+    checkpoint_text = checkpoint.read_text(encoding="utf-8")
+    assert "unsafe_spoken_text" in checkpoint_text
+    assert "provider_unavailable" in checkpoint_text
+    assert "_runner_wav_bytes" not in checkpoint_text
+    assert "RIFF" not in checkpoint_text
+
+    calls_before_resume = dict(calls)
+    resumed = VoiceRegenerationRunner(
+        provider=fake_provider,
+        contract_probe=lambda: contract,
+        checkpoint_path=checkpoint,
+        artifact_policy=ArtifactPolicy(output_root=tmp_path / "artifacts"),
+        sleep=lambda _seconds: None,
+    ).run(manifest, dispatch_authorized=True)
+
+    assert resumed == receipt
+    assert calls == calls_before_resume
+
+
+def test_runner_rejects_tampered_regenerated_checkpoint(tmp_path: Path) -> None:
+    contract = RegenerationEndpointContract(
+        endpoint_url="https://fixture-indextts.example",
+        api_name="/gen_single",
+        function_index=6,
+        input_count=24,
+        recommended_mode="parallel-gen-single",
+        config_sha256="b" * 64,
+    )
+    policy = RegenerationRunnerPolicy(
+        max_items=1,
+        max_attempts_per_item=1,
+        max_provider_requests=1,
+        max_cost_microusd=1,
+    )
+    manifest = _regeneration_plan().canary_dispatch_manifest(
+        endpoint_contract=contract,
+        size=1,
+        runner_policy=policy,
+    )
+    checkpoint = tmp_path / "run-receipt.json"
+    runner = VoiceRegenerationRunner(
+        provider=lambda _text, **_kwargs: _runner_wav_bytes(),
+        contract_probe=lambda: contract,
+        checkpoint_path=checkpoint,
+        artifact_policy=ArtifactPolicy(output_root=tmp_path / "artifacts"),
+    )
+    runner.run(manifest, dispatch_authorized=True)
+    payload = json.loads(checkpoint.read_text(encoding="utf-8"))
+    payload["items"][0]["result"] = None
+    checkpoint.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(
+        VoiceRegenerationError,
+        match="requires a canonical result",
+    ):
+        runner.run(manifest, dispatch_authorized=True)
+
+
+def test_runner_reprobes_and_rejects_endpoint_drift_before_dispatch(
+    tmp_path: Path,
+) -> None:
+    original = RegenerationEndpointContract(
+        endpoint_url="https://fixture-indextts.example",
+        api_name="/gen_single",
+        function_index=6,
+        input_count=24,
+        recommended_mode="parallel-gen-single",
+        config_sha256="c" * 64,
+    )
+    drifted = RegenerationEndpointContract(
+        endpoint_url="https://fixture-indextts.example",
+        api_name="/gen_single",
+        function_index=7,
+        input_count=24,
+        recommended_mode="parallel-gen-single",
+        config_sha256="d" * 64,
+    )
+    manifest = _regeneration_plan().canary_dispatch_manifest(
+        endpoint_contract=original,
+        size=1,
+        runner_policy=RegenerationRunnerPolicy(
+            max_items=1,
+            max_attempts_per_item=1,
+            max_provider_requests=1,
+            max_cost_microusd=1,
+        ),
+    )
+    provider_calls = 0
+
+    def forbidden_provider(_text: str, **_kwargs: object) -> bytes:
+        nonlocal provider_calls
+        provider_calls += 1
+        raise AssertionError("endpoint drift attempted provider dispatch")
+
+    runner = VoiceRegenerationRunner(
+        provider=forbidden_provider,
+        contract_probe=lambda: drifted,
+        checkpoint_path=tmp_path / "run-receipt.json",
+    )
+
+    with pytest.raises(VoiceRegenerationError, match="endpoint contract changed"):
+        runner.run(manifest, dispatch_authorized=True)
+
+    assert provider_calls == 0
+    assert runner.checkpoint_path.exists() is False
 
 
 def test_ensure_upload_capable_batch_contract_rejects_local_sync_fallback(monkeypatch) -> None:
