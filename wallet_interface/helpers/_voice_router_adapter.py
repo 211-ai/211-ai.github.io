@@ -23,7 +23,19 @@ from typing import Any, Final
 
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
-VOICE_ROUTER_ADAPTER_VERSION = "1.0"
+VOICE_ROUTER_ADAPTER_VERSION = "1.1"
+_AUDIO_MIME_TYPES: Final[dict[str, str]] = {
+    "aac": "audio/aac",
+    "flac": "audio/flac",
+    "m4a": "audio/mp4",
+    "mp3": "audio/mpeg",
+    "mpeg": "audio/mpeg",
+    "ogg": "audio/ogg",
+    "opus": "audio/ogg",
+    "wav": "audio/wav",
+    "wave": "audio/wav",
+    "webm": "audio/webm",
+}
 
 # Residual discoverability anchors for objective/ABBY-VOICE-G010. Keep the exact
 # evidence phrases stable so embedding/AST scans re-find them on this authorized
@@ -81,6 +93,11 @@ def _text_field(payload: Mapping[str, object], *names: str) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _mapping_field(payload: Mapping[str, object], *names: str) -> dict[str, object]:
+    value = _field(payload, *names)
+    return dict(value) if isinstance(value, Mapping) else {}
 
 
 def _decode_audio(value: object | None) -> bytes | str | None:
@@ -226,10 +243,10 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         # generation.  Reusing userPrompt avoids a second paid STT call.  If
         # it is absent and audio exists, the canonical STT provider is used.
         transcript = _text_field(payload, "userPrompt", "user_prompt")
-    context_value = _field(payload, "context")
-    grounding_value = _field(payload, "grounding")
-    context = dict(context_value) if isinstance(context_value, Mapping) else {}
-    grounding = dict(grounding_value) if isinstance(grounding_value, Mapping) else {}
+    context = _mapping_field(payload, "context")
+    grounding = _mapping_field(payload, "grounding")
+    stt_options = _mapping_field(payload, "stt_options", "sttOptions")
+    tts_options = _mapping_field(payload, "tts_options", "ttsOptions")
     return voice_turn_request(
         audio=audio,
         transcript=transcript,
@@ -243,12 +260,15 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         tts_provider=_text_field(payload, "tts_provider", "ttsProvider"),
         stt_model=_text_field(payload, "stt_model", "sttModel"),
         tts_model=_text_field(payload, "tts_model", "ttsModel"),
+        device=_text_field(payload, "device"),
         output_format=_text_field(payload, "output_format", "outputFormat"),
         fallback_text=(
             _text_field(payload, "fallbackText", "fallback_text", "response_text", "responseText")
             or _text_field(payload, "text")
             or "I’m sorry, I couldn’t complete that voice request. Please try again."
         ),
+        stt_options=stt_options,
+        tts_options=tts_options,
     )
 
 
@@ -263,7 +283,11 @@ def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> d
         payload["audio_base64"] = encoded
         # Keep the camelCase spelling consumed by older wallet proxy clients.
         payload["audioBase64"] = encoded
-        payload["audio_mime_type"] = f"audio/{result.audio_format or 'wav'}"
+        audio_format = str(result.audio_format or "wav").strip().lower().lstrip(".")
+        payload["audio_mime_type"] = _AUDIO_MIME_TYPES.get(
+            audio_format,
+            f"audio/{audio_format}",
+        )
     return payload
 
 
@@ -278,8 +302,10 @@ class WalletVoiceRouterAdapter:
         payload: Mapping[str, object],
         *,
         template_provider: object | None = None,
+        fallback_template_provider: object | None = None,
         stt_provider: object | None = None,
         tts_provider: object | None = None,
+        audio_resolver: object | None = None,
     ) -> dict[str, object] | None:
         if not self.enabled:
             return None
@@ -295,7 +321,9 @@ class WalletVoiceRouterAdapter:
             request,
             stt_provider_instance=stt,
             template_provider=provider,
+            fallback_template_provider=fallback_template_provider,
             tts_provider_instance=tts,
+            audio_resolver=audio_resolver,
         )
         return serialize_voice_turn_result(result)
 
@@ -305,16 +333,20 @@ def process_wallet_voice_turn(
     *,
     enabled: bool | None = None,
     template_provider: object | None = None,
+    fallback_template_provider: object | None = None,
     stt_provider: object | None = None,
     tts_provider: object | None = None,
+    audio_resolver: object | None = None,
 ) -> dict[str, object] | None:
     """Process one wallet proxy envelope when the staged flag is enabled."""
 
     return WalletVoiceRouterAdapter(enabled=enabled).process(
         payload,
         template_provider=template_provider,
+        fallback_template_provider=fallback_template_provider,
         stt_provider=stt_provider,
         tts_provider=tts_provider,
+        audio_resolver=audio_resolver,
     )
 
 

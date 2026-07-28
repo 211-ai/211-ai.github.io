@@ -15,6 +15,7 @@ decode/acoustic quality gate.
 
 from __future__ import annotations
 
+import base64
 import json
 import re
 import shutil
@@ -36,6 +37,8 @@ sys.path.insert(0, str(PACKAGE_ROOT))
 sys.path.insert(0, str(DATASETS_ROOT))
 
 from ipfs_accelerate_py.voice_audio_resolver import (  # noqa: E402
+    REASON_EXACT_MATCH,
+    REASON_SPOKEN_TEXT_MISMATCH,
     PrecomputedVoiceAudioResolver,
 )
 from ipfs_accelerate_py.voice_router import (  # noqa: E402
@@ -57,6 +60,9 @@ from ipfs_datasets_py.voice.audio_quality import (  # noqa: E402
     character_error_rate_bp,
     validate_decode_and_acoustic,
     word_error_rate_bp,
+)
+from wallet_interface.helpers._voice_router_adapter import (  # noqa: E402
+    process_wallet_voice_turn,
 )
 
 
@@ -471,6 +477,369 @@ class FallbackLLMSlottedProvider:
             intent="food_assistance",
             metadata={"fallback_llm": True, "slotted_template": True},
         )
+
+
+WEBSITE_PRECOMPUTED_TEXT = "The cached website answer is ready."
+WEBSITE_FALLBACK_TEXT = "The website fallback answer is ready."
+WEBSITE_TEXT_ONLY_TEXT = "The website can show this answer even when audio is unavailable."
+
+
+@dataclass
+class WebsiteASRFixture:
+    """Inject deterministic transcripts where the website adapter invokes ASR."""
+
+    transcripts: list[str]
+    provider_name: str = "website-asr-fixture"
+    calls: list[dict[str, Any]] = field(default_factory=list)
+
+    def transcribe(self, audio: object, **kwargs: object) -> str:
+        self.calls.append({"audio": audio, **kwargs})
+        if not self.transcripts:
+            raise AssertionError("unexpected website ASR request")
+        return self.transcripts.pop(0)
+
+
+class WebsiteGraphRAGFixture:
+    """Primary GraphRAG fixture with one deterministic middle-turn miss."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
+    def retrieve(
+        self,
+        query: str,
+        *,
+        context: Mapping[str, Any] | None = None,
+        prompt_parts: Mapping[str, Any] | None = None,
+        **_: object,
+    ) -> Mapping[str, Any] | None:
+        context = dict(context or {})
+        turn_index = int(context.get("turn_index") or 0)
+        self.calls.append(
+            {
+                "query": query,
+                "turn_index": turn_index,
+                "history": list(context.get("history") or ()),
+                "previous_assistant_audio_sha256": context.get(
+                    "previous_assistant_audio_sha256"
+                ),
+                "prompt_parts": dict(prompt_parts or {}),
+            }
+        )
+        if turn_index == 1:
+            return None
+        if turn_index == 0:
+            return {
+                "template_id": "website-precomputed-template",
+                "template": WEBSITE_PRECOMPUTED_TEXT,
+                "confidence": 1.0,
+                "intent": "website_precomputed",
+            }
+        return {
+            "template_id": "website-text-only-template",
+            "template": WEBSITE_TEXT_ONLY_TEXT,
+            "confidence": 1.0,
+            "intent": "website_text_only",
+        }
+
+
+class WebsiteFallbackFixture:
+    provider_name = "website-fallback-template"
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
+    def retrieve(
+        self,
+        transcript: str,
+        *,
+        context: Mapping[str, Any] | None = None,
+        **_: object,
+    ) -> VoiceResponsePlan:
+        context = dict(context or {})
+        assert context.get("turn_index") == 1
+        self.calls.append({"transcript": transcript, "context": context})
+        evidence = GroundingEvidence(
+            source_id="website-fallback-source",
+            cid="local-only:website-fallback",
+            text=WEBSITE_FALLBACK_TEXT,
+            facts={"answer": WEBSITE_FALLBACK_TEXT},
+        )
+        return VoiceResponsePlan(
+            template_id="website-fallback-template",
+            template="{answer}",
+            slots=(
+                GroundedSlot(
+                    "answer",
+                    WEBSITE_FALLBACK_TEXT,
+                    (evidence.source_id,),
+                ),
+            ),
+            evidence=(evidence,),
+            confidence=1.0,
+            intent="website_fallback",
+        )
+
+
+@dataclass
+class WebsiteTTSFixture:
+    audio: bytes
+    provider_name: str = "website-wav-tts"
+    calls: list[dict[str, Any]] = field(default_factory=list)
+
+    def synthesize(self, text: str, **kwargs: object) -> bytes:
+        self.calls.append({"text": text, **kwargs})
+        if text == WEBSITE_TEXT_ONLY_TEXT:
+            raise RuntimeError("deterministic website TTS outage")
+        return self.audio
+
+
+def _stable_trace_projection(payload: Mapping[str, Any]) -> list[tuple[Any, ...]]:
+    """Remove timing/error strings while retaining exact routing decisions."""
+
+    projected: list[tuple[Any, ...]] = []
+    for raw_trace in payload["traces"]:
+        trace = dict(raw_trace)
+        details = dict(trace.get("details") or {})
+        projected.append(
+            (
+                trace["stage"],
+                trace["status"],
+                trace.get("provider"),
+                details.get("template_id"),
+                details.get("precomputed"),
+                details.get("resolver_reason"),
+                details.get("live_tts_fallback"),
+                details.get("slotted_template"),
+            )
+        )
+    return projected
+
+
+def test_website_adapter_multiturn_asr_exact_hit_fallback_miss_and_text_only() -> None:
+    """Website ASR -> GraphRAG -> resolver/TTS receipts stay browser-safe."""
+
+    precomputed_audio = build_minimal_wav(frames=2_400, amplitude=8_000)
+    live_audio = build_minimal_wav(frames=2_800, amplitude=7_000)
+    precomputed_sha = sha256(precomputed_audio).hexdigest()
+    synthesis_options = {
+        "provider_version": "website-fixture-v1",
+        "sample_rate_hz": 24_000,
+        "channels": 1,
+        "generation_settings": {"temperature": 0.0},
+    }
+    resolver = PrecomputedVoiceAudioResolver.from_audio_rows(
+        [
+            {
+                "audio_id": "website-precomputed-audio",
+                "spoken_text": WEBSITE_PRECOMPUTED_TEXT,
+                "content_sha256": precomputed_sha,
+                "byte_length": len(precomputed_audio),
+                "mime_type": "audio/wav",
+                "codec": "wav",
+                "sample_rate_hz": 24_000,
+                "channels": 1,
+                "provider": "abby_indextts",
+                "model": "index-tts-v1",
+                "voice": "abby",
+                "locale": "en-US",
+                "provider_version": synthesis_options["provider_version"],
+                "generation_settings": synthesis_options["generation_settings"],
+                "template_id": "website-precomputed-template",
+            }
+        ],
+        audio_bytes_by_sha256={precomputed_sha: precomputed_audio},
+    )
+    asr_texts = [
+        "Give me the cached website answer.",
+        "Use the safe website fallback.",
+        "Keep the answer visible if voice output fails.",
+    ]
+    asr = WebsiteASRFixture(list(asr_texts))
+    graphrag = WebsiteGraphRAGFixture()
+    primary_templates = GraphRAGVoiceTemplateProvider(graphrag)
+    fallback_templates = WebsiteFallbackFixture()
+    tts = WebsiteTTSFixture(live_audio)
+    history: list[dict[str, Any]] = []
+    receipts: list[dict[str, Any]] = []
+
+    for turn_index in range(3):
+        previous_audio_sha = (
+            history[-1]["output_audio_sha256"] if history else None
+        )
+        microphone_audio = f"deterministic-browser-microphone-turn-{turn_index}".encode()
+        receipt = process_wallet_voice_turn(
+            {
+                "mode": "voice-reply",
+                "audio_base64": base64.b64encode(microphone_audio).decode("ascii"),
+                "request_id": f"website-multiturn-{turn_index}",
+                "context": {
+                    "surface": "website",
+                    "session_id": "website-offline-session",
+                    "turn_index": turn_index,
+                    "history": [
+                        {
+                            "transcript_sha256": item["transcript_sha256"],
+                            "response_text_sha256": item["response_text_sha256"],
+                        }
+                        for item in history
+                    ],
+                    "previous_assistant_audio_sha256": previous_audio_sha,
+                },
+                "language": "en-US",
+                "locale": "en-US",
+                "voice": "abby",
+                "tts_provider": "abby_indextts",
+                "tts_model": "index-tts-v1",
+                "output_format": "wav",
+                "tts_options": synthesis_options,
+                "fallback_text": "The website voice request could not be completed.",
+            },
+            enabled=True,
+            stt_provider=asr,
+            template_provider=primary_templates,
+            fallback_template_provider=fallback_templates,
+            tts_provider=tts,
+            audio_resolver=resolver,
+        )
+        assert receipt is not None
+        assert receipt["transcript"] == asr_texts[turn_index]
+        assert receipt["provenance"]["stt_provider"] == "website-asr-fixture"
+        assert microphone_audio.decode() not in json.dumps(receipt)
+        receipts.append(receipt)
+        history.append(
+            {
+                "transcript_sha256": receipt["provenance"]["transcript_sha256"],
+                "response_text_sha256": receipt["provenance"]["response_text_sha256"],
+                "output_audio_sha256": receipt["provenance"]["output_audio_sha256"],
+            }
+        )
+
+    assert [call["query"] for call in graphrag.calls] == asr_texts
+    assert [call["turn_index"] for call in graphrag.calls] == [0, 1, 2]
+    assert [len(call["history"]) for call in graphrag.calls] == [0, 1, 2]
+    assert graphrag.calls[1]["previous_assistant_audio_sha256"] == precomputed_sha
+    assert graphrag.calls[2]["previous_assistant_audio_sha256"] == sha256(
+        live_audio
+    ).hexdigest()
+    assert len(asr.calls) == 3
+    assert len(fallback_templates.calls) == 1
+    assert [call["text"] for call in tts.calls] == [
+        WEBSITE_FALLBACK_TEXT,
+        WEBSITE_TEXT_ONLY_TEXT,
+    ]
+
+    assert _stable_trace_projection(receipts[0]) == [
+        ("transcription", "succeeded", "website-asr-fixture", None, None, None, None, None),
+        (
+            "retrieval",
+            "succeeded",
+            "graphrag",
+            "website-precomputed-template",
+            None,
+            None,
+            None,
+            None,
+        ),
+        ("rendering", "succeeded", "graphrag", None, None, None, None, None),
+        (
+            "synthesis",
+            "succeeded",
+            "precomputed",
+            None,
+            True,
+            REASON_EXACT_MATCH,
+            None,
+            None,
+        ),
+    ]
+    assert receipts[0]["status"] == "completed"
+    assert receipts[0]["fallback_reasons"] == []
+    assert receipts[0]["provenance"]["metadata"]["precomputed_audio"]["status"] == "hit"
+    assert base64.b64decode(receipts[0]["audio_base64"]) == precomputed_audio
+    assert receipts[0]["audioBase64"] == receipts[0]["audio_base64"]
+    assert receipts[0]["audio_mime_type"] == "audio/wav"
+
+    assert _stable_trace_projection(receipts[1]) == [
+        ("transcription", "succeeded", "website-asr-fixture", None, None, None, None, None),
+        ("retrieval", "failed", "graphrag", None, None, None, None, None),
+        (
+            "fallback_retrieval",
+            "succeeded",
+            "website-fallback-template",
+            "website-fallback-template",
+            None,
+            None,
+            None,
+            True,
+        ),
+        (
+            "rendering",
+            "succeeded",
+            "website-fallback-template",
+            None,
+            None,
+            None,
+            None,
+            None,
+        ),
+        (
+            "synthesis",
+            "skipped",
+            "precomputed",
+            "website-fallback-template",
+            False,
+            REASON_SPOKEN_TEXT_MISMATCH,
+            True,
+            None,
+        ),
+        ("synthesis", "succeeded", "website-wav-tts", None, False, None, None, None),
+    ]
+    assert receipts[1]["status"] == "degraded"
+    assert receipts[1]["fallback_reasons"] == [
+        "template_retrieval_failed",
+        "fallback_template_provider_used",
+    ]
+    assert receipts[1]["provenance"]["metadata"]["precomputed_audio"][
+        "status"
+    ] == "miss"
+    assert base64.b64decode(receipts[1]["audio_base64"]) == live_audio
+
+    assert _stable_trace_projection(receipts[2]) == [
+        ("transcription", "succeeded", "website-asr-fixture", None, None, None, None, None),
+        (
+            "retrieval",
+            "succeeded",
+            "graphrag",
+            "website-text-only-template",
+            None,
+            None,
+            None,
+            None,
+        ),
+        ("rendering", "succeeded", "graphrag", None, None, None, None, None),
+        (
+            "synthesis",
+            "skipped",
+            "precomputed",
+            "website-text-only-template",
+            False,
+            REASON_SPOKEN_TEXT_MISMATCH,
+            True,
+            None,
+        ),
+        ("synthesis", "failed", "website-wav-tts", None, None, None, None, None),
+        ("synthesis", "failed", "abby_indextts", None, None, None, None, None),
+    ]
+    assert receipts[2]["status"] == "text_only"
+    assert receipts[2]["degraded"] is True
+    assert receipts[2]["fallback_reasons"] == ["tts_failed"]
+    assert receipts[2]["response_text"] == WEBSITE_TEXT_ONLY_TEXT
+    assert receipts[2]["audio_size_bytes"] == 0
+    assert receipts[2]["audio_format"] is None
+    assert "audio_base64" not in receipts[2]
+    assert "audioBase64" not in receipts[2]
+    assert receipts[2]["provenance"]["output_audio_sha256"] is None
 
 
 def test_multiturn_chat_uses_canonical_audio_fallback_tts_and_reviews_final_audio() -> None:
