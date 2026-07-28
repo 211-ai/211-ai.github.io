@@ -270,9 +270,9 @@ start_codex_lane() {
   )
   (
     cd "${REPO_ROOT}"
-    nohup "${PYTHON_BIN}" \
+    nohup setsid --fork "${PYTHON_BIN}" \
       -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" >>"${CODEX_LOG}" 2>&1 &
+      "${args[@]}" </dev/null >>"${CODEX_LOG}" 2>&1 &
   )
 }
 
@@ -295,9 +295,9 @@ start_grok_lane() {
     IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER=grok-build \
     IPFS_ACCELERATE_AGENT_GROK_BIN="${GROK_BIN}" \
     IPFS_ACCELERATE_AGENT_GROK_MODEL="${GROK_MODEL}" \
-    nohup "${PYTHON_BIN}" \
+    nohup setsid --fork "${PYTHON_BIN}" \
       -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" >>"${GROK_LOG}" 2>&1 &
+      "${args[@]}" </dev/null >>"${GROK_LOG}" 2>&1 &
   )
 }
 
