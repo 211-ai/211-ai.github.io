@@ -1857,6 +1857,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G700` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G700"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G843 Prove WALPROC-G710 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1876,6 +1883,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G710` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G710"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G844 Prove WALPROC-G800 for Deliver reusable, safe multi-chain wallet processors
 
@@ -1895,6 +1909,13 @@ Program invariants:
 - Parallel lane: wallet-processors/control
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `WALPROC-G800` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["WALPROC-G800"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
 
 ## WALPROC-G845 Prove ipfs_datasets_py/tests/unit/processors/wallets/worldcoin for Migrate World ID pure protocol code
 
@@ -1914,3 +1935,10 @@ Program invariants:
 - Parallel lane: wallet-processors/worldcoin
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
 - Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/worldcoin` with a narrow, verifiable change.
+- Goal completion schema version: 1
+- Completion confidence: 0.166667
+- Uncovered criteria: ["ipfs_datasets_py/tests/unit/processors/wallets/worldcoin"]
+- Stale evidence: []
+- Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
+- Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
+- Reopen reasons: []
