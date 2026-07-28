@@ -1,0 +1,210 @@
+{
+  "schema": "wallet_processor_migration/security-baseline@1",
+  "schema_version": 1,
+  "goal_id": "WALPROC-G020",
+  "task_id": "WALPROC-003",
+  "generated_at": "2026-07-28T22:30:00Z",
+  "purpose": "Freeze known World ID / wallet security failures so migration cannot silently bless unsafe behavior as compatibility. Compatibility freezes API shape and safe vectors only; every entry below is a failure to fix, not a compatibility guarantee.",
+  "policy": {
+    "compatibility_freezes": [
+      "API shape",
+      "safe cryptographic vectors",
+      "route DTO shapes",
+      "public projections",
+      "import identities",
+      "offline fixture shapes"
+    ],
+    "compatibility_does_not_freeze": [
+      "vulnerabilities",
+      "unsafe defaults",
+      "unenforced policy flags",
+      "optional authentication gaps",
+      "raw secret or nullifier retention bugs",
+      "incorrect protocol labeling",
+      "stale authorization after revoke/expiry",
+      "SSRF-prone configurable endpoints",
+      "plaintext sensitive snapshot material"
+    ],
+    "default_classification_for_listed_gaps": "failure_to_fix",
+    "blessing_as_compatibility_guarantee_forbidden": true
+  },
+  "source_inventory_refs": [
+    "data/wallet_processor_migration/audit/source-inventory.json",
+    "data/wallet_processor_migration/audit/import-map.json",
+    "data/wallet_processor_migration/audit/ownership-map.md"
+  ],
+  "fixture_refs": [
+    "ipfs_datasets_py/tests/fixtures/wallets/worldcoin",
+    "ipfs_datasets_py/tests/fixtures/wallets/xaman"
+  ],
+  "findings": [
+    {
+      "id": "SEC-WORLDID-LEGACY-DEFAULT-ON",
+      "title": "Legacy proofs allowed by default",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "WorldIdConfig.allow_legacy_proofs defaults to True (WORLD_ID_ALLOW_LEGACY_PROOFS default=true). Safe migration targets must fail closed unless legacy evidence is explicitly permitted.",
+      "evidence": [
+        "wallet_interface/world_id.py::WorldIdConfig.allow_legacy_proofs default True",
+        "wallet_interface/world_id.py::load_world_id_config WORLD_ID_ALLOW_LEGACY_PROOFS default=True"
+      ],
+      "acceptance_term": "legacy-default-on",
+      "resolving_goals": ["WALPROC-G100", "WALPROC-G110"]
+    },
+    {
+      "id": "SEC-WORLDID-UNENFORCED-USER-PRESENCE",
+      "title": "User presence / signal / provider context not enforced at verification bind",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "require_user_presence is loaded and exposed in public config but register_world_id_verification does not reject payloads with missing/false user_presence_completed, does not bind signal_hash to actor/wallet context, and provider-staff signal_context is not cryptographically enforced on verification.",
+      "evidence": [
+        "wallet_interface/world_id.py::WorldIdConfig.require_user_presence default False",
+        "wallet_interface/app_service.py::register_world_id_verification omits presence/signal/provider checks"
+      ],
+      "acceptance_term": "unenforced user presence/signal/provider context",
+      "resolving_goals": ["WALPROC-G090", "WALPROC-G100"]
+    },
+    {
+      "id": "SEC-WORLDID-UNISSUED-CHALLENGE-ACCEPTANCE",
+      "title": "Unissued challenge / nonce acceptance",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "Verification accepts IDKit payloads without proving the nonce/challenge was previously issued by create_world_id_rp_signature for the same wallet/action/environment. No durable issued-challenge store is checked before bind.",
+      "evidence": [
+        "wallet_interface/app_service.py::create_world_id_rp_signature returns signature without persisting challenge",
+        "wallet_interface/app_service.py::register_world_id_verification does not look up issued challenges"
+      ],
+      "acceptance_term": "unissued challenge acceptance",
+      "resolving_goals": ["WALPROC-G090"]
+    },
+    {
+      "id": "SEC-WORLDID-OPTIONAL-STATUS-AUTH",
+      "title": "World ID status authentication is optional",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "medium",
+      "status": "open",
+      "summary": "GET /wallets/{wallet_id}/world-id/status allows actor_did to be omitted. When omitted, binding status is returned without portal actor authorization.",
+      "evidence": [
+        "wallet_interface/routes/world_id.py::get_world_id_status actor_did: str | None = None",
+        "wallet_interface/app_service.py::get_world_id_status only authorizes when actor_did is not None"
+      ],
+      "acceptance_term": "optional status authentication",
+      "resolving_goals": ["WALPROC-G090", "WALPROC-G610"]
+    },
+    {
+      "id": "SEC-WORLDID-RAW-PROCESS-LOCAL-NULLIFIER",
+      "title": "Raw / process-local nullifier state",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "DataWalletService keeps raw nullifiers in process-local maps (world_id_private_nullifiers / world_id_raw_nullifier_index). Replay uniqueness and private state durability across restarts depend on process memory unless repository snapshots capture private state correctly. Public dicts must never include raw nullifiers; durable private storage and restart-safe replay remain incomplete relative to migration goals.",
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::world_id_private_nullifiers",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_store_world_id_private_nullifier",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::world_id_raw_nullifier_index"
+      ],
+      "acceptance_term": "raw/process-local nullifier state",
+      "resolving_goals": ["WALPROC-G090", "WALPROC-G100"]
+    },
+    {
+      "id": "SEC-WORLDID-V3-AS-V4-RECEIPT",
+      "title": "v3 evidence labeled as v4 proof system",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "medium",
+      "status": "open",
+      "summary": "Proof receipts always set proof_system=world_id_idkit_v4 and verifier_id=world_id_developer_portal_v4 regardless of binding.protocol_version. A protocol_version 3.0 binding is still labeled v4.",
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::WORLD_ID_PROOF_SYSTEM = world_id_idkit_v4",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_create_world_id_proof_receipt hardcodes WORLD_ID_PROOF_SYSTEM"
+      ],
+      "acceptance_term": "v3-as-v4 receipt labeling",
+      "resolving_goals": ["WALPROC-G090", "WALPROC-G100"]
+    },
+    {
+      "id": "SEC-WORLDID-STALE-PROOF-AFTER-REVOKE-EXPIRY",
+      "title": "Stale proof receipts after revoke/expiry",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "revoke_world_id_binding marks the binding revoked but does not invalidate or re-status the associated ProofReceipt. Expired expires_at_min bindings can still leave active-looking receipts. Consumers may treat stale receipts as verified after revoke/expiry.",
+      "evidence": [
+        "wallet_interface/app_service.py::revoke_world_id_binding only mutates binding.status",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py::_create_world_id_proof_receipt does not track revoke/expiry invalidation"
+      ],
+      "acceptance_term": "stale proof receipts after revoke/expiry",
+      "resolving_goals": ["WALPROC-G090"]
+    },
+    {
+      "id": "SEC-WORLDID-UNSAFE-CONFIGURABLE-ENDPOINTS",
+      "title": "Unsafe configurable verify endpoints",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "WORLD_ID_VERIFY_BASE_URL accepts any http(s) URL after basic scheme validation. There is no production allowlist, SSRF block for link-local/metadata ranges, or pinned host policy beyond default https://developer.world.org.",
+      "evidence": [
+        "wallet_interface/world_id.py::load_world_id_config WORLD_ID_VERIFY_BASE_URL",
+        "wallet_interface/world_id.py::verify_world_id_proof builds {base}/api/v4/verify/{rp_id}",
+        "data/wallet_processor_migration/audit/source-inventory.json network_endpoints world-developer-portal-verify-v4"
+      ],
+      "acceptance_term": "unsafe configurable endpoints",
+      "resolving_goals": ["WALPROC-G060", "WALPROC-G100"]
+    },
+    {
+      "id": "SEC-WALLET-PLAINTEXT-SNAPSHOTS",
+      "title": "Plaintext snapshot / private material risk",
+      "classification": "failure_to_fix",
+      "not_compatibility_guarantee": true,
+      "severity": "high",
+      "status": "open",
+      "summary": "Wallet snapshot/export paths must not treat raw nullifiers, IDKit proofs, RP signatures, Developer Portal responses, or other private World ID material as compatibility fields. Any snapshot format that persists such material in plaintext or public export envelopes is a failure to fix. Public export sanitizers exist but migration must keep private nullifier state out of public projections and offline fixtures used as golden vectors.",
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/wallet/service.py PUBLIC_EXPORT_PROOF_PRIVATE_KEYS",
+        "ipfs_datasets_py/tests/fixtures/wallets/worldcoin/snapshot_shapes.json old_snapshot_import_rules",
+        "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts WORLD_ID_PRIVATE_SENTINELS"
+      ],
+      "acceptance_term": "plaintext snapshots",
+      "resolving_goals": ["WALPROC-G090", "WALPROC-G280"]
+    }
+  ],
+  "acceptance_term_coverage": {
+    "legacy-default-on": "SEC-WORLDID-LEGACY-DEFAULT-ON",
+    "unenforced user presence/signal/provider context": "SEC-WORLDID-UNENFORCED-USER-PRESENCE",
+    "unissued challenge acceptance": "SEC-WORLDID-UNISSUED-CHALLENGE-ACCEPTANCE",
+    "optional status authentication": "SEC-WORLDID-OPTIONAL-STATUS-AUTH",
+    "raw/process-local nullifier state": "SEC-WORLDID-RAW-PROCESS-LOCAL-NULLIFIER",
+    "v3-as-v4 receipt labeling": "SEC-WORLDID-V3-AS-V4-RECEIPT",
+    "stale proof receipts after revoke/expiry": "SEC-WORLDID-STALE-PROOF-AFTER-REVOKE-EXPIRY",
+    "unsafe configurable endpoints": "SEC-WORLDID-UNSAFE-CONFIGURABLE-ENDPOINTS",
+    "plaintext snapshots": "SEC-WALLET-PLAINTEXT-SNAPSHOTS"
+  },
+  "required_acceptance_terms": [
+    "legacy-default-on",
+    "unenforced user presence/signal/provider context",
+    "unissued challenge acceptance",
+    "optional status authentication",
+    "raw/process-local nullifier state",
+    "v3-as-v4 receipt labeling",
+    "stale proof receipts after revoke/expiry",
+    "unsafe configurable endpoints",
+    "plaintext snapshots"
+  ],
+  "xaman_boundary": {
+    "formal_assurance_is_not_runtime_correctness": true,
+    "fixture_ref": "ipfs_datasets_py/tests/fixtures/wallets/xaman/assurance_links.json",
+    "classification": "boundary_policy",
+    "notes": "Xaman formal assets remain under logic/; runtime processors must not import report generators; assurance packets are not compatibility proof of XRPL ingest."
+  },
+  "freeze_status": "frozen",
+  "freeze_attempt": 1
+}
