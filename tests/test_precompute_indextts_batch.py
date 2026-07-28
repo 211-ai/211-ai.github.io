@@ -363,6 +363,32 @@ def test_address_slot_normalization_removes_hyphens_with_abbreviated_tokens(
     assert "-" not in normalized
 
 
+@pytest.mark.parametrize(
+    ("kind", "raw_value"),
+    (
+        ("phone", "+1 (503) 555-0100"),
+        (
+            "address",
+            "11-32 SW 13th Ave (main office), Portland, OR 97205",
+        ),
+    ),
+)
+def test_telephone_factual_slot_audio_text_has_no_spoken_punctuation_markers(
+    kind: str,
+    raw_value: str,
+) -> None:
+    normalized = precompute.normalize_slot_value_text(kind, raw_value)
+    lowered = normalized.casefold()
+
+    assert "negative" not in lowered
+    assert "parenthesis" not in lowered
+    assert "parentheses" not in lowered
+    assert "hyphen" not in lowered
+    assert " dash " not in f" {lowered} "
+    assert "(" not in normalized and ")" not in normalized
+    assert not re.search(r"\d\s*[-–—]\s*\d", normalized)
+
+
 def test_batch_audio_references_prefers_generated_file_list() -> None:
     result = {
         "data": [
