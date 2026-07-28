@@ -149,7 +149,7 @@ export function parseVoiceTurnResult(value: unknown): VoiceTurnResult | null {
     transcript,
     responseText,
     spokenText: firstString(payload, ["spoken_text", "spokenText"]) || responseText,
-    audioFormat: firstString(payload, ["audio_format", "audioFormat", "audio_mime_type", "audioMimeType"]),
+    audioFormat: firstString(payload, ["audio_mime_type", "audioMimeType", "audio_format", "audioFormat"]),
     audioSizeBytes: firstNumber(payload, ["audio_size_bytes", "audioSizeBytes"]) || 0,
     audioBase64,
     provenance,
