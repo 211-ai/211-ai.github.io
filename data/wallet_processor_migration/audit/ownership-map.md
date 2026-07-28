@@ -2,7 +2,9 @@
 
 - Goal: `WALPROC-G010`
 - Task: `WALPROC-002`
-- Generated: `2026-07-28T22:07:07Z`
+- Generated: `2026-07-28T22:15:21Z`
+- Freeze attempt: `2`
+- Freeze status: `frozen`
 - Schema: `wallet_processor_migration/ownership-map@1`
 
 This map freezes **move / retain / deprecate / create** decisions and **one owner per symbol** before production code moves. Unresolved ownership is recorded as a **blocker**, not guessed.
