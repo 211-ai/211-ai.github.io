@@ -610,7 +610,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-010 Implement wallet processor migration objective: Review and declare optional dependency extras
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
