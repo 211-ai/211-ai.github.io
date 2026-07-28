@@ -19,12 +19,15 @@ import pytest
 # package name.  Prefer that checkout over any separately installed copy.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PACKAGE_ROOT = REPO_ROOT / "ipfs_accelerate_py"
+DATASETS_PACKAGE_ROOT = REPO_ROOT / "ipfs_datasets_py"
 sys.path.insert(0, str(PACKAGE_ROOT))
+sys.path.insert(0, str(DATASETS_PACKAGE_ROOT))
 
 from ipfs_accelerate_py.voice_router import (  # noqa: E402
     DEFAULT_GROUNDED_FALLBACK,
     GraphRAGVoiceTemplateProvider,
     GroundedSlot,
+    PrecomputedAudioResolution,
     VoiceGroundingSource,
     VoiceResponsePlan,
     VoiceStageTrace,
@@ -35,6 +38,12 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     register_voice_provider,
     speech_to_text,
     text_to_speech,
+)
+from ipfs_datasets_py.voice.hf_release import (  # noqa: E402
+    materialize_response_dag_dry_run,
+)
+from ipfs_datasets_py.voice.response_dag import (  # noqa: E402
+    append_response_dag_candidate,
 )
 
 
@@ -501,6 +510,104 @@ def test_result_serialization_is_json_safe_and_omits_raw_private_audio() -> None
     assert result.cache_key
     assert raw_input.hex() not in result.cache_key
     assert result.transcript not in result.cache_key
+
+
+def test_validated_live_tts_miss_stops_at_local_response_dag_dry_run(
+    tmp_path: Path,
+) -> None:
+    """One miss becomes one slotted append receipt without a remote write."""
+
+    class ExactAudioMiss:
+        def resolve(
+            self, *_args: object, **_kwargs: object
+        ) -> PrecomputedAudioResolution:
+            return PrecomputedAudioResolution(
+                status="miss",
+                reason="no_precomputed_candidates",
+                details={"candidate_count": 0},
+            )
+
+    plan = VoiceResponsePlan(
+        template_id="phone-frame-v1",
+        template="Call {phone}.",
+        slots=(GroundedSlot("phone", "503-555-0111", ("food-record",)),),
+        evidence=(_source(),),
+        intent="resource_phone",
+        confidence=0.99,
+    )
+    live_tts = RecordingSpeechProvider(
+        "abby-live-tts",
+        audio=b"RIFF-validated-live-cache-miss-WAVE",
+    )
+    result = process_voice_turn(
+        VoiceTurnRequest(
+            transcript="What number should I call?",
+            request_id="turn-cache-miss-1",
+            tts_provider="abby-live-tts",
+            tts_model="IndexTTS-2",
+            voice="abby",
+            output_format="wav",
+        ),
+        template_provider=RecordingTemplateProvider(plan=plan),
+        tts_provider=live_tts,
+        audio_resolver=ExactAudioMiss(),
+    )
+
+    event = result.validated_cache_miss_event(
+        validation_receipt_id="asr-round-trip-pass-1",
+        response_id="phone-response-v1",
+    )
+    duplicate = result.validated_cache_miss_event(
+        validation_receipt_id="asr-round-trip-pass-retry",
+        response_id="phone-response-v1",
+    )
+    assert event is not None and duplicate is not None
+    assert event.event_id == duplicate.event_id
+    assert event.ready_for_dag_append is True
+    assert result.transcript not in json.dumps(event.to_dict(), sort_keys=True)
+    assert live_tts.audio.hex() not in json.dumps(event.to_dict(), sort_keys=True)
+
+    candidate = append_response_dag_candidate(
+        event,
+        response_text=result.response_text,
+        audio_descriptor={
+            "byte_length": len(live_tts.audio),
+            "content_sha256": result.provenance.output_audio_sha256,
+            "media_type": "audio/wav",
+            "uri": "hf://datasets/Publicus/211-abby-tts/audio/phone-response-v1.wav",
+        },
+        template_text=plan.template,
+        slot_bindings={
+            "phone": {
+                "source_cids": [result.sources[0].cid],
+                "value": result.provenance.grounded_slots[0].value,
+            }
+        },
+    )
+    receipt = materialize_response_dag_dry_run(
+        candidate,
+        output_dir=tmp_path / "response-dag-release",
+    )
+    receipt_again = materialize_response_dag_dry_run(
+        candidate,
+        output_dir=tmp_path / "response-dag-release-rebuild",
+    )
+
+    assert len(candidate.template_rows) == 1
+    assert len(candidate.vocabulary_rows) == 1
+    assert any("/rows/templates.jsonl" in path for path in candidate.file_payloads())
+    assert any("/rows/vocabulary.jsonl" in path for path in candidate.file_payloads())
+    assert receipt.publication_plan["upload_file_count"] == len(
+        candidate.file_payloads()
+    )
+    assert receipt.to_dict()["publication_status"] == "local_only"
+    assert receipt.to_dict()["remote_write_contacted"] is False
+    assert receipt.to_dict()["remote_writes"] is False
+    assert receipt.receipt_sha256 == receipt_again.receipt_sha256
+    assert (
+        receipt.publication_plan_sha256
+        == receipt_again.publication_plan_sha256
+    )
 
 
 @pytest.mark.parametrize(
