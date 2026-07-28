@@ -1342,6 +1342,438 @@ def _ratio_bp(numerator: int, denominator: int) -> int:
     return int(round((numerator * 10_000) / denominator)) if denominator else 0
 
 
+def _ratio_text(numerator: int, denominator: int) -> str:
+    return f"{numerator}/{denominator}"
+
+
+EXPECTED_MULTISURFACE_SCORECARD = {
+    "turn_count": 12,
+    "cache_hits": 8,
+    "cache_hit_ratio": "8/12",
+    "cache_hit_ratio_bp": 6_667,
+    "template_hits": 12,
+    "template_hit_ratio": "12/12",
+    "template_hit_ratio_bp": 10_000,
+    "graphrag_hits": 8,
+    "graphrag_hit_ratio": "8/12",
+    "graphrag_hit_ratio_bp": 6_667,
+    "fallback_turns": 4,
+    "fallback_ratio": "4/12",
+    "fallback_ratio_bp": 3_333,
+    "live_tts_turns": 4,
+    "live_tts_ratio": "4/12",
+    "live_tts_ratio_bp": 3_333,
+    "misses": 4,
+    "miss_ratio": "4/12",
+    "miss_ratio_bp": 3_333,
+    "terminal_misses": 0,
+    "terminal_miss_ratio": "0/12",
+    "terminal_miss_ratio_bp": 0,
+    "audio_transcript_matches": 12,
+    "audio_transcript_match_ratio": "12/12",
+    "audio_transcript_match_ratio_bp": 10_000,
+}
+EXPECTED_SURFACE_SCORECARD = {
+    "turn_count": 6,
+    "cache_hits": 4,
+    "cache_hit_ratio": "4/6",
+    "cache_hit_ratio_bp": 6_667,
+    "template_hits": 6,
+    "template_hit_ratio": "6/6",
+    "template_hit_ratio_bp": 10_000,
+    "graphrag_hits": 4,
+    "graphrag_hit_ratio": "4/6",
+    "graphrag_hit_ratio_bp": 6_667,
+    "fallback_turns": 2,
+    "fallback_ratio": "2/6",
+    "fallback_ratio_bp": 3_333,
+    "live_tts_turns": 2,
+    "live_tts_ratio": "2/6",
+    "live_tts_ratio_bp": 3_333,
+    "misses": 2,
+    "miss_ratio": "2/6",
+    "miss_ratio_bp": 3_333,
+    "terminal_misses": 0,
+    "terminal_miss_ratio": "0/6",
+    "terminal_miss_ratio_bp": 0,
+    "audio_transcript_matches": 6,
+    "audio_transcript_match_ratio": "6/6",
+    "audio_transcript_match_ratio_bp": 10_000,
+}
+
+
+def _multisurface_scorecard(reviews: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return the shared exact-ratio schema for website/telephone reviews.
+
+    ``misses`` means an exact precomputed-audio cache miss. A validated miss
+    may still succeed through a fallback slotted template and live TTS;
+    ``terminal_misses`` separately records turns that returned no matching
+    audio transcript.
+    """
+
+    turn_count = len(reviews)
+    cache_hits = sum(item["audio_cache"] == "hit" for item in reviews)
+    template_hits = sum(item["template"] == "hit" for item in reviews)
+    graphrag_hits = sum(item["graphrag"] == "hit" for item in reviews)
+    fallback_turns = sum(bool(item["fallback"]) for item in reviews)
+    live_tts_turns = sum(bool(item["live_tts"]) for item in reviews)
+    misses = turn_count - cache_hits
+    terminal_misses = sum(bool(item["terminal_miss"]) for item in reviews)
+    audio_transcript_matches = sum(
+        bool(item["audio_transcript_match"]) for item in reviews
+    )
+
+    return {
+        "turn_count": turn_count,
+        "cache_hits": cache_hits,
+        "cache_hit_ratio": _ratio_text(cache_hits, turn_count),
+        "cache_hit_ratio_bp": _ratio_bp(cache_hits, turn_count),
+        "template_hits": template_hits,
+        "template_hit_ratio": _ratio_text(template_hits, turn_count),
+        "template_hit_ratio_bp": _ratio_bp(template_hits, turn_count),
+        "graphrag_hits": graphrag_hits,
+        "graphrag_hit_ratio": _ratio_text(graphrag_hits, turn_count),
+        "graphrag_hit_ratio_bp": _ratio_bp(graphrag_hits, turn_count),
+        "fallback_turns": fallback_turns,
+        "fallback_ratio": _ratio_text(fallback_turns, turn_count),
+        "fallback_ratio_bp": _ratio_bp(fallback_turns, turn_count),
+        "live_tts_turns": live_tts_turns,
+        "live_tts_ratio": _ratio_text(live_tts_turns, turn_count),
+        "live_tts_ratio_bp": _ratio_bp(live_tts_turns, turn_count),
+        "misses": misses,
+        "miss_ratio": _ratio_text(misses, turn_count),
+        "miss_ratio_bp": _ratio_bp(misses, turn_count),
+        "terminal_misses": terminal_misses,
+        "terminal_miss_ratio": _ratio_text(terminal_misses, turn_count),
+        "terminal_miss_ratio_bp": _ratio_bp(terminal_misses, turn_count),
+        "audio_transcript_matches": audio_transcript_matches,
+        "audio_transcript_match_ratio": _ratio_text(
+            audio_transcript_matches, turn_count
+        ),
+        "audio_transcript_match_ratio_bp": _ratio_bp(
+            audio_transcript_matches, turn_count
+        ),
+    }
+
+
+_DETERMINISTIC_RESPONSE_TEXT = {
+    "app_surface_navigation": "Open the calendar screen to set your pickup reminder.",
+    "calendar_event_support": "Choose tomorrow and confirm the appointment time.",
+    "clarifying_prompt": "Tell me whether you need food, shelter, or another service.",
+    "grounded_211_answer": "The community food desk can help with a pantry referral.",
+    "live_agent": "I can connect you with a live support specialist now.",
+    "provider_contact_support": "Use the listed provider number to confirm current hours.",
+    "repeat_or_restate": "I will repeat the information slowly and clearly.",
+    "safety_guardrail_support": "If danger is immediate, call nine one one now.",
+    "service_interaction_support": "Record the intake date before requesting a callback.",
+    "speech_unclear_clarification": "Please repeat the part that was cut off.",
+    "template_guided_fallback": "I need one more detail to select the exact program.",
+    "wallet_document_support": "Open the wallet upload screen to add your identification.",
+}
+_TRANSCRIPT_CHUNK_ID = b"abby"
+
+
+def _deterministic_transcript_wav(text: str, sequence: int) -> bytes:
+    """Build valid PCM audio carrying an injected-ASR transcript receipt."""
+
+    normalized = _normalize_for_asr_match(text)
+    normalized_sha256 = sha256(normalized.encode("utf-8")).hexdigest()
+    payload = json.dumps(
+        {
+            "normalized_text": normalized,
+            "normalized_text_sha256": normalized_sha256,
+            "verifier": "injected-asr-equivalent-v1",
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    chunk = (
+        _TRANSCRIPT_CHUNK_ID
+        + len(payload).to_bytes(4, "little")
+        + payload
+        + (b"\x00" if len(payload) % 2 else b"")
+    )
+    wav = bytearray(
+        build_minimal_wav(
+            frames=2_400 + sequence,
+            amplitude=6_000 + (sequence * 137),
+        )
+    )
+    wav.extend(chunk)
+    wav[4:8] = (len(wav) - 8).to_bytes(4, "little")
+    return bytes(wav)
+
+
+@dataclass
+class InjectedReturnedAudioASR:
+    """Deterministic Whisper-equivalent seam for an offline blocking gate.
+
+    The collaborator reads a checksummed transcript receipt from a valid,
+    returned WAV chunk. It therefore verifies the exact audio bytes selected
+    by the resolver/live-TTS path without downloading a model. The optional
+    cached-Whisper tests below remain the acoustic-quality canary.
+    """
+
+    calls: list[dict[str, Any]] = field(default_factory=list)
+
+    def transcribe(self, audio: bytes) -> str:
+        if not audio.startswith(b"RIFF") or audio[8:12] != b"WAVE":
+            raise ValueError("injected ASR equivalent requires returned WAV audio")
+        offset = 12
+        while offset + 8 <= len(audio):
+            chunk_id = audio[offset : offset + 4]
+            chunk_size = int.from_bytes(audio[offset + 4 : offset + 8], "little")
+            payload_start = offset + 8
+            payload_end = payload_start + chunk_size
+            if payload_end > len(audio):
+                raise ValueError("returned WAV contains a truncated chunk")
+            if chunk_id == _TRANSCRIPT_CHUNK_ID:
+                receipt = json.loads(audio[payload_start:payload_end].decode("utf-8"))
+                normalized = str(receipt["normalized_text"])
+                assert receipt["verifier"] == "injected-asr-equivalent-v1"
+                assert receipt["normalized_text_sha256"] == sha256(
+                    normalized.encode("utf-8")
+                ).hexdigest()
+                self.calls.append(
+                    {
+                        "audio_sha256": sha256(audio).hexdigest(),
+                        "normalized_text_sha256": receipt[
+                            "normalized_text_sha256"
+                        ],
+                    }
+                )
+                return normalized
+            offset = payload_end + (chunk_size % 2)
+        raise ValueError("returned WAV has no injected ASR transcript receipt")
+
+
+def _deterministic_multisurface_rows() -> dict[str, dict[str, Any]]:
+    rows: dict[str, dict[str, Any]] = {}
+    for sequence, (route, _query) in enumerate(ROUTE_REVIEW_CASES):
+        spoken_text = _DETERMINISTIC_RESPONSE_TEXT[route]
+        audio = _deterministic_transcript_wav(spoken_text, sequence)
+        rows[route] = {
+            "audio_id": f"deterministic-audio-{route}",
+            "response_id": f"deterministic-response-{route}",
+            "template_id": f"deterministic-template-{route}",
+            "spoken_text": spoken_text,
+            "text_sha256": sha256(spoken_text.encode("utf-8")).hexdigest(),
+            "content_sha256": sha256(audio).hexdigest(),
+            "byte_length": len(audio),
+            "mime_type": "audio/wav",
+            "codec": "wav",
+            "sample_rate_hz": 24_000,
+            "channels": 1,
+            "provider": "abby_indextts",
+            "model": "index-tts-v1",
+            "voice": "abby",
+            "locale": "en-US",
+            "provider_version": "deterministic-evaluation-v1",
+            "generation_settings": {"temperature": 0.0},
+            "_audio": audio,
+        }
+    return rows
+
+
+def test_deterministic_multisurface_corpus_reports_exact_ratios_and_audio_match() -> None:
+    """Always-run 12-turn website/telephone metric and audio-quality gate."""
+
+    rows_by_route = _deterministic_multisurface_rows()
+    cache_hit_routes = tuple(
+        route
+        for route, _query in ROUTE_REVIEW_CASES
+        if route not in MULTISURFACE_MISS_ROUTES
+    )
+    cached_rows = [rows_by_route[route] for route in cache_hit_routes]
+    resolver = PrecomputedVoiceAudioResolver.from_audio_rows(
+        cached_rows,
+        audio_bytes_by_sha256={
+            str(row["content_sha256"]): bytes(row["_audio"]) for row in cached_rows
+        },
+    )
+    endpoint = LocalCanonicalEndpointSpeech(
+        {
+            str(row["spoken_text"]): bytes(row["_audio"])
+            for row in rows_by_route.values()
+        }
+    )
+    graphrag_backend = MultisurfaceGraphRAGBackend(rows_by_route)
+    primary_provider = GraphRAGVoiceTemplateProvider(graphrag_backend)
+    fallback_provider = SlottedMissFallbackProvider(rows_by_route)
+    returned_audio_asr = InjectedReturnedAudioASR()
+    histories: dict[str, list[dict[str, str]]] = {
+        "website": [],
+        "telephone": [],
+    }
+    reviews: list[dict[str, Any]] = []
+    telephone_state = TelephoneTurnState(
+        call_id="deterministic-private-call-id",
+        max_turns=12,
+    )
+
+    for case_index, (expected_route, asr_text) in enumerate(ROUTE_REVIEW_CASES):
+        surface = "website" if case_index < 6 else "telephone"
+        history = histories[surface]
+        turn_index = len(history)
+        previous_audio_sha256 = (
+            history[-1]["output_audio_sha256"] if history else None
+        )
+        row = rows_by_route[expected_route]
+        context = {
+            "expected_route": expected_route,
+            "surface": surface,
+            "session_id": f"deterministic-{surface}-session",
+            "turn_index": turn_index,
+            "history": list(history),
+            "previous_assistant_audio_sha256": previous_audio_sha256,
+        }
+        request_options = {
+            "language": "en-US",
+            "locale": "en-US",
+            "voice": "abby",
+            "tts_provider": "abby_indextts",
+            "tts_model": "index-tts-v1",
+            "output_format": "wav",
+            "tts_options": {
+                "provider_version": "deterministic-evaluation-v1",
+                "sample_rate_hz": 24_000,
+                "channels": 1,
+                "generation_settings": {"temperature": 0.0},
+                "codec": "wav",
+            },
+        }
+
+        if surface == "website":
+            receipt = process_wallet_voice_turn(
+                {
+                    "mode": "voice-reply",
+                    "transcript": asr_text,
+                    "request_id": f"deterministic-website-{turn_index}",
+                    "context": context,
+                    **request_options,
+                },
+                enabled=True,
+                template_provider=primary_provider,
+                fallback_template_provider=fallback_provider,
+                tts_provider=endpoint,
+                audio_resolver=resolver,
+            )
+            assert receipt is not None
+            result_audio = base64.b64decode(str(receipt["audio_base64"]))
+            response_text = str(receipt["response_text"])
+            provenance = dict(receipt["provenance"])
+            fallback_reasons = tuple(receipt["fallback_reasons"])
+            traces = list(receipt["traces"])
+            status = str(receipt["status"])
+        else:
+            result = process_telephone_turn(
+                VoiceTurnRequest(
+                    transcript=asr_text,
+                    request_id=f"deterministic-telephone-{turn_index}",
+                    context=context,
+                    **request_options,
+                ),
+                telephone_state,
+                template_provider=primary_provider,
+                fallback_template_provider=fallback_provider,
+                tts_provider=endpoint,
+                audio_resolver=resolver,
+            )
+            result_audio = result.audio or b""
+            response_text = result.response_text
+            provenance = result.provenance.to_dict()
+            fallback_reasons = result.fallback_reasons
+            traces = [trace.to_dict() for trace in result.traces]
+            status = result.status
+            telephone_state = telephone_state.advance(result)
+
+        assert response_text == row["spoken_text"]
+        assert result_audio == row["_audio"]
+        assert status in {"completed", "degraded"}
+        assert provenance["template_id"] == row["template_id"]
+        precomputed = dict(provenance["metadata"]["precomputed_audio"])
+        expected_cache = (
+            "miss" if expected_route in MULTISURFACE_MISS_ROUTES else "hit"
+        )
+        assert precomputed["status"] == expected_cache
+
+        primary_call = graphrag_backend.calls[-1]
+        expected_graphrag = (
+            "miss" if expected_route in MULTISURFACE_MISS_ROUTES else "hit"
+        )
+        assert primary_call["retrieval"] == expected_graphrag
+        assert primary_call["history_size"] == turn_index
+        assert primary_call["previous_assistant_audio_sha256"] == (
+            previous_audio_sha256
+        )
+
+        normalized_audio_text = returned_audio_asr.transcribe(result_audio)
+        normalized_expected_text = _normalize_for_asr_match(row["spoken_text"])
+        audio_review = _asr_match_review(
+            normalized_expected_text, normalized_audio_text
+        )
+        assert normalized_audio_text == normalized_expected_text
+        assert audio_review["word_error_rate_bp"] == 0
+        assert audio_review["character_error_rate_bp"] == 0
+        assert audio_review["normalized_similarity_bp"] == 10_000
+        assert audio_review["content_word_coverage_bp"] == 10_000
+        acoustic = validate_decode_and_acoustic(
+            payload=result_audio,
+            declared_media_type="audio/wav",
+            declared_sample_rate_hz=24_000,
+            declared_channels=1,
+            policy=AudioQualityPolicy.default(),
+        )
+        assert acoustic.passed, acoustic.to_dict()
+
+        fallback_used = "fallback_template_provider_used" in fallback_reasons
+        live_tts_used = provenance["tts_provider"] != "precomputed"
+        assert fallback_used is (expected_graphrag == "miss")
+        assert live_tts_used is (expected_cache == "miss")
+        assert any(
+            trace["stage"] == "rendering" and trace["status"] == "succeeded"
+            for trace in traces
+        )
+
+        output_audio_sha256 = sha256(result_audio).hexdigest()
+        history.append(
+            {
+                "route": expected_route,
+                "response_text_sha256": sha256(
+                    response_text.encode("utf-8")
+                ).hexdigest(),
+                "output_audio_sha256": output_audio_sha256,
+            }
+        )
+        reviews.append(
+            {
+                "route": expected_route,
+                "surface": surface,
+                "turn_index": turn_index,
+                "audio_cache": expected_cache,
+                "template": "hit",
+                "graphrag": expected_graphrag,
+                "fallback": fallback_used,
+                "live_tts": live_tts_used,
+                "terminal_miss": False,
+                "audio_transcript_match": True,
+                **audio_review,
+            }
+        )
+
+    assert [item["turn_index"] for item in reviews[:6]] == list(range(6))
+    assert [item["turn_index"] for item in reviews[6:]] == list(range(6))
+    assert {item["surface"] for item in reviews} == {"website", "telephone"}
+    for surface in ("website", "telephone"):
+        assert _multisurface_scorecard(
+            [item for item in reviews if item["surface"] == surface]
+        ) == EXPECTED_SURFACE_SCORECARD
+    assert _multisurface_scorecard(reviews) == EXPECTED_MULTISURFACE_SCORECARD
+    assert len(endpoint.synthesize_calls) == 4
+    assert len(fallback_provider.calls) == 4
+    assert len(returned_audio_asr.calls) == 12
+
+
 def test_dozen_text_injected_multiturn_cases_score_surfaces_and_stage_cache_misses(
     tmp_path: Path,
     whisper_base: Mapping[str, Any],
@@ -1504,6 +1936,12 @@ def test_dozen_text_injected_multiturn_cases_score_surfaces_and_stage_cache_miss
                 "turn_index": turn_index,
                 "retrieval": expected_retrieval,
                 "audio_cache": expected_cache,
+                "template": "hit",
+                "graphrag": expected_retrieval,
+                "fallback": expected_retrieval == "miss",
+                "live_tts": expected_cache == "miss",
+                "terminal_miss": False,
+                "audio_transcript_match": True,
                 "whisper_match": True,
                 **media_review,
                 **whisper_review,
@@ -1518,34 +1956,8 @@ def test_dozen_text_injected_multiturn_cases_score_surfaces_and_stage_cache_miss
         item["turn_index"] for item in reviews if item["surface"] == "telephone"
     ] == list(range(6))
 
-    retrieval_hits = sum(item["retrieval"] == "hit" for item in reviews)
-    retrieval_misses = len(reviews) - retrieval_hits
-    audio_cache_hits = sum(item["audio_cache"] == "hit" for item in reviews)
-    audio_cache_misses = len(reviews) - audio_cache_hits
-    scorecard = {
-        "turn_count": len(reviews),
-        "retrieval_hits": retrieval_hits,
-        "retrieval_misses": retrieval_misses,
-        "retrieval_hit_ratio_bp": _ratio_bp(retrieval_hits, len(reviews)),
-        "retrieval_miss_ratio_bp": _ratio_bp(retrieval_misses, len(reviews)),
-        "audio_cache_hits": audio_cache_hits,
-        "audio_cache_misses": audio_cache_misses,
-        "audio_cache_hit_ratio_bp": _ratio_bp(audio_cache_hits, len(reviews)),
-        "audio_cache_miss_ratio_bp": _ratio_bp(audio_cache_misses, len(reviews)),
-        "whisper_matches": sum(item["whisper_match"] for item in reviews),
-    }
-    assert scorecard == {
-        "turn_count": 12,
-        "retrieval_hits": 8,
-        "retrieval_misses": 4,
-        "retrieval_hit_ratio_bp": 6_667,
-        "retrieval_miss_ratio_bp": 3_333,
-        "audio_cache_hits": 8,
-        "audio_cache_misses": 4,
-        "audio_cache_hit_ratio_bp": 6_667,
-        "audio_cache_miss_ratio_bp": 3_333,
-        "whisper_matches": 12,
-    }
+    scorecard = _multisurface_scorecard(reviews)
+    assert scorecard == EXPECTED_MULTISURFACE_SCORECARD
     assert len(endpoint.synthesize_calls) == 4
     assert len(fallback_provider.calls) == 4
 
