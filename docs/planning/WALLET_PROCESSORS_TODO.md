@@ -414,7 +414,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-007 Implement wallet processor migration objective: Approve the wallet-domain protocol and processor adapter decision
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
