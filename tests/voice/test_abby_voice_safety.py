@@ -27,6 +27,7 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     DEFAULT_GROUNDED_FALLBACK,
     GroundedSlot,
     GraphRAGVoiceTemplateProvider,
+    TelephoneTurnState,
     VoiceGroundingSource,
     VoiceResponsePlan,
     VoiceStageTrace,
@@ -34,6 +35,7 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     VoiceTurnResult,
     VoiceProviderCapabilities,
     clear_voice_router_caches,
+    process_telephone_turn,
     process_voice_turn,
     register_voice_provider,
     speech_to_text,
@@ -368,6 +370,40 @@ def test_stage_traces_are_ordered_and_have_finite_latency() -> None:
     assert all(isinstance(item, VoiceStageTrace) for item in result.traces)
     assert all(item.duration_ms >= 0 for item in result.traces)
     assert result.total_duration_ms < 1000
+
+
+def test_telephone_max_turns_escalates_without_provider_dispatch_or_call_id_leak() -> None:
+    state = TelephoneTurnState(
+        call_id="private-synthetic-provider-call-id",
+        turn_index=2,
+        max_turns=2,
+        barge_in=True,
+    )
+    result = process_telephone_turn(
+        VoiceTurnRequest(
+            transcript="One more question",
+            request_id="telephone-max-turns",
+        ),
+        state,
+    )
+
+    assert result.status == "text_only"
+    assert result.audio is None
+    assert result.provenance.stt_provider == "not_dispatched"
+    assert result.fallback_reasons == (
+        "telephone_max_turns_reached",
+        "telephone_human_escalation",
+    )
+    assert [trace.stage for trace in result.traces] == [
+        "telephone_ingress",
+        "telephone_escalation",
+        "telephone_egress",
+    ]
+    assert result.traces[1].details["reason"] == "maximum_turns_reached"
+    assert result.traces[2].details["delivery"] == "text_only_handoff"
+    receipt = json.dumps(result.to_dict(), sort_keys=True)
+    assert "private-synthetic-provider-call-id" not in receipt
+    assert state.call_id_sha256 in receipt
 
 
 def test_graphrag_adapter_is_injected_and_prompt_is_auditable() -> None:

@@ -42,10 +42,14 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     GraphRAGVoiceTemplateProvider,
     GroundedSlot,
     GroundingEvidence,
+    TelephoneTurnState,
+    VoiceProviderCapabilities,
     VoiceResponsePlan,
     VoiceTurnRequest,
     VoiceTurnResult,
+    process_telephone_turn,
     process_voice_turn,
+    register_voice_provider,
 )
 from ipfs_datasets_py.voice.audio_quality import (  # noqa: E402
     AudioQualityPolicy,
@@ -1249,3 +1253,202 @@ def test_address_slot_normalization_regression_for_abbreviated_street_tokens(
 
     rendered = normalize_slot_value_text("address", raw_address)
     _assert_safe_phone_and_address_rendering(rendered)
+
+
+@dataclass
+class SyntheticTelephoneTTS:
+    name: str
+    fail_with_timeout: bool = False
+    spoken: list[str] = field(default_factory=list)
+
+    def synthesize(self, text: str, **kwargs: object) -> bytes:
+        self.spoken.append(text)
+        if self.fail_with_timeout:
+            raise TimeoutError("synthetic telephone provider timeout")
+        # The fully synthetic fixture makes the provider input recoverable
+        # from its output so the asserted audio transcript is deterministic.
+        return b"RIFF\x00\x00\x00\x00WAVE" + text.encode("utf-8")
+
+    def transcribe(self, audio: object, **kwargs: object) -> str:
+        raise AssertionError("telephone fixture injects text at the ASR boundary")
+
+
+class SyntheticTelephonePlans:
+    provider_name = "synthetic-telephone-graphrag"
+
+    def retrieve(
+        self,
+        transcript: str,
+        *,
+        context: Mapping[str, object] | None = None,
+        **kwargs: object,
+    ) -> VoiceResponsePlan:
+        turn_index = int((context or {})["turn_index"])
+        if turn_index == 0:
+            facts = {"phone": "+1 (503) 555-0100"}
+            return VoiceResponsePlan(
+                template_id="telephone-phone-v1",
+                template="Call {phone}.",
+                slots=(GroundedSlot("phone", facts["phone"], ("phone-source",)),),
+                evidence=(GroundingEvidence("phone-source", facts=facts),),
+                intent="provider_contact_support",
+            )
+        if turn_index == 1:
+            facts = {
+                "address": (
+                    "11-32 SW 13th Ave (main office), Portland, OR 97205"
+                )
+            }
+            return VoiceResponsePlan(
+                template_id="telephone-address-v1",
+                template="The address is {address}.",
+                slots=(
+                    GroundedSlot(
+                        "address",
+                        facts["address"],
+                        ("address-source",),
+                    ),
+                ),
+                evidence=(GroundingEvidence("address-source", facts=facts),),
+                intent="service_location",
+            )
+        return VoiceResponsePlan(
+            template_id="telephone-handoff-v1",
+            template="I will connect you with a person now.",
+            intent="service_followup",
+        )
+
+
+def _synthetic_telephone_audio_text(audio: bytes) -> str:
+    assert audio.startswith(b"RIFF\x00\x00\x00\x00WAVE")
+    return audio[12:].decode("utf-8")
+
+
+def _assert_no_telephone_audio_markers(text: str) -> None:
+    lowered = text.casefold()
+    assert "negative" not in lowered
+    assert "parenthesis" not in lowered
+    assert "parentheses" not in lowered
+    assert "hyphen" not in lowered
+    assert " dash " not in f" {lowered} "
+    assert "(" not in text and ")" not in text
+    assert not re.search(r"\d\s*[-–—]\s*\d", text)
+
+
+def test_synthetic_telephone_multiturn_retry_barge_in_and_escalation() -> None:
+    """The telephone adapter stays thin and every turn uses the shared router."""
+
+    primary = SyntheticTelephoneTTS(
+        "synthetic-telephone-primary",
+        fail_with_timeout=True,
+    )
+    retry = SyntheticTelephoneTTS("synthetic-telephone-retry")
+    register_voice_provider(
+        "synthetic-telephone-retry",
+        lambda: retry,
+        capabilities=VoiceProviderCapabilities(
+            transcription=False,
+            synthesis=True,
+            audio_formats=("wav",),
+        ),
+    )
+    plans = SyntheticTelephonePlans()
+    state = TelephoneTurnState(
+        call_id="synthetic-call-do-not-persist",
+        max_turns=4,
+    )
+
+    first = process_telephone_turn(
+        VoiceTurnRequest(
+            transcript="What phone number should I call?",
+            request_id="synthetic-telephone-0",
+            tts_providers=("synthetic-telephone-retry",),
+            output_format="wav",
+        ),
+        state,
+        template_provider=plans,
+        tts_provider=primary,
+    )
+    assert first.status == "degraded"
+    assert first.audio is not None
+    first_audio_text = _synthetic_telephone_audio_text(first.audio)
+    assert (
+        "five zero three, five five five, zero one zero zero"
+        in first_audio_text
+    )
+    _assert_no_telephone_audio_markers(first_audio_text)
+    synthesis = [trace for trace in first.traces if trace.stage == "synthesis"]
+    assert [trace.status for trace in synthesis] == ["failed", "succeeded"]
+    assert synthesis[0].details == {
+        "attempt": 1,
+        "retry": False,
+        "will_retry": True,
+    }
+    assert synthesis[1].details["attempt"] == 2
+    assert synthesis[1].details["retry"] is True
+    assert (
+        next(
+            trace
+            for trace in first.traces
+            if trace.stage == "telephone_escalation"
+        ).status
+        == "skipped"
+    )
+
+    state = state.advance(first, barge_in=True)
+    second = process_telephone_turn(
+        VoiceTurnRequest(
+            transcript="Stop and give me the address instead.",
+            request_id="synthetic-telephone-1",
+            tts_providers=("synthetic-telephone-retry",),
+            output_format="wav",
+        ),
+        state,
+        template_provider=plans,
+        tts_provider=primary,
+    )
+    assert second.audio is not None
+    second_audio_text = _synthetic_telephone_audio_text(second.audio)
+    assert "one one three two SW 13th Ave" in second_audio_text
+    assert "ZIP code nine seven two zero five" in second_audio_text
+    assert "main office" in second_audio_text
+    _assert_no_telephone_audio_markers(second_audio_text)
+    telephone_metadata = second.provenance.metadata["telephone"]
+    assert telephone_metadata["turn_index"] == 1
+    assert telephone_metadata["barge_in"] is True
+    assert (
+        telephone_metadata["previous_response_sha256"]
+        == first.provenance.response_text_sha256
+    )
+
+    state = state.advance(second)
+    exhausted = process_telephone_turn(
+        VoiceTurnRequest(
+            transcript="I still need help.",
+            request_id="synthetic-telephone-2",
+            output_format="wav",
+        ),
+        state,
+        template_provider=plans,
+        tts_provider=primary,
+    )
+    assert exhausted.status == "text_only"
+    assert exhausted.audio is None
+    assert "tts_failed" in exhausted.fallback_reasons
+    assert "telephone_human_escalation" in exhausted.fallback_reasons
+    escalation = next(
+        trace
+        for trace in exhausted.traces
+        if trace.stage == "telephone_escalation"
+    )
+    assert escalation.status == "succeeded"
+    assert escalation.provider == "human_handoff"
+    assert escalation.details["reason"] == "provider_exhausted"
+    assert (
+        exhausted.provenance.metadata["telephone"]["escalation_required"]
+        is True
+    )
+
+    receipt = json.dumps(exhausted.to_dict(), sort_keys=True)
+    assert "synthetic-call-do-not-persist" not in receipt
+    assert state.call_id_sha256 in receipt
