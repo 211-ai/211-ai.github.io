@@ -349,7 +349,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-006 Implement wallet processor migration objective: Define normalized schemas and canonical identity
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
