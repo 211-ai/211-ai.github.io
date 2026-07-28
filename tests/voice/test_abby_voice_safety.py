@@ -440,3 +440,14 @@ def test_legacy_speech_to_text_keeps_plain_string_contract_offline() -> None:
     )
     assert result == "synthetic legacy transcript"
     assert isinstance(result, str)
+
+
+def test_returned_audio_transcript_threshold_rejects_a_changed_fact() -> None:
+    """Whisper or an injected equivalent must match normalized expected text."""
+
+    normalized_expected = "call nine one one now"
+    injected_equivalent_exact = "call nine one one now"
+    changed_fact = "call nine one two now"
+
+    assert _word_error_rate(normalized_expected, injected_equivalent_exact) == 0
+    assert _word_error_rate(normalized_expected, changed_fact) > 0

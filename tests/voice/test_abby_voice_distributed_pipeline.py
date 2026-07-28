@@ -1179,3 +1179,26 @@ def test_real_provider_canary_protocol_is_documented() -> None:
     assert "offline deterministic fixture" in runbook_text
     assert "worker-crash recovery test" in runbook_text
     assert "capability/resource backpressure test" in runbook_text
+
+
+def test_multisurface_evaluation_report_records_exact_ratios_and_audio_gate() -> None:
+    """The durable receipt retains the exact G035 numerators and denominators."""
+
+    report = (
+        REPO_ROOT / "docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md"
+    ).read_text(encoding="utf-8")
+    for required in (
+        "deterministic conversation corpus",
+        "injected ASR equivalent",
+        "cache hit",
+        "template hit",
+        "GraphRAG hit",
+        "fallback",
+        "live TTS",
+        "terminal miss",
+        "8/12",
+        "12/12",
+        "4/12",
+        "0/12",
+    ):
+        assert required in report
