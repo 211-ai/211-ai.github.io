@@ -545,7 +545,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-009 Implement wallet processor migration objective: Implement bounded provider transport and security controls
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
