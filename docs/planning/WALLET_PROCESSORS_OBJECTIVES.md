@@ -59,7 +59,7 @@ Program invariants:
 
 ## WALPROC-G010 Freeze the source inventory and ownership map
 
-- Status: active
+- Status: provisionally_complete
 - Parent: WALPROC-G000
 - Fib priority: 2
 - Priority: P0
@@ -81,10 +81,13 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+- State transitioned at: 2026-07-28T22:49:13.476228+00:00
+- State transition reason: Produce completion evidence for: The inventory includes every symbol in the 955-line wallet_interface/world_id.py, World ID code in app_service.py and ops.py, WorldIdBinding and all service/snapshot/proof/nullifier paths in ipfs_datasets_py.wallet, all direct Python and TypeScript callers, current Xaman security/formal assets, both incompatible generic processor protocols and registries, optional dependency declarations, network endpoints, config keys, secret references, and a move/retain/deprecate decision with one owner per symbol.; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-28T22:49:13.476228+00:00
 
 ## WALPROC-G020 Freeze compatibility, security, and fixture baselines
 
-- Status: active
+- Status: provisionally_complete
 - Parent: WALPROC-G000
 - Fib priority: 3
 - Priority: P0
@@ -107,10 +110,13 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+- State transitioned at: 2026-07-28T22:49:13.476228+00:00
+- State transition reason: Produce completion evidence for: Golden vectors cover existing World ID signing, hash-to-field, IDKit v3/v4 uniqueness/session, verify success/failure, redaction, old snapshot import, route shapes, and old import identities; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-28T22:49:13.476228+00:00
 
 ## WALPROC-G030 Approve the wallet-domain protocol and processor adapter decision
 
-- Status: active
+- Status: provisionally_complete
 - Parent: WALPROC-G000
 - Fib priority: 5
 - Priority: P0
@@ -133,10 +139,13 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+- State transitioned at: 2026-07-28T22:49:13.476228+00:00
+- State transition reason: Produce completion evidence for: Protocols cover WalletProvider, LedgerProvider, ChainNormalizer, CheckpointStore, DatasetSink, Exporter, HttpTransport, SecretResolver, FinalityPolicy, capabilities, cancellation, deadlines, and bounded requests; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-28T22:49:13.476228+00:00
 
 ## WALPROC-G040 Define normalized schemas and canonical identity
 
-- Status: active
+- Status: provisionally_complete
 - Parent: WALPROC-G000
 - Fib priority: 5
 - Priority: P0
@@ -159,10 +168,13 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+- State transitioned at: 2026-07-28T22:49:13.476228+00:00
+- State transition reason: Produce completion evidence for: All records carry schema/version, deterministic ID, chain/network/genesis identity, source provenance, observed time, finality, and extensions; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-28T22:49:13.476228+00:00
 
 ## WALPROC-G050 Review and declare optional dependency extras
 
-- Status: active
+- Status: provisionally_complete
 - Parent: WALPROC-G000
 - Fib priority: 8
 - Priority: P1
@@ -185,6 +197,9 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+- State transitioned at: 2026-07-28T22:49:13.476228+00:00
+- State transition reason: Produce completion evidence for: Extras `wallets`, `wallets-worldcoin`, `wallets-ethereum`, `wallets-xrpl`, `wallets-xaman`, `wallets-bitcoin`, `wallets-solana`, and `wallets-all` have compatible bounds, hashes/provenance/license/SBOM rationale; Map every mandatory acceptance criterion to fresh, verified implementation and validation proof bound to the current tree.; Every submitted validation proof must be fresh and passing, and every mandatory criterion must have one.; Require an explicitly healthy analyzer that is safe for completion reasoning.; Require the configured number of independent, fresh, healthy exhaustive receipts bound to the current repository tree.; Task completion is provisional until every criterion has valid evidence.
+- Provisional at: 2026-07-28T22:49:13.476228+00:00
 
 ## WALPROC-G060 Implement bounded provider transport and security controls
 
@@ -757,3 +772,459 @@ Program invariants:
 - Analyzer health: {"evidence":{},"passed":false,"reason_code":"analyzer_health_missing","status":"missing"}
 - Exhaustion quorum: {"evidence":{},"member_count":null,"reason_code":"exhaustion_quorum_missing","required_members":null,"satisfied":false,"stale_members":[]}
 - Reopen reasons: []
+
+## WALPROC-G801 Prove WALPROC-G060 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3000
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G060`.
+- Evidence: WALPROC-G060
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G060
+- AST query: WALPROC-G060
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G060` with a narrow, verifiable change.
+
+## WALPROC-G802 Prove WALPROC-G070 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3001
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G070`.
+- Evidence: WALPROC-G070
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G070
+- AST query: WALPROC-G070
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G070` with a narrow, verifiable change.
+
+## WALPROC-G803 Prove WALPROC-G080 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3002
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G080`.
+- Evidence: WALPROC-G080
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G080
+- AST query: WALPROC-G080
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G080` with a narrow, verifiable change.
+
+## WALPROC-G804 Prove WALPROC-G090 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3000
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G090`.
+- Evidence: WALPROC-G090
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G090
+- AST query: WALPROC-G090
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G090` with a narrow, verifiable change.
+
+## WALPROC-G805 Prove WALPROC-G100 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3001
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G100`.
+- Evidence: WALPROC-G100
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G100
+- AST query: WALPROC-G100
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G100` with a narrow, verifiable change.
+
+## WALPROC-G806 Prove WALPROC-G110 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3002
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G110`.
+- Evidence: WALPROC-G110
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G110
+- AST query: WALPROC-G110
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G110` with a narrow, verifiable change.
+
+## WALPROC-G807 Prove WALPROC-G300 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3000
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G300`.
+- Evidence: WALPROC-G300
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G300
+- AST query: WALPROC-G300
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G300` with a narrow, verifiable change.
+
+## WALPROC-G808 Prove WALPROC-G400 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3001
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G400`.
+- Evidence: WALPROC-G400
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G400
+- AST query: WALPROC-G400
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G400` with a narrow, verifiable change.
+
+## WALPROC-G809 Prove WALPROC-G500 for Deliver reusable, safe multi-chain wallet processors
+
+- Status: active
+- Parent: WALPROC-G000
+- Fib priority: 3002
+- Track: wallet-processors-program
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `WALPROC-G500`.
+- Evidence: WALPROC-G500
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Refinement depth: 1
+- Embedding query: WALPROC-G500
+- AST query: WALPROC-G500
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `WALPROC-G500` with a narrow, verifiable change.
+
+## WALPROC-G810 Prove data/wallet_processor_migration/agent_supervisor/objective_graph.json for Operate dual-provider agent supervision with bounded refill
+
+- Status: active
+- Parent: WALPROC-G800
+- Fib priority: 5000
+- Track: autonomous-execution
+- Priority: P0
+- Bundle: wallet-processors/control
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `data/wallet_processor_migration/agent_supervisor/objective_graph.json`.
+- Evidence: data/wallet_processor_migration/agent_supervisor/objective_graph.json
+- Outputs: data/wallet_processor_migration/agent_supervisor, docs/planning/WALLET_PROCESSORS_TODO.md, scripts/wallet_processor_migration_supervisor.sh
+- Validation: scripts/wallet_processor_migration_supervisor.sh status
+- Refinement depth: 2
+- Embedding query: data/wallet_processor_migration/agent_supervisor/objective_graph.json
+- AST query: data/wallet_processor_migration/agent_supervisor/objective_graph.json
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `data/wallet_processor_migration/agent_supervisor/objective_graph.json` with a narrow, verifiable change.
+
+## WALPROC-G811 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py for Goal packet aggregate for WALPROC-G070, WALPROC-G080
+
+- Status: active
+- Parent: WALPROC-G070
+- Fib priority: 5000
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py` with a narrow, verifiable change.
+
+## WALPROC-G812 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py for Goal packet aggregate for WALPROC-G070, WALPROC-G080
+
+- Status: active
+- Parent: WALPROC-G070
+- Fib priority: 5001
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py` with a narrow, verifiable change.
+
+## WALPROC-G813 Prove ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py for Goal packet aggregate for WALPROC-G070, WALPROC-G080
+
+- Status: active
+- Parent: WALPROC-G070
+- Fib priority: 5002
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py`.
+- Evidence: ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py
+- AST query: ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py` with a narrow, verifiable change.
+
+## WALPROC-G814 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py for Implement streaming ingestion and dataset export
+
+- Status: active
+- Parent: WALPROC-G080
+- Fib priority: 5000
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py` with a narrow, verifiable change.
+
+## WALPROC-G815 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py for Implement streaming ingestion and dataset export
+
+- Status: active
+- Parent: WALPROC-G080
+- Fib priority: 5001
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py` with a narrow, verifiable change.
+
+## WALPROC-G816 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py for Implement streaming ingestion and dataset export
+
+- Status: active
+- Parent: WALPROC-G080
+- Fib priority: 5002
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py` with a narrow, verifiable change.
+
+## WALPROC-G817 Prove ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py for Implement streaming ingestion and dataset export
+
+- Status: active
+- Parent: WALPROC-G080
+- Fib priority: 5000
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py`.
+- Evidence: ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- AST query: ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py` with a narrow, verifiable change.
+
+## WALPROC-G818 Prove ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py for Implement checkpoint, finality, and reorganization contracts
+
+- Status: active
+- Parent: WALPROC-G070
+- Fib priority: 5000
+- Track: shared-runtime
+- Priority: P0
+- Bundle: wallet-processors/pipeline
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py`.
+- Evidence: ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- AST query: ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py` with a narrow, verifiable change.
+
+## WALPROC-G819 Prove ipfs_datasets_py/tests/contract/processors/wallets/conformance.py for Build shared chain conformance and fixture harness
+
+- Status: active
+- Parent: WALPROC-G090
+- Fib priority: 5000
+- Track: testing
+- Priority: P0
+- Bundle: wallet-processors/conformance
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/contract/processors/wallets/conformance.py`.
+- Evidence: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py
+- Outputs: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py
+- AST query: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py
+- Parallel lane: wallet-processors/conformance
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/contract/processors/wallets/conformance.py` with a narrow, verifiable change.
+
+## WALPROC-G820 Prove ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integ... for Build shared chain conformance and fixture harness
+
+- Status: active
+- Parent: WALPROC-G090
+- Fib priority: 5001
+- Track: testing
+- Priority: P0
+- Bundle: wallet-processors/conformance
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py`.
+- Evidence: ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Outputs: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- AST query: ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Parallel lane: wallet-processors/conformance
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py` with a narrow, verifiable change.
+
+## WALPROC-G821 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challe... for Extract World ID binding, challenge, replay, proof, and snapshot ownership
+
+- Status: active
+- Parent: WALPROC-G110
+- Fib priority: 5000
+- Track: worldcoin
+- Priority: P0
+- Bundle: wallet-processors/worldcoin-state
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py
+- Parallel lane: wallet-processors/worldcoin-state
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py` with a narrow, verifiable change.
+
+## WALPROC-G822 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py for Extract World ID binding, challenge, replay, proof, and snapshot ownership
+
+- Status: active
+- Parent: WALPROC-G110
+- Fib priority: 5001
+- Track: worldcoin
+- Priority: P0
+- Bundle: wallet-processors/worldcoin-state
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py
+- Parallel lane: wallet-processors/worldcoin-state
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py` with a narrow, verifiable change.
+
+## WALPROC-G823 Prove ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_binding... for Extract World ID binding, challenge, replay, proof, and snapshot ownership
+
+- Status: active
+- Parent: WALPROC-G110
+- Fib priority: 5002
+- Track: worldcoin
+- Priority: P0
+- Bundle: wallet-processors/worldcoin-state
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py`.
+- Evidence: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- AST query: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Parallel lane: wallet-processors/worldcoin-state
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py` with a narrow, verifiable change.
+
+## WALPROC-G824 Prove ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindin... for Extract World ID binding, challenge, replay, proof, and snapshot ownership
+
+- Status: active
+- Parent: WALPROC-G110
+- Fib priority: 5000
+- Track: worldcoin
+- Priority: P0
+- Bundle: wallet-processors/worldcoin-state
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py`.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py
+- AST query: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py
+- Parallel lane: wallet-processors/worldcoin-state
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py` with a narrow, verifiable change.
