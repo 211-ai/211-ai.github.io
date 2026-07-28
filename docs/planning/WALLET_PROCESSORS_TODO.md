@@ -88,7 +88,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-002 Implement wallet processor migration objective: Freeze the source inventory and ownership map
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
