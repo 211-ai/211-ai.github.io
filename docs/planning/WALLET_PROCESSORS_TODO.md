@@ -2165,3 +2165,113 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Candidate kind: aggregate
 - Todo vector key: 347bf3698843d4e7
 - Acceptance: Objective scan filed this gap for WALPROC-G710. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-033-objective-gap-7581aa355e31.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G700, WALPROC-G710) and covers all the shared packet evidence in one comprehensive pass. Playwright/live signoff may be recorded as an external blocker when required infrastructure is unavailable.
+
+## WALPROC-034 Resolve dependency guardrail for WALPROC-005
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-034-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-005 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-034-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-035 Resolve dependency guardrail for WALPROC-006
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-035-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-006 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-035-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-036 Resolve dependency guardrail for WALPROC-008
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-036-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-008 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-036-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-037 Resolve dependency guardrail for WALPROC-009
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-037-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-009 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-037-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-038 Resolve dependency guardrail for WALPROC-011
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-038-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-011 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-038-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-039 Resolve dependency guardrail for WALPROC-012
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-039-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-012 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-039-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-040 Resolve dependency guardrail for WALPROC-013
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-040-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-013 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-040-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-041 Resolve dependency guardrail for WALPROC-014
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-041-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-014 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-041-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-042 Resolve dependency guardrail for WALPROC-015
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-042-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-015 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-042-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-043 Resolve dependency guardrail for WALPROC-016
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-043-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-016 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-043-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
