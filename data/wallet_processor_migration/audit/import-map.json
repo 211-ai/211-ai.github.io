@@ -3,7 +3,7 @@
   "schema_version": 1,
   "goal_id": "WALPROC-G010",
   "task_id": "WALPROC-002",
-  "generated_at": "2026-07-28T22:07:07Z",
+  "generated_at": "2026-07-28T22:15:21Z",
   "purpose": "Machine-readable import and call graph freeze for World ID, wallet domain, generic processors, and Xaman formal assets.",
   "edges": [
     {
@@ -2374,6 +2374,18 @@
         "xaman formal IR"
       ],
       "notes": "Assurance path; not runtime wallet processor."
+    },
+    {
+      "source": "wallet_interface/routes/world_id.py",
+      "target": "wallet_interface.world_id",
+      "kind": "python_import",
+      "symbols": [
+        "WorldIdConfigError",
+        "WorldIdPayloadError",
+        "WorldIdSignatureError",
+        "WorldIdVerificationError"
+      ],
+      "notes": "HTTP layer imports exception types from world_id module; retain on cutover."
     }
   ],
   "callers_by_symbol": {
@@ -2799,34 +2811,35 @@
   "python_direct_world_id_callers": [
     "wallet_interface/app_service.py",
     "wallet_interface/ops.py",
-    "tests/test_world_id_wallet.py",
-    "tests/test_world_id_wallet_api.py",
+    "wallet_interface/routes/world_id.py",
+    "scripts/hmis_reconciliation_job.py",
     "tests/contract/test_wallet_api_contract.py",
-    "tests/test_wallet_interface.py",
-    "tests/test_wallet_interface_api.py",
-    "tests/test_wallet_interface_ops.py",
-    "tests/test_wallet_interface_hmis_api.py",
     "tests/test_hmis_end_to_end.py",
     "tests/test_hmis_reconciliation.py",
-    "scripts/hmis_reconciliation_job.py",
+    "tests/test_wallet_interface.py",
+    "tests/test_wallet_interface_api.py",
+    "tests/test_wallet_interface_hmis_api.py",
+    "tests/test_wallet_interface_ops.py",
+    "tests/test_world_id_wallet.py",
+    "tests/test_world_id_wallet_api.py",
     "tests/world_aid/test_integration_audit_contract.py"
   ],
   "typescript_ui_callers": [
-    "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
-    "wallet_interface/ui/src/features/wallet/lib/walletProofReview.ts",
-    "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
-    "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx",
+    "wallet_interface/services/world_siwe_verifier/index.mjs",
     "wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx",
-    "wallet_interface/ui/src/shared/lib/runtimeConfig.ts",
+    "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx",
     "wallet_interface/ui/src/features/wallet/components/ProofCenterScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/RegistrationScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/SettingsScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/UploadsScreen.tsx",
+    "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+    "wallet_interface/ui/src/features/wallet/lib/walletProofReview.ts",
+    "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+    "wallet_interface/ui/src/shared/lib/runtimeConfig.ts",
     "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts",
-    "wallet_interface/ui/tests/world-id.spec.ts",
-    "wallet_interface/ui/tests/world-id-ux.spec.ts",
     "wallet_interface/ui/tests/world-id-fullstack.spec.ts",
-    "wallet_interface/services/world_siwe_verifier/index.mjs"
+    "wallet_interface/ui/tests/world-id-ux.spec.ts",
+    "wallet_interface/ui/tests/world-id.spec.ts"
   ],
   "module_imports": {
     "wallet_interface/world_id.py": [
@@ -4894,6 +4907,47 @@
       ],
       "resolving_goal": "WALPROC-G030",
       "guessed": false
+    },
+    {
+      "id": "BLOCKER-WALPROC-G010-002",
+      "severity": "medium",
+      "title": "World ID binding nullifier storage ownership boundary between wallet.service and worldcoin processor",
+      "detail": "DataWalletService owns private nullifier storage, public nullifier commitment, and proof receipts today. Reusable verification/signing moves to processors.wallets.worldcoin. Exact split of _store_world_id_private_nullifier / _world_id_public_nullifier_commitment vs processor projections is deferred to WALPROC-G090/G100 extraction tasks. Recorded as blocker rather than guessing which helper moves first.",
+      "related_symbols": [
+        "DataWalletService._store_world_id_private_nullifier",
+        "DataWalletService._world_id_public_nullifier_commitment",
+        "DataWalletService._create_world_id_proof_receipt",
+        "DataWalletService.add_world_id_binding"
+      ],
+      "resolving_goal": "WALPROC-G090",
+      "guessed": false
+    },
+    {
+      "id": "BLOCKER-WALPROC-G010-003",
+      "severity": "medium",
+      "title": "Wallet processor optional dependency extras are not declared",
+      "detail": "ipfs_datasets_py optional extras have no worldcoin/xaman/ethereum/bitcoin/solana groups yet. Signing currently soft-depends on pycryptodome and coincurve inside wallet_interface/world_id.py. Package owner for extras declaration is WALPROC-G050/WALPROC-010; not invented here.",
+      "related_paths": [
+        "ipfs_datasets_py/pyproject.toml",
+        "ipfs_datasets_py/setup.py",
+        "wallet_interface/world_id.py"
+      ],
+      "resolving_goal": "WALPROC-G050",
+      "guessed": false
+    },
+    {
+      "id": "BLOCKER-WALPROC-G010-004",
+      "severity": "low",
+      "title": "Duplicate WorldIdVerificationPanel paths in UI",
+      "detail": "Both wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx and wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx exist. Which is canonical for post-cutover UI is an application cleanup decision; both retained for now.",
+      "related_paths": [
+        "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+        "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx"
+      ],
+      "resolving_goal": "WALPROC-G710",
+      "guessed": false
     }
-  ]
+  ],
+  "freeze_attempt": 2,
+  "freeze_status": "frozen"
 }

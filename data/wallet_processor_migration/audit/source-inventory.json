@@ -3,8 +3,8 @@
   "schema_version": 1,
   "goal_id": "WALPROC-G010",
   "task_id": "WALPROC-002",
-  "generated_at": "2026-07-28T22:07:07Z",
-  "repository_root": "/home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/worktrees/grok/workspace-d64ed6d66b6b-0c4757d7345e",
+  "generated_at": "2026-07-28T22:15:21Z",
+  "repository_root": "/home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/worktrees/grok/workspace-05e1948735fa-fe57124ffbbb",
   "purpose": "Deterministic inventory of Worldcoin/World ID/World Chain, Xaman/XRPL, existing wallet-domain, processor-protocol, caller, test, dependency, network, secret, snapshot, and UI boundaries before production code moves.",
   "acceptance_coverage": {
     "world_id_py_line_count": 955,
@@ -23,7 +23,9 @@
     "config_keys_documented": true,
     "secret_references_documented": true,
     "ownership_decisions_present": true,
-    "unresolved_ownership_as_blockers": true
+    "unresolved_ownership_as_blockers": true,
+    "freeze_attempt": 2,
+    "routes_world_id_listed": true
   },
   "domains": {
     "worldcoin_world_id": {
@@ -14751,23 +14753,27 @@
     "world_id_module": [
       "wallet_interface/app_service.py",
       "wallet_interface/ops.py",
-      "tests/test_world_id_wallet.py",
-      "tests/test_world_id_wallet_api.py",
+      "wallet_interface/routes/__init__.py",
+      "wallet_interface/routes/world_id.py",
+      "scripts/hmis_reconciliation_job.py",
       "tests/contract/test_wallet_api_contract.py",
-      "tests/test_wallet_interface.py",
-      "tests/test_wallet_interface_api.py",
-      "tests/test_wallet_interface_ops.py",
-      "tests/test_wallet_interface_hmis_api.py",
       "tests/test_hmis_end_to_end.py",
       "tests/test_hmis_reconciliation.py",
-      "scripts/hmis_reconciliation_job.py",
+      "tests/test_wallet_interface.py",
+      "tests/test_wallet_interface_api.py",
+      "tests/test_wallet_interface_hmis_api.py",
+      "tests/test_wallet_interface_ops.py",
+      "tests/test_world_id_wallet.py",
+      "tests/test_world_id_wallet_api.py",
       "tests/world_aid/test_integration_audit_contract.py"
     ],
     "by_symbol": {
       "world_id_module_import": [
-        "tests/contract/test_wallet_api_contract.py",
-        "tests/test_world_id_wallet_api.py",
+        "wallet_interface/app_service.py",
+        "wallet_interface/ops.py",
+        "wallet_interface/routes/world_id.py",
         "scripts/hmis_reconciliation_job.py",
+        "tests/contract/test_wallet_api_contract.py",
         "tests/test_hmis_end_to_end.py",
         "tests/test_hmis_reconciliation.py",
         "tests/test_wallet_interface.py",
@@ -14775,8 +14781,7 @@
         "tests/test_wallet_interface_hmis_api.py",
         "tests/test_wallet_interface_ops.py",
         "tests/test_world_id_wallet.py",
-        "wallet_interface/app_service.py",
-        "wallet_interface/ops.py"
+        "tests/test_world_id_wallet_api.py"
       ],
       "load_world_id_config": [
         "tests/test_world_id_wallet.py",
@@ -14832,21 +14837,21 @@
     }
   },
   "typescript_and_ui_callers": [
-    "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
-    "wallet_interface/ui/src/features/wallet/lib/walletProofReview.ts",
-    "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
-    "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx",
+    "wallet_interface/services/world_siwe_verifier/index.mjs",
     "wallet_interface/ui/src/app/components/WorldIdSurfaceStatus.tsx",
-    "wallet_interface/ui/src/shared/lib/runtimeConfig.ts",
+    "wallet_interface/ui/src/components/world-id/WorldIdVerificationPanel.tsx",
     "wallet_interface/ui/src/features/wallet/components/ProofCenterScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/RegistrationScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/SettingsScreen.tsx",
     "wallet_interface/ui/src/features/wallet/components/UploadsScreen.tsx",
+    "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+    "wallet_interface/ui/src/features/wallet/lib/walletProofReview.ts",
+    "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+    "wallet_interface/ui/src/shared/lib/runtimeConfig.ts",
     "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts",
-    "wallet_interface/ui/tests/world-id.spec.ts",
-    "wallet_interface/ui/tests/world-id-ux.spec.ts",
     "wallet_interface/ui/tests/world-id-fullstack.spec.ts",
-    "wallet_interface/services/world_siwe_verifier/index.mjs"
+    "wallet_interface/ui/tests/world-id-ux.spec.ts",
+    "wallet_interface/ui/tests/world-id.spec.ts"
   ],
   "xaman_formal_and_security_assets": [
     "ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/xaman/adapter.py",
@@ -15354,5 +15359,7 @@
     "blockers": 4,
     "ui_callers": 15,
     "python_world_id_callers": 13
-  }
+  },
+  "freeze_attempt": 2,
+  "freeze_status": "frozen"
 }
