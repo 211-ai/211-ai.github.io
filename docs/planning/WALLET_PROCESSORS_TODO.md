@@ -1587,7 +1587,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-025 Implement wallet processor migration objective: Publish lazy registry and one generic processor adapter
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
