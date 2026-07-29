@@ -1134,7 +1134,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-018 Implement Crypto IR compliance objective: Implement Bitcoin Script, Tapscript, Miniscript, and PSBT semantics
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
