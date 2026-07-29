@@ -275,7 +275,14 @@ app = create_app(service=service)
 `,
     "utf-8"
   );
-  const pythonPath = [tempDir, path.join(repoRoot, "ipfs_datasets_py"), repoRoot].join(path.delimiter);
+  const pythonPath = [
+    tempDir,
+    path.join(repoRoot, "ipfs_datasets_py"),
+    repoRoot,
+    process.env.PYTHONPATH
+  ]
+    .filter(Boolean)
+    .join(path.delimiter);
   const inheritedEnv = Object.fromEntries(
     Object.entries(process.env).filter(
       ([name]) =>

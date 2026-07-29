@@ -34,6 +34,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 WORLD_ID_PATH = REPO_ROOT / "wallet_interface" / "world_id.py"
 APP_SERVICE_PATH = REPO_ROOT / "wallet_interface" / "app_service.py"
 OPS_PATH = REPO_ROOT / "wallet_interface" / "ops.py"
+WORLD_ID_FULLSTACK_PATH = (
+    REPO_ROOT / "wallet_interface" / "ui" / "tests" / "world-id-fullstack.spec.ts"
+)
 
 # Reviewed thin-wrapper budget (deprecation-window compatibility module only).
 MAX_WRAPPER_LINES = 120
@@ -362,3 +365,24 @@ def test_wrapper_module_source_mentions_ownership_boundary() -> None:
     assert "compatibility" in lowered or "re-export" in lowered or "reexport" in lowered
     assert "ipfs_datasets_py" in source
     assert "walproc-g130" in lowered or "walproc_g130" in lowered or "thin" in lowered
+
+
+def test_world_id_fullstack_preserves_approved_pythonpath_without_inheriting_secrets() -> None:
+    source = _read(WORLD_ID_FULLSTACK_PATH)
+
+    pythonpath_entries = (
+        "tempDir,\n"
+        '    path.join(repoRoot, "ipfs_datasets_py"),\n'
+        "    repoRoot,\n"
+        "    process.env.PYTHONPATH"
+    )
+    assert pythonpath_entries in source
+    assert '.join(path.delimiter)' in source
+
+    assert 'name !== "PYTHONPATH"' in source
+    for prefix in (
+        "ABBY_RUNTIME_WORLD_ID_",
+        "VITE_WORLD_ID_",
+        "WORLD_ID_",
+    ):
+        assert f'!name.startsWith("{prefix}")' in source
