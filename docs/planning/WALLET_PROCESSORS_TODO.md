@@ -1782,7 +1782,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-028 Implement wallet processor migration objective: Complete privacy, threat-model, and secret-leak review
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
