@@ -614,7 +614,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-010 Implement Crypto IR compliance objective: Implement the Bitcoin wallet-to-Crypto-IR adapter
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
