@@ -2372,7 +2372,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-060 Close secret-smuggling serialization paths
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
