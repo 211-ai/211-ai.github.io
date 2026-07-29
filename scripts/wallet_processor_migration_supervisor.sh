@@ -64,6 +64,67 @@ require_executable() {
   fi
 }
 
+configure_validation_playwright_browsers() {
+  local configured_path=""
+  local account_home=""
+  local cache_root=""
+
+  if [[ -n "${WALLET_PROCESSOR_PLAYWRIGHT_BROWSERS_PATH:-}" ]]; then
+    configured_path="${WALLET_PROCESSOR_PLAYWRIGHT_BROWSERS_PATH}"
+  elif [[ -n "${IPFS_ACCELERATE_AGENT_VALIDATION_PLAYWRIGHT_BROWSERS_PATH:-}" ]]; then
+    configured_path="${IPFS_ACCELERATE_AGENT_VALIDATION_PLAYWRIGHT_BROWSERS_PATH}"
+  else
+    if [[ -n "${XDG_CACHE_HOME:-}" ]]; then
+      cache_root="${XDG_CACHE_HOME}"
+    elif command -v getent >/dev/null 2>&1; then
+      account_home="$(
+        getent passwd "$(id -u)" | cut -d: -f6
+      )"
+      if [[ -n "${account_home}" ]]; then
+        cache_root="${account_home}/.cache"
+      fi
+    fi
+    if [[ -n "${cache_root}" && -d "${cache_root}/ms-playwright" ]]; then
+      configured_path="${cache_root}/ms-playwright"
+    fi
+  fi
+
+  if [[ "${configured_path}" != /* || ! -d "${configured_path}" ]]; then
+    echo "Playwright browser cache is unavailable for hermetic wallet validation." >&2
+    echo "Set WALLET_PROCESSOR_PLAYWRIGHT_BROWSERS_PATH to an existing absolute ms-playwright directory." >&2
+    return 2
+  fi
+  configured_path="$(cd "${configured_path}" && pwd -P)"
+  if ! (
+    cd "${REPO_ROOT}/wallet_interface/ui"
+    env -i \
+      HOME=/nonexistent/ipfs-accelerate-validation \
+      XDG_CACHE_HOME=/nonexistent/ipfs-accelerate-validation \
+      XDG_CONFIG_HOME=/nonexistent/ipfs-accelerate-validation \
+      XDG_DATA_HOME=/nonexistent/ipfs-accelerate-validation \
+      XDG_STATE_HOME=/nonexistent/ipfs-accelerate-validation \
+      PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+      PLAYWRIGHT_BROWSERS_PATH="${configured_path}" \
+      node -e '
+const { chromium, webkit } = require("playwright");
+(async () => {
+  for (const browserType of [chromium, webkit]) {
+    const browser = await browserType.launch({ headless: true });
+    await browser.close();
+  }
+})().catch((error) => {
+  process.stderr.write(`${error && error.stack ? error.stack : error}\n`);
+  process.exitCode = 1;
+});'
+  ); then
+    echo "Playwright Chromium/WebKit launch probe failed for: ${configured_path}" >&2
+    echo "Repair it with: cd ${REPO_ROOT}/wallet_interface/ui && PLAYWRIGHT_BROWSERS_PATH=${configured_path} npx playwright install chromium webkit" >&2
+    return 2
+  fi
+
+  export IPFS_ACCELERATE_AGENT_VALIDATION_PLAYWRIGHT_BROWSERS_PATH="${configured_path}"
+}
+
 prepare_runtime() {
   require_file "${OBJECTIVE_PATH}"
   require_file "${PLAN_PATH}"
@@ -300,6 +361,7 @@ run_reconciliation_preflight() {
   local -a args=()
   prepare_runtime
   require_supervisors_stopped
+  configure_validation_playwright_browsers || return $?
   args=(
     --once
     --reconciliation-only
@@ -405,6 +467,7 @@ wait_for_lane() {
 
 start_supervisors() {
   prepare_runtime
+  configure_validation_playwright_browsers || return $?
   if [[ ! -f "${GRAPH_PATH}" || ! -f "${BUNDLE_DIR}/index.json" ]]; then
     seed_objectives true
   fi
