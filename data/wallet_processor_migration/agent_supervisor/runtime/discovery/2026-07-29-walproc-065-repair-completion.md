@@ -33,26 +33,34 @@ The proposal-reviewed candidate and the validation candidate are identical.
 6. **Browser session and current-surface coverage** — `world-id.spec.ts` only
    installs `abby-ui-session-v1`; `world-id-ux.spec.ts` installs the same
    current session and aligns stale locators with the rendered manual-intake,
-   QR, and export surfaces while retaining accessibility and privacy checks.
+   QR, and export surfaces while retaining accessibility and privacy checks
+   and excluding standards-compliant visually hidden controls from the
+   clipping diagnostic.
 7. **Fail-closed browser configuration** — the wallet API response is
    authoritative; absent `app_id` or `rp_id` cannot fall back to browser
    build-time configuration.
 8. **Full-stack transport seam** — the test composes
    `WalletInterfaceService(world_id_request_json=...)`, validates the official
    HTTPS production target, and forwards only through a bounded loopback test
-   transport. Production endpoint policy is unchanged.
+   transport. Production endpoint policy is unchanged. Unrelated
+   missing-person dead-drop background synchronization is isolated without
+   changing World ID request diagnostics.
 9. **Wrapper alias window** — `WRAPPER_ALIAS_COMPATIBILITY_PACKAGE_VERSION=0.2.0`,
    `WRAPPER_ALIAS_EXPIRY_PACKAGE_VERSION=0.3.0`.
 10. **Cutover evidence** — receipt + runbook recorded under declared Outputs.
+    Rollback rehearsal checks package commit coordinates inside
+    `ipfs_datasets_py`. Receipt completion/validation fields match the hard
+    gate.
 
-## Validation
+## Validation (hard gates re-run 2026-07-29)
 
 | Gate | Result |
 | --- | --- |
-| Python ownership/application | **61 passed** |
+| Python ownership/application | **62 passed** |
 | Production UI build (`tsc && vite build`) | **passed** |
 | `tests/world-id.spec.ts` + `tests/world-id-ux.spec.ts` (Desktop Chrome) | **18 passed, 2 skipped** |
 | `tests/world-id-fullstack.spec.ts` (Desktop Chrome) | **3 passed** |
+| Non-destructive package rollback rehearsal | **passed** |
 
 No focused gate remains blocked. Endpoint policy and privacy assertions were
 not weakened. Approved live-tenant signoff remains a separate external

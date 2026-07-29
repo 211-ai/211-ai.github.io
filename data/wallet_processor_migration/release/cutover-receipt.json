@@ -14,7 +14,7 @@
     "decision": "release_source_task_from_retry_block; hold_production_enablement"
   },
   "candidate_integrity": {
-    "candidate_base_commit": "7e0fcace06372f25a45b1d53c1a2d2784ded5d83",
+    "candidate_base_commit": "61ffaa103c264506f3345cdb9e1ce3ea11ccaaa3",
     "submodule_path": "ipfs_datasets_py",
     "submodule_mode": "160000",
     "submodule_commit": "92c1eddb55b40e4de57d51545f4bcdfbf3fab645",
@@ -95,7 +95,8 @@
         "wallet-export"
       ],
       "accessibility_coverage_retained": true,
-      "privacy_assertions_retained": true
+      "privacy_assertions_retained": true,
+      "visually_hidden_controls_excluded_from_clip_diagnostic": true
     },
     "fullstack_test_transport": {
       "status": "complete",
@@ -111,6 +112,15 @@
       "compatibility_version": "0.2.0",
       "expiry_version": "0.3.0",
       "implementation_owner": "ipfs_datasets_py.processors.wallets.worldcoin"
+    },
+    "runbook_rollback_rehearsal": {
+      "status": "complete",
+      "package_commit_coordinates_checked_inside": "ipfs_datasets_py",
+      "verified_commits": [
+        "9f82fa0d078f15fd8b1241b2bbe78c41d7257d39",
+        "422308477058a9a82a1f6bbeacd1914fa3d9691e",
+        "92c1eddb55b40e4de57d51545f4bcdfbf3fab645"
+      ]
     }
   },
   "validation": [
@@ -118,7 +128,7 @@
       "command": "python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py",
       "status": "passed",
       "exit_code": 0,
-      "tests_passed": 61
+      "tests_passed": 62
     },
     {
       "command": "npm --prefix wallet_interface/ui run build",
@@ -138,6 +148,22 @@
       "summary": "3 passed"
     }
   ],
+  "hard_gate": {
+    "status": "passed",
+    "exit_code": 0,
+    "commands": [
+      "python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py",
+      "npm --prefix wallet_interface/ui run build",
+      "PLAYWRIGHT_PORT=5175 npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts tests/world-id-ux.spec.ts --project=\"Desktop Chrome\"",
+      "PLAYWRIGHT_PORT=5176 npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts --project=\"Desktop Chrome\""
+    ],
+    "python_tests_passed": 62,
+    "ui_build_passed": true,
+    "world_id_browser_summary": "18 passed, 2 skipped",
+    "world_id_fullstack_summary": "3 passed",
+    "assertions_weakened": false,
+    "production_policy_bypassed": false
+  },
   "external_release_blockers": [
     {
       "owner": "World ID release operator",
@@ -152,6 +178,7 @@
     "proof_refresh_via_typed_api": true,
     "focused_world_id_specs_passed": true,
     "fullstack_world_id_gate_passed": true,
+    "hard_gate_passed": true,
     "source_task_may_leave_strategy_blocked_tasks": true,
     "production_enablement": "blocked"
   }
