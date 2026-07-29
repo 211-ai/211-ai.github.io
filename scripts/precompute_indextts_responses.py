@@ -19,6 +19,7 @@ import sys
 import tempfile
 import time
 import uuid
+import wave
 import zipfile
 from collections import Counter
 from pathlib import Path
@@ -1124,6 +1125,157 @@ def file_size(path: Path) -> int:
         return 0
 
 
+def _fallback_audio_is_structurally_valid(path: Path) -> bool:
+    """Validate common local cache formats when ffprobe is unavailable."""
+
+    if path.suffix.casefold() == ".wav":
+        try:
+            with wave.open(str(path), "rb") as audio:
+                frame_count = audio.getnframes()
+                expected_bytes = frame_count * audio.getnchannels() * audio.getsampwidth()
+                return (
+                    audio.getnchannels() > 0
+                    and audio.getsampwidth() > 0
+                    and audio.getframerate() > 0
+                    and frame_count > 0
+                    and len(audio.readframes(frame_count)) == expected_bytes
+                )
+        except (EOFError, OSError, wave.Error):
+            return False
+
+    ffmpeg = shutil.which("ffmpeg")
+    if path.suffix.casefold() != ".mp3" or not ffmpeg:
+        return False
+    try:
+        completed = subprocess.run(
+            [
+                ffmpeg,
+                "-v",
+                "error",
+                "-i",
+                str(path),
+                "-f",
+                "null",
+                "-",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return completed.returncode == 0
+
+
+def local_audio_is_structurally_valid(path: Path) -> bool:
+    """Return whether a local WAV/MP3 contains a decodable audio stream."""
+
+    if not path.is_file() or file_size(path) <= 0:
+        return False
+
+    ffprobe = shutil.which("ffprobe")
+    if ffprobe:
+        try:
+            completed = subprocess.run(
+                [
+                    ffprobe,
+                    "-v",
+                    "error",
+                    "-select_streams",
+                    "a:0",
+                    "-count_frames",
+                    "-show_entries",
+                    "stream=codec_type,codec_name,channels,sample_rate,nb_read_frames",
+                    "-of",
+                    "json",
+                    str(path),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=10,
+            )
+            payload = json.loads(completed.stdout) if completed.returncode == 0 else {}
+            streams = payload.get("streams") if isinstance(payload, Mapping) else None
+            valid = bool(
+                isinstance(streams, list)
+                and any(
+                    isinstance(stream, Mapping)
+                    and str(stream.get("codec_type") or "").casefold() == "audio"
+                    and str(stream.get("codec_name") or "").strip()
+                    and int(stream.get("channels") or 0) > 0
+                    and int(stream.get("sample_rate") or 0) > 0
+                    and int(stream.get("nb_read_frames") or 0) > 0
+                    for stream in streams
+                )
+            )
+        except (json.JSONDecodeError, OSError, subprocess.SubprocessError, TypeError, ValueError):
+            valid = False
+    else:
+        valid = _fallback_audio_is_structurally_valid(path)
+
+    return valid
+
+
+def discard_invalid_local_audio_cache(path: Path) -> bool:
+    """Remove an invalid final cache file so its response is regenerated."""
+
+    if not path.exists() or local_audio_is_structurally_valid(path):
+        return False
+    path.unlink(missing_ok=True)
+    return True
+
+
+def _fsync_directory(directory: Path) -> None:
+    """Best-effort directory sync after an atomic media publication."""
+
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    try:
+        descriptor = os.open(directory, flags)
+    except OSError:
+        return
+    try:
+        os.fsync(descriptor)
+    except OSError:
+        # Some filesystems do not support directory fsync.
+        pass
+    finally:
+        os.close(descriptor)
+
+
+def _replacement_mode(path: Path) -> int:
+    try:
+        return path.stat().st_mode & 0o777
+    except OSError:
+        return 0o644
+
+
+def write_audio_bytes_atomic(path: Path, content: bytes) -> None:
+    """Validate and atomically publish one generated local audio file."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.stem}.",
+        suffix=path.suffix,
+        dir=path.parent,
+    )
+    temporary_path = Path(temporary_name)
+    mode = _replacement_mode(path)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(content)
+            os.fchmod(handle.fileno(), mode)
+            handle.flush()
+            os.fsync(handle.fileno())
+        if not local_audio_is_structurally_valid(temporary_path):
+            raise RuntimeError(f"IndexTTS returned invalid audio for {path.name}")
+        os.replace(temporary_path, path)
+        _fsync_directory(path.parent)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
 def audio_url_for(path_text: str) -> str:
     if not path_text:
         return ""
@@ -1380,23 +1532,47 @@ def validate_audio_manifest_entries(
 
 
 def convert_wav_to_mp3(wav_path: Path, mp3_path: Path, *, bitrate: str = "64k", force: bool = False) -> None:
-    if mp3_path.exists() and not force and mp3_path.stat().st_mtime >= wav_path.stat().st_mtime:
+    if (
+        mp3_path.exists()
+        and not force
+        and mp3_path.stat().st_mtime >= wav_path.stat().st_mtime
+        and local_audio_is_structurally_valid(mp3_path)
+    ):
         return
-    command = [
-        "ffmpeg",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-y",
-        "-i",
-        str(wav_path),
-        "-codec:a",
-        "libmp3lame",
-        "-b:a",
-        bitrate,
-        str(mp3_path),
-    ]
-    subprocess.run(command, check=True)
+    mp3_path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{mp3_path.stem}.",
+        suffix=mp3_path.suffix,
+        dir=mp3_path.parent,
+    )
+    os.close(descriptor)
+    temporary_path = Path(temporary_name)
+    mode = _replacement_mode(mp3_path)
+    try:
+        command = [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-i",
+            str(wav_path),
+            "-codec:a",
+            "libmp3lame",
+            "-b:a",
+            bitrate,
+            str(temporary_path),
+        ]
+        subprocess.run(command, check=True)
+        temporary_path.chmod(mode)
+        with temporary_path.open("rb") as handle:
+            os.fsync(handle.fileno())
+        if not local_audio_is_structurally_valid(temporary_path):
+            raise RuntimeError(f"ffmpeg produced invalid MP3 audio for {mp3_path.name}")
+        os.replace(temporary_path, mp3_path)
+        _fsync_directory(mp3_path.parent)
+    finally:
+        temporary_path.unlink(missing_ok=True)
 
 
 def maybe_delete_wav(wav_path: Path, mp3_path: Path, *, delete_wav: bool) -> bool:
@@ -3650,7 +3826,7 @@ def main() -> None:
                         print(f"[{index}/{len(responses)}] failed {item['id']}: {entry['error']}")
                         write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                         continue
-                    audio_path.write_bytes(result["audio"])
+                    write_audio_bytes_atomic(audio_path, result["audio"])
                     if args.write_mp3:
                         convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=True)
                     wav_deleted = maybe_delete_wav(audio_path, mp3_path, delete_wav=args.write_mp3 and args.delete_wav_after_mp3)
@@ -3712,12 +3888,10 @@ def main() -> None:
             audio_path = args.output_dir / f"{item['id']}.wav"
             mp3_path = args.output_dir / f"{item['id']}.mp3"
             if not args.force:
-                if mp3_path.exists() and file_size(mp3_path) == 0:
-                    mp3_path.unlink(missing_ok=True)
-                    print(f"[{index}/{len(responses)}] dropped invalid zero-byte cache {mp3_path.name}")
-                if audio_path.exists() and file_size(audio_path) == 0:
-                    audio_path.unlink(missing_ok=True)
-                    print(f"[{index}/{len(responses)}] dropped invalid zero-byte cache {audio_path.name}")
+                if discard_invalid_local_audio_cache(mp3_path):
+                    print(f"[{index}/{len(responses)}] dropped invalid audio cache {mp3_path.name}")
+                if discard_invalid_local_audio_cache(audio_path):
+                    print(f"[{index}/{len(responses)}] dropped invalid audio cache {audio_path.name}")
             if not audio_path.exists() and mp3_path.exists() and not args.force:
                 entry = {
                     **item,
