@@ -2108,7 +2108,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-033 Implement wallet processor migration objective: Perform staged 211-AI cutover and release validation
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
