@@ -2012,8 +2012,8 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Semantic identity: objective-evidence-obligation/v1/988220d1cf881c5f4055816600bff20ade1123f930698842b864bcf031cbbabc
 - Acceptance subset: Docs distinguish World ID/World Chain/WLD and Xaman/XRPL, examples are offline or require explicit network opt-in, import and schema migration windows are stated, extras and capability gaps are documented, no example signs/broadcasts or embeds a real address/key, rollback covers target package version and outer gitlink/wrapper.
 - Preconditions: objective goal WALPROC-G700 is schedulable
-- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/wallet_processors/README.md, satisfy evidence requirement: ipfs_datasets_py/examples/wallet_processors, satisfy evidence requirement: docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
-- Evidence subset: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/wallet_processors/README.md, satisfy evidence requirement: ipfs_datasets_py/examples/wallet_processors
+- Evidence subset: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors
 - Resource class: cpu-medium
 - Token class: medium
 - Estimated tokens: 0
@@ -2021,7 +2021,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Merge fate: objective/WALPROC-G700
 - Rejection reasons: none (accepted)
 - Evidence obligation key: objective-evidence-obligation/v1/988220d1cf881c5f4055816600bff20ade1123f930698842b864bcf031cbbabc
-- Missing evidence: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Missing evidence: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors
 - Embedding query: wallet processors documentation examples schema migration compatibility rollback worldcoin xaman
 - AST query: __all__
 - Surplus group: objective/WALPROC-G700
@@ -2039,7 +2039,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Completion task bindings:
 - Candidate kind: aggregate
 - Todo vector key: 915715e5ca4a0195
-- Acceptance: Objective scan filed this gap for WALPROC-G700. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-031-objective-gap-256d97b820a3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G700, WALPROC-G710) and covers all the shared packet evidence in one comprehensive pass. Shared docs have one release owner after chain docs land.
+- Acceptance: Objective scan filed this gap for WALPROC-G700. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-031-objective-gap-256d97b820a3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G700, WALPROC-G710) and covers all the shared packet evidence in one comprehensive pass. Shared docs have one release owner after chain docs land. Synchronizing docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md is operator-owned control-plane work and is explicitly excluded from this implementation task.
 
 ## WALPROC-032 Implement wallet processor migration objective: Add metrics, benchmarks, and operational runbooks
 
