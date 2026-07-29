@@ -287,7 +287,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-005 Implement datasets symbolic contract objective: Freeze dataset manipulation compatibility and failure baselines
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
