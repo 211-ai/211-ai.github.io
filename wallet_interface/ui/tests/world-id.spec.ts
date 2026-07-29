@@ -20,6 +20,14 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 const playwrightPort = Number(process.env.PLAYWRIGHT_PORT ?? 5174);
 const walletApiBaseUrl = `http://127.0.0.1:${playwrightPort}`;
 
+// Install the current app session before any navigation so wallet routes skip
+// the login gate. Assertions and endpoint/privacy expectations stay unchanged.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("abby-ui-session-v1", JSON.stringify({ username: "abby" }));
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

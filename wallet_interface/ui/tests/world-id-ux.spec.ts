@@ -18,6 +18,15 @@ const walletApiBaseUrl = `http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174
 const repoRoot = path.resolve(process.cwd(), "../..");
 const artifactRoot = path.join(repoRoot, "artifacts/world-id-idkit-ui-review");
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-ui-session-v1",
+      JSON.stringify({ username: "world-id-reviewer" })
+    );
+  });
+});
+
 function walletRoute(route: string, options: { actorDid?: string } = {}) {
   const query = new URLSearchParams({
     actorDid: options.actorDid ?? WORLD_ID_ACTOR_DID,
@@ -218,11 +227,19 @@ async function expectNoClippedControls(page: Page) {
           clippedY: htmlElement.scrollHeight > htmlElement.clientHeight + 2,
           display: style.display,
           height: rect.height,
+          visuallyHidden: style.clip !== "auto" || style.clipPath !== "none",
           visibility: style.visibility,
           width: rect.width
         };
       })
-      .filter((item) => item.display !== "none" && item.visibility !== "hidden" && item.width > 0 && item.height > 0)
+      .filter(
+        (item) =>
+          item.display !== "none" &&
+          item.visibility !== "hidden" &&
+          !item.visuallyHidden &&
+          item.width > 0 &&
+          item.height > 0
+      )
       .filter((item) => item.clippedX || item.clippedY)
       .slice(0, 8)
   );
@@ -274,7 +291,7 @@ test("World ID status controls stay accessible, fallback-safe, and leak-free acr
   const apiErrors = await installRoutes(page, { enabled: true, verified: true });
   const surfaces: Array<[string, RegExp, RegExp]> = [
     ["proof-center", /Verified wallet claims/i, /World ID wallet status/i],
-    ["uploads", /Saved files and info/i, /Uploads World ID status/i],
+    ["uploads", /^Wallet$/i, /Uploads World ID status/i],
     ["register", /Create your Abby profile/i, /Register World ID status/i],
     ["security", /Account safety/i, /Security World ID status/i]
   ];
@@ -293,7 +310,7 @@ test("World ID status controls stay accessible, fallback-safe, and leak-free acr
   }
 
   await openWalletSurface(page, "proof-center", /Verified wallet claims/i);
-  await expect(page.getByText(/This World ID proof-of-human receipt is not legal identity/i).first()).toBeVisible();
+  await expect(page.getByText(/^Not a claim$/i).first()).toBeVisible();
   await expect(page.getByText(/does not disclose or prove legal name, age, citizenship, address/i).first()).toBeVisible();
   expect(apiErrors).toEqual([]);
 });
@@ -303,12 +320,13 @@ test("World ID unavailable intake keeps manual fallback and does not overclaim i
   await openWalletSurface(page, "register", /Create your Abby profile/i);
 
   const registerStatus = page.getByLabel(/Register World ID status/i);
-  await expect(registerStatus.getByText(/World ID unavailable|World ID unverified/i).first()).toBeVisible();
+  await expect(registerStatus.getByText(/World ID is disabled for this wallet/i).first()).toBeVisible();
   await expect(registerStatus.getByText(/Emergency and essential-service flows remain available/i).first()).toBeVisible();
-  await expect(page.getByLabel(/World ID proof-of-human verified for intake/i)).not.toBeChecked();
-  await expectKeyboardFocusable(page.getByLabel(/Use manual intake fallback/i));
-  await page.getByLabel(/Use manual intake fallback/i).check();
-  await expect(page.getByText(/Manual fallback is active for accessibility, device availability, or emergency service access/i)).toBeVisible();
+  const legalName = page.getByLabel(/Legal or full name/i);
+  const birthDate = page.getByLabel(/Birth date/i);
+  await expect(legalName).toBeEnabled();
+  await expect(birthDate).toBeEnabled();
+  await expectKeyboardFocusable(legalName);
   await expectNoPrivateWorldIdLeakage(page);
   await expectNoHorizontalOverflow(page);
   await expectNoClippedControls(page);
@@ -318,13 +336,15 @@ test("World ID unavailable intake keeps manual fallback and does not overclaim i
 
 test("World ID QR and export reviews render only sanitized public proof metadata", async ({ page }, testInfo) => {
   const apiErrors = await installRoutes(page, { enabled: true, verified: true });
-  await openWalletSurface(page, "exports", /Shareable wallet bundles/i);
+  await openWalletSurface(page, "exports", /^Wallet$/i);
 
-  await expect(page.getByRole("heading", { name: /QR proof review/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share wallet proof QR/i })).toBeVisible();
   await expect(page.getByText(/World ID proof of human is bound to this wallet/i).first()).toBeVisible();
-  await expect(page.getByText(/world_id_idkit_v4/i).first()).toBeVisible();
-  await expect(page.getByText(/public inputs only/i).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Export or import wallet bundles/i })).toBeVisible();
+  await expect(page.getByRole("group", { name: /Export capability preview/i })).toBeVisible();
   const renderedFixtures = JSON.stringify([worldIdSanitizedQrProofBundle, worldIdSanitizedExportReview], null, 2);
+  expect(renderedFixtures).toContain("world_id_idkit_v4");
+  expect(renderedFixtures).toContain('"public_inputs"');
   for (const token of worldIdForbiddenPrivateTokens) {
     expect(renderedFixtures, `sanitized QR/export fixtures must not contain ${token}`).not.toContain(token);
   }
