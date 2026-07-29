@@ -601,6 +601,7 @@ def test_main_returns_exit_75_and_checkpoints_retry_after(monkeypatch, tmp_path:
 
     monkeypatch.setattr(batch_runner, "parse_args", lambda: args)
     monkeypatch.setattr(batch_runner, "total_response_count", lambda response_manifest, dag, results: 2)
+    _patch_canonical_ids(monkeypatch, 2)
 
     def fake_run(command: list[str], cwd: Path) -> SimpleNamespace:
         _write_json(
