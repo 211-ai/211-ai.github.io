@@ -1459,7 +1459,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-023 Implement Crypto IR compliance objective: Formalize bounded exposure and compliance policy
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
