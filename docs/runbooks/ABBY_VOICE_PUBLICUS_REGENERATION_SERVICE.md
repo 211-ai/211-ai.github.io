@@ -74,15 +74,18 @@ acceptance.
 
 ## Dedicated GPU Handoff
 
-The repository currently names no concrete paid or non-ZeroGPU IndexTTS URL.
-`WALLET_INDEXTTS_SPACE_URL` and `IPFS_ACCELERATE_PY_ABBY_INDEXTTS_URLS` are
-override surfaces, while the rented-Space plan contains only a placeholder.
-The `indexteam-indextts-2-demo` fallback is also ZeroGPU and is not a capacity
-escape.
+The checked-in service requires `Publicus/IndexTTS-2-Demo` to be running on one
+dedicated `l40sx1`. Its `ExecCondition` verifies current hardware, requested
+hardware, domain readiness, and the reviewed Space commit before any queue
+process starts. It can wake a sleeping Space only when the requested hardware
+still matches. A ZeroGPU or alternate-Space fallback is not a capacity escape
+and is intentionally rejected.
 
-The lowest-risk handoff is to upgrade `Publicus/IndexTTS-2-Demo` to dedicated
-hardware while retaining its repo ID, URL, model, voice, and API contract. Probe
-the contract before dispatch:
+After changing the Space source, run its focused tests, push the reviewed
+commit, disable Dev Mode for production, and update both
+`ABBY_TTS_EXPECTED_REVISION` and `--expected-revision` in the unit template.
+Never update the pin merely to clear the gate. Wait for the runtime API to
+report that exact revision on the expected hardware, then probe the contract:
 
 ```bash
 python3 scripts/precompute_indextts_responses.py \
@@ -94,6 +97,10 @@ python3 scripts/precompute_indextts_responses.py \
 Then run a bounded canary and review its transcripts and audio before resuming
 the service. Because the URL remains unchanged, the existing checkpoint
 identity and offset remain compatible.
+
+The Space has a one-hour idle sleep setting. A completed queue is detected from
+the checkpoint before the hardware API is queried, so an enabled service does
+not wake paid hardware after completion.
 
 For a genuinely new dedicated URL, change both the launcher's `--state` and the
 child runner's `--state` to the same new checkpoint filename, and change both
@@ -109,6 +116,11 @@ promote it only after the full acceptance gate rather than mixing voices.
 ```bash
 systemctl --user status abby-voice-publicus-regeneration.service
 journalctl --user -u abby-voice-publicus-regeneration.service -n 100
+python3 scripts/wait_for_hf_space_hardware.py \
+  --space-repo-id Publicus/IndexTTS-2-Demo \
+  --expected-hardware l40sx1 \
+  --expected-revision <reviewed-full-space-sha> \
+  --timeout-seconds 1
 jq . tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-batch-state.json
 jq . tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-quota-retry-status.json
 ```
