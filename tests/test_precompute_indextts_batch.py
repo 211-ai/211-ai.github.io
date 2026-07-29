@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import re
+import subprocess
 import sys
 import wave
 import zipfile
@@ -39,6 +40,218 @@ def _runner_wav_bytes() -> bytes:
         audio.setframerate(24_000)
         audio.writeframes(b"\x01\x00" * 240)
     return buffer.getvalue()
+
+
+def test_atomic_audio_write_keeps_final_file_on_publish_failure(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    destination = tmp_path / "response.wav"
+    destination.write_bytes(b"previous-complete-audio")
+    replacement = _runner_wav_bytes()
+    observed_temporary_paths: list[Path] = []
+
+    monkeypatch.setattr(
+        precompute,
+        "local_audio_is_structurally_valid",
+        lambda path: path.read_bytes() == replacement,
+    )
+
+    def fail_replace(source: Path, target: Path) -> None:
+        source_path = Path(source)
+        observed_temporary_paths.append(source_path)
+        assert source_path.parent == destination.parent
+        assert source_path.suffix == destination.suffix
+        assert source_path.read_bytes() == replacement
+        assert Path(target) == destination
+        assert destination.read_bytes() == b"previous-complete-audio"
+        raise OSError("simulated interruption before atomic replace")
+
+    monkeypatch.setattr(precompute.os, "replace", fail_replace)
+
+    with pytest.raises(OSError, match="simulated interruption"):
+        precompute.write_audio_bytes_atomic(destination, replacement)
+
+    assert destination.read_bytes() == b"previous-complete-audio"
+    assert observed_temporary_paths
+    assert all(not path.exists() for path in observed_temporary_paths)
+
+
+def test_atomic_mp3_conversion_keeps_final_file_when_ffmpeg_fails(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    wav_path = tmp_path / "response.wav"
+    wav_path.write_bytes(_runner_wav_bytes())
+    mp3_path = tmp_path / "response.mp3"
+    mp3_path.write_bytes(b"previous-complete-mp3")
+    observed_temporary_paths: list[Path] = []
+
+    def fail_ffmpeg(command: list[str], *, check: bool) -> None:
+        assert check is True
+        temporary_path = Path(command[-1])
+        observed_temporary_paths.append(temporary_path)
+        assert temporary_path.parent == mp3_path.parent
+        assert temporary_path.suffix == mp3_path.suffix
+        assert temporary_path != mp3_path
+        temporary_path.write_bytes(b"partial-new-mp3")
+        raise subprocess.CalledProcessError(1, command)
+
+    monkeypatch.setattr(precompute.subprocess, "run", fail_ffmpeg)
+
+    with pytest.raises(subprocess.CalledProcessError):
+        precompute.convert_wav_to_mp3(wav_path, mp3_path, force=True)
+
+    assert mp3_path.read_bytes() == b"previous-complete-mp3"
+    assert observed_temporary_paths
+    assert all(not path.exists() for path in observed_temporary_paths)
+
+
+def test_local_audio_validation_prefers_ffprobe(monkeypatch, tmp_path: Path) -> None:
+    audio_path = tmp_path / "response.mp3"
+    audio_path.write_bytes(b"nonempty cache candidate")
+    commands: list[list[str]] = []
+
+    monkeypatch.setattr(precompute.shutil, "which", lambda executable: f"/usr/bin/{executable}")
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        commands.append(command)
+        assert kwargs["capture_output"] is True
+        assert kwargs["text"] is True
+        assert kwargs["check"] is False
+        assert kwargs["timeout"] == 10
+        return SimpleNamespace(
+            returncode=0,
+            stdout=json.dumps(
+                {
+                    "streams": [
+                        {
+                            "codec_type": "audio",
+                            "codec_name": "mp3",
+                            "channels": 1,
+                            "sample_rate": "24000",
+                            "nb_read_frames": "12",
+                        }
+                    ]
+                }
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(precompute.subprocess, "run", fake_run)
+
+    assert precompute.local_audio_is_structurally_valid(audio_path) is True
+    assert commands
+    assert commands[0][0] == "/usr/bin/ffprobe"
+    assert "-select_streams" in commands[0]
+
+
+def test_invalid_nonempty_cache_is_discarded_without_ffprobe(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    valid_path = tmp_path / "valid.wav"
+    valid_path.write_bytes(_runner_wav_bytes())
+    invalid_path = tmp_path / "truncated.wav"
+    invalid_path.write_bytes(_runner_wav_bytes()[:-20])
+
+    monkeypatch.setattr(precompute.shutil, "which", lambda _executable: None)
+
+    assert precompute.local_audio_is_structurally_valid(valid_path) is True
+    assert precompute.discard_invalid_local_audio_cache(valid_path) is False
+    assert precompute.discard_invalid_local_audio_cache(invalid_path) is True
+    assert valid_path.exists()
+    assert not invalid_path.exists()
+
+
+def test_main_regenerates_invalid_nonempty_local_cache(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    text = "A safe response that must be regenerated."
+    normalized_text = precompute.normalize_indextts_spoken_text(text)
+    response_id = f"abby-tts-{precompute.stable_id(normalized_text)}"
+    response_manifest = tmp_path / "responses.json"
+    response_manifest.write_text(
+        json.dumps({"responses": [{"text": text}]}),
+        encoding="utf-8",
+    )
+    reference_audio = tmp_path / "reference.wav"
+    reference_audio.write_bytes(_runner_wav_bytes())
+    output_dir = tmp_path / "audio"
+    output_dir.mkdir()
+    cached_wav = output_dir / f"{response_id}.wav"
+    cached_wav.write_bytes(b"RIFF nonempty but truncated")
+    generated_audio = _runner_wav_bytes()
+    manifest_path = tmp_path / "manifest.json"
+    public_manifest_path = tmp_path / "public-manifest.json"
+    synthesis_calls: list[list[str]] = []
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "precompute_indextts_responses.py",
+            "--response-manifest",
+            str(response_manifest),
+            "--reference-audio",
+            str(reference_audio),
+            "--output-dir",
+            str(output_dir),
+            "--manifest",
+            str(manifest_path),
+            "--public-manifest",
+            str(public_manifest_path),
+            "--slotted-response-index",
+            str(tmp_path / "missing-slotted-index.json"),
+            "--remote-batch-size",
+            "1",
+            "--no-mp3",
+        ],
+    )
+    monkeypatch.setattr(precompute, "load_secret_env", lambda: None)
+    monkeypatch.setattr(precompute, "describe_indextts_auth", lambda: "test auth")
+    monkeypatch.setattr(precompute, "indextts_config", lambda: {"dependencies": []})
+    monkeypatch.setattr(precompute, "indextts_fn_index", lambda _config: 6)
+    monkeypatch.setattr(
+        precompute,
+        "indextts_contract_summary",
+        lambda _config, _fn_index: {"deploymentDriftReason": ""},
+    )
+    monkeypatch.setattr(
+        precompute,
+        "upload_reference",
+        lambda path: {"path": str(path)},
+    )
+
+    def fake_synthesize_batch(
+        texts: list[str],
+        *_args: object,
+        **_kwargs: object,
+    ) -> list[dict[str, object]]:
+        synthesis_calls.append(texts)
+        return [
+            {
+                "audio": generated_audio,
+                "mimeType": "audio/wav",
+                "latencyMs": 1,
+                "batchMode": "single",
+            }
+        ]
+
+    monkeypatch.setattr(precompute, "synthesize_batch", fake_synthesize_batch)
+    monkeypatch.setattr(
+        precompute,
+        "local_audio_is_structurally_valid",
+        lambda path: path.read_bytes() == generated_audio,
+    )
+
+    precompute.main()
+
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert synthesis_calls == [[normalized_text]]
+    assert cached_wav.read_bytes() == generated_audio
+    assert payload["responses"][0]["status"] == "generated"
 
 
 def _regeneration_plan() -> AbbyVoiceRegenerationPlan:
