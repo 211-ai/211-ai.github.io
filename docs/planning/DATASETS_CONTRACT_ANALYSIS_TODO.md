@@ -352,7 +352,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-006 Implement datasets symbolic contract objective packet: DSCON-G040, DSCON-G100
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
