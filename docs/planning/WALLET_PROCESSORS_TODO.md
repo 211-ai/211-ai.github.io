@@ -1985,7 +1985,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Priority: P1
 - Track: release
 - Depends on: WALPROC-010, WALPROC-029, WALPROC-027, WALPROC-028
-- Outputs: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Outputs: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_documented_examples.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-031-objective-gap-256d97b820a3.md
@@ -1997,7 +1997,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Objective heap index: 25
 - Parallel lane: wallet-processors/release
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
-- Predicted files: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Predicted files: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md
 - Changed paths:
 - AST symbols: __all__
 - Interfaces:
