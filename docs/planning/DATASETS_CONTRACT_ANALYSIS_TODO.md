@@ -3412,7 +3412,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-062 Implement datasets symbolic contract objective: Freeze repository authorities, revisions, and drift inventory
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
