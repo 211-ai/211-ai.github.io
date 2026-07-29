@@ -2423,7 +2423,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-063 Put World ID verification behind a bounded safe transport
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
