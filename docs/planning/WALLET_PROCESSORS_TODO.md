@@ -1652,7 +1652,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-026 Implement wallet processor migration objective: Link Xaman runtime records to formal assurance without coupling
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
