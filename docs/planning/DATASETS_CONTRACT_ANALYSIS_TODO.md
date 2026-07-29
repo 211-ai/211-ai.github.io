@@ -938,7 +938,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-015 Implement datasets symbolic contract objective: Implement real TypeScript and JavaScript AST frontends
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
