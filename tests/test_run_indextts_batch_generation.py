@@ -36,6 +36,7 @@ def _build_args(tmp_path: Path, **overrides: object) -> SimpleNamespace:
         "progress_dir": tmp_path / "progress",
         "output_dir": tmp_path / "audio",
         "public_manifest": tmp_path / "public-manifest.json",
+        "repair_overlay": None,
         "response_manifest": tmp_path / "responses.json",
         "dag": tmp_path / "dag.json",
         "results": tmp_path / "results.json",
@@ -173,6 +174,7 @@ def test_regeneration_full_selects_canonical_dataset_paths() -> None:
     assert args.progress_dir == batch_runner.DEFAULT_FULL_PROGRESS_DIR
     assert args.output_dir == batch_runner.DEFAULT_FULL_OUTPUT_DIR
     assert args.public_manifest == batch_runner.DEFAULT_FULL_PUBLIC_MANIFEST
+    assert args.repair_overlay == batch_runner.DEFAULT_FULL_REPAIR_OVERLAY
 
 
 def test_source_response_count_preserves_declared_3908_queue_items(tmp_path: Path) -> None:
@@ -291,6 +293,75 @@ def test_aggregate_receipts_is_deterministic_deduplicated_and_ignores_incompatib
     assert payload["aggregation"]["duplicateResponseCount"] == 1
     assert payload["aggregation"]["complete"] is True
     assert "abby-tts-stale-a" not in first_bytes.decode("utf-8")
+
+
+def test_aggregate_receipts_applies_audited_repair_overlay_without_mutating_receipts(
+    tmp_path: Path,
+) -> None:
+    args = _build_args(tmp_path)
+    response_id = "abby-tts-repaired"
+    identity = _run_identity(args, total=1)
+    manifest = batch_runner.batch_manifest_path(
+        args.batch_manifest_dir,
+        batch_size=args.batch_size,
+        offset=0,
+    )
+    public_receipt = batch_runner.batch_public_manifest_path(manifest)
+    original_payload = _batch_payload(args, [response_id])
+    original_payload["responses"][0]["mp3Bytes"] = 1
+    _write_json(manifest, original_payload)
+    _write_json(
+        public_receipt,
+        batch_runner.public_payload_from_batch_manifest(original_payload),
+    )
+    batch_runner.stamp_completed_batch_receipts(
+        manifest=manifest,
+        public_receipt=public_receipt,
+        run_identity=identity,
+        offset=0,
+        batch_size=args.batch_size,
+        total=1,
+    )
+    original_receipt_bytes = public_receipt.read_bytes()
+
+    mp3_path = args.output_dir / f"{response_id}.mp3"
+    mp3_path.parent.mkdir(parents=True, exist_ok=True)
+    mp3_path.write_bytes(b"repaired-mp3")
+    repair_entry = {
+        **original_payload["responses"][0],
+        "status": "generated_mp3",
+        "mp3Bytes": mp3_path.stat().st_size,
+    }
+    repair_overlay = tmp_path / "repair-overlay.json"
+    _write_json(
+        repair_overlay,
+        {
+            "responseCount": 1,
+            "responses": [repair_entry],
+        },
+    )
+
+    aggregate = batch_runner.aggregate_public_batch_receipts(
+        batch_manifest_dir=args.batch_manifest_dir,
+        public_manifest=args.public_manifest,
+        run_identity=identity,
+        run_start_offset=0,
+        completed_offset=1,
+        total=1,
+        source_total=1,
+        batch_size=args.batch_size,
+        repair_overlay=repair_overlay,
+    )
+
+    assert aggregate["responses"][0]["mp3Bytes"] == len(b"repaired-mp3")
+    assert aggregate["aggregation"]["repairOverlays"][0] == {
+        "path": "repair-overlay.json",
+        "sha256": batch_runner.sha256_file(repair_overlay),
+        "declaredResponseCount": 1,
+        "matchedResponseCount": 1,
+        "pendingResponseCount": 0,
+    }
+    assert public_receipt.read_bytes() == original_receipt_bytes
 
 
 def test_aggregate_receipts_rejects_conflicting_duplicate_without_replacing_canonical(

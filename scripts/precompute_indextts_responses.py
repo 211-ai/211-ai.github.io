@@ -32,7 +32,14 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 try:
-    from ipfs_accelerate_py.hf_space_inference import HFBucketBackend, HFSpaceClient
+    from ipfs_accelerate_py.hf_space_inference import (
+        HFBucketBackend,
+        HFSpaceClient,
+        RefreshableGradioFile,
+        is_hf_space_transport_error,
+        is_retryable_hf_space_error,
+        is_stale_gradio_file_error,
+    )
 except ModuleNotFoundError:  # pragma: no cover - exercised in lean local test envs
     class HFBucketBackend:  # type: ignore[no-redef]
         def __init__(self, *_args: Any, **_kwargs: Any) -> None:
@@ -41,6 +48,19 @@ except ModuleNotFoundError:  # pragma: no cover - exercised in lean local test e
     class HFSpaceClient:  # type: ignore[no-redef]
         def __init__(self, *_args: Any, **_kwargs: Any) -> None:
             raise RuntimeError("ipfs_accelerate_py.hf_space_inference is unavailable")
+
+    class RefreshableGradioFile:  # type: ignore[no-redef]
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            raise RuntimeError("ipfs_accelerate_py.hf_space_inference is unavailable")
+
+    def is_hf_space_transport_error(_value: object) -> bool:
+        return False
+
+    def is_retryable_hf_space_error(_value: object) -> bool:
+        return False
+
+    def is_stale_gradio_file_error(_value: object) -> bool:
+        return False
 
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
@@ -104,6 +124,8 @@ def raise_if_indextts_quota_exceeded(value: Any) -> None:
 
 
 def is_indextts_transient_worker_error(value: Any) -> bool:
+    if is_retryable_hf_space_error(value):
+        return True
     text = str(value or "")
     lowered = text.casefold()
     return any(
@@ -2864,6 +2886,14 @@ def adaptive_split_batch_synthesis(
     except Exception as exc:
         if isinstance(exc, IndexTTSQuotaExceededError):
             raise
+        if (
+            is_hf_space_transport_error(exc)
+            or is_stale_gradio_file_error(exc)
+        ):
+            # Splitting cannot repair a disconnected response stream or an
+            # expired server-local FileData path. Let the package-owned upload
+            # lease refresh the reference and retry the logical chunk.
+            raise
         failure_reason = f"{type(exc).__name__}: {exc}"
         inherited_reason = fallback_reason or failure_reason
         if len(text_list) > 1 and is_indextts_transient_worker_error(exc):
@@ -3676,7 +3706,7 @@ def main() -> None:
     else:
         config: dict[str, Any] | None = None
         fn_index: int | None = None
-        reference: Any | None = None
+        reference: RefreshableGradioFile | None = None
         contract_summary: dict[str, Any] | None = None
         remote_batch_size = max(1, int(args.remote_batch_size or 1))
         pending: list[tuple[int, dict[str, Any], Path, Path]] = []
@@ -3707,8 +3737,10 @@ def main() -> None:
                 contract_summary = ensure_upload_capable_batch_contract(config, fn_index)
             if contract_summary.get("deploymentDriftReason"):
                 print(f"IndexTTS batch drift: {contract_summary['deploymentDriftReason']}")
-            reference = upload_reference(args.reference_audio)
-            return config, fn_index, reference
+            reference = RefreshableGradioFile(
+                lambda: upload_reference(args.reference_audio)
+            )
+            return config, fn_index, reference.get()
 
         def _record_upload_batch_results(
             batch: list[tuple[int, dict[str, Any], Path, Path]],
@@ -3769,13 +3801,26 @@ def main() -> None:
                     response_ids = [item["id"] for _, item, _, _ in batch]
                     print(f"uploading remote chunk of {len(batch)} response(s) via {indextts_batch_upload_api_name()}")
                     try:
-                        results = direct_batch_upload_synthesis(
-                            texts,
-                            active_config,
-                            active_reference,
-                            args.voice_description,
-                            args.bucket_uri,
-                            response_ids,
+                        if reference is None:
+                            raise RuntimeError(
+                                "IndexTTS reference upload was not initialized"
+                            )
+                        results = reference.run(
+                            lambda refreshed_reference: direct_batch_upload_synthesis(
+                                texts,
+                                active_config,
+                                refreshed_reference,
+                                args.voice_description,
+                                args.bucket_uri,
+                                response_ids,
+                            ),
+                            max_retries=2,
+                            retry_backoff_seconds=2.0,
+                            on_retry=lambda error, attempt: print(
+                                "refreshing expired IndexTTS reference before "
+                                f"remote retry {attempt}: "
+                                f"{type(error).__name__}: {error}"
+                            ),
                         )
                     except Exception as exc:
                         if isinstance(exc, IndexTTSQuotaExceededError):
@@ -3797,13 +3842,26 @@ def main() -> None:
                         _record_upload_batch_results(batch, results)
                         return
                 print(f"processing remote chunk of {len(batch)} response(s)")
-                results = synthesize_batch(
-                    texts,
-                    active_config,
-                    active_fn_index,
-                    active_reference,
-                    args.voice_description,
-                    parallel_workers=args.parallel_workers,
+                if reference is None:
+                    raise RuntimeError(
+                        "IndexTTS reference upload was not initialized"
+                    )
+                results = reference.run(
+                    lambda refreshed_reference: synthesize_batch(
+                        texts,
+                        active_config,
+                        active_fn_index,
+                        refreshed_reference,
+                        args.voice_description,
+                        parallel_workers=args.parallel_workers,
+                    ),
+                    max_retries=2,
+                    retry_backoff_seconds=2.0,
+                    on_retry=lambda error, attempt: print(
+                        "refreshing expired IndexTTS reference before "
+                        f"remote retry {attempt}: "
+                        f"{type(error).__name__}: {error}"
+                    ),
                 )
                 if len(results) != len(batch):
                     raise RuntimeError(f"IndexTTS batch returned {len(results)} result(s) for {len(batch)} response(s)")

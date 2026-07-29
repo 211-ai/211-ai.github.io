@@ -164,9 +164,15 @@ def test_invalid_nonempty_cache_is_discarded_without_ffprobe(
     assert not invalid_path.exists()
 
 
+@pytest.mark.parametrize(
+    "stale_reference_first",
+    [False, True],
+    ids=("normal", "refresh-stale-reference"),
+)
 def test_main_regenerates_invalid_nonempty_local_cache(
     monkeypatch,
     tmp_path: Path,
+    stale_reference_first: bool,
 ) -> None:
     text = "A safe response that must be regenerated."
     normalized_text = precompute.normalize_indextts_spoken_text(text)
@@ -186,6 +192,7 @@ def test_main_regenerates_invalid_nonempty_local_cache(
     manifest_path = tmp_path / "manifest.json"
     public_manifest_path = tmp_path / "public-manifest.json"
     synthesis_calls: list[list[str]] = []
+    reference_uploads: list[str] = []
 
     monkeypatch.setattr(
         sys,
@@ -218,10 +225,23 @@ def test_main_regenerates_invalid_nonempty_local_cache(
         "indextts_contract_summary",
         lambda _config, _fn_index: {"deploymentDriftReason": ""},
     )
+
+    def fake_upload_reference(path: Path) -> dict[str, str]:
+        upload_path = (
+            f"/tmp/gradio/upload-{len(reference_uploads) + 1}/{path.name}"
+        )
+        reference_uploads.append(upload_path)
+        return {"path": upload_path}
+
+    monkeypatch.setattr(precompute, "upload_reference", fake_upload_reference)
+    refreshable_gradio_file = precompute.RefreshableGradioFile
     monkeypatch.setattr(
         precompute,
-        "upload_reference",
-        lambda path: {"path": str(path)},
+        "RefreshableGradioFile",
+        lambda uploader: refreshable_gradio_file(
+            uploader,
+            sleeper=lambda _delay: None,
+        ),
     )
 
     def fake_synthesize_batch(
@@ -230,6 +250,13 @@ def test_main_regenerates_invalid_nonempty_local_cache(
         **_kwargs: object,
     ) -> list[dict[str, object]]:
         synthesis_calls.append(texts)
+        if stale_reference_first and len(synthesis_calls) == 1:
+            reference = _args[2]
+            assert isinstance(reference, Mapping)
+            raise RuntimeError(
+                "FileNotFoundError: [Errno 2] No such file or directory: "
+                f"'{reference['path']}'"
+            )
         return [
             {
                 "audio": generated_audio,
@@ -249,7 +276,9 @@ def test_main_regenerates_invalid_nonempty_local_cache(
     precompute.main()
 
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert synthesis_calls == [[normalized_text]]
+    expected_call_count = 2 if stale_reference_first else 1
+    assert synthesis_calls == [[normalized_text]] * expected_call_count
+    assert len(reference_uploads) == expected_call_count
     assert cached_wav.read_bytes() == generated_audio
     assert payload["responses"][0]["status"] == "generated"
 

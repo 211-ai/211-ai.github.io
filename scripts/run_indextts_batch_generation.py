@@ -32,6 +32,10 @@ DEFAULT_FULL_BATCH_MANIFEST_DIR = CANONICAL_DATASET_ROOT / "metadata/regeneratio
 DEFAULT_FULL_PROGRESS_DIR = CANONICAL_DATASET_ROOT / "metadata/regeneration-progress"
 DEFAULT_FULL_OUTPUT_DIR = CANONICAL_DATASET_ROOT / "audio"
 DEFAULT_FULL_PUBLIC_MANIFEST = CANONICAL_DATASET_ROOT / "metadata/regeneration-audio-manifest.json"
+DEFAULT_FULL_REPAIR_OVERLAY = (
+    CANONICAL_DATASET_ROOT
+    / "metadata/regeneration-padding-repair-generation-manifest.json"
+)
 EXIT_SUCCESS = 0
 EXIT_BATCH_FAILED = 1
 EXIT_RATE_LIMITED = 75
@@ -60,6 +64,21 @@ _RESPONSE_EXECUTION_FIELDS = {
     "batchRequestedSize",
     "batchExecutedSize",
     "batchSplitDepth",
+}
+_REPAIR_ARTIFACT_FIELDS = {
+    "status",
+    "audioPath",
+    "mimeType",
+    "audioBytes",
+    "mp3Path",
+    "mp3MimeType",
+    "mp3Bytes",
+    "preferredAudioPath",
+    "preferredMimeType",
+    "wavDeprecated",
+    "latencyMs",
+    "batchLatencyMs",
+    "batchMode",
 }
 
 
@@ -158,6 +177,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--progress-dir", type=Path, default=DEFAULT_PROGRESS_DIR)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--public-manifest", type=Path, default=DEFAULT_PUBLIC_MANIFEST)
+    parser.add_argument(
+        "--repair-overlay",
+        type=Path,
+        default=None,
+        help=(
+            "Optional audited regeneration manifest whose artifact metadata "
+            "overlays older immutable batch receipts."
+        ),
+    )
     parser.add_argument("--response-manifest", type=Path, default=None)
     parser.add_argument("--dag", type=Path, default=REPO_ROOT / "docs/211_conversation_dag.json")
     parser.add_argument("--results", type=Path, default=REPO_ROOT / "docs/211_chatbot_simulation_results.json")
@@ -191,6 +219,8 @@ def configure_regeneration_full(args: argparse.Namespace) -> argparse.Namespace:
         args.output_dir = DEFAULT_FULL_OUTPUT_DIR
     if args.public_manifest == DEFAULT_PUBLIC_MANIFEST:
         args.public_manifest = DEFAULT_FULL_PUBLIC_MANIFEST
+    if args.repair_overlay is None:
+        args.repair_overlay = DEFAULT_FULL_REPAIR_OVERLAY
     return args
 
 
@@ -667,6 +697,99 @@ def _receipt_response_conflict_view(entry: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def apply_repair_overlay(
+    response_by_id: dict[str, dict[str, Any]],
+    *,
+    repair_overlay: Path,
+    public_manifest: Path,
+) -> dict[str, Any]:
+    """Overlay validated replacement-artifact metadata onto receipt entries."""
+
+    payload = load_json_file(repair_overlay)
+    if not isinstance(payload, Mapping):
+        raise RuntimeError(
+            f"Invalid repair overlay {repair_overlay}: top level is not an object"
+        )
+    raw_entries = payload.get("responses")
+    if not isinstance(raw_entries, list):
+        raise RuntimeError(
+            f"Invalid repair overlay {repair_overlay}: responses is not a list"
+        )
+    declared_count = payload.get("responseCount")
+    if (
+        isinstance(declared_count, bool)
+        or not isinstance(declared_count, int)
+        or declared_count != len(raw_entries)
+    ):
+        raise RuntimeError(
+            f"Invalid repair overlay {repair_overlay}: "
+            f"responseCount={declared_count!r} does not match "
+            f"{len(raw_entries)} response(s)"
+        )
+
+    seen_ids: set[str] = set()
+    matched = 0
+    for index, raw_entry in enumerate(raw_entries):
+        if not isinstance(raw_entry, Mapping):
+            raise RuntimeError(
+                f"Invalid repair overlay {repair_overlay}: "
+                f"response {index} is not an object"
+            )
+        response_id = str(raw_entry.get("id") or "").strip()
+        if not response_id or response_id in seen_ids:
+            raise RuntimeError(
+                f"Invalid repair overlay {repair_overlay}: "
+                f"duplicate or missing response ID {response_id!r}"
+            )
+        seen_ids.add(response_id)
+        existing = response_by_id.get(response_id)
+        if existing is None:
+            continue
+        for identity_field in ("textHash", "text"):
+            overlay_value = raw_entry.get(identity_field)
+            if (
+                overlay_value is not None
+                and existing.get(identity_field) != overlay_value
+            ):
+                raise RuntimeError(
+                    f"Repair overlay identity mismatch for {response_id!r}: "
+                    f"{identity_field} differs"
+                )
+
+        mp3_path_value = str(raw_entry.get("mp3Path") or "").strip()
+        mp3_bytes = raw_entry.get("mp3Bytes")
+        if not mp3_path_value or isinstance(mp3_bytes, bool) or not isinstance(
+            mp3_bytes, int
+        ):
+            raise RuntimeError(
+                f"Repair overlay {repair_overlay} has no authoritative MP3 "
+                f"metadata for {response_id!r}"
+            )
+        mp3_path = Path(mp3_path_value)
+        if not mp3_path.is_absolute():
+            mp3_path = REPO_ROOT / mp3_path
+        if not mp3_path.is_file() or mp3_path.stat().st_size != mp3_bytes:
+            raise RuntimeError(
+                f"Repair overlay MP3 size mismatch for {response_id!r}: "
+                f"{mp3_path}"
+            )
+
+        updated = dict(existing)
+        for field in _REPAIR_ARTIFACT_FIELDS:
+            if field in raw_entry:
+                updated[field] = raw_entry[field]
+        response_by_id[response_id] = updated
+        matched += 1
+
+    return {
+        "path": os.path.relpath(repair_overlay, start=public_manifest.parent),
+        "sha256": sha256_file(repair_overlay),
+        "declaredResponseCount": len(raw_entries),
+        "matchedResponseCount": matched,
+        "pendingResponseCount": len(raw_entries) - matched,
+    }
+
+
 def aggregate_public_batch_receipts(
     *,
     batch_manifest_dir: Path,
@@ -677,6 +800,7 @@ def aggregate_public_batch_receipts(
     total: int,
     source_total: int,
     batch_size: int,
+    repair_overlay: Path | None = None,
 ) -> dict[str, Any]:
     """Atomically rebuild the canonical public manifest from completed receipts."""
 
@@ -775,6 +899,15 @@ def aggregate_public_batch_receipts(
             }
         )
 
+    repair_overlay_summaries: list[dict[str, Any]] = []
+    if repair_overlay is not None and repair_overlay.exists():
+        repair_overlay_summaries.append(
+            apply_repair_overlay(
+                response_by_id,
+                repair_overlay=repair_overlay,
+                public_manifest=public_manifest,
+            )
+        )
     responses = [response_by_id[response_id] for response_id in response_order]
     aggregate_payload = {
         **base_payload,
@@ -795,6 +928,11 @@ def aggregate_public_batch_receipts(
             "completedBatchCount": len(selected_receipts),
             "complete": run_start_offset == 0 and completed_offset == total,
             "receipts": receipt_summaries,
+            **(
+                {"repairOverlays": repair_overlay_summaries}
+                if repair_overlay_summaries
+                else {}
+            ),
         },
         "responses": responses,
     }
@@ -1031,6 +1169,7 @@ def main() -> int:
         total=total,
         source_total=source_total,
         batch_size=args.batch_size,
+        repair_overlay=args.repair_overlay,
     )
     if offset:
         print(f"Resuming batch loop at offset {offset}/{total} from {args.state}")
@@ -1154,6 +1293,7 @@ def main() -> int:
                 total=total,
                 source_total=source_total,
                 batch_size=args.batch_size,
+                repair_overlay=args.repair_overlay,
             )
         except RuntimeError as exc:
             failures += 1
@@ -1228,6 +1368,7 @@ def main() -> int:
             total=total,
             source_total=source_total,
             batch_size=args.batch_size,
+            repair_overlay=args.repair_overlay,
         )
 
     summary = f"Finished batch loop at offset {offset}/{total}; batches={batches_completed}; failures={failures}"
