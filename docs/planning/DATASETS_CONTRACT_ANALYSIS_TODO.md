@@ -416,7 +416,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-007 Implement datasets symbolic contract objective: Standardize canonical encoding, multihash, and CID profiles
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
