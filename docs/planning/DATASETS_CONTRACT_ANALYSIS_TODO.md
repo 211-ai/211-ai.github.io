@@ -4347,7 +4347,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-078 Implement datasets symbolic contract objective: Prove package-wide Python frontend totality
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -4410,6 +4410,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Todo vector key: 1cb3a474d7720005
 - Acceptance: Objective scan filed this gap for DSCON-G115. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-078-objective-gap-ca6b79022ba6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/integration/logic/software_contracts/test_python_frontend_repository_corpus.py), and keep the supervisor-fed backlog aligned with the objective heap.  Unit fixtures are necessary but not sufficient; the tracked package corpus is the exhaustion authority and archived/generated dispositions remain explicit.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## DSCON-079 Implement datasets symbolic contract objective: Run the first complete ipfs_datasets_py proof scan
 
 - Status: todo
