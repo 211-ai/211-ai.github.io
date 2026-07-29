@@ -2173,7 +2173,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-034 Resolve dependency guardrail for WALPROC-005
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2184,7 +2184,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-035 Resolve dependency guardrail for WALPROC-006
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2195,7 +2195,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-036 Resolve dependency guardrail for WALPROC-008
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2206,7 +2206,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-037 Resolve dependency guardrail for WALPROC-009
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2217,7 +2217,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-038 Resolve dependency guardrail for WALPROC-011
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2228,7 +2228,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-039 Resolve dependency guardrail for WALPROC-012
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2239,7 +2239,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-040 Resolve dependency guardrail for WALPROC-013
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2250,7 +2250,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-041 Resolve dependency guardrail for WALPROC-014
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2261,7 +2261,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-042 Resolve dependency guardrail for WALPROC-015
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2272,7 +2272,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-043 Resolve dependency guardrail for WALPROC-016
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2283,7 +2283,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-044 Resolve dependency guardrail for WALPROC-017
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2294,7 +2294,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-045 Resolve dependency guardrail for WALPROC-018
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2305,7 +2305,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-046 Resolve dependency guardrail for WALPROC-019
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2316,7 +2316,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-047 Resolve dependency guardrail for WALPROC-020
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2327,7 +2327,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-048 Resolve dependency guardrail for WALPROC-021
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
