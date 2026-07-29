@@ -1264,7 +1264,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-020 Implement Crypto IR compliance objective: Build the multi-chain monetary-flow knowledge graph
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
