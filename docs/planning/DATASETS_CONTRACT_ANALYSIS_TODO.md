@@ -3263,3 +3263,58 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
 - Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-054-dependency-guardrail.md
 - Acceptance: Dependency guardrail filed this because DSCON-012 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-054-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-055 Resolve dependency guardrail for DSCON-013
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-055-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because DSCON-013 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-055-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-056 Resolve dependency guardrail for DSCON-014
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-056-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because DSCON-014 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-056-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-057 Resolve dependency guardrail for DSCON-015
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-057-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because DSCON-015 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-057-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-058 Resolve dependency guardrail for DSCON-016
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-058-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because DSCON-016 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-058-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-059 Resolve dependency guardrail for DSCON-017
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-059-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because DSCON-017 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-059-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
