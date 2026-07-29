@@ -2,9 +2,9 @@
 
 Date: 2026-07-28
 
-Goals: `ABBY-VOICE-G020`, `ABBY-VOICE-G035`
+Goals: `ABBY-VOICE-G020`, `ABBY-VOICE-G035`, `ABBY-VOICE-G036`
 
-Tasks: `ABBY-VOICE-AUTO-020`, `ABBY-VOICE-AUTO-038`
+Tasks: `ABBY-VOICE-AUTO-020`, `ABBY-VOICE-AUTO-033`, `ABBY-VOICE-AUTO-038`
 
 Status: **passed — offline distributed and multi-surface evaluation gates complete**
 
@@ -28,6 +28,10 @@ live-TTS, cache-miss, and terminal-miss outcomes. The returned audio from every
 turn is transcribed by an injected ASR equivalent and compared with normalized
 expected text. Cached Whisper remains an optional acoustic canary and is not a
 dependency of the blocking offline gate.
+
+The G036 closure binds the five child implementation receipts to one root tree,
+runs the declared cross-surface gate, and audits the process boundary for
+remote Hugging Face access. This receipt does not grant publication authority.
 
 ## Authoritative evidence
 
@@ -66,6 +70,60 @@ python -m pytest -q tests/voice/test_abby_voice_distributed_pipeline.py tests/vo
 | Privacy scan | no secret/private audio/transcript in receipts | passed on queue rows and turn receipts |
 | Safety + distributed suite | pass | See the G035 required gate below |
 | Offline benchmark | `--check` passed | `passed: true` (route p95 0.537 ms in recorded run) |
+
+## AUTO-033 aggregate gate
+
+Validation subject:
+
+- root commit: `495b73b3b8d48132254ef2b3d957a676aef80f9f`
+- root Git tree: `1825f6a13bc2565172917d45ddd316daad6b5b7e`
+- `ipfs_accelerate_py`: `b18442ae36aa98fdfcb68e380954cc6894bd1751`
+- `ipfs_datasets_py`: `98aafd10844988bb51c7a5fd81e2c722df4c43b4`
+
+Declared command:
+
+```text
+python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py
+```
+
+Observed on 2026-07-29: **69 passed, 3 skipped** in 4.32 seconds. A separate
+endpoint/regeneration child-receipt check,
+`python -m pytest -q tests/test_precompute_indextts_batch.py`, passed **47/47**
+in 0.52 seconds.
+
+The declared command was also repeated under `strace -f -e trace=connect` with
+all recognized Hugging Face token variables removed, offline modes enabled,
+and HTTP(S)/all proxies fenced to closed loopback port 9. It passed **69
+runnable tests with 3 optional skips** in 6.18 seconds and produced no
+`connect(2)` call. The selected tests therefore had no network path capable of
+performing a Hugging Face mutation. The cache-miss dry-run assertion also
+requires `remote_write_contacted=false` and `remote_writes=false`; the upload
+test invokes local `stage_abby_tts_dataset` only, never `HfApi.upload_folder`.
+
+| Quality result | Threshold | Observed |
+| --- | ---: | ---: |
+| Exact audio cache hit | recorded | 8/12 (66.67%) |
+| Exact audio cache miss | recorded | 4/12 (33.33%) |
+| Terminal miss | 0 | 0/12 |
+| Blocking returned-audio comparison | 12/12 | 12/12 |
+| Blocking normalized similarity | 10,000 bp | 10,000 bp |
+| Blocking content-word coverage | 10,000 bp | 10,000 bp |
+| Blocking WER / CER | 0 / 0 | 0 / 0 |
+| Real Whisper canary | 12/12 | 12/12 |
+| Real Whisper minimum similarity | ≥7,800 bp | 8,942 bp |
+| Real Whisper minimum content coverage | ≥6,500 bp | 8,000 bp |
+| Real Whisper maximum WER | ≤3,500 bp | 2,000 bp |
+| Forbidden `negative` transcription | 0 | 0 |
+| Remote Hugging Face reads / writes during gate | 0 / 0 | 0 / 0 |
+
+The real-Whisper figures come from the existing read-only parent-stage receipt
+`tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-canary-whisper-review.json`
+(SHA-256
+`b317e75bd272a8e77e33084d734ba2af34e2148257464e8c19659b5eda42cb25`).
+The receipt records `remote_writes=false`. The three optional Whisper tests in
+the declared checkout gate skipped because that checkout does not contain the
+staged MP3 corpus/model cache; this is recorded explicitly rather than treating
+the injected blocking verifier as a real Whisper run.
 
 ## Multi-surface hit, miss, and audio-quality scorecard
 
