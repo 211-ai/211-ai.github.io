@@ -25,6 +25,7 @@ RUNTIME_ROOT="${PROGRAM_ROOT}/runtime"
 WORKTREE_ROOT="${PROGRAM_ROOT}/worktrees"
 MERGE_QUEUE_DIR="${RUNTIME_ROOT}/merge_queue"
 LOG_DIR="${RUNTIME_ROOT}/logs"
+LIFECYCLE_LOCK="${RUNTIME_ROOT}/launcher-lifecycle.lock"
 
 CODEX_STATE_DIR="${RUNTIME_ROOT}/codex"
 GROK_STATE_DIR="${RUNTIME_ROOT}/grok"
@@ -144,12 +145,38 @@ any_supervisor_running() {
     || read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" >/dev/null
 }
 
+any_lane_process_running() {
+  any_supervisor_running \
+    || read_live_pid "$(daemon_pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")" >/dev/null \
+    || read_live_pid "$(daemon_pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")" >/dev/null
+}
+
 require_supervisors_stopped() {
-  if any_supervisor_running; then
-    echo "objective generation requires both implementation supervisors to be stopped" >&2
+  if any_lane_process_running; then
+    echo "objective generation requires both supervisors and managed daemons to be stopped" >&2
     echo "run '$0 stop', wait for both lanes to exit, then retry" >&2
     return 1
   fi
+}
+
+with_lifecycle_lock() {
+  local lifecycle_fd
+  local status=0
+  mkdir -p "${RUNTIME_ROOT}"
+  if ! command -v flock >/dev/null 2>&1; then
+    echo "required executable is missing: flock" >&2
+    return 2
+  fi
+  exec {lifecycle_fd}>"${LIFECYCLE_LOCK}"
+  if ! flock -w 60 "${lifecycle_fd}"; then
+    echo "timed out waiting for wallet supervisor lifecycle lock: ${LIFECYCLE_LOCK}" >&2
+    exec {lifecycle_fd}>&-
+    return 1
+  fi
+  "$@" || status=$?
+  flock -u "${lifecycle_fd}"
+  exec {lifecycle_fd}>&-
+  return "${status}"
 }
 
 read_nonempty_json_field() {
@@ -276,14 +303,19 @@ run_reconciliation_preflight() {
   args=(
     --once
     --reconciliation-only
+    --fail-on-reconciliation-error
     --todo-path "${TODO_PATH}"
     --state-dir "${CODEX_STATE_DIR}"
     --state-prefix "${CODEX_STATE_PREFIX}"
     --task-prefix "${TASK_HEADER_PREFIX}"
+    --worktree-root "${WORKTREE_ROOT}/codex"
+    --worktree-submodule-path ipfs_datasets_py
+    --merge-target-branch "${MERGE_TARGET_BRANCH}"
+    --merge-queue-dir "${MERGE_QUEUE_DIR}"
+    --worktree-reconciliation-max-merges 1
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_OBJECTIVES.md
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_TODO.md
-    --no-worktree-reconciliation
     --no-objective-task-janitor
     --no-objective-goal-refinement
     --no-objective-goal-migration
@@ -376,7 +408,7 @@ start_supervisors() {
   if [[ ! -f "${GRAPH_PATH}" || ! -f "${BUNDLE_DIR}/index.json" ]]; then
     seed_objectives true
   fi
-  if ! any_supervisor_running; then
+  if ! any_lane_process_running; then
     run_reconciliation_preflight
   fi
   start_codex_lane
@@ -571,22 +603,22 @@ usage() {
 
 case "${1:-}" in
   seed)
-    seed_objectives true
+    with_lifecycle_lock seed_objectives true
     ;;
   refill)
-    seed_objectives false
+    with_lifecycle_lock seed_objectives false
     ;;
   doctor)
-    run_reconciliation_preflight
+    with_lifecycle_lock run_reconciliation_preflight
     ;;
   start)
-    start_supervisors
+    with_lifecycle_lock start_supervisors
     ;;
   status)
     show_status
     ;;
   stop)
-    stop_supervisors
+    with_lifecycle_lock stop_supervisors
     ;;
   *)
     usage >&2
