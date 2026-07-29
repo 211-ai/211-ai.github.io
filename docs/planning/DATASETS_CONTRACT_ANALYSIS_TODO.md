@@ -3346,7 +3346,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-061 Implement datasets symbolic contract objective: Pin hermetic toolchains, budgets, and no-network execution
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
