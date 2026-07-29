@@ -2406,7 +2406,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-062 Make XRPL and Xaman free-form retention opt-in
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
