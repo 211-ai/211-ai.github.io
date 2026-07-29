@@ -25,6 +25,7 @@ GENERATION_PATH="${PROGRAM_ROOT}/objective_generation.json"
 PLAN_EVALUATION_PATH="${PROGRAM_ROOT}/plan_evaluations.json"
 ANALYSIS_ESCALATION_PATH="${PROGRAM_ROOT}/analysis_escalation.json"
 GOAL_QUALITY_PATH="${PROGRAM_ROOT}/goal-quality.json"
+AST_BASELINE_PATH="${REPO_ROOT}/data/datasets_contract_analysis/scans/ipfs_datasets_py/baseline/ast-baseline.json"
 REQUIRE_TYPED_GOALS="${DATASETS_CONTRACT_ANALYSIS_REQUIRE_TYPED_GOALS:-0}"
 
 RUNTIME_ROOT="${PROGRAM_ROOT}/runtime"
@@ -378,7 +379,7 @@ print(json.dumps(value, sort_keys=True))' \
 }
 
 seed_objectives() {
-  local force_existing_goals="${1:-true}"
+  local force_existing_goals="${1:-false}"
   local -a forced_goal_args=()
   prepare_runtime
   require_target_checkout
@@ -741,6 +742,7 @@ write_health_snapshot() {
     "${TODO_PATH#${REPO_ROOT}/}" "${GRAPH_PATH#${REPO_ROOT}/}" \
     "${SWISSKNIFE_ROOT}" "${swissknife_git}" "${swissknife_clean}" "${swissknife_commit}" \
     "${DATASETS_ROOT}" "${datasets_clean}" "${datasets_current}" "${datasets_commit}" "${datasets_tree}" "${datasets_pinned_commit}" \
+    "${AST_BASELINE_PATH}" \
     "${codex_supervisor_pid}" "${codex_daemon_pid}" "${grok_supervisor_pid}" "${grok_daemon_pid}" \
     "$([[ -f "${CODEX_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" \
     "$([[ -f "${GROK_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" <<'PY'
@@ -753,12 +755,44 @@ from datetime import datetime, timezone
     output, healthy, branch, board, graph, swissknife_root, swissknife_git,
     swissknife_clean, swissknife_commit, datasets_root, datasets_clean,
     datasets_current, datasets_commit, datasets_tree, datasets_pinned_commit,
-    codex_supervisor, codex_daemon,
+    ast_baseline_path, codex_supervisor, codex_daemon,
     grok_supervisor, grok_daemon, codex_incident, grok_incident,
 ) = sys.argv[1:]
 
 def pid(value):
     return None if value == "null" else int(value)
+
+baseline_path = pathlib.Path(ast_baseline_path)
+try:
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+except (OSError, TypeError, ValueError):
+    baseline = {}
+baseline_repository = (
+    baseline.get("repository")
+    if isinstance(baseline.get("repository"), dict)
+    else {}
+)
+baseline_coverage = (
+    baseline.get("coverage")
+    if isinstance(baseline.get("coverage"), dict)
+    else {}
+)
+baseline_commit = str(baseline_repository.get("commit") or "")
+baseline_tree = str(baseline_repository.get("tree") or "")
+baseline_current = bool(
+    baseline.get("status") == "complete"
+    and baseline_coverage.get("analysis_complete") is True
+    and baseline_commit
+    and baseline_commit == datasets_commit
+    and baseline_tree
+    and baseline_tree == datasets_tree
+)
+proof_scan_root = baseline_path.parent.parent
+proof_receipt_paths = [
+    proof_scan_root / "scan-receipt.json",
+    proof_scan_root / "proof-root.json",
+    proof_scan_root / "finding-root.json",
+]
 
 payload = {
     "schema": "datasets-contract-analysis-supervisor-health/v1",
@@ -775,6 +809,18 @@ payload = {
         "commit": datasets_commit or None,
         "tree": datasets_tree or None,
         "pinned_commit": datasets_pinned_commit or None,
+    },
+    "analysis": {
+        "ast_baseline": {
+            "path": ast_baseline_path,
+            "status": baseline.get("status"),
+            "authority": baseline.get("authority"),
+            "receipt_cid": baseline.get("receipt_cid"),
+            "commit": baseline_commit or None,
+            "tree": baseline_tree or None,
+            "current": baseline_current,
+        },
+        "proof_receipts_present": all(path.is_file() for path in proof_receipt_paths),
     },
     "swissknife": {
         "root": swissknife_root,
@@ -901,7 +947,10 @@ usage() {
 
 case "${1:-}" in
   seed)
-    with_lifecycle_lock seed_objectives true
+    # A seed is an evidence-gap scan, not a request to reopen every existing
+    # goal. Explicit force-goal operations remain available through the
+    # objective daemon for reviewed recovery workflows.
+    with_lifecycle_lock seed_objectives false
     ;;
   refill)
     with_lifecycle_lock seed_objectives false
