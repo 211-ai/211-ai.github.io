@@ -227,7 +227,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: datasets-pilot
-- Depends on: DSCON-001, DSCON-G200, DSCON-G300, DSCON-G310
+- Depends on: DSCON-001, DSCON-G200
 - Outputs: data/datasets_contract_analysis/audit/dataset-contract-baseline.json, ipfs_datasets_py/tests/fixtures/dataset_manipulator, ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py, ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_contracts.py, ipfs_datasets_py/docs/schemas/dataset-operation-v1.schema.json, ipfs_datasets_py/tests/unit/core_operations/test_dataset_contracts.py, ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_manipulator.py, ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_loader.py, ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_saver.py, ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_converter.py, ipfs_datasets_py/tests/unit/core_operations/test_dataset_manipulator.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -357,7 +357,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: content-identity
-- Depends on: DSCON-001, DSCON-002, DSCON-003, DSCON-G040, DSCON-G050
+- Depends on: DSCON-001, DSCON-002, DSCON-003, DSCON-G050
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/content.py, ipfs_datasets_py/docs/software_contracts/CID_PROFILE_V1.md, ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/cache.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/cache_adapter.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_cache.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -682,7 +682,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: source-analysis
-- Depends on: DSCON-003, DSCON-006, DSCON-007, DSCON-008, DSCON-G105
+- Depends on: DSCON-003, DSCON-006, DSCON-007, DSCON-008
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/ast_ir.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/schema_versions.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/python_frontend.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_python_frontend.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/typescript_frontend.py, ipfs_datasets_py/scripts/software_contracts/typescript_ast_worker.mjs, ipfs_datasets_py/tests/unit/logic/software_contracts/test_typescript_frontend.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -812,7 +812,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: formal-contracts
-- Depends on: DSCON-002, DSCON-006, DSCON-007, DSCON-011, DSCON-012, DSCON-G110, DSCON-G120, DSCON-G200, DSCON-001
+- Depends on: DSCON-002, DSCON-006, DSCON-007, DSCON-011, DSCON-012, DSCON-G110, DSCON-G120, DSCON-001
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/contracts.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/registry.py, ipfs_datasets_py/docs/schemas/software-contract-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_ir.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/extract.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_extraction.py, data/datasets_contract_analysis/policy/cross-package-contracts-v1.json, ipfs_datasets_py/tests/contract/software_contracts/test_policy_registry.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_ir.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1072,7 +1072,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: source-analysis
-- Depends on: DSCON-016, DSCON-015, DSCON-G130
+- Depends on: DSCON-016, DSCON-015
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/resolver.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_resolver.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/call_graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/effects.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_call_graph.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_resolver.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1527,7 +1527,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security-analysis
-- Depends on: DSCON-022, DSCON-013, DSCON-014, DSCON-019, DSCON-G230, DSCON-G400, DSCON-G250
+- Depends on: DSCON-022, DSCON-013, DSCON-014, DSCON-019, DSCON-G230, DSCON-G250
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/security_rules.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_security_rules.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/mismatches.py, ipfs_datasets_py/tests/contract/software_contracts/test_cross_package_mismatches.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/findings.py, ipfs_datasets_py/docs/schemas/contract-finding-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_findings.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_security_rules.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1657,7 +1657,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: formal-verification
-- Depends on: DSCON-022, DSCON-021, DSCON-019, DSCON-010, DSCON-G230, DSCON-G150, DSCON-G240
+- Depends on: DSCON-022, DSCON-021, DSCON-019, DSCON-010, DSCON-G150
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/obligations.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_obligations.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/solver.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/reconstruct.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_solver.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/receipts.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/receipt_verifier.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_receipts.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_obligations.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1917,7 +1917,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: datasets-pilot
-- Depends on: DSCON-023, DSCON-026, DSCON-028, DSCON-G250, DSCON-G330
+- Depends on: DSCON-023, DSCON-026, DSCON-028, DSCON-G250
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/load_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/__init__.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/client.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/fastapi_service.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/simple_server.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/hierarchical_tool_manager.py, ipfs_kit_py/ipfs_kit_py/ipfs_datasets_integration.py, ipfs_kit_py/ipfs_kit_py/vfs_bucket_graphrag_integration.py, data/datasets_contract_analysis/pilot/dataset-manipulator-contracts.json, data/datasets_contract_analysis/pilot/dataset-manipulator-proof-root.json, ipfs_datasets_py/tests/contract/software_contracts/test_dataset_manipulator_proofs.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/core_operations/test_dataset_entrypoint_equivalence.py ipfs_kit_py/tests/test_ipfs_datasets_integration_contract.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2242,7 +2242,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P1
 - Track: zk-attestation
-- Depends on: DSCON-032, DSCON-G500, DSCON-G510
+- Depends on: DSCON-032
 - Outputs: ipfs_datasets_py/docs/software_contracts/ZK_ATTESTATION_V1.md, ipfs_datasets_py/docs/schemas/contract-zk-statement-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_zk_statement.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/zk_trace.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_zk_trace.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/zk_attestation.py, ipfs_datasets_py/tests/integration/logic/software_contracts/test_zk_attestation.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_zk_statement.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2437,7 +2437,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: supervisor-integration
-- Depends on: DSCON-029, DSCON-033, DSCON-G600, DSCON-009, DSCON-G610, DSCON-G620
+- Depends on: DSCON-029, DSCON-033, DSCON-009
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/repair_packet.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/task_projection.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_task_projection.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/refill_provider.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/todo_daemon/implementation_supervisor.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_refill.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/completion_gate.py, scripts/contract_analysis/refresh_completion_evidence.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2957,7 +2957,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: rollout
-- Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042, DSCON-G710
+- Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042
 - Outputs: data/datasets_contract_analysis/scans/initial, data/datasets_contract_analysis/release/canary-report.json, data/datasets_contract_analysis/release/ratchet-policy.json, data/datasets_contract_analysis/release/repair-quality.json
 - Validation: python scripts/contract_analysis/verify_scan.py data/datasets_contract_analysis/scans/initial/scan-receipt.json
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -3211,7 +3211,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-050 Resolve dependency guardrail for DSCON-004
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3222,7 +3222,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-051 Resolve dependency guardrail for DSCON-006
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3233,7 +3233,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-052 Resolve dependency guardrail for DSCON-010
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3244,7 +3244,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-053 Resolve dependency guardrail for DSCON-011
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3255,7 +3255,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-054 Resolve dependency guardrail for DSCON-012
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3266,7 +3266,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-055 Resolve dependency guardrail for DSCON-013
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3277,7 +3277,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-056 Resolve dependency guardrail for DSCON-014
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3288,7 +3288,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-057 Resolve dependency guardrail for DSCON-015
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3299,7 +3299,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-058 Resolve dependency guardrail for DSCON-016
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -3310,7 +3310,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-059 Resolve dependency guardrail for DSCON-017
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
