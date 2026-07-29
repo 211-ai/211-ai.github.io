@@ -1854,7 +1854,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Priority: P1
 - Track: integration
 - Depends on: WALPROC-011, WALPROC-025
-- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py, ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-029-objective-gap-82f44053666b.md
@@ -1866,7 +1866,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Objective heap index: 24
 - Parallel lane: wallet-processors/integration
 - Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
-- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py, ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
 - Changed paths:
 - AST symbols: WalletProcessorAPI wallet_ingest wallet_export
 - Interfaces:
