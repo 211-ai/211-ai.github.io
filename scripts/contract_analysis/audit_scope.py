@@ -13,6 +13,12 @@ and Git identity are verified.
 Usage:
   python scripts/contract_analysis/audit_scope.py --freeze
   python scripts/contract_analysis/audit_scope.py --check
+  python scripts/contract_analysis/audit_scope.py --check-current
+
+``--check`` verifies the immutable Git object graph recorded by ``--freeze``.
+It deliberately does not require the ambient worktrees to remain at the
+frozen revisions.  ``--check-current`` performs that separate freshness
+comparison and returns non-zero when a checkout has moved or is dirty.
 """
 
 from __future__ import annotations
@@ -377,6 +383,181 @@ def _git_ok(args: list[str], *, cwd: Path | None = None) -> str | None:
     if result.returncode != 0:
         return None
     return (result.stdout or "").strip()
+
+
+_FULL_GIT_OBJECT_ID = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+
+
+def _pinned_object_id(
+    value: Any,
+    *,
+    label: str,
+    errors: list[str],
+) -> str | None:
+    """Return a full lower-case Git object ID or fail the manifest closed."""
+    if not isinstance(value, str) or not _FULL_GIT_OBJECT_ID.fullmatch(value):
+        errors.append(f"{label} must be a full lower-case Git object id")
+        return None
+    return value
+
+
+def _rehash_git_object(
+    repository: Path,
+    *,
+    object_id: str,
+    object_type: str,
+) -> str | None:
+    """Recompute an object's ID so corrupt loose/pack data cannot pass by type."""
+    content = subprocess.run(
+        ["git", "cat-file", object_type, object_id],
+        cwd=repository,
+        capture_output=True,
+        check=False,
+    )
+    if content.returncode != 0:
+        return None
+    hashed = subprocess.run(
+        ["git", "hash-object", "-t", object_type, "--stdin"],
+        cwd=repository,
+        input=content.stdout,
+        capture_output=True,
+        check=False,
+    )
+    if hashed.returncode != 0:
+        return None
+    try:
+        return hashed.stdout.decode("ascii").strip()
+    except UnicodeDecodeError:
+        return None
+
+
+def _validate_pinned_commit_tree(
+    repository: Path,
+    *,
+    commit: Any,
+    tree: Any,
+    label: str,
+    errors: list[str],
+) -> bool:
+    """Verify a historical commit/tree pair without consulting ambient HEAD."""
+    commit_id = _pinned_object_id(commit, label=f"{label}.commit", errors=errors)
+    tree_id = _pinned_object_id(tree, label=f"{label}.tree", errors=errors)
+    if commit_id is None or tree_id is None:
+        return False
+    if not _is_git_checkout(repository):
+        errors.append(
+            f"{label} pinned object repository is missing or not a Git checkout: "
+            f"{repository}"
+        )
+        return False
+
+    commit_type = _git_ok(["cat-file", "-t", commit_id], cwd=repository)
+    if commit_type != "commit":
+        detail = "missing" if commit_type is None else f"type={commit_type}"
+        errors.append(f"{label} pinned commit {commit_id} is unavailable ({detail})")
+        return False
+    if _rehash_git_object(
+        repository,
+        object_id=commit_id,
+        object_type="commit",
+    ) != commit_id:
+        errors.append(f"{label} pinned commit {commit_id} failed content-hash verification")
+        return False
+
+    tree_type = _git_ok(["cat-file", "-t", tree_id], cwd=repository)
+    if tree_type != "tree":
+        detail = "missing" if tree_type is None else f"type={tree_type}"
+        errors.append(f"{label} pinned tree {tree_id} is unavailable ({detail})")
+        return False
+    if _rehash_git_object(
+        repository,
+        object_id=tree_id,
+        object_type="tree",
+    ) != tree_id:
+        errors.append(f"{label} pinned tree {tree_id} failed content-hash verification")
+        return False
+
+    resolved_tree = _git_ok(["rev-parse", f"{commit_id}^{{tree}}"], cwd=repository)
+    if resolved_tree != tree_id:
+        errors.append(
+            f"{label} pinned commit/tree mismatch: commit={commit_id} "
+            f"records tree={resolved_tree!r}, manifest tree={tree_id}"
+        )
+        return False
+    return True
+
+
+def _safe_git_tree_path(value: Any, *, label: str, errors: list[str]) -> str | None:
+    if not isinstance(value, str) or not value or "\x00" in value:
+        errors.append(f"{label} must be a non-empty Git tree path")
+        return None
+    candidate = Path(value)
+    if candidate.is_absolute() or any(part in {"", ".", ".."} for part in candidate.parts):
+        errors.append(f"{label} must be a normalized repository-relative path")
+        return None
+    return candidate.as_posix()
+
+
+def _pinned_tree_entry(
+    repository: Path,
+    *,
+    commit: str,
+    relative_path: Any,
+    label: str,
+    errors: list[str],
+) -> dict[str, str] | None:
+    """Read one exact entry from a pinned commit tree."""
+    tree_path = _safe_git_tree_path(
+        relative_path,
+        label=f"{label}.path",
+        errors=errors,
+    )
+    if tree_path is None:
+        return None
+    result = _git(
+        ["ls-tree", "--full-tree", commit, "--", tree_path],
+        cwd=repository,
+    )
+    if result.returncode != 0:
+        errors.append(
+            f"{label} cannot read pinned tree entry {tree_path!r} at {commit}"
+        )
+        return None
+    matches: list[dict[str, str]] = []
+    for line in (result.stdout or "").splitlines():
+        if "\t" not in line:
+            continue
+        metadata, found_path = line.split("\t", 1)
+        parts = metadata.split()
+        if len(parts) != 3 or found_path != tree_path:
+            continue
+        matches.append(
+            {
+                "mode": parts[0],
+                "type": parts[1],
+                "object": parts[2],
+                "path": found_path,
+            }
+        )
+    if len(matches) != 1:
+        errors.append(
+            f"{label} pinned tree entry {tree_path!r} is "
+            f"{'missing' if not matches else 'ambiguous'} at {commit}"
+        )
+        return None
+    return matches[0]
+
+
+def _read_pinned_blob(
+    repository: Path,
+    *,
+    commit: str,
+    relative_path: str,
+) -> str | None:
+    result = _git(["show", f"{commit}:{relative_path}"], cwd=repository)
+    if result.returncode != 0:
+        return None
+    return result.stdout
 
 
 def _is_git_checkout(path: Path) -> bool:
@@ -1407,15 +1588,296 @@ def freeze(
     return 0
 
 
+def _validate_pinned_external(
+    record: dict[str, Any],
+    *,
+    repository: Path,
+    label: str,
+    expected_prefix: str | None,
+    errors: list[str],
+) -> None:
+    status = record.get("status")
+    if status == "absent":
+        if record.get("commit") is not None or record.get("tree") is not None:
+            errors.append(f"{label} status=absent must not carry commit/tree ids")
+        return
+    if status not in {"matches_expected", "changed"}:
+        errors.append(f"{label}.status must be matches_expected, changed, or absent")
+        return
+    if record.get("verified") is not True:
+        errors.append(f"{label} with pinned objects must set verified=true")
+    _validate_pinned_commit_tree(
+        repository,
+        commit=record.get("commit"),
+        tree=record.get("tree"),
+        label=label,
+        errors=errors,
+    )
+    if expected_prefix:
+        expected_status = _prefix_status(record.get("commit"), expected_prefix)
+        if status != expected_status:
+            errors.append(
+                f"{label}.status={status!r} is inconsistent with pinned commit "
+                f"and expected prefix {expected_prefix}"
+            )
+
+
+def _validate_pinned_source_objects(
+    root: Path,
+    data: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Validate the frozen object graph, never ambient checkout revisions."""
+    policy = data.get("policy") or {}
+    if policy.get("read_git_objects_not_ambient_walk") is not True:
+        errors.append("source-roots policy must read pinned Git objects, not ambient HEAD")
+
+    frozen_super = data.get("superproject") or {}
+    super_commit = _pinned_object_id(
+        frozen_super.get("commit"),
+        label="superproject.commit",
+        errors=errors,
+    )
+    super_valid = _validate_pinned_commit_tree(
+        root,
+        commit=frozen_super.get("commit"),
+        tree=frozen_super.get("tree"),
+        label="superproject",
+        errors=errors,
+    )
+    if frozen_super.get("verified") is not True:
+        errors.append("superproject frozen identity must set verified=true")
+    if frozen_super.get("clean") is not True:
+        errors.append("superproject frozen identity must record a clean freeze")
+
+    links_raw = data.get("direct_gitlinks")
+    if not isinstance(links_raw, list):
+        errors.append("direct_gitlinks must be a list")
+        links_raw = []
+    frozen_links: dict[str, dict[str, Any]] = {}
+    for index, candidate in enumerate(links_raw):
+        if not isinstance(candidate, dict):
+            errors.append(f"direct_gitlinks[{index}] must be an object")
+            continue
+        path_value = _safe_git_tree_path(
+            candidate.get("path"),
+            label=f"direct_gitlinks[{index}].path",
+            errors=errors,
+        )
+        if path_value is None:
+            continue
+        if path_value in frozen_links:
+            errors.append(f"duplicate direct_gitlinks path: {path_value}")
+            continue
+        frozen_links[path_value] = candidate
+
+        pinned_link = _pinned_object_id(
+            candidate.get("gitlink_commit"),
+            label=f"{path_value}.gitlink_commit",
+            errors=errors,
+        )
+        pinned_checkout = _pinned_object_id(
+            candidate.get("commit"),
+            label=f"{path_value}.commit",
+            errors=errors,
+        )
+        if pinned_link is not None and pinned_checkout is not None:
+            if pinned_link != pinned_checkout:
+                errors.append(
+                    f"{path_value} frozen checkout commit must equal its gitlink commit"
+                )
+        if candidate.get("mode") != "160000" or candidate.get("type") != "commit":
+            errors.append(f"{path_value} must be recorded as a 160000 commit gitlink")
+        if candidate.get("verified") is not True:
+            errors.append(f"{path_value} must be verified in freeze")
+        if candidate.get("clean") is not True:
+            errors.append(f"{path_value} must be clean in freeze")
+        if candidate.get("checkout_matches_gitlink") is not True:
+            errors.append(f"{path_value} freeze must bind checkout to gitlink")
+
+        if super_valid and super_commit is not None:
+            entry = _pinned_tree_entry(
+                root,
+                commit=super_commit,
+                relative_path=path_value,
+                label=f"superproject gitlink {path_value}",
+                errors=errors,
+            )
+            if entry is not None:
+                expected = ("160000", "commit", pinned_link)
+                actual = (entry["mode"], entry["type"], entry["object"])
+                if actual != expected:
+                    errors.append(
+                        f"{path_value} frozen gitlink mismatch: "
+                        f"tree={actual}, manifest={expected}"
+                    )
+
+        _validate_pinned_commit_tree(
+            root / path_value,
+            commit=candidate.get("commit"),
+            tree=candidate.get("tree"),
+            label=path_value,
+            errors=errors,
+        )
+
+    for name in SELECTED_PACKAGE_ROOTS:
+        candidate = frozen_links.get(name)
+        if candidate is None:
+            errors.append(f"source-roots missing selected gitlink: {name}")
+        elif candidate.get("selected") is not True:
+            errors.append(f"{name} direct gitlink must set selected=true")
+
+    for group_name in ("nested_gitlinks", "mirror_cycles"):
+        records = data.get(group_name)
+        if not isinstance(records, list):
+            errors.append(f"{group_name} must be a list")
+            continue
+        for index, record in enumerate(records):
+            if not isinstance(record, dict):
+                errors.append(f"{group_name}[{index}] must be an object")
+                continue
+            label = f"{group_name}[{index}]"
+            parent_name = record.get("parent_package")
+            parent = frozen_links.get(parent_name) if isinstance(parent_name, str) else None
+            if parent is None:
+                errors.append(f"{label} refers to unknown parent_package {parent_name!r}")
+                continue
+            parent_commit = _pinned_object_id(
+                record.get("parent_commit"),
+                label=f"{label}.parent_commit",
+                errors=errors,
+            )
+            nested_commit = _pinned_object_id(
+                record.get("gitlink_commit"),
+                label=f"{label}.gitlink_commit",
+                errors=errors,
+            )
+            if parent_commit != parent.get("commit"):
+                errors.append(f"{label}.parent_commit does not bind its selected package")
+                continue
+            entry = _pinned_tree_entry(
+                root / parent_name,
+                commit=parent_commit,
+                relative_path=record.get("relative_path"),
+                label=label,
+                errors=errors,
+            )
+            if entry is not None:
+                expected = ("160000", "commit", nested_commit)
+                actual = (entry["mode"], entry["type"], entry["object"])
+                if actual != expected:
+                    errors.append(
+                        f"{label} frozen nested gitlink mismatch: "
+                        f"tree={actual}, manifest={expected}"
+                    )
+            if record.get("rescan") is not False:
+                errors.append(f"{label}.rescan must be false")
+
+    authority = data.get("package_authority")
+    datasets_link = frozen_links.get("ipfs_datasets_py")
+    if not isinstance(authority, dict):
+        errors.append("package_authority must be an object")
+    elif datasets_link is not None:
+        for field in ("commit", "tree"):
+            if authority.get(field) != datasets_link.get(field):
+                errors.append(
+                    f"package_authority.{field} must match pinned ipfs_datasets_py"
+                )
+        if authority.get("path") != "ipfs_datasets_py":
+            errors.append("package_authority.path must be ipfs_datasets_py gitlink")
+        if authority.get("selected") is not True or authority.get("verified") is not True:
+            errors.append("package_authority must be selected and verified")
+
+    checked_external: set[tuple[str, Any, Any]] = set()
+
+    def check_external(
+        record: Any,
+        *,
+        label: str,
+        path_key: str,
+        expected_prefix: str | None,
+    ) -> None:
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            return
+        raw_path = record.get(path_key)
+        if not isinstance(raw_path, str) or not raw_path:
+            errors.append(f"{label}.{path_key} must pin an external checkout path")
+            return
+        key = (raw_path, record.get("commit"), record.get("tree"))
+        if key in checked_external:
+            return
+        checked_external.add(key)
+        _validate_pinned_external(
+            record,
+            repository=Path(raw_path),
+            label=label,
+            expected_prefix=expected_prefix,
+            errors=errors,
+        )
+
+    check_external(
+        data.get("swissknife"),
+        label="swissknife",
+        path_key="configured_path",
+        expected_prefix=EXPECTED_SWISSKNIFE_PREFIX,
+    )
+    check_external(
+        data.get("hallucinate_datasets"),
+        label="hallucinate_datasets",
+        path_key="configured_path",
+        expected_prefix=EXPECTED_HALLUCINATE_DATASETS_PREFIX,
+    )
+
+    candidates = data.get("authority_candidates")
+    if not isinstance(candidates, list):
+        errors.append("authority_candidates must be a list")
+    else:
+        selected_candidates = [
+            candidate
+            for candidate in candidates
+            if isinstance(candidate, dict) and candidate.get("selected") is True
+        ]
+        if len(selected_candidates) != 1 or selected_candidates[0] != authority:
+            errors.append(
+                "authority_candidates must contain exactly the selected package_authority"
+            )
+        for index, candidate in enumerate(candidates):
+            if not isinstance(candidate, dict):
+                errors.append(f"authority_candidates[{index}] must be an object")
+                continue
+            role = candidate.get("role")
+            if role == "211-AI_gitlink_package_authority":
+                continue
+            expected_prefix = {
+                "standalone_home_checkout": EXPECTED_HOME_DATASETS_PREFIX,
+                "hallucinate_runtime_copy": EXPECTED_HALLUCINATE_DATASETS_PREFIX,
+            }.get(role)
+            if expected_prefix is None:
+                errors.append(
+                    f"authority_candidates[{index}] has unknown role {role!r}"
+                )
+                continue
+            check_external(
+                candidate,
+                label=f"authority_candidates[{index}]",
+                path_key="path",
+                expected_prefix=expected_prefix,
+            )
+
+
 def _check_source_roots(
     root: Path,
     path: Path,
     errors: list[str],
     warnings: list[str],
     *,
-    swissknife_path: Path,
-    hallucinate_path: Path,
+    swissknife_path: Path | None = None,
+    hallucinate_path: Path | None = None,
 ) -> dict[str, Any] | None:
+    # Retained as compatibility-only keyword arguments for existing callers.
+    # Snapshot validation always uses paths pinned inside source-roots.json.
+    del swissknife_path, hallucinate_path
     if not path.is_file():
         errors.append(f"missing source-roots.json: {path.relative_to(root)}")
         return None
@@ -1434,54 +1896,11 @@ def _check_source_roots(
     if data.get("schema") != SCHEMA_SOURCE_ROOTS:
         errors.append(f"source-roots.json schema must be {SCHEMA_SOURCE_ROOTS}")
 
-    live = collect_source_roots(
-        root,
-        swissknife_path=swissknife_path,
-        hallucinate_path=hallucinate_path,
-        home_datasets_path=DEFAULT_HOME_DATASETS_PATH,
-    )
-
-    frozen_super = data.get("superproject") or {}
-    live_super = live.get("superproject") or {}
-    for field in ("commit", "tree"):
-        if frozen_super.get(field) != live_super.get(field):
-            errors.append(
-                f"superproject {field} drift: frozen={frozen_super.get(field)} "
-                f"live={live_super.get(field)}"
-            )
-
-    frozen_links = {
-        d.get("path"): d for d in (data.get("direct_gitlinks") or []) if isinstance(d, dict)
-    }
-    live_links = {
-        d.get("path"): d for d in (live.get("direct_gitlinks") or []) if isinstance(d, dict)
-    }
-    for name in SELECTED_PACKAGE_ROOTS:
-        if name not in frozen_links:
-            errors.append(f"source-roots missing selected gitlink: {name}")
-            continue
-        if name not in live_links:
-            errors.append(f"live checkout missing selected gitlink: {name}")
-            continue
-        for field in ("gitlink_commit", "commit", "tree"):
-            if frozen_links[name].get(field) != live_links[name].get(field):
-                errors.append(
-                    f"{name} {field} drift: frozen={frozen_links[name].get(field)} "
-                    f"live={live_links[name].get(field)}"
-                )
-        if not frozen_links[name].get("verified"):
-            errors.append(f"{name} must be verified in freeze")
-        if not frozen_links[name].get("clean"):
-            errors.append(f"{name} must be clean in freeze")
-        if not frozen_links[name].get("tree"):
-            errors.append(f"{name} missing tree id")
+    _validate_pinned_source_objects(root, data, errors)
 
     cycles = data.get("mirror_cycles") or []
     if not isinstance(cycles, list) or not cycles:
         errors.append("mirror_cycles must record recursive package mirrors without rescan")
-    else:
-        if any(c.get("rescan") is not False for c in cycles if isinstance(c, dict)):
-            errors.append("mirror_cycles entries must set rescan=false")
 
     swiss = data.get("swissknife") or {}
     status = swiss.get("status")
@@ -1497,16 +1916,6 @@ def _check_source_roots(
                 f"swissknife matches_expected but commit does not start with "
                 f"{EXPECTED_SWISSKNIFE_PREFIX}"
             )
-    # Live consistency for swissknife status
-    live_swiss = live.get("swissknife") or {}
-    if swiss.get("status") != live_swiss.get("status"):
-        warnings.append(
-            f"swissknife status frozen={swiss.get('status')} live={live_swiss.get('status')}"
-        )
-    if swiss.get("commit") and live_swiss.get("commit") and swiss.get("commit") != live_swiss.get("commit"):
-        errors.append(
-            f"swissknife commit drift: frozen={swiss.get('commit')} live={live_swiss.get('commit')}"
-        )
 
     hall = data.get("hallucinate_datasets") or {}
     if hall.get("status") not in {"matches_expected", "changed", "absent"}:
@@ -1601,7 +2010,14 @@ def _check_drift(
         if required not in categories:
             errors.append(f"drift findings missing category: {required}")
 
-    # Spot-check mock-success evidence still present in tree where claimed.
+    # Spot-check evidence in the pinned package authority, not whichever
+    # revision happens to be checked out now.
+    authority = (source_roots or {}).get("package_authority") or {}
+    authority_commit = authority.get("commit")
+    authority_path = authority.get("path")
+    authority_repository = (
+        root / authority_path if isinstance(authority_path, str) else None
+    )
     mock_paths = [
         "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
         (
@@ -1614,18 +2030,42 @@ def _check_drift(
         ),
     ]
     for rel in mock_paths:
-        full = root / rel
-        if not full.is_file():
-            warnings.append(f"mock-success path missing at check time: {rel}")
+        package_rel = rel.removeprefix("ipfs_datasets_py/")
+        if (
+            authority_repository is None
+            or not isinstance(authority_commit, str)
+            or not _is_git_checkout(authority_repository)
+        ):
+            errors.append(
+                f"cannot read pinned mock-success evidence without package authority: {rel}"
+            )
             continue
-        text = full.read_text(encoding="utf-8", errors="replace").lower()
+        pinned_text = _read_pinned_blob(
+            authority_repository,
+            commit=authority_commit,
+            relative_path=package_rel,
+        )
+        if pinned_text is None:
+            errors.append(f"mock-success path missing from pinned authority: {rel}")
+            continue
+        text = pinned_text.lower()
         if "mock" not in text:
-            errors.append(f"expected mock-success evidence missing from {rel}")
+            errors.append(f"expected mock-success evidence missing from pinned {rel}")
 
-    manip = root / "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_manipulator.py"
-    if manip.is_file():
+    manip_rel = "ipfs_datasets_py/core_operations/dataset_manipulator.py"
+    if (
+        authority_repository is not None
+        and isinstance(authority_commit, str)
+        and _read_pinned_blob(
+            authority_repository,
+            commit=authority_commit,
+            relative_path=manip_rel,
+        )
+        is not None
+    ):
         warnings.append(
-            "dataset_manipulator.py now exists; missing-import finding may need refresh"
+            "dataset_manipulator.py exists in the pinned snapshot; "
+            "missing-import finding may need refresh"
         )
 
     bound = data.get("bound_package_authority") or {}
@@ -1676,12 +2116,131 @@ def _check_ownership(
             warnings.append(f"ownership-map.md may be missing decision emphasis for: {decision}")
 
 
-def run_check(
+def _identity_divergences(
+    label: str,
+    frozen: dict[str, Any],
+    current: dict[str, Any] | None,
+) -> list[str]:
+    if current is None:
+        return [f"{label}: current checkout is missing or unverifiable"]
+    divergences: list[str] = []
+    for field in ("commit", "tree"):
+        if frozen.get(field) != current.get(field):
+            divergences.append(
+                f"{label}.{field}: frozen={frozen.get(field)} "
+                f"current={current.get(field)}"
+            )
+    if current.get("dirty"):
+        divergences.append(
+            f"{label}: current checkout is dirty "
+            f"({current.get('dirty_entry_count', 0)} material entr"
+            f"{'y' if current.get('dirty_entry_count') == 1 else 'ies'})"
+        )
+    return divergences
+
+
+def _collect_current_divergences(
     root: Path,
+    source_roots: dict[str, Any],
     *,
     swissknife_path: Path,
     hallucinate_path: Path,
+    home_datasets_path: Path,
+) -> list[str]:
+    """Compare frozen identities to the current worktrees, as an explicit mode."""
+    divergences: list[str] = []
+    frozen_super = source_roots.get("superproject") or {}
+    current_super = _checkout_identity(
+        root,
+        label="211-AI-superproject",
+        relative_path=".",
+        ignore_freeze_outputs=True,
+    )
+    divergences.extend(
+        _identity_divergences("superproject", frozen_super, current_super)
+    )
+
+    frozen_links = {
+        entry.get("path"): entry
+        for entry in (source_roots.get("direct_gitlinks") or [])
+        if isinstance(entry, dict) and isinstance(entry.get("path"), str)
+    }
+    current_links = {
+        entry.get("path"): entry for entry in _list_direct_gitlinks(root)
+    }
+    for name, frozen in sorted(frozen_links.items()):
+        current_link = current_links.get(name)
+        if current_link is None:
+            divergences.append(f"{name}.gitlink_commit: missing from current HEAD")
+        elif frozen.get("gitlink_commit") != current_link.get("gitlink_commit"):
+            divergences.append(
+                f"{name}.gitlink_commit: frozen={frozen.get('gitlink_commit')} "
+                f"current={current_link.get('gitlink_commit')}"
+            )
+        current_checkout = _checkout_identity(
+            root / name,
+            label=name,
+            relative_path=name,
+        )
+        divergences.extend(
+            _identity_divergences(name, frozen, current_checkout)
+        )
+
+    checked_paths: set[tuple[str, str]] = set()
+
+    def compare_external(
+        label: str,
+        frozen: Any,
+        current_path: Path,
+    ) -> None:
+        if not isinstance(frozen, dict):
+            divergences.append(f"{label}: frozen record is missing")
+            return
+        key = (label, str(current_path))
+        if key in checked_paths:
+            return
+        checked_paths.add(key)
+        current = _checkout_identity(current_path, label=label)
+        if frozen.get("status") == "absent":
+            if current is not None:
+                divergences.append(
+                    f"{label}: frozen checkout was absent but is present at {current_path}"
+                )
+            return
+        divergences.extend(_identity_divergences(label, frozen, current))
+
+    compare_external(
+        "swissknife",
+        source_roots.get("swissknife"),
+        swissknife_path,
+    )
+    compare_external(
+        "hallucinate_datasets",
+        source_roots.get("hallucinate_datasets"),
+        hallucinate_path,
+    )
+    for candidate in source_roots.get("authority_candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("role") == "standalone_home_checkout":
+            compare_external(
+                "standalone_home_checkout",
+                candidate,
+                home_datasets_path,
+            )
+            break
+    return divergences
+
+
+def run_check(
+    root: Path,
+    *,
+    swissknife_path: Path | None = None,
+    hallucinate_path: Path | None = None,
 ) -> int:
+    # These keywords were accepted by the original API. They cannot redirect
+    # an immutable snapshot check, but remain accepted for caller compatibility.
+    del swissknife_path, hallucinate_path
     audit = _audit_dir(root)
     source_path = audit / "source-roots.json"
     drift_path = audit / "datasets-manipulator-drift.json"
@@ -1695,8 +2254,6 @@ def run_check(
         source_path,
         errors,
         warnings,
-        swissknife_path=swissknife_path,
-        hallucinate_path=hallucinate_path,
     )
     drift = _check_drift(root, drift_path, source_roots, errors, warnings)
     _check_ownership(root, ownership_path, errors, warnings)
@@ -1731,12 +2288,62 @@ def run_check(
     return 0
 
 
+def run_check_current(
+    root: Path,
+    *,
+    swissknife_path: Path,
+    hallucinate_path: Path,
+    home_datasets_path: Path,
+) -> int:
+    """Validate the snapshot, then fail if any configured checkout has drifted."""
+    snapshot_code = run_check(root)
+    if snapshot_code != 0:
+        print("freshness not evaluated because pinned snapshot integrity failed")
+        return snapshot_code
+
+    source_path = _audit_dir(root) / "source-roots.json"
+    try:
+        source_roots = _load_json(source_path)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print(f"FAIL current comparison: cannot reload source-roots.json: {exc}")
+        return 1
+    divergences = _collect_current_divergences(
+        root,
+        source_roots,
+        swissknife_path=swissknife_path,
+        hallucinate_path=hallucinate_path,
+        home_datasets_path=home_datasets_path,
+    )
+
+    print("datasets contract analysis audit --check-current")
+    if divergences:
+        print("stale/diverged:")
+        for divergence in divergences:
+            print(f"  - {divergence}")
+        print(f"STALE ({len(divergences)} divergence(s))")
+        return 1
+
+    print("CURRENT (all ambient identities equal the frozen snapshot)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Validate frozen source-roots / drift / ownership artifacts",
+        help=(
+            "Validate frozen source-roots / drift / ownership artifacts and "
+            "their pinned historical Git objects"
+        ),
+    )
+    parser.add_argument(
+        "--check-current",
+        action="store_true",
+        help=(
+            "Validate the frozen snapshot, then require ambient checkouts to "
+            "still equal it"
+        ),
     )
     parser.add_argument(
         "--freeze",
@@ -1771,7 +2378,10 @@ def main(argv: list[str] | None = None) -> int:
 
     root = args.root.resolve() if args.root is not None else _repo_root()
 
-    if args.freeze and args.check:
+    if args.check and args.check_current:
+        parser.error("--check and --check-current are mutually exclusive")
+
+    if args.freeze and (args.check or args.check_current):
         # Freeze then validate in one shot.
         code = freeze(
             root,
@@ -1781,11 +2391,14 @@ def main(argv: list[str] | None = None) -> int:
         )
         if code != 0:
             return code
-        return run_check(
-            root,
-            swissknife_path=args.swissknife_path,
-            hallucinate_path=args.hallucinate_datasets_path,
-        )
+        if args.check_current:
+            return run_check_current(
+                root,
+                swissknife_path=args.swissknife_path,
+                hallucinate_path=args.hallucinate_datasets_path,
+                home_datasets_path=args.home_datasets_path,
+            )
+        return run_check(root)
 
     if args.freeze:
         return freeze(
@@ -1796,13 +2409,17 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.check:
-        return run_check(
+        return run_check(root)
+
+    if args.check_current:
+        return run_check_current(
             root,
             swissknife_path=args.swissknife_path,
             hallucinate_path=args.hallucinate_datasets_path,
+            home_datasets_path=args.home_datasets_path,
         )
 
-    parser.error("specify --freeze and/or --check")
+    parser.error("specify --freeze, --check, and/or --check-current")
     return 2
 
 
