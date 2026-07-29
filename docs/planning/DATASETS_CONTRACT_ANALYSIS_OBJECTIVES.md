@@ -1001,3 +1001,22 @@ Program invariants:
 - Parallel lane: objective-schema
 - Conflict policy: sole owner of the typed objective compatibility projection, sidecar schema, and admission report
 - Gap task: Close the missing objective evidence `data/datasets_contract_analysis/agent_supervisor/goal-quality.json` with a narrow, verifiable change.
+
+## DSCON-G733 Prove ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_g... for Add lossless typed objective admission
+
+- Status: active
+- Parent: DSCON-G055
+- Fib priority: 5000
+- Track: supervisor-governance
+- Priority: P0
+- Bundle: datasets-contract/supervisor-governance
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py`.
+- Evidence: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_goal_quality.py ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Refinement depth: 2
+- Embedding query: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- AST query: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Parallel lane: objective-schema
+- Conflict policy: sole owner of the typed objective compatibility projection, sidecar schema, and admission report
+- Gap task: Close the missing objective evidence `ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py` with a narrow, verifiable change.
