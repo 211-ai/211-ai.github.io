@@ -1261,7 +1261,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-020 Implement wallet processor migration objective: Implement Solana wallet and ledger processing
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
