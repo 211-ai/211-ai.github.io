@@ -3409,3 +3409,264 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Candidate kind: aggregate
 - Todo vector key: fbef31badb5dfd0a
 - Acceptance: Objective scan filed this gap for DSCON-G050. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-061-objective-gap-457b1a0d5f4b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/datasets_contract_analysis/policy/resource-bounds-v1.json), and keep the supervisor-fed backlog aligned with the objective heap.  Tool availability is a capability fact, never a reason to auto-install during analysis.
+
+## DSCON-062 Implement datasets symbolic contract objective: Freeze repository authorities, revisions, and drift inventory
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: bootstrap
+- Depends on:
+- Outputs: scripts/contract_analysis/audit_scope.py, data/datasets_contract_analysis/audit/source-roots.json, data/datasets_contract_analysis/audit/datasets-manipulator-drift.json, data/datasets_contract_analysis/audit/ownership-map.md
+- Validation: python scripts/contract_analysis/audit_scope.py --check
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-062-objective-gap-dd228c6b9029.md
+- Bundle: datasets-contract/bootstrap
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-bootstrap.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G000
+- Graph depth: 1
+- Objective heap index: 0
+- Parallel lane: bootstrap-inventory
+- Conflict policy: owns only scope and drift audit artifacts
+- Predicted files: scripts/contract_analysis/audit_scope.py, data/datasets_contract_analysis/audit/source-roots.json, data/datasets_contract_analysis/audit/datasets-manipulator-drift.json, data/datasets_contract_analysis/audit/ownership-map.md
+- Changed paths:
+- AST symbols: process_dataset DataProcessor DatasetManager load_dataset save_dataset convert_dataset_format generate_clusters
+- Interfaces:
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G010
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/efe5e906cc91368c2029e4620f96b3acb0825d0df9dffd0b692ba84489e5d769
+- Canonical task CID: baguqeera57s6sbwmse3iyibj4rra7fvtvsyiexin7hp72c3jfouejcpf25uq
+- Semantic identity: objective-evidence-obligation/v1/cc830458bd585104d0e5f907b5c2516f3870ea07daf6a5ffa74551ae380b69cb
+- Acceptance subset: The report binds clean commit/tree IDs for every selected root and direct gitlink, records recursive mirror cycles without rescanning them, records Swissknife commit `df11f08f` or an explicit changed/absent status, records the Hallucinate datasets checkout at `8dc4f93e` and current package authority or their reviewed successors, reproduces known mock-success, nondeterministic identity, duplicate definition, missing import, and weak-test findings, unresolved authority fails closed.
+- Preconditions: objective goal DSCON-G010 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-medium
+- Token class: small
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/DSCON-G010
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/cc830458bd585104d0e5f907b5c2516f3870ea07daf6a5ffa74551ae380b69cb
+- Missing evidence: objective validation repair
+- Embedding query: repository root gitlink swissknife hallucinate datasets revision drift mock success duplicate definition ownership
+- AST query: process_dataset DataProcessor DatasetManager load_dataset save_dataset convert_dataset_format generate_clusters
+- Surplus group: objective/DSCON-G010
+- Merge key: 4e16757610eb59d6
+- Merge family: objective/DSCON-G010
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 097caf47988ece3a
+- Acceptance: Objective scan filed this gap for DSCON-G010. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-062-objective-gap-dd228c6b9029.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  A repository reference in documentation is not an authority until its path and Git identity are verified.
+
+## DSCON-063 Implement datasets symbolic contract objective: Define the soundness, threat, and verdict policy
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: trust
+- Depends on:
+- Outputs: ipfs_datasets_py/docs/software_contracts/SOUNDNESS_AND_THREAT_MODEL.md, ipfs_datasets_py/docs/software_contracts/verdict-policy-v1.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_verdict_policy.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_verdict_policy.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-063-objective-gap-15bfa594db43.md
+- Bundle: datasets-contract/trust
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-trust.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G000
+- Graph depth: 1
+- Objective heap index: 1
+- Parallel lane: trust-policy
+- Conflict policy: owns proof claim and threat-model documents
+- Predicted files: ipfs_datasets_py/docs/software_contracts/SOUNDNESS_AND_THREAT_MODEL.md, ipfs_datasets_py/docs/software_contracts/verdict-policy-v1.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_verdict_policy.py
+- Changed paths:
+- AST symbols: VerificationVerdict AssuranceLevel CompletionEvidence ProofAttestation
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G030
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/615b1e7885c0a12fa60bec0057121a0ad256aad52a140c061b94a5de21665ab6
+- Canonical task CID: baguqeeramfnr46efycqs7jql5qafoeq2bljfnkwvfikaybq3sss54ilglk3a
+- Semantic identity: objective-evidence-obligation/v1/f75e3fd05851d2c7ce02fbcc0a1e94d8f8749f814c31d3e2ca557f047cdac3fe
+- Acceptance subset: Policy distinguishes `PROVED_WITHIN_MODEL`, `VIOLATED_WITH_COUNTEREXAMPLE`, `UNKNOWN`, `UNSUPPORTED`, `INCOMPLETE_SCAN`, `STALE`, and `ERROR`, defines which evidence can satisfy completion, treats dynamic behavior and absent findings conservatively, states that GraphRAG, tests, types, simulated proofs, and ZK attestations have bounded authority.
+- Preconditions: objective goal DSCON-G030 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-small
+- Token class: small
+- Estimated tokens: 0
+- Resources: cpu-small
+- Merge fate: objective/DSCON-G030
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f75e3fd05851d2c7ce02fbcc0a1e94d8f8749f814c31d3e2ca557f047cdac3fe
+- Missing evidence: objective validation repair
+- Embedding query: soundness threat model proof verdict unknown unsupported incomplete scan trusted computing base
+- AST query: VerificationVerdict AssuranceLevel CompletionEvidence ProofAttestation
+- Surplus group: objective/DSCON-G030
+- Merge key: 0e6b6c97c6580121
+- Merge family: objective/DSCON-G030
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 00c0f895b67e3e72
+- Acceptance: Objective scan filed this gap for DSCON-G030. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-063-objective-gap-15bfa594db43.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Narrow provable claims are preferable to broad unsound claims.
+
+## DSCON-064 Implement datasets symbolic contract objective: Pin hermetic toolchains, budgets, and no-network execution
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: trust
+- Depends on: DSCON-002, DSCON-063
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/execution_profile.py, data/datasets_contract_analysis/policy/analyzer-profile-v1.json, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-064-objective-gap-f3b5e344d7a7.md
+- Bundle: datasets-contract/trust
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-trust.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G000
+- Graph depth: 1
+- Objective heap index: 5
+- Parallel lane: trust-runtime
+- Conflict policy: owns analyzer execution profile and resource policy
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/execution_profile.py, data/datasets_contract_analysis/policy/analyzer-profile-v1.json, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Changed paths:
+- AST symbols: AnalysisExecutionProfile ResourceBudget HermeticValidation CapabilitySnapshot
+- Interfaces:
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G050
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/7acfcc30106a92065083486154723b15630f5aeb63ba439c52071c6045a1c261
+- Canonical task CID: baguqeeraplh4ymaqnkjamuedjbqvi4r3cvrq6wxlmo5ehhcsa4ogarnbyjqq
+- Semantic identity: objective-evidence-obligation/v1/a319a2f2fabb7bd2c2584360b29bda916a4444dd2b69d5b32d8bd1df5feb3f5b
+- Acceptance subset: Profiles bind tool and lock identities, enforce blob, file, AST-node, edge, SCC, recursion, timeout, memory, proof, receipt, finding, task, and prompt limits, reject network, auto-install, home-cache, credential, and write-root escape, resource exhaustion yields incomplete or unknown rather than pass.
+- Preconditions: objective goal DSCON-G050 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-medium
+- Token class: small
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/DSCON-G050
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a319a2f2fabb7bd2c2584360b29bda916a4444dd2b69d5b32d8bd1df5feb3f5b
+- Missing evidence: objective validation repair
+- Embedding query: hermetic analyzer parser solver toolchain resource budgets no network credentials sandbox
+- AST query: AnalysisExecutionProfile ResourceBudget HermeticValidation CapabilitySnapshot
+- Surplus group: objective/DSCON-G050
+- Merge key: 528a5e409c9562e6
+- Merge family: objective/DSCON-G050
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 4de27545c40f2b34
+- Acceptance: Objective scan filed this gap for DSCON-G050. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-064-objective-gap-f3b5e344d7a7.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Tool availability is a capability fact, never a reason to auto-install during analysis.
+
+## DSCON-065 Implement datasets symbolic contract objective: Prove data/datasets_contract_analysis/agent_supervisor/goal-quality.json for Add lossless typed objective admission
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: supervisor-governance
+- Depends on:
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Evidence outputs: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_goal_quality.py ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-065-objective-gap-422cfc37498d.md
+- Bundle: datasets-contract/supervisor-governance
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-supervisor-governance.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G055
+- Graph depth: 2
+- Objective heap index: 39
+- Parallel lane: objective-schema
+- Conflict policy: sole owner of the typed objective compatibility projection, sidecar schema, and admission report
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Changed paths:
+- AST symbols: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G732
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/d7a7a9a58515b6f0ed3a8a965e74816fa85d3ccf4197f60e057bd752e7f71789
+- Canonical task CID: baguqeera26t2tjmfcw3pb3j2rklf45ebn6uf2pgpigl7mdqfpplvfz7xc6eq
+- Semantic identity: objective-evidence-obligation/v1/ac65df0697b9b31cea90481d5582a72f37a5f4ac4d81210bf3aad4f2f1603fc4
+- Acceptance subset: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Preconditions: objective goal DSCON-G732 is schedulable
+- Effects: satisfy evidence requirement: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Evidence subset: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/DSCON-G732
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/ac65df0697b9b31cea90481d5582a72f37a5f4ac4d81210bf3aad4f2f1603fc4
+- Missing evidence: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Embedding query: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- AST query: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Surplus group: objective/DSCON-G732
+- Merge key: a405eaad5e7dd7bd
+- Merge family: objective/DSCON-G732
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 5594f7f46b8f1531
+- Acceptance: Objective scan filed this gap for DSCON-G732. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-065-objective-gap-422cfc37498d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/datasets_contract_analysis/agent_supervisor/goal-quality.json), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.

@@ -963,3 +963,41 @@ Program invariants:
 - Refinement: Release evidence is not production publication or authority to alter external Swissknife.
 - Embedding query: release validation rollback security exhaustion quorum supervisor restart content addressed proof
 - AST query: ReleaseEvidence RollbackReceipt ExhaustionQuorum SupervisorHealth
+
+## DSCON-G731 Prove ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json for Standardize canonical encoding, multihash, and CID profiles
+
+- Status: active
+- Parent: DSCON-G040
+- Fib priority: 5000
+- Track: content-identity
+- Priority: P0
+- Bundle: datasets-contract/content
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json`.
+- Evidence: ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/content.py, ipfs_datasets_py/docs/software_contracts/CID_PROFILE_V1.md, ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py
+- Refinement depth: 2
+- Embedding query: ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json
+- AST query: ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json
+- Parallel lane: content-profile
+- Conflict policy: sole owner of the software-contract CID profile
+- Gap task: Close the missing objective evidence `ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json` with a narrow, verifiable change.
+
+## DSCON-G732 Prove data/datasets_contract_analysis/agent_supervisor/goal-quality.json for Add lossless typed objective admission
+
+- Status: active
+- Parent: DSCON-G055
+- Fib priority: 5000
+- Track: supervisor-governance
+- Priority: P0
+- Bundle: datasets-contract/supervisor-governance
+- Goal: Create concrete implementation, tests, docs, or interface descriptors proving `data/datasets_contract_analysis/agent_supervisor/goal-quality.json`.
+- Evidence: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_goal_quality.py ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Refinement depth: 2
+- Embedding query: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- AST query: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
+- Parallel lane: objective-schema
+- Conflict policy: sole owner of the typed objective compatibility projection, sidecar schema, and admission report
+- Gap task: Close the missing objective evidence `data/datasets_contract_analysis/agent_supervisor/goal-quality.json` with a narrow, verifiable change.
