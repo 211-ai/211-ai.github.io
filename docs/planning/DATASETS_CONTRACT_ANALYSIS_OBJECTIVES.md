@@ -270,7 +270,7 @@ Program invariants:
 
 ## DSCON-G115 Prove package-wide Python frontend totality
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 9
 - Priority: P0

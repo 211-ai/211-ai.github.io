@@ -183,6 +183,26 @@ composition evidence records that limitation, but this does not make a clean
 `ipfs_datasets_py` package inventory incomplete. No whole-Swissknife exhaustion
 or safety claim is part of the first package-scoped release.
 
+### 2.5 Current package AST checkpoint
+
+The first package-only immutable snapshot and AST exhaustion pass is recorded
+under `data/datasets_contract_analysis/scans/ipfs_datasets_py/baseline/`.
+It binds datasets commit `e136fe31c8bb2cf3355311b035ca4bec55faf5a7`,
+tree `5c44f704b8c06ab58de9f5dc41cedc23f7f1b003`, and repository-root CID
+`baguqeerampt5kqz2njeaxhkqoeyjvr5rtju6rirk7crxdviqzsdiifkgfeoa`.
+All 12,107 tracked blobs have dispositions. All 7,017 eligible Python blobs
+terminate in a content-addressed AST result: 6,414 without unsupported
+constructs and 603 with explicit unsupported records; no frontend exception,
+resource exhaustion, unavailable source, or unattempted blob remains. The
+aggregate AST baseline receipt is
+`baguqeeraftep7ukpgyloywhvyyne44hi7whnygsf4czz32sh6bntfd2lnwcq`.
+
+This checkpoint has `STATIC_AST_BASELINE_ONLY` authority. It is not a function
+contract proof or a package safety claim. Resolver, call/effect graph, contract
+extraction, obligation, solver/reconstruction, evidence-graph, receipt,
+security-rule, mismatch, finding, and supervisor contract-refill stages remain
+mandatory before G705 can emit proof and finding roots.
+
 ## 3. Proof boundary and claim vocabulary
 
 Python is dynamic. Reflection, monkey-patching, native extensions, network
