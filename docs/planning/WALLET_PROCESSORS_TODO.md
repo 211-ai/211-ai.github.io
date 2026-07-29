@@ -1723,7 +1723,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: validation
-- Depends on: WALPROC-014, WALPROC-022, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-025
+- Depends on: WALPROC-014, WALPROC-022, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-025, WALPROC-050
 - Outputs: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -2352,3 +2352,20 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Completion authority: local
 - Acceptance subset: WorldIdSecretConfig string and repr surfaces never expose direct secret values or complete secret-reference paths; public and durable serialization retain only the existing bounded source kind and opaque reference identifier.
 - Acceptance: Repair the critical finding discovered by WALPROC-028. Add a focused regression for direct WorldIdSecretConfig repr/str surfaces, redact secret_ref from the dataclass representation without weakening configured/source behavior, and keep raw secret values and full secret-reference paths absent from logs, errors, receipts, and serialization.
+
+## WALPROC-050 Repair wallet fixture conformance baseline
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: validation
+- Depends on: WALPROC-013, WALPROC-017, WALPROC-019, WALPROC-020, WALPROC-021
+- Outputs: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Predicted files: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Goal id: WALPROC-G620-R1
+- Completion authority: local
+- Acceptance subset: Every committed wallet fixture has an exact current digest, the Xaman runtime manifest remains attributed to WALPROC-G210, and the migration baseline continues to verify the WALPROC-G020 formal-assurance evidence embedded in the Xaman fixture bundle.
+- Acceptance: Repair the pre-existing fixture validation failures discovered by WALPROC-027. Deterministically regenerate the wallet fixture digest lock for all committed fixtures and update only the stale Xaman baseline assertions so they recognize the dual WALPROC-G210 runtime and WALPROC-G020 assurance roles without weakening fixture integrity or compatibility checks.
