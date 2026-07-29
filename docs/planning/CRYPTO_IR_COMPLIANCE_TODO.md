@@ -289,7 +289,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-005 Implement Crypto IR compliance objective: Create the bounded smart-contract processor core
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
