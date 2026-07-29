@@ -2301,3 +2301,68 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 - Candidate kind: aggregate
 - Todo vector key: 86fd3f7d9b21c014
 - Acceptance: Objective scan filed this gap for CRYPTOIR-G610. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-29-cryptoir-035-objective-gap-42704aba1aba.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/contract/logic/crypto_ir/test_multichain_conformance.py, ipfs_datasets_py/docs/crypto_ir/RELEASE_AND_ROLLBACK.md), and keep the supervisor-fed backlog aligned with the objective heap.  Roll out observation and shadow modes first; promote one reviewed enforcement class at a time.
+
+## CRYPTOIR-036 Implement Crypto IR compliance objective: Define trust, authority, threat, and fail-closed policy
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: trust
+- Depends on:
+- Outputs: ipfs_datasets_py/docs/crypto_ir/THREAT_MODEL.md, ipfs_datasets_py/docs/crypto_ir/AUTHORITY_AND_POLICY.md, ipfs_datasets_py/tests/unit/logic/crypto_ir/test_policy_baseline.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/crypto_ir/test_policy_baseline.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-29-cryptoir-036-objective-gap-e765ebb9a469.md
+- Bundle: crypto-ir/trust
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/crypto-ir-trust.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G000
+- Graph depth: 1
+- Objective heap index: 0
+- Parallel lane: trust-policy
+- Conflict policy: sole owner of Crypto IR threat, authority, and baseline policy documents
+- Predicted files: ipfs_datasets_py/docs/crypto_ir/THREAT_MODEL.md, ipfs_datasets_py/docs/crypto_ir/AUTHORITY_AND_POLICY.md, ipfs_datasets_py/tests/unit/logic/crypto_ir/test_policy_baseline.py
+- Changed paths:
+- AST symbols: AnalysisAuthority PolicyAuthority TransactionVerdict EvidenceFreshness
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G010
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/3d19e19e4d618cde49bc11c70a4fd3431503532714ddb108c2c28f42c45a40ba
+- Canonical task CID: baguqeerahum6dhsnmggn4sn4chdqut6timkqguzhcto3ccgcykhufrc2ic5a
+- Semantic identity: objective-evidence-obligation/v1/e99aa012086808b51abbc88e3926acc3c3deb486dce94d23f082adc6a8ec4903
+- Acceptance subset: Documents bind the reviewed git revisions, distinguish observation, evidence, proof, monitor, heuristic, designation, policy, and authorization authority, define exact `PROVED`, `DISPROVED`, `UNKNOWN`, `UNSUPPORTED`, `INCONCLUSIVE`, `STALE`, `ERROR`, `ALLOW`, `REVIEW`, and `DENY` semantics, prohibit unbounded guilt by association and universal security claims, unsupported or stale critical inputs fail closed.
+- Preconditions: objective goal CRYPTOIR-G010 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-small
+- Token class: small
+- Estimated tokens: 0
+- Resources: cpu-small
+- Merge fate: objective/CRYPTOIR-G010
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/e99aa012086808b51abbc88e3926acc3c3deb486dce94d23f082adc6a8ec4903
+- Missing evidence: objective validation repair
+- Embedding query: crypto trust boundary proof authority sanctions legal policy fail closed threat model
+- AST query: AnalysisAuthority PolicyAuthority TransactionVerdict EvidenceFreshness
+- Surplus group: objective/CRYPTOIR-G010
+- Merge key: 944134ca4ac019ca
+- Merge family: objective/CRYPTOIR-G010
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 40f4fa821b8b99e9
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G010. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-29-cryptoir-036-objective-gap-e765ebb9a469.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Narrow evidence-bound claims are preferable to broad claims that the current models cannot prove.
