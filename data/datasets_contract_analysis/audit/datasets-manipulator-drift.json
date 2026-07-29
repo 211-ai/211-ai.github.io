@@ -1,0 +1,372 @@
+{
+  "schema": "datasets_contract_analysis/datasets-manipulator-drift@1",
+  "goal_id": "DSCON-G010",
+  "task_id": "DSCON-001",
+  "generated_at": "2026-07-29T15:18:35Z",
+  "bound_package_authority": {
+    "path": "ipfs_datasets_py",
+    "commit": "92c1eddb55b40e4de57d51545f4bcdfbf3fab645",
+    "tree": "d272fc680ff8e81c8e25cd319649ce957594af16",
+    "role": "211-AI_gitlink_package_authority"
+  },
+  "surfaces": [
+    {
+      "surface_id": "core-data-processor",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/data_processor.py",
+      "symbols": [
+        "DataProcessor"
+      ],
+      "role": "legacy_core_processor",
+      "exists": true
+    },
+    {
+      "surface_id": "core-dataset-loader",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_loader.py",
+      "symbols": [
+        "DatasetLoader"
+      ],
+      "role": "canonical_loader_candidate",
+      "exists": true
+    },
+    {
+      "surface_id": "core-dataset-saver",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_saver.py",
+      "symbols": [
+        "DatasetSaver"
+      ],
+      "role": "canonical_saver_candidate",
+      "exists": true
+    },
+    {
+      "surface_id": "core-dataset-converter",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_converter.py",
+      "symbols": [
+        "DatasetConverter"
+      ],
+      "role": "canonical_converter_candidate",
+      "exists": true
+    },
+    {
+      "surface_id": "core-dataset-manipulator",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_manipulator.py",
+      "symbols": [
+        "DatasetManipulator"
+      ],
+      "role": "planned_canonical_manipulator",
+      "exists": false
+    },
+    {
+      "surface_id": "package-dataset-manager",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
+      "symbols": [
+        "DatasetManager",
+        "ManagedDataset"
+      ],
+      "role": "legacy_mcp_dataset_manager",
+      "exists": true
+    },
+    {
+      "surface_id": "mcp-load-dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/load_dataset.py",
+      "symbols": [
+        "load_dataset"
+      ],
+      "role": "mcp_tool_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "mcp-process-dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py",
+      "symbols": [
+        "process_dataset"
+      ],
+      "role": "mcp_tool_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "mcp-save-dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py",
+      "symbols": [
+        "save_dataset"
+      ],
+      "role": "mcp_tool_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "mcp-convert-dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py",
+      "symbols": [
+        "convert_dataset_format"
+      ],
+      "role": "mcp_tool_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "kit-datasets-integration",
+      "path": "ipfs_kit_py/ipfs_kit_py/ipfs_datasets_integration.py",
+      "symbols": [
+        "load_dataset"
+      ],
+      "role": "cross_package_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "accelerate-native-dataset-tools",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/mcp_server/tools/dataset_tools/native_dataset_tools.py",
+      "symbols": [
+        "process_dataset"
+      ],
+      "role": "cross_package_adapter",
+      "exists": true
+    },
+    {
+      "surface_id": "kit-duplicate-dataset-manager-ai-ml",
+      "path": "ipfs_kit_py/ipfs_kit_py/ai_ml_integration.py",
+      "symbols": [
+        "DatasetManager"
+      ],
+      "role": "shadow_definition",
+      "exists": true
+    },
+    {
+      "surface_id": "kit-duplicate-dataset-manager-mcp",
+      "path": "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_manager.py",
+      "symbols": [
+        "DatasetManager"
+      ],
+      "role": "shadow_definition",
+      "exists": true
+    },
+    {
+      "surface_id": "kit-duplicate-dataset-manager-mgmt",
+      "path": "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_management/manager.py",
+      "symbols": [
+        "DatasetManager"
+      ],
+      "role": "shadow_definition",
+      "exists": true
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "DSCON-DRIFT-001",
+      "category": "mock-success",
+      "severity": "high",
+      "symbol": "ManagedDataset.save_async / ManagedDataset.save",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
+      "summary": "save_async/save return fabricated location/size without writing data; comments label the path as 'Mock successful save'.",
+      "evidence": [
+        "Mock successful save comments at save_async and save",
+        "Returns location/size/format without persistence effects"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-002",
+      "category": "mock-success",
+      "severity": "high",
+      "symbol": "DatasetManager.get_dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
+      "summary": "On load failure, falls back to an in-memory mock dataset and presents it as a managed dataset without failing closed.",
+      "evidence": [
+        "Fallback: return a minimal mock dataset for testing/dev environments"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-003",
+      "category": "mock-success",
+      "severity": "high",
+      "symbol": "process_dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py",
+      "summary": "Process operations are mock implementations that invent record counts (default mock count 100) instead of applying real transforms.",
+      "evidence": [
+        "return 100  # Default mock count",
+        "Process operations (mock implementation for now)"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-004",
+      "category": "mock-success",
+      "severity": "high",
+      "symbol": "convert_dataset_format",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py",
+      "summary": "Falls back to a mock conversion response with fabricated num_records=100 and conversion_method=mock on failure.",
+      "evidence": [
+        "Using mock conversion response",
+        "num_records: 100",
+        "conversion_method: mock"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-005",
+      "category": "mock-success",
+      "severity": "medium",
+      "symbol": "save_dataset",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py",
+      "summary": "Direct data path fabricates mock_dataset_* identifiers instead of persisting through the canonical saver contract.",
+      "evidence": [
+        "dataset_id = f\"mock_dataset_{hash(str(dataset_data))}\""
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-006",
+      "category": "nondeterministic-identity",
+      "severity": "medium",
+      "symbol": "save_dataset mock dataset_id",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py",
+      "summary": "Identity is derived from Python hash() of stringified data, which is process-salted and nondeterministic across interpreters.",
+      "evidence": [
+        "hash(str(dataset_data)) used for dataset_id"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-007",
+      "category": "nondeterministic-identity",
+      "severity": "medium",
+      "symbol": "dataset serialization / processors",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/processors/serialization/dataset_serialization.py",
+      "summary": "Dataset serialization paths use uuid/random/datetime.now for identity rather than content-addressed CIDs.",
+      "evidence": [
+        "uuid / random / datetime.now usage in dataset serialization"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-008",
+      "category": "duplicate-definition",
+      "severity": "high",
+      "symbol": "DatasetManager",
+      "path": "multi",
+      "summary": "DatasetManager is defined in ipfs_datasets_py and three distinct ipfs_kit_py modules, creating shadowed owners across packages.",
+      "evidence": [
+        "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
+        "ipfs_kit_py/ipfs_kit_py/ai_ml_integration.py",
+        "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_manager.py",
+        "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_management/manager.py"
+      ],
+      "status": "open",
+      "path_verified": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-009",
+      "category": "missing-import",
+      "severity": "high",
+      "symbol": "DatasetManipulator",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_manipulator.py",
+      "summary": "Canonical DatasetManipulator module is absent; no importable DatasetManipulator symbol exists in the selected package tree.",
+      "evidence": [
+        "path does not exist at freeze time",
+        "rg DatasetManipulator across packages returned no production refs"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": false
+    },
+    {
+      "finding_id": "DSCON-DRIFT-010",
+      "category": "missing-import",
+      "severity": "medium",
+      "symbol": "core_operations package surface",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/core_operations/",
+      "summary": "Loader/saver/converter exist, but dataset_contracts and dataset_manipulator modules required by later objectives are missing.",
+      "evidence": [
+        "present: dataset_loader.py, dataset_saver.py, dataset_converter.py, data_processor.py",
+        "missing: dataset_manipulator.py, dataset_contracts.py"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-011",
+      "category": "weak-test",
+      "severity": "medium",
+      "symbol": "dataset tools unit tests",
+      "path": "ipfs_datasets_py/tests/mcp/unit/test_dataset_tools.py",
+      "summary": "Existing dataset tool tests and migration generators rely on MagicMock/patch success paths and do not refute mock-success or require content-addressed receipts.",
+      "evidence": [
+        "tests/migration_tests/_test_generator_for_dataset_tools.py uses MagicMock",
+        "no contract baseline tests for manipulator equivalence at freeze"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-012",
+      "category": "weak-test",
+      "severity": "medium",
+      "symbol": "DatasetManager gherkin stubs",
+      "path": "ipfs_datasets_py/tests/unit/test_stubs_from_gherkin/test_dataset_manager.py",
+      "summary": "Gherkin-generated DatasetManager stubs do not exercise real persistence or fail on mock success.",
+      "evidence": [
+        "stub/gherkin test surface without hermetic persistence assertions"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-013",
+      "category": "revision-mismatch-risk",
+      "severity": "high",
+      "symbol": "package authority vs Hallucinate vs home checkout",
+      "path": "external",
+      "summary": "Three live ipfs_datasets_py revisions exist: 211-AI gitlink, Hallucinate runtime copy (8dc4f93e\u2026), and home standalone (6672d6924\u2026). Contracts must bind a single selected authority.",
+      "evidence": [
+        "plan documents Hallucinate 8dc4f93e vs home 6672d6924 divergence",
+        "source-roots package_authority selects 211-AI gitlink only"
+      ],
+      "status": "open",
+      "path_verified": true
+    }
+  ],
+  "finding_categories": [
+    "duplicate-definition",
+    "missing-import",
+    "mock-success",
+    "nondeterministic-identity",
+    "revision-mismatch-risk",
+    "weak-test"
+  ],
+  "required_finding_categories": [
+    "duplicate-definition",
+    "missing-import",
+    "mock-success",
+    "nondeterministic-identity",
+    "weak-test"
+  ],
+  "acceptance_coverage": {
+    "reproduces_mock_success": true,
+    "reproduces_nondeterministic_identity": true,
+    "reproduces_duplicate_definition": true,
+    "reproduces_missing_import": true,
+    "reproduces_weak_test": true,
+    "all_required_categories_present": true,
+    "bound_to_selected_package_authority": true
+  },
+  "blockers": [],
+  "notes": [
+    "Inventory only; no production refactors in DSCON-G010.",
+    "Repair is deferred to dataset manipulator / adapter objectives."
+  ]
+}
