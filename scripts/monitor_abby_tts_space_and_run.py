@@ -43,6 +43,7 @@ class PhaseProgress:
     complete: bool
     stop_reason: str
     retry_after: str
+    updated_at: str = ""
 
 
 def timestamp_label() -> str:
@@ -119,6 +120,30 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=30.0,
         help="Seconds to wait before relaunching the wrapper when the backlog is still incomplete.",
+    )
+    parser.add_argument(
+        "--max-consecutive-wrapper-failures",
+        type=int,
+        default=int(os.getenv("ABBY_TTS_MAX_CONSECUTIVE_WRAPPER_FAILURES", "3") or "3"),
+        help="Stop after this many non-quota wrapper exits without checkpoint progress; 0 is unbounded.",
+    )
+    parser.add_argument(
+        "--quota-retry-fallback-seconds",
+        type=float,
+        default=float(os.getenv("ABBY_TTS_QUOTA_RETRY_FALLBACK_SECONDS", "300") or "300"),
+        help="Delay when a quota failure has no parseable state.retryAfter.",
+    )
+    parser.add_argument(
+        "--quota-retry-minimum-seconds",
+        type=float,
+        default=float(os.getenv("ABBY_TTS_QUOTA_RETRY_MINIMUM_SECONDS", "60") or "60"),
+        help="Minimum relaunch delay after a quota failure.",
+    )
+    parser.add_argument(
+        "--quota-retry-grace-seconds",
+        type=float,
+        default=float(os.getenv("ABBY_TTS_QUOTA_RETRY_GRACE_SECONDS", "15") or "15"),
+        help="Extra delay after the provider's advertised quota reset time.",
     )
     parser.add_argument("--refresh-input-manifests", dest="refresh_input_manifests", action="store_true", default=True)
     parser.add_argument("--no-refresh-input-manifests", dest="refresh_input_manifests", action="store_false")
@@ -296,6 +321,10 @@ def write_monitor_plan(plan: MonitorPlan, args: argparse.Namespace) -> None:
         "maxRestarts": args.max_restarts,
         "spaceSleepTimeSeconds": args.space_sleep_time_seconds,
         "wrapperRelaunchDelaySeconds": args.wrapper_relaunch_delay_seconds,
+        "maxConsecutiveWrapperFailures": args.max_consecutive_wrapper_failures,
+        "quotaRetryFallbackSeconds": args.quota_retry_fallback_seconds,
+        "quotaRetryMinimumSeconds": args.quota_retry_minimum_seconds,
+        "quotaRetryGraceSeconds": args.quota_retry_grace_seconds,
         "wrapperCommand": list(plan.wrapper_command),
     }
     plan.monitor_plan_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -354,6 +383,7 @@ def phase_progress_statuses(args: argparse.Namespace, *, specs: Sequence[Any] | 
                 complete=complete,
                 stop_reason=str(state_payload.get("stopReason") or "").strip(),
                 retry_after=str(state_payload.get("retryAfter") or "").strip(),
+                updated_at=str(state_payload.get("updatedAt") or "").strip(),
             )
         )
     return tuple(statuses)
@@ -361,6 +391,11 @@ def phase_progress_statuses(args: argparse.Namespace, *, specs: Sequence[Any] | 
 
 def backlog_complete(statuses: Sequence[PhaseProgress]) -> bool:
     return bool(statuses) and all(status.complete for status in statuses)
+
+
+def phase_checkpoint_advanced(before: Sequence[PhaseProgress], after: Sequence[PhaseProgress]) -> bool:
+    previous_offsets = {status.key: status.next_offset for status in before}
+    return any(status.next_offset > previous_offsets.get(status.key, 0) for status in after)
 
 
 def format_phase_progress(status: PhaseProgress) -> str:
@@ -395,6 +430,53 @@ def first_manual_repair_status(statuses: Sequence[PhaseProgress]) -> PhaseProgre
         if stop_reason_requires_manual_repair(status.stop_reason):
             return status
     return None
+
+
+def status_indicates_quota_wait(status: PhaseProgress) -> bool:
+    if status.complete:
+        return False
+    if status.retry_after:
+        return True
+    normalized = status.stop_reason.casefold()
+    return "quota" in normalized and any(marker in normalized for marker in ("exceed", "exhaust", "rate limit"))
+
+
+def pending_quota_retry_decision(
+    statuses: Sequence[PhaseProgress],
+    *,
+    now_epoch: float,
+    fallback_seconds: float,
+    minimum_seconds: float,
+    grace_seconds: float,
+    force_fallback: bool = False,
+) -> Any | None:
+    """Return the latest provider retry deadline among pending phases."""
+    from scripts.retry_after_policy import retry_after_decision_from_state
+
+    candidates = [
+        retry_after_decision_from_state(
+            {"retryAfter": status.retry_after, "updatedAt": status.updated_at},
+            now_epoch=now_epoch,
+            fallback_seconds=fallback_seconds,
+            minimum_seconds=minimum_seconds,
+            grace_seconds=grace_seconds,
+        )
+        for status in statuses
+        if status_indicates_quota_wait(status)
+    ]
+    if not candidates and force_fallback:
+        candidates.append(
+            retry_after_decision_from_state(
+                {},
+                now_epoch=now_epoch,
+                fallback_seconds=fallback_seconds,
+                minimum_seconds=minimum_seconds,
+                grace_seconds=grace_seconds,
+            )
+        )
+    if not candidates:
+        return None
+    return max(candidates, key=lambda decision: decision.retry_at_epoch)
 
 
 def build_log_tail(api: Any, repo_id: str, *, build: bool, line_limit: int = 40) -> list[str]:
@@ -520,6 +602,14 @@ def main() -> None:
         raise ValueError("--max-monitor-seconds must be at least 0")
     if args.wrapper_relaunch_delay_seconds < 0:
         raise ValueError("--wrapper-relaunch-delay-seconds must be at least 0")
+    if args.max_consecutive_wrapper_failures < 0:
+        raise ValueError("--max-consecutive-wrapper-failures must be at least 0")
+    if args.quota_retry_fallback_seconds < 0:
+        raise ValueError("--quota-retry-fallback-seconds must be at least 0")
+    if args.quota_retry_minimum_seconds < 0:
+        raise ValueError("--quota-retry-minimum-seconds must be at least 0")
+    if args.quota_retry_grace_seconds < 0:
+        raise ValueError("--quota-retry-grace-seconds must be at least 0")
 
     from scripts.upload_hf_abby_tts_dataset import hf_token
     from huggingface_hub import HfApi
@@ -544,6 +634,7 @@ def main() -> None:
     last_log_signature = ""
     restart_count = 0
     last_wake_request_at = 0.0
+    consecutive_wrapper_failures = 0
 
     while True:
         phase_statuses = phase_progress_statuses(args)
@@ -590,6 +681,7 @@ def main() -> None:
             else:
                 print("Space contract is ready:")
                 print(json.dumps(contract, indent=2))
+                phase_statuses_before_wrapper = phase_statuses
                 wrapper_returncode = run_wrapper(plan)
                 phase_statuses = phase_progress_statuses(args)
                 if backlog_complete(phase_statuses):
@@ -607,12 +699,47 @@ def main() -> None:
                 for status in phase_statuses:
                     if not status.complete:
                         print(f"- {format_phase_progress(status)}")
+                relaunch_delay_seconds = args.wrapper_relaunch_delay_seconds
+                quota_decision = pending_quota_retry_decision(
+                    phase_statuses,
+                    now_epoch=time.time(),
+                    fallback_seconds=args.quota_retry_fallback_seconds,
+                    minimum_seconds=args.quota_retry_minimum_seconds,
+                    grace_seconds=args.quota_retry_grace_seconds,
+                    force_fallback=wrapper_returncode == 75,
+                )
+                if quota_decision is not None:
+                    consecutive_wrapper_failures = 0
+                    relaunch_delay_seconds = max(relaunch_delay_seconds, quota_decision.delay_seconds)
+                    print(
+                        f"HF quota backoff: waiting {relaunch_delay_seconds:.1f}s before relaunch "
+                        f"(provider retry at {quota_decision.retry_at_utc}, "
+                        f"retryAfter={quota_decision.raw_value!r}, fallback={quota_decision.used_fallback})"
+                    )
+                elif phase_checkpoint_advanced(phase_statuses_before_wrapper, phase_statuses):
+                    consecutive_wrapper_failures = 0
+                else:
+                    consecutive_wrapper_failures += 1
+                    failure_limit = int(args.max_consecutive_wrapper_failures)
+                    failure_limit_label = "unbounded" if failure_limit == 0 else str(failure_limit)
+                    print(
+                        f"Non-quota wrapper exit without checkpoint progress: "
+                        f"{consecutive_wrapper_failures}/{failure_limit_label}"
+                    )
+                    if failure_limit > 0 and consecutive_wrapper_failures >= failure_limit:
+                        pending = "; ".join(
+                            format_phase_progress(status) for status in phase_statuses if not status.complete
+                        )
+                        raise RuntimeError(
+                            f"Wrapper failed {consecutive_wrapper_failures} consecutive times without checkpoint "
+                            f"progress (last exit code {wrapper_returncode}). Pending phases: {pending}"
+                        )
                 last_progress_at = time.time()
                 last_signature = ""
                 last_log_poll_at = 0.0
                 last_log_signature = ""
-                if args.wrapper_relaunch_delay_seconds > 0:
-                    time.sleep(args.wrapper_relaunch_delay_seconds)
+                if relaunch_delay_seconds > 0:
+                    time.sleep(relaunch_delay_seconds)
                 continue
 
         elapsed = time.time() - started_at

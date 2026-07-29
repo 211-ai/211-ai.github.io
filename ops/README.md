@@ -13,3 +13,9 @@ This directory holds local or sandbox operational files that should not live at 
 - `sandbox/nginx_test.pid` — local nginx PID placeholder
 
 These files remain tracked as historical sandbox references, but new operational scratch files should be added here instead of at repository root.
+
+## Service templates
+
+- `systemd/user/abby-voice-publicus-regeneration.service` — persistent,
+  quota-aware Publicus IndexTTS regeneration. See
+  `docs/runbooks/ABBY_VOICE_PUBLICUS_REGENERATION_SERVICE.md`.
