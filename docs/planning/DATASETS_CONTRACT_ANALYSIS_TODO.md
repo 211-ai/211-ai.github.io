@@ -3318,3 +3318,19 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
 - Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-059-dependency-guardrail.md
 - Acceptance: Dependency guardrail filed this because DSCON-017 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-059-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## DSCON-060 Resolve dirty main checkout blocking 1 worktree merges
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: operator_reconciliation_required
+- Priority: P1
+- Track: ops
+- Fingerprint: 1e307ab62a1c34915dcc525857a339bf77e2c7d8
+- Dedupe key: reconciliation_guardrail:main_checkout_dirty
+- Depends on:
+- Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-060-reconciliation-1e307ab62a1c.md
+- Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by main_checkout_dirty. This task is intentionally operator-gated because unknown dirty checkout content must not be committed, stashed, or discarded automatically. Use evidence and the machine-readable reconciliation plan in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-060-reconciliation-1e307ab62a1c.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
