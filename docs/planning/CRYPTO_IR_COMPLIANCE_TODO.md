@@ -1004,7 +1004,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-016 Implement Crypto IR compliance objective: Implement the EVM contract frontend and deployment semantics
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
