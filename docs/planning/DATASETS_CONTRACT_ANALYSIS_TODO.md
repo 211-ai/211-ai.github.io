@@ -3542,7 +3542,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-064 Implement datasets symbolic contract objective: Pin hermetic toolchains, budgets, and no-network execution
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -3747,3 +3747,68 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Candidate kind: validation_gate
 - Todo vector key: bface3f3b8cd423f
 - Acceptance: Objective scan filed this gap for DSCON-G020. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-067-objective-gap-9b99fe4ed887.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Hash unsupported blobs without pretending to parse or prove them.
+
+## DSCON-068 Implement datasets symbolic contract objective: Prove ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_g... for Add lossless typed objective admission
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: supervisor-governance
+- Depends on:
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_goal_quality.py ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-068-objective-gap-1a9c1c289727.md
+- Bundle: datasets-contract/supervisor-governance
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-supervisor-governance.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G055
+- Graph depth: 2
+- Objective heap index: 40
+- Parallel lane: objective-schema
+- Conflict policy: sole owner of the typed objective compatibility projection, sidecar schema, and admission report
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Changed paths:
+- AST symbols: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G733
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/f463a0c41b5b28fc745997d4ba42a2c3a29250afc50a9ae7d0da364e027cafdc
+- Canonical task CID: baguqeera6rr2bra3lmupy5czs7kluqvcyorjeufpyufjvz6q3i3e4at4v7oa
+- Semantic identity: objective-evidence-obligation/v1/4c96499c254b5c4ae22dedb070d368fce6086c11484c42967d80781ea0b8c4dd
+- Acceptance subset: objective validation repair
+- Preconditions: objective goal DSCON-G733 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/DSCON-G733
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/4c96499c254b5c4ae22dedb070d368fce6086c11484c42967d80781ea0b8c4dd
+- Missing evidence: objective validation repair
+- Embedding query: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- AST query: ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Surplus group: objective/DSCON-G733
+- Merge key: b43ad6b54be37266
+- Merge family: objective/DSCON-G733
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: 41d2301819f25a83
+- Acceptance: Objective scan filed this gap for DSCON-G733. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-068-objective-gap-1a9c1c289727.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
