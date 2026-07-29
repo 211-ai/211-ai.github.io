@@ -516,12 +516,22 @@
     "evidence_term": "objective validation repair",
     "task_id": "DSCON-062",
     "command": "python scripts/contract_analysis/audit_scope.py --check",
+    "completion_signal": "exit_code_0",
     "authority_mode": "selected_authority_objects_external_evidence",
     "validated_artifacts": [
       "scripts/contract_analysis/audit_scope.py",
       "data/datasets_contract_analysis/audit/source-roots.json",
       "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
       "data/datasets_contract_analysis/audit/ownership-map.md"
+    ],
+    "proof_obligations": [
+      "selected_commit_tree_content_hashes",
+      "direct_gitlinks_from_pinned_superproject_tree",
+      "recursive_gitlinks_from_pinned_package_trees",
+      "required_drift_categories_from_pinned_blobs",
+      "external_roots_recorded_with_path_commit_tree_or_explicit_absence",
+      "documentation_references_rejected_as_authority_without_verified_git_identity",
+      "unresolved_authority_fails_closed"
     ],
     "fail_closed": true
   },
