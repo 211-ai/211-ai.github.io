@@ -1717,7 +1717,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-027 Implement wallet processor migration objective: Prove cross-chain conformance and differential compatibility
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
