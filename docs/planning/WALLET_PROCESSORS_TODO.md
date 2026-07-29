@@ -2437,3 +2437,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Completion authority: local
 - Acceptance subset: World ID verification accepts only policy-approved HTTPS endpoints, rejects private/link-local/metadata DNS answers and unsafe redirects, enforces finite request/response/decompression/retry/deadline bounds, exposes only endpoint fingerprints in errors/config views, and never represents or serializes a raw nullifier.
 - Acceptance: Repair WP-NET-004 and the World ID portion of WP-SEC-001 from WALPROC-028. Reuse the shared EndpointPolicy and bounded transport where practical, sanitize upstream exception chaining, and wrap verification results so raw identity values cannot cross repr or serialization boundaries. Add metadata-service, DNS-rebinding, redirect, oversized/compressed-body, endpoint-leak, exception-leak, and nullifier regressions.
+
+## WALPROC-064 Resolve validation retry-budget failure for WALPROC-028
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049, WALPROC-060, WALPROC-061, WALPROC-062, WALPROC-063
+- Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py, data/wallet_processor_migration/agent_supervisor/runtime/discovery
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in WALPROC-028. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release WALPROC-028 from strategy blocked_tasks.
