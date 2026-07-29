@@ -1326,7 +1326,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-021 Implement wallet processor migration objective: Implement Xaman wallet and payload processing over XRPL
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
