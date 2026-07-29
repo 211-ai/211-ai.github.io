@@ -1589,7 +1589,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-025 Implement Crypto IR compliance objective: Add sandboxed simulation, differential analysis, and counterexamples
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
