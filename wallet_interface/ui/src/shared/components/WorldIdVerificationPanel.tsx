@@ -3,7 +3,14 @@ import { RefreshCw, ShieldCheck, UserCheck } from "lucide-react";
 import { IDKitRequestWidget, proofOfHuman, type IDKitResult } from "@worldcoin/idkit";
 import { Badge, Button, StatusBanner } from "./ui";
 import { readRuntimeWorldIdConfig } from "../lib/runtimeConfig";
-import type { WalletApiConfig } from "../../services/walletApi";
+import {
+  createWorldIdRpSignature,
+  isWorldIdWalletApiError,
+  loadWorldIdConfig as fetchWorldIdConfig,
+  loadWorldIdStatus,
+  registerWorldIdVerification,
+  type WalletApiConfig
+} from "../../services/walletApi";
 
 const IDKitErrorCodes = {
   Cancelled: "cancelled",
@@ -88,20 +95,6 @@ type PanelIssue = {
   source: "idkit" | "backend" | "signature" | "config" | "user";
 };
 
-class WorldIdApiError extends Error {
-  status: number;
-  detail: string;
-  code?: string;
-
-  constructor(status: number, detail: string, code?: string) {
-    super(detail);
-    this.name = "WorldIdApiError";
-    this.status = status;
-    this.detail = detail;
-    this.code = code;
-  }
-}
-
 export function WorldIdVerificationPanel({
   apiConfig,
   onAuditRefresh,
@@ -147,9 +140,7 @@ export function WorldIdVerificationPanel({
       setWorldIdStatus(null);
       return null;
     }
-    const url = walletUrl(apiConfig, "/world-id/status");
-    url.searchParams.set("actor_did", apiConfig.actorDid);
-    const payload = await fetchJson(url, "World ID status");
+    const payload = await loadWorldIdStatus(apiConfig);
     const nextStatus = normalizeStatus(payload);
     setWorldIdStatus(nextStatus);
     return nextStatus;
@@ -161,7 +152,7 @@ export function WorldIdVerificationPanel({
       setWorldIdConfig(nextConfig);
       return nextConfig;
     }
-    const payload = await fetchJson(walletUrl(apiConfig, "/world-id/config"), "World ID config");
+    const payload = await fetchWorldIdConfig(apiConfig);
     const nextConfig = normalizeConfig(payload, runtimeConfig);
     setWorldIdConfig(nextConfig);
     return nextConfig;
@@ -232,15 +223,7 @@ export function WorldIdVerificationPanel({
         return;
       }
 
-      const payload = await fetchJson(walletUrl(apiConfig, "/world-id/rp-signature"), "World ID RP signature", {
-        body: JSON.stringify({
-          actor_did: apiConfig.actorDid,
-          action: latestConfig.action,
-          signal_context: "wallet_binding"
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST"
-      });
+      const payload = await createWorldIdRpSignature(apiConfig, { action: latestConfig.action });
       const request = normalizeSignature(payload, latestConfig, apiConfig);
       if (request.rpContext.expires_at <= Math.floor(Date.now() / 1000) + 5) {
         const nextIssue: PanelIssue = {
@@ -280,16 +263,8 @@ export function WorldIdVerificationPanel({
 
     setPhase("verifying");
     try {
-      await fetchJson(walletUrl(apiConfig, "/world-id/verifications"), "World ID verification", {
-        body: JSON.stringify({
-          actor_did: apiConfig.actorDid,
-          action: activeRequest.action,
-          signal: activeRequest.signal,
-          idkit_response: result,
-          idkit_payload: result
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST"
+      await registerWorldIdVerification(apiConfig, {
+        idkitPayload: result as unknown as Record<string, unknown>
       });
       setPhase("refreshing");
       await Promise.all([
@@ -475,32 +450,6 @@ export function WorldIdVerificationPanel({
   );
 }
 
-function walletUrl(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">, path: string): URL {
-  return new URL(`/wallets/${config.walletId}${path}`, normalizedBaseUrl(config.apiBaseUrl));
-}
-
-function normalizedBaseUrl(value: string): string {
-  const raw = value.trim();
-  if (!raw || raw === "same-origin") {
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}/`;
-    }
-    return "/";
-  }
-  return raw.endsWith("/") ? raw : `${raw}/`;
-}
-
-async function fetchJson(url: URL, label: string, init?: RequestInit): Promise<unknown> {
-  const response = await fetch(url, init);
-  const text = await response.text();
-  const payload = text ? safeParseJson(text) : null;
-  if (!response.ok) {
-    const detail = extractErrorDetail(payload) || response.statusText || `${label} failed`;
-    throw new WorldIdApiError(response.status, detail, extractErrorCode(payload));
-  }
-  return payload;
-}
-
 function configFromRuntime(runtimeConfig: ReturnType<typeof readRuntimeWorldIdConfig>): WorldIdPublicConfig {
   return {
     enabled: runtimeConfig.enabled,
@@ -671,7 +620,7 @@ function classifySignatureIssue(error: unknown): PanelIssue {
 
 function classifyBackendIssue(error: unknown, fallback: string): PanelIssue {
   const detail = errorMessage(error) || fallback;
-  if (error instanceof WorldIdApiError && error.status === 409) {
+  if (isWorldIdWalletApiError(error) && error.status === 409) {
     return {
       phase: "replay",
       tone: "warning",
@@ -752,34 +701,7 @@ function formatDate(value: string): string {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-function safeParseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return null;
-  }
-}
-
-function extractErrorDetail(payload: unknown): string {
-  const record = asRecord(payload);
-  const detail = record.detail;
-  if (typeof detail === "string") return detail;
-  const detailRecord = asRecord(detail);
-  return (
-    readString(record, "message", "error", "reason") ||
-    readString(detailRecord, "message", "error", "reason", "detail") ||
-    ""
-  );
-}
-
-function extractErrorCode(payload: unknown): string | undefined {
-  const record = asRecord(payload);
-  const detailRecord = asRecord(record.detail);
-  return readString(record, "code", "error_code") || readString(detailRecord, "code", "error_code");
-}
-
 function errorMessage(error: unknown): string {
-  if (error instanceof WorldIdApiError) return error.detail;
   if (error instanceof Error) return error.message;
   return typeof error === "string" ? error : "";
 }
