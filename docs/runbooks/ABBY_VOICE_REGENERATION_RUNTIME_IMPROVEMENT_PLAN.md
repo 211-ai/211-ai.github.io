@@ -46,6 +46,47 @@ Date: 2026-07-28
   regressions, 59 broader pipeline/distributed/safety/release tests, and 6
   Whisper-backed multi-turn scenarios.
 
+## AUTO-033 final local integration receipt
+
+Status: **passed on 2026-07-29**.
+
+The integration subject was root commit
+`495b73b3b8d48132254ef2b3d957a676aef80f9f`, Git tree
+`1825f6a13bc2565172917d45ddd316daad6b5b7e`, with package gitlinks
+`ipfs_accelerate_py@b18442ae36aa98fdfcb68e380954cc6894bd1751` and
+`ipfs_datasets_py@98aafd10844988bb51c7a5fd81e2c722df4c43b4`.
+The implementation commits for AUTO-034 through AUTO-038 are all ancestors of
+that exact root commit. The authoritative aggregate mapping is
+`data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md`.
+
+The declared local gate passed with **69 passed, 3 skipped** in 4.32 seconds:
+
+```text
+python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py
+```
+
+The three skips are optional acoustic tests requiring the canonical staged MP3
+corpus and a locally cached `openai/whisper-base`; they are not failures or
+silent substitutions. The always-run blocking corpus recorded 8/12 exact audio
+hits and 4/12 misses (66.67% / 33.33%), 12/12 returned-audio transcript
+matches, zero terminal misses, zero WER/CER, and 10,000 basis points for both
+normalized similarity and content-word coverage.
+
+The existing real-Whisper canary receipt was re-read without mutation from the
+parent staging area. Its SHA-256 is
+`b317e75bd272a8e77e33084d734ba2af34e2148257464e8c19659b5eda42cb25`;
+it records 12/12 passed with minimum normalized similarity 8,942 basis points,
+minimum content-word coverage 8,000, maximum WER 2,000, no forbidden
+`negative` detection, and `remote_writes=false`.
+
+The validation was run with Hugging Face credentials removed, Hub/datasets/
+transformers offline modes enabled, and all outbound proxies pointed at closed
+loopback port 9. A second identical test selection under
+`strace -f -e trace=connect` passed 69/69 runnable tests and emitted **zero
+`connect(2)` calls**. Therefore the gate made zero remote Hugging Face reads,
+writes, commits, uploads, or pointer changes. Remote publication remains a
+separate G021 operator action.
+
 ## Supervisor start result
 
 The canonical bundle index now includes `ABBY-VOICE-G030` through
