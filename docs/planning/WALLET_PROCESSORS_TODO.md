@@ -1456,7 +1456,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-023 Implement wallet processor migration objective: Cut 211-AI over to a thin Worldcoin wrapper
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
