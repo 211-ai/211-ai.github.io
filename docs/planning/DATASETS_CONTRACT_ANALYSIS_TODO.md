@@ -164,6 +164,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: bootstrap
 - Depends on: DSCON-001
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/repository.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/coverage.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_repository_manifest.py
+- Evidence outputs: data/datasets_contract_analysis/manifests/repository-root.json, data/datasets_contract_analysis/manifests/coverage.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_repository_manifest.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-003-objective-gap-4f91244e4ecb.md
@@ -185,8 +186,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G020
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/94e99704526e7acf5cacf719e38b8bd901fd3e8013504d7a3f27bbec0768dfd6
-- Canonical task CID: baguqeerastuzobcsnz5m6xfm64m6hc4l3ea72puacnie26r7e656yb3i37la
+- Canonical task key: task/v1/425253743e00b9420ff70d9c54be45b02a4be6decb695cf83c5e69135deb9345
+- Canonical task CID: baguqeeraijjfg5b6ac4ued7xbwofjpsfwavexzw6znuvz6b4lzurgxplsncq
 - Semantic identity: objective-evidence-obligation/v1/f56244a68715f27b32683260e3b53b8ff915bc8dcefee0b3c5b91b6b8f2dbd96
 - Acceptance subset: Every tracked object in every selected clean tree is counted exactly once per logical root, recursive mirrors are cycle-safe, unsupported, generated, vendored, binary, archived, oversized, missing, and parseable paths remain explicit, shard counts sum to the root count, dirty or missing inputs yield `INCOMPLETE_SCAN`, two runs produce identical roots.
 - Preconditions: objective goal DSCON-G020 is schedulable
@@ -554,6 +555,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: supervisor-governance
 - Depends on: DSCON-002, DSCON-008
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/goal_quality.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/objective_tracker.py, ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
+- Evidence outputs: data/datasets_contract_analysis/agent_supervisor/goal-quality.json
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_goal_quality.py ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_goal_quality.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-009-objective-gap-e6f55a605605.md
@@ -575,8 +577,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G055
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/f88aaf9c828bfeac16abdd7b25f93935142d0d135e878558f78e6740e305feba
-- Canonical task CID: baguqeera7cfk7hecrp7kyfvl3v5sl6jzgukc2ditl2dykwhxrztubyyf725a
+- Canonical task key: task/v1/7c31a5f73feaf26429fa911600d8b9fe4b1e6d657b504f744247f0c42c830a31
+- Canonical task CID: baguqeerapqy2l5z75lzgikp2selabwfz7zfr43lfpnie65cci7ymiledbiyq
 - Semantic identity: objective-evidence-obligation/v1/271f44c7162aec1148efc311c0546e6f56e9344436bac0e5ae3d768a27004e15
 - Acceptance subset: The current heap round trips through one versioned typed representation, every criterion has a nonempty completion signal plus declared producer and validation bindings, every producer has a reviewed kind, output schema, and authority, finite freshness/resource/refinement bounds are preserved, uncertainty and unsupported behavior retain disposition/fallback, strict lint has no error-severity debt, compatibility behavior remains covered, launcher reports remain bound to the exact heap CID.
 - Preconditions: objective goal DSCON-G055 is schedulable
@@ -1919,6 +1921,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: datasets-pilot
 - Depends on: DSCON-023, DSCON-026, DSCON-028, DSCON-G250
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/load_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/__init__.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/client.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/fastapi_service.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/simple_server.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/hierarchical_tool_manager.py, ipfs_kit_py/ipfs_kit_py/ipfs_datasets_integration.py, ipfs_kit_py/ipfs_kit_py/vfs_bucket_graphrag_integration.py, data/datasets_contract_analysis/pilot/dataset-manipulator-contracts.json, data/datasets_contract_analysis/pilot/dataset-manipulator-proof-root.json, ipfs_datasets_py/tests/contract/software_contracts/test_dataset_manipulator_proofs.py
+- Evidence outputs: ipfs_datasets_py/tests/contract/core_operations/test_dataset_entrypoint_equivalence.py, ipfs_kit_py/tests/test_ipfs_datasets_integration_contract.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/core_operations/test_dataset_entrypoint_equivalence.py ipfs_kit_py/tests/test_ipfs_datasets_integration_contract.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-030-objective-gap-83e18e273e02.md
@@ -1940,8 +1943,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G330
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/07b8ca6fc11b9908a7569e3135e59325a9a19bd91fc46a803a189bc746941011
-- Canonical task CID: baguqeeraa64mu36bdomqrj2wtyytlzmtewu2dg6zd7cgvab2dcn4oruucaiq
+- Canonical task key: task/v1/a9948fe402f895ce8106f4b094316c26d4bbecc7ad1f783351ae097d443e6a1a
+- Canonical task CID: baguqeeravgki7zac7ck45aig6syjimlme3klx3ghvupxqm2rvyex2rb6nina
 - Semantic identity: objective-evidence-packet/v1/a696fe8b0e4dbe9bec14dcd21121a677426647ca7b510e8ec7868bdc9046a56d
 - Acceptance subset: Direct Python/MCP-tool/client/HTTP adapters return equivalent receipts and errors, `dataset_tools/__init__.py`, `simple_server.py`, and `hierarchical_tool_manager.py` expose and dispatch the same four load/process/save/convert contracts, wrappers contain no manipulation, identity, fabricated counts, mock persistence, or success fallback, kit validates CIDs through the canonical API and observes real artifacts, GraphRAG integration uses actual current method signatures, Swissknife descriptor expectations are checked without mutating its repository, optional dependency absence fails or degrades exactly as declared, no CLI equivalence is claimed until a separately reviewed CLI exists., Every pilot entrypoint has a current receipt, known baseline violations become refuted before repair and proved-repaired or explicitly unsupported after repair, direct/MCP-tool/client/HTTP/kit witnesses agree, Swissknife descriptor expectations are checked as read-only evidence, no unknown or incomplete result is presented as repaired and no CLI equivalence is claimed.
 - Preconditions: objective goal DSCON-G330 is schedulable, objective goal DSCON-G340 is schedulable
@@ -1984,6 +1987,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: datasets-pilot
 - Depends on: DSCON-023
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/load_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/__init__.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/client.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/fastapi_service.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/simple_server.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/hierarchical_tool_manager.py, ipfs_kit_py/ipfs_kit_py/ipfs_datasets_integration.py, ipfs_kit_py/ipfs_kit_py/vfs_bucket_graphrag_integration.py
+- Evidence outputs: ipfs_datasets_py/tests/contract/core_operations/test_dataset_entrypoint_equivalence.py, ipfs_kit_py/tests/test_ipfs_datasets_integration_contract.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/core_operations/test_dataset_entrypoint_equivalence.py ipfs_kit_py/tests/test_ipfs_datasets_integration_contract.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-031-objective-gap-23f9ca3c9d2e.md
@@ -2005,8 +2009,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G330
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/35ceaf9b14826383d23e56c065c8884062745f62e1ad4945fea657ffbcf09834
-- Canonical task CID: baguqeeragxhk7gyuqjryhur6k3aglseiibrhix3c4gwusrp6uzl77phqta2a
+- Canonical task key: task/v1/3d16a1b95f67050486ec3fe0d0597eafa31e5ff63e4593edc7592290d85df998
+- Canonical task CID: baguqeerahulkdok7m4cqjbxmh7qnawl6v6rr4x7whzczh3ohlerjbwc57gma
 - Semantic identity: objective-evidence-obligation/v1/32f2ffe7f39e7ac6adbfdbd27de37bde35ab25efe522ff98e6bf45110e5d414c
 - Acceptance subset: Direct Python/MCP-tool/client/HTTP adapters return equivalent receipts and errors, `dataset_tools/__init__.py`, `simple_server.py`, and `hierarchical_tool_manager.py` expose and dispatch the same four load/process/save/convert contracts, wrappers contain no manipulation, identity, fabricated counts, mock persistence, or success fallback, kit validates CIDs through the canonical API and observes real artifacts, GraphRAG integration uses actual current method signatures, Swissknife descriptor expectations are checked without mutating its repository, optional dependency absence fails or degrades exactly as declared, no CLI equivalence is claimed until a separately reviewed CLI exists.
 - Preconditions: objective goal DSCON-G330 is schedulable
@@ -2439,6 +2443,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: supervisor-integration
 - Depends on: DSCON-029, DSCON-033, DSCON-009
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/repair_packet.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/task_projection.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_task_projection.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/refill_provider.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/todo_daemon/implementation_supervisor.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_refill.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/completion_gate.py, scripts/contract_analysis/refresh_completion_evidence.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
+- Evidence outputs: data/datasets_contract_analysis/policy/completion-gate-v1.json
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-038-objective-gap-e1c8c4c37958.md
@@ -2460,8 +2465,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G600
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/20848374feb61de52a4b0e7e37e5ffa3af698cb1368b752dfbda2e23e7f2bf93
-- Canonical task CID: baguqeeraeccig5h6wyo6kkslbz7dpzp7uoxwtdfrg2fxklp33ixchz7sx6jq
+- Canonical task key: task/v1/3b6abead0c2c3f59f30f1cf7a8109b8923e604b2f606c941e0dd361bfdafa593
+- Canonical task CID: baguqeerahnvl5limfq7vt4ypdt32qee3rer6mbfs6ydmsqpa3u3bx7npuwjq
 - Semantic identity: objective-evidence-packet/v1/49f16f080d78f7701d101bfa9fb1a714d697efc8df784985424131ef73116053
 - Acceptance subset: Default packets are at most 8 KiB and 2, 048 estimated input tokens, exclude unrelated files, raw secrets, repository dumps, solver floods, and absolute host paths, all references resolve and recompute, truncation is explicit, unknown/ambiguous findings route to review., One finding CID/semantic family creates one task, unchanged scans create none, changed observations update evidence without spending retries, exact paths/symbols/goals/dependencies/tests are required, unknown and manual-authority findings are non-schedulable, task IDs/CIDs are deterministic., Refill is content-addressed, bounded, cooldown/backpressure aware, objective-linked, idempotent, and disabled on incomplete authority, codebase and objective refills serialize, exhausted complete scans emit quorum receipts, scan failure leaves supervisors alive but cannot claim exhaustion., Candidate-tree mismatch, stale receipt, omitted dependant, finding recurrence, weakened contract/test, incomplete scan, and single-checker high-severity evidence fail, valid repair transitions the original finding with provenance, root worktree and gitlinks remain clean.
 - Preconditions: objective goal DSCON-G600 is schedulable, objective goal DSCON-G610 is schedulable, objective goal DSCON-G620 is schedulable, objective goal DSCON-G630 is schedulable
@@ -2699,6 +2704,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: rollout
 - Depends on: DSCON-032, DSCON-033
 - Outputs: ipfs_datasets_py/benchmarks/bench_software_contract_analysis.py, data/datasets_contract_analysis/benchmarks/scale-report.json, ipfs_datasets_py/tests/integration/logic/software_contracts/test_incremental_equivalence.py
+- Evidence outputs: data/datasets_contract_analysis/benchmarks/incremental-equivalence.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/integration/logic/software_contracts/test_incremental_equivalence.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-042-objective-gap-ecdb146d33fc.md
@@ -2720,8 +2726,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G700
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/9f239674468cff90e5d29092f7c99713a05279758cf253d96f7435a780134e15
-- Canonical task CID: baguqeerat4rzm5cgrt7zbzosscjppsmxcoqfe6lvrtzfhwlpoq22paatjykq
+- Canonical task key: task/v1/ac89b82be841c621789abe5e412c706a1a48d3ab6378cc2909856e909a3e9214
+- Canonical task CID: baguqeeravse3qk7iihdcc6e2xzpecldqnineru5lmn4mykijqvxjbgr6sika
 - Semantic identity: objective-evidence-obligation/v1/13c4f36640c207ad3e84cbb1335b0c301e98a2ef43e429e57dd3cc7b173c2c98
 - Acceptance subset: Changed-blob plus reverse-closure scan equals full-scan findings/receipts on the corpus, all shards are accounted, cache warm/cold results match, bounds stop safely, measured context reduction and false-positive/unknown rates are published, no default 8, 192-file bound is mislabeled exhaustive.
 - Preconditions: objective goal DSCON-G700 is schedulable
@@ -2764,6 +2770,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: supervisor-integration
 - Depends on: DSCON-G620
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/completion_gate.py, scripts/contract_analysis/refresh_completion_evidence.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
+- Evidence outputs: data/datasets_contract_analysis/policy/completion-gate-v1.json
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-043-objective-gap-979fd80be43b.md
@@ -2785,8 +2792,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G630
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/4435fc2d00ed6c517f694c9b260976ce5434acf14aa91a678dc93958bd59acd2
-- Canonical task CID: baguqeeraiq27ylia5vwfc73jjsnsmclwzzkdjlhrjkuruz4nze4vrpkzvtja
+- Canonical task key: task/v1/b38e6c0fb9e2daa841de4c1495ce56bb75959fb8fd42db9ce0eaee544e768299
+- Canonical task CID: baguqeerawohgyd5z4lnkqqo6jqkjltswxn2zlh5y7vbnxhha5lxfittwqkmq
 - Semantic identity: objective-evidence-obligation/v1/9271a393b203a57cb8ce2de2951046f7881d0363bd14be813dc36a57ca3f5dad
 - Acceptance subset: Candidate-tree mismatch, stale receipt, omitted dependant, finding recurrence, weakened contract/test, incomplete scan, and single-checker high-severity evidence fail, valid repair transitions the original finding with provenance, root worktree and gitlinks remain clean.
 - Preconditions: objective goal DSCON-G630 is schedulable
@@ -2959,6 +2966,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: rollout
 - Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042
 - Outputs: data/datasets_contract_analysis/scans/initial, data/datasets_contract_analysis/release/canary-report.json, data/datasets_contract_analysis/release/ratchet-policy.json, data/datasets_contract_analysis/release/repair-quality.json
+- Evidence outputs: data/datasets_contract_analysis/scans/initial/scan-receipt.json, data/datasets_contract_analysis/scans/initial/finding-root.json
 - Validation: python scripts/contract_analysis/verify_scan.py data/datasets_contract_analysis/scans/initial/scan-receipt.json
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-046-objective-gap-e7fefd4fcf21.md
@@ -2980,8 +2988,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G710
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/0dec6e00221320e8b5d3b69f44e33f625fccddc94e5d2f545b156581c760f210
-- Canonical task CID: baguqeerabxwg4abccmqornotw2pujyz7mjp4zxojjzos6vc3cvsydr3a6iia
+- Canonical task key: task/v1/131420fcfa45f14d74eecec67c7435de9e3fcadc6b3d32429482d2555df34760
+- Canonical task CID: baguqeeracmkcb7h2ixyu25hoz3dhy5bv32pd7sw4nm6tequuqljfkxpti5qa
 - Semantic identity: objective-evidence-packet/v1/d5f5da4c7df5ca5da6a4cd1f0777f66bebc967f3cdd55fb43245ad92382cddef
 - Acceptance subset: All repository and analyzer shards are accounted, source/analyzer/policy/tool roots are current, unsupported languages/features and incomplete areas are explicit, findings dedupe and map to owners, unknown/heuristic issues are review-only, the verified finding root is consumable by G620 so its serialized control lane, not an implementation worker, generates bounded ipfs_accelerate_py tasks, absence claims require complete relevant coverage., Canaries use isolated worktrees and leases, exact finding and dependant obligations are rechecked, tests/contracts are not weakened, no task loops or duplicate storms occur, token/context, false-positive, merge, retry, and rollback metrics meet policy before autonomy expands.
 - Preconditions: objective goal DSCON-G710 is schedulable, objective goal DSCON-G720 is schedulable
@@ -3024,6 +3032,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Track: rollout
 - Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042
 - Outputs: data/datasets_contract_analysis/scans/initial
+- Evidence outputs: data/datasets_contract_analysis/scans/initial/scan-receipt.json, data/datasets_contract_analysis/scans/initial/finding-root.json
 - Validation: python scripts/contract_analysis/verify_scan.py data/datasets_contract_analysis/scans/initial/scan-receipt.json
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
 - Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-047-objective-gap-bcd6e3d62486.md
@@ -3045,8 +3054,8 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Goal id: DSCON-G710
 - Completion authority: local
 - External authority blockers:
-- Canonical task key: task/v1/e1f09307e49bfbf665cb149e74328c0af4b9a27a40a29288ec827dfa1df97e6f
-- Canonical task CID: baguqeera4hyjgb7etp57mzolcsphimumbl2ltit2icrjfchmqj67uhpzpzxq
+- Canonical task key: task/v1/0c7c0ace561a5bb687ce17a3d5c5261f2ed9e74fce5befccae15ba6161261738
+- Canonical task CID: baguqeerabr6avtswdjn3nb6oc6r5lrjgd4xntz2pzzn67tfocw5gcyjgc44a
 - Semantic identity: objective-evidence-obligation/v1/7a38b27db130e40451b2752a4912fc2c1a962ca0a964b50d7717da02bea40532
 - Acceptance subset: All repository and analyzer shards are accounted, source/analyzer/policy/tool roots are current, unsupported languages/features and incomplete areas are explicit, findings dedupe and map to owners, unknown/heuristic issues are review-only, the verified finding root is consumable by G620 so its serialized control lane, not an implementation worker, generates bounded ipfs_accelerate_py tasks, absence claims require complete relevant coverage.
 - Preconditions: objective goal DSCON-G710 is schedulable
@@ -3334,3 +3343,69 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Outputs: data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery, docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
 - Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-060-reconciliation-1e307ab62a1c.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by main_checkout_dirty. This task is intentionally operator-gated because unknown dirty checkout content must not be committed, stashed, or discarded automatically. Use evidence and the machine-readable reconciliation plan in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-060-reconciliation-1e307ab62a1c.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+
+## DSCON-061 Implement datasets symbolic contract objective: Pin hermetic toolchains, budgets, and no-network execution
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: trust
+- Depends on: DSCON-002
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/execution_profile.py, data/datasets_contract_analysis/policy/analyzer-profile-v1.json, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Evidence outputs: data/datasets_contract_analysis/policy/resource-bounds-v1.json
+- Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-061-objective-gap-457b1a0d5f4b.md
+- Bundle: datasets-contract/trust
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-trust.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G000
+- Graph depth: 1
+- Objective heap index: 5
+- Parallel lane: trust-runtime
+- Conflict policy: owns analyzer execution profile and resource policy
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/execution_profile.py, data/datasets_contract_analysis/policy/analyzer-profile-v1.json, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py
+- Changed paths:
+- AST symbols: AnalysisExecutionProfile ResourceBudget HermeticValidation CapabilitySnapshot
+- Interfaces:
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G050
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/1d316a82190e00c6ae76769ff72803ab5d35f0df71db1588781720a8ab1f65b2
+- Canonical task CID: baguqeeraduywvaqzbyamnltwo2p7okadvnotl4g7ohnrlcdyc4qkrky7mwza
+- Semantic identity: objective-evidence-obligation/v1/2d5812d66675febeb642011cfebe4bb3a4ccd870488a058c99d35b567fa00ac8
+- Acceptance subset: Profiles bind tool and lock identities, enforce blob, file, AST-node, edge, SCC, recursion, timeout, memory, proof, receipt, finding, task, and prompt limits, reject network, auto-install, home-cache, credential, and write-root escape, resource exhaustion yields incomplete or unknown rather than pass.
+- Preconditions: objective goal DSCON-G050 is schedulable
+- Effects: satisfy evidence requirement: data/datasets_contract_analysis/policy/resource-bounds-v1.json
+- Evidence subset: data/datasets_contract_analysis/policy/resource-bounds-v1.json
+- Resource class: cpu-medium
+- Token class: small
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/DSCON-G050
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/2d5812d66675febeb642011cfebe4bb3a4ccd870488a058c99d35b567fa00ac8
+- Missing evidence: data/datasets_contract_analysis/policy/resource-bounds-v1.json
+- Embedding query: hermetic analyzer parser solver toolchain resource budgets no network credentials sandbox
+- AST query: AnalysisExecutionProfile ResourceBudget HermeticValidation CapabilitySnapshot
+- Surplus group: objective/DSCON-G050
+- Merge key: 740cfd7b91a0972f
+- Merge family: objective/DSCON-G050
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: fbef31badb5dfd0a
+- Acceptance: Objective scan filed this gap for DSCON-G050. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-061-objective-gap-457b1a0d5f4b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/datasets_contract_analysis/policy/resource-bounds-v1.json), and keep the supervisor-fed backlog aligned with the objective heap.  Tool availability is a capability fact, never a reason to auto-install during analysis.
