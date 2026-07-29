@@ -25,11 +25,12 @@ Operator sequence:
 ./scripts/datasets_contract_analysis_supervisor.sh stop
 ```
 
-`start` seeds only when the objective graph is absent, runs strict
-reconciliation for each shard, launches both supervisors, and waits until each
-supervisor and managed implementation daemon is live. `status` rewrites the
-atomic health snapshot and fails if a lane, daemon, protected-path fence, or
-maintenance state is unhealthy.
+`seed` is deterministic but its generated control-plane artifacts must be
+reviewed and committed before launch. `start` fails closed when they are
+absent, runs strict reconciliation for each shard, launches both supervisors,
+and waits until each supervisor and managed implementation daemon is live.
+`status` rewrites the atomic health snapshot and fails if a lane, daemon,
+protected-path fence, or maintenance state is unhealthy.
 
 ## 1. Outcome
 

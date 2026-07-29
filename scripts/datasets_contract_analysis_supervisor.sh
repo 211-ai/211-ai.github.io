@@ -605,7 +605,8 @@ start_supervisors() {
     return 1
   fi
   if [[ ! -f "${GRAPH_PATH}" || ! -f "${BUNDLE_DIR}/index.json" ]]; then
-    seed_objectives true
+    echo "objective artifacts are absent; run '$0 seed', review and commit the generated control plane, then retry start" >&2
+    return 1
   fi
   run_reconciliation_preflight
   start_codex_lane
