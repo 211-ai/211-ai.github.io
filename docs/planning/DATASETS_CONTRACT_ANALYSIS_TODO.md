@@ -3330,7 +3330,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-060 Resolve dirty main checkout blocking 1 worktree merges
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Is schedulable: false
 - Review only: true
