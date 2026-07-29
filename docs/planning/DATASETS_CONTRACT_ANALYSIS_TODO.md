@@ -547,7 +547,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-009 Implement datasets symbolic contract objective: Add lossless typed objective admission
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
