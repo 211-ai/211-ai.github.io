@@ -19,7 +19,7 @@ Environment=ABBY_TTS_SPACE_REPO_ID=Publicus/IndexTTS-2-Demo
 Environment=ABBY_TTS_EXPECTED_HARDWARE=l40sx1
 Environment=ABBY_TTS_HARDWARE_WAIT_SECONDS=1800
 EnvironmentFile=-%h/.config/211-ai/abby-voice-publicus-regeneration.env
-ExecStartPre=/usr/bin/python3 scripts/wait_for_hf_space_hardware.py \
+ExecCondition=/usr/bin/python3 scripts/wait_for_hf_space_hardware.py \
   --space-repo-id Publicus/IndexTTS-2-Demo \
   --expected-hardware l40sx1 \
   --timeout-seconds 1800 \
