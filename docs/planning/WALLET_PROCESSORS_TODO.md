@@ -2448,3 +2448,14 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py, data/wallet_processor_migration/agent_supervisor/runtime/discovery
 - Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in WALPROC-028. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release WALPROC-028 from strategy blocked_tasks.
+
+## WALPROC-065 Resolve validation retry-budget failure for WALPROC-033
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: WALPROC-023, WALPROC-027, WALPROC-028, WALPROC-032, WALPROC-031
+- Outputs: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py, data/wallet_processor_migration/agent_supervisor/runtime/discovery
+- Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py && npm --prefix wallet_interface/ui test -- --runInBand
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in WALPROC-033. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-065-walproc-033-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release WALPROC-033 from strategy blocked_tasks. The declared validation target paths (tests/test_world_id_wrapper_ownership.py, tests/test_world_id_wallet.py, tests/test_world_id_wallet_api.py, wallet_interface/ui) are bounded diagnostic and repair scope: change them only when evidence proves inherited validation debt, and do not weaken correct assertions or policy.
