@@ -809,7 +809,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-013 Implement Crypto IR compliance objective: Define exact transaction intent and fail-closed preflight guard contracts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
