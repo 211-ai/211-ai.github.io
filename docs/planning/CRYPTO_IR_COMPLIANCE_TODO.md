@@ -2304,7 +2304,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-036 Implement Crypto IR compliance objective: Define trust, authority, threat, and fail-closed policy
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
