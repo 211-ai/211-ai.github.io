@@ -139,15 +139,49 @@ read_live_supervisor_pid() {
   return 1
 }
 
+any_supervisor_running() {
+  read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" >/dev/null \
+    || read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" >/dev/null
+}
+
+require_supervisors_stopped() {
+  if any_supervisor_running; then
+    echo "objective generation requires both implementation supervisors to be stopped" >&2
+    echo "run '$0 stop', wait for both lanes to exit, then retry" >&2
+    return 1
+  fi
+}
+
+read_nonempty_json_field() {
+  local path="$1"
+  local field="$2"
+  "${PYTHON_BIN}" -c \
+    'import json, pathlib, sys
+path = pathlib.Path(sys.argv[1])
+field = sys.argv[2]
+try:
+    value = json.loads(path.read_text(encoding="utf-8")).get(field)
+except (OSError, ValueError, TypeError):
+    raise SystemExit(1)
+if value in (None, "", [], {}):
+    raise SystemExit(1)
+print(json.dumps(value, sort_keys=True))' \
+    "${path}" "${field}"
+}
+
 seed_objectives() {
+  local force_existing_goals="${1:-true}"
   local -a forced_goal_args=()
   prepare_runtime
-  while IFS= read -r goal_id; do
-    forced_goal_args+=(--force-goal-id "${goal_id}")
-  done < <(
-    awk '$1 == "##" && $2 ~ /^WALPROC-G[0-9]+$/ {print $2}' \
-      "${OBJECTIVE_PATH}"
-  )
+  require_supervisors_stopped
+  if [[ "${force_existing_goals}" == "true" ]]; then
+    while IFS= read -r goal_id; do
+      forced_goal_args+=(--force-goal-id "${goal_id}")
+    done < <(
+      awk '$1 == "##" && $2 ~ /^WALPROC-G[0-9]+$/ {print $2}' \
+        "${OBJECTIVE_PATH}"
+    )
+  fi
   (
     cd "${REPO_ROOT}"
     "${PYTHON_BIN}" -m ipfs_accelerate_py.agent_supervisor.objective_daemon \
@@ -229,7 +263,38 @@ common_supervisor_args() {
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md \
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_OBJECTIVES.md \
     --implementation-protected-path docs/planning/WALLET_PROCESSORS_TODO.md \
+    --no-objective-task-janitor \
+    --no-objective-goal-refinement \
+    --no-objective-goal-migration \
     --log-level INFO
+}
+
+run_reconciliation_preflight() {
+  local -a args=()
+  prepare_runtime
+  require_supervisors_stopped
+  args=(
+    --once
+    --reconciliation-only
+    --todo-path "${TODO_PATH}"
+    --state-dir "${CODEX_STATE_DIR}"
+    --state-prefix "${CODEX_STATE_PREFIX}"
+    --task-prefix "${TASK_HEADER_PREFIX}"
+    --implementation-protected-path docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+    --implementation-protected-path docs/planning/WALLET_PROCESSORS_OBJECTIVES.md
+    --implementation-protected-path docs/planning/WALLET_PROCESSORS_TODO.md
+    --no-worktree-reconciliation
+    --no-objective-task-janitor
+    --no-objective-goal-refinement
+    --no-objective-goal-migration
+    --log-level INFO
+  )
+  (
+    cd "${REPO_ROOT}"
+    "${PYTHON_BIN}" \
+      -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
+      "${args[@]}"
+  )
 }
 
 start_codex_lane() {
@@ -249,20 +314,6 @@ start_codex_lane() {
   args+=(
     --implementation-command
     "${CODEX_BIN} exec --dangerously-bypass-approvals-and-sandbox --ephemeral -C . -"
-    --objective-refill-scan
-    --objective-path "${OBJECTIVE_PATH}"
-    --objective-graph-path "${GRAPH_PATH}"
-    --objective-bundle-dir "${BUNDLE_DIR}"
-    --objective-dataset-dir "${DATASET_DIR}"
-    --objective-discovery-dir "${DISCOVERY_DIR}"
-    --objective-todo-vector-index-path "${VECTOR_PATH}"
-    --objective-scan-min-open-tasks 8
-    --objective-scan-max-findings 12
-    --objective-scan-cooldown-seconds 900
-    --objective-refill-timeout-seconds 600
-    --objective-max-refinement-children 3
-    --objective-max-refinement-depth 4
-    --objective-surplus-findings-per-goal 1
     --auto-commit-generated-dirty
     --generated-dirty-path docs/planning/WALLET_PROCESSORS_OBJECTIVES.md
     --generated-dirty-path docs/planning/WALLET_PROCESSORS_TODO.md
@@ -323,7 +374,10 @@ wait_for_lane() {
 start_supervisors() {
   prepare_runtime
   if [[ ! -f "${GRAPH_PATH}" || ! -f "${BUNDLE_DIR}/index.json" ]]; then
-    seed_objectives
+    seed_objectives true
+  fi
+  if ! any_supervisor_running; then
+    run_reconciliation_preflight
   fi
   start_codex_lane
   start_grok_lane
@@ -338,8 +392,12 @@ show_lane_status() {
   local state_prefix="$3"
   local failed=0
   local daemon_pid_path
+  local incident_path="${state_dir}/implementation-protected-path-incident.json"
+  local status_path
+  local maintenance_error=""
   local supervisor_pid=""
   local daemon_pid=""
+  status_path="$(supervisor_status_file_for "${state_dir}" "${state_prefix}")"
   daemon_pid_path="$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"
   if supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
     echo "${label} supervisor: running (pid ${supervisor_pid})"
@@ -355,6 +413,16 @@ show_lane_status() {
     echo "${label} daemon: starting or stopped"
     failed=1
   fi
+  if [[ -f "${incident_path}" ]]; then
+    echo "${label} protected-path incident: ${incident_path}"
+    echo "${label} health is blocked pending proof-checked operator clearance."
+    failed=1
+  fi
+  if [[ -f "${status_path}" ]] \
+    && maintenance_error="$(read_nonempty_json_field "${status_path}" "last_agentic_maintenance_error" 2>/dev/null)"; then
+    echo "${label} maintenance error: ${maintenance_error}"
+    failed=1
+  fi
   if [[ -f "${state_dir}/${state_prefix}_supervisor_events.jsonl" ]]; then
     echo "${label} last supervisor event:"
     tail -n 1 "${state_dir}/${state_prefix}_supervisor_events.jsonl"
@@ -368,6 +436,8 @@ write_health_snapshot() {
   local codex_daemon_pid="null"
   local grok_supervisor_pid="null"
   local grok_daemon_pid="null"
+  local codex_protected_path_incident=false
+  local grok_protected_path_incident=false
   local pid=""
   local tmp_path="${RUNTIME_ROOT}/supervisor-health.json.tmp.$$"
 
@@ -383,9 +453,15 @@ write_health_snapshot() {
   if pid="$(read_live_pid "$(daemon_pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")")"; then
     grok_daemon_pid="${pid}"
   fi
+  if [[ -f "${CODEX_STATE_DIR}/implementation-protected-path-incident.json" ]]; then
+    codex_protected_path_incident=true
+  fi
+  if [[ -f "${GROK_STATE_DIR}/implementation-protected-path-incident.json" ]]; then
+    grok_protected_path_incident=true
+  fi
 
   printf \
-    '{"schema":"wallet-processor-migration-supervisor-health/v1","updated_at":"%s","healthy":%s,"merge_target_branch":"%s","task_board":"%s","objective_graph":"%s","codex":{"provider":"chatgpt-codex","supervisor_pid":%s,"daemon_pid":%s},"grok":{"provider":"grok-build","supervisor_pid":%s,"daemon_pid":%s}}\n' \
+    '{"schema":"wallet-processor-migration-supervisor-health/v1","updated_at":"%s","healthy":%s,"merge_target_branch":"%s","task_board":"%s","objective_graph":"%s","codex":{"provider":"chatgpt-codex","supervisor_pid":%s,"daemon_pid":%s,"protected_path_incident":%s},"grok":{"provider":"grok-build","supervisor_pid":%s,"daemon_pid":%s,"protected_path_incident":%s}}\n' \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
     "${healthy}" \
     "${MERGE_TARGET_BRANCH}" \
@@ -393,8 +469,10 @@ write_health_snapshot() {
     "${GRAPH_PATH#${REPO_ROOT}/}" \
     "${codex_supervisor_pid}" \
     "${codex_daemon_pid}" \
+    "${codex_protected_path_incident}" \
     "${grok_supervisor_pid}" \
-    "${grok_daemon_pid}" >"${tmp_path}"
+    "${grok_daemon_pid}" \
+    "${grok_protected_path_incident}" >"${tmp_path}"
   mv "${tmp_path}" "${RUNTIME_ROOT}/supervisor-health.json"
 }
 
@@ -438,12 +516,18 @@ stop_supervisors() {
 }
 
 usage() {
-  echo "Usage: $0 {seed|refill|start|status|stop}"
+  echo "Usage: $0 {seed|refill|doctor|start|status|stop}"
 }
 
 case "${1:-}" in
-  seed|refill)
-    seed_objectives
+  seed)
+    seed_objectives true
+    ;;
+  refill)
+    seed_objectives false
+    ;;
+  doctor)
+    run_reconciliation_preflight
     ;;
   start)
     start_supervisors

@@ -1001,7 +1001,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-016 Implement wallet processor migration objective: Migrate World ID pure protocol code
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
