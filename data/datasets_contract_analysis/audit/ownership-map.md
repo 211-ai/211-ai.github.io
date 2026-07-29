@@ -150,6 +150,8 @@ DSCON-062 closes the synthetic **objective validation repair** gate by running
 authorized artifacts, rehashes pinned commits and trees for the selected
 authority, resolves every documented gitlink from its pinned parent tree, and
 reproduces each required drift category from blobs in those verified revisions.
+Its checked-in validation contract enumerates those proof obligations exactly;
+exit code 0 is the completion signal, and undeclared proof fields fail closed.
 Unselected external comparison roots retain their freeze-time path/commit/tree
 evidence; if an isolated validation worker lacks those ambient checkouts, strict
 availability and freshness verification is deferred to `--check-current`.

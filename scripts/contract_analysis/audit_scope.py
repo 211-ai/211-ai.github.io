@@ -49,6 +49,15 @@ OBJECTIVE_VALIDATED_ARTIFACTS = (
     "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
     "data/datasets_contract_analysis/audit/ownership-map.md",
 )
+OBJECTIVE_VALIDATION_PROOF_OBLIGATIONS = (
+    "selected_commit_tree_content_hashes",
+    "direct_gitlinks_from_pinned_superproject_tree",
+    "recursive_gitlinks_from_pinned_package_trees",
+    "required_drift_categories_from_pinned_blobs",
+    "external_roots_recorded_with_path_commit_tree_or_explicit_absence",
+    "documentation_references_rejected_as_authority_without_verified_git_identity",
+    "unresolved_authority_fails_closed",
+)
 
 # Plan-documented external pins (prefix match against full commit).
 EXPECTED_SWISSKNIFE_PREFIX = "df11f08f"
@@ -409,8 +418,10 @@ def _objective_validation_contract() -> dict[str, Any]:
         "evidence_term": OBJECTIVE_VALIDATION_EVIDENCE,
         "task_id": VALIDATION_TASK_ID,
         "command": OBJECTIVE_VALIDATION_COMMAND,
+        "completion_signal": "exit_code_0",
         "authority_mode": "selected_authority_objects_external_evidence",
         "validated_artifacts": list(OBJECTIVE_VALIDATED_ARTIFACTS),
+        "proof_obligations": list(OBJECTIVE_VALIDATION_PROOF_OBLIGATIONS),
         "fail_closed": True,
     }
 
@@ -1662,6 +1673,8 @@ DSCON-062 closes the synthetic **{OBJECTIVE_VALIDATION_EVIDENCE}** gate by runni
 authorized artifacts, rehashes pinned commits and trees for the selected
 authority, resolves every documented gitlink from its pinned parent tree, and
 reproduces each required drift category from blobs in those verified revisions.
+Its checked-in validation contract enumerates those proof obligations exactly;
+exit code 0 is the completion signal, and undeclared proof fields fail closed.
 Unselected external comparison roots retain their freeze-time path/commit/tree
 evidence; if an isolated validation worker lacks those ambient checkouts, strict
 availability and freshness verification is deferred to `--check-current`.
@@ -1806,24 +1819,17 @@ def _check_objective_validation_contract(
         errors.append(f"{label} must be an object")
         return
     expected = _objective_validation_contract()
-    for field in (
-        "evidence_term",
-        "task_id",
-        "command",
-        "authority_mode",
-        "fail_closed",
-    ):
-        if record.get(field) != expected[field]:
+    unexpected_fields = sorted(set(record) - set(expected))
+    if unexpected_fields:
+        errors.append(
+            f"{label} contains unsupported fields: {unexpected_fields}"
+        )
+    for field, expected_value in expected.items():
+        if record.get(field) != expected_value:
             errors.append(
-                f"{label}.{field} must be {expected[field]!r} "
+                f"{label}.{field} must be {expected_value!r} "
                 f"(got {record.get(field)!r})"
             )
-    artifacts = record.get("validated_artifacts")
-    if artifacts != expected["validated_artifacts"]:
-        errors.append(
-            f"{label}.validated_artifacts must list exactly the four "
-            "DSCON-062 authorized outputs"
-        )
 
 
 def _validate_pinned_source_objects(
