@@ -3682,3 +3682,68 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-066-dscon-062-retry-budget.md
 
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in DSCON-062. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-066-dscon-062-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release DSCON-062 from strategy blocked_tasks.
+
+## DSCON-067 Implement datasets symbolic contract objective: Build recursive tracked-object and coverage manifests
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: bootstrap
+- Depends on: DSCON-001, DSCON-062
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/repository.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/coverage.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_repository_manifest.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_repository_manifest.py
+- Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-067-objective-gap-9b99fe4ed887.md
+- Bundle: datasets-contract/bootstrap
+- Bundle shard: data/datasets_contract_analysis/agent_supervisor/bundles/datasets-contract-bootstrap.todo.md
+- Bundle strategy: explicit
+- Graph parents: DSCON-G000
+- Graph depth: 1
+- Objective heap index: 2
+- Parallel lane: bootstrap-coverage
+- Conflict policy: owns repository manifest schemas and coverage receipts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/repository.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/coverage.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_repository_manifest.py
+- Changed paths:
+- AST symbols: RepositorySnapshot TrackedBlob GitlinkRecord CoverageDisposition CoverageReceipt
+- Interfaces:
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: DSCON-G020
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/efb0dc3ab77671a92cc48145c9847384cb84db6528b0010b612e09977122215e
+- Canonical task CID: baguqeera56ynyovxozy2slgeqfc4tbdtqtfyjw3ffcyacc3bfyezo4jcefpa
+- Semantic identity: objective-evidence-obligation/v1/72ceab43464052c9fcb8020770a2db47d1b94d723e3c524a72ad7d10d873d799
+- Acceptance subset: Every tracked object in every selected clean tree is counted exactly once per logical root, recursive mirrors are cycle-safe, unsupported, generated, vendored, binary, archived, oversized, missing, and parseable paths remain explicit, shard counts sum to the root count, dirty or missing inputs yield `INCOMPLETE_SCAN`, two runs produce identical roots.
+- Preconditions: objective goal DSCON-G020 is schedulable
+- Effects: satisfy evidence requirement: objective validation repair
+- Evidence subset: objective validation repair
+- Resource class: io-large
+- Token class: small
+- Estimated tokens: 0
+- Resources: io-large
+- Merge fate: objective/DSCON-G020
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/72ceab43464052c9fcb8020770a2db47d1b94d723e3c524a72ad7d10d873d799
+- Missing evidence: objective validation repair
+- Embedding query: git tree blob gitlink recursive manifest coverage shard deduplicate repository identity
+- AST query: RepositorySnapshot TrackedBlob GitlinkRecord CoverageDisposition CoverageReceipt
+- Surplus group: objective/DSCON-G020
+- Merge key: 5dac142b336affe6
+- Merge family: objective/DSCON-G020
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: validation_gate
+- Todo vector key: bface3f3b8cd423f
+- Acceptance: Objective scan filed this gap for DSCON-G020. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-067-objective-gap-9b99fe4ed887.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Hash unsupported blobs without pretending to parse or prove them.
