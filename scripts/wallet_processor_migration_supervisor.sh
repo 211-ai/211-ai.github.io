@@ -37,6 +37,7 @@ GROK_LOG="${LOG_DIR}/grok-supervisor.log"
 TASK_HEADER_PREFIX="## WALPROC-"
 TASK_ID_PREFIX="WALPROC-"
 MERGE_TARGET_BRANCH="codex/wallet-processors-migration"
+LEGACY_PLAYWRIGHT_RETRY_BINDING="WALPROC-065|0d016930f694615f829e4387fc14b2e740f29074|026a33e237fb879b9417340a58cd36daabed760acf4323dfae59a5b655a4856b|01c6f70fbe05a361b6734183125ca4aeae49e5c0d1e84659803cb35e7a41eb05"
 
 export PYTHONPATH="${ACCELERATE_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONDONTWRITEBYTECODE=1
@@ -68,6 +69,7 @@ configure_validation_playwright_browsers() {
   local configured_path=""
   local account_home=""
   local cache_root=""
+  local retry_bindings=""
 
   if [[ -n "${WALLET_PROCESSOR_PLAYWRIGHT_BROWSERS_PATH:-}" ]]; then
     configured_path="${WALLET_PROCESSOR_PLAYWRIGHT_BROWSERS_PATH}"
@@ -123,6 +125,13 @@ const { chromium, webkit } = require("playwright");
   fi
 
   export IPFS_ACCELERATE_AGENT_VALIDATION_PLAYWRIGHT_BROWSERS_PATH="${configured_path}"
+  retry_bindings="${WALLET_PROCESSOR_RECONCILIATION_ENVIRONMENT_RETRY_BINDINGS:-${IPFS_ACCELERATE_AGENT_RECONCILIATION_ENVIRONMENT_RETRY_BINDINGS:-}}"
+  if [[ -n "${retry_bindings}" ]]; then
+    retry_bindings="${LEGACY_PLAYWRIGHT_RETRY_BINDING},${retry_bindings}"
+  else
+    retry_bindings="${LEGACY_PLAYWRIGHT_RETRY_BINDING}"
+  fi
+  export IPFS_ACCELERATE_AGENT_RECONCILIATION_ENVIRONMENT_RETRY_BINDINGS="${retry_bindings}"
 }
 
 prepare_runtime() {
