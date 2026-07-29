@@ -3750,7 +3750,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-068 Implement datasets symbolic contract objective: Prove ipfs_accelerate_py/test/api/test_agent_supervisor_datasets_contract_g... for Add lossless typed objective admission
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
