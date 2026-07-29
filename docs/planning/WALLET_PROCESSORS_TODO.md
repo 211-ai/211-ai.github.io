@@ -1788,7 +1788,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security
-- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049, WALPROC-060, WALPROC-061, WALPROC-062, WALPROC-063
 - Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -2369,3 +2369,71 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Completion authority: local
 - Acceptance subset: Every committed wallet fixture has an exact current digest, the Xaman runtime manifest remains attributed to WALPROC-G210, the migration baseline continues to verify the WALPROC-G020 formal-assurance evidence embedded in the Xaman fixture bundle, and lazy-registry tests restore every chain module they temporarily remove from sys.modules.
 - Acceptance: Repair the pre-existing conformance failures discovered by WALPROC-027. Deterministically regenerate the wallet fixture digest lock for all committed fixtures; update only the stale Xaman baseline assertions so they recognize the dual WALPROC-G210 runtime and WALPROC-G020 assurance roles; and make the existing registry-test reset fixture snapshot, remove newly loaded modules, and restore the original chain-module graph so later conformance tests retain one class identity. Do not weaken fixture checks or mask the test-isolation defect in Bitcoin production code.
+
+## WALPROC-060 Close secret-smuggling serialization paths
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-006, WALPROC-011, WALPROC-012
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_models.py ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Goal id: WALPROC-G630-R2
+- Completion authority: local
+- Acceptance subset: Canonical extensions, checkpoint metadata and cursors, manifest warnings, and export receipts reject or redact recursively nested secret-shaped keys and concrete secret values while retaining deterministic canonical serialization for safe data.
+- Acceptance: Repair WP-SEC-001 from WALPROC-028. Introduce one bounded recursive secret-field/value policy and apply it consistently to canonical extensions, checkpoint free-form fields, manifests, and receipts. Add positive safe-data and adversarial nested-secret regressions; do not silently discard ordinary chain data or expose secret values in repr, str, JSON, logs, errors, checkpoints, manifests, or receipts.
+
+## WALPROC-061 Bound and authorize raw-payload custody
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-011
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Goal id: WALPROC-G630-R3
+- Completion authority: local
+- Acceptance subset: Raw-payload retention is omitted by default and requires an explicit policy with positive per-object, per-run byte, and retained-object limits enforced before copying, hashing, allocating, or writing; failed writes leave stores unchanged.
+- Acceptance: Repair WP-BOUNDS-002 from WALPROC-028. Enforce operation bounds in in-memory and directory stores, restrictive directory permissions, and fail-closed encrypted mode when no encryptor is injected. Add regressions proving oversized and over-count payloads raise ResourceLimitError before state changes and bounded explicit retention remains usable.
+
+## WALPROC-062 Make XRPL and Xaman free-form retention opt-in
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-017, WALPROC-021
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/normalizer.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/normalizer.py, ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py, ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/normalizer.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/normalizer.py, ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py, ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Goal id: WALPROC-G630-R4
+- Completion authority: local
+- Acceptance subset: Default XRPL memo and Xaman custom-instruction projections contain only presence, length, digest, and redaction metadata; retaining bounded content requires an explicit opt-in policy and preserves existing byte and item caps.
+- Acceptance: Repair WP-PRIV-003 from WALPROC-028. Change the default policies and normalizer paths to omit or redact free-form content, retain deterministic metadata and digests, and require an explicit caller policy for bounded content retention. Add default-redaction and explicit-opt-in regressions without changing settlement semantics.
+
+## WALPROC-063 Put World ID verification behind a bounded safe transport
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-009, WALPROC-016, WALPROC-049
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Goal id: WALPROC-G630-R5
+- Completion authority: local
+- Acceptance subset: World ID verification accepts only policy-approved HTTPS endpoints, rejects private/link-local/metadata DNS answers and unsafe redirects, enforces finite request/response/decompression/retry/deadline bounds, exposes only endpoint fingerprints in errors/config views, and never represents or serializes a raw nullifier.
+- Acceptance: Repair WP-NET-004 and the World ID portion of WP-SEC-001 from WALPROC-028. Reuse the shared EndpointPolicy and bounded transport where practical, sanitize upstream exception chaining, and wrap verification results so raw identity values cannot cross repr or serialization boundaries. Add metadata-service, DNS-rebinding, redirect, oversized/compressed-body, endpoint-leak, exception-leak, and nullifier regressions.
