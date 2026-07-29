@@ -29,6 +29,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=os.getenv("ABBY_TTS_EXPECTED_HARDWARE", "l40sx1"),
     )
     parser.add_argument(
+        "--expected-revision",
+        default=os.getenv("ABBY_TTS_EXPECTED_REVISION", ""),
+        help="Optional full or abbreviated Space commit SHA required before dispatch.",
+    )
+    parser.add_argument(
         "--timeout-seconds",
         type=float,
         default=float(
@@ -85,17 +90,25 @@ def runtime_snapshot(runtime: Any) -> dict[str, Any]:
         .strip()
         .lower(),
         "domainStages": domain_stages,
+        "revision": str(raw.get("sha") or "").strip().lower(),
     }
 
 
-def runtime_ready(snapshot: Mapping[str, Any], expected_hardware: str) -> bool:
+def runtime_ready(
+    snapshot: Mapping[str, Any],
+    expected_hardware: str,
+    expected_revision: str = "",
+) -> bool:
     expected = expected_hardware.strip().lower()
+    expected_sha = expected_revision.strip().lower()
+    observed_sha = str(snapshot.get("revision") or "").strip().lower()
     domain_stages = list(snapshot.get("domainStages") or [])
     domain_ready = not domain_stages or "READY" in domain_stages
     return (
         snapshot.get("stage") == "RUNNING"
         and snapshot.get("hardware") == expected
         and snapshot.get("requestedHardware") == expected
+        and (not expected_sha or observed_sha.startswith(expected_sha))
         and domain_ready
     )
 
@@ -113,6 +126,7 @@ def wait_for_hardware(
     *,
     space_repo_id: str,
     expected_hardware: str,
+    expected_revision: str = "",
     timeout_seconds: float,
     poll_interval_seconds: float,
     checkpoint: Path | None = None,
@@ -148,8 +162,26 @@ def wait_for_hardware(
                     file=sys.stderr,
                 )
                 return EXIT_HARDWARE_DRIFT
-            if runtime_ready(snapshot, expected_hardware):
+            if runtime_ready(
+                snapshot,
+                expected_hardware,
+                expected_revision,
+            ):
                 return 0
+            if (
+                expected_revision.strip()
+                and snapshot.get("stage") == "RUNNING"
+                and not str(snapshot.get("revision") or "").startswith(
+                    expected_revision.strip().lower()
+                )
+            ):
+                print(
+                    "[hardware-gate] deployed revision drift: "
+                    f"expected={expected_revision!r} "
+                    f"observed={snapshot.get('revision')!r}",
+                    file=sys.stderr,
+                )
+                return EXIT_HARDWARE_DRIFT
             if (
                 wake_sleeping
                 and not wake_requested
@@ -183,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
         HfApi(),
         space_repo_id=str(args.space_repo_id),
         expected_hardware=str(args.expected_hardware),
+        expected_revision=str(args.expected_revision),
         timeout_seconds=max(0.0, float(args.timeout_seconds)),
         poll_interval_seconds=max(0.1, float(args.poll_interval_seconds)),
         checkpoint=args.checkpoint,
