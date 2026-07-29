@@ -94,7 +94,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-002 Implement Crypto IR compliance objective packet: CRYPTOIR-G020, CRYPTOIR-G030
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
