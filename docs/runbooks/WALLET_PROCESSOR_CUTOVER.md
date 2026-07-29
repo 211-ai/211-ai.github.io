@@ -1,10 +1,20 @@
 # Wallet Processor Cutover and Rollback
 
-Status: WALPROC-065 retry repair complete; production enablement remains held.
+Status: WALPROC-033 staged cutover evidence complete; production enablement remains held.
 
-This runbook binds the WALPROC-033 cutover evidence to package source commit
-`92c1eddb55b40e4de57d51545f4bcdfbf3fab645`. It does not authorize publishing
-the package, enabling World ID, or using production credentials.
+This runbook binds the WALPROC-G710 / WALPROC-033 cutover evidence to package
+source commit `92c1eddb55b40e4de57d51545f4bcdfbf3fab645`. It does not authorize
+publishing the package, enabling World ID, or using production credentials.
+Live-tenant Playwright/production signoff remains an external blocker.
+
+## Goal packet
+
+| Field | Value |
+| --- | --- |
+| Goal packet | `goal_packet/release/ipfs_datasets_py/931f67fbca87` |
+| Goals | WALPROC-G700 (packaging docs), WALPROC-G710 (staged cutover) |
+| Source task | WALPROC-033 |
+| Repair predecessor | WALPROC-065 (validation retry-budget repair; complete) |
 
 ## Release coordinates
 
@@ -12,21 +22,26 @@ the package, enabling World ID, or using production credentials.
 | --- | --- |
 | Package | `ipfs_datasets_py==0.2.0` |
 | Source-bound package commit | `92c1eddb55b40e4de57d51545f4bcdfbf3fab645` |
+| Outer gitlink (`HEAD:ipfs_datasets_py`) | `92c1eddb55b40e4de57d51545f4bcdfbf3fab645` |
 | Documentation parent | `422308477058a9a82a1f6bbeacd1914fa3d9691e` |
 | Pre-cutover rollback pin | `9f82fa0d078f15fd8b1241b2bbe78c41d7257d39` |
 | Wrapper compatibility | `0.2.0` inclusive |
 | Wrapper expiry begins | `0.3.0` |
 | Ledger/export schema majors | v1 / v1 |
 
-The source-bound commit changes exactly these package-owned release documents:
+The source-bound commit changes exactly these package-owned release documents
+(WALPROC-G700 packaging evidence on the pin):
 
 - `CHANGELOG.md`
 - `docs/wallet_processors/COMPATIBILITY.md`
 - `docs/wallet_processors/MIGRATION.md`
 - `docs/wallet_processors/README.md`
 
-The matching receipt is
+The matching machine-readable receipt is
 [`data/wallet_processor_migration/release/cutover-receipt.json`](../../data/wallet_processor_migration/release/cutover-receipt.json).
+
+Wrapper ownership evidence is
+[`tests/test_world_id_wrapper_ownership.py`](../../tests/test_world_id_wrapper_ownership.py).
 
 ## Ownership and safety boundaries
 
@@ -34,7 +49,9 @@ The matching receipt is
   configuration, signing primitives, parsing, verification transport,
   redaction, binding, and proof behavior.
 - `wallet_interface.world_id` remains a thin compatibility re-export with
-  machine-readable alias-window constants.
+  machine-readable alias-window constants
+  (`WRAPPER_ALIAS_COMPATIBILITY_PACKAGE_VERSION=0.2.0`,
+  `WRAPPER_ALIAS_EXPIRY_PACKAGE_VERSION=0.3.0`).
 - The application retains actor authorization, persistence, routing, audit
   policy, readiness composition, and browser-safe response shaping.
 - Public UI types may contain opaque references and commitments, but never raw
@@ -44,6 +61,20 @@ The matching receipt is
   must not synthesize a duplicate local proof card.
 - Wallet processors do not gain custody, transaction signing, or broadcast
   authority during cutover.
+- Production defaults stay fail closed: World ID remains disabled until an
+  operator with separate authority enables it after live-tenant signoff.
+
+## Acceptance checklist (WALPROC-G710)
+
+| Criterion | How proven |
+| --- | --- |
+| Target package commit and outer gitlink recorded | Receipt + this runbook coordinates |
+| Two clean target validation runs and application tests | Package unit/contract 599×2; app World ID tests 62 |
+| UI typed client; no raw-nullifier DTO | `WorldIdVerificationPanel` → typed `walletApi`; `WorldIdVerificationResult` has no nullifier field |
+| Production defaults fail closed | Receipt authority flags; missing `app_id`/`rp_id` disables verification |
+| Old implementation absent | Thin-wrapper ownership tests; re-export only |
+| Wrapper aliases have expiry version | `0.2.0` / `0.3.0` constants in `wallet_interface/world_id.py` |
+| Rollback rehearsed without dataset loss | Non-destructive `cat-file` + gitlink equality; no dataset path changes |
 
 ## Preconditions
 
@@ -98,6 +129,15 @@ PLAYWRIGHT_PORT=5176 npm --prefix wallet_interface/ui test -- \
   --project="Desktop Chrome"
 ```
 
+Package double-run (target validation for the pin):
+
+```bash
+python -m pytest -q \
+  ipfs_datasets_py/tests/unit/processors/wallets \
+  ipfs_datasets_py/tests/contract/processors/wallets
+# run twice; both must be clean
+```
+
 Also verify receipt integrity:
 
 ```bash
@@ -106,8 +146,7 @@ python -m json.tool \
 git diff --check
 ```
 
-The retry repair resolves the task-owned architecture/install and typed-client
-gaps:
+Focused gate notes retained from the WALPROC-065 repair:
 
 - Normal Linux/arm64 install selects optional arm64 Rollup packages; Vite
   provides `esbuild`. No direct `@rollup/rollup-linux-x64-musl` pin.
@@ -115,8 +154,8 @@ gaps:
   verification through the typed wallet client.
 - Wallet API public configuration is authoritative in the panel; missing
   `app_id` or `rp_id` fails closed without a browser runtime fallback.
-- `WorldIdVerificationResult` and its fixture companion expose no nullifier
-  field.
+- `WorldIdVerificationResult` and its fixture companion expose no raw nullifier
+  field on the migrated verification DTO.
 - Proof receipts refresh via `ProofCenterScreen` + `listWalletProofReceipts`
   after verification.
 - `world-id.spec.ts` may only install `abby-ui-session-v1` before navigation;
