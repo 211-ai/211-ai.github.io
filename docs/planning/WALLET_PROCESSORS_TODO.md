@@ -1978,7 +1978,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-031 Implement wallet processor migration objective: Finish packaging, schemas, examples, and migration documentation
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
