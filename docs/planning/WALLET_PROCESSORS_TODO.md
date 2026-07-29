@@ -675,7 +675,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-011 Implement wallet processor migration objective: Implement streaming ingestion and dataset export
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
