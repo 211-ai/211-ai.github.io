@@ -1,0 +1,473 @@
+{
+  "schema": "wallet_processor_migration/conformance-report@1",
+  "schema_version": 1,
+  "goal_id": "WALPROC-G620",
+  "task_id": "WALPROC-027",
+  "objective_title": "Prove cross-chain conformance and differential compatibility",
+  "bundle": "wallet-processors/conformance",
+  "generated_at": "2026-07-29T00:00:00Z",
+  "purpose": "Deterministic record of shared wallet-processor conformance across five families, World ID differential coverage, and two consecutive clean offline validation passes on the current tree.",
+  "families": [
+    "bitcoin",
+    "ethereum",
+    "solana",
+    "xrpl",
+    "xaman"
+  ],
+  "required_shared_checks": [
+    "address_network_identity",
+    "cancellation",
+    "cas_conflicts",
+    "deterministic_ids",
+    "exact_amounts",
+    "export_round_trip",
+    "idempotency",
+    "malformed_empty_partial",
+    "no_network_imports",
+    "optional_dependency_absence",
+    "pagination",
+    "retries",
+    "secret_leaks",
+    "shallow_deep_reorg"
+  ],
+  "family_status": {
+    "bitcoin": {
+      "passed": true,
+      "shared_checks_passed": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "exemptions": [],
+      "fixture_subdir": "bitcoin",
+      "chain_namespace": "bip122",
+      "network": "bitcoin-mainnet",
+      "repair_bundle_on_failure": "wallet-processors/bitcoin"
+    },
+    "ethereum": {
+      "passed": true,
+      "shared_checks_passed": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "exemptions": [],
+      "fixture_subdir": "ethereum",
+      "chain_namespace": "eip155",
+      "network": "ethereum-mainnet",
+      "repair_bundle_on_failure": "wallet-processors/ethereum"
+    },
+    "solana": {
+      "passed": true,
+      "shared_checks_passed": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "exemptions": [],
+      "fixture_subdir": "solana",
+      "chain_namespace": "solana",
+      "network": "solana-mainnet-beta",
+      "repair_bundle_on_failure": "wallet-processors/solana"
+    },
+    "xrpl": {
+      "passed": true,
+      "shared_checks_passed": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "exemptions": [],
+      "fixture_subdir": "xrpl",
+      "chain_namespace": "xrpl",
+      "network": "xrpl-mainnet",
+      "repair_bundle_on_failure": "wallet-processors/xrpl"
+    },
+    "xaman": {
+      "passed": true,
+      "shared_checks_passed": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "exemptions": [],
+      "fixture_subdir": "xaman",
+      "chain_namespace": "xrpl",
+      "network": "xrpl-mainnet",
+      "repair_bundle_on_failure": "wallet-processors/xaman"
+    }
+  },
+  "runs": [
+    {
+      "run_id": 1,
+      "status": "clean",
+      "families": [
+        "bitcoin",
+        "ethereum",
+        "solana",
+        "xrpl",
+        "xaman"
+      ],
+      "shared_checks": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "family_results": {
+        "bitcoin": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "ethereum": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "solana": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "xrpl": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "xaman": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        }
+      },
+      "result_fingerprint": "sha256:7f38801523dc487c77ec6489a27761fc7a6daf5732f3b79a23a07b8d06f81b01",
+      "executed_at": "2026-07-29T00:00:00Z",
+      "tree": "current",
+      "mode": "offline_fixture"
+    },
+    {
+      "run_id": 2,
+      "status": "clean",
+      "families": [
+        "bitcoin",
+        "ethereum",
+        "solana",
+        "xrpl",
+        "xaman"
+      ],
+      "shared_checks": [
+        "address_network_identity",
+        "cancellation",
+        "cas_conflicts",
+        "deterministic_ids",
+        "exact_amounts",
+        "export_round_trip",
+        "idempotency",
+        "malformed_empty_partial",
+        "no_network_imports",
+        "optional_dependency_absence",
+        "pagination",
+        "retries",
+        "secret_leaks",
+        "shallow_deep_reorg"
+      ],
+      "family_results": {
+        "bitcoin": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "ethereum": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "solana": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "xrpl": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        },
+        "xaman": {
+          "passed": true,
+          "check_names": [
+            "address_network_identity",
+            "cancellation",
+            "cas_conflicts",
+            "deterministic_ids",
+            "exact_amounts",
+            "export_round_trip",
+            "idempotency",
+            "malformed_empty_partial",
+            "no_network_imports",
+            "optional_dependency_absence",
+            "pagination",
+            "retries",
+            "secret_leaks",
+            "shallow_deep_reorg"
+          ]
+        }
+      },
+      "result_fingerprint": "sha256:7f38801523dc487c77ec6489a27761fc7a6daf5732f3b79a23a07b8d06f81b01",
+      "executed_at": "2026-07-29T00:00:00Z",
+      "tree": "current",
+      "mode": "offline_fixture"
+    }
+  ],
+  "dependency_versions": {
+    "ipfs_datasets_py": "0.2.0",
+    "pytest": "9.0.3",
+    "web3": "uninstalled",
+    "solana": "uninstalled",
+    "solders": "uninstalled",
+    "xrpl-py": "uninstalled",
+    "xumm-sdk-py": "uninstalled",
+    "bitcoinlib": "uninstalled",
+    "eth-account": "uninstalled",
+    "eth-utils": "6.0.0"
+  },
+  "worldcoin_differential": {
+    "goal_id": "WALPROC-G620",
+    "covered_by": "ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py",
+    "safe_vectors_match_old_and_new": true,
+    "snapshots_round_trip": true,
+    "unsafe_baselines_fail_closed": true,
+    "fail_closed_cases": [
+      "legacy_proofs",
+      "unissued_challenges",
+      "user_presence_when_required",
+      "protocol_receipt_labels",
+      "revoke_and_expiry",
+      "unsafe_endpoints"
+    ],
+    "fixtures": "ipfs_datasets_py/tests/fixtures/wallets/worldcoin",
+    "security_baseline": "data/wallet_processor_migration/audit/security-baseline.json"
+  },
+  "summary": {
+    "all_families_passed": true,
+    "family_count": 5,
+    "shared_check_count": 14,
+    "consecutive_clean_runs": 2,
+    "exemptions_hiding_required_behavior": false,
+    "offline_default": true,
+    "network_io": false
+  },
+  "acceptance": {
+    "five_families_pass_without_exemptions": true,
+    "worldcoin_safe_vectors_and_snapshots_match": true,
+    "unsafe_baselines_fail_closed": true,
+    "cross_chain_identity_and_exact_amounts": true,
+    "no_import_network_secret_regressions": true,
+    "two_consecutive_clean_runs": true,
+    "dependency_versions_recorded": true
+  },
+  "refinement": {
+    "failing_chain_creates_scoped_repair_task": true,
+    "repair_bundle_pattern": "wallet-processors/{family}"
+  },
+  "evidence_paths": [
+    "ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py",
+    "ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py",
+    "data/wallet_processor_migration/validation/conformance-report.json"
+  ],
+  "harness": {
+    "module": "ipfs_datasets_py/tests/contract/processors/wallets/conformance.py",
+    "ast_symbol": "WalletProcessorConformance"
+  }
+}
