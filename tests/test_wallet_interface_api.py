@@ -68,9 +68,11 @@ def test_health_warns_when_publicus_indextts_has_no_hf_token(monkeypatch) -> Non
         "IPFS_DATASETS_PY_HF_API_TOKEN",
         "HUGGINGFACE_API_TOKEN",
         "HUGGINGFACE_HUB_TOKEN",
+        "HF_API_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "_cached_hf_token", lambda: "")
     client = _client()
 
     response = client.get("/health")
@@ -91,9 +93,11 @@ def test_ops_health_includes_publicus_indextts_credential_warning(tmp_path, monk
         "IPFS_DATASETS_PY_HF_API_TOKEN",
         "HUGGINGFACE_API_TOKEN",
         "HUGGINGFACE_HUB_TOKEN",
+        "HF_API_TOKEN",
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "_cached_hf_token", lambda: "")
     service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
     client = _client_with_service(service)
 
@@ -111,6 +115,7 @@ def test_ops_voice_proxy_status_reports_publicus_warning(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space")
     monkeypatch.setenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo")
     monkeypatch.setattr(_tts_http_module, "resolve_secret", lambda *args: "")
+    monkeypatch.setattr(_tts_http_module, "_cached_hf_token", lambda: "")
     client = _client()
 
     response = client.get("/ops/voice-proxy/status")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import re
+import sys
 import wave
 import zipfile
 from collections.abc import Mapping
@@ -63,6 +64,28 @@ def test_indextts_batch_fn_index_discovers_configured_api(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_INDEXTTS_BATCH_API_NAME", "gen_batch")
 
     assert precompute.indextts_batch_fn_index({"dependencies": [{"id": 6, "api_name": "/gen_single"}, {"id": 9, "api_name": "/gen_batch"}]}) == 9
+
+
+def test_publicus_defaults_and_cached_huggingface_token(monkeypatch) -> None:
+    for name in (
+        *precompute.INDEXTTS_TOKEN_ENV_NAMES,
+        "WALLET_INDEXTTS_SPACE_URL",
+        "WALLET_INDEXTTS_MODEL_NAME",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(precompute, "load_resolve_secret", lambda: None)
+    monkeypatch.setitem(
+        sys.modules,
+        "huggingface_hub",
+        SimpleNamespace(get_token=lambda: "hf_cached_publicus_token"),
+    )
+
+    precompute.load_secret_env()
+
+    assert precompute.indextts_base_url() == "https://publicus-indextts-2-demo.hf.space"
+    assert precompute.indextts_model_name() == "Publicus/IndexTTS-2-Demo"
+    assert precompute.current_huggingface_token() == "hf_cached_publicus_token"
+    assert precompute.indextts_headers()["Authorization"] == "Bearer hf_cached_publicus_token"
 
 
 def test_batch_request_data_supports_template(monkeypatch) -> None:
@@ -306,9 +329,46 @@ def test_indextts_contract_summary_reports_registered_batch_alias(monkeypatch) -
     assert summary["batchFnIndex"] == 9
     assert summary["batchContract"] == "segments-bucket-25-field"
     assert summary["batchUploadRegistered"] is True
+    assert summary["batchUploadInputCount"] == 25
     assert summary["uploadResultsRegistered"] is True
     assert summary["remoteBucketPipelineReady"] is True
     assert summary["recommendedMode"] == "gen_batch_with_upload"
+
+
+def test_publicus_endpoint_contract_detects_single_and_batch_functions() -> None:
+    receipt = precompute.probe_indextts_endpoint_contract(
+        config={
+            "dependencies": [
+                {"id": 6, "api_name": "/gen_single", "inputs": list(range(25))},
+                {"id": 7, "api_name": "/gen_batch", "inputs": list(range(25))},
+            ]
+        }
+    )
+
+    assert receipt["compatible"] is True
+    assert receipt["function_index"] == 6
+    assert receipt["input_count"] == 25
+    assert receipt["batch_function_index"] == 7
+    assert receipt["batch_input_count"] == 25
+    assert receipt["expected"]["require_batch_match"] is True
+
+
+def test_publicus_endpoint_contract_rejects_missing_batch_unless_explicitly_allowed() -> None:
+    config = {
+        "dependencies": [
+            {"id": 6, "api_name": "/gen_single", "inputs": list(range(25))},
+        ]
+    }
+
+    with pytest.raises(RuntimeError, match="batch_api_name_not_registered"):
+        precompute.probe_indextts_endpoint_contract(config=config)
+
+    receipt = precompute.probe_indextts_endpoint_contract(
+        config=config,
+        require_batch_match=False,
+    )
+    assert receipt["compatible"] is True
+    assert receipt["batch_function_index"] is None
 
 
 def test_endpoint_contract_probe_is_read_only_and_fails_closed_on_drift() -> None:
@@ -335,7 +395,11 @@ def test_endpoint_contract_probe_is_read_only_and_fails_closed_on_drift() -> Non
         def upload_file(self, *_args: object, **_kwargs: object) -> object:
             raise AssertionError("read-only probe attempted upload")
 
-    receipt = precompute.probe_indextts_endpoint_contract(client=FakeClient())
+    receipt = precompute.probe_indextts_endpoint_contract(
+        client=FakeClient(),
+        expected_input_count=24,
+        require_batch_match=False,
+    )
 
     assert calls == ["get_config"]
     assert receipt["compatible"] is True
@@ -357,6 +421,7 @@ def test_endpoint_contract_probe_is_read_only_and_fails_closed_on_drift() -> Non
         precompute.probe_indextts_endpoint_contract(
             client=FakeClient(),
             expected_input_count=25,
+            require_batch_match=False,
         )
 
 
@@ -387,7 +452,9 @@ def test_package_canary_manifest_is_deterministic_bounded_and_no_dispatch(
                     ]
                 },
             },
-        )()
+        )(),
+        expected_input_count=24,
+        require_batch_match=False,
     )
     plan = _regeneration_plan()
 
@@ -869,9 +936,12 @@ def test_cached_bucket_audio_entry_prefers_remote_mp3(monkeypatch) -> None:
     assert entry["bucketAudioUri"] == "hf://buckets/Publicus/abby-voice/run-1/audio/abby-tts-1234.wav"
 
 
-def test_batch_upload_request_data_appends_bucket_uri_by_default(monkeypatch) -> None:
+def test_batch_upload_request_data_defaults_to_live_29_field_contract(monkeypatch) -> None:
     monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", raising=False)
     monkeypatch.delenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_SUBDIR", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_MODE", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_AUTO_UPLOAD_ENABLED", raising=False)
     reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
 
     data = precompute.batch_upload_request_data(
@@ -881,10 +951,52 @@ def test_batch_upload_request_data_appends_bucket_uri_by_default(monkeypatch) ->
         "hf://buckets/Publicus/abby-voice/run-1",
     )
 
-    # Must end with the bucket URI
-    assert data[-1] == "hf://buckets/Publicus/abby-voice/run-1"
-    # Texts encoded as JSON string (default batch format)
+    assert len(data) == 29
     assert data[2] == '["hello", "world"]'
+    assert data[25] == "hf://buckets/Publicus/abby-voice/run-1"
+    assert data[26] == ""
+    assert data[27] == "auto"
+    assert data[28] is True
+
+
+def test_batch_upload_request_data_preserves_legacy_26_field_contract(monkeypatch) -> None:
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", raising=False)
+    reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
+
+    data = precompute.batch_upload_request_data(
+        ["hello"],
+        reference,
+        "Same voice",
+        "hf://buckets/Publicus/abby-voice/run-1",
+        input_count=26,
+    )
+
+    assert len(data) == 26
+    assert data[25] == "hf://buckets/Publicus/abby-voice/run-1"
+
+
+def test_batch_upload_request_data_supports_live_tail_overrides(monkeypatch) -> None:
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", raising=False)
+    reference = {"path": "/tmp/ref.wav", "meta": {"_type": "gradio.FileData"}}
+
+    data = precompute.batch_upload_request_data(
+        ["hello"],
+        reference,
+        "Same voice",
+        "hf://buckets/Publicus/abby-voice",
+        upload_subdir="runs/canary",
+        upload_mode="batch_files",
+        auto_upload_enabled=False,
+    )
+
+    assert data[25:] == [
+        "hf://buckets/Publicus/abby-voice",
+        "runs/canary",
+        "batch_files",
+        False,
+    ]
 
 
 def test_batch_upload_request_data_supports_template(monkeypatch) -> None:
@@ -904,24 +1016,36 @@ def test_batch_upload_request_data_supports_template(monkeypatch) -> None:
     assert data == [reference, ["hi"], "Same voice", "hf://buckets/Publicus/abby-voice/run-1"]
 
 
-def test_direct_batch_upload_synthesis_returns_bucket_uris(monkeypatch) -> None:
+def test_direct_batch_upload_synthesis_uses_actual_returned_filenames(monkeypatch) -> None:
+    queued: list[tuple[int, list]] = []
+
     class FakeClient:
         def queue_join(self, fn_index: int, data: list, **_: object) -> str:
+            queued.append((fn_index, data))
             return "session-upload-1"
 
     monkeypatch.setattr(precompute, "indextts_space_client", lambda: FakeClient())
     monkeypatch.setattr(
         precompute,
         "wait_for_result",
-        lambda session_hash: {"data": []},
+        lambda session_hash: {
+            "data": [
+                {"path": "/tmp/gradio/spk_1780000000-item-1.wav"},
+                [
+                    {"path": "/tmp/gradio/spk_1780000000-item-1.wav"},
+                    {"path": "/tmp/gradio/spk_1780000000-item-2.wav"},
+                ],
+                {"path": "/tmp/gradio/spk_1780000000-batch.zip"},
+            ]
+        },
     )
     monkeypatch.setattr(precompute, "indextts_batch_upload_api_name", lambda: "/gen_batch_with_upload")
     monkeypatch.setattr(precompute, "lookup_dependency_id_by_api_name", lambda _config, _name: 10)
-    monkeypatch.setattr(precompute, "lookup_dependency_input_count", lambda _config, _fn: 26)
+    monkeypatch.setattr(precompute, "lookup_dependency_input_count", lambda _config, _fn: 29)
     monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", raising=False)
     monkeypatch.delenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", raising=False)
 
-    config = {"dependencies": [{"id": 10, "api_name": "/gen_batch_with_upload", "inputs": list(range(26))}]}
+    config = {"dependencies": [{"id": 10, "api_name": "/gen_batch_with_upload", "inputs": list(range(29))}]}
     reference = {"path": "/tmp/ref.wav"}
 
     results = precompute.direct_batch_upload_synthesis(
@@ -934,8 +1058,51 @@ def test_direct_batch_upload_synthesis_returns_bucket_uris(monkeypatch) -> None:
     )
 
     assert len(results) == 2
+    assert len(queued) == 1
+    assert len(queued[0][1]) == 29
+    assert queued[0][1][25:] == [
+        "hf://buckets/Publicus/abby-voice/run-1",
+        "",
+        "auto",
+        True,
+    ]
     assert results[0]["batchMode"] == "batch-upload"
-    assert results[0]["bucketMp3Uri"] == "hf://buckets/Publicus/abby-voice/run-1/audio/abby-tts-aaa.mp3"
-    assert results[1]["bucketAudioUri"] == "hf://buckets/Publicus/abby-voice/run-1/audio/abby-tts-bbb.wav"
-    assert results[0]["preferredBucketAudioUri"] == results[0]["bucketMp3Uri"]
+    assert results[0]["responseId"] == "abby-tts-aaa"
+    assert results[0]["uploadedFilename"] == "spk_1780000000-item-1.wav"
+    assert results[0]["bucketAudioUri"] == (
+        "hf://buckets/Publicus/abby-voice/run-1/spk_1780000000-item-1.wav"
+    )
+    assert results[1]["bucketAudioUri"] == (
+        "hf://buckets/Publicus/abby-voice/run-1/spk_1780000000-item-2.wav"
+    )
+    assert "abby-tts-aaa" not in results[0]["bucketAudioUri"]
+    assert "bucketMp3Uri" not in results[0]
+    assert results[0]["preferredBucketAudioUri"] == results[0]["bucketAudioUri"]
     assert "audio" not in results[0]
+
+
+def test_direct_batch_upload_fails_closed_without_authoritative_filenames(monkeypatch) -> None:
+    class FakeClient:
+        def queue_join(self, fn_index: int, data: list, **_: object) -> str:
+            return "session-upload-1"
+
+    monkeypatch.setattr(precompute, "indextts_space_client", lambda: FakeClient())
+    monkeypatch.setattr(precompute, "wait_for_result", lambda session_hash: {"data": []})
+    monkeypatch.setattr(precompute, "indextts_batch_upload_api_name", lambda: "/gen_batch_with_upload")
+    monkeypatch.setattr(precompute, "lookup_dependency_id_by_api_name", lambda _config, _name: 8)
+    monkeypatch.setattr(precompute, "lookup_dependency_input_count", lambda _config, _fn: 29)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", raising=False)
+    monkeypatch.delenv("WALLET_INDEXTTS_BATCH_DATA_TEMPLATE", raising=False)
+
+    with pytest.raises(
+        precompute.IndexTTSUploadResultUnverifiableError,
+        match="authoritative audio filename",
+    ):
+        precompute.direct_batch_upload_synthesis(
+            ["hello"],
+            {"dependencies": []},
+            {"path": "/tmp/ref.wav"},
+            "Same voice",
+            "hf://buckets/Publicus/abby-voice/run-1",
+            ["abby-tts-aaa"],
+        )

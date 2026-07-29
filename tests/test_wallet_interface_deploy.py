@@ -75,6 +75,52 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "storage-retention.example.json" in readme
 
 
+def test_wallet_voice_deploy_defaults_use_publicus_batch_primary() -> None:
+    compose = (DEPLOY_ROOT / "docker-compose.wallet.yml").read_text(encoding="utf-8")
+    production_env = (DEPLOY_ROOT / "env.production.example").read_text(encoding="utf-8")
+
+    for rendered in (compose, production_env):
+        assert "https://publicus-indextts-2-demo.hf.space" in rendered
+        assert "https://indexteam-indextts-2-demo.hf.space" in rendered
+        assert "Publicus/IndexTTS-2-Demo" in rendered
+        assert "IndexTeam/IndexTTS-2-Demo" in rendered
+        assert "WALLET_INDEXTTS_BATCH_API_NAME" in rendered
+        assert "gen_batch" in rendered
+        assert "WALLET_INDEXTTS_BATCH_ENABLED" in rendered
+        assert "WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS" in rendered
+        assert "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_URLS" in rendered
+        assert "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_REFERENCE_AUDIO" in rendered
+
+    assert (
+        "WALLET_INDEXTTS_SPACE_URL=https://publicus-indextts-2-demo.hf.space"
+        in production_env
+    )
+    assert "WALLET_INDEXTTS_BATCH_FN_INDEX=" in production_env
+    assert "WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS=95" in production_env
+    assert (
+        "WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS: "
+        "${WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS:-95}"
+    ) in compose
+    assert (
+        "WALLET_INDEXTTS_BATCH_FN_INDEX: ${WALLET_INDEXTTS_BATCH_FN_INDEX:-}"
+        in compose
+    )
+    assert "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TIMEOUT_SECONDS=900" in production_env
+    assert "IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND=remote-proxy" in production_env
+    assert (
+        "IPFS_DATASETS_VOICE_PROXY_INFER_URL="
+        "http://wallet-api:8000/voice/indextts/infer"
+    ) in production_env
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TIMEOUT_SECONDS: "
+        "${IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TIMEOUT_SECONDS:-900}"
+    ) in compose
+    assert (
+        "IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND: "
+        "${IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND:-remote-proxy}"
+    ) in compose
+
+
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     api_manifest = (K8S_ROOT / "api-deployment.yaml").read_text(encoding="utf-8")
     ops_manifest = (K8S_ROOT / "ops-deployment.yaml").read_text(encoding="utf-8")

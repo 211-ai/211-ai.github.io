@@ -49,6 +49,17 @@ DEFAULT_OUTPUT_DIR = REPO_ROOT / "wallet_interface/ui/public/assets/audio/precom
 DEFAULT_MANIFEST = REPO_ROOT / "docs/211_indextts_precompute_manifest.json"
 DEFAULT_PUBLIC_MANIFEST = DEFAULT_OUTPUT_DIR / "manifest.json"
 DEFAULT_SLOTTED_RESPONSE_INDEX = REPO_ROOT / "wallet_interface/ui/public/assets/rag/slotted-response-index.json"
+DEFAULT_INDEXTTS_SPACE_URL = "https://publicus-indextts-2-demo.hf.space"
+DEFAULT_INDEXTTS_MODEL_NAME = "Publicus/IndexTTS-2-Demo"
+DEFAULT_INDEXTTS_REMOTE_BATCH_SIZE = 4
+INDEXTTS_TOKEN_ENV_NAMES = (
+    "HF_TOKEN",
+    "WALLET_INDEXTTS_HF_TOKEN",
+    "HUGGINGFACEHUB_API_TOKEN",
+    "IPFS_DATASETS_PY_HF_API_TOKEN",
+    "HUGGINGFACE_API_TOKEN",
+    "HUGGINGFACE_HUB_TOKEN",
+)
 SLOTTED_RESPONSE_FIELDS = (
     "slottedIntentIds",
     "slottedCanonicalQueryTemplates",
@@ -62,6 +73,10 @@ class IndexTTSQuotaExceededError(RuntimeError):
     def __init__(self, message: str, *, retry_after: str = "") -> None:
         super().__init__(message)
         self.retry_after = retry_after
+
+
+class IndexTTSUploadResultUnverifiableError(RuntimeError):
+    """Raised when a remote upload cannot be mapped to authoritative object URIs."""
 
 
 def indextts_retry_after_hint(value: Any) -> str:
@@ -1420,7 +1435,7 @@ def load_resolve_secret() -> Any:
 def load_secret_env() -> None:
     """Best-effort load HF token/billing env from ~/.ipfs_datasets/secrets.json."""
     resolve_secret = load_resolve_secret()
-    if resolve_secret:
+    if resolve_secret and not current_huggingface_token():
         token = (
             resolve_secret(
                 "WALLET_INDEXTTS_HF_TOKEN",
@@ -1434,6 +1449,16 @@ def load_secret_env() -> None:
         ).strip()
         if token and not os.getenv("HF_TOKEN"):
             os.environ["HF_TOKEN"] = token
+
+    if not current_huggingface_token():
+        try:
+            from huggingface_hub import get_token
+
+            cached_token = str(get_token() or "").strip()
+        except Exception:
+            cached_token = ""
+        if cached_token:
+            os.environ["HF_TOKEN"] = cached_token
 
     path = Path(os.path.expanduser("~/.ipfs_datasets/secrets.json"))
     if path.exists():
@@ -1450,7 +1475,19 @@ def load_secret_env() -> None:
 
 
 def indextts_base_url() -> str:
-    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", DEFAULT_INDEXTTS_SPACE_URL).strip().rstrip("/")
+
+
+def indextts_model_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_MODEL_NAME", DEFAULT_INDEXTTS_MODEL_NAME).strip() or DEFAULT_INDEXTTS_MODEL_NAME
+
+
+def current_huggingface_token() -> str:
+    for name in INDEXTTS_TOKEN_ENV_NAMES:
+        token = str(os.getenv(name) or "").strip()
+        if token:
+            return token
+    return ""
 
 
 def indextts_timeout() -> float:
@@ -1461,11 +1498,12 @@ def indextts_timeout() -> float:
 
 
 def indextts_headers(*, accept: str = "application/json") -> dict[str, str]:
+    load_secret_env()
     headers = {
         "Accept": accept,
         "User-Agent": "211-ai-indextts-precompute/1.0",
     }
-    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACEHUB_API_TOKEN") or os.getenv("IPFS_DATASETS_PY_HF_API_TOKEN")
+    token = current_huggingface_token()
     if token:
         headers["Authorization"] = f"Bearer {token}"
     bill_to = os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus"
@@ -1488,11 +1526,12 @@ _INDEXTTS_SPACE_CLIENT_KEY = ""
 def indextts_space_client() -> HFSpaceClient:
     global _INDEXTTS_SPACE_CLIENT
     global _INDEXTTS_SPACE_CLIENT_KEY
+    load_secret_env()
     cache_key = "|".join(
         (
             indextts_base_url(),
             str(indextts_timeout()),
-            str(os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACEHUB_API_TOKEN") or os.getenv("IPFS_DATASETS_PY_HF_API_TOKEN") or ""),
+            current_huggingface_token(),
             str(os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus"),
         )
     )
@@ -1689,6 +1728,11 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
     batch_input_count = lookup_dependency_input_count(config, batch_fn_index) if batch_fn_index is not None else None
     batch_upload_api_name = indextts_batch_upload_api_name()
     batch_upload_fn_index = lookup_dependency_id_by_api_name(config, batch_upload_api_name)
+    batch_upload_input_count = (
+        lookup_dependency_input_count(config, batch_upload_fn_index)
+        if batch_upload_fn_index is not None
+        else None
+    )
     upload_results_api_name = indextts_upload_generated_results_api_name()
     upload_results_fn_index = lookup_dependency_id_by_api_name(config, upload_results_api_name)
     auto_upload_results_api_name = indextts_auto_upload_generated_results_api_name()
@@ -1710,6 +1754,7 @@ def indextts_contract_summary(config: Mapping[str, Any], single_fn_index: int | 
         "batchUploadApiName": batch_upload_api_name,
         "batchUploadRegistered": batch_upload_fn_index is not None,
         "batchUploadFnIndex": batch_upload_fn_index,
+        "batchUploadInputCount": batch_upload_input_count,
         "uploadResultsApiName": upload_results_api_name,
         "uploadResultsRegistered": upload_results_fn_index is not None,
         "uploadResultsFnIndex": upload_results_fn_index,
@@ -1741,7 +1786,11 @@ def probe_indextts_endpoint_contract(
     config: Mapping[str, Any] | None = None,
     expected_api_name: str = "/gen_single",
     expected_fn_index: int = 6,
-    expected_input_count: int = 24,
+    expected_input_count: int = 25,
+    expected_batch_api_name: str = "/gen_batch",
+    expected_batch_fn_index: int = 7,
+    expected_batch_input_count: int = 25,
+    require_batch_match: bool = True,
     require_match: bool = True,
 ) -> dict[str, Any]:
     """Return a canonical receipt for a read-only IndexTTS config probe.
@@ -1763,9 +1812,24 @@ def probe_indextts_endpoint_contract(
         or expected_input_count <= 0
     ):
         raise ValueError("expected_input_count must be a positive integer")
+    if (
+        isinstance(expected_batch_fn_index, bool)
+        or not isinstance(expected_batch_fn_index, int)
+        or expected_batch_fn_index < 0
+    ):
+        raise ValueError("expected_batch_fn_index must be a non-negative integer")
+    if (
+        isinstance(expected_batch_input_count, bool)
+        or not isinstance(expected_batch_input_count, int)
+        or expected_batch_input_count <= 0
+    ):
+        raise ValueError("expected_batch_input_count must be a positive integer")
     normalized_expected_api = "/" + str(expected_api_name or "").strip().lstrip("/")
     if normalized_expected_api == "/":
         raise ValueError("expected_api_name is required")
+    normalized_expected_batch_api = "/" + str(expected_batch_api_name or "").strip().lstrip("/")
+    if normalized_expected_batch_api == "/":
+        raise ValueError("expected_batch_api_name is required")
 
     active_client = client
     if config is None:
@@ -1780,6 +1844,7 @@ def probe_indextts_endpoint_contract(
     if not isinstance(dependencies, list):
         dependencies = []
     observed_dependency: Mapping[str, Any] | None = None
+    observed_batch_dependency: Mapping[str, Any] | None = None
     registered_api_names: list[str] = []
     for dependency in dependencies:
         if not isinstance(dependency, Mapping):
@@ -1791,6 +1856,8 @@ def probe_indextts_endpoint_contract(
         registered_api_names.append(api_name)
         if api_name == normalized_expected_api:
             observed_dependency = dependency
+        if api_name == normalized_expected_batch_api:
+            observed_batch_dependency = dependency
 
     observed_fn_index: int | None = None
     observed_input_count: int | None = None
@@ -1804,6 +1871,18 @@ def probe_indextts_endpoint_contract(
         if isinstance(inputs, list):
             observed_input_count = len(inputs)
 
+    observed_batch_fn_index: int | None = None
+    observed_batch_input_count: int | None = None
+    if observed_batch_dependency is not None:
+        raw_batch_id = observed_batch_dependency.get("id")
+        if isinstance(raw_batch_id, int) and not isinstance(raw_batch_id, bool):
+            observed_batch_fn_index = raw_batch_id
+        elif isinstance(raw_batch_id, str) and raw_batch_id.strip().isdigit():
+            observed_batch_fn_index = int(raw_batch_id.strip())
+        batch_inputs = observed_batch_dependency.get("inputs")
+        if isinstance(batch_inputs, list):
+            observed_batch_input_count = len(batch_inputs)
+
     drift_reasons: list[str] = []
     if observed_dependency is None:
         drift_reasons.append("api_name_not_registered")
@@ -1811,6 +1890,13 @@ def probe_indextts_endpoint_contract(
         drift_reasons.append("function_index_mismatch")
     if observed_input_count != expected_input_count:
         drift_reasons.append("input_count_mismatch")
+    if require_batch_match:
+        if observed_batch_dependency is None:
+            drift_reasons.append("batch_api_name_not_registered")
+        if observed_batch_fn_index != expected_batch_fn_index:
+            drift_reasons.append("batch_function_index_mismatch")
+        if observed_batch_input_count != expected_batch_input_count:
+            drift_reasons.append("batch_input_count_mismatch")
 
     api_names = sorted(set(registered_api_names))
     batch_registered = "/gen_batch" in api_names
@@ -1867,6 +1953,9 @@ def probe_indextts_endpoint_contract(
     )
     receipt = {
         **identity,
+        "batch_api_name": normalized_expected_batch_api,
+        "batch_function_index": observed_batch_fn_index,
+        "batch_input_count": observed_batch_input_count,
         "compatible": not drift_reasons,
         "contract_id": contract_id,
         "drift_reasons": drift_reasons,
@@ -1874,6 +1963,10 @@ def probe_indextts_endpoint_contract(
             "api_name": normalized_expected_api,
             "function_index": expected_fn_index,
             "input_count": expected_input_count,
+            "batch_api_name": normalized_expected_batch_api,
+            "batch_function_index": expected_batch_fn_index,
+            "batch_input_count": expected_batch_input_count,
+            "require_batch_match": require_batch_match,
         },
         "probe_method": "GET config",
         "registered_api_names": api_names,
@@ -2070,8 +2163,28 @@ def batch_upload_request_data(
     bucket_uri: str,
     *,
     input_count: int | None = None,
+    upload_subdir: str | None = None,
+    upload_mode: str | None = None,
+    auto_upload_enabled: bool | None = None,
 ) -> list[Any]:
     text_list = [str(text) for text in texts]
+    resolved_subdir = (
+        os.getenv("WALLET_INDEXTTS_BATCH_UPLOAD_SUBDIR", "")
+        if upload_subdir is None
+        else str(upload_subdir)
+    ).strip()
+    resolved_mode = (
+        os.getenv("WALLET_INDEXTTS_BATCH_UPLOAD_MODE", "auto")
+        if upload_mode is None
+        else str(upload_mode)
+    ).strip() or "auto"
+    if auto_upload_enabled is None:
+        resolved_auto_upload = (
+            os.getenv("WALLET_INDEXTTS_BATCH_AUTO_UPLOAD_ENABLED", "1").strip().lower()
+            not in {"0", "false", "no", "off"}
+        )
+    else:
+        resolved_auto_upload = bool(auto_upload_enabled)
     raw_template = os.getenv("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE", "").strip()
     if raw_template:
         rendered = (
@@ -2080,14 +2193,46 @@ def batch_upload_request_data(
             .replace("{voice_description}", json.dumps(voice_description))
             .replace("{reference_audio}", json.dumps(reference_audio))
             .replace("{bucket_uri}", json.dumps(str(bucket_uri or "")))
+            .replace("{upload_subdir}", json.dumps(resolved_subdir))
+            .replace("{upload_mode}", json.dumps(resolved_mode))
+            .replace("{auto_upload_enabled}", json.dumps(resolved_auto_upload))
         )
         parsed = json.loads(rendered)
         if not isinstance(parsed, list):
             raise RuntimeError("WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE must render to a JSON array")
         return parsed
-    # Default: same layout as the regular batch but with bucket_uri appended.
-    base = list(batch_request_data(texts, reference_audio, voice_description, input_count=input_count))
-    base.append(str(bucket_uri or ""))
+
+    resolved_input_count = 29 if input_count is None else input_count
+    if (
+        isinstance(resolved_input_count, bool)
+        or not isinstance(resolved_input_count, int)
+        or resolved_input_count < 24
+    ):
+        raise ValueError("batch upload input_count must be an integer of at least 24")
+    if resolved_input_count > 29:
+        raise RuntimeError(
+            f"Unsupported {resolved_input_count}-field batch upload contract; "
+            "set WALLET_INDEXTTS_BATCH_UPLOAD_DATA_TEMPLATE explicitly"
+        )
+
+    # Fields 1-25 match /gen_batch. Legacy upload deployments exposed only
+    # field 26 (bucket URI); the live Publicus endpoint adds fields 27-29.
+    base_input_count = min(resolved_input_count, 25)
+    base = list(
+        batch_request_data(
+            texts,
+            reference_audio,
+            voice_description,
+            input_count=base_input_count,
+        )
+    )
+    upload_tail = [
+        str(bucket_uri or ""),
+        resolved_subdir,
+        resolved_mode,
+        resolved_auto_upload,
+    ]
+    base.extend(upload_tail[: max(0, resolved_input_count - 25)])
     return base
 
 
@@ -2128,6 +2273,13 @@ def find_audio_references(value: Any) -> list[Any]:
     seen: set[str] = set()
 
     def visit(item: Any) -> None:
+        if isinstance(item, str):
+            lowered = item.casefold().split("?", 1)[0]
+            if lowered.endswith((".wav", ".mp3", ".flac", ".ogg")):
+                if item not in seen:
+                    seen.add(item)
+                    refs.append(item)
+            return
         if isinstance(item, Mapping):
             direct = find_audio_reference(item)
             if direct is item:
@@ -2164,6 +2316,61 @@ def gradio_file_key(reference: Any) -> str:
     if isinstance(reference, Mapping):
         return str(reference.get("url") or reference.get("path") or reference.get("name") or json.dumps(reference, sort_keys=True, default=str))
     return str(reference)
+
+
+def gradio_reference_filename(reference: Any) -> str:
+    """Extract a safe basename from a Gradio file reference."""
+    if isinstance(reference, Mapping):
+        raw_value = (
+            reference.get("path")
+            or reference.get("name")
+            or reference.get("url")
+            or ""
+        )
+    else:
+        raw_value = reference
+    raw = urllib_parse.unquote(str(raw_value or "").strip())
+    if not raw:
+        raise IndexTTSUploadResultUnverifiableError(
+            "IndexTTS upload result contained an empty file reference"
+        )
+    parsed = urllib_parse.urlparse(raw)
+    candidate = parsed.path or raw
+    if "/file=" in candidate:
+        candidate = candidate.rsplit("/file=", 1)[1]
+    filename = Path(candidate).name
+    if (
+        not filename
+        or filename in {".", ".."}
+        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", filename)
+        or Path(filename).suffix.casefold() not in {".wav", ".mp3", ".flac", ".ogg"}
+    ):
+        raise IndexTTSUploadResultUnverifiableError(
+            f"IndexTTS upload result did not expose a safe audio filename: {raw!r}"
+        )
+    return filename
+
+
+def hf_bucket_upload_target(bucket_uri: str, upload_subdir: str = "") -> str:
+    base = str(bucket_uri or "").strip().rstrip("/")
+    parsed = urllib_parse.urlparse(base)
+    if parsed.scheme != "hf" or parsed.netloc != "buckets" or len([part for part in parsed.path.split("/") if part]) < 2:
+        raise IndexTTSUploadResultUnverifiableError(
+            f"Cannot derive uploaded object URIs from invalid HF bucket URI {base!r}"
+        )
+    suffix = str(upload_subdir or "").strip().strip("/")
+    if suffix:
+        parts = suffix.split("/")
+        if any(
+            part in {"", ".", ".."}
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", part)
+            for part in parts
+        ):
+            raise IndexTTSUploadResultUnverifiableError(
+                f"Cannot derive uploaded object URIs from unsafe bucket subdirectory {suffix!r}"
+            )
+        return f"{base}/{suffix}"
+    return base
 
 
 def dedupe_gradio_references(references: Sequence[Any]) -> list[Any]:
@@ -2309,10 +2516,14 @@ def direct_batch_upload_synthesis(
 ) -> list[dict[str, Any]]:
     """Trigger gen_batch_with_upload on the Space. The Space generates audio
     and uploads it directly to bucket_uri; no audio bytes are downloaded locally.
-    Returns per-item results with deterministic bucket URIs."""
+    Returns per-item results only when the actual uploaded filenames can be
+    derived from the endpoint response."""
     text_list = [str(text) for text in texts]
     if not text_list:
         return []
+    response_id_list = [str(response_id) for response_id in response_ids]
+    if len(response_id_list) != len(text_list):
+        raise ValueError("response_ids must contain exactly one ID per text")
     start = time.perf_counter()
     batch_upload_api_name = indextts_batch_upload_api_name()
     batch_upload_fn_index = lookup_dependency_id_by_api_name(config, batch_upload_api_name)
@@ -2321,32 +2532,96 @@ def direct_batch_upload_synthesis(
             f"IndexTTS batch upload api_name {batch_upload_api_name!r} was not found in the live Space config"
         )
     batch_upload_input_count = lookup_dependency_input_count(config, batch_upload_fn_index)
+    request_payload = batch_upload_request_data(
+        text_list,
+        reference_audio,
+        voice_description,
+        bucket_uri,
+        input_count=batch_upload_input_count,
+    )
+    if len(request_payload) != batch_upload_input_count:
+        raise IndexTTSUploadResultUnverifiableError(
+            f"IndexTTS batch upload request rendered {len(request_payload)} fields "
+            f"for a {batch_upload_input_count}-field live contract"
+        )
+    if len(request_payload) < 29:
+        raise IndexTTSUploadResultUnverifiableError(
+            "Legacy batch upload contract does not expose enough request fields "
+            "to derive the effective remote upload target"
+        )
+
+    request_bucket_uri = str(request_payload[25] or "").strip()
+    request_upload_subdir = str(request_payload[26] or "").strip()
+    request_upload_mode = str(request_payload[27] or "auto").strip() or "auto"
+    raw_auto_upload = request_payload[28]
+    auto_upload_enabled = (
+        raw_auto_upload
+        if isinstance(raw_auto_upload, bool)
+        else str(raw_auto_upload or "").strip().lower() in {"1", "true", "yes", "on"}
+    )
+    if not auto_upload_enabled:
+        raise IndexTTSUploadResultUnverifiableError(
+            "Batch upload request has automatic upload disabled"
+        )
+    per_item_upload_modes = {"auto", "batch_files", "all_artifacts"}
+    if request_upload_mode not in per_item_upload_modes and not (
+        request_upload_mode == "single_preview" and len(text_list) == 1
+    ):
+        raise IndexTTSUploadResultUnverifiableError(
+            f"Upload mode {request_upload_mode!r} does not upload one authoritative file per response"
+        )
+    upload_target = hf_bucket_upload_target(
+        request_bucket_uri,
+        request_upload_subdir,
+    )
+
     session_hash = indextts_space_client().queue_join(
         int(batch_upload_fn_index),
-        batch_upload_request_data(
-            text_list,
-            reference_audio,
-            voice_description,
-            bucket_uri,
-            input_count=batch_upload_input_count,
-        ),
+        request_payload,
     )
-    wait_for_result(session_hash)
+    result = wait_for_result(session_hash)
+    output_values = gradio_output_values(result)
+    uploaded_references = (
+        dedupe_gradio_references(find_audio_references(output_values[1]))
+        if len(output_values) >= 2
+        else []
+    )
+    if len(uploaded_references) != len(text_list):
+        raise IndexTTSUploadResultUnverifiableError(
+            f"IndexTTS batch upload returned {len(uploaded_references)} authoritative "
+            f"audio filename(s) for {len(text_list)} response(s)"
+        )
+    filenames = [gradio_reference_filename(reference) for reference in uploaded_references]
+    if len(set(filenames)) != len(filenames):
+        raise IndexTTSUploadResultUnverifiableError(
+            "IndexTTS batch upload returned duplicate audio filenames"
+        )
+
     batch_latency_ms = int((time.perf_counter() - start) * 1000)
-    targets = bucket_sync_targets(bucket_uri)
-    bucket_audio_base = str(targets.get("audioUri", "")).rstrip("/")
     outputs: list[dict[str, Any]] = []
-    for response_id in list(response_ids)[: len(text_list)]:
-        mp3_uri = f"{bucket_audio_base}/{response_id}.mp3"
-        wav_uri = f"{bucket_audio_base}/{response_id}.wav"
-        outputs.append({
-            "bucketMp3Uri": mp3_uri,
-            "bucketAudioUri": wav_uri,
-            "preferredBucketAudioUri": mp3_uri,
+    for response_id, filename in zip(response_id_list, filenames):
+        remote_uri = f"{upload_target}/{filename}"
+        suffix = Path(filename).suffix.casefold()
+        mime_type = {
+            ".wav": "audio/wav",
+            ".mp3": "audio/mpeg",
+            ".flac": "audio/flac",
+            ".ogg": "audio/ogg",
+        }.get(suffix, mimetypes.guess_type(filename)[0] or "application/octet-stream")
+        output = {
+            "responseId": response_id,
+            "uploadedFilename": filename,
+            "preferredBucketAudioUri": remote_uri,
+            "preferredMimeType": mime_type,
             "latencyMs": batch_latency_ms,
             "batchLatencyMs": batch_latency_ms,
             "batchMode": "batch-upload",
-        })
+        }
+        if suffix == ".mp3":
+            output["bucketMp3Uri"] = remote_uri
+        else:
+            output["bucketAudioUri"] = remote_uri
+        outputs.append(output)
     return outputs
 
 
@@ -2966,8 +3241,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--space-url",
-        default="",
+        default=os.getenv("WALLET_INDEXTTS_SPACE_URL", DEFAULT_INDEXTTS_SPACE_URL).strip() or DEFAULT_INDEXTTS_SPACE_URL,
         help="Override the IndexTTS Space base URL for this invocation.",
+    )
+    parser.add_argument(
+        "--model-name",
+        default=os.getenv("WALLET_INDEXTTS_MODEL_NAME", DEFAULT_INDEXTTS_MODEL_NAME).strip() or DEFAULT_INDEXTTS_MODEL_NAME,
+        help="Provider/model identity recorded in generated manifests.",
     )
     parser.add_argument("--dag", type=Path, default=DEFAULT_DAG)
     parser.add_argument("--results", type=Path, default=DEFAULT_RESULTS)
@@ -2992,8 +3272,30 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--remote-batch-size",
         type=int,
-        default=int(os.getenv("WALLET_INDEXTTS_REMOTE_BATCH_SIZE", "1") or "1"),
+        default=int(
+            os.getenv(
+                "WALLET_INDEXTTS_REMOTE_BATCH_SIZE",
+                str(DEFAULT_INDEXTTS_REMOTE_BATCH_SIZE),
+            )
+            or str(DEFAULT_INDEXTTS_REMOTE_BATCH_SIZE)
+        ),
         help="Send this many uncached responses to the IndexTTS batch endpoint at once when available.",
+    )
+    batch_requirement = parser.add_mutually_exclusive_group()
+    batch_requirement.add_argument(
+        "--require-batch",
+        dest="require_batch",
+        action="store_const",
+        const=True,
+        default=None,
+        help="Fail closed when the configured batch endpoint is unavailable or a batch cannot be completed.",
+    )
+    batch_requirement.add_argument(
+        "--allow-single-fallback",
+        dest="require_batch",
+        action="store_const",
+        const=False,
+        help="Explicitly permit gen_single fallback when batch generation is unavailable.",
     )
     parser.add_argument(
         "--parallel-workers",
@@ -3075,7 +3377,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--canary-max-cost-microusd", type=int, default=None)
     parser.add_argument("--expected-single-api-name", default="/gen_single")
     parser.add_argument("--expected-single-fn-index", type=int, default=6)
-    parser.add_argument("--expected-single-input-count", type=int, default=24)
+    parser.add_argument("--expected-single-input-count", type=int, default=25)
+    parser.add_argument("--expected-batch-api-name", default="/gen_batch")
+    parser.add_argument("--expected-batch-fn-index", type=int, default=7)
+    parser.add_argument("--expected-batch-input-count", type=int, default=25)
+    parser.add_argument(
+        "--allow-batch-contract-drift",
+        action="store_true",
+        help="Probe only the single endpoint contract; intended for explicitly selected legacy Spaces.",
+    )
     parser.add_argument(
         "--bucket-uri",
         default=os.getenv("WALLET_INDEXTTS_BUCKET_URI", "").strip(),
@@ -3098,6 +3408,10 @@ def main() -> None:
     args = parse_args()
     if str(args.space_url or "").strip():
         os.environ["WALLET_INDEXTTS_SPACE_URL"] = str(args.space_url).strip()
+    if str(args.model_name or "").strip():
+        os.environ["WALLET_INDEXTTS_MODEL_NAME"] = str(args.model_name).strip()
+    if args.require_batch is not None:
+        os.environ["WALLET_INDEXTTS_REQUIRE_BATCH"] = "1" if args.require_batch else "0"
     started_at = time.time()
     include_assistant = not args.voice_responses_only
     include_voice = not args.assistant_responses_only
@@ -3118,6 +3432,10 @@ def main() -> None:
             expected_api_name=args.expected_single_api_name,
             expected_fn_index=args.expected_single_fn_index,
             expected_input_count=args.expected_single_input_count,
+            expected_batch_api_name=args.expected_batch_api_name,
+            expected_batch_fn_index=args.expected_batch_fn_index,
+            expected_batch_input_count=args.expected_batch_input_count,
+            require_batch_match=not args.allow_batch_contract_drift,
         )
         print(json.dumps(summary, indent=2, sort_keys=True))
         if args.require_upload_capable_batch:
@@ -3137,6 +3455,10 @@ def main() -> None:
             expected_api_name=args.expected_single_api_name,
             expected_fn_index=args.expected_single_fn_index,
             expected_input_count=args.expected_single_input_count,
+            expected_batch_api_name=args.expected_batch_api_name,
+            expected_batch_fn_index=args.expected_batch_fn_index,
+            expected_batch_input_count=args.expected_batch_input_count,
+            require_batch_match=not args.allow_batch_contract_drift,
         )
         plan = read_regeneration_plan(args.regeneration_plan)
         canary_manifest = build_canary_dispatch_manifest(
@@ -3193,6 +3515,17 @@ def main() -> None:
             print(f"IndexTTS auth: {describe_indextts_auth()}")
             config = indextts_config()
             fn_index = indextts_fn_index(config)
+            if os.getenv("WALLET_INDEXTTS_REQUIRE_BATCH", "").strip().lower() in {"1", "true", "yes"}:
+                probe_indextts_endpoint_contract(
+                    config=config,
+                    expected_api_name=args.expected_single_api_name,
+                    expected_fn_index=args.expected_single_fn_index,
+                    expected_input_count=args.expected_single_input_count,
+                    expected_batch_api_name=args.expected_batch_api_name,
+                    expected_batch_fn_index=args.expected_batch_fn_index,
+                    expected_batch_input_count=args.expected_batch_input_count,
+                    require_batch_match=not args.allow_batch_contract_drift,
+                )
             contract_summary = indextts_contract_summary(config, fn_index)
             if args.require_upload_capable_batch:
                 contract_summary = ensure_upload_capable_batch_contract(config, fn_index)
@@ -3210,7 +3543,10 @@ def main() -> None:
                 preferred_mp3_uri = str(result.get("bucketMp3Uri") or "")
                 preferred_wav_uri = str(result.get("bucketAudioUri") or "")
                 preferred_uri = preferred_mp3_uri or preferred_wav_uri
-                preferred_mime = "audio/mpeg" if preferred_mp3_uri else "audio/wav"
+                preferred_mime = str(
+                    result.get("preferredMimeType")
+                    or ("audio/mpeg" if preferred_mp3_uri else "audio/wav")
+                )
                 entry = {
                     **item,
                     "status": "uploaded",
@@ -3229,7 +3565,13 @@ def main() -> None:
                 if result.get("bucketMp3Uri"):
                     entry["mp3Path"] = str(result["bucketMp3Uri"])
                     entry["mp3MimeType"] = "audio/mpeg"
-                attach_bucket_audio_uris(entry, args.bucket_uri, prefer_mp3=bool(args.write_mp3))
+                    entry["bucketMp3Uri"] = str(result["bucketMp3Uri"])
+                if result.get("bucketAudioUri"):
+                    entry["bucketAudioUri"] = str(result["bucketAudioUri"])
+                if result.get("preferredBucketAudioUri"):
+                    entry["preferredBucketAudioUri"] = str(result["preferredBucketAudioUri"])
+                if result.get("uploadedFilename"):
+                    entry["uploadedFilename"] = str(result["uploadedFilename"])
                 manifest_entries.append(entry)
                 print(f"[{index}/{len(responses)}] uploaded {item['id']} -> {preferred_uri}")
                 write_progress(args.progress_json, manifest_entries, len(responses), started_at)
@@ -3260,10 +3602,15 @@ def main() -> None:
                             response_ids,
                         )
                     except Exception as exc:
-                        if isinstance(exc, IndexTTSQuotaExceededError) or not is_indextts_transient_worker_error(exc):
+                        if isinstance(exc, IndexTTSQuotaExceededError):
+                            raise
+                        if (
+                            not isinstance(exc, IndexTTSUploadResultUnverifiableError)
+                            and not is_indextts_transient_worker_error(exc)
+                        ):
                             raise
                         print(
-                            f"remote upload chunk failed transiently; falling back to local generation + bucket sync: "
+                            f"remote upload chunk was not safely usable; falling back to local generation + canonical bucket sync: "
                             f"{type(exc).__name__}: {exc}"
                         )
                     else:
@@ -3447,7 +3794,7 @@ def main() -> None:
     payload = {
         "schemaVersion": 1,
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "provider": "IndexTeam/IndexTTS-2-Demo",
+        "provider": indextts_model_name(),
         "spaceUrl": indextts_base_url(),
         "referenceAudio": str(args.reference_audio),
         "voiceDescription": args.voice_description,

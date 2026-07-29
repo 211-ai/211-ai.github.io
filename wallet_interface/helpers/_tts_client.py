@@ -6,6 +6,7 @@ All functions in this module require ``ipfs_accelerate_py`` (``HFSpaceClient``).
 
 from __future__ import annotations
 
+import hashlib
 import mimetypes
 import os
 import threading
@@ -38,7 +39,7 @@ from ._tts_gradio import (  # noqa: E402
     _gradio_output_values,
     _normalize_indextts_queue_failure,
 )
-from ._tts_http import _indextts_headers  # noqa: E402
+from ._tts_http import _configured_hf_token, _indextts_headers  # noqa: E402
 
 _INDEXTTS_CACHE_LOCK = threading.Lock()
 _INDEXTTS_CONFIG_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
@@ -53,6 +54,12 @@ _INDEXTTS_SPACE_CLIENT_KEY = ""
 def _indextts_space_client() -> HFSpaceClient:
     global _INDEXTTS_SPACE_CLIENT
     global _INDEXTTS_SPACE_CLIENT_KEY
+    configured_token = _configured_hf_token()
+    token_digest = (
+        hashlib.sha256(configured_token.encode("utf-8")).hexdigest()[:16]
+        if configured_token
+        else ""
+    )
     cache_key = "|".join(
         [
             _indextts_space_base_url(),
@@ -61,9 +68,7 @@ def _indextts_space_client() -> HFSpaceClient:
             os.getenv("WALLET_INDEXTTS_BATCH_API_NAME", ""),
             os.getenv("WALLET_INDEXTTS_HF_BILL_TO", ""),
             os.getenv("IPFS_DATASETS_PY_HF_BILL_TO", ""),
-            os.getenv("HF_TOKEN", ""),
-            os.getenv("HUGGINGFACEHUB_API_TOKEN", ""),
-            os.getenv("IPFS_DATASETS_PY_HF_API_TOKEN", ""),
+            token_digest,
         ]
     )
     if _INDEXTTS_SPACE_CLIENT is not None and cache_key == _INDEXTTS_SPACE_CLIENT_KEY:
@@ -232,4 +237,3 @@ def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
     path = str(reference.get("path") or reference.get("name") or "") if isinstance(reference, Mapping) else str(reference or "")
     mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "") if isinstance(reference, Mapping) else ""
     return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
-

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import base64
 import os
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -33,6 +34,7 @@ from ._tts_config import (  # noqa: E402,F401
     _indextts_api_name,
     _indextts_attempt_timeout_seconds,
     _indextts_batch_api_name,
+    _indextts_batch_enabled,
     _indextts_cache_ttl_seconds,
     _indextts_degraded_error_payload,
     _indextts_endpoint_retry_count,
@@ -41,6 +43,7 @@ from ._tts_config import (  # noqa: E402,F401
     _indextts_fast_fail_mode,
     _indextts_force_require_batch,
     _indextts_model_name,
+    _indextts_require_batch_mode,
     _indextts_single_batch_fallback_enabled,
     _indextts_space_base_url,
     _indextts_space_base_urls,
@@ -166,7 +169,47 @@ def _run_indextts_gradio_batch_tts(
     raise ValueError("IndexTTS batch failed: no configured spaces available")
 
 
-def _run_indextts_tts_with_batch_fallback(
+def _single_tts_response_from_batch(
+    batch: Mapping[str, Any],
+    *,
+    text: str,
+    result_path: str,
+    prior_error: Exception | None = None,
+) -> dict[str, Any]:
+    """Convert a one-item ``gen_batch`` receipt to the wallet TTS envelope."""
+
+    items = batch.get("items")
+    if not isinstance(items, list) or not items:
+        raise ValueError("IndexTTS batch returned no items")
+    first_item = items[0] if isinstance(items[0], Mapping) else {}
+    response: dict[str, Any] = {
+        "audioBase64": str(first_item.get("audioBase64") or ""),
+        "mimeType": str(first_item.get("mimeType") or "audio/wav"),
+        "model": str(batch.get("model") or _indextts_model_name()),
+        "spaceUrl": str(batch.get("spaceUrl") or _indextts_space_base_url()),
+        "provider": str(batch.get("provider") or "huggingface-zero-gpu-gradio"),
+        "billTo": str(
+            batch.get("billTo")
+            or os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
+            or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+            or "publicus"
+        ),
+        "referenceAudio": "",
+        "text": str(first_item.get("text") or text),
+        "originalText": str(first_item.get("originalText") or ""),
+        "latency": {
+            "result_path": result_path,
+            "batch_latency": dict(batch.get("latency") or {}),
+        },
+    }
+    if prior_error is not None:
+        response["latency"]["single_error"] = str(prior_error)
+    if not response["audioBase64"]:
+        raise ValueError("IndexTTS batch did not return audioBase64")
+    return response
+
+
+def _run_indextts_compatibility_tts_with_batch_fallback(
     *,
     text: str,
     voice_description: str | None = None,
@@ -174,6 +217,38 @@ def _run_indextts_tts_with_batch_fallback(
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
 ) -> dict[str, Any]:
+    if _indextts_batch_enabled():
+        try:
+            with _indextts_force_require_batch(True):
+                batch = _run_indextts_gradio_batch_tts(
+                    texts=[text],
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_audio_name,
+                    reference_audio_mime_type=reference_audio_mime_type,
+                )
+            return _single_tts_response_from_batch(
+                batch,
+                text=text,
+                result_path="publicus-batch-primary",
+            )
+        except Exception as batch_exc:
+            if _indextts_require_batch_mode():
+                raise
+            try:
+                return _run_indextts_gradio_tts(
+                    text=text,
+                    voice_description=voice_description,
+                    reference_audio=reference_audio,
+                    reference_audio_name=reference_audio_name,
+                    reference_audio_mime_type=reference_audio_mime_type,
+                )
+            except Exception as single_exc:
+                raise ValueError(
+                    f"IndexTTS batch primary failed and single fallback failed: "
+                    f"batch={batch_exc}; single={single_exc}"
+                ) from single_exc
+
     try:
         return _run_indextts_gradio_tts(
             text=text,
@@ -198,31 +273,93 @@ def _run_indextts_tts_with_batch_fallback(
             raise ValueError(
                 f"IndexTTS single failed and batch fallback failed: single={single_exc}; batch={batch_exc}"
             ) from batch_exc
-        items = batch.get("items") if isinstance(batch, Mapping) else None
-        if not isinstance(items, list) or not items:
-            raise ValueError("IndexTTS batch fallback returned no items") from single_exc
-        first_item = items[0] if isinstance(items[0], Mapping) else {}
-        response: dict[str, Any] = {
-            "audioBase64": str(first_item.get("audioBase64") or ""),
-            "mimeType": str(first_item.get("mimeType") or "audio/wav"),
-            "model": str(batch.get("model") or _indextts_model_name()) if isinstance(batch, Mapping) else _indextts_model_name(),
-            "spaceUrl": str(batch.get("spaceUrl") or _indextts_space_base_url()) if isinstance(batch, Mapping) else _indextts_space_base_url(),
-            "provider": str(batch.get("provider") or "huggingface-zero-gpu-gradio") if isinstance(batch, Mapping) else "huggingface-zero-gpu-gradio",
-            "billTo": str(batch.get("billTo") or os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus")
-            if isinstance(batch, Mapping)
-            else (os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus"),
-            "referenceAudio": "",
-            "text": str(first_item.get("text") or text),
-            "originalText": str(first_item.get("originalText") or ""),
-            "latency": {
-                "result_path": "single-batch-fallback",
-                "single_error": str(single_exc),
-                "batch_latency": dict(batch.get("latency") or {}) if isinstance(batch, Mapping) else {},
-            },
-        }
-        if not response["audioBase64"]:
-            raise ValueError("IndexTTS batch fallback did not return audioBase64") from single_exc
-        return response
+        try:
+            return _single_tts_response_from_batch(
+                batch,
+                text=text,
+                result_path="single-batch-fallback",
+                prior_error=single_exc,
+            )
+        except ValueError as response_exc:
+            raise response_exc from single_exc
 
 
+def _run_indextts_tts_with_batch_fallback(
+    *,
+    text: str,
+    voice_description: str | None = None,
+    reference_audio: bytes | None = None,
+    reference_audio_name: str | None = None,
+    reference_audio_mime_type: str | None = None,
+) -> dict[str, Any]:
+    """Use package-native Publicus synthesis, retaining the wallet fallback."""
+
+    try:
+        from ._voice_router_adapter import (  # noqa: WPS433
+            _PackageFirstTTSProvider,
+            _package_indextts_tts_provider,
+        )
+
+        package_provider = _package_indextts_tts_provider()
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError):
+        package_provider = None
+    if package_provider is None:
+        return _run_indextts_compatibility_tts_with_batch_fallback(
+            text=text,
+            voice_description=voice_description,
+            reference_audio=reference_audio,
+            reference_audio_name=reference_audio_name,
+            reference_audio_mime_type=reference_audio_mime_type,
+        )
+
+    provider = _PackageFirstTTSProvider(package_provider)
+    audio = provider.synthesize(
+        text,
+        voice=voice_description,
+        reference_audio=reference_audio,
+        reference_audio_name=reference_audio_name,
+        reference_audio_mime_type=reference_audio_mime_type,
+    )
+    compatibility_result = provider.compatibility_provider.last_result
+    if provider.last_backend == "wallet-gradio-compatibility" and compatibility_result:
+        return dict(compatibility_result)
+
+    receipt = provider.last_receipt
+    receipt_to_dict = getattr(receipt, "to_dict", None)
+    try:
+        receipt_payload = receipt_to_dict() if callable(receipt_to_dict) else {}
+    except Exception:
+        receipt_payload = {}
+    selected_endpoint = str(
+        getattr(receipt, "selected_endpoint", "")
+        or (
+            package_provider.endpoints[0]
+            if getattr(package_provider, "endpoints", ())
+            else _indextts_space_base_url()
+        )
+    )
+    spoken_text = provider.last_spoken_text or _normalize_indextts_spoken_text(text)
+    return {
+        "audioBase64": base64.b64encode(audio).decode("ascii"),
+        "mimeType": "audio/wav",
+        "model": str(
+            getattr(package_provider, "default_model", "")
+            or _indextts_model_name()
+        ),
+        "spaceUrl": selected_endpoint,
+        "provider": "ipfs_accelerate_py-abby-indextts",
+        "billTo": (
+            os.getenv("IPFS_ACCELERATE_PY_ABBY_HF_BILL_TO")
+            or os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
+            or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+            or "publicus"
+        ),
+        "referenceAudio": "",
+        "text": spoken_text,
+        "originalText": text if text != spoken_text else "",
+        "latency": {
+            "result_path": provider.last_backend,
+            "provider_receipt": receipt_payload,
+        },
+    }
 

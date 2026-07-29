@@ -45,21 +45,40 @@ def _cors_origins_from_env() -> list[str]:
 
 def _prepare_hf_router_environment(kwargs: dict[str, Any] | None = None) -> dict[str, Any]:
     """Make encrypted HF credentials visible to ipfs_datasets_py router helpers."""
-    if not _APP_OPTIONAL_DEPS_AVAILABLE or resolve_secret is None:
-        return dict(kwargs or {})
-    token = (
-        resolve_secret(
+    token = ""
+    if _APP_OPTIONAL_DEPS_AVAILABLE and resolve_secret is not None:
+        try:
+            token = str(
+                resolve_secret(
+                    "WALLET_INDEXTTS_HF_TOKEN",
+                    "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TOKEN",
+                    "IPFS_DATASETS_PY_HF_API_TOKEN",
+                    "HF_TOKEN",
+                    "HUGGINGFACEHUB_API_TOKEN",
+                    "HUGGINGFACE_API_TOKEN",
+                    "HUGGINGFACE_HUB_TOKEN",
+                    "HF_API_TOKEN",
+                )
+                or ""
+            ).strip()
+        except (OSError, RuntimeError, ValueError):
+            token = ""
+    if not token:
+        # Lazy import avoids an app -> TTS HTTP -> app import cycle while also
+        # honoring the token cached by `hf auth login` for host processes.
+        try:
+            from ._tts_http import _configured_hf_token  # noqa: WPS433
+
+            token = _configured_hf_token()
+        except ImportError:  # pragma: no cover - minimal wallet install.
+            token = ""
+    if token:
+        for key in (
             "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TOKEN",
             "HF_TOKEN",
             "HUGGINGFACEHUB_API_TOKEN",
-            "HUGGINGFACE_API_TOKEN",
-            "HUGGINGFACE_HUB_TOKEN",
-            "HF_API_TOKEN",
-        )
-        or ""
-    ).strip()
-    if token:
-        for key in ("IPFS_DATASETS_PY_HF_API_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN"):
+        ):
             if not os.getenv(key, "").strip():
                 os.environ[key] = token
     bill_to = (
@@ -70,7 +89,12 @@ def _prepare_hf_router_environment(kwargs: dict[str, Any] | None = None) -> dict
     ).strip()
     if bill_to:
         os.environ.setdefault("IPFS_DATASETS_PY_HF_BILL_TO", bill_to)
+        os.environ.setdefault("IPFS_ACCELERATE_PY_ABBY_HF_BILL_TO", bill_to)
         os.environ.setdefault("HUGGINGFACE_BILL_TO", bill_to)
+    os.environ.setdefault(
+        "IPFS_ACCELERATE_PY_ABBY_INDEXTTS_MODEL",
+        os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo"),
+    )
     router_kwargs = dict(kwargs or {})
     if bill_to:
         router_kwargs.setdefault("bill_to", bill_to)
@@ -158,4 +182,3 @@ def _wallet_interface_service_from_env() -> WalletInterfaceService:
 
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
-

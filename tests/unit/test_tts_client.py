@@ -71,6 +71,23 @@ class TestIndexttsSpaceClient(unittest.TestCase):
                 c2 = _indextts_space_client()
         self.assertIsNot(c1, c2)
 
+    def test_cached_hf_token_change_refreshes_client_without_storing_secret(self):
+        mock_cls = MagicMock(side_effect=[self._make_mock_client(), self._make_mock_client()])
+        with patch("wallet_interface.helpers._tts_client.HFSpaceClient", mock_cls), \
+             patch(
+                 "wallet_interface.helpers._tts_client._configured_hf_token",
+                 side_effect=["cached-token-one", "cached-token-two"],
+             ):
+            from wallet_interface.helpers import _tts_client as module
+
+            first = module._indextts_space_client()
+            second = module._indextts_space_client()
+
+        self.assertIsNot(first, second)
+        self.assertEqual(mock_cls.call_count, 2)
+        self.assertNotIn("cached-token-one", module._INDEXTTS_SPACE_CLIENT_KEY)
+        self.assertNotIn("cached-token-two", module._INDEXTTS_SPACE_CLIENT_KEY)
+
 
 # ---------------------------------------------------------------------------
 # _indextts_config — TTL caching

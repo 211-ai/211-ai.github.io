@@ -25,10 +25,11 @@ def _import():
 # ---------------------------------------------------------------------------
 
 class TestIndexttsSpaceBaseUrl:
-    def test_default(self):
+    def test_default(self, monkeypatch):
+        monkeypatch.delenv("WALLET_INDEXTTS_SPACE_URL", raising=False)
         m = _import()
         url = m._indextts_space_base_url()
-        assert "hf.space" in url or "huggingface" in url.lower() or url
+        assert url == "https://publicus-indextts-2-demo.hf.space"
 
     def test_env_override(self, monkeypatch):
         m = _import()
@@ -223,6 +224,16 @@ class TestFeatureFlags:
         m = _import()
         assert isinstance(m._indextts_single_batch_fallback_enabled(), bool)
 
+    def test_batch_enabled_defaults_true(self, monkeypatch):
+        monkeypatch.delenv("WALLET_INDEXTTS_BATCH_ENABLED", raising=False)
+        m = _import()
+        assert m._indextts_batch_enabled() is True
+
+    def test_batch_enabled_can_be_disabled(self, monkeypatch):
+        monkeypatch.setenv("WALLET_INDEXTTS_BATCH_ENABLED", "0")
+        m = _import()
+        assert m._indextts_batch_enabled() is False
+
     def test_require_batch_default_false(self):
         m = _import()
         with m._indextts_force_require_batch(False):
@@ -259,11 +270,12 @@ class TestAttemptTimeout:
         t = m._indextts_attempt_timeout_seconds(0, 1)
         assert t == m._indextts_timeout_seconds()
 
-    def test_first_of_many_capped(self):
+    def test_first_of_many_uses_endpoint_budget(self, monkeypatch):
+        monkeypatch.setenv("WALLET_INDEXTTS_ENDPOINT_TIMEOUT_SECONDS", "95")
         m = _import()
         with m._indextts_use_timeout_seconds(180.0):
             t = m._indextts_attempt_timeout_seconds(0, 2)
-        assert t <= 20.0
+        assert t == 95.0
 
     def test_last_of_many_capped(self):
         m = _import()
