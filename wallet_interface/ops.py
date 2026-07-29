@@ -199,11 +199,19 @@ def _bool_env(env: Mapping[str, str] | None, name: str) -> bool | None:
 
 
 def _world_id_production_readiness_checks(env: Mapping[str, str] | None) -> list[dict[str, Any]]:
+    """World ID readiness probes that *delegate* to the thin wrapper / package.
+
+    Configuration load, RP signature vectors, and proof redaction are owned by
+    ``ipfs_datasets_py`` (re-exported via ``wallet_interface.world_id``).  This
+    function only composes operator-facing check records for the ops worker.
+    """
+
     enabled_value = _env(env, "WORLD_ID_ENABLED")
     enabled = _bool_env(env, "WORLD_ID_ENABLED")
     if not enabled_value or enabled is False:
         return []
 
+    # Delegate protocol work through the WALPROC-G130 compatibility wrapper.
     from .world_id import (
         DEFAULT_WORLD_ID_VERIFY_BASE_URL,
         load_world_id_config,
