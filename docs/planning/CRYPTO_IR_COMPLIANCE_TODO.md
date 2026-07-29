@@ -224,7 +224,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-004 Implement Crypto IR compliance objective: Add capabilities, adapters, registries, and non-interchangeable verdicts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
