@@ -1719,7 +1719,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-027 Implement Crypto IR compliance objective: Add the smart-contract safety gate
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
