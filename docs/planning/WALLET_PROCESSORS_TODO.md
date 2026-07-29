@@ -218,7 +218,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-004 Implement wallet processor migration objective: Operate dual-provider agent supervision with bounded refill
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
