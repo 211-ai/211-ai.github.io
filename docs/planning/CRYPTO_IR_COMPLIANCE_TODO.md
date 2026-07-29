@@ -679,7 +679,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-011 Implement Crypto IR compliance objective: Add bounded artifact acquisition, storage, caching, and provenance
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
