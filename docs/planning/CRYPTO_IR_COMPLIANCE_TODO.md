@@ -1329,7 +1329,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-021 Implement Crypto IR compliance objective: Define common and chain-specific security rules
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
