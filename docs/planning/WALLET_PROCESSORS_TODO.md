@@ -2362,10 +2362,10 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Priority: P0
 - Track: validation
 - Depends on: WALPROC-013, WALPROC-017, WALPROC-019, WALPROC-020, WALPROC-021
-- Outputs: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
-- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
-- Predicted files: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Outputs: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py ipfs_datasets_py/tests/contract/processors/wallets/test_bitcoin_conformance.py ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Predicted files: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
 - Goal id: WALPROC-G620-R1
 - Completion authority: local
-- Acceptance subset: Every committed wallet fixture has an exact current digest, the Xaman runtime manifest remains attributed to WALPROC-G210, and the migration baseline continues to verify the WALPROC-G020 formal-assurance evidence embedded in the Xaman fixture bundle.
-- Acceptance: Repair the pre-existing fixture validation failures discovered by WALPROC-027. Deterministically regenerate the wallet fixture digest lock for all committed fixtures and update only the stale Xaman baseline assertions so they recognize the dual WALPROC-G210 runtime and WALPROC-G020 assurance roles without weakening fixture integrity or compatibility checks.
+- Acceptance subset: Every committed wallet fixture has an exact current digest, the Xaman runtime manifest remains attributed to WALPROC-G210, the migration baseline continues to verify the WALPROC-G020 formal-assurance evidence embedded in the Xaman fixture bundle, and lazy-registry tests restore every chain module they temporarily remove from sys.modules.
+- Acceptance: Repair the pre-existing conformance failures discovered by WALPROC-027. Deterministically regenerate the wallet fixture digest lock for all committed fixtures; update only the stale Xaman baseline assertions so they recognize the dual WALPROC-G210 runtime and WALPROC-G020 assurance roles; and make the existing registry-test reset fixture snapshot, remove newly loaded modules, and restore the original chain-module graph so later conformance tests retain one class identity. Do not weaken fixture checks or mask the test-isolation defect in Bitcoin production code.
