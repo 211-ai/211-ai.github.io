@@ -1788,7 +1788,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security
-- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049
 - Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
 - Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
@@ -2335,3 +2335,20 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 - Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
 - Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-048-dependency-guardrail.md
 - Acceptance: Dependency guardrail filed this because WALPROC-021 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-048-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-049 Repair World ID secret-reference representation
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-014
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Goal id: WALPROC-G630-R1
+- Completion authority: local
+- Acceptance subset: WorldIdSecretConfig string and repr surfaces never expose direct secret values or complete secret-reference paths; public and durable serialization retain only the existing bounded source kind and opaque reference identifier.
+- Acceptance: Repair the critical finding discovered by WALPROC-028. Add a focused regression for direct WorldIdSecretConfig repr/str surfaces, redact secret_ref from the dataclass representation without weakening configured/source behavior, and keep raw secret values and full secret-reference paths absent from logs, errors, receipts, and serialization.
