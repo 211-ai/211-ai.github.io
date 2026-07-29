@@ -200,7 +200,6 @@ def _build_shards(
     shard_size: int,
 ) -> list[dict[str, Any]]:
     from ipfs_datasets_py.logic.software_contracts.content import (
-        cid_for_bytes,
         cid_for_structured,
     )
 
@@ -230,6 +229,7 @@ def build_documents(
     _install_import_path(repo_root)
 
     from ipfs_datasets_py.logic.software_contracts.content import (
+        cid_for_bytes,
         cid_for_structured,
     )
     from ipfs_datasets_py.logic.software_contracts.coverage import (
@@ -407,6 +407,12 @@ def build_documents(
             "error_cid": error_cid,
         }
         leaves.append(leaf)
+        if len(leaves) % 500 == 0:
+            print(
+                f"AST baseline: processed {len(leaves)}/{len(eligible)} blobs",
+                file=sys.stderr,
+                flush=True,
+            )
 
     leaf_cids = [cid_for_structured(leaf) for leaf in leaves]
     shards = _build_shards(leaves, leaf_cids, shard_size=shard_size)
