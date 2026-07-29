@@ -13,8 +13,19 @@ Environment=PYTHONUNBUFFERED=1
 Environment=PYTHONPATH=%h/211-AI/211-AI/ipfs_accelerate_py:%h/211-AI/211-AI/ipfs_datasets_py
 Environment=WALLET_INDEXTTS_SPACE_URL=https://publicus-indextts-2-demo.hf.space
 Environment=WALLET_INDEXTTS_MODEL_NAME=Publicus/IndexTTS-2-Demo
+Environment=WALLET_INDEXTTS_HF_BILL_TO=Publicus
 Environment=IPFS_ACCELERATE_PY_ABBY_HF_BILL_TO=Publicus
+Environment=ABBY_TTS_SPACE_REPO_ID=Publicus/IndexTTS-2-Demo
+Environment=ABBY_TTS_EXPECTED_HARDWARE=l40sx1
+Environment=ABBY_TTS_HARDWARE_WAIT_SECONDS=1800
 EnvironmentFile=-%h/.config/211-ai/abby-voice-publicus-regeneration.env
+ExecStartPre=/usr/bin/python3 scripts/wait_for_hf_space_hardware.py \
+  --space-repo-id Publicus/IndexTTS-2-Demo \
+  --expected-hardware l40sx1 \
+  --timeout-seconds 1800 \
+  --poll-interval-seconds 15 \
+  --checkpoint tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-batch-state.json \
+  --wake-sleeping
 ExecStart=/usr/bin/python3 scripts/run_quota_aware_command.py \
   --state tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-batch-state.json \
   --status tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-quota-retry-status.json \
@@ -37,7 +48,7 @@ ExecStart=/usr/bin/python3 scripts/run_quota_aware_command.py \
   --max-runtime-seconds 0
 Restart=on-failure
 RestartSec=60
-RestartPreventExitStatus=75
+RestartPreventExitStatus=75 78
 KillSignal=SIGINT
 TimeoutStopSec=45
 SyslogIdentifier=abby-voice-publicus-regeneration
