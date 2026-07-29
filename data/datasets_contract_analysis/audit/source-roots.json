@@ -7,7 +7,9 @@
     "read_git_objects_not_ambient_walk": true,
     "documentation_not_authority_until_verified": true,
     "unresolved_authority_fails_closed": true,
-    "external_swissknife_read_only": true
+    "external_swissknife_read_only": true,
+    "external_comparison_checkout_required_for_snapshot_check": false,
+    "external_comparison_checkout_required_for_freshness_check": true
   },
   "superproject": {
     "label": "211-AI-superproject",
@@ -507,7 +509,21 @@
     "swissknife_df11f08f_or_explicit_status": true,
     "hallucinate_8dc4f93e_and_package_authority_recorded": true,
     "unresolved_authority_fails_closed": true,
-    "documentation_is_not_authority_until_verified": true
+    "documentation_is_not_authority_until_verified": true,
+    "objective_validation_repair": true
+  },
+  "objective_validation_repair": {
+    "evidence_term": "objective validation repair",
+    "task_id": "DSCON-062",
+    "command": "python scripts/contract_analysis/audit_scope.py --check",
+    "authority_mode": "selected_authority_objects_external_evidence",
+    "validated_artifacts": [
+      "scripts/contract_analysis/audit_scope.py",
+      "data/datasets_contract_analysis/audit/source-roots.json",
+      "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
+      "data/datasets_contract_analysis/audit/ownership-map.md"
+    ],
+    "fail_closed": true
   },
   "blockers": [],
   "hard_blockers": [],

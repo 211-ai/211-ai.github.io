@@ -2,6 +2,7 @@
 
 - Goal: `DSCON-G010`
 - Task: `DSCON-001`
+- Validation repair task: `DSCON-062`
 - Generated: `2026-07-29T15:18:35Z`
 - Freeze status: `frozen`
 - Schema: `datasets_contract_analysis/ownership-map@1`
@@ -62,6 +63,7 @@ are recorded for **revision-mismatch** detection. The **package authority** for
 | Canonical dataset convert | `core_operations/dataset_converter.py` | **retain** / harden | `ipfs_datasets_py.core_operations.DatasetConverter` |
 | Canonical dataset manipulate | *(missing `dataset_manipulator.py`)* | **create** | `ipfs_datasets_py.core_operations.DatasetManipulator` |
 | Legacy DatasetManager | `ipfs_datasets_py/dataset_manager.py` | **deprecate** (mock-success) | thin wrapper over canonical core after repair |
+| Legacy `generate_clusters` methods | `ipfs_datasets_py/ipfs_datasets.py` (2 definitions) | **deprecate** shadowed no-op methods | canonical bounded manipulator operation |
 | MCP load/process/save/convert tools | `mcp_server/tools/dataset_tools/*` | **retain** as thin adapters | must not own manipulation after DSCON-G330 |
 | DataProcessor | `core_operations/data_processor.py` | **retain** (non-manipulator) | keep separate from DatasetManipulator |
 | ipfs_kit DatasetManager shadows | `ipfs_kit_py/.../DatasetManager` (3 copies) | **retain** kit-local until mismatch policy | not package authority; duplicate definition finding |
@@ -82,6 +84,7 @@ are recorded for **revision-mismatch** detection. The **package authority** for
 | `DatasetManager` | class | `ipfs_kit_py/.../ai_ml_integration.py` | **retain** kit-local | kit shadow; not datasets authority |
 | `DatasetManager` | class | `ipfs_kit_py/.../mcp/ai/dataset_manager.py` | **retain** kit-local | kit shadow; duplicate definition |
 | `DatasetManager` | class | `ipfs_kit_py/.../mcp/ai/dataset_management/manager.py` | **retain** kit-local | kit shadow; duplicate definition |
+| `generate_clusters` | async method | `ipfs_datasets_py/ipfs_datasets.py` (2 definitions) | **deprecate** | duplicate/shadowed monolith surface |
 | `load_dataset` | function | MCP + kit + accelerate surfaces | **retain** adapters | thin wrappers over package authority |
 | `process_dataset` | function | MCP tools | **repair** | stop mock-success; delegate to manipulator |
 | `save_dataset` | function | MCP tools | **repair** | stop mock identity; delegate to saver |
@@ -108,6 +111,7 @@ definition**, **missing import**, **weak-test**.
 | `DSCON-DRIFT-011` | weak-test | medium | `dataset tools unit tests` | `ipfs_datasets_py/tests/mcp/unit/test_dataset_tools.py` | open |
 | `DSCON-DRIFT-012` | weak-test | medium | `DatasetManager gherkin stubs` | `ipfs_datasets_py/tests/unit/test_stubs_from_gherkin/test_dataset_manager.py` | open |
 | `DSCON-DRIFT-013` | revision-mismatch-risk | high | `package authority vs Hallucinate vs home checkout` | `external` | open |
+| `DSCON-DRIFT-014` | duplicate-definition | high | `generate_clusters` | `ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py` | open |
 
 ## 6. Authority selection rules (fail closed)
 
@@ -137,5 +141,18 @@ definition**, **missing import**, **weak-test**.
 | Hallucinate `8dc4f93e` + package authority | `source-roots.json` hallucinate_datasets + package_authority |
 | mock-success / nondeterministic / duplicate / missing import / weak-test | `datasets-manipulator-drift.json` findings |
 | Unresolved authority fails closed | `source-roots.json` fail_closed + blockers |
+| objective validation repair | DSCON-062 executable validation contract and pinned-object evidence probes |
+
+## 9. Objective validation repair
+
+DSCON-062 closes the synthetic **objective validation repair** gate by running
+`python scripts/contract_analysis/audit_scope.py --check`. The command validates all four
+authorized artifacts, rehashes pinned commits and trees for the selected
+authority, resolves every documented gitlink from its pinned parent tree, and
+reproduces each required drift category from blobs in those verified revisions.
+Unselected external comparison roots retain their freeze-time path/commit/tree
+evidence; if an isolated validation worker lacks those ambient checkouts, strict
+availability and freshness verification is deferred to `--check-current`.
+Documentation paths are never promoted to package authority.
 
 Validation: `python scripts/contract_analysis/audit_scope.py --check`
