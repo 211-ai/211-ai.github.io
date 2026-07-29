@@ -870,7 +870,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-014 Implement wallet processor migration objective: Extract World ID binding, challenge, replay, proof, and snapshot ownership
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
