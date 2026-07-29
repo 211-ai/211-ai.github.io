@@ -1,0 +1,46 @@
+[Unit]
+Description=Abby canonical audio regeneration through the Publicus IndexTTS Space
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=30min
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=%h/211-AI/211-AI
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=%h/211-AI/211-AI/ipfs_accelerate_py:%h/211-AI/211-AI/ipfs_datasets_py
+Environment=WALLET_INDEXTTS_SPACE_URL=https://publicus-indextts-2-demo.hf.space
+Environment=WALLET_INDEXTTS_MODEL_NAME=Publicus/IndexTTS-2-Demo
+Environment=IPFS_ACCELERATE_PY_ABBY_HF_BILL_TO=Publicus
+EnvironmentFile=-%h/.config/211-ai/abby-voice-publicus-regeneration.env
+ExecStart=/usr/bin/python3 scripts/run_quota_aware_command.py \
+  --state tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-batch-state.json \
+  --status tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-quota-retry-status.json \
+  --quota-fallback-delay-seconds 300 \
+  --quota-minimum-delay-seconds 60 \
+  --quota-grace-seconds 15 \
+  --max-quota-retries 0 \
+  -- \
+  /usr/bin/python3 scripts/run_indextts_batch_generation.py \
+  --regeneration-full \
+  --state tmp_assets/hf-abby-tts-canonical-dataset/metadata/regeneration-batch-state.json \
+  --batch-size 32 \
+  --remote-batch-size 4 \
+  --parallel-workers 1 \
+  --space-url https://publicus-indextts-2-demo.hf.space \
+  --model-name Publicus/IndexTTS-2-Demo \
+  --require-batch \
+  --require-upload-capable-batch \
+  --stop-on-error \
+  --max-runtime-seconds 0
+Restart=on-failure
+RestartSec=60
+RestartPreventExitStatus=75
+KillSignal=SIGINT
+TimeoutStopSec=45
+SyslogIdentifier=abby-voice-publicus-regeneration
+
+[Install]
+WantedBy=default.target

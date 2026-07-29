@@ -33,6 +33,10 @@ def _build_args(tmp_path: Path, **overrides: object) -> SimpleNamespace:
         "max_runtime_seconds": 43200.0,
         "space_sleep_time_seconds": None,
         "wrapper_relaunch_delay_seconds": 30.0,
+        "max_consecutive_wrapper_failures": 3,
+        "quota_retry_fallback_seconds": 300.0,
+        "quota_retry_minimum_seconds": 60.0,
+        "quota_retry_grace_seconds": 15.0,
         "refresh_input_manifests": True,
         "rerender_phase2": False,
         "restart_all": False,
@@ -95,6 +99,7 @@ def test_write_monitor_plan_persists_wrapper_command(tmp_path: Path) -> None:
     assert payload["monitorLabel"] == "l40s-monitor"
     assert payload["spaceRepoId"] == "Publicus/IndexTTS-2-Demo"
     assert payload["spaceSleepTimeSeconds"] == -1
+    assert payload["maxConsecutiveWrapperFailures"] == 3
     assert payload["wrapperCommand"][0] == "python3"
 
 
@@ -146,7 +151,17 @@ def test_phase_progress_statuses_report_pending_state(tmp_path: Path) -> None:
     manifest_path = tmp_path / "phase4-manifest.json"
     state_path = tmp_path / "phase4-state.json"
     manifest_path.write_text(json.dumps({"responses": [{}, {}, {}]}), encoding="utf-8")
-    state_path.write_text(json.dumps({"nextOffset": 2, "stopReason": "batch failed", "retryAfter": "30"}), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "nextOffset": 2,
+                "stopReason": "batch failed",
+                "retryAfter": "30",
+                "updatedAt": "2026-07-29T00:00:00Z",
+            }
+        ),
+        encoding="utf-8",
+    )
     spec = SimpleNamespace(
         key="phase4-residual",
         label="Residual full responses",
@@ -162,6 +177,7 @@ def test_phase_progress_statuses_report_pending_state(tmp_path: Path) -> None:
     assert statuses[0].total_responses == 3
     assert statuses[0].stop_reason == "batch failed"
     assert statuses[0].retry_after == "30"
+    assert statuses[0].updated_at == "2026-07-29T00:00:00Z"
     assert monitor.backlog_complete(statuses) is False
 
 
@@ -219,3 +235,67 @@ def test_first_manual_repair_status_returns_first_incomplete_local_artifact_fail
 
     assert blocking is not None
     assert blocking.key == "phase4-residual"
+
+
+def test_pending_quota_retry_decision_honors_checkpoint_countdown(tmp_path: Path) -> None:
+    from scripts.retry_after_policy import parse_timestamp
+
+    anchor = parse_timestamp("2026-07-29T00:00:00Z")
+    assert anchor is not None
+    status = monitor.PhaseProgress(
+        key="phase4-residual",
+        label="Residual full responses",
+        response_manifest=tmp_path / "phase4.json",
+        state=tmp_path / "phase4-state.json",
+        next_offset=64,
+        total_responses=128,
+        complete=False,
+        stop_reason="IndexTTS quota exhausted",
+        retry_after="01:00:00",
+        updated_at="2026-07-29T00:00:00Z",
+    )
+
+    decision = monitor.pending_quota_retry_decision(
+        [status],
+        now_epoch=anchor + 600.0,
+        fallback_seconds=300.0,
+        minimum_seconds=60.0,
+        grace_seconds=15.0,
+    )
+
+    assert decision is not None
+    assert decision.delay_seconds == 3015.0
+    assert decision.used_fallback is False
+
+
+def test_pending_quota_exit_without_hint_uses_fallback() -> None:
+    decision = monitor.pending_quota_retry_decision(
+        [],
+        now_epoch=1000.0,
+        fallback_seconds=300.0,
+        minimum_seconds=60.0,
+        grace_seconds=15.0,
+        force_fallback=True,
+    )
+
+    assert decision is not None
+    assert decision.delay_seconds == 300.0
+    assert decision.used_fallback is True
+
+
+def test_phase_checkpoint_advanced_detects_durable_progress(tmp_path: Path) -> None:
+    def status(offset: int) -> monitor.PhaseProgress:
+        return monitor.PhaseProgress(
+            key="phase4-residual",
+            label="Residual full responses",
+            response_manifest=tmp_path / "phase4.json",
+            state=tmp_path / "phase4-state.json",
+            next_offset=offset,
+            total_responses=128,
+            complete=False,
+            stop_reason="",
+            retry_after="",
+        )
+
+    assert monitor.phase_checkpoint_advanced([status(32)], [status(64)]) is True
+    assert monitor.phase_checkpoint_advanced([status(32)], [status(32)]) is False

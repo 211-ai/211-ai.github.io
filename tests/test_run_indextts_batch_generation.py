@@ -595,6 +595,40 @@ def test_main_does_not_advance_checkpoint_for_incomplete_success_receipt(monkeyp
     assert public_manifest["responseCount"] == 0
 
 
+def test_main_returns_exit_75_and_checkpoints_retry_after(monkeypatch, tmp_path: Path) -> None:
+    args = _build_args(tmp_path)
+    manifest_path = args.batch_manifest_dir / "batch-00000-offset-000000.json"
+
+    monkeypatch.setattr(batch_runner, "parse_args", lambda: args)
+    monkeypatch.setattr(batch_runner, "total_response_count", lambda response_manifest, dag, results: 2)
+
+    def fake_run(command: list[str], cwd: Path) -> SimpleNamespace:
+        _write_json(
+            manifest_path,
+            {
+                "batchInference": {
+                    "rateLimitDetected": {
+                        "type": "IndexTTSQuotaExceededError",
+                        "message": "IndexTTS quota exhausted",
+                        "retryAfter": "16:23:24",
+                    }
+                },
+                "responses": [],
+            },
+        )
+        return SimpleNamespace(returncode=75)
+
+    monkeypatch.setattr(batch_runner.subprocess, "run", fake_run)
+
+    exit_code = batch_runner.main()
+
+    state = json.loads(args.state.read_text(encoding="utf-8"))
+    assert exit_code == batch_runner.EXIT_RATE_LIMITED
+    assert state["nextOffset"] == 0
+    assert state["retryAfter"] == "16:23:24"
+    assert state["stopReason"] == "IndexTTS quota exhausted"
+
+
 def test_main_returns_runtime_limit_when_deadline_expires(monkeypatch, tmp_path: Path) -> None:
     args = _build_args(tmp_path, max_runtime_seconds=1.0)
     time_values = iter([100.0, 101.5, 101.5, 101.5])
