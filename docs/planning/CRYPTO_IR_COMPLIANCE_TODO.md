@@ -159,7 +159,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-003 Implement Crypto IR compliance objective: Build the canonical Crypto IR model, identity, provenance, and schema core
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
