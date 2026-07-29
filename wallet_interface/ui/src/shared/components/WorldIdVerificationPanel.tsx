@@ -128,6 +128,7 @@ export function WorldIdVerificationPanel({
       apiConfig.actorDid &&
       worldIdConfig.enabled &&
       worldIdConfig.appId &&
+      worldIdConfig.rpId &&
       worldIdConfig.action &&
       !["loading", "requesting_signature", "idkit", "verifying", "refreshing"].includes(phase)
   );
@@ -247,57 +248,60 @@ export function WorldIdVerificationPanel({
     }
   }
 
-  async function verifyWithBackend(result: IDKitResult): Promise<void> {
-    if (!apiConfig?.actorDid || !activeRequest) {
-      const nextIssue: PanelIssue = {
-        phase: "backend_failure",
-        tone: "danger",
-        message: "World ID verification could not be linked to this wallet session.",
-        source: "backend"
-      };
-      backendIssueRef.current = nextIssue;
-      setPhase(nextIssue.phase);
-      setIssue(nextIssue);
-      throw new Error(nextIssue.message);
-    }
+  const verifyWithBackend = useCallback(
+    async (result: IDKitResult): Promise<void> => {
+      if (!apiConfig?.actorDid || !activeRequest) {
+        const nextIssue: PanelIssue = {
+          phase: "backend_failure",
+          tone: "danger",
+          message: "World ID verification could not be linked to this wallet session.",
+          source: "backend"
+        };
+        backendIssueRef.current = nextIssue;
+        setPhase(nextIssue.phase);
+        setIssue(nextIssue);
+        throw new Error(nextIssue.message);
+      }
 
-    setPhase("verifying");
-    try {
-      await registerWorldIdVerification(apiConfig, {
-        idkitPayload: result as unknown as Record<string, unknown>
-      });
-      setPhase("refreshing");
-      await Promise.all([
-        Promise.resolve(onProofsRefresh?.()),
-        Promise.resolve(onAuditRefresh?.()),
-        refreshWorldIdStatus()
-      ]);
-      backendIssueRef.current = null;
-      setIssue({
-        phase: "verified",
-        tone: "success",
-        message: "World ID proof-of-human is now bound to this wallet.",
-        source: "backend"
-      });
-      setPhase("verified");
-    } catch (error) {
-      const nextIssue = classifyBackendIssue(error, "World ID verification failed.");
-      backendIssueRef.current = nextIssue;
-      setIssue(nextIssue);
-      setPhase(nextIssue.phase);
-      throw new Error(nextIssue.message);
-    }
-  }
+      setPhase("verifying");
+      try {
+        await registerWorldIdVerification(apiConfig, {
+          idkitPayload: result as unknown as Record<string, unknown>
+        });
+        setPhase("refreshing");
+        await Promise.all([
+          Promise.resolve(onProofsRefresh?.()),
+          Promise.resolve(onAuditRefresh?.()),
+          refreshWorldIdStatus()
+        ]);
+        backendIssueRef.current = null;
+        setIssue({
+          phase: "verified",
+          tone: "success",
+          message: "World ID proof-of-human is now bound to this wallet.",
+          source: "backend"
+        });
+        setPhase("verified");
+      } catch (error) {
+        const nextIssue = classifyBackendIssue(error, "World ID verification failed.");
+        backendIssueRef.current = nextIssue;
+        setIssue(nextIssue);
+        setPhase(nextIssue.phase);
+        throw new Error(nextIssue.message);
+      }
+    },
+    [activeRequest, apiConfig, onAuditRefresh, onProofsRefresh, refreshWorldIdStatus]
+  );
 
-  function handleIdkitSuccess() {
+  const handleIdkitSuccess = useCallback(() => {
     idkitSettledRef.current = true;
     backendIssueRef.current = null;
     setWidgetOpen(false);
     setActiveRequest(null);
     setPhase("verified");
-  }
+  }, []);
 
-  function handleIdkitError(errorCode: IDKitErrorCode) {
+  const handleIdkitError = useCallback((errorCode: IDKitErrorCode) => {
     idkitSettledRef.current = true;
     setWidgetOpen(false);
     setActiveRequest(null);
@@ -310,10 +314,21 @@ export function WorldIdVerificationPanel({
     const nextIssue = classifyIdkitIssue(errorCode);
     setIssue(nextIssue);
     setPhase(nextIssue.phase);
-  }
+  }, []);
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen && widgetOpen && !idkitSettledRef.current && phase === "idkit") {
+    if (nextOpen) {
+      setWidgetOpen(true);
+      return;
+    }
+    if (!idkitSettledRef.current && phase === "idkit") {
+      const g = globalThis as typeof globalThis & { __abbyEnableWorldIdPanelTest?: boolean };
+      if (g.__abbyEnableWorldIdPanelTest === true) {
+        // IDKit may close while the opted-in Playwright harness is preparing its
+        // simulated result. Preserve only that test request until the hook runs.
+        setWidgetOpen(false);
+        return;
+      }
       const nextIssue: PanelIssue = {
         phase: "cancelled",
         tone: "info",
@@ -324,7 +339,7 @@ export function WorldIdVerificationPanel({
       setPhase(nextIssue.phase);
       setActiveRequest(null);
     }
-    setWidgetOpen(nextOpen);
+    setWidgetOpen(false);
   }
 
   // Expose test hooks only when Playwright explicitly opts in.
@@ -340,13 +355,19 @@ export function WorldIdVerificationPanel({
     };
     if (g.__abbyEnableWorldIdPanelTest !== true) return;
     g.__abbyWorldIdPanelTest = {
+      // Capture the active request's handlers. IDKit may transiently clear its
+      // open state after this explicit test hook is armed.
       simulateSuccess: verifyWithBackend,
       simulateError: (errorCode: string) => handleIdkitError(errorCode as IDKitErrorCode)
     };
+  }, [activeRequest, handleIdkitError, verifyWithBackend]);
+
+  useEffect(() => {
     return () => {
+      const g = globalThis as typeof globalThis & { __abbyWorldIdPanelTest?: unknown };
       delete g.__abbyWorldIdPanelTest;
     };
-  }, [activeRequest, verifyWithBackend]);
+  }, []);
 
   return (
     <article className="world-id-panel proof-card" aria-label="World ID verification">
@@ -465,8 +486,10 @@ function configFromRuntime(runtimeConfig: ReturnType<typeof readRuntimeWorldIdCo
 
 function normalizeConfig(payload: unknown, runtimeConfig: ReturnType<typeof readRuntimeWorldIdConfig>): WorldIdPublicConfig {
   const record = asRecord(payload);
-  const enabled = readBoolean(record, "enabled") ?? runtimeConfig.enabled;
-  const appId = readString(record, "app_id", "appId") ?? runtimeConfig.appId;
+  // Once a wallet API is configured, its public response is authoritative.
+  // Never fill a missing backend app ID from browser build-time configuration.
+  const enabled = readBoolean(record, "enabled") ?? false;
+  const appId = readString(record, "app_id", "appId");
   const action =
     readString(record, "default_action", "defaultAction", "action") || runtimeConfig.action || "wallet-attach-world-id-v1";
   const environment = normalizeEnvironment(readString(record, "environment") || runtimeConfig.environment);
@@ -664,7 +687,7 @@ function getDisabledDetail(apiConfig: WalletApiConfig | undefined, config: World
   if (!apiConfig) return "Connect the wallet API before starting World ID verification.";
   if (!apiConfig.actorDid) return "An actor DID is required before starting World ID verification.";
   if (!config.enabled) return formatRuntimeDisabledReason(config.disabledReason);
-  if (!config.appId) return "World ID app configuration is missing.";
+  if (!config.appId || !config.rpId) return "World ID app configuration is missing.";
   return "";
 }
 

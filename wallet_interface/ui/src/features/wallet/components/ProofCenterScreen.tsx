@@ -5,6 +5,7 @@ import { nonGrantedCapabilities } from "../../../services/capabilities";
 import {
   createLocationRegionProof,
   getProofReceiptUiState,
+  listWalletProofReceipts,
   WalletApiConsensusFailClosedError,
   WalletApiRequestError,
   type WalletApiConfig
@@ -18,6 +19,7 @@ import {
 } from "../../../services/walletProofReview";
 import { ProofReceiptView, UploadItem } from "../../../models/abby";
 import { WorldIdSurfaceStatus } from "../../../app/components/WorldIdSurfaceStatus";
+import { WorldIdVerificationPanel } from "../../../shared/components/WorldIdVerificationPanel";
 
 const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
 const hiddenProofCenterProofTypes = new Set(["location_distance"]);
@@ -167,7 +169,29 @@ export function ProofCenterScreen({
         apiConfig={apiConfig}
         ariaLabel="World ID wallet status"
         onAuditRefresh={refreshWalletAuditEvents}
+        onProofsRefresh={async () => {
+          if (!apiConfig) return;
+          const nextProofs = await listWalletProofReceipts(apiConfig);
+          setProofs(nextProofs);
+        }}
       />
+      {/*
+        WorldIdSurfaceStatus only mounts the verification panel when an actor DID
+        is present. Always surface the panel here for missing-actor / missing-API
+        disabled states so operators and tests still see fail-closed messaging.
+        When an actor DID exists, Surface already owns the single panel instance.
+      */}
+      {!apiConfig?.actorDid ? (
+        <WorldIdVerificationPanel
+          apiConfig={apiConfig}
+          onAuditRefresh={refreshWalletAuditEvents}
+          onProofsRefresh={async () => {
+            if (!apiConfig) return;
+            const nextProofs = await listWalletProofReceipts(apiConfig);
+            setProofs(nextProofs);
+          }}
+        />
+      ) : null}
       <article className="proof-card" aria-label="Active wallet proof center">
         <div className="scope-header">
           <div>

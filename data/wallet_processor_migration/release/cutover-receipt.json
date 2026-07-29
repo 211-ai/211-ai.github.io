@@ -1,0 +1,158 @@
+{
+  "schema": "wallet_processor_migration/cutover-receipt@1",
+  "schema_version": 1,
+  "receipt_id": "walproc-065-2026-07-29-92c1eddb55b4",
+  "generated_at": "2026-07-29",
+  "source_task_id": "WALPROC-033",
+  "repair_task_id": "WALPROC-065",
+  "repair_status": "completed",
+  "authority": {
+    "completion_authoritative": false,
+    "production_enablement_authorized": false,
+    "production_enabled": false,
+    "package_publish_performed": false,
+    "decision": "release_source_task_from_retry_block; hold_production_enablement"
+  },
+  "candidate_integrity": {
+    "candidate_base_commit": "7e0fcace06372f25a45b1d53c1a2d2784ded5d83",
+    "submodule_path": "ipfs_datasets_py",
+    "submodule_mode": "160000",
+    "submodule_commit": "92c1eddb55b40e4de57d51545f4bcdfbf3fab645",
+    "submodule_parent_commit": "422308477058a9a82a1f6bbeacd1914fa3d9691e",
+    "submodule_clean": true,
+    "source_bound_release_documents": [
+      "CHANGELOG.md",
+      "docs/wallet_processors/COMPATIBILITY.md",
+      "docs/wallet_processors/MIGRATION.md",
+      "docs/wallet_processors/README.md"
+    ],
+    "source_bound_document_count": 4,
+    "assume_unchanged_used": false,
+    "skip_worktree_used": false,
+    "host_local_patch_required": false,
+    "assertions_weakened": false,
+    "policy_bypass_used": false,
+    "proposal_and_validation_candidate_identical": true
+  },
+  "repairs": {
+    "architecture_neutral_ui_dependencies": {
+      "status": "complete",
+      "removed_direct_platform_pin": "@rollup/rollup-linux-x64-musl",
+      "lockfile_platform_packages": "optional",
+      "linux_arm64_install_verified": true,
+      "selected_rollup_packages": [
+        "@rollup/rollup-linux-arm64-gnu",
+        "@rollup/rollup-linux-arm64-musl"
+      ],
+      "esbuild_available_from": "vite"
+    },
+    "typed_world_id_client": {
+      "status": "complete",
+      "panel": "wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx",
+      "client": "wallet_interface/ui/src/features/wallet/lib/walletApi.ts",
+      "operations": [
+        "loadWorldIdConfig",
+        "loadWorldIdStatus",
+        "createWorldIdRpSignature",
+        "registerWorldIdVerification"
+      ],
+      "ad_hoc_panel_transport_removed": true
+    },
+    "backend_config_fail_closed": {
+      "status": "complete",
+      "backend_public_config_authoritative": true,
+      "missing_app_id_disables_verification": true,
+      "missing_rp_id_disables_verification": true,
+      "browser_runtime_fallback_used_for_backend_ids": false
+    },
+    "proof_refresh_after_verification": {
+      "status": "complete",
+      "screen": "wallet_interface/ui/src/features/wallet/components/ProofCenterScreen.tsx",
+      "api": "listWalletProofReceipts",
+      "panel_local_proof_card_synthesized": false
+    },
+    "public_nullifier_dto": {
+      "status": "complete",
+      "dto": "WorldIdVerificationResult",
+      "raw_nullifier_field_present": false,
+      "typed_fixture_updated": true,
+      "fixture": "wallet_interface/ui/tests/fixtures/world-id-fixtures.ts"
+    },
+    "world_id_spec_session_install": {
+      "status": "complete",
+      "file": "wallet_interface/ui/tests/world-id.spec.ts",
+      "session_key": "abby-ui-session-v1",
+      "assertions_unchanged": true,
+      "endpoint_privacy_expectations_unchanged": true
+    },
+    "world_id_ux_current_surface_alignment": {
+      "status": "complete",
+      "file": "wallet_interface/ui/tests/world-id-ux.spec.ts",
+      "session_key": "abby-ui-session-v1",
+      "current_surfaces": [
+        "manual-intake",
+        "wallet-proof-qr",
+        "wallet-export"
+      ],
+      "accessibility_coverage_retained": true,
+      "privacy_assertions_retained": true
+    },
+    "fullstack_test_transport": {
+      "status": "complete",
+      "file": "wallet_interface/ui/tests/world-id-fullstack.spec.ts",
+      "service_injection": "WalletInterfaceService.world_id_request_json",
+      "production_verify_base_url": "https://developer.world.org",
+      "production_endpoint_policy_changed": false,
+      "loopback_test_transport_bounded": true,
+      "unrelated_dead_drop_background_route_isolated": true
+    },
+    "wrapper_alias_window": {
+      "status": "complete",
+      "compatibility_version": "0.2.0",
+      "expiry_version": "0.3.0",
+      "implementation_owner": "ipfs_datasets_py.processors.wallets.worldcoin"
+    }
+  },
+  "validation": [
+    {
+      "command": "python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py",
+      "status": "passed",
+      "exit_code": 0,
+      "tests_passed": 61
+    },
+    {
+      "command": "npm --prefix wallet_interface/ui run build",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "PLAYWRIGHT_PORT=5175 npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts tests/world-id-ux.spec.ts --project=\"Desktop Chrome\"",
+      "status": "passed",
+      "exit_code": 0,
+      "summary": "18 passed, 2 skipped"
+    },
+    {
+      "command": "PLAYWRIGHT_PORT=5176 npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts --project=\"Desktop Chrome\"",
+      "status": "passed",
+      "exit_code": 0,
+      "summary": "3 passed"
+    }
+  ],
+  "external_release_blockers": [
+    {
+      "owner": "World ID release operator",
+      "condition": "Complete approved live-tenant signoff with secret-managed production configuration before enabling or publishing."
+    }
+  ],
+  "release_summary": {
+    "retry_budget_root_cause_repaired": true,
+    "source_bound_package_docs_materialized": true,
+    "typed_client_and_dto_gate_passed": true,
+    "architecture_neutral_install_passed": true,
+    "proof_refresh_via_typed_api": true,
+    "focused_world_id_specs_passed": true,
+    "fullstack_world_id_gate_passed": true,
+    "source_task_may_leave_strategy_blocked_tasks": true,
+    "production_enablement": "blocked"
+  }
+}

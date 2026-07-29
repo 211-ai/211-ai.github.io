@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer as createHttpServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { createServer as createNetServer, type AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -192,15 +192,105 @@ async function startWalletApi(options: { developerPortalBaseUrl?: string; worldI
   const tempDir = await mkdtemp(path.join(tmpdir(), "abby-world-id-fullstack-"));
   const port = await freePort();
   const baseUrl = `http://127.0.0.1:${port}`;
-  const pythonPath = [path.join(repoRoot, "ipfs_datasets_py"), repoRoot, process.env.PYTHONPATH]
-    .filter(Boolean)
-    .join(":");
+  const testAsgiModule = path.join(tempDir, "world_id_fullstack_asgi.py");
+  await writeFile(
+    testAsgiModule,
+    `"""Test-only ASGI composition for the World ID full-stack browser gate."""
+
+import json
+import math
+import os
+from urllib import parse as urllib_parse
+from urllib import request as urllib_request
+
+from wallet_interface.api import create_app
+from wallet_interface.app_service import WalletInterfaceService
+
+
+def _test_world_id_request_json(method, url, payload, headers, timeout_seconds):
+    del headers
+    parsed_url = urllib_parse.urlsplit(url)
+    expected_path = (
+        "/api/v4/verify/"
+        + urllib_parse.quote(os.environ["WORLD_ID_RP_ID"].strip(), safe="")
+    )
+    if (
+        method != "POST"
+        or parsed_url.scheme != "https"
+        or parsed_url.hostname != "developer.world.org"
+        or parsed_url.port not in (None, 443)
+        or parsed_url.username is not None
+        or parsed_url.password is not None
+        or parsed_url.path != expected_path
+        or parsed_url.query
+        or parsed_url.fragment
+    ):
+        raise RuntimeError("World ID test transport received an invalid production target")
+
+    test_base_url = os.environ.get("WORLD_ID_TEST_VERIFY_BASE_URL", "").rstrip("/")
+    if not test_base_url:
+        raise RuntimeError("WORLD_ID_TEST_VERIFY_BASE_URL is required by the full-stack test transport")
+    test_url = urllib_parse.urlsplit(test_base_url)
+    if (
+        test_url.scheme != "http"
+        or test_url.hostname != "127.0.0.1"
+        or test_url.port is None
+        or not 1 <= test_url.port <= 65535
+        or test_url.username is not None
+        or test_url.password is not None
+        or test_url.path not in ("", "/")
+        or test_url.query
+        or test_url.fragment
+    ):
+        raise RuntimeError("World ID test transport requires a loopback test portal")
+
+    body = json.dumps(payload, allow_nan=False, separators=(",", ":")).encode("utf-8")
+    if len(body) > 64 * 1024:
+        raise RuntimeError("World ID test request exceeded its byte budget")
+    timeout = min(float(timeout_seconds), 5.0)
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise RuntimeError("World ID test transport received an invalid timeout")
+    request = urllib_request.Request(
+        f"{test_base_url}{expected_path}",
+        data=body,
+        headers={
+            "accept": "application/json",
+            "accept-encoding": "identity",
+            "content-type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib_request.urlopen(request, timeout=timeout) as response:
+        raw = response.read(256 * 1024 + 1)
+    if len(raw) > 256 * 1024:
+        raise RuntimeError("World ID test response exceeded its byte budget")
+    result = json.loads(raw.decode("utf-8"))
+    if not isinstance(result, dict):
+        raise RuntimeError("World ID test transport returned a non-object response")
+    return result
+
+
+service = WalletInterfaceService(world_id_request_json=_test_world_id_request_json)
+app = create_app(service=service)
+`,
+    "utf-8"
+  );
+  const pythonPath = [tempDir, path.join(repoRoot, "ipfs_datasets_py"), repoRoot].join(path.delimiter);
+  const inheritedEnv = Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([name]) =>
+        name !== "PYTHONPATH" &&
+        !name.startsWith("ABBY_RUNTIME_WORLD_ID_") &&
+        !name.startsWith("VITE_WORLD_ID_") &&
+        !name.startsWith("WORLD_ID_")
+    )
+  );
   const logs: string[] = [];
   const worldIdEnabled = options.worldIdEnabled ?? true;
   const apiProcess = spawn(process.env.PYTHON ?? "python3", [
     "-m",
     "uvicorn",
-    "wallet_interface.asgi:app",
+    "world_id_fullstack_asgi:app",
     "--host",
     "127.0.0.1",
     "--port",
@@ -210,7 +300,7 @@ async function startWalletApi(options: { developerPortalBaseUrl?: string; worldI
   ], {
     cwd: repoRoot,
     env: {
-      ...process.env,
+      ...inheritedEnv,
       IPFS_AUTO_INSTALL: "false",
       IPFS_DATASETS_AUTO_INSTALL: "false",
       IPFS_DATASETS_PY_MINIMAL_IMPORTS: "1",
@@ -234,7 +324,8 @@ async function startWalletApi(options: { developerPortalBaseUrl?: string; worldI
       WORLD_ID_RP_ID,
       WORLD_ID_RP_SIGNATURE_TTL_SECONDS: "300",
       WORLD_ID_RP_SIGNING_KEY: `0x${"11".repeat(32)}`,
-      WORLD_ID_VERIFY_BASE_URL: options.developerPortalBaseUrl ?? "http://127.0.0.1:9"
+      WORLD_ID_TEST_VERIFY_BASE_URL: options.developerPortalBaseUrl ?? "",
+      WORLD_ID_VERIFY_BASE_URL: "https://developer.world.org"
     },
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -310,6 +401,21 @@ function collectPageDiagnostics(page: Page, apiBaseUrl: string): PageDiagnostics
   return diagnostics;
 }
 
+async function isolateUnrelatedBackgroundRoutes(page: Page, apiBaseUrl: string) {
+  // The app synchronizes the missing-person dead-drop setting on every wallet
+  // mount. This World ID gate keeps that unrelated, currently unsupported
+  // service method out of the otherwise-live API diagnostics.
+  await page.route(`${apiBaseUrl}/wallets/*/dead-drops/missing-person`, async (route) => {
+    await route.fulfill({
+      json: {
+        enabled: false,
+        status: "disabled",
+        wallet_id: route.request().url().split("/wallets/")[1]?.split("/")[0] ?? ""
+      }
+    });
+  });
+}
+
 async function signInIfNeeded(page: Page, username = "abby") {
   const usernameField = page.getByLabel(/username/i).first();
   try {
@@ -381,6 +487,7 @@ function expectNoForbiddenTokens(rendered: string) {
 test("World ID disabled and missing-config guards stay safe with a live wallet API", async ({ page }) => {
   const api = await startWalletApi({ worldIdEnabled: false });
   try {
+    await isolateUnrelatedBackgroundRoutes(page, api.baseUrl);
     const diagnostics = collectPageDiagnostics(page, api.baseUrl);
     const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", {
       owner_did: WORLD_ID_ACTOR_DID
@@ -410,6 +517,7 @@ test("World ID verification completes through the real UI and live wallet API", 
   const portal = await startDeveloperPortal();
   const api = await startWalletApi({ developerPortalBaseUrl: portal.baseUrl });
   try {
+    await isolateUnrelatedBackgroundRoutes(page, api.baseUrl);
     const diagnostics = collectPageDiagnostics(page, api.baseUrl);
     const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", {
       owner_did: WORLD_ID_ACTOR_DID
