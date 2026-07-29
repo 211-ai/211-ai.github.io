@@ -3670,3 +3670,15 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Candidate kind: aggregate
 - Todo vector key: 5594f7f46b8f1531
 - Acceptance: Objective scan filed this gap for DSCON-G732. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-065-objective-gap-422cfc37498d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/datasets_contract_analysis/agent_supervisor/goal-quality.json), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## DSCON-066 Resolve validation retry-budget failure for DSCON-062
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: scripts/contract_analysis/audit_scope.py, data/datasets_contract_analysis/audit/source-roots.json, data/datasets_contract_analysis/audit/datasets-manipulator-drift.json, data/datasets_contract_analysis/audit/ownership-map.md, data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery
+- Validation: test -f /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-066-dscon-062-retry-budget.md
+
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in DSCON-062. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/runtime/state/discovery/2026-07-29-dscon-066-dscon-062-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release DSCON-062 from strategy blocked_tasks.
