@@ -1847,7 +1847,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-029 Implement wallet processor migration objective: Add bounded Python, CLI, and MCP ingest/export surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
