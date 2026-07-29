@@ -123,6 +123,26 @@ def _resolve_audio_path(manifest_path: Path, value: str) -> Path:
     return (manifest_path.parent / candidate).resolve()
 
 
+def select_review_rows(
+    rows: list[Any],
+    audio_ids: list[str] | None,
+) -> list[dict[str, Any]]:
+    candidates = [row for row in rows if isinstance(row, dict)]
+    requested = [str(value).strip() for value in audio_ids or [] if str(value).strip()]
+    if not requested:
+        return candidates
+    if len(requested) != len(set(requested)):
+        raise ValueError("requested audio IDs must be unique")
+    rows_by_id = {str(row.get("id") or ""): row for row in candidates}
+    missing = [audio_id for audio_id in requested if audio_id not in rows_by_id]
+    if missing:
+        raise ValueError(
+            "requested audio IDs are absent from generation manifest: "
+            + ", ".join(missing)
+        )
+    return [rows_by_id[audio_id] for audio_id in requested]
+
+
 def review_manifest(
     manifest_path: Path,
     *,
@@ -133,11 +153,13 @@ def review_manifest(
     minimum_content_coverage_bp: int,
     maximum_wer_bp: int,
     prior_transcripts: dict[str, str] | None = None,
+    audio_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     rows = payload.get("responses") or []
     if not isinstance(rows, list) or not rows:
         raise ValueError("generation manifest has no response rows")
+    rows = select_review_rows(rows, audio_ids)
     session: LocalWhisperBatchSession | None = None
     prior_transcripts = dict(prior_transcripts or {})
     receipts: list[dict[str, Any]] = []
@@ -230,6 +252,10 @@ def review_manifest(
         "receipt_count": len(receipts),
         "receipts": receipts,
         "remote_writes": False,
+        "selection": {
+            "audio_ids": [str(value).strip() for value in audio_ids or []],
+            "selected_count": len(receipts),
+        },
         "schema_version": "abby_voice_regeneration_whisper_review_v1",
     }
 
@@ -249,6 +275,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help="Reuse prior transcripts keyed by verified audio SHA-256.",
+    )
+    parser.add_argument(
+        "--audio-id",
+        action="append",
+        default=[],
+        help="Review only this manifest audio ID; repeat for an ordered sample.",
     )
     parser.add_argument("--soft-fail", action="store_true")
     return parser.parse_args()
@@ -277,6 +309,7 @@ def main() -> None:
         minimum_content_coverage_bp=args.minimum_content_coverage_bp,
         maximum_wer_bp=args.maximum_wer_bp,
         prior_transcripts=prior_transcripts,
+        audio_ids=args.audio_id,
     )
     args.report_out.parent.mkdir(parents=True, exist_ok=True)
     args.report_out.write_text(
