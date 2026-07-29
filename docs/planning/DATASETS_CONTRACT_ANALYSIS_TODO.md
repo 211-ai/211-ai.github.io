@@ -613,7 +613,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-010 Implement datasets symbolic contract objective: Implement immutable content-addressed analysis caching
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
