@@ -873,7 +873,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-014 Implement datasets symbolic contract objective: Define the software contract IR and reviewed registry
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
