@@ -2355,7 +2355,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-050 Repair wallet fixture conformance baseline
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
