@@ -1199,7 +1199,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-019 Implement Crypto IR compliance objective: Build sound formal lowering, prover routing, and analysis receipts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
