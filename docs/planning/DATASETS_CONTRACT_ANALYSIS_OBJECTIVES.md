@@ -828,7 +828,7 @@ Program invariants:
 - Priority: P0
 - Track: supervisor-integration
 - Bundle: datasets-contract/supervisor
-- Depends on: DSCON-G610
+- Depends on: DSCON-G055, DSCON-G610
 - Parallel lane: supervisor-refill
 - Conflict policy: owns contract refill provider and supervisor wiring
 - Submodules: ipfs_accelerate_py
