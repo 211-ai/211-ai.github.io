@@ -106,5 +106,18 @@
       "SOURCE_DATE_EPOCH",
       "TZ"
     ]
+  },
+  "objective_validation_repair": {
+    "evidence_term": "objective validation repair",
+    "goal_id": "DSCON-G050",
+    "task_id": "DSCON-064",
+    "command": "python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py",
+    "validated_artifacts": [
+      "ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/execution_profile.py",
+      "data/datasets_contract_analysis/policy/analyzer-profile-v1.json",
+      "data/datasets_contract_analysis/policy/resource-bounds-v1.json",
+      "ipfs_accelerate_py/test/api/test_agent_supervisor_contract_execution_profile.py"
+    ],
+    "fail_closed": true
   }
 }
