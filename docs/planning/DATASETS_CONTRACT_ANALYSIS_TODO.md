@@ -3685,7 +3685,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-067 Implement datasets symbolic contract objective: Build recursive tracked-object and coverage manifests
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
