@@ -1133,7 +1133,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-018 Implement datasets symbolic contract objective: Resolve cross-repository modules, imports, exports, and protocols
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
