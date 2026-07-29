@@ -1979,7 +1979,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-031 Implement Crypto IR compliance objective: Integrate the Solana transaction guard
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
