@@ -398,6 +398,7 @@ seed_objectives() {
       --max-refinement-children 4 \
       --max-refinement-depth 5 \
       --no-reconcile-goal-completion \
+      --no-persist-ast-dataset \
       --objective-generation-max-depth 4 \
       --objective-generation-max-breadth 4 \
       --objective-generation-max-new-work 24 \
@@ -525,6 +526,7 @@ start_codex_lane() {
     --objective-surplus-findings-per-goal 2
     --objective-surplus-min-terms-per-todo 2
     --objective-todo-vector-index-path "${VECTOR_PATH}"
+    --no-objective-ast-dataset
     --no-objective-goal-completion-reconcile
     --no-objective-goal-migration
     --codebase-refill-scan

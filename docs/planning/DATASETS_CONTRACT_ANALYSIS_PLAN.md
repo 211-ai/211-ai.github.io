@@ -139,6 +139,15 @@ The initial codebase scanner finds annotations, swallowed exceptions, and
 placeholder runtime paths. This program extends that admission pipeline with
 content-addressed contract and vulnerability findings.
 
+The legacy objective AST dataset exporter is disabled for this program's
+bootstrap seed/refill. On the current composition it serialized source-heavy
+rows into a roughly 2.6 GB JSONL file before task generation completed, which
+is neither a bounded control-plane index nor the content-addressed shard model
+specified here. Bootstrap uses structural objective evidence and the bounded
+task/vector projection only. Goals G020, G100-G150, and G700 replace that dump
+with disposition-complete, incremental CID shards and explicit resource
+receipts before any whole-repository analysis claim is allowed.
+
 ### 2.4 Concrete Swissknife and runtime-package scope
 
 The requested Swissknife source is a separate clean Git repository at
