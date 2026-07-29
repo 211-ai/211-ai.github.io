@@ -2389,7 +2389,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-061 Bound and authorize raw-payload custody
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
