@@ -2043,7 +2043,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-032 Implement wallet processor migration objective: Add metrics, benchmarks, and operational runbooks
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
