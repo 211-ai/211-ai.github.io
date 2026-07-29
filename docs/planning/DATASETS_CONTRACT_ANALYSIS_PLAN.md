@@ -1,4 +1,4 @@
-# Datasets Manipulator and Swissknife Symbolic Contract Analysis Plan
+# ipfs_datasets_py Symbolic Contract and Dataset Manipulator Analysis Plan
 
 Status: approved for supervised implementation on the dedicated integration
 branch `codex/datasets-contract-analysis`.
@@ -38,9 +38,8 @@ Build a deterministic, incremental software-contract analysis system that:
 
 1. removes the known drift in the `ipfs_datasets_py` dataset manipulation
    surface;
-2. inventories every Git-tracked object in the Swissknife superproject and the
-   pinned `ipfs_accelerate_py`, `ipfs_kit_py`, and `ipfs_datasets_py`
-   repositories;
+2. inventories and analyzes every Git-tracked object in the exact pinned
+   `ipfs_datasets_py` tree, which is the primary proof subject;
 3. constructs content-addressed AST, symbol, import, call, contract, proof,
    finding, and repair-packet datasets;
 4. proves supported contract obligations, emits replayable counterexamples for
@@ -60,6 +59,12 @@ deduplication, prioritization, and task admission are symbolic and
 deterministic. An LLM is used only after a precise repair task has been
 admitted, and receives only the relevant contract, call slice, source excerpts,
 counterexample, and validation command.
+
+`ipfs_accelerate_py` is the orchestration and task-projection runtime.
+`ipfs_kit_py`, Swissknife, and other consumers supply boundary-call and
+revision evidence only. They are not part of the primary completeness domain
+for the first `ipfs_datasets_py` proof scan, and their partial coverage cannot
+block or silently widen that package-scoped milestone.
 
 ## 2. Current-state findings
 
@@ -148,7 +153,13 @@ task/vector projection only. Goals G020, G100-G150, and G700 replace that dump
 with disposition-complete, incremental CID shards and explicit resource
 receipts before any whole-repository analysis claim is allowed.
 
-### 2.4 Concrete Swissknife and runtime-package scope
+### 2.4 Primary package and boundary-repository scope
+
+The first complete scan targets the clean, pinned `ipfs_datasets_py` Git tree.
+Its commit, tree, tracked-object manifest, analyzer profile, frontend versions,
+policy roots, and proof/finding roots form the authoritative scan statement.
+Every supported semantic shard must receive an AST or explicit fail-closed
+receipt before package-level absence or exhaustion claims are allowed.
 
 The requested Swissknife source is a separate clean Git repository at
 `/home/barberb/swissknife`, currently on commit
@@ -166,10 +177,11 @@ are interpreted. It must never compare an expected contract from one revision
 to an invocation from another revision without labeling that revision mismatch
 as part of the finding.
 
-The launch wrapper supplies the Swissknife path as a read-only configured
-analysis root. If it is absent, dirty, or not a Git repository, the scan records
-`INCOMPLETE_SCAN` and may continue bootstrap implementation, but it cannot emit
-a whole-Swissknife exhaustion or safety claim.
+The launch wrapper supplies the Swissknife path as an optional, read-only
+boundary root. If it is absent, dirty, or not a Git repository, boundary
+composition evidence records that limitation, but this does not make a clean
+`ipfs_datasets_py` package inventory incomplete. No whole-Swissknife exhaustion
+or safety claim is part of the first package-scoped release.
 
 ## 3. Proof boundary and claim vocabulary
 
@@ -231,7 +243,7 @@ configuration. A developer mode may analyze a dirty tree only after building a
 separate immutable overlay manifest whose blobs and path decisions are all
 content addressed.
 
-### 4.2 Entire-repository coverage
+### 4.2 Complete `ipfs_datasets_py` coverage
 
 Every tracked blob receives a CID and disposition record. "Indexed" does not
 mean "semantically proved":
@@ -249,10 +261,15 @@ Docker, TOML/YAML/JSON, Solidity/Noir, and Rust frontends are separate,
 versioned capabilities. Until a frontend is accepted, its files are
 `unsupported`, not passed.
 
+The primary coverage root contains only the exact pinned `ipfs_datasets_py`
+tree. Cross-package and Swissknife snapshots are separate boundary evidence
+roots, so a missing boundary checkout cannot alter the package object count or
+be confused with package semantic coverage.
+
 The current supervisor objective scanner is also bounded: it recognizes a
 fixed suffix set, ignores oversized files, and its codebase refill rules
 primarily target annotations, swallowed exceptions, and placeholders. Its
-normal scan is not the whole-repository proof requested here. The recursive
+normal scan is not the package proof requested here. The recursive
 tracked-object manifest, real TypeScript Compiler API frontend, and typed
 contract-finding admission layer are mandatory bootstrap work before stronger
 coverage language is permitted.
@@ -567,7 +584,7 @@ When open work falls below the configured threshold:
 | datasets | dataset operation IR, core manipulator, adapters | graph/formal after schema gates |
 | supervisor | finding/task adapters, refill, repair packets | analyzers after finding schema |
 | ZK | statement, trace, proof envelope | only after native verifier |
-| rollout | full scan, canaries, autonomous repair, release | only after all gates |
+| rollout | package proof scan, canaries, autonomous repair, release | only after all gates |
 
 The canonical schemas, CID profile, task board, objective heap, launch script,
 and merge queue each have one serialized owner. Agents must not modify
@@ -641,16 +658,20 @@ provenance are bound; documentation states whether the proof is only a
 trace-commitment opening or covers a named set of transitions. A current
 `not_enabled` capability receipt is sufficient for the ordinary release path.
 
-### Phase 6 — complete Swissknife scan and staged repair
+### Phase 6 — complete `ipfs_datasets_py` proof scan and staged repair
 
-- inventory and index the full committed superproject recursively;
-- generate the first `ipfs_accelerate_py` bug/vulnerability repair backlog;
+- inventory and index the full committed `ipfs_datasets_py` tree;
+- emit package-scoped AST, contract, obligation, proof, coverage, and finding
+  roots;
+- send admitted package findings through the `ipfs_accelerate_py` refill and
+  task-projection runtime;
 - run high-confidence, low-blast-radius canaries;
 - expand autonomy by severity and package only after repair-quality gates.
 
 Gate: complete coverage manifest, current-tree proof quorum, clean worktrees,
 no unresolved critical/high admitted finding without an owner or explicit
-blocker, and rehearsed rollback.
+blocker, and rehearsed rollback. Swissknife and the other packages remain
+optional boundary-composition expansion after this gate.
 
 ## 16. Validation strategy
 
@@ -694,8 +715,8 @@ coverage report.
 The program is complete when:
 
 - the dataset manipulator has one real core owner and thin adapters;
-- every tracked object in the recursive Swissknife snapshot has a CID and
-  disposition;
+- every tracked object in the exact pinned `ipfs_datasets_py` tree has a CID
+  and disposition;
 - supported Python call and contract surfaces are indexed with explicit
   uncertainty;
 - proof and counterexample receipts replay from immutable inputs;
@@ -708,4 +729,8 @@ The program is complete when:
 - drained-backlog refills consume new analyzer findings without unbounded goal
   or task growth; and
 - current-tree coverage, exhaustion quorum, security review, rollback, and
-  release receipts are present.
+  release receipts are present for the package-scoped proof statement.
+
+A later Swissknife/three-package composition scan is a separate, deferred
+milestone. It cannot be used as a substitute for, or prerequisite to, the
+first complete `ipfs_datasets_py` proof scan.
