@@ -493,26 +493,76 @@ show_status() {
   return "${failed}"
 }
 
-stop_lane() {
+request_lane_stop() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
-  local path
   local pid=""
   if pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
     echo "Stopping ${label} supervisor ${pid}."
     kill "${pid}"
+    return 0
   fi
-  path="$(daemon_pid_file_for "${state_dir}" "${state_prefix}")"
-  if pid="$(read_live_pid "${path}")"; then
-    echo "Stopping ${label} managed daemon ${pid}."
-    kill "${pid}"
+  if pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")"; then
+    echo "${label} daemon ${pid} is live without its owning supervisor; refusing a race-prone direct stop." >&2
+    return 1
   fi
+  echo "${label} supervisor is already stopped."
+}
+
+wait_for_lane_stop() {
+  local label="$1"
+  local state_dir="$2"
+  local state_prefix="$3"
+  local active_snapshot="${state_dir}/implementation-protected-path-active.json"
+  local incident="${state_dir}/implementation-protected-path-incident.json"
+  local state_path="${state_dir}/${state_prefix}_task_state.json"
+  local attempt
+  local daemon_pid=""
+  local supervisor_pid=""
+
+  for attempt in {1..30}; do
+    supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
+    daemon_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")" 2>/dev/null || true)"
+    if [[ -z "${supervisor_pid}" && -z "${daemon_pid}" ]]; then
+      break
+    fi
+    sleep 1
+  done
+
+  supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
+  daemon_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")" 2>/dev/null || true)"
+  if [[ -n "${supervisor_pid}" || -n "${daemon_pid}" ]]; then
+    echo "${label} shutdown did not quiesce its supervisor and daemon within 30 seconds." >&2
+    return 1
+  fi
+  if [[ -f "${incident}" ]]; then
+    echo "${label} shutdown preserved a protected-path incident requiring proof-checked clearance: ${incident}" >&2
+    return 1
+  fi
+  if [[ -f "${active_snapshot}" ]]; then
+    echo "${label} shutdown left an active protected-path snapshot: ${active_snapshot}" >&2
+    return 1
+  fi
+  if [[ -f "${state_path}" ]] && "${PYTHON_BIN}" -c \
+    'import json, pathlib, sys
+payload = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+raise SystemExit(0 if payload.get("implementation_in_progress") is True else 1)' \
+    "${state_path}"; then
+    echo "${label} shutdown left implementation_in_progress=true in ${state_path}." >&2
+    return 1
+  fi
+  echo "${label} supervisor and daemon stopped with no active implementation fence."
 }
 
 stop_supervisors() {
-  stop_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}"
-  stop_lane "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}"
+  local failed=0
+  request_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
+  request_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
+  wait_for_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
+  wait_for_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
+  write_health_snapshot false
+  return "${failed}"
 }
 
 usage() {
