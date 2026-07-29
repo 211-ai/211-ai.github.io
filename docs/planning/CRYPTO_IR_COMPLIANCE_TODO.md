@@ -1654,7 +1654,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-026 Implement Crypto IR compliance objective: Emit explainable compliance decisions and immutable receipts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
