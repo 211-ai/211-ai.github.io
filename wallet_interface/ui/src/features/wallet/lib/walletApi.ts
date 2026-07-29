@@ -532,7 +532,6 @@ export interface WorldIdVerificationRequest {
 export interface WorldIdVerificationResult {
   success: boolean;
   action?: string;
-  nullifier?: string;
   created_at?: string;
   environment?: string;
   session_id?: string;
