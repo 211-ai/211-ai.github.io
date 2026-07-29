@@ -1391,7 +1391,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-022 Implement wallet processor migration objective: Compose World Chain and WLD through Ethereum
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
