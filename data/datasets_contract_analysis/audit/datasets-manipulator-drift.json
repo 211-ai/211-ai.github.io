@@ -66,6 +66,15 @@
       "exists": true
     },
     {
+      "surface_id": "legacy-monolith-generate-clusters",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py",
+      "symbols": [
+        "generate_clusters"
+      ],
+      "role": "shadowed_duplicate_method",
+      "exists": true
+    },
+    {
       "surface_id": "mcp-load-dataset",
       "path": "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/dataset_tools/load_dataset.py",
       "symbols": [
@@ -338,6 +347,21 @@
       ],
       "status": "open",
       "path_verified": true
+    },
+    {
+      "finding_id": "DSCON-DRIFT-014",
+      "category": "duplicate-definition",
+      "severity": "high",
+      "symbol": "generate_clusters",
+      "path": "ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py",
+      "summary": "The legacy dataset monolith defines generate_clusters twice in the same class scope; the later no-op definition shadows the first.",
+      "evidence": [
+        "async def generate_clusters occurs twice in the pinned monolith",
+        "both definitions return None without generating clusters"
+      ],
+      "status": "open",
+      "path_verified": true,
+      "observed_exists": true
     }
   ],
   "finding_categories": [
@@ -362,11 +386,26 @@
     "reproduces_missing_import": true,
     "reproduces_weak_test": true,
     "all_required_categories_present": true,
-    "bound_to_selected_package_authority": true
+    "bound_to_selected_package_authority": true,
+    "objective_validation_repair": true
+  },
+  "objective_validation_repair": {
+    "evidence_term": "objective validation repair",
+    "task_id": "DSCON-062",
+    "command": "python scripts/contract_analysis/audit_scope.py --check",
+    "authority_mode": "selected_authority_objects_external_evidence",
+    "validated_artifacts": [
+      "scripts/contract_analysis/audit_scope.py",
+      "data/datasets_contract_analysis/audit/source-roots.json",
+      "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
+      "data/datasets_contract_analysis/audit/ownership-map.md"
+    ],
+    "fail_closed": true
   },
   "blockers": [],
   "notes": [
     "Inventory only; no production refactors in DSCON-G010.",
-    "Repair is deferred to dataset manipulator / adapter objectives."
+    "Repair is deferred to dataset manipulator / adapter objectives.",
+    "DSCON-062 objective validation repair replays evidence probes against pinned Git objects."
   ]
 }

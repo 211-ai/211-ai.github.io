@@ -36,8 +36,19 @@ from typing import Any
 
 GOAL_ID = "DSCON-G010"
 TASK_ID = "DSCON-001"
+VALIDATION_TASK_ID = "DSCON-062"
 SCHEMA_SOURCE_ROOTS = "datasets_contract_analysis/source-roots@1"
 SCHEMA_DRIFT = "datasets_contract_analysis/datasets-manipulator-drift@1"
+OBJECTIVE_VALIDATION_EVIDENCE = "objective validation repair"
+OBJECTIVE_VALIDATION_COMMAND = (
+    "python scripts/contract_analysis/audit_scope.py --check"
+)
+OBJECTIVE_VALIDATED_ARTIFACTS = (
+    "scripts/contract_analysis/audit_scope.py",
+    "data/datasets_contract_analysis/audit/source-roots.json",
+    "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
+    "data/datasets_contract_analysis/audit/ownership-map.md",
+)
 
 # Plan-documented external pins (prefix match against full commit).
 EXPECTED_SWISSKNIFE_PREFIX = "df11f08f"
@@ -75,6 +86,7 @@ REQUIRED_SOURCE_ROOT_KEYS = (
     "package_authority",
     "authority_candidates",
     "acceptance_coverage",
+    "objective_validation_repair",
     "blockers",
     "fail_closed",
 )
@@ -89,6 +101,7 @@ REQUIRED_DRIFT_KEYS = (
     "findings",
     "finding_categories",
     "acceptance_coverage",
+    "objective_validation_repair",
     "blockers",
 )
 
@@ -110,6 +123,7 @@ REQUIRED_OWNERSHIP_PHRASES = (
     "DatasetSaver",
     "DatasetConverter",
     "DatasetManipulator",
+    "generate_clusters",
     "mock-success",
     "nondeterministic",
     "duplicate definition",
@@ -118,6 +132,18 @@ REQUIRED_OWNERSHIP_PHRASES = (
     "Blocker",
     "fail closed",
     "package authority",
+    "objective validation repair",
+    "DSCON-062",
+)
+
+REQUIRED_DRIFT_CATEGORIES = frozenset(
+    {
+        "mock-success",
+        "nondeterministic-identity",
+        "duplicate-definition",
+        "missing-import",
+        "weak-test",
+    }
 )
 
 # Known drift findings frozen as inventory (pre-repair evidence).
@@ -342,6 +368,22 @@ KNOWN_FINDINGS: list[dict[str, Any]] = [
         ],
         "status": "open",
     },
+    {
+        "finding_id": "DSCON-DRIFT-014",
+        "category": "duplicate-definition",
+        "severity": "high",
+        "symbol": "generate_clusters",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py",
+        "summary": (
+            "The legacy dataset monolith defines generate_clusters twice in "
+            "the same class scope; the later no-op definition shadows the first."
+        ),
+        "evidence": [
+            "async def generate_clusters occurs twice in the pinned monolith",
+            "both definitions return None without generating clusters",
+        ],
+        "status": "open",
+    },
 ]
 
 
@@ -351,6 +393,26 @@ def _repo_root() -> Path:
 
 def _audit_dir(root: Path) -> Path:
     return root / "data" / "datasets_contract_analysis" / "audit"
+
+
+def _objective_validation_contract() -> dict[str, Any]:
+    """Describe the executable DSCON-062 validation gate.
+
+    This is a contract rather than a precomputed success receipt: the command
+    must re-read and verify the selected authority's pinned Git object graph
+    every time it runs. Unselected external comparison roots retain their
+    freeze-time identity evidence; ``--check-current`` verifies their ambient
+    availability and freshness.
+    """
+
+    return {
+        "evidence_term": OBJECTIVE_VALIDATION_EVIDENCE,
+        "task_id": VALIDATION_TASK_ID,
+        "command": OBJECTIVE_VALIDATION_COMMAND,
+        "authority_mode": "selected_authority_objects_external_evidence",
+        "validated_artifacts": list(OBJECTIVE_VALIDATED_ARTIFACTS),
+        "fail_closed": True,
+    }
 
 
 def _run(
@@ -563,8 +625,52 @@ def _read_pinned_blob(
 def _is_git_checkout(path: Path) -> bool:
     if not path.is_dir():
         return False
-    marker = path / ".git"
-    return marker.exists() or marker.is_file()
+    return _git_ok(["rev-parse", "--git-dir"], cwd=path) is not None
+
+
+def _resolve_gitlink_repository(
+    root: Path,
+    package: str,
+    commit: Any,
+) -> Path:
+    """Locate the object database for a direct gitlink's pinned commit.
+
+    Supervisor and CI worktrees may leave the gitlink directory uninitialized
+    while retaining its object database under another linked worktree's Git
+    administration directory.  The audit is about immutable objects, not the
+    ambient checkout, so prefer any local repository that proves it has the
+    exact pinned commit.
+    """
+
+    checkout = root / package
+    candidates = [checkout]
+    common_raw = _git_ok(["rev-parse", "--git-common-dir"], cwd=root)
+    if common_raw:
+        common_dir = Path(common_raw)
+        if not common_dir.is_absolute():
+            common_dir = (root / common_dir).resolve()
+        candidates.append(common_dir / "modules" / package)
+        worktrees_dir = common_dir / "worktrees"
+        if worktrees_dir.is_dir():
+            for worktree_admin in sorted(worktrees_dir.iterdir()):
+                candidates.append(worktree_admin / "modules" / package)
+
+    seen: set[Path] = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        if not _is_git_checkout(candidate):
+            continue
+        if isinstance(commit, str):
+            present = _git_ok(
+                ["cat-file", "-e", f"{commit}^{{commit}}"],
+                cwd=candidate,
+            )
+            if present is None:
+                continue
+        return candidate
+    return checkout
 
 
 # Freeze outputs live in the superproject worktree; they must not poison
@@ -658,8 +764,11 @@ def _prefix_status(commit: str | None, expected_prefix: str) -> str:
     return "changed"
 
 
-def _list_direct_gitlinks(root: Path) -> list[dict[str, Any]]:
-    out = _git_ok(["ls-tree", "HEAD"], cwd=root) or ""
+def _list_direct_gitlinks(
+    root: Path,
+    commit: str = "HEAD",
+) -> list[dict[str, Any]]:
+    out = _git_ok(["ls-tree", commit], cwd=root) or ""
     links: list[dict[str, Any]] = []
     for line in out.splitlines():
         if "\t" not in line:
@@ -682,8 +791,12 @@ def _list_direct_gitlinks(root: Path) -> list[dict[str, Any]]:
     return links
 
 
-def _list_nested_gitlinks(package_root: Path, parent_package: str, parent_commit: str) -> list[dict[str, Any]]:
-    out = _git_ok(["ls-tree", "-r", "HEAD"], cwd=package_root) or ""
+def _list_nested_gitlinks(
+    package_root: Path,
+    parent_package: str,
+    parent_commit: str,
+) -> list[dict[str, Any]]:
+    out = _git_ok(["ls-tree", "-r", parent_commit], cwd=package_root) or ""
     nested: list[dict[str, Any]] = []
     for line in out.splitlines():
         if not line.startswith("160000 "):
@@ -1074,6 +1187,7 @@ def collect_source_roots(
         ),
         "unresolved_authority_fails_closed": True,
         "documentation_is_not_authority_until_verified": True,
+        "objective_validation_repair": True,
     }
 
     return {
@@ -1086,6 +1200,8 @@ def collect_source_roots(
             "documentation_not_authority_until_verified": True,
             "unresolved_authority_fails_closed": True,
             "external_swissknife_read_only": True,
+            "external_comparison_checkout_required_for_snapshot_check": False,
+            "external_comparison_checkout_required_for_freshness_check": True,
         },
         "superproject": superproject,
         "direct_gitlinks": direct,
@@ -1096,6 +1212,7 @@ def collect_source_roots(
         "package_authority": selected_authority,
         "authority_candidates": authority_candidates,
         "acceptance_coverage": acceptance,
+        "objective_validation_repair": _objective_validation_contract(),
         "blockers": blockers,
         "hard_blockers": hard_blockers,
         "fail_closed": not freeze_ok,
@@ -1167,6 +1284,15 @@ def collect_drift(root: Path, source_roots: dict[str, Any]) -> dict[str, Any]:
             "role": "legacy_mcp_dataset_manager",
             "exists": _surface_exists(
                 root, "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py"
+            ),
+        },
+        {
+            "surface_id": "legacy-monolith-generate-clusters",
+            "path": "ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py",
+            "symbols": ["generate_clusters"],
+            "role": "shadowed_duplicate_method",
+            "exists": _surface_exists(
+                root, "ipfs_datasets_py/ipfs_datasets_py/ipfs_datasets.py"
             ),
         },
         {
@@ -1295,13 +1421,7 @@ def collect_drift(root: Path, source_roots: dict[str, Any]) -> dict[str, Any]:
             finding["observed_exists"] = exists
 
     categories = sorted({str(f["category"]) for f in findings})
-    required_categories = {
-        "mock-success",
-        "nondeterministic-identity",
-        "duplicate-definition",
-        "missing-import",
-        "weak-test",
-    }
+    required_categories = REQUIRED_DRIFT_CATEGORIES
     acceptance = {
         "reproduces_mock_success": "mock-success" in categories,
         "reproduces_nondeterministic_identity": "nondeterministic-identity" in categories,
@@ -1310,6 +1430,7 @@ def collect_drift(root: Path, source_roots: dict[str, Any]) -> dict[str, Any]:
         "reproduces_weak_test": "weak-test" in categories,
         "all_required_categories_present": required_categories.issubset(set(categories)),
         "bound_to_selected_package_authority": bool(authority.get("commit")),
+        "objective_validation_repair": True,
     }
 
     blockers: list[dict[str, Any]] = []
@@ -1346,10 +1467,15 @@ def collect_drift(root: Path, source_roots: dict[str, Any]) -> dict[str, Any]:
         "finding_categories": categories,
         "required_finding_categories": sorted(required_categories),
         "acceptance_coverage": acceptance,
+        "objective_validation_repair": _objective_validation_contract(),
         "blockers": blockers,
         "notes": [
             "Inventory only; no production refactors in DSCON-G010.",
             "Repair is deferred to dataset manipulator / adapter objectives.",
+            (
+                "DSCON-062 objective validation repair replays evidence probes "
+                "against pinned Git objects."
+            ),
         ],
     }
 
@@ -1403,6 +1529,7 @@ def render_ownership_map(source_roots: dict[str, Any], drift: dict[str, Any]) ->
 
 - Goal: `{GOAL_ID}`
 - Task: `{TASK_ID}`
+- Validation repair task: `{VALIDATION_TASK_ID}`
 - Generated: `{generated}`
 - Freeze status: `{"frozen" if source_roots.get("freeze_ok") else "fail_closed"}`
 - Schema: `datasets_contract_analysis/ownership-map@1`
@@ -1461,6 +1588,7 @@ are recorded for **revision-mismatch** detection. The **package authority** for
 | Canonical dataset convert | `core_operations/dataset_converter.py` | **retain** / harden | `ipfs_datasets_py.core_operations.DatasetConverter` |
 | Canonical dataset manipulate | *(missing `dataset_manipulator.py`)* | **create** | `ipfs_datasets_py.core_operations.DatasetManipulator` |
 | Legacy DatasetManager | `ipfs_datasets_py/dataset_manager.py` | **deprecate** (mock-success) | thin wrapper over canonical core after repair |
+| Legacy `generate_clusters` methods | `ipfs_datasets_py/ipfs_datasets.py` (2 definitions) | **deprecate** shadowed no-op methods | canonical bounded manipulator operation |
 | MCP load/process/save/convert tools | `mcp_server/tools/dataset_tools/*` | **retain** as thin adapters | must not own manipulation after DSCON-G330 |
 | DataProcessor | `core_operations/data_processor.py` | **retain** (non-manipulator) | keep separate from DatasetManipulator |
 | ipfs_kit DatasetManager shadows | `ipfs_kit_py/.../DatasetManager` (3 copies) | **retain** kit-local until mismatch policy | not package authority; duplicate definition finding |
@@ -1481,6 +1609,7 @@ are recorded for **revision-mismatch** detection. The **package authority** for
 | `DatasetManager` | class | `ipfs_kit_py/.../ai_ml_integration.py` | **retain** kit-local | kit shadow; not datasets authority |
 | `DatasetManager` | class | `ipfs_kit_py/.../mcp/ai/dataset_manager.py` | **retain** kit-local | kit shadow; duplicate definition |
 | `DatasetManager` | class | `ipfs_kit_py/.../mcp/ai/dataset_management/manager.py` | **retain** kit-local | kit shadow; duplicate definition |
+| `generate_clusters` | async method | `ipfs_datasets_py/ipfs_datasets.py` (2 definitions) | **deprecate** | duplicate/shadowed monolith surface |
 | `load_dataset` | function | MCP + kit + accelerate surfaces | **retain** adapters | thin wrappers over package authority |
 | `process_dataset` | function | MCP tools | **repair** | stop mock-success; delegate to manipulator |
 | `save_dataset` | function | MCP tools | **repair** | stop mock identity; delegate to saver |
@@ -1524,8 +1653,21 @@ definition**, **missing import**, **weak-test**.
 | Hallucinate `8dc4f93e` + package authority | `source-roots.json` hallucinate_datasets + package_authority |
 | mock-success / nondeterministic / duplicate / missing import / weak-test | `datasets-manipulator-drift.json` findings |
 | Unresolved authority fails closed | `source-roots.json` fail_closed + blockers |
+| {OBJECTIVE_VALIDATION_EVIDENCE} | DSCON-062 executable validation contract and pinned-object evidence probes |
 
-Validation: `python scripts/contract_analysis/audit_scope.py --check`
+## 9. Objective validation repair
+
+DSCON-062 closes the synthetic **{OBJECTIVE_VALIDATION_EVIDENCE}** gate by running
+`{OBJECTIVE_VALIDATION_COMMAND}`. The command validates all four
+authorized artifacts, rehashes pinned commits and trees for the selected
+authority, resolves every documented gitlink from its pinned parent tree, and
+reproduces each required drift category from blobs in those verified revisions.
+Unselected external comparison roots retain their freeze-time path/commit/tree
+evidence; if an isolated validation worker lacks those ambient checkouts, strict
+availability and freshness verification is deferred to `--check-current`.
+Documentation paths are never promoted to package authority.
+
+Validation: `{OBJECTIVE_VALIDATION_COMMAND}`
 """
 
 
@@ -1595,7 +1737,18 @@ def _validate_pinned_external(
     label: str,
     expected_prefix: str | None,
     errors: list[str],
+    warnings: list[str],
 ) -> None:
+    """Validate freeze evidence for an unselected external comparison root.
+
+    The selected package authority is always verified from the superproject's
+    pinned Git object graph. External copies are explicitly unselected and may
+    be unavailable in an isolated proposal-validation worker. Their recorded
+    IDs and expected revision status remain fail-closed here; when the checkout
+    is present its objects are also rehashed. ``--check-current`` is the strict
+    ambient availability/freshness gate.
+    """
+
     status = record.get("status")
     if status == "absent":
         if record.get("commit") is not None or record.get("tree") is not None:
@@ -1606,31 +1759,93 @@ def _validate_pinned_external(
         return
     if record.get("verified") is not True:
         errors.append(f"{label} with pinned objects must set verified=true")
-    _validate_pinned_commit_tree(
-        repository,
-        commit=record.get("commit"),
-        tree=record.get("tree"),
-        label=label,
+    commit_id = _pinned_object_id(
+        record.get("commit"),
+        label=f"{label}.commit",
+        errors=errors,
+    )
+    tree_id = _pinned_object_id(
+        record.get("tree"),
+        label=f"{label}.tree",
         errors=errors,
     )
     if expected_prefix:
-        expected_status = _prefix_status(record.get("commit"), expected_prefix)
+        expected_status = _prefix_status(commit_id, expected_prefix)
         if status != expected_status:
             errors.append(
                 f"{label}.status={status!r} is inconsistent with pinned commit "
                 f"and expected prefix {expected_prefix}"
             )
+    if commit_id is None or tree_id is None:
+        return
+    if not _is_git_checkout(repository):
+        warnings.append(
+            f"{label} external comparison checkout is unavailable; "
+            "recorded IDs were validated structurally and ambient verification "
+            "is deferred to --check-current"
+        )
+        return
+    _validate_pinned_commit_tree(
+        repository,
+        commit=commit_id,
+        tree=tree_id,
+        label=label,
+        errors=errors,
+    )
+
+
+def _check_objective_validation_contract(
+    record: Any,
+    *,
+    label: str,
+    errors: list[str],
+) -> None:
+    """Require the checked-in validation contract to match this executable."""
+
+    if not isinstance(record, dict):
+        errors.append(f"{label} must be an object")
+        return
+    expected = _objective_validation_contract()
+    for field in (
+        "evidence_term",
+        "task_id",
+        "command",
+        "authority_mode",
+        "fail_closed",
+    ):
+        if record.get(field) != expected[field]:
+            errors.append(
+                f"{label}.{field} must be {expected[field]!r} "
+                f"(got {record.get(field)!r})"
+            )
+    artifacts = record.get("validated_artifacts")
+    if artifacts != expected["validated_artifacts"]:
+        errors.append(
+            f"{label}.validated_artifacts must list exactly the four "
+            "DSCON-062 authorized outputs"
+        )
 
 
 def _validate_pinned_source_objects(
     root: Path,
     data: dict[str, Any],
     errors: list[str],
+    warnings: list[str],
 ) -> None:
     """Validate the frozen object graph, never ambient checkout revisions."""
     policy = data.get("policy") or {}
     if policy.get("read_git_objects_not_ambient_walk") is not True:
         errors.append("source-roots policy must read pinned Git objects, not ambient HEAD")
+    if policy.get("external_comparison_checkout_required_for_snapshot_check") is not False:
+        errors.append(
+            "source-roots policy must not require unselected external comparison "
+            "checkouts for snapshot validation"
+        )
+    if policy.get("external_comparison_checkout_required_for_freshness_check") is not True:
+        errors.append(
+            "source-roots policy must require external comparison checkouts for "
+            "freshness validation"
+        )
 
     frozen_super = data.get("superproject") or {}
     super_commit = _pinned_object_id(
@@ -1655,6 +1870,7 @@ def _validate_pinned_source_objects(
         errors.append("direct_gitlinks must be a list")
         links_raw = []
     frozen_links: dict[str, dict[str, Any]] = {}
+    frozen_repositories: dict[str, Path] = {}
     for index, candidate in enumerate(links_raw):
         if not isinstance(candidate, dict):
             errors.append(f"direct_gitlinks[{index}] must be an object")
@@ -1681,6 +1897,12 @@ def _validate_pinned_source_objects(
             label=f"{path_value}.commit",
             errors=errors,
         )
+        package_repository = _resolve_gitlink_repository(
+            root,
+            path_value,
+            pinned_checkout,
+        )
+        frozen_repositories[path_value] = package_repository
         if pinned_link is not None and pinned_checkout is not None:
             if pinned_link != pinned_checkout:
                 errors.append(
@@ -1713,12 +1935,24 @@ def _validate_pinned_source_objects(
                     )
 
         _validate_pinned_commit_tree(
-            root / path_value,
+            package_repository,
             commit=candidate.get("commit"),
             tree=candidate.get("tree"),
             label=path_value,
             errors=errors,
         )
+
+    if super_valid and super_commit is not None:
+        expected_links = {
+            entry["path"]: entry
+            for entry in _list_direct_gitlinks(root, super_commit)
+        }
+        if set(frozen_links) != set(expected_links):
+            errors.append(
+                "direct_gitlinks must exactly match every gitlink in the "
+                f"pinned superproject tree: expected={sorted(expected_links)}, "
+                f"recorded={sorted(frozen_links)}"
+            )
 
     for name in SELECTED_PACKAGE_ROOTS:
         candidate = frozen_links.get(name)
@@ -1727,6 +1961,10 @@ def _validate_pinned_source_objects(
         elif candidate.get("selected") is not True:
             errors.append(f"{name} direct gitlink must set selected=true")
 
+    recorded_nested: dict[str, set[tuple[str, str, str]]] = {
+        "nested_gitlinks": set(),
+        "mirror_cycles": set(),
+    }
     for group_name in ("nested_gitlinks", "mirror_cycles"):
         records = data.get(group_name)
         if not isinstance(records, list):
@@ -1756,7 +1994,7 @@ def _validate_pinned_source_objects(
                 errors.append(f"{label}.parent_commit does not bind its selected package")
                 continue
             entry = _pinned_tree_entry(
-                root / parent_name,
+                frozen_repositories.get(parent_name, root / parent_name),
                 commit=parent_commit,
                 relative_path=record.get("relative_path"),
                 label=label,
@@ -1772,6 +2010,87 @@ def _validate_pinned_source_objects(
                     )
             if record.get("rescan") is not False:
                 errors.append(f"{label}.rescan must be false")
+            relative_path = record.get("relative_path")
+            if isinstance(relative_path, str) and nested_commit is not None:
+                record_key = (parent_name, relative_path, nested_commit)
+                if record_key in recorded_nested[group_name]:
+                    errors.append(f"{label} duplicates a pinned nested gitlink")
+                recorded_nested[group_name].add(record_key)
+                expected_full_path = f"{parent_name}/{relative_path}"
+                if record.get("full_path") != expected_full_path:
+                    errors.append(
+                        f"{label}.full_path must be {expected_full_path!r}"
+                    )
+                mirror = _mirror_name(relative_path)
+                if group_name == "mirror_cycles":
+                    if mirror is None or record.get("mirror_package") != mirror:
+                        errors.append(
+                            f"{label} must identify its package mirror cycle"
+                        )
+                    selected_mirror = frozen_links.get(mirror or "") or {}
+                    prior_commit = selected_mirror.get("commit")
+                    if record.get("prior_selected_commit") != prior_commit:
+                        errors.append(
+                            f"{label}.prior_selected_commit must bind the "
+                            "selected mirror revision"
+                        )
+                    if record.get("same_commit_as_selected") is not (
+                        prior_commit == nested_commit
+                    ):
+                        errors.append(
+                            f"{label}.same_commit_as_selected is inconsistent"
+                        )
+                    if record.get("disposition") != (
+                        "mirror_cycle_recorded_without_rescan"
+                    ):
+                        errors.append(
+                            f"{label}.disposition must record a mirror cycle"
+                        )
+                else:
+                    if mirror is not None:
+                        errors.append(
+                            f"{label} is a package mirror and belongs in mirror_cycles"
+                        )
+                    if record.get("disposition") != "nested_gitlink_recorded":
+                        errors.append(
+                            f"{label}.disposition must record a nested gitlink"
+                        )
+
+    for package_name, parent in frozen_links.items():
+        if not parent.get("selected"):
+            continue
+        parent_commit = parent.get("commit")
+        if not isinstance(parent_commit, str):
+            continue
+        expected_nested: dict[str, set[tuple[str, str]]] = {
+            "nested_gitlinks": set(),
+            "mirror_cycles": set(),
+        }
+        for entry in _list_nested_gitlinks(
+            frozen_repositories.get(package_name, root / package_name),
+            package_name,
+            parent_commit,
+        ):
+            group_name = (
+                "mirror_cycles"
+                if _mirror_name(entry["relative_path"]) is not None
+                else "nested_gitlinks"
+            )
+            expected_nested[group_name].add(
+                (entry["relative_path"], entry["gitlink_commit"])
+            )
+        for group_name in ("nested_gitlinks", "mirror_cycles"):
+            recorded_for_package = {
+                (relative_path, gitlink_commit)
+                for parent_name, relative_path, gitlink_commit
+                in recorded_nested[group_name]
+                if parent_name == package_name
+            }
+            if recorded_for_package != expected_nested[group_name]:
+                errors.append(
+                    f"{group_name} for {package_name} must exactly match the "
+                    "pinned package tree"
+                )
 
     authority = data.get("package_authority")
     datasets_link = frozen_links.get("ipfs_datasets_py")
@@ -1814,6 +2133,7 @@ def _validate_pinned_source_objects(
             label=label,
             expected_prefix=expected_prefix,
             errors=errors,
+            warnings=warnings,
         )
 
     check_external(
@@ -1896,7 +2216,12 @@ def _check_source_roots(
     if data.get("schema") != SCHEMA_SOURCE_ROOTS:
         errors.append(f"source-roots.json schema must be {SCHEMA_SOURCE_ROOTS}")
 
-    _validate_pinned_source_objects(root, data, errors)
+    _check_objective_validation_contract(
+        data.get("objective_validation_repair"),
+        label="source-roots objective_validation_repair",
+        errors=errors,
+    )
+    _validate_pinned_source_objects(root, data, errors, warnings)
 
     cycles = data.get("mirror_cycles") or []
     if not isinstance(cycles, list) or not cycles:
@@ -1947,6 +2272,8 @@ def _check_source_roots(
             ("swissknife_df11f08f_or_explicit_status", True),
             ("hallucinate_8dc4f93e_and_package_authority_recorded", True),
             ("unresolved_authority_fails_closed", True),
+            ("documentation_is_not_authority_until_verified", True),
+            ("objective_validation_repair", True),
         ):
             if coverage.get(key) is not expected:
                 errors.append(f"acceptance_coverage.{key} must be {expected}")
@@ -1963,6 +2290,240 @@ def _check_source_roots(
             errors.append("blockers must not mark unresolved ownership as guessed=true")
 
     return data
+
+
+def _pinned_package_blob(
+    root: Path,
+    source_roots: dict[str, Any],
+    *,
+    package: str,
+    relative_path: str,
+    errors: list[str],
+) -> str | None:
+    """Read a blob from a verified direct-gitlink revision."""
+
+    links = {
+        item.get("path"): item
+        for item in (source_roots.get("direct_gitlinks") or [])
+        if isinstance(item, dict)
+    }
+    link = links.get(package)
+    commit = link.get("commit") if isinstance(link, dict) else None
+    repository = _resolve_gitlink_repository(root, package, commit)
+    if not isinstance(commit, str) or not _is_git_checkout(repository):
+        errors.append(
+            f"cannot inspect pinned {package}/{relative_path}: "
+            "verified package revision unavailable"
+        )
+        return None
+    return _read_pinned_blob(
+        repository,
+        commit=commit,
+        relative_path=relative_path,
+    )
+
+
+def _require_pinned_markers(
+    root: Path,
+    source_roots: dict[str, Any],
+    *,
+    category: str,
+    package: str,
+    relative_path: str,
+    markers: tuple[str, ...],
+    errors: list[str],
+) -> None:
+    text = _pinned_package_blob(
+        root,
+        source_roots,
+        package=package,
+        relative_path=relative_path,
+        errors=errors,
+    )
+    display = f"{package}/{relative_path}"
+    if text is None:
+        errors.append(f"{category} evidence blob is absent: {display}")
+        return
+    for marker in markers:
+        if marker not in text:
+            errors.append(
+                f"{category} marker {marker!r} missing from pinned {display}"
+            )
+
+
+def _require_pinned_absence(
+    root: Path,
+    source_roots: dict[str, Any],
+    *,
+    category: str,
+    package: str,
+    relative_path: str,
+    errors: list[str],
+) -> None:
+    text = _pinned_package_blob(
+        root,
+        source_roots,
+        package=package,
+        relative_path=relative_path,
+        errors=errors,
+    )
+    if text is not None:
+        errors.append(
+            f"{category} expects pinned path to be absent: "
+            f"{package}/{relative_path}"
+        )
+
+
+def _require_pinned_marker_count(
+    root: Path,
+    source_roots: dict[str, Any],
+    *,
+    category: str,
+    package: str,
+    relative_path: str,
+    marker: str,
+    expected_count: int,
+    errors: list[str],
+) -> None:
+    text = _pinned_package_blob(
+        root,
+        source_roots,
+        package=package,
+        relative_path=relative_path,
+        errors=errors,
+    )
+    display = f"{package}/{relative_path}"
+    if text is None:
+        errors.append(f"{category} evidence blob is absent: {display}")
+        return
+    observed = text.count(marker)
+    if observed != expected_count:
+        errors.append(
+            f"{category} marker {marker!r} must occur {expected_count} times "
+            f"in pinned {display} (got {observed})"
+        )
+
+
+def _validate_pinned_drift_evidence(
+    root: Path,
+    source_roots: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """Replay the five required drift categories from frozen Git blobs."""
+
+    probes = (
+        (
+            "mock-success",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/dataset_manager.py",
+            ("Fallback: return a minimal mock dataset", "Mock successful save"),
+        ),
+        (
+            "mock-success",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/mcp_server/tools/dataset_tools/process_dataset.py",
+            ("Default mock count", "mock implementation for now"),
+        ),
+        (
+            "mock-success",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/mcp_server/tools/dataset_tools/convert_dataset_format.py",
+            ("Using mock conversion response", '"conversion_method": "mock"'),
+        ),
+        (
+            "nondeterministic-identity",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/mcp_server/tools/dataset_tools/save_dataset.py",
+            ("hash(str(dataset_data))",),
+        ),
+        (
+            "nondeterministic-identity",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/processors/serialization/dataset_serialization.py",
+            ("uuid.uuid4()", "datetime.datetime.now()", "random.sample("),
+        ),
+        (
+            "duplicate-definition",
+            "ipfs_datasets_py",
+            "ipfs_datasets_py/dataset_manager.py",
+            ("class DatasetManager:",),
+        ),
+        (
+            "duplicate-definition",
+            "ipfs_kit_py",
+            "ipfs_kit_py/ai_ml_integration.py",
+            ("class DatasetManager:",),
+        ),
+        (
+            "duplicate-definition",
+            "ipfs_kit_py",
+            "ipfs_kit_py/mcp/ai/dataset_manager.py",
+            ("class DatasetManager:",),
+        ),
+        (
+            "duplicate-definition",
+            "ipfs_kit_py",
+            "ipfs_kit_py/mcp/ai/dataset_management/manager.py",
+            ("class DatasetManager:",),
+        ),
+        (
+            "weak-test",
+            "ipfs_datasets_py",
+            "tests/migration_tests/_test_generator_for_dataset_tools.py",
+            ("MagicMock", "patch"),
+        ),
+        (
+            "weak-test",
+            "ipfs_datasets_py",
+            "tests/unit/test_stubs_from_gherkin/test_dataset_manager.py",
+            ("test_create_mock_dataset_when_loading_fails", "pass"),
+        ),
+    )
+    for category, package, relative_path, markers in probes:
+        _require_pinned_markers(
+            root,
+            source_roots,
+            category=category,
+            package=package,
+            relative_path=relative_path,
+            markers=markers,
+            errors=errors,
+        )
+
+    _require_pinned_marker_count(
+        root,
+        source_roots,
+        category="duplicate-definition",
+        package="ipfs_datasets_py",
+        relative_path="ipfs_datasets_py/ipfs_datasets.py",
+        marker="async def generate_clusters(",
+        expected_count=2,
+        errors=errors,
+    )
+
+    for relative_path in (
+        "ipfs_datasets_py/core_operations/dataset_manipulator.py",
+        "ipfs_datasets_py/core_operations/dataset_contracts.py",
+    ):
+        _require_pinned_absence(
+            root,
+            source_roots,
+            category="missing-import",
+            package="ipfs_datasets_py",
+            relative_path=relative_path,
+            errors=errors,
+        )
+    _require_pinned_absence(
+        root,
+        source_roots,
+        category="weak-test",
+        package="ipfs_datasets_py",
+        relative_path=(
+            "tests/contract/core_operations/"
+            "test_dataset_manipulator_baseline.py"
+        ),
+        errors=errors,
+    )
 
 
 def _check_drift(
@@ -1992,6 +2553,12 @@ def _check_drift(
     if data.get("schema") != SCHEMA_DRIFT:
         errors.append(f"drift schema must be {SCHEMA_DRIFT}")
 
+    _check_objective_validation_contract(
+        data.get("objective_validation_repair"),
+        label="drift objective_validation_repair",
+        errors=errors,
+    )
+
     findings = data.get("findings") or []
     if not isinstance(findings, list) or len(findings) < 5:
         errors.append("drift findings must include the known baseline inventory")
@@ -2000,73 +2567,52 @@ def _check_drift(
         for f in findings
         if isinstance(f, dict)
     }
-    for required in (
-        "mock-success",
-        "nondeterministic-identity",
-        "duplicate-definition",
-        "missing-import",
-        "weak-test",
-    ):
+    for required in sorted(REQUIRED_DRIFT_CATEGORIES):
         if required not in categories:
             errors.append(f"drift findings missing category: {required}")
 
-    # Spot-check evidence in the pinned package authority, not whichever
-    # revision happens to be checked out now.
-    authority = (source_roots or {}).get("package_authority") or {}
-    authority_commit = authority.get("commit")
-    authority_path = authority.get("path")
-    authority_repository = (
-        root / authority_path if isinstance(authority_path, str) else None
-    )
-    mock_paths = [
-        "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
-        (
-            "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/"
-            "dataset_tools/process_dataset.py"
-        ),
-        (
-            "ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/"
-            "dataset_tools/convert_dataset_format.py"
-        ),
-    ]
-    for rel in mock_paths:
-        package_rel = rel.removeprefix("ipfs_datasets_py/")
-        if (
-            authority_repository is None
-            or not isinstance(authority_commit, str)
-            or not _is_git_checkout(authority_repository)
-        ):
-            errors.append(
-                f"cannot read pinned mock-success evidence without package authority: {rel}"
-            )
+    expected_findings = {
+        item["finding_id"]: item for item in KNOWN_FINDINGS
+    }
+    observed_findings: dict[str, dict[str, Any]] = {}
+    for index, finding in enumerate(findings):
+        if not isinstance(finding, dict):
+            errors.append(f"drift findings[{index}] must be an object")
             continue
-        pinned_text = _read_pinned_blob(
-            authority_repository,
-            commit=authority_commit,
-            relative_path=package_rel,
-        )
-        if pinned_text is None:
-            errors.append(f"mock-success path missing from pinned authority: {rel}")
+        finding_id = finding.get("finding_id")
+        if not isinstance(finding_id, str):
+            errors.append(f"drift findings[{index}] missing finding_id")
             continue
-        text = pinned_text.lower()
-        if "mock" not in text:
-            errors.append(f"expected mock-success evidence missing from pinned {rel}")
+        if finding_id in observed_findings:
+            errors.append(f"duplicate drift finding_id: {finding_id}")
+            continue
+        observed_findings[finding_id] = finding
+    for finding_id, expected in expected_findings.items():
+        finding = observed_findings.get(finding_id)
+        if finding is None:
+            errors.append(f"drift findings missing frozen finding: {finding_id}")
+            continue
+        for field in ("category", "severity", "symbol", "path", "status"):
+            if finding.get(field) != expected.get(field):
+                errors.append(
+                    f"{finding_id}.{field} differs from frozen inventory: "
+                    f"expected {expected.get(field)!r}, got {finding.get(field)!r}"
+                )
+        if finding.get("path_verified") is not True:
+            errors.append(f"{finding_id}.path_verified must be true")
 
-    manip_rel = "ipfs_datasets_py/core_operations/dataset_manipulator.py"
-    if (
-        authority_repository is not None
-        and isinstance(authority_commit, str)
-        and _read_pinned_blob(
-            authority_repository,
-            commit=authority_commit,
-            relative_path=manip_rel,
+    recorded_categories = data.get("finding_categories")
+    if recorded_categories != sorted(categories):
+        errors.append("finding_categories must equal categories derived from findings")
+    if data.get("required_finding_categories") != sorted(REQUIRED_DRIFT_CATEGORIES):
+        errors.append(
+            "required_finding_categories must list the five objective categories"
         )
-        is not None
-    ):
-        warnings.append(
-            "dataset_manipulator.py exists in the pinned snapshot; "
-            "missing-import finding may need refresh"
-        )
+
+    if source_roots is None:
+        errors.append("cannot replay drift evidence without source-roots authority")
+    else:
+        _validate_pinned_drift_evidence(root, source_roots, errors)
 
     bound = data.get("bound_package_authority") or {}
     if source_roots is not None:
@@ -2077,8 +2623,21 @@ def _check_drift(
             )
 
     coverage = data.get("acceptance_coverage") or {}
-    if not isinstance(coverage, dict) or not coverage.get("all_required_categories_present"):
-        errors.append("drift acceptance_coverage.all_required_categories_present must be true")
+    if not isinstance(coverage, dict):
+        errors.append("drift acceptance_coverage must be an object")
+    else:
+        for key in (
+            "reproduces_mock_success",
+            "reproduces_nondeterministic_identity",
+            "reproduces_duplicate_definition",
+            "reproduces_missing_import",
+            "reproduces_weak_test",
+            "all_required_categories_present",
+            "bound_to_selected_package_authority",
+            "objective_validation_repair",
+        ):
+            if coverage.get(key) is not True:
+                errors.append(f"drift acceptance_coverage.{key} must be true")
 
     return data
 
@@ -2270,6 +2829,10 @@ def run_check(
     print(
         f"  ownership: {ownership_path.relative_to(root)} "
         f"({'ok' if ownership_path.is_file() else 'MISSING'})"
+    )
+    print(
+        f"  {OBJECTIVE_VALIDATION_EVIDENCE}: "
+        f"{'ok' if not errors else 'FAILED'} ({VALIDATION_TASK_ID})"
     )
 
     if warnings:
