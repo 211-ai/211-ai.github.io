@@ -2451,7 +2451,7 @@ The objective daemon appends canonical `WALPROC-*` task blocks below.
 
 ## WALPROC-065 Resolve validation retry-budget failure for WALPROC-033
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
