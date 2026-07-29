@@ -42,6 +42,25 @@ def _runner_wav_bytes() -> bytes:
     return buffer.getvalue()
 
 
+def _pcm16_wav_bytes(
+    samples: tuple[int, ...],
+    *,
+    sample_rate: int = 1_000,
+) -> bytes:
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(sample_rate)
+        audio.writeframes(
+            b"".join(
+                sample.to_bytes(2, "little", signed=True)
+                for sample in samples
+            )
+        )
+    return buffer.getvalue()
+
+
 def test_atomic_audio_write_keeps_final_file_on_publish_failure(
     monkeypatch,
     tmp_path: Path,
@@ -75,6 +94,25 @@ def test_atomic_audio_write_keeps_final_file_on_publish_failure(
     assert destination.read_bytes() == b"previous-complete-audio"
     assert observed_temporary_paths
     assert all(not path.exists() for path in observed_temporary_paths)
+
+
+def test_atomic_audio_write_preserves_final_file_on_trailing_silence_rejection(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    destination = tmp_path / "response.wav"
+    previous = _runner_wav_bytes()
+    destination.write_bytes(previous)
+    padded = _pcm16_wav_bytes((1_000, 0, 0))
+    monkeypatch.setenv("WALLET_INDEXTTS_MAX_TRAILING_SILENCE_MS", "1")
+
+    with pytest.raises(VoiceJobExecutionError) as captured:
+        precompute.write_audio_bytes_atomic(destination, padded)
+
+    assert captured.value.code == "audio_trailing_silence_exceeded"
+    assert captured.value.retryable is True
+    assert destination.read_bytes() == previous
+    assert not list(tmp_path.glob(".response.*.wav"))
 
 
 def test_atomic_mp3_conversion_keeps_final_file_when_ffmpeg_fails(
@@ -169,10 +207,15 @@ def test_invalid_nonempty_cache_is_discarded_without_ffprobe(
     [False, True],
     ids=("normal", "refresh-stale-reference"),
 )
-def test_main_regenerates_invalid_nonempty_local_cache(
+@pytest.mark.parametrize(
+    "cache_kind",
+    ["truncated", "padded-tail"],
+)
+def test_main_regenerates_invalid_or_padded_local_cache(
     monkeypatch,
     tmp_path: Path,
     stale_reference_first: bool,
+    cache_kind: str,
 ) -> None:
     text = "A safe response that must be regenerated."
     normalized_text = precompute.normalize_indextts_spoken_text(text)
@@ -187,7 +230,12 @@ def test_main_regenerates_invalid_nonempty_local_cache(
     output_dir = tmp_path / "audio"
     output_dir.mkdir()
     cached_wav = output_dir / f"{response_id}.wav"
-    cached_wav.write_bytes(b"RIFF nonempty but truncated")
+    cached_content = (
+        b"RIFF nonempty but truncated"
+        if cache_kind == "truncated"
+        else _pcm16_wav_bytes((1_000,) + (0,) * 1_001)
+    )
+    cached_wav.write_bytes(cached_content)
     generated_audio = _runner_wav_bytes()
     manifest_path = tmp_path / "manifest.json"
     public_manifest_path = tmp_path / "public-manifest.json"
@@ -270,7 +318,13 @@ def test_main_regenerates_invalid_nonempty_local_cache(
     monkeypatch.setattr(
         precompute,
         "local_audio_is_structurally_valid",
-        lambda path: path.read_bytes() == generated_audio,
+        lambda path: (
+            path.read_bytes() == generated_audio
+            or (
+                cache_kind == "padded-tail"
+                and path.read_bytes() == cached_content
+            )
+        ),
     )
 
     precompute.main()
@@ -530,6 +584,23 @@ def test_adaptive_split_batch_synthesis_falls_back_to_single_for_irreducible_fai
 
 def test_space_queue_failed_without_details_is_transient() -> None:
     assert precompute.is_indextts_transient_worker_error("Space queue failed: {'error': None}") is True
+
+
+def test_generated_audio_quality_error_is_transient() -> None:
+    error = VoiceJobExecutionError(
+        "audio_trailing_silence_exceeded",
+        retryable=True,
+    )
+
+    assert precompute.is_indextts_transient_worker_error(error) is True
+    assert precompute.batch_failure_result(
+        error,
+        batch_mode="batch",
+        fallback_reason="",
+        requested_batch_size=1,
+        executed_batch_size=1,
+        split_depth=0,
+    )["retriable"] is True
 
 
 def test_indextts_contract_summary_reports_missing_batch_alias(monkeypatch) -> None:
@@ -1164,6 +1235,12 @@ def test_cached_bucket_audio_entry_prefers_remote_mp3(monkeypatch) -> None:
         "hf_bucket_backend",
         lambda bucket_uri: FakeBucketBackend({"audio/abby-tts-1234.mp3"}),
     )
+    validated: list[str] = []
+    monkeypatch.setattr(
+        precompute,
+        "validate_indextts_bucket_audio",
+        lambda _backend, remote_path: validated.append(remote_path) or {},
+    )
 
     entry = precompute.cached_bucket_audio_entry(
         {"id": "abby-tts-1234", "text": "hello"},
@@ -1176,6 +1253,39 @@ def test_cached_bucket_audio_entry_prefers_remote_mp3(monkeypatch) -> None:
     assert entry["preferredAudioPath"] == "hf://buckets/Publicus/abby-voice/run-1/audio/abby-tts-1234.mp3"
     assert entry["preferredBucketAudioUri"] == entry["preferredAudioPath"]
     assert entry["bucketAudioUri"] == "hf://buckets/Publicus/abby-voice/run-1/audio/abby-tts-1234.wav"
+    assert validated == ["audio/abby-tts-1234.mp3"]
+
+
+def test_cached_bucket_audio_rejects_quality_failed_remote_object(
+    monkeypatch,
+) -> None:
+    class FakeBucketBackend:
+        def exists(self, remote_path: str) -> bool:
+            return remote_path.endswith(".mp3")
+
+    monkeypatch.setattr(
+        precompute,
+        "hf_bucket_backend",
+        lambda _bucket_uri: FakeBucketBackend(),
+    )
+    monkeypatch.setattr(
+        precompute,
+        "validate_indextts_bucket_audio",
+        lambda _backend, _remote_path: (_ for _ in ()).throw(
+            VoiceJobExecutionError(
+                "audio_trailing_silence_exceeded",
+                retryable=True,
+            )
+        ),
+    )
+
+    entry = precompute.cached_bucket_audio_entry(
+        {"id": "abby-tts-padded", "text": "hello"},
+        bucket_uri="hf://buckets/Publicus/abby-voice/run-1",
+        prefer_mp3=True,
+    )
+
+    assert entry is None
 
 
 def test_batch_upload_request_data_defaults_to_live_29_field_contract(monkeypatch) -> None:

@@ -62,6 +62,19 @@ except ModuleNotFoundError:  # pragma: no cover - exercised in lean local test e
     def is_stale_gradio_file_error(_value: object) -> bool:
         return False
 
+try:
+    from ipfs_accelerate_py.voice_jobs import (
+        ArtifactPolicy as VoiceArtifactPolicy,
+        VoiceJobExecutionError,
+        validate_generated_audio_bytes,
+    )
+    _VOICE_AUDIO_VALIDATOR_IMPORT_ERROR: Exception | None = None
+except (ImportError, ModuleNotFoundError) as exc:  # pragma: no cover - fail closed
+    VoiceArtifactPolicy = None  # type: ignore[assignment,misc]
+    VoiceJobExecutionError = None  # type: ignore[assignment,misc]
+    validate_generated_audio_bytes = None  # type: ignore[assignment]
+    _VOICE_AUDIO_VALIDATOR_IMPORT_ERROR = exc
+
 IPFS_DATASETS_SECRETS_MODULE = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "secrets.py"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
 DEFAULT_RESULTS = REPO_ROOT / "docs/211_chatbot_simulation_results.json"
@@ -73,6 +86,7 @@ DEFAULT_SLOTTED_RESPONSE_INDEX = REPO_ROOT / "wallet_interface/ui/public/assets/
 DEFAULT_INDEXTTS_SPACE_URL = "https://publicus-indextts-2-demo.hf.space"
 DEFAULT_INDEXTTS_MODEL_NAME = "Publicus/IndexTTS-2-Demo"
 DEFAULT_INDEXTTS_REMOTE_BATCH_SIZE = 4
+DEFAULT_INDEXTTS_MAX_TRAILING_SILENCE_MS = 1_000
 INDEXTTS_TOKEN_ENV_NAMES = (
     "HF_TOKEN",
     "WALLET_INDEXTTS_HF_TOKEN",
@@ -124,6 +138,13 @@ def raise_if_indextts_quota_exceeded(value: Any) -> None:
 
 
 def is_indextts_transient_worker_error(value: Any) -> bool:
+    error_type = VoiceJobExecutionError
+    if (
+        isinstance(error_type, type)
+        and isinstance(value, error_type)
+        and bool(getattr(value, "retryable", False))
+    ):
+        return True
     if is_retryable_hf_space_error(value):
         return True
     text = str(value or "")
@@ -144,7 +165,16 @@ def is_indextts_transient_worker_error(value: Any) -> bool:
             "timed out",
             "connection reset",
             "remote disconnected",
+            "audio_trailing_silence_exceeded",
         )
+    )
+
+
+def is_indextts_audio_validation_error(value: Any) -> bool:
+    error_type = VoiceJobExecutionError
+    return (
+        isinstance(error_type, type)
+        and isinstance(value, error_type)
     )
 
 
@@ -1273,6 +1303,81 @@ def _replacement_mode(path: Path) -> int:
         return 0o644
 
 
+def indextts_max_trailing_silence_ms() -> int | None:
+    """Return the configured TTS tail limit, or ``None`` when disabled."""
+
+    raw = os.environ.get(
+        "WALLET_INDEXTTS_MAX_TRAILING_SILENCE_MS",
+        str(DEFAULT_INDEXTTS_MAX_TRAILING_SILENCE_MS),
+    ).strip()
+    if raw.casefold() in {"none", "off", "disabled"}:
+        return None
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise RuntimeError(
+            "WALLET_INDEXTTS_MAX_TRAILING_SILENCE_MS must be a "
+            "non-negative integer or one of: none, off, disabled"
+        ) from exc
+    if value < 0:
+        raise RuntimeError(
+            "WALLET_INDEXTTS_MAX_TRAILING_SILENCE_MS must be non-negative"
+        )
+    return value
+
+
+def validate_indextts_generated_audio(path: Path, content: bytes) -> dict[str, int]:
+    """Apply package-owned TTS quality gates before local publication."""
+
+    if (
+        VoiceArtifactPolicy is None
+        or validate_generated_audio_bytes is None
+    ):
+        raise RuntimeError(
+            "ipfs_accelerate_py generated-audio validation is unavailable"
+        ) from _VOICE_AUDIO_VALIDATOR_IMPORT_ERROR
+    media_type = mimetypes.guess_type(path.name)[0] or "audio/wav"
+    return validate_generated_audio_bytes(
+        content,
+        media_type=media_type,
+        uri=path.name,
+        policy=VoiceArtifactPolicy(
+            max_tts_trailing_silence_ms=indextts_max_trailing_silence_ms(),
+        ),
+    )
+
+
+def validate_indextts_bucket_audio(
+    backend: HFBucketBackend,
+    remote_path: str,
+) -> dict[str, int]:
+    """Download and validate one remote artifact before trusting its cache hit."""
+
+    content = backend.get_file(remote_path)
+    parsed_path = urllib_parse.urlsplit(str(remote_path)).path
+    return validate_indextts_generated_audio(
+        Path(parsed_path or str(remote_path)),
+        content,
+    )
+
+
+def discard_unacceptable_local_audio_cache(path: Path) -> bool:
+    """Discard structurally invalid or quality-rejected local TTS cache data."""
+
+    if discard_invalid_local_audio_cache(path):
+        return True
+    if not path.exists():
+        return False
+    try:
+        validate_indextts_generated_audio(path, path.read_bytes())
+    except Exception as exc:
+        if not is_indextts_audio_validation_error(exc):
+            raise
+        path.unlink(missing_ok=True)
+        return True
+    return False
+
+
 def write_audio_bytes_atomic(path: Path, content: bytes) -> None:
     """Validate and atomically publish one generated local audio file."""
 
@@ -1292,6 +1397,7 @@ def write_audio_bytes_atomic(path: Path, content: bytes) -> None:
             os.fsync(handle.fileno())
         if not local_audio_is_structurally_valid(temporary_path):
             raise RuntimeError(f"IndexTTS returned invalid audio for {path.name}")
+        validate_indextts_generated_audio(path, content)
         os.replace(temporary_path, path)
         _fsync_directory(path.parent)
     finally:
@@ -1344,7 +1450,27 @@ def cached_bucket_audio_entry(
         return None
     backend = hf_bucket_backend(bucket_uri)
     mp3_exists = backend.exists(f"audio/{item['id']}.mp3")
+    if mp3_exists:
+        try:
+            validate_indextts_bucket_audio(
+                backend,
+                f"audio/{item['id']}.mp3",
+            )
+        except Exception as exc:
+            if not is_indextts_audio_validation_error(exc):
+                raise
+            mp3_exists = False
     wav_exists = backend.exists(f"audio/{item['id']}.wav") if (not mp3_exists or not prefer_mp3) else False
+    if wav_exists:
+        try:
+            validate_indextts_bucket_audio(
+                backend,
+                f"audio/{item['id']}.wav",
+            )
+        except Exception as exc:
+            if not is_indextts_audio_validation_error(exc):
+                raise
+            wav_exists = False
     if prefer_mp3 and mp3_exists:
         entry = {
             **item,
@@ -3822,6 +3948,39 @@ def main() -> None:
                                 f"{type(error).__name__}: {error}"
                             ),
                         )
+                        if len(results) != len(batch):
+                            raise IndexTTSUploadResultUnverifiableError(
+                                "IndexTTS batch upload returned "
+                                f"{len(results)} result(s) for "
+                                f"{len(batch)} response(s)"
+                            )
+                        upload_backend = hf_bucket_backend(args.bucket_uri)
+                        for result in results:
+                            preferred_uri = str(
+                                result.get("preferredBucketAudioUri")
+                                or result.get("bucketMp3Uri")
+                                or result.get("bucketAudioUri")
+                                or ""
+                            )
+                            if not preferred_uri:
+                                raise IndexTTSUploadResultUnverifiableError(
+                                    "IndexTTS batch upload omitted an "
+                                    "authoritative audio URI"
+                                )
+                            try:
+                                validate_indextts_bucket_audio(
+                                    upload_backend,
+                                    preferred_uri,
+                                )
+                            except Exception as validation_error:
+                                if is_indextts_audio_validation_error(
+                                    validation_error
+                                ):
+                                    raise
+                                raise IndexTTSUploadResultUnverifiableError(
+                                    "IndexTTS uploaded audio could not be "
+                                    "independently validated"
+                                ) from validation_error
                     except Exception as exc:
                         if isinstance(exc, IndexTTSQuotaExceededError):
                             raise
@@ -3835,10 +3994,6 @@ def main() -> None:
                             f"{type(exc).__name__}: {exc}"
                         )
                     else:
-                        if len(results) != len(batch):
-                            raise RuntimeError(
-                                f"IndexTTS batch upload returned {len(results)} result(s) for {len(batch)} response(s)"
-                            )
                         _record_upload_batch_results(batch, results)
                         return
                 print(f"processing remote chunk of {len(batch)} response(s)")
@@ -3887,6 +4042,10 @@ def main() -> None:
                     write_audio_bytes_atomic(audio_path, result["audio"])
                     if args.write_mp3:
                         convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=True)
+                        validate_indextts_generated_audio(
+                            mp3_path,
+                            mp3_path.read_bytes(),
+                        )
                     wav_deleted = maybe_delete_wav(audio_path, mp3_path, delete_wav=args.write_mp3 and args.delete_wav_after_mp3)
                     entry = {
                         **item,
@@ -3923,6 +4082,7 @@ def main() -> None:
                     write_progress(args.progress_json, manifest_entries, len(responses), started_at)
             except Exception as exc:
                 retry_after = exc.retry_after if isinstance(exc, IndexTTSQuotaExceededError) else indextts_retry_after_hint(exc)
+                retriable = is_indextts_transient_worker_error(exc) or bool(retry_after)
                 for index, item, _audio_path, _mp3_path in batch:
                     print(f"[{index}/{len(responses)}] failed {item['id']}: {exc}")
                     manifest_entries.append(
@@ -3932,7 +4092,8 @@ def main() -> None:
                             "audioPath": "",
                             "mp3Path": "",
                             "error": f"{type(exc).__name__}: {exc}",
-                            **({"retriable": True, "retryAfter": retry_after} if retry_after else {}),
+                            **({"retriable": True} if retriable else {}),
+                            **({"retryAfter": retry_after} if retry_after else {}),
                         }
                     )
                     write_progress(args.progress_json, manifest_entries, len(responses), started_at)
@@ -3946,9 +4107,9 @@ def main() -> None:
             audio_path = args.output_dir / f"{item['id']}.wav"
             mp3_path = args.output_dir / f"{item['id']}.mp3"
             if not args.force:
-                if discard_invalid_local_audio_cache(mp3_path):
+                if discard_unacceptable_local_audio_cache(mp3_path):
                     print(f"[{index}/{len(responses)}] dropped invalid audio cache {mp3_path.name}")
-                if discard_invalid_local_audio_cache(audio_path):
+                if discard_unacceptable_local_audio_cache(audio_path):
                     print(f"[{index}/{len(responses)}] dropped invalid audio cache {audio_path.name}")
             if not audio_path.exists() and mp3_path.exists() and not args.force:
                 entry = {
@@ -3972,6 +4133,10 @@ def main() -> None:
             if audio_path.exists() and not args.force:
                 if args.write_mp3:
                     convert_wav_to_mp3(audio_path, mp3_path, bitrate=args.mp3_bitrate, force=False)
+                    validate_indextts_generated_audio(
+                        mp3_path,
+                        mp3_path.read_bytes(),
+                    )
                 wav_deleted = maybe_delete_wav(audio_path, mp3_path, delete_wav=args.write_mp3 and args.delete_wav_after_mp3)
                 entry = {
                     **item,

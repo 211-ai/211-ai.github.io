@@ -239,6 +239,12 @@ def test_space_queue_failed_without_details_is_retryable() -> None:
     assert batch_runner.is_retryable_failure_message("RuntimeError: Space queue failed: {'error': None}") is True
 
 
+def test_trailing_silence_quality_failure_is_retryable() -> None:
+    assert batch_runner.is_retryable_failure_message(
+        "VoiceJobExecutionError: audio_trailing_silence_exceeded"
+    ) is True
+
+
 def test_aggregate_receipts_is_deterministic_deduplicated_and_ignores_incompatible_stale_receipts(
     tmp_path: Path,
 ) -> None:

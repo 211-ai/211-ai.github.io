@@ -966,6 +966,7 @@ _TRANSIENT_FAILURE_MARKERS = (
     "timed out",
     "connection reset",
     "remote disconnected",
+    "audio_trailing_silence_exceeded",
 )
 
 
