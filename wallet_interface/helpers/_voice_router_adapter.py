@@ -19,10 +19,13 @@ import base64
 import binascii
 import hashlib
 import os
+import threading
+import time
 from collections.abc import Mapping
 from typing import Any, Final
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
+RUNTIME_AUDIO_MANIFEST_ENV = "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL"
 VOICE_ROUTER_ADAPTER_VERSION = "1.3"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
     "aac": "audio/aac",
@@ -38,6 +41,11 @@ _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
 }
 _PACKAGE_INDEXTTS_PROVIDER: object | None = None
 _PACKAGE_INDEXTTS_PROVIDER_KEY: tuple[object, ...] = ()
+_PACKAGE_PRECOMPUTED_AUDIO_RESOLVER: object | None = None
+_PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY: tuple[object, ...] = ()
+_PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR: str | None = None
+_PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT = 0.0
+_PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_LOCK = threading.Lock()
 _VOICE_SURFACE_ALIASES: Final[dict[str, str]] = {
     "web": "website",
     "website": "website",
@@ -465,7 +473,11 @@ class _WalletResponsePlanProvider:
         )
 
 
-def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
+def build_voice_turn_request(
+    payload: Mapping[str, object],
+    *,
+    synthesis_identity: object | None = None,
+) -> Any:
     """Build a canonical request from legacy camelCase/snake_case proxy data."""
 
     _, voice_turn_request, _ = _router_contracts()
@@ -484,6 +496,29 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
     grounding = _mapping_field(payload, "grounding")
     stt_options = _mapping_field(payload, "stt_options", "sttOptions")
     tts_options = _mapping_field(payload, "tts_options", "ttsOptions")
+    identity_to_dict = getattr(synthesis_identity, "to_dict", None)
+    identity = (
+        dict(identity_to_dict())
+        if callable(identity_to_dict)
+        else (
+            dict(synthesis_identity)
+            if isinstance(synthesis_identity, Mapping)
+            else {}
+        )
+    )
+    identity_options = {
+        "channels": identity.get("channels"),
+        "codec": identity.get("codec"),
+        "generation_settings": identity.get("generation_settings"),
+        "provider_version": identity.get("provider_version"),
+        "reference_audio_sha256": identity.get(
+            "reference_audio_sha256"
+        ),
+        "sample_rate_hz": identity.get("sample_rate_hz"),
+    }
+    for key, value in identity_options.items():
+        if value is not None:
+            tts_options.setdefault(key, value)
     return voice_turn_request(
         audio=audio,
         transcript=transcript,
@@ -491,14 +526,39 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         context=context,
         grounding=grounding,
         language=_text_field(payload, "language"),
-        locale=_text_field(payload, "locale"),
-        voice=_text_field(payload, "voice", "voiceDescription", "voice_description"),
+        locale=(
+            _text_field(payload, "locale")
+            or str(identity.get("locale") or "").strip()
+            or None
+        ),
+        voice=(
+            _text_field(
+                payload,
+                "voice",
+                "voiceDescription",
+                "voice_description",
+            )
+            or str(identity.get("voice") or "").strip()
+            or None
+        ),
         stt_provider=_text_field(payload, "stt_provider", "sttProvider"),
-        tts_provider=_text_field(payload, "tts_provider", "ttsProvider"),
+        tts_provider=(
+            _text_field(payload, "tts_provider", "ttsProvider")
+            or str(identity.get("provider") or "").strip()
+            or None
+        ),
         stt_model=_text_field(payload, "stt_model", "sttModel"),
-        tts_model=_text_field(payload, "tts_model", "ttsModel"),
+        tts_model=(
+            _text_field(payload, "tts_model", "ttsModel")
+            or str(identity.get("model") or "").strip()
+            or None
+        ),
         device=_text_field(payload, "device"),
-        output_format=_text_field(payload, "output_format", "outputFormat"),
+        output_format=(
+            _text_field(payload, "output_format", "outputFormat")
+            or str(identity.get("codec") or "").strip()
+            or None
+        ),
         fallback_text=(
             _text_field(payload, "fallbackText", "fallback_text", "response_text", "responseText")
             or _text_field(payload, "text")
@@ -507,6 +567,83 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         stt_options=stt_options,
         tts_options=tts_options,
     )
+
+
+def _package_precomputed_audio_resolver() -> object | None:
+    """Load the explicitly configured immutable runtime manifest once.
+
+    Failed loads create an empty resolver so the router records a measurable
+    cache miss and safely falls through to live TTS.  A bounded retry window
+    avoids turning a temporary read outage into either a request storm or a
+    process-lifetime failure.
+    """
+
+    global _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER
+    global _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR
+    global _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT
+    global _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY
+
+    manifest_url = str(os.getenv(RUNTIME_AUDIO_MANIFEST_ENV) or "").strip()
+    if not manifest_url:
+        return None
+    timeout_raw = str(
+        os.getenv(
+            "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS",
+            "15",
+        )
+        or "15"
+    )
+    retry_raw = str(
+        os.getenv(
+            "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS",
+            "60",
+        )
+        or "60"
+    )
+    try:
+        timeout_seconds = max(1.0, float(timeout_raw))
+        retry_seconds = max(1.0, float(retry_raw))
+    except ValueError as exc:
+        raise ValueError(
+            "Abby runtime-manifest timeout/retry values must be numeric"
+        ) from exc
+    resolver_key: tuple[object, ...] = (manifest_url, timeout_seconds)
+    now = time.monotonic()
+    with _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_LOCK:
+        if (
+            resolver_key == _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY
+            and _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER is not None
+            and (
+                _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR is None
+                or now - _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT
+                < retry_seconds
+            )
+        ):
+            return _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER
+        try:
+            from ipfs_accelerate_py.voice_runtime_manifest import (  # noqa: WPS433
+                load_pinned_voice_runtime_resolver,
+            )
+
+            resolver = load_pinned_voice_runtime_resolver(
+                manifest_url,
+                timeout_seconds=timeout_seconds,
+            )
+            error_code = None
+            failure_at = 0.0
+        except Exception as exc:
+            from ipfs_accelerate_py.voice_audio_resolver import (  # noqa: WPS433
+                PrecomputedVoiceAudioResolver,
+            )
+
+            resolver = PrecomputedVoiceAudioResolver()
+            error_code = exc.__class__.__name__
+            failure_at = now
+        _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER = resolver
+        _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY = resolver_key
+        _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR = error_code
+        _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT = failure_at
+        return resolver
 
 
 def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> dict[str, object]:
@@ -590,7 +727,20 @@ class WalletVoiceRouterAdapter:
             sink=response_dag_sink,
             postprocessor=response_dag_postprocessor,
         )
-        request = build_voice_turn_request(payload)
+        selected_audio_resolver = (
+            audio_resolver
+            if audio_resolver is not None
+            else _package_precomputed_audio_resolver()
+        )
+        synthesis_identity = getattr(
+            selected_audio_resolver,
+            "default_synthesis_identity",
+            None,
+        )
+        request = build_voice_turn_request(
+            payload,
+            synthesis_identity=synthesis_identity,
+        )
         response_text = request.fallback_text
         provider = template_provider or _WalletResponsePlanProvider(response_text)
         stt = stt_provider or _WalletSTTProvider()
@@ -609,7 +759,7 @@ class WalletVoiceRouterAdapter:
             template_provider=provider,
             fallback_template_provider=fallback_template_provider,
             tts_provider_instance=tts,
-            audio_resolver=audio_resolver,
+            audio_resolver=selected_audio_resolver,
         )
         queued = None
         queue_reason = "not_live_tts_cache_miss"
@@ -633,6 +783,21 @@ class WalletVoiceRouterAdapter:
             else:
                 queue_reason = "independent_validation_not_passed"
         serialized = serialize_voice_turn_result(result)
+        if (
+            audio_resolver is None
+            and selected_audio_resolver is not None
+            and str(os.getenv(RUNTIME_AUDIO_MANIFEST_ENV) or "").strip()
+        ):
+            serialized["precomputed_audio_runtime"] = {
+                "artifact_count": int(
+                    getattr(selected_audio_resolver, "artifact_count", 0) or 0
+                ),
+                "configured": True,
+                "loader_error_code": (
+                    _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR
+                ),
+                "remote_writes": False,
+            }
         if response_dag_callback is not None:
             serialized["response_dag_queue"] = (
                 queued.to_dict()
@@ -686,6 +851,7 @@ __all__ = [
     "G010_AUTHORITATIVE_EVIDENCE_MAP",
     "G010_REQUIRED_EVIDENCE_TERMS",
     "G010_RESIDUAL_EVIDENCE_MAP",
+    "RUNTIME_AUDIO_MANIFEST_ENV",
     "UNIFIED_VOICE_ROUTER_FLAG",
     "VOICE_ROUTER_ADAPTER_VERSION",
     "WalletVoiceRouterAdapter",

@@ -95,6 +95,62 @@ APPROVED_WHISPER_GATES = {
     "minimum_similarity_bp": 7_800,
     "require_numeric_sequences_match": True,
 }
+PUBLICUS_MAIN_SPACE_REVISION = (
+    "c2381586678d0bceb908c39354f2cf1f47be00ea"
+)
+PUBLICUS_PADDING_REPAIR_SPACE_REVISION = (
+    "9ecca0d440939e08fea1292bccf31d6724616312"
+)
+CANONICAL_RUNTIME_GENERATION_PROVIDER_REVISIONS = (
+    PUBLICUS_MAIN_SPACE_REVISION,
+    PUBLICUS_PADDING_REPAIR_SPACE_REVISION,
+)
+CANONICAL_RUNTIME_SYNTHESIS_PROFILE_SCOPE = (
+    "validated_cache_compatibility_profile"
+)
+# The immutable release contains output from both real Space revisions above.
+# This is therefore an explicit logical cache profile, not a false claim that
+# every clip came from one provider revision.
+CANONICAL_RUNTIME_PROVIDER_VERSION = (
+    f"release-profile:{PUBLICUS_MAIN_SPACE_REVISION}"
+    f"+{PUBLICUS_PADDING_REPAIR_SPACE_REVISION}"
+)
+CANONICAL_RUNTIME_GENERATION_SETTINGS = {
+    "do_sample": True,
+    "emotion_control_method": "Same as the voice reference",
+    "emotion_random": False,
+    "emotion_vector_1": 0.0,
+    "emotion_vector_2": 0.0,
+    "emotion_vector_3": 0.0,
+    "emotion_vector_4": 0.0,
+    "emotion_vector_5": 0.0,
+    "emotion_vector_6": 0.0,
+    "emotion_vector_7": 0.0,
+    "emotion_vector_8": 0.0,
+    "emotion_weight": 0.8,
+    "length_penalty": 0.0,
+    "max_mel_tokens": 1_500,
+    "max_text_tokens_per_segment": 120,
+    "num_beams": 3,
+    "repetition_penalty": 10.0,
+    "temperature": 0.8,
+    "top_k": 30,
+    "top_p": 0.8,
+}
+CANONICAL_RUNTIME_SYNTHESIS_IDENTITY = {
+    "channels": 1,
+    "codec": "mp3",
+    "generationSettings": CANONICAL_RUNTIME_GENERATION_SETTINGS,
+    "locale": "en-US",
+    "model": "Publicus/IndexTTS-2-Demo",
+    "provider": "abby_indextts",
+    "providerVersion": CANONICAL_RUNTIME_PROVIDER_VERSION,
+    "referenceAudioSha256": (
+        "f871893eeafa806c9a7734d46e0159ca606155bebcf047d284389fd10fc843c8"
+    ),
+    "sampleRateHz": 22_050,
+    "voice": "Same as the voice reference",
+}
 
 _MUTABLE_HF_MARKERS = (
     "/resolve/main/",
@@ -1682,6 +1738,9 @@ def reconcile_canonical_release(
                 ),
                 "sourceIds": _ordered_strings(row.get("sourceIds") or ()),
                 "status": "active_immutable_release",
+                "synthesisIdentity": dict(
+                    CANONICAL_RUNTIME_SYNTHESIS_IDENTITY
+                ),
                 "text": canonical_audio.spoken_text,
                 "textSha256": canonical_audio.text_sha256,
             }
@@ -2469,6 +2528,9 @@ def build_canonical_release(
         _write_jsonl(frame_map_path, reconciliation.frame_template_rows)
         runtime_precomputed_audio_manifest = {
             "audioBase": "../assets/audio/",
+            "generationProviderRevisions": list(
+                CANONICAL_RUNTIME_GENERATION_PROVIDER_REVISIONS
+            ),
             "immutableReleaseOnly": True,
             "responseCount": len(
                 reconciliation.runtime_precomputed_audio_rows
@@ -2478,6 +2540,9 @@ def build_canonical_release(
             ),
             "schemaVersion": (
                 "abby_voice_runtime_precomputed_audio_manifest_v2"
+            ),
+            "synthesisProfileScope": (
+                CANONICAL_RUNTIME_SYNTHESIS_PROFILE_SCOPE
             ),
         }
         _assert_publication_support_safe(

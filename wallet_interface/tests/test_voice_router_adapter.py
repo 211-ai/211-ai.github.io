@@ -219,6 +219,66 @@ def test_adapter_builds_typed_request_without_exposing_audio_in_normal_serializa
     assert "audio_base64" not in request.to_dict()
 
 
+def test_adapter_fills_omitted_request_fields_from_pinned_synthesis_identity() -> None:
+    provider_version = (
+        "release-profile:c2381586678d0bceb908c39354f2cf1f47be00ea"
+        "+9ecca0d440939e08fea1292bccf31d6724616312"
+    )
+    reference_audio_sha256 = (
+        "f871893eeafa806c9a7734d46e0159ca606155bebcf047d284389fd10fc843c8"
+    )
+    generation_settings = {
+        "do_sample": True,
+        "emotion_control_method": "Same as the voice reference",
+        "emotion_random": False,
+        **{f"emotion_vector_{index}": 0.0 for index in range(1, 9)},
+        "emotion_weight": 0.8,
+        "length_penalty": 0.0,
+        "max_mel_tokens": 1_500,
+        "max_text_tokens_per_segment": 120,
+        "num_beams": 3,
+        "repetition_penalty": 10.0,
+        "temperature": 0.8,
+        "top_k": 30,
+        "top_p": 0.8,
+    }
+    identity = SynthesisIdentity(
+        provider="abby_indextts",
+        model="Publicus/IndexTTS-2-Demo",
+        voice="Same as the voice reference",
+        provider_version=provider_version,
+        locale="en-US",
+        codec="mp3",
+        sample_rate_hz=22_050,
+        channels=1,
+        reference_audio_sha256=reference_audio_sha256,
+        generation_settings=generation_settings,
+    )
+
+    request = build_voice_turn_request(
+        {
+            "mode": "voice-reply",
+            "user_prompt": "Where can I find help?",
+            "fallback_text": "I can help you find a local service.",
+        },
+        synthesis_identity=identity,
+    )
+
+    assert request.tts_provider == "abby_indextts"
+    assert request.tts_model == "Publicus/IndexTTS-2-Demo"
+    assert request.voice == "Same as the voice reference"
+    assert request.locale == "en-US"
+    assert request.output_format == "mp3"
+    assert request.tts_options == {
+        "channels": 1,
+        "codec": "mp3",
+        "generation_settings": generation_settings,
+        "provider_version": provider_version,
+        "reference_audio_sha256": reference_audio_sha256,
+        "sample_rate_hz": 22_050,
+    }
+
+
 def test_enabled_adapter_returns_canonical_receipt_and_audio_wire_field() -> None:
     tts = _TTS()
     payload = process_wallet_voice_turn(
@@ -459,6 +519,92 @@ def test_precomputed_cache_hit_never_stages_response_dag_candidate(
     assert len(queue) == 0
     assert postprocessor.calls == []
     assert postprocessor.artifact_path is None
+    assert tts.texts == []
+
+
+def test_explicit_pinned_manifest_is_loaded_as_default_backend_resolver(
+    monkeypatch,
+) -> None:
+    from ipfs_accelerate_py import voice_runtime_manifest
+    from wallet_interface.helpers import _voice_router_adapter as adapter
+
+    class _ConfiguredHit(_ExactHit):
+        artifact_count = 1
+        default_synthesis_identity = SynthesisIdentity(
+            provider="abby_indextts",
+            model="Publicus/IndexTTS-2-Demo",
+            voice="Same as the voice reference",
+            provider_version=(
+                "release-profile:c2381586678d0bceb908c39354f2cf1f47be00ea"
+                "+9ecca0d440939e08fea1292bccf31d6724616312"
+            ),
+            locale="en-US",
+            codec="mp3",
+            sample_rate_hz=22_050,
+            channels=1,
+            reference_audio_sha256=(
+                "f871893eeafa806c9a7734d46e0159ca606155bebcf047d284389fd10fc843c8"
+            ),
+            generation_settings={
+                "do_sample": True,
+                "emotion_control_method": "Same as the voice reference",
+                "emotion_random": False,
+                **{
+                    f"emotion_vector_{index}": 0.0
+                    for index in range(1, 9)
+                },
+                "emotion_weight": 0.8,
+                "length_penalty": 0.0,
+                "max_mel_tokens": 1_500,
+                "max_text_tokens_per_segment": 120,
+                "num_beams": 3,
+                "repetition_penalty": 10.0,
+                "temperature": 0.8,
+                "top_k": 30,
+                "top_p": 0.8,
+            },
+        )
+
+    manifest_url = (
+        "https://huggingface.co/datasets/Publicus/211-abby-tts/"
+        f"resolve/{'a' * 40}/data/abby_voice_v2/release-1/"
+        "metadata/runtime-precomputed-audio-manifest.json"
+    )
+    resolver = _ConfiguredHit()
+    loads: list[tuple[str, float]] = []
+    monkeypatch.setenv(adapter.RUNTIME_AUDIO_MANIFEST_ENV, manifest_url)
+    monkeypatch.setattr(
+        voice_runtime_manifest,
+        "load_pinned_voice_runtime_resolver",
+        lambda url, *, timeout_seconds: (
+            loads.append((url, timeout_seconds)) or resolver
+        ),
+    )
+    adapter._PACKAGE_PRECOMPUTED_AUDIO_RESOLVER = None
+    adapter._PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY = ()
+    adapter._PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR = None
+    adapter._PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT = 0.0
+    tts = _TTS()
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        template_provider=_SlottedTemplates(),
+        tts_provider=tts,
+    )
+
+    assert payload is not None
+    assert payload["provenance"]["tts_provider"] == "precomputed"  # type: ignore[index]
+    assert payload["precomputed_audio_runtime"] == {
+        "artifact_count": 1,
+        "configured": True,
+        "loader_error_code": None,
+        "remote_writes": False,
+    }
+    assert loads == [(manifest_url, 15.0)]
     assert tts.texts == []
 
 

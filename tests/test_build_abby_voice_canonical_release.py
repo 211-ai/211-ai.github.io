@@ -9,6 +9,7 @@ import pytest
 from scripts.build_abby_voice_canonical_release import (
     BASE_WHISPER_MODEL_NAME,
     BASE_WHISPER_MODEL_REVISION,
+    CANONICAL_RUNTIME_SYNTHESIS_IDENTITY,
     CanonicalReleaseInputs,
     _full_whisper_receipt_id,
     load_full_whisper_validation_evidence,
@@ -143,6 +144,9 @@ def test_reconciliation_runtime_manifest_contains_only_active_safe_audio(
     assert runtime_row["preferredAudioUrl"].startswith("../assets/audio/")
     assert "/resolve/main/" not in runtime_row["preferredAudioUrl"]
     assert runtime_row["slottedIntentIds"] == ["intent-food"]
+    assert runtime_row["synthesisIdentity"] == (
+        CANONICAL_RUNTIME_SYNTHESIS_IDENTITY
+    )
     assert result.unsafe_spoken_regeneration_rows[0]["excluded_audio_id"] == (
         "abby-tts-unsafe"
     )

@@ -4,6 +4,7 @@ import io
 import json
 import zipfile
 from collections.abc import Mapping, Sequence
+from hashlib import sha256
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -2274,6 +2275,7 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
     monkeypatch.setattr(llm_router, "generate_text", fake_generate_text)
     monkeypatch.setattr(_ai_router_module, "_run_indextts_tts_with_batch_fallback", fake_tts)
     monkeypatch.setenv("WALLET_VOICE_LLM_MODEL", "Qwen/Qwen3.5-2B")
+    monkeypatch.delenv("WALLET_VOICE_UNIFIED_ROUTER_ENABLED", raising=False)
 
     client = _client()
     response = client.post(
@@ -2293,6 +2295,100 @@ def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None
     assert body["latency"]["llm_request_ms"] >= 0
     assert body["latency"]["llm_model"] == "Qwen/Qwen3.5-2B"
     assert prompts and "I need food help" in str(prompts[0]["prompt"])
+
+
+def test_indextts_voice_reply_uses_unified_router_when_enabled(
+    monkeypatch,
+) -> None:
+    expected_text = "The pinned response is ready."
+    routed: list[dict[str, object]] = []
+
+    monkeypatch.setenv("WALLET_VOICE_UNIFIED_ROUTER_ENABLED", "true")
+    monkeypatch.setattr(
+        _ai_router_module,
+        "_generate_indextts_voice_reply_text",
+        lambda **_kwargs: (
+            expected_text,
+            {"llm_model": "fixture", "llm_request_ms": 1},
+        ),
+    )
+
+    def fake_unified(
+        payload: Mapping[str, object],
+        *,
+        enabled: bool,
+    ) -> dict[str, object]:
+        assert enabled is True
+        routed.append(dict(payload))
+        return {
+            "audioBase64": "UklGRnN0dWJXQVZF",
+            "audio_base64": "UklGRnN0dWJXQVZF",
+            "audio_mime_type": "audio/mpeg",
+            "provenance": {"tts_provider": "precomputed"},
+            "response_text": expected_text,
+            "spoken_text": expected_text,
+            "status": "completed",
+            "traces": [],
+            "voice_router": True,
+        }
+
+    monkeypatch.setattr(
+        _ai_router_module,
+        "process_wallet_voice_turn",
+        fake_unified,
+    )
+    monkeypatch.setattr(
+        _ai_router_module,
+        "_run_indextts_tts_with_batch_fallback",
+        lambda **_kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy TTS must not run when unified routing succeeds")
+        ),
+    )
+
+    response = _client().post(
+        "/voice/indextts/infer",
+        data={
+            "fallbackText": expected_text,
+            "mode": "voice-reply",
+            "surface": "telephone",
+            "userPrompt": "Repeat the number.",
+        },
+        files={
+            "audio": (
+                "custom-reference.wav",
+                b"custom-reference-audio",
+                "audio/wav",
+            )
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["voice_router"] is True
+    assert body["provenance"]["tts_provider"] == "precomputed"
+    assert body["mimeType"] == "audio/mpeg"
+    assert body["text"] == expected_text
+    assert body["latency"]["llm_model"] == "fixture"
+    assert routed == [
+        {
+            "audio_bytes": None,
+            "fallbackText": expected_text,
+            "mode": "voice-reply",
+            "surface": "telephone",
+            "text": "",
+            "transcript": "Repeat the number.",
+            "tts_options": {
+                "reference_audio": b"custom-reference-audio",
+                "reference_audio_mime_type": "audio/wav",
+                "reference_audio_name": "custom-reference.wav",
+                "reference_audio_sha256": sha256(
+                    b"custom-reference-audio"
+                ).hexdigest(),
+            },
+            "userPrompt": "Repeat the number.",
+            "voice_description": None,
+        }
+    ]
 
 
 def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:

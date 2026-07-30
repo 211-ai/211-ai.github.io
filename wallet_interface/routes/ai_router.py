@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping, Sequence
+from hashlib import sha256
 from typing import Any
 from urllib import error as urllib_error
 
@@ -35,6 +36,10 @@ from ..helpers import (
     _run_indextts_with_endpoint_retry,
     _silent_wav_bytes,
     _wallet_router_subject,
+)
+from ..helpers._voice_router_adapter import (
+    is_unified_voice_router_enabled,
+    process_wallet_voice_turn,
 )
 from ..schemas import (
     AddTextDocumentRequest,
@@ -225,6 +230,7 @@ def create_router(service: WalletInterfaceService):
         fallbackText: str | None = Form(default=None),
         fallback_text: str | None = Form(default=None),
         voice_description: str | None = Form(default=None),
+        surface: str = Form(default="website"),
     ) -> dict[str, Any]:
         try:
             reference_audio = await audio.read() if audio is not None else None
@@ -240,6 +246,55 @@ def create_router(service: WalletInterfaceService):
                     fallback_text=fallback_text or fallbackText,
                 ),
             )
+            if is_unified_voice_router_enabled():
+                tts_options: dict[str, object] = {}
+                if reference_audio:
+                    tts_options = {
+                        "reference_audio": reference_audio,
+                        "reference_audio_mime_type": reference_type,
+                        "reference_audio_name": reference_name,
+                        "reference_audio_sha256": sha256(
+                            reference_audio
+                        ).hexdigest(),
+                    }
+                unified_payload = process_wallet_voice_turn(
+                    {
+                        # This endpoint's upload is a TTS voice reference, not
+                        # caller speech. Never send it through the ASR stage.
+                        "audio_bytes": None,
+                        "fallbackText": reply_text,
+                        "mode": mode or "voice-reply",
+                        "surface": surface,
+                        "text": text,
+                        "transcript": (
+                            user_prompt
+                            or userPrompt
+                            or text
+                            or reply_text
+                        ),
+                        "tts_options": tts_options,
+                        "userPrompt": user_prompt or userPrompt,
+                        "voice_description": voice_description,
+                    },
+                    enabled=True,
+                )
+                if unified_payload is not None:
+                    unified_payload["text"] = str(
+                        unified_payload.get("response_text")
+                        or unified_payload.get("spoken_text")
+                        or reply_text
+                    )
+                    audio_mime_type = str(
+                        unified_payload.get("audio_mime_type") or ""
+                    ).strip()
+                    if audio_mime_type:
+                        unified_payload["mimeType"] = audio_mime_type
+                    latency = dict(
+                        unified_payload.get("latency") or {}
+                    )
+                    latency.update(generation_latency)
+                    unified_payload["latency"] = latency
+                    return unified_payload
             audio_payload = _run_indextts_with_endpoint_retry(
                 "infer",
                 lambda: _run_indextts_tts_with_batch_fallback(
