@@ -72,6 +72,14 @@ FULL_WHISPER_ITEM_SCHEMA = "abby_voice_full_whisper_validation_item_v3"
 FULL_WHISPER_RECEIPT_SCHEMA = "abby_voice_full_whisper_validation_receipt_v3"
 FULL_WHISPER_FAILURE_SCHEMA = "abby_voice_full_whisper_failures_v2"
 FULL_WHISPER_VALIDATOR_VERSION = "abby_voice_full_whisper_validator_v3"
+SEMANTIC_CORRUPTION_SCHEMA = "abby_voice_semantic_corruptions_v2"
+SEMANTIC_CORRUPTION_SCAN_RULE = (
+    "confirmed_abbreviation_and_apostrophe_direction_rules_v2"
+)
+EXPECTED_SEMANTIC_CORRUPTION_REASON_COUNTS = {
+    "apostrophe_direction_expansion": 9,
+    "st_abbreviation_expanded_to_street": 33,
+}
 BASE_WHISPER_MODEL_NAME = "openai/whisper-base"
 BASE_WHISPER_MODEL_REVISION = "e37978b90ca9030d5170a5c07aadb050351a65bb"
 ADJUDICATION_MODEL_NAME = "openai/whisper-large-v3-turbo"
@@ -130,7 +138,7 @@ class CanonicalReleaseInputs:
 
 @dataclass(frozen=True, slots=True)
 class FullWhisperValidationEvidence:
-    """Complete, content-bound v2 Whisper evidence used by release sealing."""
+    """Complete, content-bound v3 Whisper evidence used by release sealing."""
 
     receipt_path: Path
     manifest_path: Path
@@ -139,6 +147,8 @@ class FullWhisperValidationEvidence:
     receipt: Mapping[str, Any]
     latest_events: Mapping[str, Mapping[str, Any]]
     failed_audio_ids: frozenset[str]
+    semantic_corruption_manifest_path: Path | None
+    semantic_corruption_ids: frozenset[str]
 
     @property
     def validation_receipt_id(self) -> str:
@@ -156,6 +166,12 @@ class FullWhisperValidationEvidence:
     def failure_manifest_sha256(self) -> str:
         return _sha256_file(self.failure_manifest_path)
 
+    @property
+    def semantic_corruption_manifest_sha256(self) -> str | None:
+        if self.semantic_corruption_manifest_path is None:
+            return None
+        return _sha256_file(self.semantic_corruption_manifest_path)
+
 
 @dataclass(frozen=True, slots=True)
 class WhisperAdjudicationEvidence:
@@ -169,6 +185,26 @@ class WhisperAdjudicationEvidence:
     def summary_sha256(self) -> str:
         return _sha256_file(self.summary_path)
 
+    @property
+    def validation_receipt_id(self) -> str:
+        return self.validation.validation_receipt_id
+
+    @property
+    def latest_events(self) -> Mapping[str, Mapping[str, Any]]:
+        return self.validation.latest_events
+
+    @property
+    def receipt_sha256(self) -> str:
+        return self.validation.receipt_sha256
+
+    @property
+    def ledger_sha256(self) -> str:
+        return self.validation.ledger_sha256
+
+    @property
+    def failure_manifest_sha256(self) -> str:
+        return self.validation.failure_manifest_sha256
+
 
 @dataclass(frozen=True, slots=True)
 class CanonicalReleaseReconciliation:
@@ -180,6 +216,7 @@ class CanonicalReleaseReconciliation:
     quality_exclusion_rows: tuple[Mapping[str, Any], ...]
     unsafe_spoken_regeneration_rows: tuple[Mapping[str, Any], ...]
     regeneration_inventory_rows: tuple[Mapping[str, Any], ...]
+    runtime_precomputed_audio_rows: tuple[Mapping[str, Any], ...]
     frame_template_rows: tuple[Mapping[str, Any], ...]
     audit: Mapping[str, Any]
 
@@ -190,6 +227,27 @@ def _sha256_file(path: Path) -> str:
         while chunk := handle.read(8 * 1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _full_whisper_receipt_id(
+    *,
+    manifest_sha256: str,
+    ledger_sha256: str,
+    run_fingerprint: str,
+    semantic_manifest_sha256: str,
+) -> str:
+    digest = sha256(
+        (
+            manifest_sha256
+            + "\0"
+            + ledger_sha256
+            + "\0"
+            + run_fingerprint
+            + "\0"
+            + semantic_manifest_sha256
+        ).encode("utf-8")
+    ).hexdigest()
+    return f"abby-voice-full-asr-corpus:sha256:{digest}"
 
 
 def _relative(path: Path) -> str:
@@ -348,8 +406,9 @@ def load_full_whisper_validation_evidence(
     receipt_path: Path,
     required_model_name: str | None = None,
     required_model_revision: str | None = None,
+    require_semantic_manifest: bool = False,
 ) -> FullWhisperValidationEvidence:
-    """Load and exhaustively bind a final single-shard v2 Whisper receipt."""
+    """Load and exhaustively bind a final single-shard v3 Whisper receipt."""
 
     receipt_path = receipt_path.expanduser().resolve()
     if not receipt_path.is_file() or receipt_path.is_symlink():
@@ -398,7 +457,7 @@ def load_full_whisper_validation_evidence(
         )
     if receipt.get("gates") != APPROVED_WHISPER_GATES:
         raise CanonicalReleaseReconciliationError(
-            "full Whisper receipt was not produced with the approved v2 gates"
+            "full Whisper receipt was not produced with the approved v3 gates"
         )
     if (
         required_model_name is not None
@@ -434,6 +493,10 @@ def load_full_whisper_validation_evidence(
             "total_count",
         )
     }
+    semantic_corruption_count = _required_count(
+        receipt.get("semantic_corruption_count"),
+        field="semantic_corruption_count",
+    )
     expected_total = len(generated_by_id)
     if (
         counts["total_count"] != expected_total
@@ -441,7 +504,11 @@ def load_full_whisper_validation_evidence(
         or counts["pending_count"] != 0
         or counts["error_count"] != 0
         or counts["passed_count"] + counts["failed_count"] != expected_total
-        or receipt.get("all_passed") is not (counts["failed_count"] == 0)
+        or receipt.get("all_passed")
+        is not (
+            counts["failed_count"] == 0
+            and semantic_corruption_count == 0
+        )
     ):
         raise CanonicalReleaseReconciliationError(
             "full Whisper receipt is incomplete or internally inconsistent"
@@ -472,27 +539,29 @@ def load_full_whisper_validation_evidence(
         receipt.get("failed_item_manifest"),
         field="failed_item_manifest",
     )
+    semantic_manifest_path = _resolve_bound_artifact(
+        receipt_path,
+        receipt.get("semantic_corruption_manifest"),
+        field="semantic_corruption_manifest",
+    )
     ledger_sha256 = _sha256_file(ledger_path)
     failure_manifest_sha256 = _sha256_file(failure_manifest_path)
+    semantic_manifest_sha256 = _sha256_file(semantic_manifest_path)
     if (
         receipt.get("ledger_sha256") != ledger_sha256
         or receipt.get("failed_item_manifest_sha256")
         != failure_manifest_sha256
+        or receipt.get("semantic_corruption_manifest_sha256")
+        != semantic_manifest_sha256
     ):
         raise CanonicalReleaseReconciliationError(
             "full Whisper receipt artifact digest mismatch"
         )
-    expected_receipt_id = (
-        "abby-voice-full-asr-corpus:sha256:"
-        + sha256(
-            (
-                manifest_sha256
-                + "\0"
-                + ledger_sha256
-                + "\0"
-                + run_fingerprint
-            ).encode()
-        ).hexdigest()
+    expected_receipt_id = _full_whisper_receipt_id(
+        manifest_sha256=manifest_sha256,
+        ledger_sha256=ledger_sha256,
+        run_fingerprint=run_fingerprint,
+        semantic_manifest_sha256=semantic_manifest_sha256,
     )
     if receipt.get("validation_receipt_id") != expected_receipt_id:
         raise CanonicalReleaseReconciliationError(
@@ -601,6 +670,92 @@ def load_full_whisper_validation_evidence(
                 f"full Whisper failure evidence is incomplete for {audio_id}"
             )
 
+    semantic_corruption_ids: set[str] = set()
+    if require_semantic_manifest:
+        semantic_manifest = _load_json(semantic_manifest_path)
+        if (
+            receipt.get("semantic_corruption_manifest_sha256")
+            != semantic_manifest_sha256
+            or receipt.get("semantic_corruption_count") != 42
+            or receipt.get("semantic_override_exclusion_count") != 42
+            or receipt.get("semantic_corruption_reason_counts")
+            != EXPECTED_SEMANTIC_CORRUPTION_REASON_COUNTS
+            or not isinstance(semantic_manifest, Mapping)
+            or semantic_manifest.get("schema_version")
+            != SEMANTIC_CORRUPTION_SCHEMA
+            or semantic_manifest.get("scan_rule")
+            != SEMANTIC_CORRUPTION_SCAN_RULE
+            or semantic_manifest.get("manifest_sha256") != manifest_sha256
+            or semantic_manifest.get("corruption_count") != 42
+            or semantic_manifest.get("release_eligible_count")
+            != expected_total - 42
+            or semantic_manifest.get("reason_counts")
+            != EXPECTED_SEMANTIC_CORRUPTION_REASON_COUNTS
+            or not isinstance(semantic_manifest.get("items"), list)
+        ):
+            raise CanonicalReleaseReconciliationError(
+                "base Whisper semantic-corruption evidence is invalid"
+            )
+        semantic_items = _index_unique(
+            [
+                dict(row)
+                for row in semantic_manifest["items"]
+                if isinstance(row, Mapping)
+            ],
+            "audio_id",
+            label="semantic corruption items",
+        )
+        if len(semantic_items) != len(semantic_manifest["items"]):
+            raise CanonicalReleaseReconciliationError(
+                "semantic corruption items must be objects"
+            )
+        semantic_reason_counts: dict[str, int] = defaultdict(int)
+        for audio_id, item in semantic_items.items():
+            if audio_id not in generated_by_id:
+                raise CanonicalReleaseReconciliationError(
+                    f"unknown semantic corruption audio ID: {audio_id}"
+                )
+            reasons = item.get("reasons")
+            if (
+                item.get("active_eligible") is not False
+                or item.get("manifest_index") != manifest_indices[audio_id]
+                or item.get("expected_text_sha256")
+                != latest_events[audio_id].get("expected_text_sha256")
+                or not isinstance(reasons, list)
+                or not reasons
+                or not set(reasons)
+                <= set(EXPECTED_SEMANTIC_CORRUPTION_REASON_COUNTS)
+            ):
+                raise CanonicalReleaseReconciliationError(
+                    f"invalid semantic corruption item for {audio_id}"
+                )
+            for reason in set(reasons):
+                semantic_reason_counts[str(reason)] += 1
+        semantic_corruption_ids = set(semantic_items)
+        semantic_ids_payload = (
+            "".join(
+                f"{audio_id}\n"
+                for audio_id in sorted(semantic_corruption_ids)
+            ).encode("utf-8")
+            if semantic_corruption_ids
+            else b""
+        )
+        semantic_ids_sha256 = sha256(semantic_ids_payload).hexdigest()
+        if (
+            len(semantic_corruption_ids) != 42
+            or dict(sorted(semantic_reason_counts.items()))
+            != EXPECTED_SEMANTIC_CORRUPTION_REASON_COUNTS
+            or semantic_manifest.get("unique_audio_ids_sha256")
+            != semantic_ids_sha256
+            or receipt.get(
+                "semantic_corruption_unique_audio_ids_sha256"
+            )
+            != semantic_ids_sha256
+        ):
+            raise CanonicalReleaseReconciliationError(
+                "semantic corruption IDs/reasons do not match their bindings"
+            )
+
     return FullWhisperValidationEvidence(
         receipt_path=receipt_path,
         manifest_path=validation_manifest,
@@ -609,6 +764,8 @@ def load_full_whisper_validation_evidence(
         receipt=dict(receipt),
         latest_events=dict(sorted(latest_events.items())),
         failed_audio_ids=frozenset(failed_audio_ids),
+        semantic_corruption_manifest_path=semantic_manifest_path,
+        semantic_corruption_ids=frozenset(semantic_corruption_ids),
     )
 
 
@@ -662,6 +819,12 @@ def load_whisper_adjudication_evidence(
         summary.get("stronger_validation_receipt"),
         field="stronger_validation_receipt",
     )
+    semantic_manifest_path = _resolve_bound_artifact(
+        summary_path,
+        summary.get("semantic_corruption_manifest"),
+        field="semantic_corruption_manifest",
+    )
+    summary_semantic_ids = summary.get("semantic_corruption_ids")
     if (
         base_receipt_path != base_validation.receipt_path
         or base_failure_path != base_validation.failure_manifest_path
@@ -672,6 +835,21 @@ def load_whisper_adjudication_evidence(
         or summary.get("subset_manifest_sha256") != _sha256_file(subset_path)
         or summary.get("stronger_validation_receipt_sha256")
         != _sha256_file(stronger_receipt_path)
+        or semantic_manifest_path
+        != base_validation.semantic_corruption_manifest_path
+        or summary.get("semantic_corruption_manifest_sha256")
+        != base_validation.semantic_corruption_manifest_sha256
+        or summary.get("semantic_corruption_count")
+        != len(base_validation.semantic_corruption_ids)
+        or summary.get("semantic_override_exclusion_count")
+        != len(base_validation.semantic_corruption_ids)
+        or not isinstance(summary_semantic_ids, list)
+        or summary_semantic_ids
+        != sorted(base_validation.semantic_corruption_ids)
+        or summary.get("semantic_corruption_unique_audio_ids_sha256")
+        != base_validation.receipt.get(
+            "semantic_corruption_unique_audio_ids_sha256"
+        )
     ):
         raise CanonicalReleaseReconciliationError(
             "Whisper adjudication summary has a stale evidence binding"
@@ -693,10 +871,29 @@ def load_whisper_adjudication_evidence(
         required_model_name=ADJUDICATION_MODEL_NAME,
         required_model_revision=ADJUDICATION_MODEL_REVISION,
     )
+    base_failure_manifest = _load_json(base_validation.failure_manifest_path)
+    assert isinstance(base_failure_manifest, Mapping)
+    ordered_base_failure_ids = [
+        str(row["audio_id"])
+        for row in base_failure_manifest["failures"]
+    ]
+    ordered_subset_ids = [
+        str(row["id"])
+        for row in subset["responses"]
+        if isinstance(row, Mapping)
+    ]
     selected_ids = set(validation.latest_events)
     if selected_ids != set(base_validation.failed_audio_ids):
         raise CanonicalReleaseReconciliationError(
             "stronger-model adjudication must exactly cover every base failure"
+        )
+    if (
+        ordered_subset_ids != ordered_base_failure_ids
+        or len(ordered_subset_ids) != len(subset["responses"])
+    ):
+        raise CanonicalReleaseReconciliationError(
+            "stronger-model adjudication subset is not in base failure "
+            "manifest order"
         )
 
     raw_decisions = summary.get("decisions")
@@ -713,11 +910,23 @@ def load_whisper_adjudication_evidence(
         raise CanonicalReleaseReconciliationError(
             "Whisper adjudication decisions do not exactly cover the subset"
         )
-    passed_ids = {
+    if [
+        str(row["audio_id"])
+        for row in raw_decisions
+        if isinstance(row, Mapping)
+    ] != ordered_base_failure_ids:
+        raise CanonicalReleaseReconciliationError(
+            "Whisper adjudication decisions are not in base failure "
+            "manifest order"
+        )
+    acoustic_pass_ids = {
         audio_id
         for audio_id, event in validation.latest_events.items()
         if event.get("passed") is True
     }
+    passed_ids = acoustic_pass_ids - set(
+        base_validation.semantic_corruption_ids
+    )
     still_failed_ids = selected_ids - passed_ids
     summary_passed_ids = summary.get("adjudicated_pass_ids")
     summary_failed_ids = summary.get("still_failed_ids")
@@ -725,6 +934,12 @@ def load_whisper_adjudication_evidence(
         if (
             decision.get("adjudicated_passed") is not (
                 audio_id in passed_ids
+            )
+            or decision.get("stronger_acoustic_passed") is not (
+                audio_id in acoustic_pass_ids
+            )
+            or decision.get("semantic_corruption_excluded") is not (
+                audio_id in base_validation.semantic_corruption_ids
             )
             or decision.get("base_validation_receipt_id")
             != base_validation.latest_events[audio_id].get(
@@ -744,10 +959,20 @@ def load_whisper_adjudication_evidence(
         or summary.get("still_failed_count") != len(still_failed_ids)
         or not isinstance(summary_passed_ids, list)
         or len(summary_passed_ids) != len(passed_ids)
-        or set(summary_passed_ids) != passed_ids
+        or summary_passed_ids
+        != [
+            audio_id
+            for audio_id in ordered_base_failure_ids
+            if audio_id in passed_ids
+        ]
         or not isinstance(summary_failed_ids, list)
         or len(summary_failed_ids) != len(still_failed_ids)
-        or set(summary_failed_ids) != still_failed_ids
+        or summary_failed_ids
+        != [
+            audio_id
+            for audio_id in ordered_base_failure_ids
+            if audio_id in still_failed_ids
+        ]
     ):
         raise CanonicalReleaseReconciliationError(
             "Whisper adjudication summary counts or ordered IDs are invalid"
@@ -999,7 +1224,7 @@ def reconcile_canonical_release(
             quality_decisions[generated_id] = "unvalidated_candidate"
             continue
         if generated_id not in whisper_validation.failed_audio_ids:
-            quality_decisions[generated_id] = "base_whisper_v2_pass"
+            quality_decisions[generated_id] = "base_whisper_v3_pass"
             continue
         adjudication_event = (
             whisper_adjudication.latest_events.get(generated_id)
@@ -1025,7 +1250,7 @@ def reconcile_canonical_release(
             )
             continue
         quality_decisions[generated_id] = (
-            "excluded_unresolved_whisper_v2_failure"
+            "excluded_unresolved_whisper_v3_failure"
         )
         unresolved_quality_ids.add(generated_id)
 
@@ -1233,6 +1458,15 @@ def reconcile_canonical_release(
         generated_active_records.append(row)
 
     active_records = [*retained_active_records, *generated_active_records]
+    if (
+        whisper_validation is not None
+        and generated_unsafe_exclusion_ids
+        != set(whisper_validation.semantic_corruption_ids)
+    ):
+        raise CanonicalReleaseReconciliationError(
+            "package semantic scan does not match the bound base-v3 "
+            "semantic-corruption manifest"
+        )
 
     if set(active_raw_audio_ids) & set(supersession_by_old):
         raise CanonicalReleaseReconciliationError(
@@ -1363,6 +1597,107 @@ def reconcile_canonical_release(
     canonical_audio_by_digest = {
         row.content_sha256: row for row in bundle.audio
     }
+    canonical_response_by_id = {
+        row.response_id: row for row in bundle.responses
+    }
+    runtime_precomputed_audio_rows_list: list[dict[str, Any]] = []
+    for row in sorted(
+        active_records,
+        key=lambda item: str(item.get("id") or ""),
+    ):
+        if row.get("audioAvailable") is not True:
+            continue
+        raw_response_id = str(row.get("id") or "").strip()
+        audio_sha256 = str(row.get("audioSha256") or "").strip().casefold()
+        canonical_audio = canonical_audio_by_digest.get(audio_sha256)
+        if canonical_audio is None or canonical_audio.response_id is None:
+            raise CanonicalReleaseReconciliationError(
+                "active runtime row has no canonical audio/response binding: "
+                f"{raw_response_id}"
+            )
+        canonical_response = canonical_response_by_id.get(
+            canonical_audio.response_id
+        )
+        if canonical_response is None:
+            raise CanonicalReleaseReconciliationError(
+                "active runtime row references an unknown canonical response: "
+                f"{raw_response_id}"
+            )
+        source_path = audio_sources[canonical_audio.audio_id]
+        extension = source_path.suffix.casefold()
+        if extension not in {".mp3", ".wav", ".flac", ".ogg", ".m4a"}:
+            raise CanonicalReleaseReconciliationError(
+                f"unsupported runtime audio extension: {extension}"
+            )
+        runtime_precomputed_audio_rows_list.append(
+            {
+                "audioBytes": canonical_audio.byte_length,
+                "audioSha256": canonical_audio.content_sha256,
+                "canonicalAudioId": canonical_audio.audio_id,
+                "canonicalResponseId": canonical_response.response_id,
+                "id": raw_response_id,
+                "locationTags": _ordered_strings(
+                    (
+                        *(row.get("locationTags") or ()),
+                        *canonical_response.location_tags,
+                    )
+                ),
+                "originalTexts": _ordered_strings(
+                    (
+                        *(row.get("originalTexts") or ()),
+                        canonical_response.text,
+                    )
+                ),
+                "preferredAudioUrl": (
+                    f"../assets/audio/{canonical_audio.audio_id}{extension}"
+                ),
+                "preferredMimeType": canonical_audio.mime_type,
+                "rawResponseId": raw_response_id,
+                "routes": _ordered_strings(
+                    (
+                        *(row.get("routes") or ()),
+                        *canonical_response.route_labels,
+                    )
+                ),
+                "serviceTags": _ordered_strings(
+                    (
+                        *(row.get("serviceTags") or ()),
+                        *canonical_response.service_tags,
+                    )
+                ),
+                "slottedCanonicalQueryTemplates": _ordered_strings(
+                    row.get("slottedCanonicalQueryTemplates") or ()
+                ),
+                "slottedEdgeIds": _ordered_strings(
+                    row.get("slottedEdgeIds") or ()
+                ),
+                "slottedIntentIds": _ordered_strings(
+                    row.get("slottedIntentIds") or ()
+                ),
+                "slottedResponseFrameIds": _ordered_strings(
+                    row.get("slottedResponseFrameIds") or ()
+                ),
+                "slottedResponseSignatures": _ordered_strings(
+                    row.get("slottedResponseSignatures") or ()
+                ),
+                "sourceIds": _ordered_strings(row.get("sourceIds") or ()),
+                "status": "active_immutable_release",
+                "text": canonical_audio.spoken_text,
+                "textSha256": canonical_audio.text_sha256,
+            }
+        )
+    runtime_precomputed_audio_rows = tuple(
+        runtime_precomputed_audio_rows_list
+    )
+    if len(runtime_precomputed_audio_rows) != expected_active_audio:
+        raise CanonicalReleaseReconciliationError(
+            "runtime precomputed-audio manifest does not exactly cover active "
+            "safe audio"
+        )
+    _assert_publication_support_safe(
+        runtime_precomputed_audio_rows,
+        label="runtime precomputed-audio rows",
+    )
 
     active_links = tuple(
         {
@@ -1633,6 +1968,13 @@ def reconcile_canonical_release(
                 "whisper_base_receipt": whisper_validation.receipt_sha256,
             }
         )
+        if (
+            whisper_validation.semantic_corruption_manifest_sha256
+            is not None
+        ):
+            source_digests[
+                "whisper_base_semantic_corruption_manifest"
+            ] = whisper_validation.semantic_corruption_manifest_sha256
     if whisper_adjudication is not None:
         source_digests.update(
             {
@@ -1692,6 +2034,9 @@ def reconcile_canonical_release(
             for decision in quality_decisions.values()
         ),
         "response_frame_count": len(frame_rows),
+        "runtime_precomputed_audio_count": len(
+            runtime_precomputed_audio_rows
+        ),
         "generated_unsafe_spoken_exclusion_count": len(
             generated_unsafe_exclusion_ids
         ),
@@ -1703,6 +2048,13 @@ def reconcile_canonical_release(
         ),
         "retained_apostrophe_direction_exclusion_ids_sha256": (
             retained_apostrophe_direction_ids_sha256
+        ),
+        "retained_apostrophe_direction_exclusion_population_rule": (
+            "retained row text where audioAvailable is true, audio ID is "
+            "absent from regeneration-full-plan supersession_map, and "
+            "unsafe_spoken_transformation_reasons(text) contains "
+            "apostrophe_direction_corruption; bind sorted full audio IDs "
+            "as UTF-8 with one trailing LF per ID"
         ),
         "retained_numeric_punctuation_exclusion_count": len(
             retained_numeric_exclusion_ids
@@ -1747,6 +2099,7 @@ def reconcile_canonical_release(
         quality_exclusion_rows=quality_exclusion_rows,
         unsafe_spoken_regeneration_rows=unsafe_spoken_regeneration_queue,
         regeneration_inventory_rows=regeneration_inventory_rows,
+        runtime_precomputed_audio_rows=runtime_precomputed_audio_rows,
         frame_template_rows=tuple(
             sorted(frame_template_rows, key=lambda item: str(item["frame_id"]))
         ),
@@ -1829,7 +2182,12 @@ def _validation_publication_binding(
     *,
     role: str,
 ) -> dict[str, Any]:
-    excluded_paths = {"failed_item_manifest", "ledger", "manifest"}
+    excluded_paths = {
+        "failed_item_manifest",
+        "ledger",
+        "manifest",
+        "semantic_corruption_manifest",
+    }
     payload = {
         key: value
         for key, value in evidence.receipt.items()
@@ -1905,6 +2263,7 @@ def _sanitized_adjudication_summary(
     excluded_paths = {
         "base_failure_manifest",
         "base_validation_receipt",
+        "semantic_corruption_manifest",
         "stronger_validation_receipt",
         "subset_manifest",
     }
@@ -1990,6 +2349,7 @@ def build_canonical_release(
         receipt_path=whisper_receipt,
         required_model_name=BASE_WHISPER_MODEL_NAME,
         required_model_revision=BASE_WHISPER_MODEL_REVISION,
+        require_semantic_manifest=True,
     )
     adjudication: WhisperAdjudicationEvidence | None = None
     if base_validation.failed_audio_ids:
@@ -2071,10 +2431,16 @@ def build_canonical_release(
         bucket_inventory_path = temporary / "bucket-audio-inventory.jsonl"
         regeneration_plan_path = temporary / "regeneration-plan.json"
         frame_map_path = temporary / "frame-template-map.jsonl"
+        runtime_precomputed_audio_path = (
+            temporary / "runtime-precomputed-audio-manifest.json"
+        )
         audit_path = temporary / "reconciliation-audit.json"
         base_binding_path = temporary / "whisper-base-binding.json"
         base_decisions_path = temporary / "whisper-base-decisions.jsonl"
         base_failures_path = temporary / "whisper-base-failures.json"
+        base_semantic_corruptions_path = (
+            temporary / "whisper-base-semantic-corruptions.json"
+        )
         _write_jsonl(active_links_path, reconciliation.active_links)
         _write_jsonl(supersession_path, reconciliation.supersession_rows)
         _write_jsonl(excluded_path, reconciliation.excluded_audio_rows)
@@ -2101,6 +2467,27 @@ def build_canonical_release(
         )
         _write_json(regeneration_plan_path, regeneration_plan)
         _write_jsonl(frame_map_path, reconciliation.frame_template_rows)
+        runtime_precomputed_audio_manifest = {
+            "audioBase": "../assets/audio/",
+            "immutableReleaseOnly": True,
+            "responseCount": len(
+                reconciliation.runtime_precomputed_audio_rows
+            ),
+            "responses": list(
+                reconciliation.runtime_precomputed_audio_rows
+            ),
+            "schemaVersion": (
+                "abby_voice_runtime_precomputed_audio_manifest_v2"
+            ),
+        }
+        _assert_publication_support_safe(
+            runtime_precomputed_audio_manifest,
+            label="runtime precomputed-audio manifest",
+        )
+        _write_json(
+            runtime_precomputed_audio_path,
+            runtime_precomputed_audio_manifest,
+        )
         _write_json(audit_path, reconciliation.audit)
         _write_json(
             base_binding_path,
@@ -2122,6 +2509,21 @@ def build_canonical_release(
             label="base Whisper failure manifest",
         )
         _write_json(base_failures_path, base_failure_manifest)
+        if base_validation.semantic_corruption_manifest_path is None:
+            raise CanonicalReleaseReconciliationError(
+                "base semantic-corruption evidence is required"
+            )
+        base_semantic_corruptions = _load_json(
+            base_validation.semantic_corruption_manifest_path
+        )
+        _assert_publication_support_safe(
+            base_semantic_corruptions,
+            label="base Whisper semantic-corruption manifest",
+        )
+        _write_json(
+            base_semantic_corruptions_path,
+            base_semantic_corruptions,
+        )
 
         support_sources = [
             _support_source(
@@ -2220,6 +2622,16 @@ def build_canonical_release(
                 kind="frame_template_map",
             ),
             _support_source(
+                source=runtime_precomputed_audio_path,
+                relative_path=(
+                    "metadata/runtime-precomputed-audio-manifest.json"
+                ),
+                schema_type=(
+                    "abby_voice_runtime_precomputed_audio_manifest_v2"
+                ),
+                kind="runtime_precomputed_audio_manifest",
+            ),
+            _support_source(
                 source=audit_path,
                 relative_path="metadata/reconciliation-audit.json",
                 schema_type="abby_voice_canonical_reconciliation_v2",
@@ -2243,6 +2655,14 @@ def build_canonical_release(
                 relative_path="metadata/whisper-base-v3-failures.json",
                 schema_type=FULL_WHISPER_FAILURE_SCHEMA,
                 kind="base_whisper_failure_manifest",
+            ),
+            _support_source(
+                source=base_semantic_corruptions_path,
+                relative_path=(
+                    "metadata/whisper-base-v3-semantic-corruptions.json"
+                ),
+                schema_type=SEMANTIC_CORRUPTION_SCHEMA,
+                kind="base_whisper_semantic_corruption_manifest",
             ),
         ]
         if adjudication is not None:
@@ -2445,6 +2865,7 @@ def main(argv: list[str] | None = None) -> int:
                 receipt_path=args.whisper_receipt,
                 required_model_name=BASE_WHISPER_MODEL_NAME,
                 required_model_revision=BASE_WHISPER_MODEL_REVISION,
+                require_semantic_manifest=True,
             )
             if args.whisper_receipt.is_file()
             else None
