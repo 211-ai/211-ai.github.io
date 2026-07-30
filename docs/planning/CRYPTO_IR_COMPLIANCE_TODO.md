@@ -2700,7 +2700,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-042 Implement Crypto IR compliance objective: Build bounded provenance-preserving hybrid GraphRAG
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
