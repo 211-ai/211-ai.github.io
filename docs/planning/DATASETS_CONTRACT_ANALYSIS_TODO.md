@@ -222,10 +222,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-004 Implement datasets symbolic contract objective packet: DSCON-G300, DSCON-G310, DSCON-G320
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: datasets-pilot
 - Depends on: DSCON-001, DSCON-G200
@@ -808,10 +809,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-013 Implement datasets symbolic contract objective packet: DSCON-G200, DSCON-G210, DSCON-G220
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: formal-contracts
 - Depends on: DSCON-002, DSCON-006, DSCON-007, DSCON-011, DSCON-012, DSCON-G110, DSCON-G120, DSCON-001
@@ -1068,10 +1070,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-017 Implement datasets symbolic contract objective packet: DSCON-G130, DSCON-G140
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: source-analysis
 - Depends on: DSCON-016, DSCON-015
@@ -1196,7 +1199,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Todo vector key: 397b72494bc7dcff
 - Acceptance: Objective scan filed this gap for DSCON-G130. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-018-objective-gap-e3026e0f23d8.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/resolver.py, ipfs_datasets_py/tests/fixtures/software_contracts/resolution), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/source_analysis/ipfs_datasets_py/cfd7feb23673; implement a complete, cohesive change that fully advances the packet goals (DSCON-G130, DSCON-G140) and covers all the shared packet evidence in one comprehensive pass. Ambiguous targets remain finite may-sets or unknown; they are not guessed.
 
-## DSCON-019 Implement datasets symbolic contract objective: Declare cross-package architecture, effect, and security policies
+## DSCON-019 Implement datasets symbolic contract objective: Declare package architecture, effect, and security policies
 
 - Status: todo
 - Completion: manual
@@ -1204,7 +1207,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: formal-contracts
-- Depends on: DSCON-001, DSCON-013, DSCON-014
+- Depends on: DSCON-001, DSCON-014
 - Outputs: data/datasets_contract_analysis/policy/cross-package-contracts-v1.json, ipfs_datasets_py/tests/contract/software_contracts/test_policy_registry.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/software_contracts/test_policy_registry.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1259,7 +1262,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Completion task bindings:
 - Candidate kind: aggregate
 - Todo vector key: fcb57407a801c382
-- Acceptance: Objective scan filed this gap for DSCON-G220. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-019-objective-gap-e9adc59f899d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/datasets_contract_analysis/policy/cross-package-contracts-v1.json), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/formal_contracts/ipfs_datasets_py/c6bbd15e6e85; implement a complete, cohesive change that fully advances the packet goals (DSCON-G200, DSCON-G210, DSCON-G220) and covers all the shared packet evidence in one comprehensive pass. Start with high-value boundaries and extend through reviewed child policies.
+- Acceptance: Implement the reviewed `ipfs_datasets_py` ownership, effect, security, persistence, resource, and error-semantics policy. External accelerator, kit, Swissknife, and other callers are boundary summaries only and cannot support cross-repository proof claims. Preserve content-addressed policy identity and explicit revision mismatch.
 
 ## DSCON-020 Implement datasets symbolic contract objective: Define canonical dataset operations, artifacts, and receipts
 
@@ -1269,7 +1272,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: datasets-pilot
-- Depends on: DSCON-013, DSCON-014, DSCON-004, DSCON-005
+- Depends on: DSCON-014, DSCON-005
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_contracts.py, ipfs_datasets_py/docs/schemas/dataset-operation-v1.schema.json, ipfs_datasets_py/tests/unit/core_operations/test_dataset_contracts.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/core_operations/test_dataset_contracts.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1334,7 +1337,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: formal-contracts
-- Depends on: DSCON-016, DSCON-015, DSCON-013, DSCON-014
+- Depends on: DSCON-016, DSCON-014
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/extract.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_extraction.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_extraction.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1399,7 +1402,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: source-analysis
-- Depends on: DSCON-017, DSCON-018
+- Depends on: DSCON-018
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/call_graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/effects.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_call_graph.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_call_graph.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1523,10 +1526,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-024 Implement datasets symbolic contract objective packet: DSCON-G400, DSCON-G410, DSCON-G420
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: security-analysis
 - Depends on: DSCON-022, DSCON-013, DSCON-014, DSCON-019, DSCON-G230, DSCON-G250
@@ -1594,7 +1598,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security-analysis
-- Depends on: DSCON-022, DSCON-013, DSCON-014
+- Depends on: DSCON-022, DSCON-014
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/security_rules.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_security_rules.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_security_rules.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1653,10 +1657,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-026 Implement datasets symbolic contract objective packet: DSCON-G230, DSCON-G240, DSCON-G250
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: formal-verification
 - Depends on: DSCON-022, DSCON-021, DSCON-019, DSCON-010, DSCON-G150
@@ -1724,7 +1729,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: formal-verification
-- Depends on: DSCON-010, DSCON-026
+- Depends on: DSCON-010, DSCON-028
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/solver.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/reconstruct.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_solver.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_solver.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -1913,10 +1918,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-030 Implement datasets symbolic contract objective packet: DSCON-G330, DSCON-G340
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: datasets-pilot
 - Depends on: DSCON-023, DSCON-026, DSCON-028, DSCON-G250
@@ -2116,7 +2122,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security-analysis
-- Depends on: DSCON-032, DSCON-024, DSCON-025
+- Depends on: DSCON-032, DSCON-025
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/findings.py, ipfs_datasets_py/docs/schemas/contract-finding-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_findings.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_findings.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2181,7 +2187,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: security-analysis
-- Depends on: DSCON-019, DSCON-026, DSCON-028, DSCON-024, DSCON-025
+- Depends on: DSCON-019, DSCON-028, DSCON-025
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/mismatches.py, ipfs_datasets_py/tests/contract/software_contracts/test_cross_package_mismatches.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/software_contracts/test_cross_package_mismatches.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2240,10 +2246,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-035 Implement datasets symbolic contract objective packet: DSCON-G500, DSCON-G510, DSCON-G520
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P1
 - Track: zk-attestation
 - Depends on: DSCON-032
@@ -2376,7 +2383,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: datasets-pilot
-- Depends on: DSCON-026, DSCON-028, DSCON-032, DSCON-030, DSCON-031
+- Depends on: DSCON-028, DSCON-032, DSCON-031
 - Outputs: data/datasets_contract_analysis/pilot/dataset-manipulator-contracts.json, data/datasets_contract_analysis/pilot/dataset-manipulator-proof-root.json, ipfs_datasets_py/tests/contract/software_contracts/test_dataset_manipulator_proofs.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/software_contracts/test_dataset_manipulator_proofs.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2435,10 +2442,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-038 Implement datasets symbolic contract objective packet: DSCON-G600, DSCON-G610, DSCON-G620, DSCON-G630
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: supervisor-integration
 - Depends on: DSCON-029, DSCON-033, DSCON-009
@@ -2507,7 +2515,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: supervisor-integration
-- Depends on: DSCON-029, DSCON-033
+- Depends on: DSCON-079, DSCON-033
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/repair_packet.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_repair_packet.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2572,7 +2580,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: supervisor-integration
-- Depends on: DSCON-038, DSCON-039
+- Depends on: DSCON-039
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/task_projection.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_task_projection.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_task_projection.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2637,7 +2645,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P1
 - Track: zk-attestation
-- Depends on: DSCON-035, DSCON-036
+- Depends on: DSCON-036
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/zk_trace.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_zk_trace.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_zk_trace.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2702,7 +2710,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: rollout
-- Depends on: DSCON-032, DSCON-033
+- Depends on: DSCON-079
 - Outputs: ipfs_datasets_py/benchmarks/bench_software_contract_analysis.py, data/datasets_contract_analysis/benchmarks/scale-report.json, ipfs_datasets_py/tests/integration/logic/software_contracts/test_incremental_equivalence.py
 - Evidence outputs: data/datasets_contract_analysis/benchmarks/incremental-equivalence.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/integration/logic/software_contracts/test_incremental_equivalence.py
@@ -2768,7 +2776,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: supervisor-integration
-- Depends on: DSCON-G620
+- Depends on: DSCON-044, DSCON-079
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/completion_gate.py, scripts/contract_analysis/refresh_completion_evidence.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
 - Evidence outputs: data/datasets_contract_analysis/policy/completion-gate-v1.json
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
@@ -2834,7 +2842,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: supervisor-integration
-- Depends on: DSCON-009, DSCON-040
+- Depends on: DSCON-009, DSCON-040, DSCON-079
 - Outputs: ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/refill_provider.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/todo_daemon/implementation_supervisor.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_refill.py
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_refill.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -2958,10 +2966,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-046 Implement datasets symbolic contract objective packet: DSCON-G710, DSCON-G720
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: rollout
 - Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042
@@ -3024,13 +3033,14 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-047 Implement datasets symbolic contract objective: Run the first complete Swissknife and three-package analysis
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
-- Priority: P0
+- Is schedulable: false
+- Review only: true
+- Priority: P2
 - Track: rollout
-- Depends on: DSCON-037, DSCON-034, DSCON-043, DSCON-042
+- Depends on: DSCON-079
+- Blocked reason: Deferred boundary-composition expansion; review after the package-only proof scan.
 - Outputs: data/datasets_contract_analysis/scans/initial
 - Evidence outputs: data/datasets_contract_analysis/scans/initial/scan-receipt.json, data/datasets_contract_analysis/scans/initial/finding-root.json
 - Validation: python scripts/contract_analysis/verify_scan.py data/datasets_contract_analysis/scans/initial/scan-receipt.json
@@ -3096,7 +3106,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: rollout
-- Depends on: DSCON-046, DSCON-047
+- Depends on: DSCON-043, DSCON-042
 - Outputs: data/datasets_contract_analysis/release/canary-report.json, data/datasets_contract_analysis/release/ratchet-policy.json, data/datasets_contract_analysis/release/repair-quality.json
 - Validation: python scripts/contract_analysis/verify_repair_canaries.py --check
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -3827,7 +3837,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-070 Implement datasets symbolic contract objective: Freeze dataset manipulation compatibility and failure baselines
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -3892,7 +3902,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-071 Implement datasets symbolic contract objective: Add lossless typed objective admission
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -3957,7 +3967,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-072 Implement datasets symbolic contract objective: Implement immutable content-addressed analysis caching
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -4022,10 +4032,11 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-073 Implement datasets symbolic contract objective packet: DSCON-G105, DSCON-G110, DSCON-G120
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Goal packet aggregate is tracking-only; granular member tasks own implementation.
 - Priority: P0
 - Track: source-analysis
 - Depends on: DSCON-003, DSCON-067, DSCON-006, DSCON-007, DSCON-008, DSCON-061, DSCON-064
@@ -4152,7 +4163,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-075 Implement datasets symbolic contract objective: Define the software contract IR and reviewed registry
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -4217,13 +4228,14 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-076 Implement datasets symbolic contract objective: Implement real TypeScript and JavaScript AST frontends
 
-- Status: todo
+- Status: blocked
 - Completion: manual
-- Is schedulable: true
-- Review only: false
-- Priority: P0
+- Is schedulable: false
+- Review only: true
+- Priority: P2
 - Track: source-analysis
-- Depends on: DSCON-011, DSCON-012, DSCON-073, DSCON-074
+- Depends on: DSCON-015, DSCON-074
+- Blocked reason: Reviewed TypeScript compiler 5.6.3 is unavailable; this boundary-language capability does not gate the Python package proof scan.
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/typescript_frontend.py, ipfs_datasets_py/scripts/software_contracts/typescript_ast_worker.mjs, ipfs_datasets_py/tests/unit/logic/software_contracts/test_typescript_frontend.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_typescript_frontend.py
 - Evidence inputs: data/datasets_contract_analysis/agent_supervisor/discovery
@@ -4282,7 +4294,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-077 Implement datasets symbolic contract objective: Implement a versioned Python AST and symbol frontend
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -4347,7 +4359,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 
 ## DSCON-078 Implement datasets symbolic contract objective: Prove package-wide Python frontend totality
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -4410,7 +4422,6 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Todo vector key: 1cb3a474d7720005
 - Acceptance: Objective scan filed this gap for DSCON-G115. Use evidence in /home/barberb/211-AI/.worktrees/datasets-contract-analysis/data/datasets_contract_analysis/agent_supervisor/discovery/2026-07-29-dscon-078-objective-gap-ca6b79022ba6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/integration/logic/software_contracts/test_python_frontend_repository_corpus.py), and keep the supervisor-fed backlog aligned with the objective heap.  Unit fixtures are necessary but not sufficient; the tracked package corpus is the exhaustion authority and archived/generated dispositions remain explicit.
 
-- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## DSCON-079 Implement datasets symbolic contract objective: Run the first complete ipfs_datasets_py proof scan
 
 - Status: todo
@@ -4419,7 +4430,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: rollout
-- Depends on: DSCON-078, DSCON-037, DSCON-034, DSCON-043, DSCON-042
+- Depends on: DSCON-032, DSCON-033
 - Outputs: scripts/contract_analysis/verify_scan.py, data/datasets_contract_analysis/scans/ipfs_datasets_py
 - Evidence outputs: data/datasets_contract_analysis/scans/ipfs_datasets_py/scan-receipt.json, data/datasets_contract_analysis/scans/ipfs_datasets_py/proof-root.json, data/datasets_contract_analysis/scans/ipfs_datasets_py/finding-root.json
 - Validation: python scripts/contract_analysis/verify_scan.py data/datasets_contract_analysis/scans/ipfs_datasets_py/scan-receipt.json --expected-logical-root ipfs_datasets_py
@@ -4485,7 +4496,7 @@ The objective daemon appends canonical `DSCON-*` task blocks below.
 - Review only: false
 - Priority: P0
 - Track: content-identity
-- Depends on:
+- Depends on: DSCON-007
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/content.py, ipfs_datasets_py/docs/software_contracts/CID_PROFILE_V1.md, ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py
 - Evidence outputs: ipfs_datasets_py/tests/fixtures/software_contracts/cid_vectors.json
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_content_identity.py

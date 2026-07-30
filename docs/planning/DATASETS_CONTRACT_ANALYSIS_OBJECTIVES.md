@@ -198,7 +198,7 @@ Program invariants:
 
 ## DSCON-G100 Implement immutable content-addressed analysis caching
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 8
 - Priority: P0
@@ -211,7 +211,7 @@ Program invariants:
 - Resource class: io-large
 - Token class: small
 - Goal: Build an immutable local CAS and replaceable indexes whose reusable shard keys bind source/dependency closure, analyzer, configuration, semantics, policy, solver, and toolchain, while snapshot manifests separately bind those shard CIDs to the repository-tree CID.
-- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/cache.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_cache.py
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/cache.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/cache_adapter.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_cache.py, ipfs_accelerate_py/test/api/test_agent_supervisor_contract_cache_adapter.py
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/cache.py, ipfs_accelerate_py/ipfs_accelerate_py/agent_supervisor/contract_analysis/cache_adapter.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_cache.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_cache.py ipfs_accelerate_py/test/api/test_agent_supervisor_contract_cache_adapter.py
 - Acceptance: Cache writes are atomic and immutable; reads recompute identity and schema; poisoning, truncation, wrong snapshot membership, wrong toolchain, wrong policy, and dependency-change fixtures miss or reject; the global repository-tree CID is absent from reusable blob/symbol/slice keys and present in aggregate snapshot receipts; unknown/negative results have bounded leases and never satisfy completion; one-blob mutation invalidates only the expected reverse dependency closure.
@@ -222,7 +222,7 @@ Program invariants:
 
 ## DSCON-G105 Define the shared package scaffold and normalized AST/symbol IR
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 8
 - Priority: P0
@@ -235,7 +235,7 @@ Program invariants:
 - Resource class: cpu-medium
 - Token class: small
 - Goal: Create the shared `logic/software_contracts` package scaffold and immutable language-neutral records for modules, definitions, scopes, symbols, signatures, source spans, imports, references, calls, effects, diagnostics, unsupported constructs, and frontend capability/version identities.
-- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/ast_ir.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/ast_ir.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/schema_versions.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/ast_ir.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/schema_versions.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_ast_ir.py
 - Acceptance: Shared records reject ambiguous canonical values, separate parsing from resolution, carry source/provenance and frontend version identity, round trip through the canonical CID profile, and have deterministic golden roots; Python, TypeScript, and contract goals may import the records but may not independently edit shared exports or schema-version files.
@@ -246,7 +246,7 @@ Program invariants:
 
 ## DSCON-G110 Implement a versioned Python AST and symbol frontend
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 8
 - Priority: P0
@@ -259,7 +259,7 @@ Program invariants:
 - Resource class: cpu-large
 - Token class: small
 - Goal: Parse Python without imports or execution and emit normalized modules, definitions, scopes, signatures, annotations, decorators, imports, calls, awaits, raises, state access, source spans, and explicit unsupported constructs.
-- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/python_frontend.py, ipfs_datasets_py/tests/fixtures/software_contracts/python
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/python_frontend.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_python_frontend.py, ipfs_datasets_py/tests/integration/logic/software_contracts/test_python_frontend_repository_corpus.py
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/python_frontend.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_python_frontend.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_python_frontend.py
 - Acceptance: Frontend reproduces duplicate/shadowed definitions and undefined-reference candidates in the dataset monolith; preserves async/generator/default/annotation facts; never imports analyzed code; malformed and unsupported syntax is explicit; normalized records and roots are deterministic across processes.
@@ -318,20 +318,20 @@ Program invariants:
 
 ## DSCON-G130 Resolve cross-repository modules, imports, exports, and protocols
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 13
 - Priority: P0
 - Track: source-analysis
 - Bundle: datasets-contract/graph
-- Depends on: DSCON-G115, DSCON-G120
+- Depends on: DSCON-G105, DSCON-G110, DSCON-G115
 - Parallel lane: graph-resolution
 - Conflict policy: owns resolver and resolution fixtures
 - Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
 - Resource class: cpu-large
 - Token class: small
 - Goal: Resolve Python and JS-family module paths, aliases, reexports, inheritance, Protocol/ABC implementations, package exports, optional imports, and cross-repository boundaries against the pinned composition.
-- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/resolver.py, ipfs_datasets_py/tests/fixtures/software_contracts/resolution
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/resolver.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_resolver.py
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/resolver.py, ipfs_datasets_py/tests/unit/logic/software_contracts/test_resolver.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_resolver.py
 - Acceptance: Definite, finite-may, unresolved, optional, missing, and revision-mismatch results are distinct; package mirrors do not create false owners; Swissknife/Hallucinate/package imports bind to recorded revisions; resolution never imports or executes target code.
@@ -390,7 +390,7 @@ Program invariants:
 
 ## DSCON-G200 Define the software contract IR and reviewed registry
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 8
 - Priority: P0
@@ -403,7 +403,7 @@ Program invariants:
 - Resource class: cpu-medium
 - Token class: small
 - Goal: Define versioned callable, data, effect, exception, capability, resource, temporal, determinism, schema, trust-boundary, provenance, and authority records for a deliberately bounded proof model.
-- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/contracts.py, ipfs_datasets_py/docs/schemas/software-contract-v1.schema.json
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/contracts.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/registry.py, ipfs_datasets_py/docs/schemas/software-contract-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_ir.py
 - Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/contracts.py, ipfs_datasets_py/ipfs_datasets_py/logic/software_contracts/registry.py, ipfs_datasets_py/docs/schemas/software-contract-v1.schema.json, ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_ir.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/software_contracts/test_contract_ir.py
 - Acceptance: IR encodes explicit assumptions and source authority; rejects unbounded executable predicates and ambiguous canonical values; distinguishes declared, mechanically extracted, witnessed, and inferred facts; contradictory contracts are findings; schema round trips and CIDs are stable.
@@ -420,7 +420,7 @@ Program invariants:
 - Priority: P0
 - Track: formal-contracts
 - Bundle: datasets-contract/contracts
-- Depends on: DSCON-G115, DSCON-G120, DSCON-G200
+- Depends on: DSCON-G115, DSCON-G200
 - Parallel lane: contracts-extraction
 - Conflict policy: owns source-to-contract extractors
 - Submodules: ipfs_datasets_py
@@ -436,7 +436,7 @@ Program invariants:
 - Embedding query: contract extraction protocol abc stub annotation decorator schema tests documentation precedence
 - AST query: ContractExtractor Protocol Callable Signature JSONSchema PropertyTest
 
-## DSCON-G220 Declare cross-package architecture, effect, and security policies
+## DSCON-G220 Declare package architecture, effect, and security policies
 
 - Status: active
 - Parent: DSCON-G000
@@ -447,14 +447,14 @@ Program invariants:
 - Depends on: DSCON-G010, DSCON-G200
 - Parallel lane: contracts-policy
 - Conflict policy: owns reviewed policy manifests, not package implementation
-- Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
+- Submodules: ipfs_datasets_py
 - Resource class: cpu-medium
 - Token class: small
-- Goal: Declare ownership, dependency direction, wrapper delegation, optional dependency, no-mock-success, CID, persistence, network, secret, async, resource, and error-semantics policies for the three packages and Swissknife entrypoints.
+- Goal: Declare ownership, dependency direction, wrapper delegation, optional dependency, no-mock-success, CID, persistence, network, secret, async, resource, and error-semantics policies for the exact pinned `ipfs_datasets_py` tree; represent accelerator, kit, Swissknife, and other callers only as explicit boundary summaries.
 - Evidence: data/datasets_contract_analysis/policy/cross-package-contracts-v1.json
 - Outputs: data/datasets_contract_analysis/policy/cross-package-contracts-v1.json, ipfs_datasets_py/tests/contract/software_contracts/test_policy_registry.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/software_contracts/test_policy_registry.py
-- Acceptance: Policies name exact owners/interfaces/revisions and distinguish expected behavior from observations; no broad marketing statement becomes authoritative; exceptions are scoped and expiring; package/runtime revision mismatch is explicit; policy identity is content addressed.
+- Acceptance: Policies name exact package owners/interfaces/revisions and distinguish expected behavior from observations; external callers remain boundary summaries and cannot support cross-repository safety claims; no broad marketing statement becomes authoritative; exceptions are scoped and expiring; package/runtime revision mismatch is explicit; policy identity is content addressed.
 - Gap task: Convert reviewed architecture and security invariants into a machine-readable registry with validation fixtures.
 - Refinement: Start with high-value boundaries and extend through reviewed child policies.
 - Embedding query: cross package architecture policy ownership wrapper delegation persistence no mock cid async security
@@ -534,7 +534,7 @@ Program invariants:
 
 ## DSCON-G300 Freeze dataset manipulation compatibility and failure baselines
 
-- Status: active
+- Status: completed
 - Parent: DSCON-G000
 - Fib priority: 3
 - Priority: P0
@@ -547,7 +547,7 @@ Program invariants:
 - Resource class: cpu-medium
 - Token class: small
 - Goal: Characterize direct Python, MCP tool, MCP client, HTTP service, Swissknife descriptor, and ipfs_kit dataset load/save/convert/process contracts and freeze safe behavior, observed drift, mock-success failures, persistence effects, return/errors, IDs, and schema shapes.
-- Evidence: data/datasets_contract_analysis/audit/dataset-contract-baseline.json, ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py
+- Evidence: data/datasets_contract_analysis/audit/dataset-contract-baseline.json, ipfs_datasets_py/tests/fixtures/dataset_manipulator, ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py
 - Outputs: data/datasets_contract_analysis/audit/dataset-contract-baseline.json, ipfs_datasets_py/tests/fixtures/dataset_manipulator, ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py
 - Validation: python -m pytest -q ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py
 - Acceptance: Fixtures reproduce pass/no-op transformations, fabricated counts, random hash/id identities, no-write saves, no-conversion converts, fallback sample datasets, duplicate/shadowed monolith methods, missing calls/imports, kit integration failures, and weak wrappers; safe existing vectors are preserved; vulnerabilities are expected failures, not compatibility promises.
@@ -852,7 +852,7 @@ Program invariants:
 - Priority: P0
 - Track: supervisor-integration
 - Bundle: datasets-contract/supervisor
-- Depends on: DSCON-G055, DSCON-G610
+- Depends on: DSCON-G055, DSCON-G610, DSCON-G705
 - Parallel lane: supervisor-refill
 - Conflict policy: owns contract refill provider and supervisor wiring
 - Submodules: ipfs_accelerate_py
@@ -876,7 +876,7 @@ Program invariants:
 - Priority: P0
 - Track: supervisor-integration
 - Bundle: datasets-contract/supervisor
-- Depends on: DSCON-G620
+- Depends on: DSCON-G620, DSCON-G705
 - Parallel lane: supervisor-validation
 - Conflict policy: owns completion artifact refresh and proof quorum
 - Submodules: ipfs_accelerate_py, ipfs_datasets_py
@@ -888,7 +888,7 @@ Program invariants:
 - Validation: python -m pytest -q ipfs_accelerate_py/test/api/test_agent_supervisor_contract_completion_gate.py
 - Acceptance: Candidate-tree mismatch, stale receipt, omitted dependant, finding recurrence, weakened contract/test, incomplete scan, and single-checker high-severity evidence fail; valid repair transitions the original finding with provenance; root worktree and gitlinks remain clean.
 - Gap task: Implement shell-free artifact refresh, patch-scope calculation, validation receipts, and quorum checks.
-- Refinement: Goal completion reconciliation remains disabled until this artifact is healthy.
+- Refinement: This gate controls repair closure after findings exist; it does not block evidence-backed reconciliation of already implemented construction goals.
 - Embedding query: repair completion gate patch bound reanalysis dependent proof quorum candidate tree
 - AST query: CompletionGate CompletionEvidence CodeProofScope ExhaustionQuorum
 
@@ -900,7 +900,7 @@ Program invariants:
 - Priority: P0
 - Track: rollout
 - Bundle: datasets-contract/rollout
-- Depends on: DSCON-G250, DSCON-G420
+- Depends on: DSCON-G705
 - Parallel lane: rollout-performance
 - Conflict policy: owns benchmark fixtures and performance receipts
 - Submodules: ipfs_accelerate_py, ipfs_datasets_py
@@ -924,7 +924,7 @@ Program invariants:
 - Priority: P0
 - Track: rollout
 - Bundle: datasets-contract/datasets-proof-scan
-- Depends on: DSCON-G115, DSCON-G340, DSCON-G410, DSCON-G630, DSCON-G700
+- Depends on: DSCON-G115, DSCON-G250, DSCON-G420
 - Parallel lane: datasets-proof-scan
 - Conflict policy: owns immutable package scan outputs and the generated package finding root
 - Submodules: ipfs_datasets_py
@@ -973,7 +973,7 @@ Program invariants:
 - Priority: P0
 - Track: rollout
 - Bundle: datasets-contract/rollout
-- Depends on: DSCON-G705
+- Depends on: DSCON-G630, DSCON-G700
 - Parallel lane: rollout-repairs
 - Conflict policy: tasks own exact leased files/symbols; shared contracts serialize
 - Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py

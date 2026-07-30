@@ -187,21 +187,22 @@ or safety claim is part of the first package-scoped release.
 
 The first package-only immutable snapshot and AST exhaustion pass is recorded
 under `data/datasets_contract_analysis/scans/ipfs_datasets_py/baseline/`.
-It binds datasets commit `e136fe31c8bb2cf3355311b035ca4bec55faf5a7`,
-tree `5c44f704b8c06ab58de9f5dc41cedc23f7f1b003`, and repository-root CID
-`baguqeerampt5kqz2njeaxhkqoeyjvr5rtju6rirk7crxdviqzsdiifkgfeoa`.
-All 12,107 tracked blobs have dispositions. All 7,017 eligible Python blobs
-terminate in a content-addressed AST result: 6,414 without unsupported
+It binds datasets commit `0689cff0b58c5c57fae67f51d20fa76b3a8d2061`,
+tree `9d5389eaca12826353263a755d486547fed6ddba`, and repository-root CID
+`baguqeerawnqcvy5yfuappuhkdmuiqrtlp66on4idvup76x3qx2stuwq6x5la`.
+All 12,109 tracked blobs have dispositions. All 7,019 eligible Python blobs
+terminate in a content-addressed AST result: 6,416 without unsupported
 constructs and 603 with explicit unsupported records; no frontend exception,
 resource exhaustion, unavailable source, or unattempted blob remains. The
 aggregate AST baseline receipt is
-`baguqeeraftep7ukpgyloywhvyyne44hi7whnygsf4czz32sh6bntfd2lnwcq`.
+`baguqeeravqeus4d5klxxypnc3vm6l2qvwhsfylt7zhonmkkm5yc5igox6zbq`.
 
 This checkpoint has `STATIC_AST_BASELINE_ONLY` authority. It is not a function
-contract proof or a package safety claim. Resolver, call/effect graph, contract
-extraction, obligation, solver/reconstruction, evidence-graph, receipt,
-security-rule, mismatch, finding, and supervisor contract-refill stages remain
-mandatory before G705 can emit proof and finding roots.
+contract proof or a package safety claim. The bounded resolver is implemented
+and covered by nine focused tests. Call/effect graph, contract extraction,
+obligation, solver/reconstruction, evidence-graph, receipt, security-rule,
+finding, and supervisor contract-refill stages remain mandatory before G705
+can emit proof and finding roots.
 
 ## 3. Proof boundary and claim vocabulary
 
@@ -604,11 +605,37 @@ When open work falls below the configured threshold:
 | datasets | dataset operation IR, core manipulator, adapters | graph/formal after schema gates |
 | supervisor | finding/task adapters, refill, repair packets | analyzers after finding schema |
 | ZK | statement, trace, proof envelope | only after native verifier |
-| rollout | package proof scan, canaries, autonomous repair, release | only after all gates |
+| rollout | package proof scan, canaries, autonomous repair, release | after package proof prerequisites |
 
 The canonical schemas, CID profile, task board, objective heap, launch script,
 and merge queue each have one serialized owner. Agents must not modify
 protected planning/control files.
+
+### 14.1 Executable package-proof critical path
+
+The first formal analysis target is the exact pinned `ipfs_datasets_py` tree.
+The supervisor must follow this dependency graph and may parallelize only the
+branches shown:
+
+```text
+G115 complete ──> G130 complete ──> G140 ──┬─> G150 ──────────────┐
+                                            ├─> G400 ────────┐     │
+G115 + G200 complete ──> G210 ──┐           │                │     │
+G010 + G200 complete ──> G220 ──┴─> G230 ──┴─> G240 ────────┴─> G250
+                                                                  │
+G400 + G250 ───────────────────────────────────────────────────> G420
+G115 + G250 + G420 ────────────────────────────────────────────> G705
+G705 ──> G600 ──> G610 ──> G620 ──> G630
+  └────> G700
+G630 + G700 ───────────────────────────────────────────────────> G720
+```
+
+G210 contract extraction, G220 package policy, and G140 call/effect graph are
+the next independent implementation lanes. After G140, evidence-graph,
+obligation, and security-rule work may run in parallel. G340, G410, G710, the
+TypeScript capability gap, and optional ZK envelopes are explicitly outside
+the first package-proof critical path. Aggregate packet cards are tracking
+records and never compete with their granular implementation cards.
 
 ## 15. Phases and release gates
 
@@ -646,15 +673,19 @@ the expected dependency slice; every tracked blob has a disposition.
 Gate: golden valid/invalid/unknown fixtures are classified exactly; proof
 receipts replay in a clean process; unsupported dynamic behavior fails closed.
 
-### Phase 3 — dataset manipulator repair
+### Phase 3 — complete the first `ipfs_datasets_py` proof scan
 
-- canonical operation plan and core implementation;
-- thin MCP tool, client, and HTTP adapters;
-- direct/MCP-tool/client/HTTP equivalence and security tests;
-- pilot call-contract proofs.
+- inventory and index the full committed `ipfs_datasets_py` tree;
+- emit package-scoped AST, contract, obligation, proof, coverage, and finding
+  roots;
+- replay every receipt against the exact tree, analyzer, policy, schema,
+  solver, and tool identities;
+- fail closed on missing, unknown, unsupported, stale, or incomplete
+  supported-semantic shards.
 
-Gate: no mock success or process-randomized IDs; compatibility and semantic
-tests pass twice; pilot drift findings are proved repaired.
+Gate: G705 has a current scan receipt, proof root, and finding root; every
+tracked object has exactly one disposition; no boundary-repository safety or
+exhaustion claim is made.
 
 ### Phase 4 — supervisor refill and low-context edits
 
@@ -663,11 +694,24 @@ tests pass twice; pilot drift findings are proved repaired.
 - objective/codebase refill adapters;
 - completion evidence and independent validation.
 
-Gate: synthetic findings generate one stable task each, duplicates generate
-none, unknown/stale findings are blocked, and Codex/Grok can complete isolated
-canaries without reading the full repository.
+Gate: package findings generate one stable task each, duplicates generate
+none, unknown/stale findings are blocked, and scan failure leaves both
+supervisor lanes live without claiming exhaustion.
 
-### Phase 5 — optional ZK attestation
+### Phase 5 — staged package repair and dataset-manipulator canary
+
+- canonical operation plan and core implementation;
+- thin MCP tool, client, and HTTP adapters;
+- direct/MCP-tool/client/HTTP equivalence and security tests;
+- pilot call-contract proofs;
+- high-confidence, low-blast-radius package finding repairs through Codex and
+  Grok Build.
+
+Gate: no mock success or process-randomized IDs; compatibility and semantic
+tests pass twice; exact finding and dependant obligations are rechecked; pilot
+drift findings are proved repaired or explicitly unsupported.
+
+### Phase 6 — optional ZK attestation
 
 - native trace verifier;
 - reviewed public input and witness schema;
@@ -678,20 +722,16 @@ provenance are bound; documentation states whether the proof is only a
 trace-commitment opening or covers a named set of transitions. A current
 `not_enabled` capability receipt is sufficient for the ordinary release path.
 
-### Phase 6 — complete `ipfs_datasets_py` proof scan and staged repair
+### Phase 7 — optional boundary-composition expansion
 
-- inventory and index the full committed `ipfs_datasets_py` tree;
-- emit package-scoped AST, contract, obligation, proof, coverage, and finding
-  roots;
-- send admitted package findings through the `ipfs_accelerate_py` refill and
-  task-projection runtime;
-- run high-confidence, low-blast-radius canaries;
-- expand autonomy by severity and package only after repair-quality gates.
+- analyze the pinned accelerator, kit, and Swissknife boundary trees;
+- compose package and external-call contracts without changing the package
+  proof root;
+- publish separate cross-repository coverage, mismatch, and finding roots.
 
-Gate: complete coverage manifest, current-tree proof quorum, clean worktrees,
-no unresolved critical/high admitted finding without an owner or explicit
-blocker, and rehearsed rollback. Swissknife and the other packages remain
-optional boundary-composition expansion after this gate.
+Gate when reviewed: every boundary root is clean and pinned, partial language
+coverage is explicit, and no package-only result is silently widened into a
+cross-repository claim.
 
 ## 16. Validation strategy
 
