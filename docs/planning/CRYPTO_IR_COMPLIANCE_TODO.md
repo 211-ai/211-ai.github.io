@@ -3022,3 +3022,14 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 - Candidate kind: aggregate
 - Todo vector key: 50f6235b4d55b1f0
 - Acceptance: Objective scan filed this gap for CRYPTOIR-G800. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-046-objective-gap-294c83602009.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py), and keep the supervisor-fed backlog aligned with the objective heap.  Reviewers may use GraphRAG to choose obligations, but only the existing proof and policy gates may authorize a transaction.
+
+## CRYPTOIR-047 Resolve merge retry-budget failure for CRYPTOIR-037
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: CRYPTOIR-001, CRYPTOIR-036
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py, data/crypto_ir_compliance/agent_supervisor/runtime/state/discovery
+- Validation: test -f /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/runtime/state/discovery/2026-07-30-cryptoir-047-cryptoir-037-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in CRYPTOIR-037. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/runtime/state/discovery/2026-07-30-cryptoir-047-cryptoir-037-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release CRYPTOIR-037 from strategy blocked_tasks.
