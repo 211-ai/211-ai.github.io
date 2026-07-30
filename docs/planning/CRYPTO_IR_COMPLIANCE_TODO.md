@@ -1394,7 +1394,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-022 Implement Crypto IR compliance objective: Implement XRPL native-ledger, Hooks, and sidechain semantics
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
