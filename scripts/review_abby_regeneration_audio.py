@@ -73,10 +73,34 @@ _CONTENT_STOPWORDS = frozenset(
     }
 )
 _WHISPER_TEXT_NORMALIZER = EnglishTextNormalizer({})
+_DIGIT_WORDS = (
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+)
 
 
 def normalized_review_text(text: str) -> str:
-    normalized = normalize_indextts_spoken_text(str(text or "")).casefold()
+    # Normalize curly contractions before the TTS-safe normalizer so Whisper's
+    # ``you're`` compares with expected text containing ``you’re``.
+    source = str(text or "").replace("’", "'").replace("‘", "'")
+    normalized = normalize_indextts_spoken_text(source).casefold()
+    # Whisper may punctuate a digit-at-a-time telephone number as
+    # ``5-4-1-2-...``.  Its English normalizer inconsistently converts those
+    # singleton digits (for example ``1`` -> ``one``), so spell every observed
+    # Arabic digit before asking the normalizer to compact number sequences.
+    normalized = re.sub(
+        r"\d",
+        lambda match: f" {_DIGIT_WORDS[int(match.group(0))]} ",
+        normalized,
+    )
     # Whisper commonly emits compact numerals while the safe TTS input spells
     # every digit.  Use Whisper's own English number normalizer so ``five zero
     # three`` and ``503`` compare as the same acoustic content.
@@ -93,6 +117,20 @@ def normalized_similarity_bp(expected: str, observed: str) -> int:
             difflib.SequenceMatcher(None, expected_norm, observed_norm).ratio()
             * 10_000
         )
+    )
+
+
+def normalized_numeric_sequences(text: str) -> tuple[str, ...]:
+    """Return ordered, acoustically normalized digit sequences."""
+
+    return tuple(re.findall(r"\d+", normalized_review_text(text)))
+
+
+def numeric_sequences_match(expected: str, observed: str) -> bool:
+    """Require every expected number to be heard exactly and in order."""
+
+    return normalized_numeric_sequences(expected) == normalized_numeric_sequences(
+        observed
     )
 
 
@@ -192,12 +230,14 @@ def review_manifest(
             normalized_review_text(transcript),
         )
         forbidden_negative = bool(re.search(r"(?i)\bnegative\b", transcript))
+        numbers_match = numeric_sequences_match(expected, transcript)
         passed = (
             bool(transcript.strip())
             and similarity >= minimum_similarity_bp
             and coverage >= minimum_content_coverage_bp
             and wer <= maximum_wer_bp
             and not forbidden_negative
+            and numbers_match
         )
         receipts.append(
             {
@@ -209,6 +249,7 @@ def review_manifest(
                 "expected_text_sha256": sha256(expected.encode()).hexdigest(),
                 "forbidden_negative_detected": forbidden_negative,
                 "normalized_similarity_bp": similarity,
+                "numeric_sequences_match": numbers_match,
                 "passed": passed,
                 "transcript": transcript,
                 "transcript_sha256": sha256(transcript.encode()).hexdigest(),
@@ -237,6 +278,7 @@ def review_manifest(
             "maximum_wer_bp": maximum_wer_bp,
             "minimum_content_word_coverage_bp": minimum_content_coverage_bp,
             "minimum_similarity_bp": minimum_similarity_bp,
+            "require_numeric_sequences_match": True,
         },
         "manifest": str(manifest_path.relative_to(REPO_ROOT)),
         "minimum_content_word_coverage_bp": min(

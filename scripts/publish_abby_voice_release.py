@@ -15,8 +15,9 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPO_ROOT / "ipfs_datasets_py"
@@ -90,6 +91,34 @@ def build_parser() -> argparse.ArgumentParser:
         help="Target Hugging Face dataset repository",
     )
     parser.add_argument(
+        "--audited-parent-commit",
+        default="",
+        help=(
+            "Exact 40-64 hex commit SHA audited before this plan. It is included "
+            "in plan_digest and required by --execute."
+        ),
+    )
+    parser.add_argument(
+        "--target-revision",
+        default="main",
+        help="Branch protected by the parent-commit race guard (currently: main)",
+    )
+    parser.add_argument(
+        "--verified-cache-root",
+        type=Path,
+        default=None,
+        help=(
+            "Empty directory for the real pinned redownload. If omitted during "
+            "--execute, a new persistent temporary directory is created."
+        ),
+    )
+    parser.add_argument(
+        "--pinned-download-workers",
+        type=int,
+        default=8,
+        help="Bounded concurrent pinned downloads during verification (1-32; default: 8)",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         default=True,
@@ -134,6 +163,13 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+    if args.execute and not str(args.audited_parent_commit).strip():
+        print(
+            "error: --execute requires --audited-parent-commit; "
+            "rerun the dry-run with that same commit before approval",
+            file=sys.stderr,
+        )
+        return 2
 
     approval = None
     if args.approval_json is not None:
@@ -159,8 +195,16 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=dry_run,
             local_root=args.local_root,
             repository_id=str(args.repository_id),
+            audited_parent_commit=str(args.audited_parent_commit),
+            target_revision=str(args.target_revision),
             approval=approval,
             api=api,
+            verified_cache_root=(
+                args.verified_cache_root.expanduser().resolve()
+                if args.verified_cache_root is not None
+                else None
+            ),
+            pinned_download_workers=int(args.pinned_download_workers),
             receipt_path=args.receipt.expanduser().resolve(),
         )
     except HuggingFacePublicationError as exc:
@@ -177,6 +221,8 @@ def main(argv: list[str] | None = None) -> int:
             "repository_id": receipt.get("repository_id"),
             "release_id": plan.get("release_id"),
             "release_prefix": plan.get("release_prefix"),
+            "audited_parent_commit": plan.get("audited_parent_commit"),
+            "target_revision": plan.get("target_revision"),
             "plan_digest": plan.get("plan_digest"),
             "upload_file_count": plan.get("upload_file_count"),
             "upload_bytes": plan.get("upload_bytes"),
