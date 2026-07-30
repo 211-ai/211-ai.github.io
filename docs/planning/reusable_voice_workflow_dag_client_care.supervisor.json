@@ -1,0 +1,123 @@
+{
+  "schema": "211-ai/voice-care-supervisor-launch-profile@1",
+  "program_id": "reusable-voice-workflow-dag-client-care-v1",
+  "profile_kind": "planned-control-wrapper-input",
+  "consumer_status": "planned-by-VOICE-CARE-001",
+  "repo_root": ".",
+  "plan_path": "docs/planning/REUSABLE_VOICE_WORKFLOW_DAG_CLIENT_CARE_PLAN.md",
+  "objectives_path": "docs/planning/reusable_voice_workflow_dag_client_care.objectives.md",
+  "taskboard_path": "docs/planning/reusable_voice_workflow_dag_client_care.todo.md",
+  "validator_path": "scripts/validate_voice_workflow_dag_client_care_plan.py",
+  "task_prefix": "## VOICE-CARE-",
+  "board_namespace": "voice-care-workflow-dag-v1",
+  "merge_target_branch": "agent/voice-care-workflow-dag",
+  "merge_target_creation": {
+    "required_before_worker_start": true,
+    "base_ref": "origin/main",
+    "expected_base_commit": "ad369c36e258133ad43abfe272e7f69460d9f572",
+    "require_clean_recursive_tree": true,
+    "fast_forward_merges_only": true
+  },
+  "max_lanes": 4,
+  "task_shard_count": 4,
+  "poll_interval_seconds": 5,
+  "daemon_interval_seconds": 300,
+  "check_interval_seconds": 60,
+  "stale_seconds": 1800,
+  "max_restarts": 3,
+  "max_task_attempts": 5,
+  "implementation_timeout_seconds": 7200,
+  "worktree_submodule_paths": [
+    "ipfs_accelerate_py",
+    "ipfs_datasets_py",
+    "ipfs_kit_py"
+  ],
+  "protected_paths": [
+    "docs/planning/REUSABLE_VOICE_WORKFLOW_DAG_CLIENT_CARE_PLAN.md",
+    "docs/planning/reusable_voice_workflow_dag_client_care.objectives.md",
+    "docs/planning/reusable_voice_workflow_dag_client_care.todo.md",
+    "docs/planning/reusable_voice_workflow_dag_client_care.supervisor.json",
+    "scripts/validate_voice_workflow_dag_client_care_plan.py"
+  ],
+  "state_layout": {
+    "external_state_required": true,
+    "state_root_env": "VOICE_CARE_SUPERVISOR_STATE_ROOT",
+    "worktree_root": "worktrees",
+    "lane_state_root": "lanes",
+    "log_root": "logs",
+    "projection_root": "projection",
+    "shared_merge_queue": "merge-queue",
+    "secrets_in_argv_allowed": false
+  },
+  "refill": {
+    "initially_enabled": false,
+    "enable_after_task_id": "VOICE-CARE-001",
+    "required_bootstrap_receipts": [
+      "protected-path-policy",
+      "semantic-deduplication",
+      "bounded-refill-budget",
+      "sole-refill-owner"
+    ],
+    "owner_lane_id": "voice-care-grok-0",
+    "transfer_authority_on_provider_failure": false,
+    "minimum_open_tasks": 4,
+    "objective_max_findings": 8,
+    "codebase_max_findings": 5,
+    "max_child_goals_per_refinement": 3,
+    "max_refinement_depth": 4,
+    "surplus_findings_per_goal": 2,
+    "objective_cooldown_seconds": 3600,
+    "codebase_cooldown_seconds": 21600,
+    "objective_timeout_seconds": 900,
+    "codebase_timeout_seconds": 600,
+    "deduplicate_by_semantic_fingerprint": true,
+    "defer_codebase_refill_after_objective_generation": true
+  },
+  "proof_cache": {
+    "enabled": true,
+    "module": "ipfs_accelerate_py.agent_supervisor.proof.formal_verification_cache",
+    "prefer_cache_before_provider": true,
+    "single_flight": true,
+    "rederive_assurance_on_hit": true,
+    "allow_simulated_zk_attested": false,
+    "authority_note": "A cache hit is memoization only and cannot upgrade evidence, authorization, execution, or proof strength."
+  },
+  "lanes": [
+    {
+      "lane_id": "voice-care-grok-0",
+      "provider": "grok-build",
+      "task_shard_index": 0,
+      "objective_refill_owner": true,
+      "codebase_refill_owner": true,
+      "repo_git_gc_owner": true,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "voice-care-codex-1",
+      "provider": "codex",
+      "task_shard_index": 1,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "voice-care-grok-2",
+      "provider": "grok-build",
+      "task_shard_index": 2,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "voice-care-codex-3",
+      "provider": "codex",
+      "task_shard_index": 3,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    }
+  ]
+}
