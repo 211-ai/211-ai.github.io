@@ -2044,7 +2044,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-032 Implement Crypto IR compliance objective: Integrate the Bitcoin transaction guard
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
