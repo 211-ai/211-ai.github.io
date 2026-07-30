@@ -40,3 +40,19 @@ ipfs_datasets_py/ipfs_datasets_py/processors/groth16_backend/
 ipfs_datasets_py/tests/
 ipfs_datasets_py/tmp/
 ipfs_datasets_py/workspace/
+
+# The wallet API installs the sibling ipfs_accelerate_py checkout for its
+# package-owned voice router. Keep that source in the build context while
+# excluding development corpora, tests, browser assets, and the optional
+# Qualcomm SDK payload that the remote Publicus voice path never imports.
+ipfs_accelerate_py/.codex/
+ipfs_accelerate_py/.github/
+ipfs_accelerate_py/.git
+ipfs_accelerate_py/.vscode/
+ipfs_accelerate_py/artifacts/
+ipfs_accelerate_py/data/
+ipfs_accelerate_py/docs/
+ipfs_accelerate_py/ipfs_accelerate_js/
+ipfs_accelerate_py/ipfs_accelerate_py/utils/qualcomm/
+ipfs_accelerate_py/test/
+ipfs_accelerate_py/tmp/

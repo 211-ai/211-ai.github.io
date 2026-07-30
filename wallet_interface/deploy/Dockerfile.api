@@ -15,14 +15,29 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" pydantic
+    && python -m pip install --no-cache-dir \
+        "fastapi>=0.110" \
+        "pydantic>=2.7" \
+        "python-multipart>=0.0.30" \
+        "uvicorn[standard]>=0.29"
 
 COPY ipfs_datasets_py /app/ipfs_datasets_py
-COPY wallet_interface /app/wallet_interface
-
 RUN python -m pip install --no-cache-dir -e /app/ipfs_datasets_py
+
+COPY ipfs_accelerate_py /app/ipfs_accelerate_py
+
+# The wallet voice runtime uses only the package-owned remote router,
+# immutable-release loader, and local response-DAG staging code. Install the
+# audited sibling checkout directly, without resolving its unrelated local ML
+# stack (including a second Torch runtime), and keep legacy core discovery off.
+ENV IPFS_ACCEL_SKIP_CORE=1 \
+    IPFS_ACCELERATE_PY_SETUP_AUTO_TORCH=0
+
+RUN python -m pip install --no-cache-dir --no-deps -e /app/ipfs_accelerate_py \
+    && python -c "from ipfs_accelerate_py.voice_audio_resolver import PrecomputedVoiceAudioResolver; from ipfs_accelerate_py.voice_response_dag_runtime import load_local_voice_response_dag_runtime_from_environment; from ipfs_accelerate_py.voice_response_dag_sink import LocalResponseDAGQueue; from ipfs_accelerate_py.voice_router import process_voice_turn; from ipfs_accelerate_py.voice_runtime_manifest import load_pinned_voice_runtime_resolver; from ipfs_datasets_py.voice.graphrag import GraphRAGVoiceTemplateProvider; from ipfs_datasets_py.voice.release_loader import AbbyVoiceReleaseLoader"
+
+COPY wallet_interface /app/wallet_interface
 
 EXPOSE 8000
 
 CMD ["uvicorn", "wallet_interface.asgi:app", "--host", "0.0.0.0", "--port", "8000"]
-

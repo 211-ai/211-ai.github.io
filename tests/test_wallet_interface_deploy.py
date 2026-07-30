@@ -79,6 +79,36 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "storage-retention.example.json" in readme
 
 
+def test_wallet_api_image_installs_and_smokes_package_owned_voice_runtime() -> None:
+    dockerfile = (DEPLOY_ROOT / "Dockerfile.api").read_text(encoding="utf-8")
+    dockerignore = (REPO_ROOT / ".dockerignore").read_text(encoding="utf-8")
+
+    assert "COPY ipfs_accelerate_py /app/ipfs_accelerate_py" in dockerfile
+    assert '"python-multipart>=0.0.30"' in dockerfile
+    assert (
+        "python -m pip install --no-cache-dir --no-deps "
+        "-e /app/ipfs_accelerate_py"
+    ) in dockerfile
+    assert "IPFS_ACCEL_SKIP_CORE=1" in dockerfile
+    assert "IPFS_ACCELERATE_PY_SETUP_AUTO_TORCH=0" in dockerfile
+    for runtime_import in (
+        "ipfs_accelerate_py.voice_audio_resolver",
+        "ipfs_accelerate_py.voice_response_dag_runtime",
+        "ipfs_accelerate_py.voice_response_dag_sink",
+        "ipfs_accelerate_py.voice_router",
+        "ipfs_accelerate_py.voice_runtime_manifest",
+        "ipfs_datasets_py.voice.graphrag",
+        "ipfs_datasets_py.voice.release_loader",
+    ):
+        assert runtime_import in dockerfile
+
+    # The image includes the reviewed package checkout, but not development
+    # corpora or the optional, very large local Qualcomm SDK.
+    assert "ipfs_accelerate_py/test/" in dockerignore
+    assert "ipfs_accelerate_py/data/" in dockerignore
+    assert "ipfs_accelerate_py/ipfs_accelerate_py/utils/qualcomm/" in dockerignore
+
+
 def test_wallet_voice_deploy_defaults_use_publicus_batch_primary() -> None:
     compose = (DEPLOY_ROOT / "docker-compose.wallet.yml").read_text(encoding="utf-8")
     production_env = (DEPLOY_ROOT / "env.production.example").read_text(encoding="utf-8")
