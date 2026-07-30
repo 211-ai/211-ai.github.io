@@ -21,12 +21,15 @@ import hashlib
 import os
 import threading
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any, Final
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
 RUNTIME_AUDIO_MANIFEST_ENV = "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL"
-VOICE_ROUTER_ADAPTER_VERSION = "1.3"
+RUNTIME_GRAPHRAG_MINIMUM_CONFIDENCE_ENV = (
+    "WALLET_ABBY_VOICE_GRAPHRAG_MINIMUM_CONFIDENCE"
+)
+VOICE_ROUTER_ADAPTER_VERSION = "1.4"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
     "aac": "audio/aac",
     "flac": "audio/flac",
@@ -46,6 +49,16 @@ _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_KEY: tuple[object, ...] = ()
 _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_ERROR: str | None = None
 _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_FAILURE_AT = 0.0
 _PACKAGE_PRECOMPUTED_AUDIO_RESOLVER_LOCK = threading.Lock()
+_PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER: object | None = None
+_PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_KEY: tuple[object, ...] = ()
+_PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR: str | None = None
+_PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_FAILURE_AT = 0.0
+_PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_LOCK = threading.Lock()
+_PACKAGE_RESPONSE_DAG_RUNTIME: object | None = None
+_PACKAGE_RESPONSE_DAG_RUNTIME_KEY: tuple[object, ...] = ()
+_PACKAGE_RESPONSE_DAG_RUNTIME_ERROR: str | None = None
+_PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT = 0.0
+_PACKAGE_RESPONSE_DAG_RUNTIME_LOCK = threading.Lock()
 _VOICE_SURFACE_ALIASES: Final[dict[str, str]] = {
     "web": "website",
     "website": "website",
@@ -473,6 +486,61 @@ class _WalletResponsePlanProvider:
         )
 
 
+class _WalletLazyResponsePlanProvider:
+    """Generate the wallet LLM fallback only after primary GraphRAG misses."""
+
+    provider_name = "wallet-llm-fallback"
+
+    def __init__(
+        self,
+        generate: Callable[[], tuple[str, Mapping[str, object]]],
+    ) -> None:
+        if not callable(generate):
+            raise TypeError("generate must be callable")
+        self._generate = generate
+        self._lock = threading.Lock()
+        self._generated = False
+        self.response_text = ""
+        self.generation_latency: dict[str, object] = {}
+        self.error_code: str | None = None
+
+    @property
+    def generated(self) -> bool:
+        return self._generated
+
+    def retrieve(self, transcript: str, **_: object) -> object:
+        with self._lock:
+            if not self._generated:
+                try:
+                    response_text, latency = self._generate()
+                    response_text = str(response_text or "").strip()
+                    if not response_text:
+                        raise ValueError(
+                            "wallet LLM fallback returned empty text"
+                        )
+                    if not isinstance(latency, Mapping):
+                        raise TypeError(
+                            "wallet LLM fallback latency must be a mapping"
+                        )
+                except Exception as exc:
+                    self.error_code = exc.__class__.__name__
+                    raise
+                self.response_text = response_text
+                self.generation_latency = dict(latency)
+                self._generated = True
+        voice_response_plan, _, _ = _router_contracts()
+        return voice_response_plan(
+            template_id="wallet-interface-llm-fallback-v1",
+            template=self.response_text,
+            metadata={
+                "adapter": "wallet_interface",
+                "generated_fallback": True,
+                "grounding_boundary": "upstream",
+                "slotted_template": False,
+            },
+        )
+
+
 def build_voice_turn_request(
     payload: Mapping[str, object],
     *,
@@ -646,6 +714,163 @@ def _package_precomputed_audio_resolver() -> object | None:
         return resolver
 
 
+def _package_graphrag_template_provider() -> object | None:
+    """Load GraphRAG from the same explicitly pinned release as audio."""
+
+    global _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER
+    global _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR
+    global _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_FAILURE_AT
+    global _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_KEY
+
+    manifest_url = str(os.getenv(RUNTIME_AUDIO_MANIFEST_ENV) or "").strip()
+    if not manifest_url:
+        return None
+    timeout_raw = str(
+        os.getenv(
+            "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS",
+            "15",
+        )
+        or "15"
+    )
+    retry_raw = str(
+        os.getenv(
+            "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS",
+            "60",
+        )
+        or "60"
+    )
+    confidence_raw = str(
+        os.getenv(RUNTIME_GRAPHRAG_MINIMUM_CONFIDENCE_ENV, "0.35")
+        or "0.35"
+    )
+    try:
+        timeout_seconds = max(1.0, float(timeout_raw))
+        retry_seconds = max(1.0, float(retry_raw))
+        minimum_confidence = float(confidence_raw)
+        if not 0.0 <= minimum_confidence <= 1.0:
+            raise ValueError("confidence must be between zero and one")
+    except ValueError:
+        timeout_seconds = 15.0
+        retry_seconds = 60.0
+        minimum_confidence = 0.35
+        configuration_error = "ValueError"
+    else:
+        configuration_error = None
+
+    provider_key: tuple[object, ...] = (
+        manifest_url,
+        timeout_seconds,
+        minimum_confidence,
+        configuration_error,
+    )
+    now = time.monotonic()
+    with _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_LOCK:
+        if (
+            provider_key == _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_KEY
+            and (
+                _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER is not None
+                or (
+                    _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR is not None
+                    and now - _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_FAILURE_AT
+                    < retry_seconds
+                )
+            )
+        ):
+            return _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER
+        if configuration_error is not None:
+            provider = None
+            error_code = configuration_error
+            failure_at = now
+        else:
+            try:
+                from ipfs_accelerate_py.voice_router import (  # noqa: WPS433
+                    GraphRAGVoiceTemplateProvider,
+                )
+                from ipfs_accelerate_py.voice_runtime_manifest import (  # noqa: WPS433
+                    load_pinned_voice_graphrag_provider,
+                )
+
+                backend = load_pinned_voice_graphrag_provider(
+                    manifest_url,
+                    timeout_seconds=timeout_seconds,
+                    minimum_confidence=minimum_confidence,
+                )
+                provider = GraphRAGVoiceTemplateProvider(
+                    backend,
+                    minimum_confidence=minimum_confidence,
+                )
+                error_code = None
+                failure_at = 0.0
+            except Exception as exc:
+                provider = None
+                error_code = exc.__class__.__name__
+                failure_at = now
+        _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER = provider
+        _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_KEY = provider_key
+        _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR = error_code
+        _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_FAILURE_AT = failure_at
+        return provider
+
+
+def _package_response_dag_runtime() -> object | None:
+    """Build the package-owned local-only response-DAG runtime if selected."""
+
+    global _PACKAGE_RESPONSE_DAG_RUNTIME
+    global _PACKAGE_RESPONSE_DAG_RUNTIME_ERROR
+    global _PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT
+    global _PACKAGE_RESPONSE_DAG_RUNTIME_KEY
+
+    from ipfs_accelerate_py.voice_response_dag_runtime import (  # noqa: WPS433
+        RESPONSE_DAG_AUDIO_ROOT_ENV,
+        RESPONSE_DAG_QUEUE_ROOT_ENV,
+        RESPONSE_DAG_VALIDATOR_DEVICE_ENV,
+        RESPONSE_DAG_VALIDATOR_LANGUAGE_ENV,
+        RESPONSE_DAG_VALIDATOR_MAX_WER_BP_ENV,
+        RESPONSE_DAG_VALIDATOR_MODEL_ENV,
+        RESPONSE_DAG_VALIDATOR_PROVIDER_ENV,
+        load_local_voice_response_dag_runtime_from_environment,
+    )
+
+    queue_root = str(os.getenv(RESPONSE_DAG_QUEUE_ROOT_ENV) or "").strip()
+    if not queue_root:
+        return None
+    runtime_key: tuple[object, ...] = tuple(
+        str(os.getenv(name) or "").strip()
+        for name in (
+            RESPONSE_DAG_QUEUE_ROOT_ENV,
+            RESPONSE_DAG_AUDIO_ROOT_ENV,
+            RESPONSE_DAG_VALIDATOR_PROVIDER_ENV,
+            RESPONSE_DAG_VALIDATOR_MODEL_ENV,
+            RESPONSE_DAG_VALIDATOR_LANGUAGE_ENV,
+            RESPONSE_DAG_VALIDATOR_DEVICE_ENV,
+            RESPONSE_DAG_VALIDATOR_MAX_WER_BP_ENV,
+        )
+    )
+    now = time.monotonic()
+    with _PACKAGE_RESPONSE_DAG_RUNTIME_LOCK:
+        if runtime_key == _PACKAGE_RESPONSE_DAG_RUNTIME_KEY:
+            if _PACKAGE_RESPONSE_DAG_RUNTIME is not None:
+                return _PACKAGE_RESPONSE_DAG_RUNTIME
+            if (
+                _PACKAGE_RESPONSE_DAG_RUNTIME_ERROR is not None
+                and now - _PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT < 60.0
+            ):
+                return None
+        try:
+            runtime = load_local_voice_response_dag_runtime_from_environment()
+            error_code = None
+            failure_at = 0.0
+        except Exception as exc:
+            runtime = None
+            error_code = exc.__class__.__name__
+            failure_at = now
+        _PACKAGE_RESPONSE_DAG_RUNTIME = runtime
+        _PACKAGE_RESPONSE_DAG_RUNTIME_KEY = runtime_key
+        _PACKAGE_RESPONSE_DAG_RUNTIME_ERROR = error_code
+        _PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT = failure_at
+        return runtime
+
+
 def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> dict[str, object]:
     """Serialize a router receipt for the wallet proxy without losing metadata."""
 
@@ -723,9 +948,28 @@ class WalletVoiceRouterAdapter:
             return None
         if not isinstance(payload, Mapping):
             raise TypeError("wallet voice payload must be a mapping")
+        selected_response_dag_sink = response_dag_sink
+        selected_response_dag_postprocessor = response_dag_postprocessor
+        environment_dag_runtime = None
+        if (
+            selected_response_dag_sink is None
+            and selected_response_dag_postprocessor is None
+        ):
+            environment_dag_runtime = _package_response_dag_runtime()
+            if environment_dag_runtime is not None:
+                selected_response_dag_sink = getattr(
+                    environment_dag_runtime,
+                    "sink",
+                    None,
+                )
+                selected_response_dag_postprocessor = getattr(
+                    environment_dag_runtime,
+                    "postprocessor",
+                    None,
+                )
         response_dag_callback = _response_dag_stage_configuration(
-            sink=response_dag_sink,
-            postprocessor=response_dag_postprocessor,
+            sink=selected_response_dag_sink,
+            postprocessor=selected_response_dag_postprocessor,
         )
         selected_audio_resolver = (
             audio_resolver
@@ -742,7 +986,14 @@ class WalletVoiceRouterAdapter:
             synthesis_identity=synthesis_identity,
         )
         response_text = request.fallback_text
-        provider = template_provider or _WalletResponsePlanProvider(response_text)
+        selected_template_provider = (
+            template_provider
+            if template_provider is not None
+            else _package_graphrag_template_provider()
+        )
+        provider = selected_template_provider
+        if provider is None and fallback_template_provider is None:
+            provider = _WalletResponsePlanProvider(response_text)
         stt = stt_provider or _WalletSTTProvider()
         package_tts = (
             _package_indextts_tts_provider() if tts_provider is None else None
@@ -763,25 +1014,41 @@ class WalletVoiceRouterAdapter:
         )
         queued = None
         queue_reason = "not_live_tts_cache_miss"
+        queue_error_code = None
         if response_dag_callback is not None and result.is_live_tts_cache_miss:
-            from ipfs_accelerate_py.voice_response_dag_sink import (  # noqa: WPS433
-                LocalValidatedVoiceCacheMissArtifacts,
-            )
+            try:
+                from ipfs_accelerate_py.voice_response_dag_sink import (  # noqa: WPS433
+                    LocalValidatedVoiceCacheMissArtifacts,
+                )
 
-            validated = response_dag_callback(result)
-            if validated is not None:
-                artifacts = LocalValidatedVoiceCacheMissArtifacts.from_value(
-                    validated
-                )
-                queued = result.enqueue_validated_cache_miss_candidate(
-                    sink=response_dag_sink,
-                    validation_receipt=artifacts.validation_receipt,
-                    audio_descriptor=artifacts.audio_descriptor,
-                    response_id=artifacts.response_id,
-                    surface=str(request.context.get("surface") or ""),
-                )
-            else:
-                queue_reason = "independent_validation_not_passed"
+                validated = response_dag_callback(result)
+                if validated is not None:
+                    artifacts = LocalValidatedVoiceCacheMissArtifacts.from_value(
+                        validated
+                    )
+                    queued = result.enqueue_validated_cache_miss_candidate(
+                        sink=selected_response_dag_sink,
+                        validation_receipt=artifacts.validation_receipt,
+                        audio_descriptor=artifacts.audio_descriptor,
+                        response_id=artifacts.response_id,
+                        surface=str(request.context.get("surface") or ""),
+                    )
+                else:
+                    queue_reason = "independent_validation_not_passed"
+                    queue_error_code = str(
+                        getattr(
+                            selected_response_dag_postprocessor,
+                            "last_error_code",
+                            "",
+                        )
+                        or ""
+                    ) or None
+            except Exception as exc:
+                # Local response-DAG staging is an observability/durability
+                # side effect. Never discard an otherwise valid user-facing
+                # voice response because the local queue is unavailable.
+                queue_reason = "local_staging_failed"
+                queue_error_code = exc.__class__.__name__
         serialized = serialize_voice_turn_result(result)
         if (
             audio_resolver is None
@@ -798,6 +1065,42 @@ class WalletVoiceRouterAdapter:
                 ),
                 "remote_writes": False,
             }
+        if template_provider is None and str(
+            os.getenv(RUNTIME_AUDIO_MANIFEST_ENV) or ""
+        ).strip():
+            graph_backend = getattr(
+                selected_template_provider,
+                "backend",
+                selected_template_provider,
+            )
+            graph_index = getattr(graph_backend, "index", None)
+            serialized["graphrag_runtime"] = {
+                "configured": True,
+                "graph_cid": str(
+                    getattr(graph_index, "graph_cid", "") or ""
+                )
+                or None,
+                "index_cid": str(
+                    getattr(graph_index, "index_cid", "") or ""
+                )
+                or None,
+                "loader_error_code": _PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR,
+                "remote_writes": False,
+                "status": (
+                    "available"
+                    if selected_template_provider is not None
+                    else "unavailable"
+                ),
+            }
+        dag_environment_configured = bool(
+            str(
+                os.getenv(
+                    "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_QUEUE_ROOT",
+                    "",
+                )
+                or ""
+            ).strip()
+        )
         if response_dag_callback is not None:
             serialized["response_dag_queue"] = (
                 queued.to_dict()
@@ -807,9 +1110,30 @@ class WalletVoiceRouterAdapter:
                     "publication_status": "not_applicable",
                     "reason": queue_reason,
                     "remote_writes": False,
-                    "status": "not_queued",
+                    "status": (
+                        "error"
+                        if queue_reason == "local_staging_failed"
+                        else "not_queued"
+                    ),
                 }
             )
+            if queued is None and queue_error_code is not None:
+                serialized["response_dag_queue"]["error_code"] = (  # type: ignore[index]
+                    queue_error_code
+                )
+        elif (
+            response_dag_sink is None
+            and response_dag_postprocessor is None
+            and dag_environment_configured
+        ):
+            serialized["response_dag_queue"] = {
+                "candidate_id": None,
+                "error_code": _PACKAGE_RESPONSE_DAG_RUNTIME_ERROR,
+                "publication_status": "not_applicable",
+                "reason": "local_runtime_unavailable",
+                "remote_writes": False,
+                "status": "unavailable",
+            }
         return serialized
 
 

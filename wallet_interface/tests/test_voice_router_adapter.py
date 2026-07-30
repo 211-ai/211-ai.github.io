@@ -29,6 +29,7 @@ from wallet_interface.helpers._voice_router_adapter import (
     WalletVoiceRouterAdapter,
     _package_indextts_tts_provider,
     _PackageFirstTTSProvider,
+    _WalletLazyResponsePlanProvider,
     build_voice_turn_request,
     process_wallet_voice_turn,
 )
@@ -71,6 +72,11 @@ class _Templates:
             template="A safe response for the caller.",
             metadata={"transcript": transcript},
         )
+
+
+class _NoTemplates:
+    def retrieve(self, transcript: str, **_: object) -> None:
+        return None
 
 
 class _SlottedTemplates:
@@ -309,6 +315,70 @@ def test_enabled_adapter_returns_canonical_receipt_and_audio_wire_field() -> Non
     assert tts.texts == ["A safe response for the caller."]
 
 
+@pytest.mark.parametrize("surface", ("website", "telephone"))
+def test_release_graphrag_hit_precedes_lazy_llm_on_both_surfaces(
+    monkeypatch,
+    surface: str,
+) -> None:
+    from ipfs_accelerate_py import voice_runtime_manifest
+    from wallet_interface.helpers import _voice_router_adapter as adapter
+
+    manifest_url = (
+        "https://huggingface.co/datasets/Publicus/211-abby-tts/"
+        f"resolve/{'a' * 40}/data/abby_voice_v2/release-1/"
+        "metadata/runtime-precomputed-audio-manifest.json"
+    )
+    graph_loads: list[tuple[str, float, float]] = []
+    llm_calls: list[object] = []
+    monkeypatch.setenv(adapter.RUNTIME_AUDIO_MANIFEST_ENV, manifest_url)
+    monkeypatch.setattr(
+        adapter,
+        "_package_precomputed_audio_resolver",
+        lambda: _ExactHit(),
+    )
+    monkeypatch.setattr(
+        voice_runtime_manifest,
+        "load_pinned_voice_graphrag_provider",
+        lambda url, *, timeout_seconds, minimum_confidence: (
+            graph_loads.append(
+                (url, timeout_seconds, minimum_confidence)
+            )
+            or _SlottedTemplates()
+        ),
+    )
+    adapter._PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER = None
+    adapter._PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_KEY = ()
+    adapter._PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_ERROR = None
+    adapter._PACKAGE_GRAPHRAG_TEMPLATE_PROVIDER_FAILURE_AT = 0.0
+    fallback = _WalletLazyResponsePlanProvider(
+        lambda: (
+            llm_calls.append(object())
+            or ("LLM should not run.", {"llm_request_ms": 1})
+        )
+    )
+    tts = _TTS()
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "surface": surface,
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        fallback_template_provider=fallback,
+        tts_provider=tts,
+    )
+
+    assert payload is not None
+    assert payload["response_text"] == SLOTTED_RESPONSE
+    assert payload["provenance"]["tts_provider"] == "precomputed"  # type: ignore[index]
+    assert payload["graphrag_runtime"]["status"] == "available"  # type: ignore[index]
+    assert fallback.generated is False
+    assert llm_calls == []
+    assert tts.texts == []
+    assert graph_loads == [(manifest_url, 15.0, 0.35)]
+
+
 def test_publicus_gradio_space_activates_native_package_provider(monkeypatch) -> None:
     from wallet_interface.helpers import _voice_router_adapter as adapter
 
@@ -484,6 +554,70 @@ def test_validated_live_tts_miss_stages_private_local_response_dag_candidate(
     assert "private-call-id" not in staged
     assert "private-session-id" not in staged
     assert json.loads(staged)["remote_writes"] is False
+
+
+@pytest.mark.parametrize("surface", ("website", "telephone"))
+def test_environment_runtime_queues_fallback_miss_on_both_surfaces(
+    monkeypatch,
+    tmp_path,
+    surface: str,
+) -> None:
+    from ipfs_accelerate_py.voice_response_dag_runtime import (
+        RESPONSE_DAG_QUEUE_ROOT_ENV,
+    )
+
+    from ipfs_accelerate_py import voice_router
+    from wallet_interface.helpers import _voice_router_adapter as adapter
+
+    class _Whisper:
+        def transcribe(self, audio: bytes, **_: object) -> str:
+            assert audio == VALID_WAV
+            return SLOTTED_RESPONSE
+
+    queue_root = tmp_path / f"{surface}-environment-queue"
+    monkeypatch.setenv(RESPONSE_DAG_QUEUE_ROOT_ENV, str(queue_root))
+    monkeypatch.setattr(
+        voice_router,
+        "get_voice_provider",
+        lambda name: _Whisper(),
+    )
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME = None
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_KEY = ()
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_ERROR = None
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT = 0.0
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "surface": surface,
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        template_provider=_NoTemplates(),
+        fallback_template_provider=_SlottedTemplates(),
+        tts_provider=_TTS(),
+        audio_resolver=_ExactMiss(),
+    )
+
+    assert payload is not None
+    assert payload["audio_base64"] == base64.b64encode(VALID_WAV).decode(
+        "ascii"
+    )
+    assert "fallback_template_provider_used" in payload["fallback_reasons"]
+    queue_payload = payload["response_dag_queue"]
+    assert queue_payload["candidate_id"]
+    assert queue_payload["queue"]["remote_writes"] is False
+    queue = LocalResponseDAGQueue(queue_root)
+    assert len(queue) == 1
+    candidate = queue.load(str(queue_payload["candidate_id"]))
+    assert candidate.metadata["surface"] == surface
+    assert len(candidate.template_rows) == 1
+    assert len(candidate.vocabulary_rows) == 1
+    assert (
+        queue_root
+        / "validated-audio"
+        / f"{sha256(VALID_WAV).hexdigest()}.wav"
+    ).read_bytes() == VALID_WAV
 
 
 def test_precomputed_cache_hit_never_stages_response_dag_candidate(
@@ -662,6 +796,80 @@ def test_failed_independent_validation_returns_audio_without_queueing(
     }
     assert len(postprocessor.calls) == 1
     assert len(queue) == 0
+
+
+def test_invalid_environment_queue_is_fail_open_and_observable(
+    monkeypatch,
+) -> None:
+    from ipfs_accelerate_py.voice_response_dag_runtime import (
+        RESPONSE_DAG_QUEUE_ROOT_ENV,
+    )
+
+    from wallet_interface.helpers import _voice_router_adapter as adapter
+
+    monkeypatch.setenv(RESPONSE_DAG_QUEUE_ROOT_ENV, "relative/queue")
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME = None
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_KEY = ()
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_ERROR = None
+    adapter._PACKAGE_RESPONSE_DAG_RUNTIME_FAILURE_AT = 0.0
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        template_provider=_SlottedTemplates(),
+        tts_provider=_TTS(),
+        audio_resolver=_ExactMiss(),
+    )
+
+    assert payload is not None
+    assert payload["audio_base64"] == base64.b64encode(VALID_WAV).decode(
+        "ascii"
+    )
+    assert payload["response_dag_queue"] == {
+        "candidate_id": None,
+        "error_code": "LocalResponseDAGQueueError",
+        "publication_status": "not_applicable",
+        "reason": "local_runtime_unavailable",
+        "remote_writes": False,
+        "status": "unavailable",
+    }
+
+
+def test_local_staging_exception_is_fail_open_and_observable(tmp_path) -> None:
+    class _FailingPostprocessor:
+        remote_writes = False
+
+        def validate_and_store_local(self, _result: object) -> None:
+            raise OSError("local volume unavailable")
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        template_provider=_SlottedTemplates(),
+        tts_provider=_TTS(),
+        audio_resolver=_ExactMiss(),
+        response_dag_sink=LocalResponseDAGQueue(tmp_path / "queue"),
+        response_dag_postprocessor=_FailingPostprocessor(),
+    )
+
+    assert payload is not None
+    assert payload["audio_base64"] == base64.b64encode(VALID_WAV).decode(
+        "ascii"
+    )
+    assert payload["response_dag_queue"] == {
+        "candidate_id": None,
+        "error_code": "OSError",
+        "publication_status": "not_applicable",
+        "reason": "local_staging_failed",
+        "remote_writes": False,
+        "status": "error",
+    }
 
 
 def test_remote_write_capable_postprocessor_is_rejected_before_tts(

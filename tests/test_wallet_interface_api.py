@@ -7,6 +7,7 @@ from collections.abc import Mapping, Sequence
 from hashlib import sha256
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from ipfs_datasets_py.wallet.crypto import random_key
@@ -2302,14 +2303,14 @@ def test_indextts_voice_reply_uses_unified_router_when_enabled(
 ) -> None:
     expected_text = "The pinned response is ready."
     routed: list[dict[str, object]] = []
+    fallback_providers: list[object] = []
 
     monkeypatch.setenv("WALLET_VOICE_UNIFIED_ROUTER_ENABLED", "true")
     monkeypatch.setattr(
         _ai_router_module,
         "_generate_indextts_voice_reply_text",
-        lambda **_kwargs: (
-            expected_text,
-            {"llm_model": "fixture", "llm_request_ms": 1},
+        lambda **_kwargs: (_ for _ in ()).throw(
+            AssertionError("GraphRAG hit must not generate an LLM reply")
         ),
     )
 
@@ -2317,9 +2318,11 @@ def test_indextts_voice_reply_uses_unified_router_when_enabled(
         payload: Mapping[str, object],
         *,
         enabled: bool,
+        fallback_template_provider: object,
     ) -> dict[str, object]:
         assert enabled is True
         routed.append(dict(payload))
+        fallback_providers.append(fallback_template_provider)
         return {
             "audioBase64": "UklGRnN0dWJXQVZF",
             "audio_base64": "UklGRnN0dWJXQVZF",
@@ -2368,11 +2371,15 @@ def test_indextts_voice_reply_uses_unified_router_when_enabled(
     assert body["provenance"]["tts_provider"] == "precomputed"
     assert body["mimeType"] == "audio/mpeg"
     assert body["text"] == expected_text
-    assert body["latency"]["llm_model"] == "fixture"
+    assert "llm_model" not in body["latency"]
+    assert len(fallback_providers) == 1
+    assert fallback_providers[0].generated is False
     assert routed == [
         {
             "audio_bytes": None,
+            "context": {},
             "fallbackText": expected_text,
+            "grounding": {},
             "mode": "voice-reply",
             "surface": "telephone",
             "text": "",
@@ -2389,6 +2396,126 @@ def test_indextts_voice_reply_uses_unified_router_when_enabled(
             "voice_description": None,
         }
     ]
+
+
+def test_indextts_unified_router_generates_llm_only_after_website_miss(
+    monkeypatch,
+) -> None:
+    generated_text = "What city or ZIP code should I search?"
+    generator_calls: list[dict[str, object]] = []
+    routed: list[dict[str, object]] = []
+
+    monkeypatch.setenv("WALLET_VOICE_UNIFIED_ROUTER_ENABLED", "true")
+
+    def fake_generate(**kwargs: object) -> tuple[str, dict[str, object]]:
+        generator_calls.append(dict(kwargs))
+        return generated_text, {
+            "llm_model": "fixture",
+            "llm_request_ms": 2,
+        }
+
+    monkeypatch.setattr(
+        _ai_router_module,
+        "_generate_indextts_voice_reply_text",
+        fake_generate,
+    )
+
+    def fake_unified(
+        payload: Mapping[str, object],
+        *,
+        enabled: bool,
+        fallback_template_provider: object,
+    ) -> dict[str, object]:
+        assert enabled is True
+        assert generator_calls == []
+        routed.append(dict(payload))
+        plan = fallback_template_provider.retrieve("I need food help")
+        assert plan.template == generated_text
+        return {
+            "audioBase64": "UklGRnN0dWJXQVZF",
+            "audio_base64": "UklGRnN0dWJXQVZF",
+            "audio_mime_type": "audio/wav",
+            "latency": {"tts_request_ms": 1},
+            "provenance": {"template_provider": "wallet-llm-fallback"},
+            "response_text": generated_text,
+            "spoken_text": generated_text,
+            "status": "degraded",
+            "traces": [],
+            "voice_router": True,
+        }
+
+    monkeypatch.setattr(
+        _ai_router_module,
+        "process_wallet_voice_turn",
+        fake_unified,
+    )
+
+    response = _client().post(
+        "/voice/indextts/infer",
+        data={
+            "context_json": json.dumps({"intent": "food_assistance"}),
+            "fallbackText": "I can help search for food resources.",
+            "grounding_json": json.dumps(
+                {
+                    "current_evidence": [
+                        {
+                            "cid": "bafy-current-food",
+                            "facts": {"city": "Portland"},
+                            "source_id": "food-current",
+                        }
+                    ]
+                }
+            ),
+            "mode": "voice-reply",
+            "surface": "website",
+            "userPrompt": "I need food help",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == generated_text
+    assert body["latency"]["llm_model"] == "fixture"
+    assert body["latency"]["llm_request_ms"] == 2
+    assert len(generator_calls) == 1
+    assert routed[0]["surface"] == "website"
+    assert routed[0]["context"] == {"intent": "food_assistance"}
+    assert routed[0]["grounding"] == {
+        "current_evidence": [
+            {
+                "cid": "bafy-current-food",
+                "facts": {"city": "Portland"},
+                "source_id": "food-current",
+            }
+        ]
+    }
+
+
+@pytest.mark.parametrize(
+    ("field_name", "value"),
+    (
+        ("context_json", "[]"),
+        ("grounding_json", "{not-json"),
+    ),
+)
+def test_indextts_unified_router_rejects_invalid_runtime_json(
+    monkeypatch,
+    field_name: str,
+    value: str,
+) -> None:
+    monkeypatch.setenv("WALLET_VOICE_UNIFIED_ROUTER_ENABLED", "true")
+
+    response = _client().post(
+        "/voice/indextts/infer",
+        data={
+            field_name: value,
+            "mode": "voice-reply",
+            "userPrompt": "I need help",
+        },
+    )
+
+    assert response.status_code == 400, response.text
+    assert field_name in response.json()["detail"]
 
 
 def test_hf_whisper_stt_extracts_text_from_nested_payload(monkeypatch) -> None:

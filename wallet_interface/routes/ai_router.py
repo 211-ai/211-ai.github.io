@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping, Sequence
 from hashlib import sha256
@@ -38,6 +39,7 @@ from ..helpers import (
     _wallet_router_subject,
 )
 from ..helpers._voice_router_adapter import (
+    _WalletLazyResponsePlanProvider,
     is_unified_voice_router_enabled,
     process_wallet_voice_turn,
 )
@@ -47,6 +49,25 @@ from ..schemas import (
     WalletLlmRouterRequest,
     WalletMultimodalRouterRequest,
 )
+
+
+def _optional_json_mapping(value: str | None, *, field_name: str) -> dict[str, object]:
+    raw = str(value or "").strip()
+    if not raw:
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{field_name} must be valid JSON",
+        ) from exc
+    if not isinstance(parsed, Mapping):
+        raise HTTPException(
+            status_code=400,
+            detail=f"{field_name} must be a JSON object",
+        )
+    return dict(parsed)
 
 
 def create_router(service: WalletInterfaceService):
@@ -231,22 +252,36 @@ def create_router(service: WalletInterfaceService):
         fallback_text: str | None = Form(default=None),
         voice_description: str | None = Form(default=None),
         surface: str = Form(default="website"),
+        context_json: str | None = Form(default=None),
+        grounding_json: str | None = Form(default=None),
     ) -> dict[str, Any]:
         try:
             reference_audio = await audio.read() if audio is not None else None
             reference_name = getattr(audio, "filename", None) if audio is not None else None
             reference_type = getattr(audio, "content_type", None) if audio is not None else None
-            reply_text, generation_latency = _run_indextts_with_endpoint_retry(
-                "infer-generate",
-                lambda: _generate_indextts_voice_reply_text(
-                    mode=mode,
-                    text=text,
-                    system_prompt=system_prompt or systemPrompt,
-                    user_prompt=user_prompt or userPrompt,
-                    fallback_text=fallback_text or fallbackText,
-                ),
-            )
-            if is_unified_voice_router_enabled():
+            selected_mode = str(mode or "voice-reply").strip().casefold()
+            unified_enabled = is_unified_voice_router_enabled()
+            if unified_enabled and selected_mode == "voice-reply":
+                context_payload = _optional_json_mapping(
+                    context_json,
+                    field_name="context_json",
+                )
+                grounding_payload = _optional_json_mapping(
+                    grounding_json,
+                    field_name="grounding_json",
+                )
+                lazy_fallback = _WalletLazyResponsePlanProvider(
+                    lambda: _run_indextts_with_endpoint_retry(
+                        "infer-generate",
+                        lambda: _generate_indextts_voice_reply_text(
+                            mode=selected_mode,
+                            text=text,
+                            system_prompt=system_prompt or systemPrompt,
+                            user_prompt=user_prompt or userPrompt,
+                            fallback_text=fallback_text or fallbackText,
+                        ),
+                    )
+                )
                 tts_options: dict[str, object] = {}
                 if reference_audio:
                     tts_options = {
@@ -262,8 +297,85 @@ def create_router(service: WalletInterfaceService):
                         # This endpoint's upload is a TTS voice reference, not
                         # caller speech. Never send it through the ASR stage.
                         "audio_bytes": None,
+                        "context": context_payload,
+                        "fallbackText": (
+                            fallback_text
+                            or fallbackText
+                            or "I’m sorry, I couldn’t complete that voice request. Please try again."
+                        ),
+                        "grounding": grounding_payload,
+                        "mode": selected_mode,
+                        "surface": surface,
+                        "text": text,
+                        "transcript": (
+                            user_prompt
+                            or userPrompt
+                            or text
+                            or fallback_text
+                            or fallbackText
+                        ),
+                        "tts_options": tts_options,
+                        "userPrompt": user_prompt or userPrompt,
+                        "voice_description": voice_description,
+                    },
+                    enabled=True,
+                    fallback_template_provider=lazy_fallback,
+                )
+                if unified_payload is not None:
+                    unified_payload["text"] = str(
+                        unified_payload.get("response_text")
+                        or unified_payload.get("spoken_text")
+                        or lazy_fallback.response_text
+                        or fallback_text
+                        or fallbackText
+                        or ""
+                    )
+                    audio_mime_type = str(
+                        unified_payload.get("audio_mime_type") or ""
+                    ).strip()
+                    if audio_mime_type:
+                        unified_payload["mimeType"] = audio_mime_type
+                    latency = dict(unified_payload.get("latency") or {})
+                    latency.update(lazy_fallback.generation_latency)
+                    unified_payload["latency"] = latency
+                    return unified_payload
+
+            reply_text, generation_latency = _run_indextts_with_endpoint_retry(
+                "infer-generate",
+                lambda: _generate_indextts_voice_reply_text(
+                    mode=selected_mode,
+                    text=text,
+                    system_prompt=system_prompt or systemPrompt,
+                    user_prompt=user_prompt or userPrompt,
+                    fallback_text=fallback_text or fallbackText,
+                ),
+            )
+            if unified_enabled:
+                tts_options: dict[str, object] = {}
+                if reference_audio:
+                    tts_options = {
+                        "reference_audio": reference_audio,
+                        "reference_audio_mime_type": reference_type,
+                        "reference_audio_name": reference_name,
+                        "reference_audio_sha256": sha256(
+                            reference_audio
+                        ).hexdigest(),
+                    }
+                unified_payload = process_wallet_voice_turn(
+                    {
+                        # This endpoint's upload is a TTS voice reference, not
+                        # caller speech. Never send it through the ASR stage.
+                        "audio_bytes": None,
+                        "context": _optional_json_mapping(
+                            context_json,
+                            field_name="context_json",
+                        ),
                         "fallbackText": reply_text,
-                        "mode": mode or "voice-reply",
+                        "grounding": _optional_json_mapping(
+                            grounding_json,
+                            field_name="grounding_json",
+                        ),
+                        "mode": selected_mode,
                         "surface": surface,
                         "text": text,
                         "transcript": (
@@ -310,6 +422,8 @@ def create_router(service: WalletInterfaceService):
             latency.update(generation_latency)
             audio_payload["latency"] = latency
             return audio_payload
+        except HTTPException:
+            raise
         except Exception as exc:
             raise HTTPException(status_code=503, detail=_indextts_degraded_error_payload(exc, "infer")) from exc
 
