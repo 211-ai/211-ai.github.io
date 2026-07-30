@@ -1,0 +1,2461 @@
+# Multi-Chain Wallet Processor Task Board
+
+This is the executable projection of
+[`WALLET_PROCESSORS_OBJECTIVES.md`](WALLET_PROCESSORS_OBJECTIVES.md). It is
+maintained by `ipfs_accelerate_py.agent_supervisor`; implementation agents must
+not hand-edit status fields.
+
+Program invariants:
+
+- Integration branch: `codex/wallet-processors-migration`.
+- Reusable behavior belongs in `ipfs_datasets_py`.
+- The final 211-AI World ID module is a thin compatibility/application wrapper.
+- Runtime wallet processors never store keys, sign, approve, or broadcast.
+- Network integration is opt-in; default tests are offline.
+- Shared contracts land before chain lanes edit their own disjoint packages.
+- Chain lanes do not opportunistically change shared schemas.
+- Amounts use exact base units, not binary floats.
+- Checkpoints are hash-anchored, compare-and-set, and reorg aware.
+- Task completion requires the listed validation and current-tree evidence.
+
+The objective daemon appends canonical `WALPROC-*` task blocks below.
+
+## WALPROC-001 Implement wallet processor migration objective: Deliver reusable, safe multi-chain wallet processors
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Tracking aggregate only; its child goals and their evidence-bearing tasks are the execution authority.
+- Priority: P0
+- Track: wallet-processors-program
+- Depends on:
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-001-objective-gap-d779f341d565.md
+- Bundle: wallet-processors/control
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-control.todo.md
+- Bundle strategy: explicit
+- Graph parents: none
+- Graph depth: 0
+- Objective heap index: 0
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets, wallet_interface/world_id.py, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Changed paths:
+- AST symbols: WalletProcessor LedgerProvider WalletLedgerProcessor WorldcoinWalletProcessor
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G000
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/e0c263b18f1424919a618a7a732c2005d2bf7de2ed3ad5bea5f49b946e42834c
+- Canonical task CID: baguqeera4dbghmmpcqsjdgtbrj5hglbaaxjl67pc5u5nlpvf6snzi3scqnga
+- Semantic identity: objective-evidence-obligation/v1/a4045512977689cbef2cd828cd1c0948c15edc3442b3873a985be22a5e0a975f
+- Acceptance subset: Every child objective has current-tree evidence or a recorded external blocker, all five chain families pass shared conformance, Worldcoin reusable code has one owner in ipfs_datasets_py, the 211-AI wrapper passes its static thinness gate, Xaman runtime processing is separated from formal assurance, release, rollback, privacy, security, and bounded-operation documentation is current.
+- Preconditions: objective goal WALPROC-G000 is schedulable
+- Effects: satisfy evidence requirement: WALPROC-G010, satisfy evidence requirement: WALPROC-G020, satisfy evidence requirement: WALPROC-G030, satisfy evidence requirement: WALPROC-G040, satisfy evidence requirement: WALPROC-G050, satisfy evidence requirement: WALPROC-G060, satisfy evidence requirement: WALPROC-G070, satisfy evidence requirement: WALPROC-G080, satisfy evidence requirement: WALPROC-G090, satisfy evidence requirement: WALPROC-G100, satisfy evidence requirement: WALPROC-G110, satisfy evidence requirement: WALPROC-G120, satisfy evidence requirement: WALPROC-G130, satisfy evidence requirement: WALPROC-G200, satisfy evidence requirement: WALPROC-G210, satisfy evidence requirement: WALPROC-G220, satisfy evidence requirement: WALPROC-G300, satisfy evidence requirement: WALPROC-G400, satisfy evidence requirement: WALPROC-G500, satisfy evidence requirement: WALPROC-G600, satisfy evidence requirement: WALPROC-G610, satisfy evidence requirement: WALPROC-G620, satisfy evidence requirement: WALPROC-G630, satisfy evidence requirement: WALPROC-G640, satisfy evidence requirement: WALPROC-G700, satisfy evidence requirement: WALPROC-G710, satisfy evidence requirement: WALPROC-G800
+- Evidence subset: WALPROC-G010, WALPROC-G020, WALPROC-G030, WALPROC-G040, WALPROC-G050, WALPROC-G060, WALPROC-G070, WALPROC-G080, WALPROC-G090, WALPROC-G100, WALPROC-G110, WALPROC-G120, WALPROC-G130, WALPROC-G200, WALPROC-G210, WALPROC-G220, WALPROC-G300, WALPROC-G400, WALPROC-G500, WALPROC-G600, WALPROC-G610, WALPROC-G620, WALPROC-G630, WALPROC-G640, WALPROC-G700, WALPROC-G710, WALPROC-G800
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G000
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a4045512977689cbef2cd828cd1c0948c15edc3442b3873a985be22a5e0a975f
+- Missing evidence: WALPROC-G010, WALPROC-G020, WALPROC-G030, WALPROC-G040, WALPROC-G050, WALPROC-G060, WALPROC-G070, WALPROC-G080, WALPROC-G090, WALPROC-G100, WALPROC-G110, WALPROC-G120, WALPROC-G130, WALPROC-G200, WALPROC-G210, WALPROC-G220, WALPROC-G300, WALPROC-G400, WALPROC-G500, WALPROC-G600, WALPROC-G610, WALPROC-G620, WALPROC-G630, WALPROC-G640, WALPROC-G700, WALPROC-G710, WALPROC-G800
+- Embedding query: multi chain wallet processor worldcoin xaman xrpl ethereum bitcoin solana public ledger ingestion dataset export thin wrapper
+- AST query: WalletProcessor LedgerProvider WalletLedgerProcessor WorldcoinWalletProcessor
+- Surplus group: objective/WALPROC-G000
+- Merge key: 09cabaa0b0b7949f
+- Merge family: objective/WALPROC-G000
+- Merge role: aggregate
+- Work item count: 27
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 045b22ee550843ce
+- Acceptance: Objective scan filed this gap for WALPROC-G000. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-001-objective-gap-d779f341d565.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (WALPROC-G010, WALPROC-G020, WALPROC-G030, WALPROC-G040, WALPROC-G050, WALPROC-G060, WALPROC-G070, WALPROC-G080, WALPROC-G090, WALPROC-G100, WALPROC-G110, WALPROC-G120, WALPROC-G130, WALPROC-G200, WALPROC-G210, WALPROC-G220, WALPROC-G300, WALPROC-G400, WALPROC-G500, WALPROC-G600, WALPROC-G610, WALPROC-G620, WALPROC-G630, WALPROC-G640, WALPROC-G700, WALPROC-G710, WALPROC-G800), and keep the supervisor-fed backlog aligned with the objective heap.  Complete inventory and shared contracts first; then run chain packages in parallel; serialize integration and cutover.
+
+## WALPROC-002 Implement wallet processor migration objective: Freeze the source inventory and ownership map
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: bootstrap
+- Depends on:
+- Outputs: data/wallet_processor_migration/audit/source-inventory.json, data/wallet_processor_migration/audit/import-map.json, data/wallet_processor_migration/audit/ownership-map.md
+- Validation: python scripts/audit_wallet_processor_migration.py --check
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-002-objective-gap-1396d6ce893f.md
+- Bundle: wallet-processors/bootstrap
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-bootstrap.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 1
+- Parallel lane: wallet-processors/bootstrap
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: data/wallet_processor_migration/audit/source-inventory.json, data/wallet_processor_migration/audit/import-map.json, data/wallet_processor_migration/audit/ownership-map.md
+- Changed paths:
+- AST symbols: WorldIdBinding DataWalletService WorldIdConfig normalize_world_id_idkit_response _world_id_production_readiness_checks
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G010
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/84dcb712534d4415594387816d2ae604c1a835b6af9131a2832801237730073d
+- Canonical task CID: baguqeeraqtoloestjvcbkwkdq6aw2kxgata2qnnwv6itdiudfaasg5zqa46q
+- Semantic identity: objective-evidence-obligation/v1/5262e00e22aef6c9d96054e2798f7ef1383e85de7d1d6e91327ec636f714c437
+- Acceptance subset: The inventory includes every symbol in the 955-line wallet_interface/world_id.py, World ID code in app_service.py and ops.py, WorldIdBinding and all service/snapshot/proof/nullifier paths in ipfs_datasets_py.wallet, all direct Python and TypeScript callers, current Xaman security/formal assets, both incompatible generic processor protocols and registries, optional dependency declarations, network endpoints, config keys, secret references, and a move/retain/deprecate decision with one owner per symbol.
+- Preconditions: objective goal WALPROC-G010 is schedulable
+- Effects: satisfy evidence requirement: data/wallet_processor_migration/audit/source-inventory.json, satisfy evidence requirement: data/wallet_processor_migration/audit/import-map.json, satisfy evidence requirement: data/wallet_processor_migration/audit/ownership-map.md
+- Evidence subset: data/wallet_processor_migration/audit/source-inventory.json, data/wallet_processor_migration/audit/import-map.json, data/wallet_processor_migration/audit/ownership-map.md
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G010
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/5262e00e22aef6c9d96054e2798f7ef1383e85de7d1d6e91327ec636f714c437
+- Missing evidence: data/wallet_processor_migration/audit/source-inventory.json, data/wallet_processor_migration/audit/import-map.json, data/wallet_processor_migration/audit/ownership-map.md
+- Embedding query: source inventory world id binding app service xaman xrpl processor protocols dependencies imports ownership
+- AST query: WorldIdBinding DataWalletService WorldIdConfig normalize_world_id_idkit_response _world_id_production_readiness_checks
+- Surplus group: objective/WALPROC-G010
+- Merge key: d10ee5dbf6840650
+- Merge family: objective/WALPROC-G010
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 6f3d68aa4c394cc2
+- Acceptance: Objective scan filed this gap for WALPROC-G010. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-002-objective-gap-1396d6ce893f.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/wallet_processor_migration/audit/source-inventory.json, data/wallet_processor_migration/audit/import-map.json, data/wallet_processor_migration/audit/ownership-map.md), and keep the supervisor-fed backlog aligned with the objective heap.  Record unresolved ownership as a blocker rather than guessing.
+
+## WALPROC-003 Implement wallet processor migration objective: Freeze compatibility, security, and fixture baselines
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: bootstrap
+- Depends on: WALPROC-002
+- Outputs: ipfs_datasets_py/tests/fixtures/wallets/worldcoin, ipfs_datasets_py/tests/fixtures/wallets/xaman, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, data/wallet_processor_migration/audit/security-baseline.json
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-003-objective-gap-263c57c0fd6d.md
+- Bundle: wallet-processors/bootstrap
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-bootstrap.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 2
+- Parallel lane: wallet-processors/bootstrap
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/tests/fixtures/wallets/worldcoin, ipfs_datasets_py/tests/fixtures/wallets/xaman, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, data/wallet_processor_migration/audit/security-baseline.json
+- Changed paths:
+- AST symbols: sign_world_id_request hash_to_field normalize_idkit_response get_world_id_status
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G020
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/d1860475432ba60d41e87fed6efcf97a9af6d8f80fef04d008be3b71bf2361db
+- Canonical task CID: baguqeera2gdai5kdfota2qpip7ww57hzpknpnwhyb7xqjuaixy5xdpzdmhnq
+- Semantic identity: objective-evidence-obligation/v1/268e4ab4a0d3d91eb16ba2ba6dcc0a6ddc45e08c29aa0720d4ee7f2c6138753f
+- Acceptance subset: Golden vectors cover existing World ID signing, hash-to-field, IDKit v3/v4 uniqueness/session, verify success/failure, redaction, old snapshot import, route shapes, and old import identities, the baseline explicitly marks legacy-default-on, unenforced user presence/signal/provider context, unissued challenge acceptance, optional status authentication, raw/process-local nullifier state, v3-as-v4 receipt labeling, stale proof receipts after revoke/expiry, unsafe configurable endpoints, and plaintext snapshots as failures to fix rather than compatibility guarantees.
+- Preconditions: objective goal WALPROC-G020 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/worldcoin, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/xaman, satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, satisfy evidence requirement: data/wallet_processor_migration/audit/security-baseline.json
+- Evidence subset: ipfs_datasets_py/tests/fixtures/wallets/worldcoin, ipfs_datasets_py/tests/fixtures/wallets/xaman, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, data/wallet_processor_migration/audit/security-baseline.json
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G020
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/268e4ab4a0d3d91eb16ba2ba6dcc0a6ddc45e08c29aa0720d4ee7f2c6138753f
+- Missing evidence: ipfs_datasets_py/tests/fixtures/wallets/worldcoin, ipfs_datasets_py/tests/fixtures/wallets/xaman, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, data/wallet_processor_migration/audit/security-baseline.json
+- Embedding query: golden fixtures migration compatibility world id security baseline xaman assurance snapshot route
+- AST query: sign_world_id_request hash_to_field normalize_idkit_response get_world_id_status
+- Surplus group: objective/WALPROC-G020
+- Merge key: 84f91085e17bc4ae
+- Merge family: objective/WALPROC-G020
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 8dd7f253d8f4c852
+- Acceptance: Objective scan filed this gap for WALPROC-G020. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-003-objective-gap-263c57c0fd6d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/fixtures/wallets/worldcoin, ipfs_datasets_py/tests/fixtures/wallets/xaman, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, data/wallet_processor_migration/audit/security-baseline.json), and keep the supervisor-fed backlog aligned with the objective heap.  Compatibility freezes API shape and safe vectors, not vulnerabilities.
+
+## WALPROC-004 Implement wallet processor migration objective: Operate dual-provider agent supervision with bounded refill
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: autonomous-execution
+- Depends on: WALPROC-002
+- Outputs: data/wallet_processor_migration/agent_supervisor, docs/planning/WALLET_PROCESSORS_TODO.md, scripts/wallet_processor_migration_supervisor.sh
+- Validation: scripts/wallet_processor_migration_supervisor.sh status
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-004-objective-gap-9539e3767847.md
+- Bundle: wallet-processors/control
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-control.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 3
+- Parallel lane: wallet-processors/control
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: data/wallet_processor_migration/agent_supervisor, docs/planning/WALLET_PROCESSORS_TODO.md, scripts/wallet_processor_migration_supervisor.sh
+- Changed paths:
+- AST symbols: PortalImplementationSupervisor objective_daemon task_shard_count
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G800
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/fcc23fc0c539258ba2add5db968e5151b0e0107ad83058e3e0fc3b881085a2d7
+- Canonical task CID: baguqeera7tbd7qgfhesyxivn2xnzndsrkgyoaed23ayfry7a7q5yqeefullq
+- Semantic identity: objective-evidence-obligation/v1/11ae8b069e5dbf757ec704680d38509a4f6003447647472dc9b6f308fce89664
+- Acceptance subset: Objective graph and task board contain stable goal/task identities and dependencies, Codex and Grok supervisors use shard 0/2 and 1/2, separate state/worktrees/logs, the shared integration branch and merge queue, and `--worktree-submodule-path ipfs_datasets_py`, only the control lane refills, protected plan/heap files are read-only to agents, PID, command line, heartbeat, events, and child daemon health are verified, retries stop at the budget and generate repair/blocker work.
+- Preconditions: objective goal WALPROC-G800 is schedulable
+- Effects: satisfy evidence requirement: data/wallet_processor_migration/agent_supervisor/objective_graph.json, satisfy evidence requirement: data/wallet_processor_migration/agent_supervisor/bundles/index.json, satisfy evidence requirement: data/wallet_processor_migration/agent_supervisor/runtime/supervisor-health.json
+- Evidence subset: data/wallet_processor_migration/agent_supervisor/objective_graph.json, data/wallet_processor_migration/agent_supervisor/bundles/index.json, data/wallet_processor_migration/agent_supervisor/runtime/supervisor-health.json
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G800
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/11ae8b069e5dbf757ec704680d38509a4f6003447647472dc9b6f308fce89664
+- Missing evidence: data/wallet_processor_migration/agent_supervisor/objective_graph.json, data/wallet_processor_migration/agent_supervisor/bundles/index.json, data/wallet_processor_migration/agent_supervisor/runtime/supervisor-health.json
+- Embedding query: ipfs accelerate agent supervisor codex grok parallel shards objective refill wallet processors
+- AST query: PortalImplementationSupervisor objective_daemon task_shard_count
+- Surplus group: objective/WALPROC-G800
+- Merge key: 20ffb6a8c74be667
+- Merge family: objective/WALPROC-G800
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d6a27a66b8d929a9
+- Acceptance: Objective scan filed this gap for WALPROC-G800. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-004-objective-gap-9539e3767847.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/wallet_processor_migration/agent_supervisor/objective_graph.json, data/wallet_processor_migration/agent_supervisor/bundles/index.json, data/wallet_processor_migration/agent_supervisor/runtime/supervisor-health.json), and keep the supervisor-fed backlog aligned with the objective heap.  Supervisor automation may manage generated todo/state artifacts but cannot authorize network, credentials, dependency installation, signing, broadcasting, production config, or release approval.
+
+## WALPROC-005 Implement wallet processor migration objective packet: WALPROC-G030, WALPROC-G040
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
+- Priority: P0
+- Track: shared-contracts
+- Depends on:
+- Outputs: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/errors.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-005-objective-gap-0f530aa955b4.md
+- Bundle: wallet-processors/contracts
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 4
+- Parallel lane: wallet-processors/contracts
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/errors.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Changed paths:
+- AST symbols: ProcessorProtocol ProcessingContext ProcessorRegistry UniversalProcessor, ChainRef AccountRef AssetRef TransactionRecord TransferRecord LedgerCursor ExportManifest
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G030
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/c3c4afbbdf1209a5b198e87ee87382b63d0c6d02e88572f2c6b0aaa754e9e064
+- Canonical task CID: baguqeeraypck7o67cie2lmmy5b7oq44cwy6qy3ic5ccxf4wgwcvkovhj4bsa
+- Semantic identity: objective-evidence-packet/v1/946b0df215921ef02defdcb2844fc75fe5db52e488ddeeac1f4a8f6326606105
+- Acceptance subset: Protocols cover WalletProvider, LedgerProvider, ChainNormalizer, CheckpointStore, DatasetSink, Exporter, HttpTransport, SecretResolver, FinalityPolicy, capabilities, cancellation, deadlines, and bounded requests, signing/broadcast are absent, imports have no optional/network side effects, ADR documents both current generic APIs and permits exactly one later compatibility adapter., All records carry schema/version, deterministic ID, chain/network/genesis identity, source provenance, observed time, finality, and extensions, amounts are exact base units with explicit decimals, raw payloads are digest/CID references, cross-network identities cannot collide, unknown/failed/orphaned states remain distinguishable, serialization is deterministic and JSON Schema validated.
+- Preconditions: objective goal WALPROC-G030 is schedulable, objective goal WALPROC-G040 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, satisfy evidence requirement: ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Evidence subset: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-packet/v1/946b0df215921ef02defdcb2844fc75fe5db52e488ddeeac1f4a8f6326606105
+- Missing evidence: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Embedding query: goal packet goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829; wallet domain protocol ledger provider dataset sink checkpoint finality generic processor ambiguity; chain account asset transaction transfer balance utxo canonical record id schema provenance exact amount; Approve the wallet-domain protocol and processor adapter decision; Define normalized schemas and canonical identity
+- AST query: ProcessorProtocol ProcessingContext ProcessorRegistry UniversalProcessor, ChainRef AccountRef AssetRef TransactionRecord TransferRecord LedgerCursor ExportManifest
+- Surplus group: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Merge key: 521a43d3f2a77cde
+- Merge family: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Merge role: packet_aggregate
+- Work item count: 7
+- Work scope: goal_subgoal_packet_aggregate; vector_ast_bundle
+- Goal packet: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Goal packet role: packet_aggregate
+- Goal packet goals: WALPROC-G030, WALPROC-G040
+- Goal packet task count: 3
+- Goal packet work item count: 7
+- Completion goal bindings: {"WALPROC-G030":["ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py","ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py"],"WALPROC-G040":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py","ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json","ipfs_datasets_py/tests/unit/processors/wallets/test_models.py"]}
+- Completion task bindings: baguqeeralz6t2h624rf5rnxa4s7poqoz2gmrlguohwy6bjm6hkp6m4vi72gq, baguqeerau7x4ve3k52qyr7yzhazwh34d2ftrdclivamxvnceutkscrwpgtqa
+- Candidate kind: goal_packet_aggregate
+- Todo vector key: 0b1cd776e2056212
+- Acceptance: Objective scan filed this gap for WALPROC-G030. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-005-objective-gap-0f530aa955b4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G030, WALPROC-G040) and covers all the shared packet evidence in one comprehensive pass. Do not edit either generic registry in this goal.
+
+## WALPROC-006 Implement wallet processor migration objective: Define normalized schemas and canonical identity
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: shared-contracts
+- Depends on: WALPROC-007
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-006-objective-gap-e9adca299d9f.md
+- Bundle: wallet-processors/contracts
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 4
+- Parallel lane: wallet-processors/contracts
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/docs/schemas/wallet-export-manifest-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Changed paths:
+- AST symbols: ChainRef AccountRef AssetRef TransactionRecord TransferRecord LedgerCursor ExportManifest
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G040
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/90355be1ac0ef05a0d61f42730065dd279c5c9588809f320ca70142e107ce39a
+- Canonical task CID: baguqeerasa2vxynmb3yfudlb6qttabs52j44lskyrae7gigkoakc4ed44ona
+- Semantic identity: objective-evidence-obligation/v1/c091d4af3e954ab35d3d3ac601bf9ceeb21702eb2a0ccca63ddcbbe5c6a6f091
+- Acceptance subset: All records carry schema/version, deterministic ID, chain/network/genesis identity, source provenance, observed time, finality, and extensions, amounts are exact base units with explicit decimals, raw payloads are digest/CID references, cross-network identities cannot collide, unknown/failed/orphaned states remain distinguishable, serialization is deterministic and JSON Schema validated.
+- Preconditions: objective goal WALPROC-G040 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, satisfy evidence requirement: ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G040
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/c091d4af3e954ab35d3d3ac601bf9ceeb21702eb2a0ccca63ddcbbe5c6a6f091
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py
+- Embedding query: chain account asset transaction transfer balance utxo canonical record id schema provenance exact amount
+- AST query: ChainRef AccountRef AssetRef TransactionRecord TransferRecord LedgerCursor ExportManifest
+- Surplus group: objective/WALPROC-G040
+- Merge key: 8a699191c54c5067
+- Merge family: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G030, WALPROC-G040
+- Goal packet task count: 2
+- Goal packet work item count: 7
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: c25a9690379c8252
+- Acceptance: Objective scan filed this gap for WALPROC-G040. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-006-objective-gap-e9adca299d9f.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/canonical.py, ipfs_datasets_py/docs/schemas/wallet-ledger-record-v1.schema.json, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G030, WALPROC-G040) and covers all the shared packet evidence in one comprehensive pass. Chain-specific fields remain in versioned extensions unless shared semantics are proven.
+
+## WALPROC-007 Implement wallet processor migration objective: Approve the wallet-domain protocol and processor adapter decision
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: shared-contracts
+- Depends on: WALPROC-002
+- Outputs: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/errors.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-007-objective-gap-7c9316619f5e.md
+- Bundle: wallet-processors/contracts
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 5
+- Parallel lane: wallet-processors/contracts
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/errors.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Changed paths:
+- AST symbols: ProcessorProtocol ProcessingContext ProcessorRegistry UniversalProcessor
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G030
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/eafa9afde65226826ab1bbcb800bd09a6cd401c2134b4f51d79955cf8264d0a0
+- Canonical task CID: baguqeera5l5jv7pgkitie2vrxpfyac6qtjwniaoccnfu6uoxtfk47ate2cqa
+- Semantic identity: objective-evidence-obligation/v1/46a1627393355e0cea32697795982b5cec23eac5763e2932fea9328c4988789f
+- Acceptance subset: Protocols cover WalletProvider, LedgerProvider, ChainNormalizer, CheckpointStore, DatasetSink, Exporter, HttpTransport, SecretResolver, FinalityPolicy, capabilities, cancellation, deadlines, and bounded requests, signing/broadcast are absent, imports have no optional/network side effects, ADR documents both current generic APIs and permits exactly one later compatibility adapter.
+- Preconditions: objective goal WALPROC-G030 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Evidence subset: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G030
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/46a1627393355e0cea32697795982b5cec23eac5763e2932fea9328c4988789f
+- Missing evidence: ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py
+- Embedding query: wallet domain protocol ledger provider dataset sink checkpoint finality generic processor ambiguity
+- AST query: ProcessorProtocol ProcessingContext ProcessorRegistry UniversalProcessor
+- Surplus group: objective/WALPROC-G030
+- Merge key: 8ea12d9650ef850a
+- Merge family: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829
+- Goal packet role: packet_anchor
+- Goal packet goals: WALPROC-G030, WALPROC-G040
+- Goal packet task count: 2
+- Goal packet work item count: 7
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 912d6edf71c2d7d1
+- Acceptance: Objective scan filed this gap for WALPROC-G030. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-007-objective-gap-7c9316619f5e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/architecture/WALLET_PROCESSOR_PROTOCOL_ADR.md, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/protocols.py, ipfs_datasets_py/tests/unit/processors/wallets/test_protocols.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_contracts/ipfs_datasets_py/5d18f758a829; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G030, WALPROC-G040) and covers all the shared packet evidence in one comprehensive pass. Do not edit either generic registry in this goal.
+
+## WALPROC-008 Implement wallet processor migration objective packet: WALPROC-G060, WALPROC-G070, WALPROC-G080
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
+- Priority: P0
+- Track: shared-runtime
+- Depends on:
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-008-objective-gap-f6591362f0d1.md
+- Bundle: wallet-processors/pipeline
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-pipeline.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 6
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Changed paths:
+- AST symbols: HttpTransport RetryPolicy RateLimiter ProviderCapability SecretResolver, CheckpointStore FinalityPolicy rewind common_ancestor, WalletLedgerProcessor DatasetSink Exporter ExportReceipt
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G060
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/c773085c3464226a788b946c630eea35d684eed6293a28aea308a9e8af6069e9
+- Canonical task CID: baguqeeray5zqqxbumqrgu6elsrwggdxkgxlij3wwfe5crlvdbcu6rl3anhuq
+- Semantic identity: objective-evidence-packet/v1/08646400a203d2156b46c29c938ef491551738b035ae980d4eee4f0cb477bbbd
+- Acceptance subset: Import performs no I/O, fake transport covers success, malformed response, timeout, cancellation, throttling, transient/permanent errors, oversized response, pagination loop, unsafe endpoint, and circuit breaker, secrets and full endpoints never enter repr/log/errors/checkpoints/manifests, every request has finite byte/page/time/retry budgets., Checkpoint identity binds chain/network/genesis/provider/scan scope/schema/normalizer, sink commit precedes checkpoint CAS, crash replay is idempotent, shallow reorg finds an ancestor and emits orphan corrections, deep reorg stops for review, finality is an enum/state transition rather than a boolean, provisional export requires explicit opt-in., Scans require finite scopes, normalization streams without whole-history accumulation, duplicate/out-of-order pages do not duplicate records, partial/cancelled runs do not skip checkpoints, manifests include scope, versions, provider capability, digests/CIDs, counts, positions, finality, warnings, raw-data policy, and before/after checkpoints, round trips preserve exact types and IDs.
+- Preconditions: objective goal WALPROC-G060 is schedulable, objective goal WALPROC-G070 is schedulable, objective goal WALPROC-G080 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-packet/v1/08646400a203d2156b46c29c938ef491551738b035ae980d4eee4f0cb477bbbd
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Embedding query: goal packet goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a; http json rpc retry rate limit circuit breaker ssrf deadline cancellation redaction wallet provider; checkpoint compare and set finality reorg rewind orphan tombstone canonical hash crash replay; streaming wallet ingestion ledger range jsonl parquet arrow ipld car export manifest resume; Implement bounded provider transport and security controls; Implement checkpoint, finality, and reorganization contracts; Implement streaming ingestion and dataset export
+- AST query: HttpTransport RetryPolicy RateLimiter ProviderCapability SecretResolver, CheckpointStore FinalityPolicy rewind common_ancestor, WalletLedgerProcessor DatasetSink Exporter ExportReceipt
+- Surplus group: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Merge key: e23c7693ce767519
+- Merge family: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Merge role: packet_aggregate
+- Work item count: 12
+- Work scope: goal_subgoal_packet_aggregate; vector_ast_bundle
+- Goal packet: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Goal packet role: packet_aggregate
+- Goal packet goals: WALPROC-G060, WALPROC-G070, WALPROC-G080
+- Goal packet task count: 4
+- Goal packet work item count: 12
+- Completion goal bindings: {"WALPROC-G060":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py","ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py"],"WALPROC-G070":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py","ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py","ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py"],"WALPROC-G080":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py","ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py"]}
+- Completion task bindings: baguqeera7kmbyudvzvutsdypqxiitwju7mlz62xsdhxeuosx2m63r3lmvbnq, baguqeeraioksjajt6qrndjxppmz3io2scpul45q5ngzad4bpp5y53yhxud4a, baguqeerazqe4wn6d5yg3cqmjegjed74q4quyru4j7i5eyxvh337glmcdm6pq
+- Candidate kind: goal_packet_aggregate
+- Todo vector key: 6a23421988d46f9d
+- Acceptance: Objective scan filed this gap for WALPROC-G060. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-008-objective-gap-f6591362f0d1.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G060, WALPROC-G070, WALPROC-G080) and covers all the shared packet evidence in one comprehensive pass. Provider authentication uses secret references, never secret fields in serializable config.
+
+## WALPROC-009 Implement wallet processor migration objective: Implement bounded provider transport and security controls
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: shared-runtime
+- Depends on: WALPROC-007, WALPROC-006
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-009-objective-gap-1dc9fcfa2773.md
+- Bundle: wallet-processors/pipeline
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-pipeline.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 6
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/security.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Changed paths:
+- AST symbols: HttpTransport RetryPolicy RateLimiter ProviderCapability SecretResolver
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G060
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/d176ef498ae1e7903a9d3159ade75b4e213373b175833242b02848bcbdc61021
+- Canonical task CID: baguqeera2f3o6smk4htzaou5gfm23z23jyqtg45rowbteqvqfbelzpogcaqq
+- Semantic identity: objective-evidence-obligation/v1/9f1c3e29562f40187b0363cdad5be8b0ca5c7f7e00ae8efac07877187f434b60
+- Acceptance subset: Import performs no I/O, fake transport covers success, malformed response, timeout, cancellation, throttling, transient/permanent errors, oversized response, pagination loop, unsafe endpoint, and circuit breaker, secrets and full endpoints never enter repr/log/errors/checkpoints/manifests, every request has finite byte/page/time/retry budgets.
+- Preconditions: objective goal WALPROC-G060 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G060
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/9f1c3e29562f40187b0363cdad5be8b0ca5c7f7e00ae8efac07877187f434b60
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py
+- Embedding query: http json rpc retry rate limit circuit breaker ssrf deadline cancellation redaction wallet provider
+- AST query: HttpTransport RetryPolicy RateLimiter ProviderCapability SecretResolver
+- Surplus group: objective/WALPROC-G060
+- Merge key: d9cc0f09e32defb2
+- Merge family: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Goal packet role: packet_anchor
+- Goal packet goals: WALPROC-G060, WALPROC-G070, WALPROC-G080
+- Goal packet task count: 3
+- Goal packet work item count: 12
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 3ff0ad5d62303640
+- Acceptance: Objective scan filed this gap for WALPROC-G060. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-009-objective-gap-1dc9fcfa2773.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/http.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/retry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/providers/rate_limit.py, ipfs_datasets_py/tests/unit/processors/wallets/test_transport.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G060, WALPROC-G070, WALPROC-G080) and covers all the shared packet evidence in one comprehensive pass. Provider authentication uses secret references, never secret fields in serializable config.
+
+## WALPROC-010 Implement wallet processor migration objective: Review and declare optional dependency extras
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: dependencies
+- Depends on: WALPROC-002, WALPROC-003
+- Outputs: ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, ipfs_datasets_py/pyproject.toml, ipfs_datasets_py/setup.py, ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-010-objective-gap-f4eab05f3967.md
+- Bundle: wallet-processors/dependencies
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-dependencies.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 7
+- Parallel lane: wallet-processors/dependencies
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, ipfs_datasets_py/pyproject.toml, ipfs_datasets_py/setup.py, ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Changed paths:
+- AST symbols: optional-dependencies extras_require
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G050
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/3cc3ddd4d500ddab5b5eddb8e135c0bcf497fb2e1d7409540d083251df60d9fc
+- Canonical task CID: baguqeerahtb53vgvado2ww263w4ocnoaxt2jp6zodv2asvanbazfdx3a3h6a
+- Semantic identity: objective-evidence-obligation/v1/d8272b77142a4f5a6994871452a51db751abfa022096b0f307d02abe81f46be4
+- Acceptance subset: Extras `wallets`, `wallets-worldcoin`, `wallets-ethereum`, `wallets-xrpl`, `wallets-xaman`, `wallets-bitcoin`, `wallets-solana`, and `wallets-all` have compatible bounds, hashes/provenance/license/SBOM rationale, coincurve/pycryptodome versus existing eth-hash/eth-keys is decided by vectors, raw REST/JSON-RPC remains sufficient unless an SDK earns inclusion, minimal imports succeed with every chain extra absent, Python support mismatch has a documented resolution.
+- Preconditions: objective goal WALPROC-G050 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Evidence subset: ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G050
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/d8272b77142a4f5a6994871452a51db751abfa022096b0f307d02abe81f46be4
+- Missing evidence: ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py
+- Embedding query: wallet optional extras dependency license sbom worldcoin coincurve pycryptodome web3 solana xrpl bitcoin
+- AST query: optional-dependencies extras_require
+- Surplus group: objective/WALPROC-G050
+- Merge key: d4178c56617fa897
+- Merge family: objective/WALPROC-G050
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 7adf9cfbcbe93fed
+- Acceptance: Objective scan filed this gap for WALPROC-G050. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-010-objective-gap-f4eab05f3967.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/dependencies/WALLET_PROCESSOR_DEPENDENCIES.md, ipfs_datasets_py/tests/contract/processors/wallets/test_optional_dependencies.py), and keep the supervisor-fed backlog aligned with the objective heap.  SDK convenience is not sufficient justification for a mandatory dependency.
+
+## WALPROC-011 Implement wallet processor migration objective: Implement streaming ingestion and dataset export
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: shared-runtime
+- Depends on: WALPROC-009, WALPROC-012
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-011-objective-gap-9e73bcabafd8.md
+- Bundle: wallet-processors/pipeline
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-pipeline.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 8
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Changed paths:
+- AST symbols: WalletLedgerProcessor DatasetSink Exporter ExportReceipt
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G080
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/14f384b64459d8e33a25133937198ea1a4898d72a7fdb1ef0dad41b4841973ce
+- Canonical task CID: baguqeeractzyjnselhmogorfcm4togmougsitdlsu763d3ynvva3jbazopha
+- Semantic identity: objective-evidence-obligation/v1/a69d6756f22698fc0f9f8b472ada5abc20d628a9ddb0f588d0c258363c334c47
+- Acceptance subset: Scans require finite scopes, normalization streams without whole-history accumulation, duplicate/out-of-order pages do not duplicate records, partial/cancelled runs do not skip checkpoints, manifests include scope, versions, provider capability, digests/CIDs, counts, positions, finality, warnings, raw-data policy, and before/after checkpoints, round trips preserve exact types and IDs.
+- Preconditions: objective goal WALPROC-G080 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G080
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a69d6756f22698fc0f9f8b472ada5abc20d628a9ddb0f588d0c258363c334c47
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Embedding query: streaming wallet ingestion ledger range jsonl parquet arrow ipld car export manifest resume
+- AST query: WalletLedgerProcessor DatasetSink Exporter ExportReceipt
+- Surplus group: objective/WALPROC-G080
+- Merge key: 3681d6a4550ae590
+- Merge family: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G060, WALPROC-G070, WALPROC-G080
+- Goal packet task count: 3
+- Goal packet work item count: 12
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 9cefeeba56ff3a85
+- Acceptance: Objective scan filed this gap for WALPROC-G080. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-011-objective-gap-9e73bcabafd8.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G060, WALPROC-G070, WALPROC-G080) and covers all the shared packet evidence in one comprehensive pass. IPLD/CAR may remain an optional child if JSONL and Parquet contracts land first.
+
+## WALPROC-012 Implement wallet processor migration objective: Implement checkpoint, finality, and reorganization contracts
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: shared-runtime
+- Depends on: WALPROC-006, WALPROC-009
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-012-objective-gap-97420d6eeddf.md
+- Bundle: wallet-processors/pipeline
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-pipeline.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 9
+- Parallel lane: wallet-processors/pipeline
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Changed paths:
+- AST symbols: CheckpointStore FinalityPolicy rewind common_ancestor
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G070
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/cd2e68fbe9f2c2e9b66491c2012e6fc7af736f109bc682e6467d6c8711e78732
+- Canonical task CID: baguqeerazuxgr67j6lbotnteshbacltpy6xxg3yqtpdifzsgpvwioephq4za
+- Semantic identity: objective-evidence-obligation/v1/7da35d3c960dc09beaed6d6b786ec6d028b2aed7edb115930d84a9a9236a6ad3
+- Acceptance subset: Checkpoint identity binds chain/network/genesis/provider/scan scope/schema/normalizer, sink commit precedes checkpoint CAS, crash replay is idempotent, shallow reorg finds an ancestor and emits orphan corrections, deep reorg stops for review, finality is an enum/state transition rather than a boolean, provisional export requires explicit opt-in.
+- Preconditions: objective goal WALPROC-G070 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G070
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/7da35d3c960dc09beaed6d6b786ec6d028b2aed7edb115930d84a9a9236a6ad3
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py
+- Embedding query: checkpoint compare and set finality reorg rewind orphan tombstone canonical hash crash replay
+- AST query: CheckpointStore FinalityPolicy rewind common_ancestor
+- Surplus group: objective/WALPROC-G070
+- Merge key: 1e5e55d9aaa19905
+- Merge family: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G060, WALPROC-G070, WALPROC-G080
+- Goal packet task count: 3
+- Goal packet work item count: 12
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 04c6800d33702497
+- Acceptance: Objective scan filed this gap for WALPROC-G070. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-012-objective-gap-97420d6eeddf.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/finality.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_reorgs.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/shared_runtime/ipfs_datasets_py/7bc57fe6f18a; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G060, WALPROC-G070, WALPROC-G080) and covers all the shared packet evidence in one comprehensive pass. Provider continuation tokens never replace canonical hash anchors.
+
+## WALPROC-013 Implement wallet processor migration objective: Build shared chain conformance and fixture harness
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: testing
+- Depends on: WALPROC-006, WALPROC-012, WALPROC-011
+- Outputs: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-013-objective-gap-3b858b4d3001.md
+- Bundle: wallet-processors/conformance
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-conformance.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 10
+- Parallel lane: wallet-processors/conformance
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Changed paths:
+- AST symbols: WalletProcessorConformance ProviderContract FixtureTransport
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G090
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/52a43e294568bf232e9774849265419d0b5b669ce502837d48eeaddcaede9989
+- Canonical task CID: baguqeerakksd4kkfnc7sgluxoscjezkbtufvwzu44ubig7ki52w5zlw6tgeq
+- Semantic identity: objective-evidence-obligation/v1/e388706ce90bee7314ac85551275ea3c8cd4b0a78bd407bb20b3d474b902859a
+- Acceptance subset: Harness tests address/network identity, exact amounts, deterministic IDs, malformed/empty/partial data, pagination, retries, cancellation, idempotency, CAS conflicts, shallow/deep reorg, export round trip, secret leaks, optional dependency absence, and no-network imports, fixtures are immutable/digested and include source/license/provenance.
+- Preconditions: objective goal WALPROC-G090 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets, satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Evidence subset: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G090
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/e388706ce90bee7314ac85551275ea3c8cd4b0a78bd407bb20b3d474b902859a
+- Missing evidence: ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py
+- Embedding query: wallet chain conformance fixtures provider normalizer checkpoint reorg export offline
+- AST query: WalletProcessorConformance ProviderContract FixtureTransport
+- Surplus group: objective/WALPROC-G090
+- Merge key: 3de1fcb5dda33a84
+- Merge family: objective/WALPROC-G090
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 6a41cf5f2e46528e
+- Acceptance: Objective scan filed this gap for WALPROC-G090. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-013-objective-gap-3b858b4d3001.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/contract/processors/wallets/conformance.py, ipfs_datasets_py/tests/fixtures/wallets, ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py), and keep the supervisor-fed backlog aligned with the objective heap.  Chain-specific assertions extend rather than weaken shared checks.
+
+## WALPROC-014 Implement wallet processor migration objective: Extract World ID binding, challenge, replay, proof, and snapshot ownership
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: worldcoin
+- Depends on: WALPROC-006, WALPROC-012, WALPROC-016
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py ipfs_datasets_py/tests/unit/test_data_wallet.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-014-objective-gap-e001f4df2cd0.md
+- Bundle: wallet-processors/worldcoin-state
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-worldcoin-state.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 11
+- Parallel lane: wallet-processors/worldcoin-state
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/snapshots.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/processor.py, ipfs_datasets_py/ipfs_datasets_py/wallet/models.py, ipfs_datasets_py/ipfs_datasets_py/wallet/service.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Changed paths:
+- AST symbols: WorldIdBinding add_world_id_binding _create_world_id_proof_receipt world_id_private_nullifiers
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G110
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/a2791e193592b8ff4816869e173b7eea8361f26ecd37f933c7e2522de6be17d2
+- Canonical task CID: baguqeerauj4r4gjvsk4p6sawq2pboo365kbwd4tozu37sm6h4jjc3zv6c7ja
+- Semantic identity: objective-evidence-obligation/v1/af05ee6cf2aa8455d6c932f979835bcbff4b054f1c1b0aab2d46ab57870aebab
+- Acceptance subset: Old snapshots load and new snapshots round-trip through delegators, challenge verification binds nonce, signal/context, action, environment, credential policy, presence, expiry, protocol, actor/provider context, configured HMAC protects durable replay commitments, raw nullifiers never persist/export, replay survives restart and uniqueness is atomic, revoked/expired bindings cannot yield active verified receipts, v3 is never labeled v4, minimum-necessary projections require caller authorization.
+- Preconditions: objective goal WALPROC-G110 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G110
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/af05ee6cf2aa8455d6c932f979835bcbff4b054f1c1b0aab2d46ab57870aebab
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py
+- Embedding query: world id binding durable challenge replay hmac proof receipt snapshot revoke expiry data wallet
+- AST query: WorldIdBinding add_world_id_binding _create_world_id_proof_receipt world_id_private_nullifiers
+- Surplus group: objective/WALPROC-G110
+- Merge key: a7fc5610c942bd01
+- Merge family: objective/WALPROC-G110
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f1da1dc0efe24bf0
+- Acceptance: Objective scan filed this gap for WALPROC-G110. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-014-objective-gap-e001f4df2cd0.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/bindings.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/challenges.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/proofs.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_bindings.py), and keep the supervisor-fed backlog aligned with the objective heap.  `wallet/service.py` has one owner for this bundle; other lanes must not edit it.
+
+## WALPROC-015 Implement wallet processor migration objective packet: WALPROC-G100, WALPROC-G120
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
+- Priority: P0
+- Track: worldcoin
+- Depends on:
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-015-objective-gap-3efa8ab0847b.md
+- Bundle: wallet-processors/worldcoin
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-worldcoin.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 12
+- Parallel lane: wallet-processors/worldcoin
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Changed paths:
+- AST symbols: WorldIdConfig WorldIdRpSignature sign_world_id_request normalize_idkit_response verify_world_id_proof, WorldChainProcessor EthereumWalletProcessor AssetRef Finality
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G100
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/57ee63f0270b02019d6b682f82a87c8639b97b0d0a853be0e5811f986252e06a
+- Canonical task CID: baguqeerak7xgh4bhbmbadhllnaxyfkd4qy43s6ynbkctxyhfqepzqyss4bva
+- Semantic identity: objective-evidence-packet/v1/60390e069f13e79445940a235066f88a953af4518e1f7a843ad8ff51065cbb13
+- Acceptance subset: Existing official vectors are byte-identical, safe defaults reject legacy evidence unless explicitly permitted, v3/v4/session labels remain accurate, injected transport and endpoint policy are bounded, config serializes secret references only, raw proof/nullifier/upstream payload cannot enter logs/errors/public dicts, package import has no I/O., Chain IDs 480 and 4801 and genesis/network identity are validated, WLD asset identity is network/contract bound, Ethereum parsing is reused, included, operationally confirmed, safe, finalized, and optional L1-settled states are distinct, block depth alone is not called finality, no SIWE bootstrap placeholder is promoted.
+- Preconditions: objective goal WALPROC-G100 is schedulable, objective goal WALPROC-G120 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-packet/v1/60390e069f13e79445940a235066f88a953af4518e1f7a843ad8ff51065cbb13
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Embedding query: goal packet goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94; world id idkit developer portal rp signing hash to field redaction migration; world chain 480 4801 wld ethereum composition finality l1 settlement; Migrate World ID pure protocol code; Compose World Chain and WLD through Ethereum
+- AST query: WorldIdConfig WorldIdRpSignature sign_world_id_request normalize_idkit_response verify_world_id_proof, WorldChainProcessor EthereumWalletProcessor AssetRef Finality
+- Surplus group: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Merge key: 55e0fb75c88b55fd
+- Merge family: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Merge role: packet_aggregate
+- Work item count: 7
+- Work scope: goal_subgoal_packet_aggregate; vector_ast_bundle
+- Goal packet: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Goal packet role: packet_aggregate
+- Goal packet goals: WALPROC-G100, WALPROC-G120
+- Goal packet task count: 3
+- Goal packet work item count: 7
+- Completion goal bindings: {"WALPROC-G100":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py","ipfs_datasets_py/tests/unit/processors/wallets/worldcoin"],"WALPROC-G120":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py","ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py"]}
+- Completion task bindings: baguqeerayzij6esyv2gv6qxgbpm2xjklqq7v3wqlmr5yv5dko6am5x64q7oa, baguqeerajlml777r4hainf4nzqfteupa5epxlk4ox7snmysllhrcv5lqrpoa
+- Candidate kind: goal_packet_aggregate
+- Todo vector key: 4904b5829ef9a58b
+- Acceptance: Objective scan filed this gap for WALPROC-G100. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-015-objective-gap-3efa8ab0847b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G100, WALPROC-G120) and covers all the shared packet evidence in one comprehensive pass. Config/models, signing, and IDKit/verifier can be separate tasks with disjoint files after API scaffold.
+
+## WALPROC-016 Implement wallet processor migration objective: Migrate World ID pure protocol code
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: worldcoin
+- Depends on: WALPROC-003, WALPROC-007, WALPROC-006, WALPROC-010, WALPROC-009
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-016-objective-gap-569ba630b299.md
+- Bundle: wallet-processors/worldcoin
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-worldcoin.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 12
+- Parallel lane: wallet-processors/worldcoin
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Changed paths:
+- AST symbols: WorldIdConfig WorldIdRpSignature sign_world_id_request normalize_idkit_response verify_world_id_proof
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G100
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/22e10d761e2e3335a55c8de83506f652a6d97fdaaf8421a2708d2e32037b73e6
+- Canonical task CID: baguqeeraelqq25q6fyztljk4rxudkbxwkktns762v6ccditqruxdea33opta
+- Semantic identity: objective-evidence-obligation/v1/44c85c5bc2110276284ac567eaf06055209cdb113c5552e98d94063fd5a7a967
+- Acceptance subset: Existing official vectors are byte-identical, safe defaults reject legacy evidence unless explicitly permitted, v3/v4/session labels remain accurate, injected transport and endpoint policy are bounded, config serializes secret references only, raw proof/nullifier/upstream payload cannot enter logs/errors/public dicts, package import has no I/O.
+- Preconditions: objective goal WALPROC-G100 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G100
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/44c85c5bc2110276284ac567eaf06055209cdb113c5552e98d94063fd5a7a967
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin
+- Embedding query: world id idkit developer portal rp signing hash to field redaction migration
+- AST query: WorldIdConfig WorldIdRpSignature sign_world_id_request normalize_idkit_response verify_world_id_proof
+- Surplus group: objective/WALPROC-G100
+- Merge key: 3153c7babf8853e8
+- Merge family: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Merge role: aggregate
+- Work item count: 5
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Goal packet role: packet_anchor
+- Goal packet goals: WALPROC-G100, WALPROC-G120
+- Goal packet task count: 2
+- Goal packet work item count: 7
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 3526e5ed177f8436
+- Acceptance: Objective scan filed this gap for WALPROC-G100. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-016-objective-gap-569ba630b299.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/signing.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/idkit.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G100, WALPROC-G120) and covers all the shared packet evidence in one comprehensive pass. Config/models, signing, and IDKit/verifier can be separate tasks with disjoint files after API scaffold.
+
+## WALPROC-017 Implement wallet processor migration objective: Implement the reusable XRPL ledger processor
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: xrpl
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/xrpl ipfs_datasets_py/tests/contract/processors/wallets/test_xrpl_conformance.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-017-objective-gap-d0761f3f5a23.md
+- Bundle: wallet-processors/xaman
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-xaman.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 13
+- Parallel lane: wallet-processors/xaman
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl
+- Changed paths:
+- AST symbols: XRPLLedgerProvider XRPLNormalizer delivered_amount
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G200
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/8d93139793dc832a8708639b80fcf641c0ad5542fb685889cb8b9604657af952
+- Canonical task CID: baguqeerarwjrhf4t3sbsvbyimonyb7hwihak2vkc7nufrcolrolaizl27fja
+- Semantic identity: objective-evidence-obligation/v1/0208b88632180d260735e7e5c7b4b654dbb48ecde674510f05f1dce9f2631983
+- Acceptance subset: Marker pagination has no gaps/duplicates, only validated results are final, ledger hash/index continuity anchors checkpoints, partial-payment delivered_amount is correct, issued asset identity includes currency and issuer, tags/memos are preserved under privacy policy, failed/unvalidated/unknown outcomes remain distinct, no signing/submission capability exists.
+- Preconditions: objective goal WALPROC-G200 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/xrpl, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/xrpl
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G200
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/0208b88632180d260735e7e5c7b4b654dbb48ecde674510f05f1dce9f2631983
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl
+- Embedding query: xrpl account tx marker validated ledger delivered amount issued currency trustline destination tag memo
+- AST query: XRPLLedgerProvider XRPLNormalizer delivered_amount
+- Surplus group: objective/WALPROC-G200
+- Merge key: 12aef1b5a3a4a32f
+- Merge family: objective/WALPROC-G200
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 25df5dae305d7591
+- Acceptance: Objective scan filed this gap for WALPROC-G200. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-017-objective-gap-d0761f3f5a23.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl, ipfs_datasets_py/tests/unit/processors/wallets/xrpl, ipfs_datasets_py/tests/fixtures/wallets/xrpl), and keep the supervisor-fed backlog aligned with the objective heap.  Keep Xaman wallet payload concerns out of the XRPL ledger provider.
+
+## WALPROC-018 Implement wallet processor migration objective: Implement Ethereum/EVM wallet and ledger processing
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: ethereum
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/ethereum ipfs_datasets_py/tests/contract/processors/wallets/test_ethereum_conformance.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-018-objective-gap-302c3cd9f406.md
+- Bundle: wallet-processors/ethereum
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-ethereum.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 14
+- Parallel lane: wallet-processors/ethereum
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum
+- Changed paths:
+- AST symbols: EthereumLedgerProvider EthereumNormalizer decode_transfer_log
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G300
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/ffdad4bb3f2fd9a90aebce7f0894d84af414fa8d8f7277accda3475b01387ba4
+- Canonical task CID: baguqeera77nnjoz7f7m2scxlzz7qrfgyjl2bj6unr5zhplgnundvwajyposa
+- Semantic identity: objective-evidence-obligation/v1/59e214c18f1a4914451521df192c1c3c07c4cb60ba28f9ef0fe830a80d6da6ad
+- Acceptance subset: eth_chainId and genesis bind provider identity, amounts/fees are exact, reverted receipts and removed logs are preserved, event IDs are stable, ERC standards decode from logs, traces/internal value are labeled optional/incomplete when unavailable, safe/finalized tags are preferred with explicit confirmation fallback, reorg replay emits corrections, read-only interface has no signer/broadcaster.
+- Preconditions: objective goal WALPROC-G300 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/ethereum, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/ethereum
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G300
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/59e214c18f1a4914451521df192c1c3c07c4cb60ba28f9ef0fe830a80d6da6ad
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum
+- Embedding query: ethereum evm eip1559 receipts logs erc20 erc721 erc1155 safe finalized reorg
+- AST query: EthereumLedgerProvider EthereumNormalizer decode_transfer_log
+- Surplus group: objective/WALPROC-G300
+- Merge key: 60f40f47e33793fa
+- Merge family: objective/WALPROC-G300
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: c6872801ae7527d4
+- Acceptance: Objective scan filed this gap for WALPROC-G300. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-018-objective-gap-302c3cd9f406.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/ethereum, ipfs_datasets_py/tests/unit/processors/wallets/ethereum, ipfs_datasets_py/tests/fixtures/wallets/ethereum), and keep the supervisor-fed backlog aligned with the objective heap.  Token metadata lookup is optional and cannot block transfer ingestion.
+
+## WALPROC-019 Implement wallet processor migration objective: Implement Bitcoin wallet and ledger processing
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: bitcoin
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/bitcoin ipfs_datasets_py/tests/contract/processors/wallets/test_bitcoin_conformance.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-019-objective-gap-a93af606e523.md
+- Bundle: wallet-processors/bitcoin
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-bitcoin.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 15
+- Parallel lane: wallet-processors/bitcoin
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin
+- Changed paths:
+- AST symbols: BitcoinLedgerProvider UtxoRecord ScriptDescriptor
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G400
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/49aa98af9552df7956d2b8559a603457c4b1e8b0c57f6cd579cda81b9700ac94
+- Canonical task CID: baguqeerajgvjrl4vklpxsvwsxbkzuybuk7cld2fqyv7wzvlzzwubxfyavska
+- Semantic identity: objective-evidence-obligation/v1/b98a6f2ae24ecaa28447f9f3803b90d9d19819af70e2ad0445a0837e761f4dc5
+- Acceptance subset: Legacy/SegWit/Taproot, coinbase, multi-input/output, spent/unspent, replacement, network mismatch, and reorg fixtures pass, UTXOs—not account debits—drive state, satoshi amounts are exact, ownership/change clustering is not asserted, confirmation threshold is policy not universal truth, reorg reverses UTXO effects, no PSBT/sign/broadcast capability exists.
+- Preconditions: objective goal WALPROC-G400 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/bitcoin
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G400
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/b98a6f2ae24ecaa28447f9f3803b90d9d19819af70e2ad0445a0837e761f4dc5
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin
+- Embedding query: bitcoin utxo scripts segwit taproot coinbase mempool confirmation reorg wallet export
+- AST query: BitcoinLedgerProvider UtxoRecord ScriptDescriptor
+- Surplus group: objective/WALPROC-G400
+- Merge key: 5661550ac1e74c7f
+- Merge family: objective/WALPROC-G400
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 62ca9bfecfe2b8e9
+- Acceptance: Objective scan filed this gap for WALPROC-G400. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-019-objective-gap-a93af606e523.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/bitcoin, ipfs_datasets_py/tests/unit/processors/wallets/bitcoin, ipfs_datasets_py/tests/fixtures/wallets/bitcoin), and keep the supervisor-fed backlog aligned with the objective heap.  Support one reviewed provider family first behind the common protocol.
+
+## WALPROC-020 Implement wallet processor migration objective: Implement Solana wallet and ledger processing
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solana
+- Depends on: WALPROC-006, WALPROC-009, WALPROC-012, WALPROC-011, WALPROC-013
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/solana ipfs_datasets_py/tests/contract/processors/wallets/test_solana_conformance.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-020-objective-gap-55fd1f79dc60.md
+- Bundle: wallet-processors/solana
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-solana.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 16
+- Parallel lane: wallet-processors/solana
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana
+- Changed paths:
+- AST symbols: SolanaLedgerProvider SolanaNormalizer TokenAccountRecord
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G500
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/22c550a2e5461df18b54888d80dc1dcac6b470490affbfd2c8f77f4062ba7fb1
+- Canonical task CID: baguqeeraelcvbixfiyo7dc2urcgybxa5zldli4cjbl737uwi657uayv2p6yq
+- Semantic identity: objective-evidence-obligation/v1/d07988a9b1993c11122689a566347a6173c796d5659b88f0a2b4d2f2780e3d5b
+- Acceptance subset: Signature pagination has no gaps/duplicates, versioned messages and lookup tables resolve deterministically, failed txs remain visible, inner instructions are indexed distinctly, lamport/SPL amounts are exact, processed/confirmed/finalized remain distinct, skipped/missing slots do not silently advance, finalized slot/blockhash anchors checkpoints, no transaction signing/submission exists.
+- Preconditions: objective goal WALPROC-G500 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/solana, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/solana
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G500
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/d07988a9b1993c11122689a566347a6173c796d5659b88f0a2b4d2f2780e3d5b
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana
+- Embedding query: solana signatures versioned transaction address lookup inner instruction spl token commitment skipped slot
+- AST query: SolanaLedgerProvider SolanaNormalizer TokenAccountRecord
+- Surplus group: objective/WALPROC-G500
+- Merge key: 689c293108935c88
+- Merge family: objective/WALPROC-G500
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: c3fab0580939d78e
+- Acceptance: Objective scan filed this gap for WALPROC-G500. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-020-objective-gap-55fd1f79dc60.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/solana, ipfs_datasets_py/tests/unit/processors/wallets/solana, ipfs_datasets_py/tests/fixtures/wallets/solana), and keep the supervisor-fed backlog aligned with the objective heap.  NFT enrichment is an optional projection over token records, not a core ingestion dependency.
+
+## WALPROC-021 Implement wallet processor migration objective: Implement Xaman wallet and payload processing over XRPL
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: xaman
+- Depends on: WALPROC-003, WALPROC-017
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, ipfs_datasets_py/tests/unit/processors/wallets/xaman, ipfs_datasets_py/tests/fixtures/wallets/xaman
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/xaman ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_conformance.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-021-objective-gap-ef748fcb2b7b.md
+- Bundle: wallet-processors/xaman
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-xaman.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 17
+- Parallel lane: wallet-processors/xaman
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, ipfs_datasets_py/tests/unit/processors/wallets/xaman, ipfs_datasets_py/tests/fixtures/wallets/xaman
+- Changed paths:
+- AST symbols: XamanWalletProcessor XamanPayload PayloadStatus
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G210
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/038457e53148b6fb21c387790a191d64ccbaecd488bdaa1a18a9bd722aee3d5b
+- Canonical task CID: baguqeeraaocfpzjrjc3pwiodq54qugi5mtglv3gurc62ugqyvg6xekxohvnq
+- Semantic identity: objective-evidence-obligation/v1/2f9cee94557dc1d4a3ca05a615e13d3235c543519c4de35be21af4097fa85170
+- Acceptance subset: Created/opened/signed/rejected/expired/cancelled/submitted/validated/failed/unknown states remain distinct, Xaman API success is never settlement, transaction facts are verified through XRPL, network/account/payload identity is bound, memos and payload content follow redaction/size policy, processor cannot approve, sign, or submit.
+- Preconditions: objective goal WALPROC-G210 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/xaman, satisfy evidence requirement: ipfs_datasets_py/tests/fixtures/wallets/xaman
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, ipfs_datasets_py/tests/unit/processors/wallets/xaman, ipfs_datasets_py/tests/fixtures/wallets/xaman
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G210
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/2f9cee94557dc1d4a3ca05a615e13d3235c543519c4de35be21af4097fa85170
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, ipfs_datasets_py/tests/unit/processors/wallets/xaman, ipfs_datasets_py/tests/fixtures/wallets/xaman
+- Embedding query: xaman payload lifecycle xrpl wallet account activity settlement validation redacted export
+- AST query: XamanWalletProcessor XamanPayload PayloadStatus
+- Surplus group: objective/WALPROC-G210
+- Merge key: 990a6283f71625ab
+- Merge family: objective/WALPROC-G210
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: ba185e93a4f44a32
+- Acceptance: Objective scan filed this gap for WALPROC-G210. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-021-objective-gap-ef748fcb2b7b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman, ipfs_datasets_py/tests/unit/processors/wallets/xaman, ipfs_datasets_py/tests/fixtures/wallets/xaman), and keep the supervisor-fed backlog aligned with the objective heap.  Xaman and XRPL may share a bundle but keep separate public modules.
+
+## WALPROC-022 Implement wallet processor migration objective: Compose World Chain and WLD through Ethereum
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: worldcoin
+- Depends on: WALPROC-016, WALPROC-018
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-022-objective-gap-92f7b921735d.md
+- Bundle: wallet-processors/worldcoin
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-worldcoin.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 18
+- Parallel lane: wallet-processors/worldcoin
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/assets.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Changed paths:
+- AST symbols: WorldChainProcessor EthereumWalletProcessor AssetRef Finality
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G120
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/0eced5890f35f192c859ac537ad4793371913c92cc6238f175dee0526cd512df
+- Canonical task CID: baguqeerab3hnlcipgxyzfsczvrjxvvdzgnyzcpeszrrdr4lv33qfe3gvclpq
+- Semantic identity: objective-evidence-obligation/v1/01da1c17b1bb0c64fde52640313d773a2596b41073e240567a323145a4a43a09
+- Acceptance subset: Chain IDs 480 and 4801 and genesis/network identity are validated, WLD asset identity is network/contract bound, Ethereum parsing is reused, included, operationally confirmed, safe, finalized, and optional L1-settled states are distinct, block depth alone is not called finality, no SIWE bootstrap placeholder is promoted.
+- Preconditions: objective goal WALPROC-G120 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G120
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/01da1c17b1bb0c64fde52640313d773a2596b41073e240567a323145a4a43a09
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py
+- Embedding query: world chain 480 4801 wld ethereum composition finality l1 settlement
+- AST query: WorldChainProcessor EthereumWalletProcessor AssetRef Finality
+- Surplus group: objective/WALPROC-G120
+- Merge key: 8cc235fe92b31749
+- Merge family: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G100, WALPROC-G120
+- Goal packet task count: 2
+- Goal packet work item count: 7
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d2bf94d57b6a7a78
+- Acceptance: Objective scan filed this gap for WALPROC-G120. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-022-objective-gap-92f7b921735d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/world_chain.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_world_chain.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/worldcoin/ipfs_datasets_py/5c694de84d94; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G100, WALPROC-G120) and covers all the shared packet evidence in one comprehensive pass. Future SIWE is a separate reviewed child objective.
+
+## WALPROC-023 Implement wallet processor migration objective: Cut 211-AI over to a thin Worldcoin wrapper
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: worldcoin-cutover
+- Depends on: WALPROC-016, WALPROC-014, WALPROC-022
+- Outputs: wallet_interface/world_id.py, wallet_interface/app_service.py, wallet_interface/ops.py, tests/test_world_id_wrapper_ownership.py, tests/test_world_id_wallet.py, tests/test_world_id_wallet_api.py
+- Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-023-objective-gap-0abd0c0477e9.md
+- Bundle: wallet-processors/wrapper
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-wrapper.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 19
+- Parallel lane: wallet-processors/wrapper
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: wallet_interface/world_id.py, wallet_interface/app_service.py, wallet_interface/ops.py, tests/test_world_id_wrapper_ownership.py, tests/test_world_id_wallet.py, tests/test_world_id_wallet_api.py
+- Changed paths:
+- AST symbols: WalletInterfaceService create_world_id_rp_signature register_world_id_verification
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G130
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/b53253ed8345e8257a4bdc8b0f4761878b65ac78f5f19b0750d564054708d7c0
+- Canonical task CID: baguqeerawuzfh3mdixuck6sl3sfq6r3bq6fwlldy6xyzwb2q2vsakryi27aa
+- Semantic identity: objective-evidence-obligation/v1/71f1f900727a576346761b8f75c7a0787cb3c2e27a6c7f5ce05ec65171cf5d9c
+- Acceptance subset: Old documented imports and exception identities remain for the deprecation window, route paths/DTOs remain stable, wrapper has explicit __all__ and no crypto, hashing, HTTP, endpoint literal, secret resolution, proof parsing, normalization, redaction, binding, replay, or proof implementation, status is authenticated/minimum necessary, readiness probes delegate, provider/actor application policy remains in 211-AI.
+- Preconditions: objective goal WALPROC-G130 is schedulable
+- Effects: satisfy evidence requirement: tests/test_world_id_wrapper_ownership.py
+- Evidence subset: tests/test_world_id_wrapper_ownership.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G130
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/71f1f900727a576346761b8f75c7a0787cb3c2e27a6c7f5ce05ec65171cf5d9c
+- Missing evidence: tests/test_world_id_wrapper_ownership.py
+- Embedding query: 211 ai world id thin wrapper compatibility reexport app service delegation ownership static test
+- AST query: WalletInterfaceService create_world_id_rp_signature register_world_id_verification
+- Surplus group: objective/WALPROC-G130
+- Merge key: 0e242ab93f903c04
+- Merge family: objective/WALPROC-G130
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 279cd96767451962
+- Acceptance: Objective scan filed this gap for WALPROC-G130. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-023-objective-gap-0abd0c0477e9.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (tests/test_world_id_wrapper_ownership.py), and keep the supervisor-fed backlog aligned with the objective heap.  `wallet_interface/app_service.py` has one cutover owner; UI migration is a later child if needed.
+
+## WALPROC-024 Implement wallet processor migration objective packet: WALPROC-G600, WALPROC-G610
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
+- Priority: P1
+- Track: integration
+- Depends on:
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-024-objective-gap-d5c5aac2b37e.md
+- Bundle: wallet-processors/integration
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-integration.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 20
+- Parallel lane: wallet-processors/integration
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Changed paths:
+- AST symbols: WalletProcessorRegistry get_wallet_processor, WalletProcessorAPI wallet_ingest wallet_export
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G600
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/1995c71b7d2752736f1e6ffa13fcea6c88d3e9995a4b9dbc57018e8ad836d623
+- Canonical task CID: baguqeeradgk4og35e5jhg3y6n75bh7hknsenh2mzljfz3pcxaghivwbw2yrq
+- Semantic identity: objective-evidence-packet/v1/1ac0d0de4eb04192fe31dee830c75531e861df4bd696155e63ea5c0af32d2f19
+- Acceptance subset: Chain providers load lazily, capabilities are explicit, unknown/ambiguous networks fail, optional dependency errors identify the extra without auto-installing, one generic adapter exists and the rejected registry surface is not also wired, root processor imports remain lightweight, Xaman composes XRPL and World Chain composes Ethereum., Surfaces share typed requests/results, every scan has finite range/item/byte/time/retry bounds, provider URLs and secret values cannot be supplied by untrusted MCP requests outside allowlists, default export is finalized, provisional/raw modes are explicit, no signing/broadcast verb exists, status/receipts exclude wallet payload and secrets.
+- Preconditions: objective goal WALPROC-G600 is schedulable, objective goal WALPROC-G610 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, satisfy evidence requirement: ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-packet/v1/1ac0d0de4eb04192fe31dee830c75531e861df4bd696155e63ea5c0af32d2f19
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Embedding query: goal packet goal_packet/integration/ipfs_datasets_py/1c769b1f5b14; lazy wallet processor registry factory generic adapter optional dependencies capabilities; wallet processor python cli mcp ingest export resume status capabilities bounded; Publish lazy registry and one generic processor adapter; Add bounded Python, CLI, and MCP ingest/export surfaces
+- AST query: WalletProcessorRegistry get_wallet_processor, WalletProcessorAPI wallet_ingest wallet_export
+- Surplus group: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Merge key: e2a12e23097f6bc1
+- Merge family: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Merge role: packet_aggregate
+- Work item count: 6
+- Work scope: goal_subgoal_packet_aggregate; vector_ast_bundle
+- Goal packet: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Goal packet role: packet_aggregate
+- Goal packet goals: WALPROC-G600, WALPROC-G610
+- Goal packet task count: 3
+- Goal packet work item count: 6
+- Completion goal bindings: {"WALPROC-G600":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py","ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py","ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py"],"WALPROC-G610":["ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py","ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools","ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py"]}
+- Completion task bindings: baguqeerazpwxsa4iolkcky6442thhxfufzbmrov6bqivh5xojwthn3pyxgia, baguqeeran36wyl327mikkludtlw62sp233az4auowz337av6lvcqa7eqm75q
+- Candidate kind: goal_packet_aggregate
+- Todo vector key: c65c038284dd93f6
+- Acceptance: Objective scan filed this gap for WALPROC-G600. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-024-objective-gap-d5c5aac2b37e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/integration/ipfs_datasets_py/1c769b1f5b14; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G600, WALPROC-G610) and covers all the shared packet evidence in one comprehensive pass. Integration owner alone edits shared package __init__ and registry files.
+
+## WALPROC-025 Implement wallet processor migration objective: Publish lazy registry and one generic processor adapter
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: integration
+- Depends on: WALPROC-007, WALPROC-016, WALPROC-017, WALPROC-018, WALPROC-019, WALPROC-020
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-025-objective-gap-25657c28e4ea.md
+- Bundle: wallet-processors/integration
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-integration.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 20
+- Parallel lane: wallet-processors/integration
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/__init__.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Changed paths:
+- AST symbols: WalletProcessorRegistry get_wallet_processor
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G600
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/3a365b5abf2aa9c9015a322c569391cf01227b16d30f487f2470d70d8af01e2c
+- Canonical task CID: baguqeerahi3fwwv7fku4sak2giwfne4rz4ase6yw2mhuq7zeodlq3cxqdywa
+- Semantic identity: objective-evidence-obligation/v1/25f5b331983d99dc8e59cf2f33acca108c9a23b6d8da3f0e95cdb2bb5e4e9bae
+- Acceptance subset: Chain providers load lazily, capabilities are explicit, unknown/ambiguous networks fail, optional dependency errors identify the extra without auto-installing, one generic adapter exists and the rejected registry surface is not also wired, root processor imports remain lightweight, Xaman composes XRPL and World Chain composes Ethereum.
+- Preconditions: objective goal WALPROC-G600 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, satisfy evidence requirement: ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G600
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/25f5b331983d99dc8e59cf2f33acca108c9a23b6d8da3f0e95cdb2bb5e4e9bae
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Embedding query: lazy wallet processor registry factory generic adapter optional dependencies capabilities
+- AST query: WalletProcessorRegistry get_wallet_processor
+- Surplus group: objective/WALPROC-G600
+- Merge key: 83cddbec360f4ec3
+- Merge family: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Goal packet role: packet_anchor
+- Goal packet goals: WALPROC-G600, WALPROC-G610
+- Goal packet task count: 2
+- Goal packet work item count: 6
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 9fc8bfb9389e7962
+- Acceptance: Objective scan filed this gap for WALPROC-G600. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-025-objective-gap-25657c28e4ea.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/registry.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/adapters/processor_protocol.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/integration/ipfs_datasets_py/1c769b1f5b14; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G600, WALPROC-G610) and covers all the shared packet evidence in one comprehensive pass. Integration owner alone edits shared package __init__ and registry files.
+
+## WALPROC-026 Implement wallet processor migration objective: Link Xaman runtime records to formal assurance without coupling
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: xaman-assurance
+- Depends on: WALPROC-021
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-026-objective-gap-2c69caca4327.md
+- Bundle: wallet-processors/xaman-assurance
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-xaman-assurance.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 21
+- Parallel lane: wallet-processors/xaman-assurance
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md
+- Changed paths:
+- AST symbols: xaman_source_extractor XamanWalletProcessor SecurityModelIR
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G220
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/ac538715a6c0258fa10b718c40b3f4f0f2649581096620f7db0259b3277fec0c
+- Canonical task CID: baguqeeravrjyofngyasy7iiloggebm7u6dzgjfmbbftcb563ajm3gj375qga
+- Semantic identity: objective-evidence-obligation/v1/7b49a770c3982aca64419b33670780c3d8647d00aa76c27e28e264e00237e57b
+- Acceptance subset: Runtime imports no proof tool, report generator, archive corpus, Firebase, native vault, or device harness, formal modules stay at existing paths unless separately mapped, projection covers network binding, payload lifecycle, signing decision, submission, and finality assumptions, assurance status is not runtime authorization or release proof.
+- Preconditions: objective goal WALPROC-G220 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, satisfy evidence requirement: ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G220
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/7b49a770c3982aca64419b33670780c3d8647d00aa76c27e28e264e00237e57b
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md
+- Embedding query: xaman runtime formal assurance bridge security model no coupling
+- AST query: xaman_source_extractor XamanWalletProcessor SecurityModelIR
+- Surplus group: objective/WALPROC-G220
+- Merge key: d47a0db94c5c78d6
+- Merge family: objective/WALPROC-G220
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 2f706242418e037f
+- Acceptance: Objective scan filed this gap for WALPROC-G220. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-026-objective-gap-2c69caca4327.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/assurance.py, ipfs_datasets_py/tests/contract/processors/wallets/test_xaman_assurance_bridge.py, ipfs_datasets_py/docs/security_verification/xaman_wallet_processor_mapping.md), and keep the supervisor-fed backlog aligned with the objective heap.  Treat formal artifact relocation as a separate task only if the inventory proves true runtime duplication.
+
+## WALPROC-027 Implement wallet processor migration objective: Prove cross-chain conformance and differential compatibility
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: validation
+- Depends on: WALPROC-014, WALPROC-022, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-025, WALPROC-050
+- Outputs: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets ipfs_datasets_py/tests/contract/processors/wallets
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-027-objective-gap-193a4f8ec716.md
+- Bundle: wallet-processors/conformance
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-conformance.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 22
+- Parallel lane: wallet-processors/conformance
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
+- Changed paths:
+- AST symbols: WalletProcessorConformance
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G620
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/17590fc9e945bd7ec02e91699b1e74f6f9bafc463fad76c966a9cc3b1a948107
+- Canonical task CID: baguqeerac5mq7spjiw6x5qbosfuzwhtu6343v7cgh6wxnslgvhgdwguuqedq
+- Semantic identity: objective-evidence-obligation/v1/7c55b751fd28ae7401d299ccdd96300a9d60e93f77fdc724c4e6b03d8ae14c6f
+- Acceptance subset: Five families pass the same contract without exemptions hiding required behavior, old/new safe World ID results and snapshots match, known unsafe baseline cases now fail closed, normalized queries preserve chain identity and exact quantities, no import/network/secret regressions, report records two consecutive clean current-tree runs and dependency versions.
+- Preconditions: objective goal WALPROC-G620 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, satisfy evidence requirement: ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, satisfy evidence requirement: data/wallet_processor_migration/validation/conformance-report.json
+- Evidence subset: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G620
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/7c55b751fd28ae7401d299ccdd96300a9d60e93f77fdc724c4e6b03d8ae14c6f
+- Missing evidence: ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json
+- Embedding query: all wallet processors conformance world id differential snapshot cross chain schema
+- AST query: WalletProcessorConformance
+- Surplus group: objective/WALPROC-G620
+- Merge key: 2202a1e080f67c22
+- Merge family: objective/WALPROC-G620
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 4b1d3492cf537836
+- Acceptance: Objective scan filed this gap for WALPROC-G620. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-027-objective-gap-193a4f8ec716.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/tests/contract/processors/wallets/test_all_processors.py, ipfs_datasets_py/tests/contract/processors/wallets/test_worldcoin_differential.py, data/wallet_processor_migration/validation/conformance-report.json), and keep the supervisor-fed backlog aligned with the objective heap.  A failing chain creates a scoped repair task in that chain bundle.
+
+## WALPROC-028 Implement wallet processor migration objective: Complete privacy, threat-model, and secret-leak review
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049, WALPROC-060, WALPROC-061, WALPROC-062, WALPROC-063
+- Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-028-objective-gap-5819c07ac490.md
+- Bundle: wallet-processors/security
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-security.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 23
+- Parallel lane: wallet-processors/security
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Changed paths:
+- AST symbols: redact SecretResolver RawPayloadStore
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G630
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/e4aed0757b0f0ac51511e94ac798a593ca905c5969b16c8d865405b91ff10789
+- Canonical task CID: baguqeera4sxna5l3b4fmkfir5ffmpgffspfjaxczngywzdmgkqc3sh7ra6eq
+- Semantic identity: objective-evidence-obligation/v1/3be1e6078ab6d28331d240ab6e626903629bef1cf453438f8a02cb54afd656eb
+- Acceptance subset: No seed/private/signing material is accepted by canonical models, public data is treated as potentially personal, identity clustering is absent, raw/memo/calldata/instruction storage is opt-in/bounded/redacted, SSRF and decompression/body/page/range abuse fail, secrets/full endpoints are absent from every serialization/log/error/receipt, signing/broadcast remain explicitly denied future capabilities.
+- Preconditions: objective goal WALPROC-G630 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, satisfy evidence requirement: ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, satisfy evidence requirement: ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Evidence subset: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G630
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/3be1e6078ab6d28331d240ab6e626903629bef1cf453438f8a02cb54afd656eb
+- Missing evidence: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py
+- Embedding query: wallet public ledger privacy threat model nullifier payload secrets ssrf dos raw data custody
+- AST query: redact SecretResolver RawPayloadStore
+- Surplus group: objective/WALPROC-G630
+- Merge key: 0c9eef4ee9b23c95
+- Merge family: objective/WALPROC-G630
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: e56052ca70d9d002
+- Acceptance: Objective scan filed this gap for WALPROC-G630. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-028-objective-gap-5819c07ac490.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py), and keep the supervisor-fed backlog aligned with the objective heap.  Critical findings block release and generate scoped repair goals.
+
+## WALPROC-029 Implement wallet processor migration objective: Add bounded Python, CLI, and MCP ingest/export surfaces
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: integration
+- Depends on: WALPROC-011, WALPROC-025
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py, ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-029-objective-gap-82f44053666b.md
+- Bundle: wallet-processors/integration
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-integration.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 24
+- Parallel lane: wallet-processors/integration
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/cli/wallets.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py, ipfs_datasets_py/tests/unit/processors/wallets/test_api.py
+- Changed paths:
+- AST symbols: WalletProcessorAPI wallet_ingest wallet_export
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G610
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/2d38288648678dab5077cbaf25ed7a55481ab5b97bd5e940af430a5ddbd3d3a9
+- Canonical task CID: baguqeerafu4crbsim6g2wudxzoxsl3l2kvebvnnzppk6sqfpimff3w6t2ouq
+- Semantic identity: objective-evidence-obligation/v1/1d2da2698804284ecdf2357d11270ddbf97115296617aaee4bf9ea96650d62e6
+- Acceptance subset: Surfaces share typed requests/results, every scan has finite range/item/byte/time/retry bounds, provider URLs and secret values cannot be supplied by untrusted MCP requests outside allowlists, default export is finalized, provisional/raw modes are explicit, no signing/broadcast verb exists, status/receipts exclude wallet payload and secrets.
+- Preconditions: objective goal WALPROC-G610 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, satisfy evidence requirement: ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G610
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/1d2da2698804284ecdf2357d11270ddbf97115296617aaee4bf9ea96650d62e6
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py
+- Embedding query: wallet processor python cli mcp ingest export resume status capabilities bounded
+- AST query: WalletProcessorAPI wallet_ingest wallet_export
+- Surplus group: objective/WALPROC-G610
+- Merge key: bbf600b38d1e511e
+- Merge family: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/integration/ipfs_datasets_py/1c769b1f5b14
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G600, WALPROC-G610
+- Goal packet task count: 2
+- Goal packet work item count: 6
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: e805fb91c23eb569
+- Acceptance: Objective scan filed this gap for WALPROC-G610. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-029-objective-gap-82f44053666b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/api.py, ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/wallet_processor_tools, ipfs_datasets_py/tests/mcp/test_wallet_processor_tools.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/integration/ipfs_datasets_py/1c769b1f5b14; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G600, WALPROC-G610) and covers all the shared packet evidence in one comprehensive pass. Reuse existing MCP registration conventions without importing all chain extras.
+
+## WALPROC-030 Implement wallet processor migration objective packet: WALPROC-G710, WALPROC-G700
+
+- Status: blocked
+- Completion: manual
+- Is schedulable: false
+- Review only: true
+- Blocked reason: Deterministic planner aggregate only; the packet anchor and member tasks are the execution authority.
+- Priority: P0
+- Track: release
+- Depends on:
+- Outputs: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py, ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py && npm --prefix wallet_interface/ui test -- --runInBand
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-030-objective-gap-d5d620b884bf.md
+- Bundle: wallet-processors/release
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 25
+- Parallel lane: wallet-processors/release
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py, ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Changed paths:
+- AST symbols: create_world_id_router WorldIdVerificationPanel, __all__
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G710
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/39518df9e35e8a69c8db3e212f6a108910e9443066a7b1ef58c7804362bc3c50
+- Canonical task CID: baguqeerahfiy36pdl2fgtsg3hyqs62qqreiosrbqm2t3d32yy6aegyv4hria
+- Semantic identity: objective-evidence-packet/v1/7fdb1ab23227a4499a78fbb71bd8dc01aae8bcbc8e176949e9fc1de91d8327e9
+- Acceptance subset: Target package commit and outer gitlink are recorded, two clean target validation runs and application tests pass, UI uses the typed client and exposes no raw-nullifier DTO where migrated, production defaults are fail closed, old implementation is absent, wrapper aliases have an expiry version, rollback to the prior gitlink/wrapper is rehearsed without dataset loss., Docs distinguish World ID/World Chain/WLD and Xaman/XRPL, examples are offline or require explicit network opt-in, import and schema migration windows are stated, extras and capability gaps are documented, no example signs/broadcasts or embeds a real address/key, rollback covers target package version and outer gitlink/wrapper.
+- Preconditions: objective goal WALPROC-G710 is schedulable, objective goal WALPROC-G700 is schedulable
+- Effects: satisfy evidence requirement: data/wallet_processor_migration/release/cutover-receipt.json, satisfy evidence requirement: docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, satisfy evidence requirement: tests/test_world_id_wrapper_ownership.py, satisfy evidence requirement: ipfs_datasets_py/docs/wallet_processors/README.md, satisfy evidence requirement: ipfs_datasets_py/examples/wallet_processors, satisfy evidence requirement: docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Evidence subset: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py, ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-packet/v1/7fdb1ab23227a4499a78fbb71bd8dc01aae8bcbc8e176949e9fc1de91d8327e9
+- Missing evidence: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py, ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md
+- Embedding query: goal packet goal_packet/release/ipfs_datasets_py/931f67fbca87; staged cutover release ipfs datasets submodule pin 211 ai wrapper ui playwright rollback; wallet processors documentation examples schema migration compatibility rollback worldcoin xaman; Perform staged 211-AI cutover and release validation; Finish packaging, schemas, examples, and migration documentation
+- AST query: create_world_id_router WorldIdVerificationPanel, __all__
+- Surplus group: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Merge key: c5359a3def5e7cd4
+- Merge family: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Merge role: packet_aggregate
+- Work item count: 6
+- Work scope: goal_subgoal_packet_aggregate; vector_ast_bundle
+- Goal packet: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Goal packet role: packet_aggregate
+- Goal packet goals: WALPROC-G710, WALPROC-G700
+- Goal packet task count: 3
+- Goal packet work item count: 6
+- Completion goal bindings: {"WALPROC-G700":["ipfs_datasets_py/docs/wallet_processors/README.md","ipfs_datasets_py/examples/wallet_processors","docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md"],"WALPROC-G710":["data/wallet_processor_migration/release/cutover-receipt.json","docs/runbooks/WALLET_PROCESSOR_CUTOVER.md","tests/test_world_id_wrapper_ownership.py"]}
+- Completion task bindings: baguqeerax5i4vehe7ghgg6lv5k4vwko4sqyq4c6sblnnlrq2hrem5oiwaqcq, baguqeeratatxgpfrp2torsjekg5ekucrsrmk6w3vzkdkfvee3qkgy4isfpmq
+- Candidate kind: goal_packet_aggregate
+- Todo vector key: 3317fcba5fe0d6c4
+- Acceptance: Objective scan filed this gap for WALPROC-G710. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-030-objective-gap-d5d620b884bf.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py, ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors, docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G710, WALPROC-G700) and covers all the shared packet evidence in one comprehensive pass. Playwright/live signoff may be recorded as an external blocker when required infrastructure is unavailable.
+
+## WALPROC-031 Implement wallet processor migration objective: Finish packaging, schemas, examples, and migration documentation
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: release
+- Depends on: WALPROC-010, WALPROC-029, WALPROC-027, WALPROC-028
+- Outputs: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/contract/processors/wallets/test_documented_examples.py
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-031-objective-gap-256d97b820a3.md
+- Bundle: wallet-processors/release
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 25
+- Parallel lane: wallet-processors/release
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/docs/wallet_processors, ipfs_datasets_py/examples/wallet_processors, ipfs_datasets_py/README.md, ipfs_datasets_py/CHANGELOG.md
+- Changed paths:
+- AST symbols: __all__
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G700
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/b0ffe48c21f97e093c6126ede4ceb72ec52d25087d04c20622280b072da8024d
+- Canonical task CID: baguqeerawd76jdbb7f7aspdbe3w6jtvxf3cs2jiipucmebrcfafqolniajgq
+- Semantic identity: objective-evidence-obligation/v1/988220d1cf881c5f4055816600bff20ade1123f930698842b864bcf031cbbabc
+- Acceptance subset: Docs distinguish World ID/World Chain/WLD and Xaman/XRPL, examples are offline or require explicit network opt-in, import and schema migration windows are stated, extras and capability gaps are documented, no example signs/broadcasts or embeds a real address/key, rollback covers target package version and outer gitlink/wrapper.
+- Preconditions: objective goal WALPROC-G700 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/wallet_processors/README.md, satisfy evidence requirement: ipfs_datasets_py/examples/wallet_processors
+- Evidence subset: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G700
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/988220d1cf881c5f4055816600bff20ade1123f930698842b864bcf031cbbabc
+- Missing evidence: ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors
+- Embedding query: wallet processors documentation examples schema migration compatibility rollback worldcoin xaman
+- AST query: __all__
+- Surplus group: objective/WALPROC-G700
+- Merge key: 1e48d8be6a2f22dd
+- Merge family: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Goal packet role: packet_member
+- Goal packet goals: WALPROC-G700, WALPROC-G710
+- Goal packet task count: 2
+- Goal packet work item count: 6
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 915715e5ca4a0195
+- Acceptance: Objective scan filed this gap for WALPROC-G700. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-031-objective-gap-256d97b820a3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/wallet_processors/README.md, ipfs_datasets_py/examples/wallet_processors), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G700, WALPROC-G710) and covers all the shared packet evidence in one comprehensive pass. Shared docs have one release owner after chain docs land. Synchronizing docs/planning/WALLET_PROCESSORS_MIGRATION_PLAN.md is operator-owned control-plane work and is explicitly excluded from this implementation task.
+
+## WALPROC-032 Implement wallet processor migration objective: Add metrics, benchmarks, and operational runbooks
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P2
+- Track: operations
+- Depends on: WALPROC-011, WALPROC-027
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, ipfs_datasets_py/benchmarks/wallet_processors, ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_metrics.py && python ipfs_datasets_py/benchmarks/wallet_processors/run.py --fixture-only
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-032-objective-gap-9cac153e48eb.md
+- Bundle: wallet-processors/operations
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-operations.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 26
+- Parallel lane: wallet-processors/operations
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, ipfs_datasets_py/benchmarks/wallet_processors, ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md
+- Changed paths:
+- AST symbols: WalletProcessorMetrics IngestRunReceipt
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G640
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/bfebbd1c44d0c2420ecdd9eec7c16bcbfa1d59981fd593a86026d7ba6d70514a
+- Canonical task CID: baguqeerax7v32hce2dbeedwn3hxmpqllzp5b2wmyd7kzhkdae3l3u3lqkffa
+- Semantic identity: objective-evidence-obligation/v1/f5569b5056859943b19fab34c057cd21be9f19778b577c999d18f836247283cd
+- Acceptance subset: Metrics cover calls/retries/throttles/bytes/records/errors/checkpoint age/head lag/rewinds/finality/throughput without addresses/payloads/secrets, benchmark reports records/sec and peak memory on fixed fixtures, operational bounds and recovery from crash/CAS/reorg/provider mismatch are documented, live smoke is disabled unless explicit endpoint and network approval are supplied.
+- Preconditions: objective goal WALPROC-G640 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, satisfy evidence requirement: ipfs_datasets_py/benchmarks/wallet_processors, satisfy evidence requirement: ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, ipfs_datasets_py/benchmarks/wallet_processors, ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G640
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f5569b5056859943b19fab34c057cd21be9f19778b577c999d18f836247283cd
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, ipfs_datasets_py/benchmarks/wallet_processors, ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md
+- Embedding query: wallet processor metrics benchmark checkpoint lag reorg throughput operations runbook
+- AST query: WalletProcessorMetrics IngestRunReceipt
+- Surplus group: objective/WALPROC-G640
+- Merge key: 048d48b203c9b3bc
+- Merge family: objective/WALPROC-G640
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f4691a80f05dc0e9
+- Acceptance: Objective scan filed this gap for WALPROC-G640. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-032-objective-gap-9cac153e48eb.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/wallets/metrics.py, ipfs_datasets_py/benchmarks/wallet_processors, ipfs_datasets_py/docs/operations/WALLET_PROCESSOR_RUNBOOK.md), and keep the supervisor-fed backlog aligned with the objective heap.  Do not set performance budgets from live provider latency alone.
+
+## WALPROC-033 Implement wallet processor migration objective: Perform staged 211-AI cutover and release validation
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: release
+- Depends on: WALPROC-023, WALPROC-027, WALPROC-028, WALPROC-032, WALPROC-031
+- Outputs: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py
+- Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py && npm --prefix wallet_interface/ui run build && PLAYWRIGHT_PORT=5175 npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts tests/world-id-ux.spec.ts --project="Desktop Chrome" && PLAYWRIGHT_PORT=5176 npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts --project="Desktop Chrome"
+- Evidence inputs: data/wallet_processor_migration/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-033-objective-gap-7581aa355e31.md
+- Bundle: wallet-processors/release
+- Bundle shard: data/wallet_processor_migration/agent_supervisor/bundles/wallet-processors-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: WALPROC-G000
+- Graph depth: 1
+- Objective heap index: 27
+- Parallel lane: wallet-processors/release
+- Conflict policy: prefer bundle-local changes; invoke the LLM merge resolver for semantic conflicts
+- Predicted files: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py, wallet_interface/world_id.py
+- Changed paths:
+- AST symbols: create_world_id_router WorldIdVerificationPanel
+- Interfaces:
+- Submodules:
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: WALPROC-G710
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/a7a683f7a01c79897bb2ec001ed8dcfc02508daf93dfa35228e8917d1609deaf
+- Canonical task CID: baguqeerau6tih55adr4ys65s5qab5wg47qbfbdnpspp2guri5cix2fqj32xq
+- Semantic identity: objective-evidence-obligation/v1/74651683d8800395e0cbe16d6789d794d5a555b30142a4abd6a80e9af790b49e
+- Acceptance subset: Target package commit and outer gitlink are recorded, two clean target validation runs and application tests pass, UI uses the typed client and exposes no raw-nullifier DTO where migrated, production defaults are fail closed, old implementation is absent, wrapper aliases have an expiry version, rollback to the prior gitlink/wrapper is rehearsed without dataset loss.
+- Preconditions: objective goal WALPROC-G710 is schedulable
+- Effects: satisfy evidence requirement: data/wallet_processor_migration/release/cutover-receipt.json, satisfy evidence requirement: docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, satisfy evidence requirement: tests/test_world_id_wrapper_ownership.py
+- Evidence subset: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-medium
+- Merge fate: objective/WALPROC-G710
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/74651683d8800395e0cbe16d6789d794d5a555b30142a4abd6a80e9af790b49e
+- Missing evidence: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py
+- Embedding query: staged cutover release ipfs datasets submodule pin 211 ai wrapper ui playwright rollback
+- AST query: create_world_id_router WorldIdVerificationPanel
+- Surplus group: objective/WALPROC-G710
+- Merge key: bc95b4ada0b5c07b
+- Merge family: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch; goal_subgoal_packet
+- Goal packet: goal_packet/release/ipfs_datasets_py/931f67fbca87
+- Goal packet role: packet_anchor
+- Goal packet goals: WALPROC-G700, WALPROC-G710
+- Goal packet task count: 2
+- Goal packet work item count: 6
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 347bf3698843d4e7
+- Acceptance: Objective scan filed this gap for WALPROC-G710. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/discovery/2026-07-28-walproc-033-objective-gap-7581aa355e31.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, tests/test_world_id_wrapper_ownership.py), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/release/ipfs_datasets_py/931f67fbca87; implement a complete, cohesive change that fully advances the packet goals (WALPROC-G700, WALPROC-G710) and covers all the shared packet evidence in one comprehensive pass. Playwright/live signoff may be recorded as an external blocker when required infrastructure is unavailable.
+
+## WALPROC-034 Resolve dependency guardrail for WALPROC-005
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-034-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-005 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-034-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-035 Resolve dependency guardrail for WALPROC-006
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-035-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-006 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-035-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-036 Resolve dependency guardrail for WALPROC-008
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-036-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-008 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-036-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-037 Resolve dependency guardrail for WALPROC-009
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-037-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-009 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-037-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-038 Resolve dependency guardrail for WALPROC-011
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-038-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-011 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-038-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-039 Resolve dependency guardrail for WALPROC-012
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-039-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-012 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-039-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-040 Resolve dependency guardrail for WALPROC-013
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-040-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-013 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-040-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-041 Resolve dependency guardrail for WALPROC-014
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-041-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-014 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-041-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-042 Resolve dependency guardrail for WALPROC-015
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-042-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-015 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-042-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-043 Resolve dependency guardrail for WALPROC-016
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-043-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-016 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-043-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-044 Resolve dependency guardrail for WALPROC-017
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-044-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-017 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-044-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-045 Resolve dependency guardrail for WALPROC-018
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-045-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-018 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-045-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-046 Resolve dependency guardrail for WALPROC-019
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-046-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-019 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-046-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-047 Resolve dependency guardrail for WALPROC-020
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-047-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-020 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-047-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-048 Resolve dependency guardrail for WALPROC-021
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/wallet_processor_migration/agent_supervisor/runtime/discovery, docs/planning/WALLET_PROCESSORS_TODO.md
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-048-dependency-guardrail.md
+- Acceptance: Dependency guardrail filed this because WALPROC-021 has missing, self-referential, cyclic, or duplicate task-id metadata. Use the evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-28-walproc-048-dependency-guardrail.md to repair the todo board metadata or add the missing prerequisite task, then verify the original task can become ready once its real dependencies complete.
+
+## WALPROC-049 Repair World ID secret-reference representation
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-014
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py
+- Goal id: WALPROC-G630-R1
+- Completion authority: local
+- Acceptance subset: WorldIdSecretConfig string and repr surfaces never expose direct secret values or complete secret-reference paths; public and durable serialization retain only the existing bounded source kind and opaque reference identifier.
+- Acceptance: Repair the critical finding discovered by WALPROC-028. Add a focused regression for direct WorldIdSecretConfig repr/str surfaces, redact secret_ref from the dataclass representation without weakening configured/source behavior, and keep raw secret values and full secret-reference paths absent from logs, errors, receipts, and serialization.
+
+## WALPROC-050 Repair wallet fixture conformance baseline
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: validation
+- Depends on: WALPROC-013, WALPROC-017, WALPROC-019, WALPROC-020, WALPROC-021
+- Outputs: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py ipfs_datasets_py/tests/contract/processors/wallets/test_bitcoin_conformance.py ipfs_datasets_py/tests/contract/processors/wallets/test_fixture_integrity.py ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py
+- Predicted files: ipfs_datasets_py/tests/fixtures/wallets/digests.json, ipfs_datasets_py/tests/contract/processors/wallets/test_migration_baseline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_registry.py
+- Goal id: WALPROC-G620-R1
+- Completion authority: local
+- Acceptance subset: Every committed wallet fixture has an exact current digest, the Xaman runtime manifest remains attributed to WALPROC-G210, the migration baseline continues to verify the WALPROC-G020 formal-assurance evidence embedded in the Xaman fixture bundle, and lazy-registry tests restore every chain module they temporarily remove from sys.modules.
+- Acceptance: Repair the pre-existing conformance failures discovered by WALPROC-027. Deterministically regenerate the wallet fixture digest lock for all committed fixtures; update only the stale Xaman baseline assertions so they recognize the dual WALPROC-G210 runtime and WALPROC-G020 assurance roles; and make the existing registry-test reset fixture snapshot, remove newly loaded modules, and restore the original chain-module graph so later conformance tests retain one class identity. Do not weaken fixture checks or mask the test-isolation defect in Bitcoin production code.
+
+## WALPROC-060 Close secret-smuggling serialization paths
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-006, WALPROC-011, WALPROC-012
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_models.py ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/checkpoints.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/export.py, ipfs_datasets_py/tests/unit/processors/wallets/test_models.py, ipfs_datasets_py/tests/unit/processors/wallets/test_checkpoints.py, ipfs_datasets_py/tests/unit/processors/wallets/test_export.py
+- Goal id: WALPROC-G630-R2
+- Completion authority: local
+- Acceptance subset: Canonical extensions, checkpoint metadata and cursors, manifest warnings, and export receipts reject or redact recursively nested secret-shaped keys and concrete secret values while retaining deterministic canonical serialization for safe data.
+- Acceptance: Repair WP-SEC-001 from WALPROC-028. Introduce one bounded recursive secret-field/value policy and apply it consistently to canonical extensions, checkpoint free-form fields, manifests, and receipts. Add positive safe-data and adversarial nested-secret regressions; do not silently discard ordinary chain data or expose secret values in repr, str, JSON, logs, errors, checkpoints, manifests, or receipts.
+
+## WALPROC-061 Bound and authorize raw-payload custody
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-011
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/storage.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/pipeline.py, ipfs_datasets_py/tests/unit/processors/wallets/test_storage.py, ipfs_datasets_py/tests/unit/processors/wallets/test_pipeline.py
+- Goal id: WALPROC-G630-R3
+- Completion authority: local
+- Acceptance subset: Raw-payload retention is omitted by default and requires an explicit policy with positive per-object, per-run byte, and retained-object limits enforced before copying, hashing, allocating, or writing; failed writes leave stores unchanged.
+- Acceptance: Repair WP-BOUNDS-002 from WALPROC-028. Enforce operation bounds in in-memory and directory stores, restrictive directory permissions, and fail-closed encrypted mode when no encryptor is injected. Add regressions proving oversized and over-count payloads raise ResourceLimitError before state changes and bounded explicit retention remains usable.
+
+## WALPROC-062 Make XRPL and Xaman free-form retention opt-in
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-017, WALPROC-021
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/normalizer.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/normalizer.py, ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py, ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xrpl/normalizer.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/privacy.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/xaman/normalizer.py, ipfs_datasets_py/tests/unit/processors/wallets/xrpl/test_normalizer_and_provider.py, ipfs_datasets_py/tests/unit/processors/wallets/xaman/test_provider_ingest.py
+- Goal id: WALPROC-G630-R4
+- Completion authority: local
+- Acceptance subset: Default XRPL memo and Xaman custom-instruction projections contain only presence, length, digest, and redaction metadata; retaining bounded content requires an explicit opt-in policy and preserves existing byte and item caps.
+- Acceptance: Repair WP-PRIV-003 from WALPROC-028. Change the default policies and normalizer paths to omit or redact free-form content, retain deterministic metadata and digests, and require an explicit caller policy for bounded content retention. Add default-redaction and explicit-opt-in regressions without changing settlement semantics.
+
+## WALPROC-063 Put World ID verification behind a bounded safe transport
+
+- Status: completed
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: WALPROC-009, WALPROC-016, WALPROC-049
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/config.py, ipfs_datasets_py/ipfs_datasets_py/processors/wallets/worldcoin/developer_portal.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_config.py, ipfs_datasets_py/tests/unit/processors/wallets/worldcoin/test_developer_portal.py
+- Goal id: WALPROC-G630-R5
+- Completion authority: local
+- Acceptance subset: World ID verification accepts only policy-approved HTTPS endpoints, rejects private/link-local/metadata DNS answers and unsafe redirects, enforces finite request/response/decompression/retry/deadline bounds, exposes only endpoint fingerprints in errors/config views, and never represents or serializes a raw nullifier.
+- Acceptance: Repair WP-NET-004 and the World ID portion of WP-SEC-001 from WALPROC-028. Reuse the shared EndpointPolicy and bounded transport where practical, sanitize upstream exception chaining, and wrap verification results so raw identity values cannot cross repr or serialization boundaries. Add metadata-service, DNS-rebinding, redirect, oversized/compressed-body, endpoint-leak, exception-leak, and nullifier regressions.
+
+## WALPROC-064 Resolve validation retry-budget failure for WALPROC-028
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: WALPROC-009, WALPROC-011, WALPROC-014, WALPROC-021, WALPROC-018, WALPROC-019, WALPROC-020, WALPROC-049, WALPROC-060, WALPROC-061, WALPROC-062, WALPROC-063
+- Outputs: ipfs_datasets_py/docs/security/WALLET_PROCESSOR_THREAT_MODEL.md, ipfs_datasets_py/tests/security/test_wallet_processor_secrets.py, ipfs_datasets_py/tests/security/test_wallet_processor_bounds.py, data/wallet_processor_migration/agent_supervisor/runtime/discovery
+- Validation: test -f /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in WALPROC-028. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-064-walproc-028-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release WALPROC-028 from strategy blocked_tasks.
+
+## WALPROC-065 Resolve validation retry-budget failure for WALPROC-033
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: WALPROC-023, WALPROC-027, WALPROC-028, WALPROC-032, WALPROC-031
+- Outputs: data/wallet_processor_migration/release/cutover-receipt.json, docs/runbooks/WALLET_PROCESSOR_CUTOVER.md, ipfs_datasets_py/CHANGELOG.md, ipfs_datasets_py/docs/wallet_processors/COMPATIBILITY.md, ipfs_datasets_py/docs/wallet_processors/MIGRATION.md, ipfs_datasets_py/docs/wallet_processors/README.md, wallet_interface/world_id.py, wallet_interface/ui/package.json, wallet_interface/ui/package-lock.json, wallet_interface/ui/src/features/wallet/lib/walletApi.ts, wallet_interface/ui/src/features/wallet/components/ProofCenterScreen.tsx, wallet_interface/ui/src/shared/components/WorldIdVerificationPanel.tsx, wallet_interface/ui/tests/fixtures/world-id-fixtures.ts, wallet_interface/ui/tests/world-id.spec.ts, wallet_interface/ui/tests/world-id-ux.spec.ts, wallet_interface/ui/tests/world-id-fullstack.spec.ts, data/wallet_processor_migration/agent_supervisor/runtime/discovery
+- Validation: python -m pytest -q tests/test_world_id_wrapper_ownership.py tests/test_world_id_wallet.py tests/test_world_id_wallet_api.py && npm --prefix wallet_interface/ui run build && PLAYWRIGHT_PORT=5175 npm --prefix wallet_interface/ui test -- tests/world-id.spec.ts tests/world-id-ux.spec.ts --project="Desktop Chrome" && PLAYWRIGHT_PORT=5176 npm --prefix wallet_interface/ui test -- tests/world-id-fullstack.spec.ts --project="Desktop Chrome"
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in WALPROC-033. Use evidence in /home/barberb/211-AI/.worktrees/wallet-processors-migration/data/wallet_processor_migration/agent_supervisor/runtime/discovery/2026-07-29-walproc-065-walproc-033-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release WALPROC-033 from strategy blocked_tasks. Materialize and validate the four declared ipfs_datasets_py release-document changes as source-bound submodule content, use architecture-neutral UI dependencies, route WorldIdVerificationPanel through the typed wallet client, treat the backend public configuration as authoritative and fail closed when app_id or rp_id is absent, remove every nullifier field from WorldIdVerificationResult and its fixture, and keep the exact World ID fixture companion within the proposal-reviewed candidate. Refresh proof receipts through ProofCenterScreen and the existing typed wallet API after verification; do not synthesize a duplicate local proof card in WorldIdVerificationPanel. Any world-id.spec.ts edit is limited to installing the current abby-ui-session-v1 session before navigation; its assertions and endpoint/privacy expectations must remain unchanged. The world-id-ux.spec.ts repair may install that session, align stale accessible heading/status/feature locators with the current rendered manual-intake, QR, and export surfaces demonstrated by Playwright diagnostics, and exclude standards-compliant visually hidden controls from the clipping diagnostic; it must preserve equivalent accessibility and public-metadata coverage and must not remove privacy assertions, broaden privacy matches, or change endpoint/privacy behavior. Update world-id-fullstack.spec.ts through an explicit test-only WalletInterfaceService/World ID request-transport injection seam so the live local fixture can run without relaxing, replacing, or bypassing the production WORLD_ID_ENDPOINT_POLICY; it may isolate the unrelated missing-person dead-drop background synchronization route while keeping every World ID API request and diagnostic live and exact. Fix the runbook rollback rehearsal so package commit coordinates are checked inside ipfs_datasets_py, and synchronize the cutover receipt's completion/validation fields with the hard-gate result. Do not use assume-unchanged, skip-worktree, uncommitted host-local patches, assertion weakening, or production policy bypasses: the proposal-reviewed candidate and the validation candidate must be identical. The production UI build, focused World ID Playwright specs, and declared Python tests are hard task gates. Failures outside those focused specs in the inherited full UI suite must be recorded separately as release debt and do not authorize edits outside the declared Outputs; live-tenant signoff remains an external release gate.

@@ -1,0 +1,203 @@
+{
+  "schema": "datasets_contract_analysis/dataset-contract-baseline@1",
+  "goal_id": "DSCON-G300",
+  "task_id": "DSCON-005",
+  "goal_packet": "goal_packet/datasets_pilot/ipfs_datasets_py/c2f31d882e73",
+  "goal_packet_goals": ["DSCON-G300", "DSCON-G310", "DSCON-G320"],
+  "generated_at": "2026-07-29T17:30:00Z",
+  "freeze_status": "frozen",
+  "characterization_only": true,
+  "production_code_changed": false,
+  "vulnerabilities_are_expected_failures": true,
+  "compatibility_promises": false,
+  "policy": {
+    "observe": "actual artifacts and side effects, not dictionary shape alone",
+    "safe_vectors": "preserve fail-closed security validations",
+    "repair_owners": {
+      "DSCON-G310": [
+        "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_contracts.py",
+        "ipfs_datasets_py/docs/schemas/dataset-operation-v1.schema.json"
+      ],
+      "DSCON-G320": [
+        "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_manipulator.py",
+        "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_loader.py",
+        "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_saver.py",
+        "ipfs_datasets_py/ipfs_datasets_py/core_operations/dataset_converter.py",
+        "ipfs_datasets_py/tests/unit/core_operations/test_dataset_manipulator.py"
+      ]
+    }
+  },
+  "companions": {
+    "fixtures_dir": "ipfs_datasets_py/tests/fixtures/dataset_manipulator",
+    "contract_test": "ipfs_datasets_py/tests/contract/core_operations/test_dataset_manipulator_baseline.py",
+    "drift_inventory": "data/datasets_contract_analysis/audit/datasets-manipulator-drift.json",
+    "ownership_map": "data/datasets_contract_analysis/audit/ownership-map.md",
+    "source_roots": "data/datasets_contract_analysis/audit/source-roots.json"
+  },
+  "channels_characterized": [
+    "direct_python",
+    "mcp_tool",
+    "mcp_client",
+    "http_service",
+    "swissknife",
+    "ipfs_kit"
+  ],
+  "operations_characterized": ["load", "save", "convert", "process"],
+  "observed_side_effects": [
+    {
+      "id": "OBS-SAVE-MCP-NO-WRITE",
+      "operation": "save",
+      "surface": "mcp save_dataset (dict path)",
+      "claimed_status": "success",
+      "filesystem_write": false,
+      "identity": "mock_dataset_{hash(str(dataset_data))}",
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-SAVE-MANAGER-NO-WRITE",
+      "operation": "save",
+      "surface": "ManagedDataset.save / save_async",
+      "claimed_status": "success",
+      "filesystem_write": false,
+      "comment_marker": "Mock successful save",
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-SAVE-CORE-NO-WRITE",
+      "operation": "save",
+      "surface": "DatasetSaver.save",
+      "claimed_status": "success",
+      "filesystem_write": false,
+      "placeholder": true,
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-CONVERT-MCP-MOCK",
+      "operation": "convert",
+      "surface": "mcp convert_dataset_format",
+      "claimed_status": "success",
+      "conversion_method": "mock",
+      "fabricated_num_records": 100,
+      "output_artifact_created": false,
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-CONVERT-CORE-PLACEHOLDER",
+      "operation": "convert",
+      "surface": "DatasetConverter.convert",
+      "claimed_status": "success",
+      "actual_conversion": false,
+      "placeholder": true,
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-PROCESS-NOOP-TRANSFORM",
+      "operation": "process",
+      "surface": "mcp process_dataset",
+      "claimed_status": "success",
+      "real_transform_applied": false,
+      "fabricated_filter_ratio": 0.9,
+      "identity": "processed_{hash(...) % 100000}",
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-LOAD-FALLBACK-SAMPLE",
+      "operation": "load",
+      "surface": "DatasetManager.get_dataset",
+      "claimed_status": "ManagedDataset returned",
+      "fails_closed_on_missing": false,
+      "fallback": "in-memory sample text/label",
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-MISSING-MANIPULATOR",
+      "operation": "manipulate",
+      "surface": "DatasetManipulator",
+      "importable": false,
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-MISSING-CONTRACTS",
+      "operation": "contracts",
+      "surface": "dataset_contracts",
+      "importable": false,
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-KIT-SHADOW-DEFINITIONS",
+      "operation": "ownership",
+      "surface": "DatasetManager shadows",
+      "definition_paths": [
+        "ipfs_datasets_py/ipfs_datasets_py/dataset_manager.py",
+        "ipfs_kit_py/ipfs_kit_py/ai_ml_integration.py",
+        "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_manager.py",
+        "ipfs_kit_py/ipfs_kit_py/mcp/ai/dataset_management/manager.py"
+      ],
+      "classification": "expected_failure"
+    },
+    {
+      "id": "OBS-KIT-LOAD-EXPORT",
+      "operation": "load",
+      "surface": "ipfs_kit_py.ipfs_datasets_integration",
+      "top_level_load_dataset_export": false,
+      "DatasetIPFSBackend_method_present": true,
+      "classification": "expected_failure"
+    }
+  ],
+  "safe_vectors_preserved": [
+    "reject dangerous process op types (eval/exec/import)",
+    "reject empty operations list",
+    "reject executable save destinations",
+    "reject .py dataset sources",
+    "require destination on typed save path"
+  ],
+  "acceptance_coverage": {
+    "pass_no_op_transformations": true,
+    "fabricated_counts": true,
+    "random_hash_id_identities": true,
+    "no_write_saves": true,
+    "no_conversion_converts": true,
+    "fallback_sample_datasets": true,
+    "duplicate_shadowed_monolith_methods": true,
+    "missing_calls_imports": true,
+    "kit_integration_failures": true,
+    "weak_wrappers": true,
+    "safe_existing_vectors_preserved": true,
+    "vulnerabilities_expected_failures_not_compatibility": true,
+    "side_effects_observed": true
+  },
+  "present_core_symbols": [
+    "DatasetLoader",
+    "DatasetSaver",
+    "DatasetConverter",
+    "DataProcessor"
+  ],
+  "missing_core_symbols": [
+    "DatasetManipulator",
+    "DatasetRef",
+    "ArtifactRef",
+    "DatasetOperationPlan",
+    "DatasetOperationReceipt",
+    "OperationRegistry"
+  ],
+  "linked_drift_findings": [
+    "DSCON-DRIFT-001",
+    "DSCON-DRIFT-002",
+    "DSCON-DRIFT-003",
+    "DSCON-DRIFT-004",
+    "DSCON-DRIFT-005",
+    "DSCON-DRIFT-006",
+    "DSCON-DRIFT-007",
+    "DSCON-DRIFT-008",
+    "DSCON-DRIFT-009",
+    "DSCON-DRIFT-010",
+    "DSCON-DRIFT-011",
+    "DSCON-DRIFT-012",
+    "DSCON-DRIFT-013"
+  ],
+  "notes": [
+    "Inventory + live side-effect freeze only; no production refactors in DSCON-005.",
+    "Mock success paths remain defects for DSCON-G320 to eliminate.",
+    "Weak existing unit tests that only check dict shape are recorded, not elevated."
+  ]
+}

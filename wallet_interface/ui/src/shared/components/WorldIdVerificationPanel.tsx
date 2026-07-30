@@ -3,7 +3,14 @@ import { RefreshCw, ShieldCheck, UserCheck } from "lucide-react";
 import { IDKitRequestWidget, proofOfHuman, type IDKitResult } from "@worldcoin/idkit";
 import { Badge, Button, StatusBanner } from "./ui";
 import { readRuntimeWorldIdConfig } from "../lib/runtimeConfig";
-import type { WalletApiConfig } from "../../services/walletApi";
+import {
+  createWorldIdRpSignature,
+  isWorldIdWalletApiError,
+  loadWorldIdConfig as fetchWorldIdConfig,
+  loadWorldIdStatus,
+  registerWorldIdVerification,
+  type WalletApiConfig
+} from "../../services/walletApi";
 
 const IDKitErrorCodes = {
   Cancelled: "cancelled",
@@ -88,20 +95,6 @@ type PanelIssue = {
   source: "idkit" | "backend" | "signature" | "config" | "user";
 };
 
-class WorldIdApiError extends Error {
-  status: number;
-  detail: string;
-  code?: string;
-
-  constructor(status: number, detail: string, code?: string) {
-    super(detail);
-    this.name = "WorldIdApiError";
-    this.status = status;
-    this.detail = detail;
-    this.code = code;
-  }
-}
-
 export function WorldIdVerificationPanel({
   apiConfig,
   onAuditRefresh,
@@ -135,6 +128,7 @@ export function WorldIdVerificationPanel({
       apiConfig.actorDid &&
       worldIdConfig.enabled &&
       worldIdConfig.appId &&
+      worldIdConfig.rpId &&
       worldIdConfig.action &&
       !["loading", "requesting_signature", "idkit", "verifying", "refreshing"].includes(phase)
   );
@@ -147,9 +141,7 @@ export function WorldIdVerificationPanel({
       setWorldIdStatus(null);
       return null;
     }
-    const url = walletUrl(apiConfig, "/world-id/status");
-    url.searchParams.set("actor_did", apiConfig.actorDid);
-    const payload = await fetchJson(url, "World ID status");
+    const payload = await loadWorldIdStatus(apiConfig);
     const nextStatus = normalizeStatus(payload);
     setWorldIdStatus(nextStatus);
     return nextStatus;
@@ -161,7 +153,7 @@ export function WorldIdVerificationPanel({
       setWorldIdConfig(nextConfig);
       return nextConfig;
     }
-    const payload = await fetchJson(walletUrl(apiConfig, "/world-id/config"), "World ID config");
+    const payload = await fetchWorldIdConfig(apiConfig);
     const nextConfig = normalizeConfig(payload, runtimeConfig);
     setWorldIdConfig(nextConfig);
     return nextConfig;
@@ -232,15 +224,7 @@ export function WorldIdVerificationPanel({
         return;
       }
 
-      const payload = await fetchJson(walletUrl(apiConfig, "/world-id/rp-signature"), "World ID RP signature", {
-        body: JSON.stringify({
-          actor_did: apiConfig.actorDid,
-          action: latestConfig.action,
-          signal_context: "wallet_binding"
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST"
-      });
+      const payload = await createWorldIdRpSignature(apiConfig, { action: latestConfig.action });
       const request = normalizeSignature(payload, latestConfig, apiConfig);
       if (request.rpContext.expires_at <= Math.floor(Date.now() / 1000) + 5) {
         const nextIssue: PanelIssue = {
@@ -264,65 +248,60 @@ export function WorldIdVerificationPanel({
     }
   }
 
-  async function verifyWithBackend(result: IDKitResult): Promise<void> {
-    if (!apiConfig?.actorDid || !activeRequest) {
-      const nextIssue: PanelIssue = {
-        phase: "backend_failure",
-        tone: "danger",
-        message: "World ID verification could not be linked to this wallet session.",
-        source: "backend"
-      };
-      backendIssueRef.current = nextIssue;
-      setPhase(nextIssue.phase);
-      setIssue(nextIssue);
-      throw new Error(nextIssue.message);
-    }
+  const verifyWithBackend = useCallback(
+    async (result: IDKitResult): Promise<void> => {
+      if (!apiConfig?.actorDid || !activeRequest) {
+        const nextIssue: PanelIssue = {
+          phase: "backend_failure",
+          tone: "danger",
+          message: "World ID verification could not be linked to this wallet session.",
+          source: "backend"
+        };
+        backendIssueRef.current = nextIssue;
+        setPhase(nextIssue.phase);
+        setIssue(nextIssue);
+        throw new Error(nextIssue.message);
+      }
 
-    setPhase("verifying");
-    try {
-      await fetchJson(walletUrl(apiConfig, "/world-id/verifications"), "World ID verification", {
-        body: JSON.stringify({
-          actor_did: apiConfig.actorDid,
-          action: activeRequest.action,
-          signal: activeRequest.signal,
-          idkit_response: result,
-          idkit_payload: result
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST"
-      });
-      setPhase("refreshing");
-      await Promise.all([
-        Promise.resolve(onProofsRefresh?.()),
-        Promise.resolve(onAuditRefresh?.()),
-        refreshWorldIdStatus()
-      ]);
-      backendIssueRef.current = null;
-      setIssue({
-        phase: "verified",
-        tone: "success",
-        message: "World ID proof-of-human is now bound to this wallet.",
-        source: "backend"
-      });
-      setPhase("verified");
-    } catch (error) {
-      const nextIssue = classifyBackendIssue(error, "World ID verification failed.");
-      backendIssueRef.current = nextIssue;
-      setIssue(nextIssue);
-      setPhase(nextIssue.phase);
-      throw new Error(nextIssue.message);
-    }
-  }
+      setPhase("verifying");
+      try {
+        await registerWorldIdVerification(apiConfig, {
+          idkitPayload: result as unknown as Record<string, unknown>
+        });
+        setPhase("refreshing");
+        await Promise.all([
+          Promise.resolve(onProofsRefresh?.()),
+          Promise.resolve(onAuditRefresh?.()),
+          refreshWorldIdStatus()
+        ]);
+        backendIssueRef.current = null;
+        setIssue({
+          phase: "verified",
+          tone: "success",
+          message: "World ID proof-of-human is now bound to this wallet.",
+          source: "backend"
+        });
+        setPhase("verified");
+      } catch (error) {
+        const nextIssue = classifyBackendIssue(error, "World ID verification failed.");
+        backendIssueRef.current = nextIssue;
+        setIssue(nextIssue);
+        setPhase(nextIssue.phase);
+        throw new Error(nextIssue.message);
+      }
+    },
+    [activeRequest, apiConfig, onAuditRefresh, onProofsRefresh, refreshWorldIdStatus]
+  );
 
-  function handleIdkitSuccess() {
+  const handleIdkitSuccess = useCallback(() => {
     idkitSettledRef.current = true;
     backendIssueRef.current = null;
     setWidgetOpen(false);
     setActiveRequest(null);
     setPhase("verified");
-  }
+  }, []);
 
-  function handleIdkitError(errorCode: IDKitErrorCode) {
+  const handleIdkitError = useCallback((errorCode: IDKitErrorCode) => {
     idkitSettledRef.current = true;
     setWidgetOpen(false);
     setActiveRequest(null);
@@ -335,10 +314,21 @@ export function WorldIdVerificationPanel({
     const nextIssue = classifyIdkitIssue(errorCode);
     setIssue(nextIssue);
     setPhase(nextIssue.phase);
-  }
+  }, []);
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen && widgetOpen && !idkitSettledRef.current && phase === "idkit") {
+    if (nextOpen) {
+      setWidgetOpen(true);
+      return;
+    }
+    if (!idkitSettledRef.current && phase === "idkit") {
+      const g = globalThis as typeof globalThis & { __abbyEnableWorldIdPanelTest?: boolean };
+      if (g.__abbyEnableWorldIdPanelTest === true) {
+        // IDKit may close while the opted-in Playwright harness is preparing its
+        // simulated result. Preserve only that test request until the hook runs.
+        setWidgetOpen(false);
+        return;
+      }
       const nextIssue: PanelIssue = {
         phase: "cancelled",
         tone: "info",
@@ -349,7 +339,7 @@ export function WorldIdVerificationPanel({
       setPhase(nextIssue.phase);
       setActiveRequest(null);
     }
-    setWidgetOpen(nextOpen);
+    setWidgetOpen(false);
   }
 
   // Expose test hooks only when Playwright explicitly opts in.
@@ -365,13 +355,19 @@ export function WorldIdVerificationPanel({
     };
     if (g.__abbyEnableWorldIdPanelTest !== true) return;
     g.__abbyWorldIdPanelTest = {
+      // Capture the active request's handlers. IDKit may transiently clear its
+      // open state after this explicit test hook is armed.
       simulateSuccess: verifyWithBackend,
       simulateError: (errorCode: string) => handleIdkitError(errorCode as IDKitErrorCode)
     };
+  }, [activeRequest, handleIdkitError, verifyWithBackend]);
+
+  useEffect(() => {
     return () => {
+      const g = globalThis as typeof globalThis & { __abbyWorldIdPanelTest?: unknown };
       delete g.__abbyWorldIdPanelTest;
     };
-  }, [activeRequest, verifyWithBackend]);
+  }, []);
 
   return (
     <article className="world-id-panel proof-card" aria-label="World ID verification">
@@ -475,32 +471,6 @@ export function WorldIdVerificationPanel({
   );
 }
 
-function walletUrl(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">, path: string): URL {
-  return new URL(`/wallets/${config.walletId}${path}`, normalizedBaseUrl(config.apiBaseUrl));
-}
-
-function normalizedBaseUrl(value: string): string {
-  const raw = value.trim();
-  if (!raw || raw === "same-origin") {
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}/`;
-    }
-    return "/";
-  }
-  return raw.endsWith("/") ? raw : `${raw}/`;
-}
-
-async function fetchJson(url: URL, label: string, init?: RequestInit): Promise<unknown> {
-  const response = await fetch(url, init);
-  const text = await response.text();
-  const payload = text ? safeParseJson(text) : null;
-  if (!response.ok) {
-    const detail = extractErrorDetail(payload) || response.statusText || `${label} failed`;
-    throw new WorldIdApiError(response.status, detail, extractErrorCode(payload));
-  }
-  return payload;
-}
-
 function configFromRuntime(runtimeConfig: ReturnType<typeof readRuntimeWorldIdConfig>): WorldIdPublicConfig {
   return {
     enabled: runtimeConfig.enabled,
@@ -516,8 +486,10 @@ function configFromRuntime(runtimeConfig: ReturnType<typeof readRuntimeWorldIdCo
 
 function normalizeConfig(payload: unknown, runtimeConfig: ReturnType<typeof readRuntimeWorldIdConfig>): WorldIdPublicConfig {
   const record = asRecord(payload);
-  const enabled = readBoolean(record, "enabled") ?? runtimeConfig.enabled;
-  const appId = readString(record, "app_id", "appId") ?? runtimeConfig.appId;
+  // Once a wallet API is configured, its public response is authoritative.
+  // Never fill a missing backend app ID from browser build-time configuration.
+  const enabled = readBoolean(record, "enabled") ?? false;
+  const appId = readString(record, "app_id", "appId");
   const action =
     readString(record, "default_action", "defaultAction", "action") || runtimeConfig.action || "wallet-attach-world-id-v1";
   const environment = normalizeEnvironment(readString(record, "environment") || runtimeConfig.environment);
@@ -671,7 +643,7 @@ function classifySignatureIssue(error: unknown): PanelIssue {
 
 function classifyBackendIssue(error: unknown, fallback: string): PanelIssue {
   const detail = errorMessage(error) || fallback;
-  if (error instanceof WorldIdApiError && error.status === 409) {
+  if (isWorldIdWalletApiError(error) && error.status === 409) {
     return {
       phase: "replay",
       tone: "warning",
@@ -715,7 +687,7 @@ function getDisabledDetail(apiConfig: WalletApiConfig | undefined, config: World
   if (!apiConfig) return "Connect the wallet API before starting World ID verification.";
   if (!apiConfig.actorDid) return "An actor DID is required before starting World ID verification.";
   if (!config.enabled) return formatRuntimeDisabledReason(config.disabledReason);
-  if (!config.appId) return "World ID app configuration is missing.";
+  if (!config.appId || !config.rpId) return "World ID app configuration is missing.";
   return "";
 }
 
@@ -752,34 +724,7 @@ function formatDate(value: string): string {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-function safeParseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return null;
-  }
-}
-
-function extractErrorDetail(payload: unknown): string {
-  const record = asRecord(payload);
-  const detail = record.detail;
-  if (typeof detail === "string") return detail;
-  const detailRecord = asRecord(detail);
-  return (
-    readString(record, "message", "error", "reason") ||
-    readString(detailRecord, "message", "error", "reason", "detail") ||
-    ""
-  );
-}
-
-function extractErrorCode(payload: unknown): string | undefined {
-  const record = asRecord(payload);
-  const detailRecord = asRecord(record.detail);
-  return readString(record, "code", "error_code") || readString(detailRecord, "code", "error_code");
-}
-
 function errorMessage(error: unknown): string {
-  if (error instanceof WorldIdApiError) return error.detail;
   if (error instanceof Error) return error.message;
   return typeof error === "string" ? error : "";
 }

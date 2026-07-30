@@ -229,7 +229,6 @@ export function buildWorldIdVerificationResponse(
     verification: {
       success: true,
       action: WORLD_ID_ACTION,
-      nullifier: "[redacted]",
       created_at: WORLD_ID_VERIFIED_AT,
       environment: "staging",
       session_id: "world-id-session-ui",

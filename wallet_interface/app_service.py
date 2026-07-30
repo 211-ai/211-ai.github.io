@@ -39,6 +39,9 @@ from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
 )
 
 from .proof_backends import HttpLocationRegionProofBackend  # noqa: E402
+# World ID protocol/crypto lives in ipfs_datasets_py; this service is the sole
+# 211-AI cutover owner for application auth, policy, persistence, and DTOs
+# (WALPROC-G130). UI route migration is a later child if needed.
 from .world_id import (  # noqa: E402
     WorldIdConfig,
     WorldIdRequestJson,
@@ -55,6 +58,23 @@ PROVIDER_STAFF_WORLD_ID_ACTION = "provider-staff-world-id-v1"
 
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat()
+
+
+def _world_id_verification_response_dto(verification: Any) -> dict[str, Any]:
+    """Shape package verification output for the 211-AI deprecation-window DTO.
+
+    The reusable package omits raw nullifier material from ``public_dict``
+    (``has_nullifier`` only).  211-AI routes historically returned a redacted
+    ``nullifier`` field; keep that key stable without re-introducing secrets.
+    """
+
+    payload = dict(redact_world_id_payload(verification.public_dict()))
+    has_nullifier = bool(getattr(verification, "nullifier", None) or payload.get("has_nullifier"))
+    if "nullifier" not in payload:
+        payload["nullifier"] = "[redacted]" if has_nullifier else ""
+    elif payload.get("nullifier") not in {"", "[redacted]"} and has_nullifier:
+        payload["nullifier"] = "[redacted]"
+    return payload
 
 
 def _storage_config_from_env() -> str | dict[str, Any] | None:
@@ -645,12 +665,12 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
         )
 
     def get_world_id_config(self) -> dict[str, Any]:
-        """Return browser-safe World ID configuration."""
+        """Return browser-safe World ID configuration (no secrets or secret refs)."""
 
         return dict(self.world_id_config.public_dict())
 
     def get_world_id_status(self, wallet_id: str, *, actor_did: str | None = None) -> dict[str, Any]:
-        """Return sanitized World ID binding status for a wallet."""
+        """Return authenticated, minimum-necessary World ID binding status for a wallet."""
 
         self.wallet_service._wallet(wallet_id)
         if actor_did is not None:
@@ -682,7 +702,7 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
         random_bytes: bytes | None = None,
         created_at: int | None = None,
     ) -> dict[str, Any]:
-        """Create a fresh relying-party signature for the World ID IDKit client."""
+        """Authorize the actor, then delegate RP signing to the World ID package."""
 
         self._require_portal_actor(wallet_id, actor_did)
         selected_action = str(action or self.world_id_config.default_action).strip()
@@ -745,7 +765,7 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
         idkit_payload: Mapping[str, Any],
         request_json: WorldIdRequestJson | None = None,
     ) -> dict[str, Any]:
-        """Verify an IDKit result and bind the resulting proof-of-human to a wallet."""
+        """Authorize, delegate verify/normalize to the package, persist the binding."""
 
         self._require_portal_actor(wallet_id, actor_did)
         normalized = normalize_world_id_idkit_response(idkit_payload)
@@ -768,6 +788,7 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
             signal_hash_ref = "worldid-signal-ref:v1:" + hashlib.sha256(
                 json.dumps(sorted(normalized.signal_hashes), sort_keys=True).encode("utf-8")
             ).hexdigest()
+        verification_dto = _world_id_verification_response_dto(verification)
         binding = self.wallet_service.add_world_id_binding(
             wallet_id,
             actor_did=actor_did,
@@ -789,7 +810,7 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
             metadata={
                 "credential_policy": self.world_id_config.credential_policy,
                 "idkit": normalized.public_dict(),
-                "verification": redact_world_id_payload(verification.public_dict()),
+                "verification": verification_dto,
             },
         )
         proof = self.wallet_service.proofs.get(binding.proof_receipt_id or "")
@@ -797,7 +818,7 @@ class WalletInterfaceService(HmisDomainServiceMixin, InteractionDomainServiceMix
         return {
             "binding": binding.to_dict(),
             "proof": proof.to_dict() if proof is not None else None,
-            "verification": redact_world_id_payload(verification.public_dict()),
+            "verification": verification_dto,
         }
 
     def revoke_world_id_binding(
