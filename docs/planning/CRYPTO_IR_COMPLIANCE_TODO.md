@@ -2375,7 +2375,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-037 Implement Crypto IR compliance objective: Pin source, licensing, threat, and release authority
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
