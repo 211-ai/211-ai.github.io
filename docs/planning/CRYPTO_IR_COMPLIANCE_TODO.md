@@ -2109,7 +2109,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-033 Implement Crypto IR compliance objective: Integrate Worldcoin and World Chain transaction guards
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
