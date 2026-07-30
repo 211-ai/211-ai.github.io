@@ -22,7 +22,6 @@ import os
 from collections.abc import Mapping
 from typing import Any, Final
 
-
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
 VOICE_ROUTER_ADAPTER_VERSION = "1.3"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
@@ -532,22 +531,37 @@ def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> d
 def _response_dag_stage_configuration(
     *,
     sink: object | None,
-    validation_receipt: object | None,
-    audio_descriptor: Mapping[str, object] | None,
-) -> bool:
+    postprocessor: object | None,
+) -> object | None:
     """Fail closed on partial opt-in to local response-DAG staging."""
 
-    values = (sink, validation_receipt, audio_descriptor)
-    if not any(value is not None for value in values):
-        return False
-    if sink is None or validation_receipt is None or audio_descriptor is None:
+    if sink is None and postprocessor is None:
+        return None
+    if sink is None or postprocessor is None:
         raise ValueError(
             "response-DAG staging requires response_dag_sink, "
-            "validation_receipt, and audio_descriptor together"
+            "and response_dag_postprocessor together"
         )
-    if not isinstance(audio_descriptor, Mapping):
-        raise TypeError("response-DAG audio_descriptor must be a mapping")
-    return True
+    from ipfs_accelerate_py.voice_response_dag_sink import (  # noqa: WPS433
+        LocalResponseDAGQueue,
+    )
+
+    if not isinstance(sink, LocalResponseDAGQueue):
+        raise TypeError(
+            "response_dag_sink must be a package-owned LocalResponseDAGQueue"
+        )
+    if getattr(postprocessor, "remote_writes", None) is not False:
+        raise ValueError(
+            "response_dag_postprocessor must explicitly declare "
+            "remote_writes = False"
+        )
+    callback = getattr(postprocessor, "validate_and_store_local", None)
+    if not callable(callback):
+        raise TypeError(
+            "response_dag_postprocessor must implement "
+            "validate_and_store_local(result)"
+        )
+    return callback
 
 
 class WalletVoiceRouterAdapter:
@@ -566,18 +580,15 @@ class WalletVoiceRouterAdapter:
         tts_provider: object | None = None,
         audio_resolver: object | None = None,
         response_dag_sink: object | None = None,
-        validation_receipt: object | None = None,
-        audio_descriptor: Mapping[str, object] | None = None,
-        response_dag_response_id: str = "",
+        response_dag_postprocessor: object | None = None,
     ) -> dict[str, object] | None:
         if not self.enabled:
             return None
         if not isinstance(payload, Mapping):
             raise TypeError("wallet voice payload must be a mapping")
-        stage_response_dag = _response_dag_stage_configuration(
+        response_dag_callback = _response_dag_stage_configuration(
             sink=response_dag_sink,
-            validation_receipt=validation_receipt,
-            audio_descriptor=audio_descriptor,
+            postprocessor=response_dag_postprocessor,
         )
         request = build_voice_turn_request(payload)
         response_text = request.fallback_text
@@ -601,22 +612,35 @@ class WalletVoiceRouterAdapter:
             audio_resolver=audio_resolver,
         )
         queued = None
-        if stage_response_dag:
-            queued = result.enqueue_validated_cache_miss_candidate(
-                sink=response_dag_sink,
-                validation_receipt=validation_receipt,
-                audio_descriptor=audio_descriptor,
-                response_id=str(response_dag_response_id or "").strip(),
-                surface=str(request.context.get("surface") or ""),
+        queue_reason = "not_live_tts_cache_miss"
+        if response_dag_callback is not None and result.is_live_tts_cache_miss:
+            from ipfs_accelerate_py.voice_response_dag_sink import (  # noqa: WPS433
+                LocalValidatedVoiceCacheMissArtifacts,
             )
+
+            validated = response_dag_callback(result)
+            if validated is not None:
+                artifacts = LocalValidatedVoiceCacheMissArtifacts.from_value(
+                    validated
+                )
+                queued = result.enqueue_validated_cache_miss_candidate(
+                    sink=response_dag_sink,
+                    validation_receipt=artifacts.validation_receipt,
+                    audio_descriptor=artifacts.audio_descriptor,
+                    response_id=artifacts.response_id,
+                    surface=str(request.context.get("surface") or ""),
+                )
+            else:
+                queue_reason = "independent_validation_not_passed"
         serialized = serialize_voice_turn_result(result)
-        if stage_response_dag:
+        if response_dag_callback is not None:
             serialized["response_dag_queue"] = (
                 queued.to_dict()
                 if queued is not None
                 else {
                     "candidate_id": None,
                     "publication_status": "not_applicable",
+                    "reason": queue_reason,
                     "remote_writes": False,
                     "status": "not_queued",
                 }
@@ -634,9 +658,7 @@ def process_wallet_voice_turn(
     tts_provider: object | None = None,
     audio_resolver: object | None = None,
     response_dag_sink: object | None = None,
-    validation_receipt: object | None = None,
-    audio_descriptor: Mapping[str, object] | None = None,
-    response_dag_response_id: str = "",
+    response_dag_postprocessor: object | None = None,
 ) -> dict[str, object] | None:
     """Process one wallet proxy envelope when the staged flag is enabled."""
 
@@ -648,9 +670,7 @@ def process_wallet_voice_turn(
         tts_provider=tts_provider,
         audio_resolver=audio_resolver,
         response_dag_sink=response_dag_sink,
-        validation_receipt=validation_receipt,
-        audio_descriptor=audio_descriptor,
-        response_dag_response_id=response_dag_response_id,
+        response_dag_postprocessor=response_dag_postprocessor,
     )
 
 

@@ -11,12 +11,12 @@ import wave
 from hashlib import sha256
 
 import pytest
-
+from ipfs_accelerate_py.voice_audio_resolver import PrecomputedAudioArtifact
 from ipfs_accelerate_py.voice_response_dag_sink import (
     IndependentVoiceValidationReceipt,
     LocalResponseDAGQueue,
+    LocalValidatedVoiceCacheMissArtifacts,
 )
-from ipfs_accelerate_py.voice_audio_resolver import PrecomputedAudioArtifact
 from ipfs_accelerate_py.voice_router import (
     GroundedSlot,
     GroundingEvidence,
@@ -24,10 +24,11 @@ from ipfs_accelerate_py.voice_router import (
     SynthesisIdentity,
     VoiceResponsePlan,
 )
+
 from wallet_interface.helpers._voice_router_adapter import (
     WalletVoiceRouterAdapter,
-    _PackageFirstTTSProvider,
     _package_indextts_tts_provider,
+    _PackageFirstTTSProvider,
     build_voice_turn_request,
     process_wallet_voice_turn,
 )
@@ -107,28 +108,57 @@ SLOTTED_RESPONSE = (
 )
 
 
-def _validation_receipt() -> IndependentVoiceValidationReceipt:
+def _validation_receipt(result: object) -> IndependentVoiceValidationReceipt:
+    response_text = str(getattr(result, "response_text", "") or "")
+    audio = getattr(result, "audio", None)
+    assert isinstance(audio, bytes)
     return IndependentVoiceValidationReceipt(
         validation_receipt_id="wallet-whisper-round-trip-pass",
-        rendered_text_sha256=sha256(
-            SLOTTED_RESPONSE.encode("utf-8")
-        ).hexdigest(),
-        output_audio_sha256=sha256(VALID_WAV).hexdigest(),
+        rendered_text_sha256=sha256(response_text.encode("utf-8")).hexdigest(),
+        output_audio_sha256=sha256(audio).hexdigest(),
         validator_identity="openai-whisper-base-pinned-revision",
         validation_method="asr_round_trip",
     )
 
 
-def _audio_descriptor() -> dict[str, object]:
-    return {
-        "byte_length": len(VALID_WAV),
-        "content_sha256": sha256(VALID_WAV).hexdigest(),
-        "media_type": "audio/wav",
-        "uri": (
-            "hf://datasets/Publicus/211-abby-tts/"
-            "response_dag/audio/wallet-phone-response.wav"
-        ),
-    }
+class _LocalWhisperPostprocessor:
+    remote_writes = False
+
+    def __init__(
+        self,
+        root,
+        *,
+        asr_transcript: str = SLOTTED_RESPONSE,
+    ) -> None:
+        self.root = root
+        self.asr_transcript = asr_transcript
+        self.calls: list[object] = []
+        self.artifact_path = None
+
+    def validate_and_store_local(
+        self,
+        result: object,
+    ) -> LocalValidatedVoiceCacheMissArtifacts | None:
+        self.calls.append(result)
+        response_text = str(getattr(result, "response_text", "") or "")
+        audio = getattr(result, "audio", None)
+        if self.asr_transcript != response_text or not isinstance(audio, bytes):
+            return None
+        digest = sha256(audio).hexdigest()
+        self.root.mkdir(parents=True, exist_ok=True)
+        self.artifact_path = self.root / f"{digest}.wav"
+        self.artifact_path.write_bytes(audio)
+        self.artifact_path.chmod(0o600)
+        return LocalValidatedVoiceCacheMissArtifacts(
+            validation_receipt=_validation_receipt(result),
+            audio_descriptor={
+                "byte_length": len(audio),
+                "content_sha256": digest,
+                "media_type": "audio/wav",
+                "uri": self.artifact_path.resolve().as_uri(),
+            },
+            response_id="wallet-phone-rendered-response",
+        )
 
 
 class _ExactHit:
@@ -337,6 +367,9 @@ def test_validated_live_tts_miss_stages_private_local_response_dag_candidate(
     expected_surface,
 ) -> None:
     queue = LocalResponseDAGQueue(tmp_path / f"{expected_surface}-queue")
+    postprocessor = _LocalWhisperPostprocessor(
+        tmp_path / f"{expected_surface}-validated-audio"
+    )
     tts = _TTS()
     private_audio = b"private caller audio"
     context = {
@@ -359,9 +392,7 @@ def test_validated_live_tts_miss_stages_private_local_response_dag_candidate(
         tts_provider=tts,
         audio_resolver=_ExactMiss(),
         response_dag_sink=queue,
-        validation_receipt=_validation_receipt(),
-        audio_descriptor=_audio_descriptor(),
-        response_dag_response_id="wallet-phone-rendered-response",
+        response_dag_postprocessor=postprocessor,
     )
 
     assert payload is not None
@@ -371,6 +402,9 @@ def test_validated_live_tts_miss_stages_private_local_response_dag_candidate(
     assert queue_payload["candidate_id"]
     assert queue_payload["queue"]["remote_writes"] is False
     assert len(queue) == 1
+    assert len(postprocessor.calls) == 1
+    assert postprocessor.artifact_path is not None
+    assert postprocessor.artifact_path.read_bytes() == VALID_WAV
 
     candidate = queue.load(str(queue_payload["candidate_id"]))
     assert candidate.metadata["surface"] == expected_surface
@@ -396,6 +430,9 @@ def test_precomputed_cache_hit_never_stages_response_dag_candidate(
     tmp_path,
 ) -> None:
     queue = LocalResponseDAGQueue(tmp_path / "cache-hit-queue")
+    postprocessor = _LocalWhisperPostprocessor(
+        tmp_path / "cache-hit-validated-audio"
+    )
     tts = _TTS()
 
     payload = process_wallet_voice_turn(
@@ -408,19 +445,20 @@ def test_precomputed_cache_hit_never_stages_response_dag_candidate(
         tts_provider=tts,
         audio_resolver=_ExactHit(),
         response_dag_sink=queue,
-        validation_receipt=_validation_receipt(),
-        audio_descriptor=_audio_descriptor(),
-        response_dag_response_id="wallet-phone-rendered-response",
+        response_dag_postprocessor=postprocessor,
     )
 
     assert payload is not None
     assert payload["response_dag_queue"] == {
         "candidate_id": None,
         "publication_status": "not_applicable",
+        "reason": "not_live_tts_cache_miss",
         "remote_writes": False,
         "status": "not_queued",
     }
     assert len(queue) == 0
+    assert postprocessor.calls == []
+    assert postprocessor.artifact_path is None
     assert tts.texts == []
 
 
@@ -440,6 +478,68 @@ def test_partial_response_dag_staging_configuration_fails_before_tts(
             tts_provider=tts,
             audio_resolver=_ExactMiss(),
             response_dag_sink=LocalResponseDAGQueue(tmp_path / "partial"),
+        )
+
+    assert tts.texts == []
+
+
+def test_failed_independent_validation_returns_audio_without_queueing(
+    tmp_path,
+) -> None:
+    queue = LocalResponseDAGQueue(tmp_path / "failed-validation-queue")
+    postprocessor = _LocalWhisperPostprocessor(
+        tmp_path / "failed-validation-audio",
+        asr_transcript="The audio did not match.",
+    )
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "user_prompt": "Where should I call?",
+        },
+        enabled=True,
+        template_provider=_SlottedTemplates(),
+        tts_provider=_TTS(),
+        audio_resolver=_ExactMiss(),
+        response_dag_sink=queue,
+        response_dag_postprocessor=postprocessor,
+    )
+
+    assert payload is not None
+    assert payload["audio_base64"] == base64.b64encode(VALID_WAV).decode("ascii")
+    assert payload["response_dag_queue"] == {
+        "candidate_id": None,
+        "publication_status": "not_applicable",
+        "reason": "independent_validation_not_passed",
+        "remote_writes": False,
+        "status": "not_queued",
+    }
+    assert len(postprocessor.calls) == 1
+    assert len(queue) == 0
+
+
+def test_remote_write_capable_postprocessor_is_rejected_before_tts(
+    tmp_path,
+) -> None:
+    class _RemotePublisher:
+        remote_writes = True
+
+        def validate_and_store_local(self, result: object) -> None:
+            raise AssertionError("must not run")
+
+    tts = _TTS()
+    with pytest.raises(ValueError, match="remote_writes = False"):
+        process_wallet_voice_turn(
+            {
+                "mode": "voice-reply",
+                "user_prompt": "Where should I call?",
+            },
+            enabled=True,
+            template_provider=_SlottedTemplates(),
+            tts_provider=tts,
+            audio_resolver=_ExactMiss(),
+            response_dag_sink=LocalResponseDAGQueue(tmp_path / "no-remote"),
+            response_dag_postprocessor=_RemotePublisher(),
         )
 
     assert tts.texts == []
