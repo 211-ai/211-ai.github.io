@@ -21,6 +21,9 @@ Program invariants:
 - A backend earns proof authority only by executing a sound, supported
   lowering. Opaque JSON, GraphRAG, static findings, tests, simulation,
   monitors, and heuristic scores are not theorem proofs.
+- Solidity corpus quality, retrieval rank, embedding similarity, model output,
+  and candidate formalizations are non-authoritative until an exact supported
+  lowering is independently executed and its proof receipt is validated.
 - Exact applicable sanctions identifiers and established blocked parties are
   distinct from indirect exposure and heuristic association. Missing, stale,
   inconsistent, reorged, or incomplete critical evidence fails closed.
@@ -47,11 +50,11 @@ Program invariants:
 - Submodules: ipfs_datasets_py
 - Resource class: cpu-large
 - Token class: small
-- Goal: Deliver a chain-neutral Crypto IR, bounded smart-contract acquisition and assurance, sanctions and monetary-flow compliance reasoning, and a fail-closed pre-sign/pre-broadcast transaction gate.
-- Evidence: CRYPTOIR-G010, CRYPTOIR-G020, CRYPTOIR-G030, CRYPTOIR-G100, CRYPTOIR-G110, CRYPTOIR-G120, CRYPTOIR-G130, CRYPTOIR-G140, CRYPTOIR-G200, CRYPTOIR-G210, CRYPTOIR-G220, CRYPTOIR-G230, CRYPTOIR-G240, CRYPTOIR-G250, CRYPTOIR-G260, CRYPTOIR-G300, CRYPTOIR-G310, CRYPTOIR-G320, CRYPTOIR-G330, CRYPTOIR-G400, CRYPTOIR-G410, CRYPTOIR-G420, CRYPTOIR-G430, CRYPTOIR-G440, CRYPTOIR-G500, CRYPTOIR-G510, CRYPTOIR-G520, CRYPTOIR-G530, CRYPTOIR-G540, CRYPTOIR-G550, CRYPTOIR-G560, CRYPTOIR-G570, CRYPTOIR-G600, CRYPTOIR-G610
+- Goal: Deliver a chain-neutral Crypto IR, bounded smart-contract acquisition and assurance, sanctions and monetary-flow compliance reasoning, a provenance-bound Solidity GraphRAG/formal-learning corpus, and a fail-closed pre-sign/pre-broadcast transaction gate.
+- Evidence: CRYPTOIR-G010, CRYPTOIR-G020, CRYPTOIR-G030, CRYPTOIR-G100, CRYPTOIR-G110, CRYPTOIR-G120, CRYPTOIR-G130, CRYPTOIR-G140, CRYPTOIR-G200, CRYPTOIR-G210, CRYPTOIR-G220, CRYPTOIR-G230, CRYPTOIR-G240, CRYPTOIR-G250, CRYPTOIR-G260, CRYPTOIR-G300, CRYPTOIR-G310, CRYPTOIR-G320, CRYPTOIR-G330, CRYPTOIR-G400, CRYPTOIR-G410, CRYPTOIR-G420, CRYPTOIR-G430, CRYPTOIR-G440, CRYPTOIR-G500, CRYPTOIR-G510, CRYPTOIR-G520, CRYPTOIR-G530, CRYPTOIR-G540, CRYPTOIR-G550, CRYPTOIR-G560, CRYPTOIR-G570, CRYPTOIR-G600, CRYPTOIR-G610, CRYPTOIR-G700
 - Outputs:
 - Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/crypto_ir ipfs_datasets_py/tests/unit/processors/smart_contracts ipfs_datasets_py/tests/unit/processors/wallets/guard ipfs_datasets_py/tests/contract/logic/crypto_ir ipfs_datasets_py/tests/contract/processors/smart_contracts ipfs_datasets_py/tests/contract/processors/wallets
-- Acceptance: Every child has current-tree evidence; all supported chains have explicit semantic coverage; no hard-deny or stale-critical-evidence fixture obtains `ALLOW`; proof and sanctions authority never exceed their evidence; exact-candidate permission is revalidated and consumed atomically; processors remain non-custodial; release, rollback, privacy, security, compliance, and operational evidence is current.
+- Acceptance: Every child has current-tree evidence; all supported chains have explicit semantic coverage; no hard-deny or stale-critical-evidence fixture obtains `ALLOW`; proof and sanctions authority never exceed their evidence; corpus, GraphRAG, and learned candidates never become proof or transaction authority; exact-candidate permission is revalidated and consumed atomically; processors remain non-custodial; release, rollback, privacy, security, compliance, and operational evidence is current.
 - Gap task: Review child-goal evidence and completion quorum only; do not create an aggregate implementation change or edit the planning control plane.
 - Refinement: Preserve the authority boundaries and complete dependency-ready children before integration or release.
 - Embedding query: crypto intermediate representation smart contract security theorem prover sanctions flow graph transaction gate
@@ -905,3 +908,277 @@ Program invariants:
 - Refinement: Roll out observation and shadow modes first; promote one reviewed enforcement class at a time.
 - Embedding query: crypto ir cross chain conformance adversarial release rollback operations sanctions contract gate
 - AST query: MultichainConformance ReleaseGate RollbackPlan TransactionPreflight
+
+## CRYPTOIR-G700 Deliver provenance-bound Solidity GraphRAG and formal learning
+
+- Status: blocked
+- Review only: true
+- Parent: CRYPTOIR-G000
+- Fib priority: 377
+- Priority: P1
+- Track: solidity-cpt-program
+- Bundle: solidity-cpt/control
+- Parallel lane: solidity-cpt-control
+- Conflict policy: review child evidence only; never create an aggregate implementation edit or grant corpus/model outputs proof authority
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: small
+- Goal: Turn the pinned `samscrack/solidity-cpt-top10-quality` corpus into an immutable Security IR GraphRAG dataset and leakage-safe formal-learning/evaluation pipeline, with a narrow non-authoritative Crypto IR bridge.
+- Evidence: CRYPTOIR-G710, CRYPTOIR-G720, CRYPTOIR-G730, CRYPTOIR-G740, CRYPTOIR-G750, CRYPTOIR-G760, CRYPTOIR-G770, CRYPTOIR-G780, CRYPTOIR-G790, CRYPTOIR-G800
+- Outputs:
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10 ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Acceptance: Every child has current-tree evidence; the immutable source and licenses are verified; source parsing, graph projection, retrieval, formalization, training, and evaluation remain bounded and reproducible; no source-family leakage is admitted; dataset quality, retrieval scores, model output, candidate formulas, SAT, or simulation cannot become theorem proof, contract-safety `ALLOW`, or wallet authorization.
+- Gap task: Review child-goal evidence and authority-preservation only; do not implement the aggregate or edit the planning control plane.
+- Refinement: Keep raw CPT tokens, instruction records, proof-attempt records, and evaluation-only cases separate and provenance bound.
+- Embedding query: solidity cpt hugging face security ir graphrag formal logic training proof authority
+- AST query: SolidityCPTSourceProfile SoliditySecurityGraph FormalTrainingRecord
+
+## CRYPTOIR-G710 Pin source, licensing, threat, and release authority
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 377
+- Priority: P0
+- Track: solidity-cpt-governance
+- Bundle: solidity-cpt/governance
+- Depends on: CRYPTOIR-G010
+- Parallel lane: solidity-cpt-governance
+- Conflict policy: sole owner of the new package initializer, corpus authority document, and release-policy module
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-small
+- Token class: medium
+- Goal: Freeze the exact Hugging Face revision, LFS digest, row/schema profile, reused CVEfixes contracts, untrusted-input threat model, row-level license policy, and non-proof/non-enforcement authority boundary.
+- Evidence: ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py
+- Acceptance: Policy pins revision `23c0b2f279fa29c6b425543fe9c8bf41d574d028`, `top10.parquet` SHA-256 `185f1ac548f0df10a8166c8a2a10610bcc3422ce77f51567c3de86ddc8f5e455`, size 109124886, row count 23471, and the ordered eight-column schema; records dataset-level and per-row license evidence separately; defaults ambiguous source licenses to internal/source-free use; treats source text as inert untrusted data; states that `top10` is top-decile quality rather than OWASP/vulnerability/safety truth; and forbids network, execution, training, upload, proof, or enforcement authority by default.
+- Gap task: Port or reuse the reviewed CVEfixes governance contracts without creating a second identity, authority, or release-policy framework.
+- Refinement: Publication of raw source or learned weights requires separate license review and operator authority.
+- Embedding query: solidity cpt dataset pin lfs sha license threat release authority hugging face
+- AST query: SolidityCPTReleasePolicy LicenseProvenance SourceProfile
+
+## CRYPTOIR-G720 Verify and ingest the immutable Hugging Face snapshot
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 610
+- Priority: P0
+- Track: solidity-cpt-source
+- Bundle: solidity-cpt/source
+- Depends on: CRYPTOIR-G710
+- Parallel lane: solidity-cpt-source
+- Conflict policy: owns only source-snapshot, Hugging Face source, canonical derived-schema modules, and their tests
+- Submodules: ipfs_datasets_py
+- Resource class: io-medium
+- Token class: medium
+- Goal: Verify the immutable dataset/shard contract, adapt bounded inert rows, preserve raw and normalized provenance, and emit strict content-addressed source and derived-record schemas.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_source.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_source_snapshot.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_source.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_schemas.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_source_snapshot.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_source.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_schemas.py
+- Acceptance: Local or injected streaming intake verifies dataset, immutable revision, split, file digest/size, row count, ordered columns and types before admission; strict row bounds cover bytes, text, paths, fields, nesting, counts, and diagnostics; every record binds exact source/parent/config CIDs; source bodies remain separate; malformed, oversize, poisoned, drifted, truncated, duplicate, or unknown-authority input is quarantined; imports use no network, credentials, auto-install, compilation, execution, or upload; address and verified-source metadata never assert deployed-bytecode equality.
+- Gap task: Adapt the CVEfixes `source_snapshot`, `hf_source`, and schema pattern to the exact Solidity dataset contract with offline fixtures.
+- Refinement: Rehash every persisted artifact on load and reject stale caller-supplied identities.
+- Embedding query: hugging face solidity parquet immutable snapshot content address row schema bounded ingest
+- AST query: SolidityCPTSourceSnapshot SolidityCPTRow DerivedDataset
+
+## CRYPTOIR-G730 Implement bounded inert Solidity parsing and normalization
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 610
+- Priority: P0
+- Track: solidity-cpt-parser
+- Bundle: solidity-cpt/parser
+- Depends on: CRYPTOIR-G010, CRYPTOIR-G210, CRYPTOIR-G220, CRYPTOIR-G300, CRYPTOIR-G710
+- Parallel lane: solidity-cpt-parser
+- Conflict policy: sole owner of the Solidity parser leaf package; does not edit shared smart-contract protocols or package exports
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: medium
+- Goal: Implement the existing smart-contract parser protocol for bounded Solidity source and normalize source-spanned declarations, relationships, control, state, call, and effect facts without executing corpus code.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/__init__.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py, ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity/test_parser.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity/test_parser.py
+- Acceptance: Deterministic results preserve exact source spans and cover contracts, libraries, interfaces, inheritance, imports, functions, constructors, modifiers, state variables, events, errors, calls, reads/writes, authorization guards, value effects, assembly, and unsupported syntax; parser identity/version/config and all byte, node, nesting, import, diagnostic, cancellation, and time bounds are receipt-bound; imports never resolve over the network; source/compiler/address claims remain evidence rather than deployed semantics; failure and partial coverage are explicit.
+- Gap task: Add an injected, offline Solidity parser adapter and adversarial fixtures while reusing existing ContractParser and source-provenance contracts.
+- Refinement: Do not add import-time parser installation or require a system `solc`; capability unavailability is a typed unsupported result.
+- Embedding query: solidity parser ast source span smart contract calls modifiers storage effects bounded
+- AST query: SolidityContractParser SoliditySourceUnit SolidityParseResult
+
+## CRYPTOIR-G740 Build the typed Solidity contract-security graph
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 987
+- Priority: P1
+- Track: solidity-cpt-graph
+- Bundle: solidity-cpt/graph
+- Depends on: CRYPTOIR-G720, CRYPTOIR-G730
+- Parallel lane: solidity-cpt-graph
+- Conflict policy: owns vocabulary, projector, graph modules, and graph tests only
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: medium
+- Goal: Project verified source rows and bounded Solidity facts into a deterministic, content-addressed, typed Security IR corpus graph with explicit provenance and non-authoritative similarity.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/vocabulary.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_vocabulary.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_projector.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_graph.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_vocabulary.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_projector.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_graph.py
+- Acceptance: Versioned node and edge schemas cover source, contract, declaration, control/state/effect, provenance, license, compiler, candidate security concept, assumption, mitigation, and proof-obligation facts; graph and node identities bind source and config CIDs; source bodies remain out-of-graph; edge endpoints and ontology are validated; approximate structural/semantic edges are explicitly non-authoritative; corpus quality never becomes a security label; unknown extensions, dangling edges, stale identities, or lossy required semantics fail closed.
+- Gap task: Port the CVEfixes vocabulary/projector/graph pattern and add a reviewed Solidity language adapter over normalized parser facts.
+- Refinement: Keep observed syntax, inferred candidate, reviewed claim, and verified result as separate node and authority types.
+- Embedding query: solidity security knowledge graph ontology contract function modifier storage call provenance
+- AST query: SoliditySecurityGraph SolidityVocabulary SolidityGraphProjector
+
+## CRYPTOIR-G750 Build bounded provenance-preserving hybrid GraphRAG
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 1597
+- Priority: P1
+- Track: solidity-cpt-retrieval
+- Bundle: solidity-cpt/retrieval
+- Depends on: CRYPTOIR-G740
+- Parallel lane: solidity-cpt-retrieval
+- Conflict policy: owns only hybrid retrieval, index schemas, injected accelerator port use, and tests
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: medium
+- Goal: Build integrity-bound lexical, embedding, and graph-neighborhood retrieval whose hits cite exact graph paths and remain context-only candidates.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_retrieval.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_retrieval.py
+- Acceptance: Index roots bind exact graph, ontology, source, partition, shard, model/revision/tokenizer/dimension, accelerator configuration, weights, bounds, and authority policy; embedding uses an injected `EmbeddingAcceleratorPort`; queries are bounded by partition, license, nodes, shards, hops, bytes, results, and time; rehash-on-load, scope checks, and graph-edge validation reject corrupt, stale, mismatched, cross-partition, or grant-like results; every hit is source-citing and has `proof_authority=False` and no execution authority.
+- Gap task: Adapt the CVEfixes hybrid retriever and Intent IR context-only premise contract without coupling model selection into Security IR.
+- Refinement: Approximate rank affects ordering only and can never widen the caller's authority or evaluation scope.
+- Embedding query: solidity graphrag lexical vector graph hybrid retrieval embedding accelerator provenance
+- AST query: SolidityGraphRetriever EmbeddingAcceleratorPort RetrievalIndex
+
+## CRYPTOIR-G760 Build lineage-safe partitions and retrieval fences
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 1597
+- Priority: P0
+- Track: solidity-cpt-partitions
+- Bundle: solidity-cpt/partitions
+- Depends on: CRYPTOIR-G720, CRYPTOIR-G740
+- Parallel lane: solidity-cpt-partitions
+- Conflict policy: owns deterministic partition manifests and leakage-fence tests only
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: medium
+- Goal: Derive deterministic connected-component train, validation, test, held-out, and adversarial partitions before training or index construction and enforce retrieval isolation.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_partitions.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_partitions.py
+- Acceptance: Grouping occurs before assignment using exact and near-duplicate content, repository/source family, normalized path/history, address, fork/import lineage, and generated-code family; one connected group cannot cross partitions; manifests contain hashed bounded grouping evidence rather than raw bodies; partition ratios/seeds/policy/source revision are CID-bound; evaluation retrieval cannot cross its exact partition/snapshot/family fence; missing grouping evidence, overlap, drift, or attempted leakage fails closed.
+- Gap task: Reuse Intent IR split guards and CVEfixes connected-component evaluation contracts for Solidity-specific lineage signals.
+- Refinement: The upstream single `train` split is never randomly divided row-by-row.
+- Embedding query: solidity training split repository lineage near duplicate leakage retrieval fence
+- AST query: SolidityPartitionManifest SolidityRetrievalFence DuplicateFamily
+
+## CRYPTOIR-G770 Compile Security IR candidates and formal-learning records
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 2584
+- Priority: P0
+- Track: solidity-cpt-formalization
+- Bundle: solidity-cpt/formalization
+- Depends on: CRYPTOIR-G310, CRYPTOIR-G320, CRYPTOIR-G730, CRYPTOIR-G740, CRYPTOIR-G760
+- Parallel lane: solidity-cpt-formalization
+- Conflict policy: owns Solidity corpus Security IR adapter, formalizer, learning-record schema, and tests only
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-proof-solver
+- Token class: large
+- Goal: Convert source-grounded Solidity graph candidates into canonical Security IR declarations, context-only assumptions, exact proof obligations, and partitioned formal-learning records without importing result authority into features.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training_records.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_adapter.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_formalize.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_records.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_adapter.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_formalize.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_records.py
+- Acceptance: Declarations and formulas cite exact source spans, graph/source/config/partition CIDs, semantic prerequisites, assumptions, unsupported frontiers, logic family, and candidate authority; retrieved premises become `context_only` assumptions with `proof_authority=False`; quality is never a safety label and unlabeled rows remain unlabeled; CPT tokens, instruction targets, proof-attempt targets, and evaluation-only records remain distinct; proof labels require validated receipts from actually executed supported lowerings; solver results, traces, model scores, and evaluation labels do not leak into declaration features; unknown or lossy semantics abstain.
+- Gap task: Adapt CVEfixes candidate/formalization contracts to Solidity while reusing shared Security IR formal views and Crypto IR obligation semantics.
+- Refinement: A generated obligation is a property to check, not evidence that the property holds.
+- Embedding query: solidity security ir formalization proof obligation training record context assumption
+- AST query: SoliditySecurityIRAdapter SolidityFormalizationRecord ProofObligation
+
+## CRYPTOIR-G780 Implement bounded formal-learning runs and checkpoint receipts
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 4181
+- Priority: P1
+- Track: solidity-cpt-training
+- Bundle: solidity-cpt/training
+- Depends on: CRYPTOIR-G750, CRYPTOIR-G770
+- Parallel lane: solidity-cpt-training
+- Conflict policy: owns backend-neutral training contracts, offline CLI, checkpoint manifests, and tests only
+- Submodules: ipfs_datasets_py
+- Resource class: gpu-small
+- Token class: large
+- Goal: Implement an injected, bounded, reproducible runner for formalizer/retriever learning with dry-run-safe defaults and content-addressed run/checkpoint receipts.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_command.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_command.py
+- Acceptance: Requests bind exact source/graph/index/partition/license CIDs, base model/revision/tokenizer, objective, feature/target schema, hyperparameters, seed, backend/capability, hardware, byte/token/time/memory/checkpoint budgets, and output policy; dry-run and tiny offline fixtures are default; checkpoints and terminal receipts rehash and reproduce; unavailable, timeout, cancellation, partial, divergent, stale, or corrupt runs remain explicit; model download, ambient credentials, external tracking, full GPU execution, publication, and upload are disabled without separate operator authority; learned outputs have candidate authority only.
+- Gap task: Add backend-neutral training protocols and a deterministic offline CLI; do not run the full corpus or download a model as part of task validation.
+- Refinement: Training implementation and a production-quality trained checkpoint are separate deliverables with separate resource and release authority.
+- Embedding query: solidity formal logic training runner checkpoint reproducible offline dry run
+- AST query: FormalTrainingRequest FormalTrainingReceipt CheckpointManifest
+
+## CRYPTOIR-G790 Evaluate leakage, grounding, abstention, and prover agreement
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 6765
+- Priority: P0
+- Track: solidity-cpt-evaluation
+- Bundle: solidity-cpt/evaluation
+- Depends on: CRYPTOIR-G750, CRYPTOIR-G770, CRYPTOIR-G780
+- Parallel lane: solidity-cpt-evaluation
+- Conflict policy: owns held-out/adversarial evaluation, evaluation CLI, fixtures, and tests only
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-proof-solver
+- Token class: large
+- Goal: Evaluate source integrity, leakage, GraphRAG attribution, formalization grounding, unsupported-semantics abstention, calibration, and actual prover agreement on held-out and adversarial controls.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py, ipfs_datasets_py/scripts/ops/security_ir/evaluate_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation_command.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation_command.py
+- Acceptance: Evaluation is CID-bound and reports zero cross-partition/source-family duplicate leakage; retrieval accuracy, graph-path validity, attribution, latency, memory, schema validity, source-span grounding, obligation coverage, executable-lowering, proof/disproof/unknown/timeout/unavailable/disagreement, calibration, and abstention are measured separately; poisoned text, prompt-like content, ambiguous licenses, unsupported syntax, compiler/source/deployment mismatch, mutations, corrupt graph/index, and cross-solver cases are included; no approximate, model, SAT, simulation, or unexecuted result is counted as proof; external label corpora require separate pin/license/leakage admission.
+- Gap task: Port CVEfixes promotion/evaluation gates and add Solidity-specific held-out, mutation, poisoning, and authority-confusion fixtures.
+- Refinement: Report uncertainty and unsupported coverage rather than optimizing a single misleading accuracy score.
+- Embedding query: solidity formalizer evaluation leakage adversarial calibration abstention prover agreement
+- AST query: SolidityFormalEvaluation PromotionGate ProverAgreement
+
+## CRYPTOIR-G800 Add the advisory Crypto IR bridge and deterministic release gate
+
+- Status: active
+- Review only: false
+- Parent: CRYPTOIR-G700
+- Fib priority: 10946
+- Priority: P0
+- Track: solidity-cpt-release
+- Bundle: solidity-cpt/release
+- Depends on: CRYPTOIR-G510, CRYPTOIR-G610, CRYPTOIR-G790
+- Parallel lane: solidity-cpt-release
+- Conflict policy: serialized owner of the narrow Crypto IR adapter, local release staging, conformance test, and release/rollback documentation
+- Submodules: ipfs_datasets_py
+- Resource class: cpu-large
+- Token class: large
+- Goal: Bridge reviewed Solidity candidates into existing Crypto IR rule/obligation inputs, stage deterministic license-filtered artifacts, and prove end-to-end that corpus/retrieval/model output cannot bypass contract or wallet authority.
+- Evidence: ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/scripts/ops/security_ir/build_solidity_cpt_top10_release.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_RELEASE_AND_ROLLBACK.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_release.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_command.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10 ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Acceptance: The bridge emits reviewed candidate rules/obligations with exact semantic prerequisites and never emits a safety verdict; contract enforcement still requires independently validated proof receipts for the exact deployed code epoch; corpus quality, retrieval rank, model confidence, candidate formula, SAT, simulation, stale result, or corrupt/mismatched artifact cannot become proof or `ALLOW`; release manifests bind all source/graph/model/evaluation/license/config CIDs and omit unlicensed bodies; builds are local and deterministic; upload/publication remains disabled; data/model cards, limitations, rollback, and observation/shadow-only integration are documented.
+- Gap task: Add the narrow adapter, source-free deterministic release staging, authority-confusion contract tests, and rollback documentation after held-out evaluation passes.
+- Refinement: Reviewers may use GraphRAG to choose obligations, but only the existing proof and policy gates may authorize a transaction.
+- Embedding query: solidity cpt crypto ir adapter release gate graphrag model proof authority wallet
+- AST query: SolidityCPTCryptoIRAdapter SolidityCPTReleaseManifest ContractSafetyDecision

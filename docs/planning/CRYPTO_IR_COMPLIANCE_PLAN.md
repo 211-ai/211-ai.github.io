@@ -766,3 +766,240 @@ current-tree evidence and:
 - CLI/MCP cannot bypass policy, freshness, or receipt checks; and
 - shadow, recovery, rollback, security, privacy, compliance/legal, and release
   reviews pass with durable evidence.
+
+## 14. Solidity CPT Top-10 GraphRAG and formal-learning expansion
+
+### 14.1 Outcome and source pin
+
+Add a provenance-bound Solidity corpus pipeline for the Hugging Face dataset
+[`samscrack/solidity-cpt-top10-quality`](https://huggingface.co/datasets/samscrack/solidity-cpt-top10-quality).
+The reviewed source profile is:
+
+- immutable dataset revision
+  `23c0b2f279fa29c6b425543fe9c8bf41d574d028`;
+- one `train` split containing 23,471 Solidity source rows;
+- LFS object `top10.parquet`, 109,124,886 bytes, SHA-256
+  `185f1ac548f0df10a8166c8a2a10610bcc3422ce77f51567c3de86ddc8f5e455`;
+- ordered row fields `text`, `source`, `address`, `name`, `compiler`,
+  `license`, `path`, and `n_chars`; and
+- a declared dataset-level CC BY 4.0 license plus per-row source-license
+  metadata that may be different, absent, ambiguous, or more restrictive.
+
+The source profile is verified again from observed Hub metadata before any row
+is admitted. A moving branch, changed shard, row-count or schema drift,
+truncation, unexpected compression expansion, or digest mismatch fails closed.
+The name `top10` describes the dataset author's top-decile quality selection;
+it is not an OWASP Top 10 label and is not evidence that a contract is secure.
+
+The corpus provides Solidity syntax and source-distribution evidence. It does
+not provide authoritative vulnerability labels, deployed-bytecode equality,
+complete execution semantics, theorem proofs, or transaction permission.
+
+### 14.2 Reuse and package boundaries
+
+Use the reviewed CVEfixes Security IR implementation at
+`ipfs_datasets_py` ref `origin/integration/cvesir-ipfs-accelerate`, commit
+`3952dae8925e9f469632ed53eccf1678a924fd4e`, as the primary implementation
+pattern. Reconcile or deliberately port its shared contracts before creating
+new equivalents. In particular, reuse its immutable source profiles, strict
+derived schemas, release policy, typed graph, bounded hybrid retrieval,
+Security IR adapter, formalizer, leakage-safe evaluation, and deterministic
+release staging. Reuse the current Intent IR rule that retrieved premises are
+content-bound `context_only` assumptions with `proof_authority=False`.
+
+Ownership is deliberately split:
+
+```text
+ipfs_datasets_py/ipfs_datasets_py/
+├── processors/smart_contracts/solidity/
+│   ├── __init__.py
+│   ├── models.py
+│   └── parser.py
+├── logic/security_ir/solidity_cpt_top10/
+│   ├── __init__.py
+│   ├── source_snapshot.py
+│   ├── hf_source.py
+│   ├── schemas.py
+│   ├── release_policy.py
+│   ├── vocabulary.py
+│   ├── projector.py
+│   ├── graph.py
+│   ├── retrieval.py
+│   ├── partitions.py
+│   ├── adapter.py
+│   ├── formalize.py
+│   ├── training_records.py
+│   ├── training.py
+│   ├── evaluation.py
+│   └── hf_release.py
+└── logic/crypto_ir/adapters/
+    └── solidity_cpt_top10.py
+```
+
+`processors.smart_contracts.solidity` is an inert, bounded implementation of
+the existing contract-parser protocol. The Security IR package owns corpus
+ingestion, graph projection, retrieval, candidate formalization, learning
+records, and evaluation. The narrow Crypto IR bridge may propose reviewed
+security rules and proof obligations with explicit semantic prerequisites; it
+cannot directly decide contract safety or authorize a wallet transaction.
+
+### 14.3 Bounded acquisition, provenance, and license policy
+
+The default path consumes a previously downloaded, digest-verified local
+Parquet file or a bounded injected stream. Imports perform no network access,
+credential discovery, dependency installation, source execution, compilation,
+prompt interpretation, publication, or upload.
+
+Each admitted row receives:
+
+- the exact dataset, revision, shard, row, and producer-configuration identity;
+- a raw-source digest and CID, with source bodies stored separately from graph
+  nodes and release manifests;
+- normalized but non-authoritative source, repository, address, compiler,
+  license, path, and size metadata;
+- strict byte, character, token, AST-node, nesting, import, and time bounds;
+- explicit quarantine diagnostics for malformed encodings, duplicate fields,
+  unsafe paths, oversize values, parser failure, and suspicious content; and
+- a license-review result controlling internal use, derived release, raw-source
+  redistribution, and model/checkpoint publication independently.
+
+An Etherscan address or “verified source” observation remains source metadata;
+it does not establish equality with deployed runtime bytecode. Rows whose
+underlying license is absent or ambiguous default to internal research use and
+source-free derived release only until a reviewer grants narrower authority.
+
+### 14.4 Solidity projection and contract-security graph
+
+The parser produces deterministic, source-spanned facts for contracts,
+libraries, interfaces, inheritance, imports, functions, constructors,
+modifiers, state variables, events, errors, calls, state reads/writes,
+authorization guards, value effects, control flow, assembly regions, and
+unsupported syntax. It never executes Solidity, resolves imports over the
+network, trusts the declared compiler, or silently treats source semantics as
+deployed EVM semantics.
+
+The versioned graph contains content-addressed nodes for:
+
+- dataset snapshots, shards, rows, source units, repositories, source
+  licenses, compiler declarations, and unverified deployment-address hints;
+- contracts, libraries, interfaces, functions, modifiers, variables, events,
+  errors, call sites, state accesses, and effect summaries;
+- typed security concepts, candidate claims, assumptions, mitigations,
+  proof obligations, and exact formal views; and
+- producer configurations, graph partitions, evaluation cases, and receipts.
+
+Typed edges cover `contains`, `declares`, `inherits`, `imports`, `calls`,
+`reads`, `writes`, `emits`, `guards`, `may_effect`, `derived_from`,
+`grounded_in`, `has_license`, `has_compiler`, `candidate_for`, and explicit
+structural or semantic similarity. Approximate similarity is always labeled
+non-authoritative. Unknown node, edge, schema, or authority extensions fail
+closed.
+
+### 14.5 Retrieval and accelerator integration
+
+Build a deterministic hybrid retriever over lexical, embedding, and bounded
+graph-neighborhood scores. Its embedding dependency is the existing injected
+`EmbeddingAcceleratorPort` contract; accelerator/model selection remains
+outside the corpus package. Every index root binds:
+
+- source, graph, ontology, partition, shard, and projection CIDs;
+- exact embedding model, revision, tokenizer, dimensions, normalization, and
+  accelerator configuration;
+- lexical/vector/graph weights and all node, byte, hop, result, and time
+  limits; and
+- the release and authority policy under which the index was built.
+
+Queries name exactly one allowed partition and authority scope. Retrieval
+cannot cross a held-out, source-family, adversarial, license, or graph-snapshot
+fence. Every hit cites its source and graph path and is returned as context or
+a candidate only. Rehash-on-load, stale-index, missing-assignment,
+cross-partition, grant-like metadata, and model/config mismatch checks fail
+closed.
+
+### 14.6 Formal-learning records and training
+
+Keep four non-interchangeable streams:
+
+1. license-admitted raw continued-pretraining tokens;
+2. source-to-Security-IR and source-to-proof-obligation instruction records;
+3. formal formulas, counterexamples, and proof-attempt records whose labels
+   bind exact executed prover receipts; and
+4. evaluation-only, adversarial, mutated, vulnerable/fixed, and held-out cases.
+
+Before any split, group exact and near duplicates by normalized content,
+repository/source family, path history, address, fork/import lineage, and
+generated-code family. Assign connected groups—not individual rows—to
+deterministic train, validation, test, held-out-domain, held-out-revision, and
+adversarial partitions. Retrieval for evaluation is fenced to the permitted
+partition snapshot.
+
+Formalization may learn to retrieve evidence, construct a typed Security IR
+candidate, propose an assumption, rank a rule, or generate a proof obligation.
+The dataset's quality score is never converted into a safety label. Missing
+labels remain unlabeled rather than negative. A theorem label exists only when
+an exact supported lowering was executed by the named backend and its receipt
+was validated; solver answers, proof traces, and evaluation labels remain
+separate from input features unless the named training objective explicitly
+uses them as targets.
+
+The backend-neutral training runner is offline and dry-run safe by default.
+An opt-in run binds the base model and revision, tokenizer, optimizer,
+hyperparameters, random seed, partitions, source and graph CIDs, license
+policy, hardware/capability profile, budgets, checkpoints, logs, and terminal
+status. It emits candidate formalization authority only. Model download, a
+full GPU run, external tracking, checkpoint upload, and publication require
+separate operator authority, credentials, budget, and license approval.
+
+### 14.7 Evaluation and promotion gates
+
+Mandatory offline evaluation measures:
+
+- source-pin, schema, license, CID, parser, ontology, graph, and index
+  integrity;
+- exact/near-duplicate and source-family leakage, which must be zero;
+- retrieval recall/precision/MRR, graph-path validity, partition isolation,
+  attribution coverage, latency, and memory;
+- Security IR schema validity, source-span grounding, unsupported-semantics
+  abstention, obligation coverage, and executable-lowering rate;
+- proof, disproof, unknown, timeout, unavailable, and backend-disagreement
+  rates against held-out and mutation-generated controls;
+- calibration and abstention under unsupported syntax, ambiguous licenses,
+  poisoned text, prompt-like content, compiler mismatch, source/deployment
+  mismatch, and graph/index corruption; and
+- a cross-layer authority test proving that corpus quality, GraphRAG score,
+  model confidence, SAT, simulation, or an unexecuted formal candidate cannot
+  become theorem authority, a contract-safety `ALLOW`, or wallet permission.
+
+Any CVEfixes, OWASP, CWE, SWC, SCSVS, EthTrust, exploit, or patch corpus used
+for labels or controls needs its own pinned provenance, license admission, and
+leakage group. Nearest-neighbor similarity never transfers a vulnerability or
+safety label.
+
+Release artifacts include deterministic data/model cards, source and
+derivation manifests, evaluation receipts, known limitations, rollback
+instructions, and license exclusions. Raw sources or learned weights are not
+uploaded by the supervisor. The first integration is observation/shadow only:
+retrieval may help reviewers choose obligations, but the existing
+exact-code-epoch contract gate consumes only independently validated proof and
+policy receipts.
+
+### 14.8 Parallel execution waves
+
+- **Wave A — governance:** `CRYPTOIR-G710` pins the source, reusable contracts,
+  authority, threat, license, and release policy.
+- **Wave B — two parallel foundations:** `CRYPTOIR-G720` builds bounded source
+  intake and canonical records while `CRYPTOIR-G730` builds the inert Solidity
+  parser against offline fixtures.
+- **Wave C — graph and partitioning:** `CRYPTOIR-G740` builds the typed graph;
+  then `CRYPTOIR-G750` builds retrieval while `CRYPTOIR-G760` builds
+  leakage-safe partitions and fences.
+- **Wave D — formal learning:** `CRYPTOIR-G770` builds the Security IR/formal
+  adapter and training records; `CRYPTOIR-G780` adds the bounded training
+  runner and checkpoint receipts.
+- **Wave E — assurance and release:** `CRYPTOIR-G790` runs held-out and
+  adversarial evaluation; `CRYPTOIR-G800` adds the narrow Crypto IR bridge,
+  deterministic release staging, conformance tests, and rollback docs.
+
+The supervisor may schedule logically independent lanes in parallel, but its
+shared `ipfs_datasets_py` resource claim remains the physical merge-safety
+fence. That fence is not weakened merely to increase concurrency.

@@ -336,6 +336,41 @@ seed_objectives() {
     done < <(
       awk '$1 == "##" && $2 ~ /^CRYPTOIR-G[0-9]+$/ {print $2}' "${OBJECTIVE_PATH}"
     )
+  else
+    # A normal evidence scan can nominate a path merely because it is named in
+    # the objective document.  Force only schedulable goals that have never
+    # received a task binding; unlike seed, this cannot reproject completed
+    # work and becomes a no-op after the first successful refill.
+    while IFS= read -r goal_id; do
+      forced_goal_args+=(--force-goal-id "${goal_id}")
+    done < <(
+      "${PYTHON_BIN}" - "${OBJECTIVE_PATH}" "${TODO_PATH}" <<'PY'
+import pathlib
+import re
+import sys
+
+from ipfs_accelerate_py.agent_supervisor.objective_graph import parse_goal_heap
+
+objective_path = pathlib.Path(sys.argv[1])
+todo_path = pathlib.Path(sys.argv[2])
+goals = parse_goal_heap(objective_path.read_text(encoding="utf-8"))
+todo_text = todo_path.read_text(encoding="utf-8")
+bound_goal_ids = set(
+    re.findall(r"(?m)^- Goal id:\s*(\S+)\s*$", todo_text)
+)
+for goal in goals:
+    review_only = (
+        str(goal.fields.get("review_only") or "").strip().lower() == "true"
+    )
+    if (
+        goal.goal_id != "CRYPTOIR-G000"
+        and goal.is_schedulable
+        and not review_only
+        and goal.goal_id not in bound_goal_ids
+    ):
+        print(goal.goal_id)
+PY
+    )
   fi
   (
     cd "${REPO_ROOT}"
@@ -481,7 +516,7 @@ start_codex_lane() {
     --objective-root-goal-id CRYPTOIR-G000
     --objective-root-goal-title "Deliver Crypto IR contract assurance and transaction compliance"
     --objective-tracking-document-title "Crypto IR, Smart-Contract Assurance, and Transaction Compliance Objective Heap"
-    --objective-mission-term "crypto,wallet,contract,proof,security,sanctions,compliance,knowledge-graph,transaction"
+    --objective-mission-term "crypto,wallet,contract,solidity,cpt,hugging-face,graphrag,training,formal-logic,proof,security,sanctions,compliance,knowledge-graph,transaction"
     --objective-scan-min-open-tasks 4
     --objective-scan-max-findings 16
     --objective-scan-cooldown-seconds 300

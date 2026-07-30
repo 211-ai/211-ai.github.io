@@ -14,6 +14,12 @@ Program invariants:
   wallet, knowledge-graph, prover, and admissibility primitives.
 - Proof authority requires an executed supported lowering; static analysis,
   simulation, monitors, GraphRAG, heuristics, and opaque JSON are not proofs.
+- The Solidity CPT corpus is untrusted source evidence, not a vulnerability or
+  safety label; retrieval/model/candidate outputs never grant proof, contract
+  safety, transaction, or wallet authority.
+- Corpus intake pins immutable source, schema, shard digest, and license
+  evidence; parsing is inert and bounded; evaluation partitions are separated
+  by repository/source/duplicate lineage before training and retrieval.
 - Exact sanctions identifiers, designated/owned parties, direct association,
   bounded indirect exposure, and heuristic association stay distinct.
 - Missing, stale, inconsistent, reorged, unsupported, incomplete, or errored
@@ -2366,3 +2372,653 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 - Candidate kind: validation_gate
 - Todo vector key: 40f4fa821b8b99e9
 - Acceptance: Objective scan filed this gap for CRYPTOIR-G010. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-29-cryptoir-036-objective-gap-e765ebb9a469.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Narrow evidence-bound claims are preferable to broad claims that the current models cannot prove.
+
+## CRYPTOIR-037 Implement Crypto IR compliance objective: Pin source, licensing, threat, and release authority
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-governance
+- Depends on: CRYPTOIR-001, CRYPTOIR-036
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-037-objective-gap-f9b0264e4649.md
+- Bundle: solidity-cpt/governance
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-governance.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 34
+- Parallel lane: solidity-cpt-governance
+- Conflict policy: sole owner of the new package initializer, corpus authority document, and release-policy module
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/__init__.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_policy.py
+- Changed paths:
+- AST symbols: SolidityCPTReleasePolicy LicenseProvenance SourceProfile
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G710
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/ae5edaeb4bfd492a06920d80c66f69067d78b904052ed6e16b4478a0b8fb0ad9
+- Canonical task CID: baguqeeravzpnv22l7vesubusbwamm33jaz6xroieauxnnyllir4kboh3blmq
+- Semantic identity: objective-evidence-obligation/v1/a290ba6a7188ed5ac0b1abd55917b489aa0332d8f402e6748498bda6db6c7836
+- Acceptance subset: Policy pins revision `23c0b2f279fa29c6b425543fe9c8bf41d574d028`, `top10.parquet` SHA-256 `185f1ac548f0df10a8166c8a2a10610bcc3422ce77f51567c3de86ddc8f5e455`, size 109124886, row count 23471, and the ordered eight-column schema, records dataset-level and per-row license evidence separately, defaults ambiguous source licenses to internal/source-free use, treats source text as inert untrusted data, states that `top10` is top-decile quality rather than OWASP/vulnerability/safety truth, and forbids network, execution, training, upload, proof, or enforcement authority by default.
+- Preconditions: objective goal CRYPTOIR-G710 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py
+- Evidence subset: ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py
+- Resource class: cpu-small
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-small
+- Merge fate: objective/CRYPTOIR-G710
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a290ba6a7188ed5ac0b1abd55917b489aa0332d8f402e6748498bda6db6c7836
+- Missing evidence: ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py
+- Embedding query: solidity cpt dataset pin lfs sha license threat release authority hugging face
+- AST query: SolidityCPTReleasePolicy LicenseProvenance SourceProfile
+- Surplus group: objective/CRYPTOIR-G710
+- Merge key: baece023f7ab6bf0
+- Merge family: objective/CRYPTOIR-G710
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 69df3be273808447
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G710. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-037-objective-gap-f9b0264e4649.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_AUTHORITY.md, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/release_policy.py), and keep the supervisor-fed backlog aligned with the objective heap.  Publication of raw source or learned weights requires separate license review and operator authority.
+
+## CRYPTOIR-038 Implement Crypto IR compliance objective: Verify and ingest the immutable Hugging Face snapshot
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-source
+- Depends on: CRYPTOIR-037
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_source.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_source_snapshot.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_source.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_schemas.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_source_snapshot.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_source.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_schemas.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-038-objective-gap-23bd46940fc4.md
+- Bundle: solidity-cpt/source
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-source.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 35
+- Parallel lane: solidity-cpt-source
+- Conflict policy: owns only source-snapshot, Hugging Face source, canonical derived-schema modules, and their tests
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_source.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_source_snapshot.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_source.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_schemas.py
+- Changed paths:
+- AST symbols: SolidityCPTSourceSnapshot SolidityCPTRow DerivedDataset
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G720
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/9d7878ff7be941100b6a09c4390e73db3bece63d63e2fee282697d6a55650e07
+- Canonical task CID: baguqeeratv4hr7335farac3kbhcdsdtt3m56zzr5mprp5yucnf6wuvlfbydq
+- Semantic identity: objective-evidence-obligation/v1/6f80f9a20f52bc2544974b9861afad99f979a8a8c55644f9978b5fa40eecf0cd
+- Acceptance subset: Local or injected streaming intake verifies dataset, immutable revision, split, file digest/size, row count, ordered columns and types before admission, strict row bounds cover bytes, text, paths, fields, nesting, counts, and diagnostics, every record binds exact source/parent/config CIDs, source bodies remain separate, malformed, oversize, poisoned, drifted, truncated, duplicate, or unknown-authority input is quarantined, imports use no network, credentials, auto-install, compilation, execution, or upload, address and verified-source metadata never assert deployed-bytecode equality.
+- Preconditions: objective goal CRYPTOIR-G720 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py
+- Resource class: io-medium
+- Token class: medium
+- Estimated tokens: 0
+- Resources: io-medium
+- Merge fate: objective/CRYPTOIR-G720
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/6f80f9a20f52bc2544974b9861afad99f979a8a8c55644f9978b5fa40eecf0cd
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py
+- Embedding query: hugging face solidity parquet immutable snapshot content address row schema bounded ingest
+- AST query: SolidityCPTSourceSnapshot SolidityCPTRow DerivedDataset
+- Surplus group: objective/CRYPTOIR-G720
+- Merge key: c3efabce4b3a07fd
+- Merge family: objective/CRYPTOIR-G720
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: b8c2011370832499
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G720. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-038-objective-gap-23bd46940fc4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/source_snapshot.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/schemas.py), and keep the supervisor-fed backlog aligned with the objective heap.  Rehash every persisted artifact on load and reject stale caller-supplied identities.
+
+## CRYPTOIR-039 Implement Crypto IR compliance objective: Implement bounded inert Solidity parsing and normalization
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-parser
+- Depends on: CRYPTOIR-001, CRYPTOIR-036, CRYPTOIR-011, CRYPTOIR-016, CRYPTOIR-014, CRYPTOIR-037
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/__init__.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py, ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity/test_parser.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity/test_parser.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-039-objective-gap-e539eb82f819.md
+- Bundle: solidity-cpt/parser
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-parser.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 36
+- Parallel lane: solidity-cpt-parser
+- Conflict policy: sole owner of the Solidity parser leaf package; does not edit shared smart-contract protocols or package exports
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/__init__.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/models.py, ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py, ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity/test_parser.py
+- Changed paths:
+- AST symbols: SolidityContractParser SoliditySourceUnit SolidityParseResult
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G730
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/0b80475583bfbe521f1d4590582d50ea60b10140af29a46d6adaec73903d6cab
+- Canonical task CID: baguqeeraboaeovmdx67fehy5iwifqlkq5jqlcakav4u2i3lk3lwhheb5nsvq
+- Semantic identity: objective-evidence-obligation/v1/a42e2800ef0f8bc959fc6bc945c3518a533b9683d40c960f50408053a29b3d2a
+- Acceptance subset: Deterministic results preserve exact source spans and cover contracts, libraries, interfaces, inheritance, imports, functions, constructors, modifiers, state variables, events, errors, calls, reads/writes, authorization guards, value effects, assembly, and unsupported syntax, parser identity/version/config and all byte, node, nesting, import, diagnostic, cancellation, and time bounds are receipt-bound, imports never resolve over the network, source/compiler/address claims remain evidence rather than deployed semantics, failure and partial coverage are explicit.
+- Preconditions: objective goal CRYPTOIR-G730 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py
+- Resource class: cpu-large
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-large
+- Merge fate: objective/CRYPTOIR-G730
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a42e2800ef0f8bc959fc6bc945c3518a533b9683d40c960f50408053a29b3d2a
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py
+- Embedding query: solidity parser ast source span smart contract calls modifiers storage effects bounded
+- AST query: SolidityContractParser SoliditySourceUnit SolidityParseResult
+- Surplus group: objective/CRYPTOIR-G730
+- Merge key: 57376b5590a25002
+- Merge family: objective/CRYPTOIR-G730
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: be5f8e4066b68ed1
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G730. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-039-objective-gap-e539eb82f819.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/processors/smart_contracts/solidity/parser.py), and keep the supervisor-fed backlog aligned with the objective heap.  Do not add import-time parser installation or require a system `solc`; capability unavailability is a typed unsupported result.
+
+## CRYPTOIR-040 Implement Crypto IR compliance objective: Build the typed Solidity contract-security graph
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: solidity-cpt-graph
+- Depends on: CRYPTOIR-038, CRYPTOIR-039
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/vocabulary.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_vocabulary.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_projector.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_graph.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_vocabulary.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_projector.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_graph.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-040-objective-gap-a4e2b1c3e637.md
+- Bundle: solidity-cpt/graph
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-graph.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 37
+- Parallel lane: solidity-cpt-graph
+- Conflict policy: owns vocabulary, projector, graph modules, and graph tests only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/vocabulary.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_vocabulary.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_projector.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_graph.py
+- Changed paths:
+- AST symbols: SoliditySecurityGraph SolidityVocabulary SolidityGraphProjector
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G740
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/2a2c4da0e7f364e9cddde12cfd75e2bc26686f453226d095cc1befe3a833abc0
+- Canonical task CID: baguqeerafiwe3ihh6nsotto54ewp25pcxqtgq32fgitnbfomdpx6hkbtvpaa
+- Semantic identity: objective-evidence-obligation/v1/94321ab5425f001e200e913b10e2fc2c33578798093d0352fc27885c70ca963b
+- Acceptance subset: Versioned node and edge schemas cover source, contract, declaration, control/state/effect, provenance, license, compiler, candidate security concept, assumption, mitigation, and proof-obligation facts, graph and node identities bind source and config CIDs, source bodies remain out-of-graph, edge endpoints and ontology are validated, approximate structural/semantic edges are explicitly non-authoritative, corpus quality never becomes a security label, unknown extensions, dangling edges, stale identities, or lossy required semantics fail closed.
+- Preconditions: objective goal CRYPTOIR-G740 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py
+- Resource class: cpu-large
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-large
+- Merge fate: objective/CRYPTOIR-G740
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/94321ab5425f001e200e913b10e2fc2c33578798093d0352fc27885c70ca963b
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py
+- Embedding query: solidity security knowledge graph ontology contract function modifier storage call provenance
+- AST query: SoliditySecurityGraph SolidityVocabulary SolidityGraphProjector
+- Surplus group: objective/CRYPTOIR-G740
+- Merge key: 71b49887f29456f7
+- Merge family: objective/CRYPTOIR-G740
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 234a66d1dd41d0d1
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G740. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-040-objective-gap-a4e2b1c3e637.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/graph.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/projector.py), and keep the supervisor-fed backlog aligned with the objective heap.  Keep observed syntax, inferred candidate, reviewed claim, and verified result as separate node and authority types.
+
+## CRYPTOIR-041 Implement Crypto IR compliance objective: Build lineage-safe partitions and retrieval fences
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-partitions
+- Depends on: CRYPTOIR-038, CRYPTOIR-040
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_partitions.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_partitions.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-041-objective-gap-a6b80172e36a.md
+- Bundle: solidity-cpt/partitions
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-partitions.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 38
+- Parallel lane: solidity-cpt-partitions
+- Conflict policy: owns deterministic partition manifests and leakage-fence tests only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_partitions.py
+- Changed paths:
+- AST symbols: SolidityPartitionManifest SolidityRetrievalFence DuplicateFamily
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G760
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/e6aa2335322d1045bf67ed41751fbd5361a730334880e4688d1d3bd38e0395b8
+- Canonical task CID: baguqeera42vcgnjsfuielp3h5vaxkh55knq2ombtjcaoi2endu55hdqdsw4a
+- Semantic identity: objective-evidence-obligation/v1/bdf0d5aaf032fae4d52f45983ce63d4dc54e18415594a6c4e46e602a51fd9d6e
+- Acceptance subset: Grouping occurs before assignment using exact and near-duplicate content, repository/source family, normalized path/history, address, fork/import lineage, and generated-code family, one connected group cannot cross partitions, manifests contain hashed bounded grouping evidence rather than raw bodies, partition ratios/seeds/policy/source revision are CID-bound, evaluation retrieval cannot cross its exact partition/snapshot/family fence, missing grouping evidence, overlap, drift, or attempted leakage fails closed.
+- Preconditions: objective goal CRYPTOIR-G760 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py
+- Resource class: cpu-large
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-large
+- Merge fate: objective/CRYPTOIR-G760
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/bdf0d5aaf032fae4d52f45983ce63d4dc54e18415594a6c4e46e602a51fd9d6e
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py
+- Embedding query: solidity training split repository lineage near duplicate leakage retrieval fence
+- AST query: SolidityPartitionManifest SolidityRetrievalFence DuplicateFamily
+- Surplus group: objective/CRYPTOIR-G760
+- Merge key: 8487c0f0fa8ba120
+- Merge family: objective/CRYPTOIR-G760
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 4bfd6572a5c9144b
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G760. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-041-objective-gap-a6b80172e36a.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/partitions.py), and keep the supervisor-fed backlog aligned with the objective heap.  The upstream single `train` split is never randomly divided row-by-row.
+
+## CRYPTOIR-042 Implement Crypto IR compliance objective: Build bounded provenance-preserving hybrid GraphRAG
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: solidity-cpt-retrieval
+- Depends on: CRYPTOIR-040
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_retrieval.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_retrieval.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-042-objective-gap-8e5b261aec7f.md
+- Bundle: solidity-cpt/retrieval
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-retrieval.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 39
+- Parallel lane: solidity-cpt-retrieval
+- Conflict policy: owns only hybrid retrieval, index schemas, injected accelerator port use, and tests
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_retrieval.py
+- Changed paths:
+- AST symbols: SolidityGraphRetriever EmbeddingAcceleratorPort RetrievalIndex
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G750
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/1c68b3d95b61ce1bc799f0ff60673dfc252488feef875c4f806770ebec00b73e
+- Canonical task CID: baguqeeradrulhwk3mhhbxr4z6d7wazz57qssjch656dvyt4am5yox3aaw47a
+- Semantic identity: objective-evidence-obligation/v1/f4222f7bd59a33ceafdbc89ced0160eec6de589b794255e4d2378125eeac91a2
+- Acceptance subset: Index roots bind exact graph, ontology, source, partition, shard, model/revision/tokenizer/dimension, accelerator configuration, weights, bounds, and authority policy, embedding uses an injected `EmbeddingAcceleratorPort`, queries are bounded by partition, license, nodes, shards, hops, bytes, results, and time, rehash-on-load, scope checks, and graph-edge validation reject corrupt, stale, mismatched, cross-partition, or grant-like results, every hit is source-citing and has `proof_authority=False` and no execution authority.
+- Preconditions: objective goal CRYPTOIR-G750 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py
+- Resource class: cpu-large
+- Token class: medium
+- Estimated tokens: 0
+- Resources: cpu-large
+- Merge fate: objective/CRYPTOIR-G750
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f4222f7bd59a33ceafdbc89ced0160eec6de589b794255e4d2378125eeac91a2
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py
+- Embedding query: solidity graphrag lexical vector graph hybrid retrieval embedding accelerator provenance
+- AST query: SolidityGraphRetriever EmbeddingAcceleratorPort RetrievalIndex
+- Surplus group: objective/CRYPTOIR-G750
+- Merge key: 901a8352fdfe8c87
+- Merge family: objective/CRYPTOIR-G750
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: edecd9a4a07c541a
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G750. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-042-objective-gap-8e5b261aec7f.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/retrieval.py), and keep the supervisor-fed backlog aligned with the objective heap.  Approximate rank affects ordering only and can never widen the caller's authority or evaluation scope.
+
+## CRYPTOIR-043 Implement Crypto IR compliance objective: Compile Security IR candidates and formal-learning records
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-formalization
+- Depends on: CRYPTOIR-021, CRYPTOIR-019, CRYPTOIR-039, CRYPTOIR-040, CRYPTOIR-041
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training_records.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_adapter.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_formalize.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_records.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_adapter.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_formalize.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_records.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-043-objective-gap-f32b7086be06.md
+- Bundle: solidity-cpt/formalization
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-formalization.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 40
+- Parallel lane: solidity-cpt-formalization
+- Conflict policy: owns Solidity corpus Security IR adapter, formalizer, learning-record schema, and tests only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training_records.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_adapter.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_formalize.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_records.py
+- Changed paths:
+- AST symbols: SoliditySecurityIRAdapter SolidityFormalizationRecord ProofObligation
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G770
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/124cd1400f6f83f7800f489a4386c1612b70ea8763915eb12ef7957febc3d305
+- Canonical task CID: baguqeeracjgncqapn6b7paapjcnehbwbmevxb2uhmoiv5mjo66kx726d2mcq
+- Semantic identity: objective-evidence-obligation/v1/282be19f07ff15e47042c9b94c220595e7fcd9602416b0be9d36850b593650a3
+- Acceptance subset: Declarations and formulas cite exact source spans, graph/source/config/partition CIDs, semantic prerequisites, assumptions, unsupported frontiers, logic family, and candidate authority, retrieved premises become `context_only` assumptions with `proof_authority=False`, quality is never a safety label and unlabeled rows remain unlabeled, CPT tokens, instruction targets, proof-attempt targets, and evaluation-only records remain distinct, proof labels require validated receipts from actually executed supported lowerings, solver results, traces, model scores, and evaluation labels do not leak into declaration features, unknown or lossy semantics abstain.
+- Preconditions: objective goal CRYPTOIR-G770 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py
+- Resource class: cpu-proof-solver
+- Token class: large
+- Estimated tokens: 0
+- Resources: cpu-proof-solver
+- Merge fate: objective/CRYPTOIR-G770
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/282be19f07ff15e47042c9b94c220595e7fcd9602416b0be9d36850b593650a3
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py
+- Embedding query: solidity security ir formalization proof obligation training record context assumption
+- AST query: SoliditySecurityIRAdapter SolidityFormalizationRecord ProofObligation
+- Surplus group: objective/CRYPTOIR-G770
+- Merge key: 0611502507b22095
+- Merge family: objective/CRYPTOIR-G770
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d7abf552e24bada5
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G770. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-043-objective-gap-f32b7086be06.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/adapter.py, ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/formalize.py), and keep the supervisor-fed backlog aligned with the objective heap.  A generated obligation is a property to check, not evidence that the property holds.
+
+## CRYPTOIR-044 Implement Crypto IR compliance objective: Implement bounded formal-learning runs and checkpoint receipts
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: solidity-cpt-training
+- Depends on: CRYPTOIR-042, CRYPTOIR-043
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_command.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_command.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-044-objective-gap-9d84ad5889d0.md
+- Bundle: solidity-cpt/training
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-training.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 41
+- Parallel lane: solidity-cpt-training
+- Conflict policy: owns backend-neutral training contracts, offline CLI, checkpoint manifests, and tests only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_training_command.py
+- Changed paths:
+- AST symbols: FormalTrainingRequest FormalTrainingReceipt CheckpointManifest
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G780
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/40aebf5fbe9f9ee04a9091208514c534346df7352a5943b527c58bbf2411bef3
+- Canonical task CID: baguqeeraicxl6x56t6poasuqseqikfgfgq2g35zvfjmuhnjhywf36jarx3zq
+- Semantic identity: objective-evidence-obligation/v1/ebc652928617a765fc184b157a612c949d7ecef928e084ab5f011f408fa141ad
+- Acceptance subset: Requests bind exact source/graph/index/partition/license CIDs, base model/revision/tokenizer, objective, feature/target schema, hyperparameters, seed, backend/capability, hardware, byte/token/time/memory/checkpoint budgets, and output policy, dry-run and tiny offline fixtures are default, checkpoints and terminal receipts rehash and reproduce, unavailable, timeout, cancellation, partial, divergent, stale, or corrupt runs remain explicit, model download, ambient credentials, external tracking, full GPU execution, publication, and upload are disabled without separate operator authority, learned outputs have candidate authority only.
+- Preconditions: objective goal CRYPTOIR-G780 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, satisfy evidence requirement: ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py
+- Resource class: gpu-small
+- Token class: large
+- Estimated tokens: 0
+- Resources: gpu-small
+- Merge fate: objective/CRYPTOIR-G780
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/ebc652928617a765fc184b157a612c949d7ecef928e084ab5f011f408fa141ad
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py
+- Embedding query: solidity formal logic training runner checkpoint reproducible offline dry run
+- AST query: FormalTrainingRequest FormalTrainingReceipt CheckpointManifest
+- Surplus group: objective/CRYPTOIR-G780
+- Merge key: d2a057ea9d7f4899
+- Merge family: objective/CRYPTOIR-G780
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d8a5c069a339c39f
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G780. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-044-objective-gap-9d84ad5889d0.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/training.py, ipfs_datasets_py/scripts/ops/security_ir/train_solidity_cpt_top10_formalizer.py), and keep the supervisor-fed backlog aligned with the objective heap.  Training implementation and a production-quality trained checkpoint are separate deliverables with separate resource and release authority.
+
+## CRYPTOIR-045 Implement Crypto IR compliance objective: Evaluate leakage, grounding, abstention, and prover agreement
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-evaluation
+- Depends on: CRYPTOIR-042, CRYPTOIR-043, CRYPTOIR-044
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py, ipfs_datasets_py/scripts/ops/security_ir/evaluate_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation_command.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation.py ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation_command.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-045-objective-gap-36bec8d163a8.md
+- Bundle: solidity-cpt/evaluation
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-evaluation.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 42
+- Parallel lane: solidity-cpt-evaluation
+- Conflict policy: owns held-out/adversarial evaluation, evaluation CLI, fixtures, and tests only
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py, ipfs_datasets_py/scripts/ops/security_ir/evaluate_solidity_cpt_top10_formalizer.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_evaluation_command.py
+- Changed paths:
+- AST symbols: SolidityFormalEvaluation PromotionGate ProverAgreement
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G790
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/996fcb633a5d13cd166a830fb759f9a02e5e00fa4292097c4c234889b37641ed
+- Canonical task CID: baguqeeratfx4wyz2luj42ftkqmh3owpzuaxf4ah2ikjas7cmeneitm3wihwq
+- Semantic identity: objective-evidence-obligation/v1/a25e14389e83677eff06e8d13806cab794aba8d113b49a581d42647739cb3b44
+- Acceptance subset: Evaluation is CID-bound and reports zero cross-partition/source-family duplicate leakage, retrieval accuracy, graph-path validity, attribution, latency, memory, schema validity, source-span grounding, obligation coverage, executable-lowering, proof/disproof/unknown/timeout/unavailable/disagreement, calibration, and abstention are measured separately, poisoned text, prompt-like content, ambiguous licenses, unsupported syntax, compiler/source/deployment mismatch, mutations, corrupt graph/index, and cross-solver cases are included, no approximate, model, SAT, simulation, or unexecuted result is counted as proof, external label corpora require separate pin/license/leakage admission.
+- Preconditions: objective goal CRYPTOIR-G790 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py
+- Resource class: cpu-proof-solver
+- Token class: large
+- Estimated tokens: 0
+- Resources: cpu-proof-solver
+- Merge fate: objective/CRYPTOIR-G790
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a25e14389e83677eff06e8d13806cab794aba8d113b49a581d42647739cb3b44
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py
+- Embedding query: solidity formalizer evaluation leakage adversarial calibration abstention prover agreement
+- AST query: SolidityFormalEvaluation PromotionGate ProverAgreement
+- Surplus group: objective/CRYPTOIR-G790
+- Merge key: 2c13b1c49bba0cdd
+- Merge family: objective/CRYPTOIR-G790
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 7a4a4db8441ae252
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G790. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-045-objective-gap-36bec8d163a8.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/evaluation.py), and keep the supervisor-fed backlog aligned with the objective heap.  Report uncertainty and unsupported coverage rather than optimizing a single misleading accuracy score.
+
+## CRYPTOIR-046 Implement Crypto IR compliance objective: Add the advisory Crypto IR bridge and deterministic release gate
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: solidity-cpt-release
+- Depends on: CRYPTOIR-027, CRYPTOIR-035, CRYPTOIR-045
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/scripts/ops/security_ir/build_solidity_cpt_top10_release.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_RELEASE_AND_ROLLBACK.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_release.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_command.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10 ipfs_datasets_py/tests/unit/processors/smart_contracts/solidity ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Evidence inputs: data/crypto_ir_compliance/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-046-objective-gap-294c83602009.md
+- Bundle: solidity-cpt/release
+- Bundle shard: data/crypto_ir_compliance/agent_supervisor/bundles/solidity-cpt-release.todo.md
+- Bundle strategy: explicit
+- Graph parents: CRYPTOIR-G700
+- Graph depth: 2
+- Objective heap index: 43
+- Parallel lane: solidity-cpt-release
+- Conflict policy: serialized owner of the narrow Crypto IR adapter, local release staging, conformance test, and release/rollback documentation
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/logic/security_ir/solidity_cpt_top10/hf_release.py, ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/scripts/ops/security_ir/build_solidity_cpt_top10_release.py, ipfs_datasets_py/docs/security_ir/SOLIDITY_CPT_TOP10_RELEASE_AND_ROLLBACK.md, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_hf_release.py, ipfs_datasets_py/tests/unit/logic/security_ir/solidity_cpt_top10/test_release_command.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Changed paths:
+- AST symbols: SolidityCPTCryptoIRAdapter SolidityCPTReleaseManifest ContractSafetyDecision
+- Interfaces:
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: CRYPTOIR-G800
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/ba116ea1cb89b9e5a31f7680df372ab3e82c4d48b5a4ec8a7994d1915009e124
+- Canonical task CID: baguqeeraxiiw5iolrg46liy7o2an6nzkwpucytkiwwsozctzstizcuaj4esa
+- Semantic identity: objective-evidence-obligation/v1/abdf9bf9daeba45dfc8b2a3c9c183182af5c8df054efae8a35c73855f5832fbf
+- Acceptance subset: The bridge emits reviewed candidate rules/obligations with exact semantic prerequisites and never emits a safety verdict, contract enforcement still requires independently validated proof receipts for the exact deployed code epoch, corpus quality, retrieval rank, model confidence, candidate formula, SAT, simulation, stale result, or corrupt/mismatched artifact cannot become proof or `ALLOW`, release manifests bind all source/graph/model/evaluation/license/config CIDs and omit unlicensed bodies, builds are local and deterministic, upload/publication remains disabled, data/model cards, limitations, rollback, and observation/shadow-only integration are documented.
+- Preconditions: objective goal CRYPTOIR-G800 is schedulable
+- Effects: satisfy evidence requirement: ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, satisfy evidence requirement: ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Evidence subset: ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Resource class: cpu-large
+- Token class: large
+- Estimated tokens: 0
+- Resources: cpu-large
+- Merge fate: objective/CRYPTOIR-G800
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/abdf9bf9daeba45dfc8b2a3c9c183182af5c8df054efae8a35c73855f5832fbf
+- Missing evidence: ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py
+- Embedding query: solidity cpt crypto ir adapter release gate graphrag model proof authority wallet
+- AST query: SolidityCPTCryptoIRAdapter SolidityCPTReleaseManifest ContractSafetyDecision
+- Surplus group: objective/CRYPTOIR-G800
+- Merge key: 9e3914fc958efc4f
+- Merge family: objective/CRYPTOIR-G800
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 50f6235b4d55b1f0
+- Acceptance: Objective scan filed this gap for CRYPTOIR-G800. Use evidence in /home/barberb/211-AI/.worktrees/crypto-ir-contract-compliance/data/crypto_ir_compliance/agent_supervisor/discovery/2026-07-30-cryptoir-046-objective-gap-294c83602009.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_datasets_py/ipfs_datasets_py/logic/crypto_ir/adapters/solidity_cpt_top10.py, ipfs_datasets_py/tests/contract/logic/crypto_ir/test_solidity_cpt_top10_authority.py), and keep the supervisor-fed backlog aligned with the objective heap.  Reviewers may use GraphRAG to choose obligations, but only the existing proof and policy gates may authorize a transaction.
