@@ -2765,7 +2765,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-043 Implement Crypto IR compliance objective: Compile Security IR candidates and formal-learning records
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
