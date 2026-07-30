@@ -2174,7 +2174,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-034 Implement Crypto IR compliance objective: Cut over public services, registries, and every signing boundary
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
