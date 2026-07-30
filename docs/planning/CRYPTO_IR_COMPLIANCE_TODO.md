@@ -2440,7 +2440,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-038 Implement Crypto IR compliance objective: Verify and ingest the immutable Hugging Face snapshot
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
