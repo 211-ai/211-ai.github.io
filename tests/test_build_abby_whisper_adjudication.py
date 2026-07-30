@@ -16,6 +16,7 @@ from scripts.build_abby_whisper_adjudication import (
 from scripts.validate_abby_regeneration_whisper import (
     FAILURE_MANIFEST_SCHEMA,
     RECEIPT_SCHEMA,
+    SEMANTIC_CORRUPTION_SCHEMA,
     atomic_write_json,
 )
 
@@ -70,6 +71,35 @@ def _base_evidence(tmp_path: Path, count: int = 5) -> tuple[Path, Path, Path]:
             "validator_version": "abby_voice_full_whisper_validator_v3",
         },
     )
+    semantic_path = tmp_path / "semantic-corruptions.json"
+    atomic_write_json(
+        semantic_path,
+        {
+            "corruption_count": 1,
+            "items": [
+                {
+                    "active_eligible": False,
+                    "audio_id": "audio-0",
+                    "expected_text_sha256": failures[0][
+                        "expected_text_sha256"
+                    ],
+                    "manifest_index": 0,
+                    "reasons": ["apostrophe_direction_expansion"],
+                    "source_ids": ["response-0"],
+                }
+            ],
+            "manifest_sha256": manifest_digest,
+            "reason_counts": {
+                "apostrophe_direction_expansion": 1,
+                "st_abbreviation_expanded_to_street": 0,
+            },
+            "release_eligible_count": count - 1,
+            "scan_rule": (
+                "confirmed_abbreviation_and_apostrophe_direction_rules_v2"
+            ),
+            "schema_version": SEMANTIC_CORRUPTION_SCHEMA,
+        },
+    )
     receipt_path = tmp_path / "base-receipt.json"
     atomic_write_json(
         receipt_path,
@@ -88,6 +118,9 @@ def _base_evidence(tmp_path: Path, count: int = 5) -> tuple[Path, Path, Path]:
             "pending_count": 0,
             "run_fingerprint": "base-fingerprint",
             "schema_version": RECEIPT_SCHEMA,
+            "semantic_corruption_count": 1,
+            "semantic_corruption_manifest": str(semantic_path),
+            "semantic_corruption_manifest_sha256": _digest(semantic_path),
         },
     )
     return manifest_path, receipt_path, failure_path
@@ -207,8 +240,10 @@ def test_build_adjudication_receipt_requires_hash_identity_and_keeps_base(
     )
 
     assert payload["schema_version"] == ADJUDICATION_SCHEMA
-    assert payload["adjudicated_pass_ids"] == ["audio-0"]
-    assert payload["still_failed_ids"] == ["audio-1"]
+    assert payload["adjudicated_pass_ids"] == []
+    assert payload["still_failed_ids"] == ["audio-0", "audio-1"]
+    assert payload["decisions"][0]["stronger_acoustic_passed"] is True
+    assert payload["decisions"][0]["semantic_corruption_excluded"] is True
     assert payload["base_receipt_mutated"] is False
     assert payload["evidence_only"] is True
 

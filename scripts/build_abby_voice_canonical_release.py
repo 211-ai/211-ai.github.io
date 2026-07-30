@@ -1302,6 +1302,16 @@ def reconcile_canonical_release(
             f"canonical audio count mismatch: expected {expected_active_audio}, "
             f"got {len(bundle.audio)}"
         )
+    unsafe_canonical_audio = [
+        row.audio_id
+        for row in bundle.audio
+        if unsafe_spoken_transformation_reasons(row.spoken_text)
+    ]
+    if unsafe_canonical_audio:
+        raise CanonicalReleaseReconciliationError(
+            "canonical audio retained unsafe spoken transformation text: "
+            + ", ".join(sorted(unsafe_canonical_audio)[:10])
+        )
     canonical_template_by_identity = {
         normalized_text_identity(row.spoken_template or ""): row
         for row in bundle.templates
@@ -1424,8 +1434,14 @@ def reconcile_canonical_release(
                         str(retained_by_id[old_id].get("text") or "")
                     ).encode("utf-8")
                 ).hexdigest(),
-                "quality_decision": quality_decisions[replacement_id],
-                "replacement_active": replacement_id not in unresolved_quality_ids,
+                "quality_decision": (
+                    "excluded_unsafe_spoken_transformation"
+                    if replacement_id in generated_unsafe_exclusion_ids
+                    else quality_decisions[replacement_id]
+                ),
+                "replacement_active": replacement_id not in (
+                    unresolved_quality_ids | generated_unsafe_exclusion_ids
+                ),
                 "replacement_adjudication_item_id": (
                     adjudication_event.get("validation_receipt_id")
                     if adjudication_event is not None
@@ -1518,7 +1534,11 @@ def reconcile_canonical_release(
             "expected_text_sha256": sha256(
                 str(generated_by_id[audio_id].get("text") or "").encode("utf-8")
             ).hexdigest(),
-            "quality_decision": quality_decisions[audio_id],
+            "quality_decision": (
+                "excluded_unsafe_spoken_transformation"
+                if audio_id in generated_unsafe_exclusion_ids
+                else quality_decisions[audio_id]
+            ),
             "schema_version": "abby_voice_regeneration_audio_inventory_v2",
             "source_ids": _ordered_strings(
                 generated_by_id[audio_id].get("sourceIds") or ()
@@ -1536,22 +1556,60 @@ def reconcile_canonical_release(
         }
         for audio_id in sorted(generated_by_id)
     )
-    retained_numeric_regeneration_queue = tuple(
+    unsafe_spoken_regeneration_queue = tuple(
         sorted(
-            retained_numeric_regeneration_rows,
-            key=lambda item: str(item["excluded_audio_id"]),
+            unsafe_spoken_regeneration_rows,
+            key=lambda item: (
+                str(item["excluded_audio_id"]),
+                str(item["source_kind"]),
+            ),
         )
     )
+    if any(
+        unsafe_spoken_transformation_reasons(
+            str(item["target_spoken_text"])
+        )
+        for item in unsafe_spoken_regeneration_queue
+    ):
+        raise CanonicalReleaseReconciliationError(
+            "unsafe-spoken regeneration queue contains an unsafe repair target"
+        )
     retained_numeric_ids_sha256 = sha256(
         "".join(
-            f"{item['excluded_audio_id']}\n"
-            for item in retained_numeric_regeneration_queue
+            f"{audio_id}\n"
+            for audio_id in sorted(retained_numeric_exclusion_ids)
         ).encode("utf-8")
     ).hexdigest()
-    retained_numeric_reason_counts: dict[str, int] = defaultdict(int)
-    for item in retained_numeric_regeneration_queue:
+    retained_unsafe_ids_sha256 = sha256(
+        "".join(
+            f"{audio_id}\n"
+            for audio_id in sorted(retained_unsafe_exclusion_ids)
+        ).encode("utf-8")
+    ).hexdigest()
+    retained_apostrophe_direction_ids = {
+        str(item["excluded_audio_id"])
+        for item in unsafe_spoken_regeneration_queue
+        if (
+            item["source_kind"] == "retained_audio"
+            and "apostrophe_direction_corruption" in item["risk_reasons"]
+        )
+    }
+    retained_apostrophe_direction_ids_sha256 = sha256(
+        "".join(
+            f"{audio_id}\n"
+            for audio_id in sorted(retained_apostrophe_direction_ids)
+        ).encode("utf-8")
+    ).hexdigest()
+    generated_unsafe_ids_sha256 = sha256(
+        "".join(
+            f"{audio_id}\n"
+            for audio_id in sorted(generated_unsafe_exclusion_ids)
+        ).encode("utf-8")
+    ).hexdigest()
+    unsafe_spoken_reason_counts: dict[str, int] = defaultdict(int)
+    for item in unsafe_spoken_regeneration_queue:
         for reason in item["risk_reasons"]:
-            retained_numeric_reason_counts[str(reason)] += 1
+            unsafe_spoken_reason_counts[str(reason)] += 1
     source_paths = {
         "bucket_audio_objects": inputs.bucket_objects,
         "regeneration_audio_manifest": inputs.regeneration_audio,
@@ -1634,14 +1692,35 @@ def reconcile_canonical_release(
             for decision in quality_decisions.values()
         ),
         "response_frame_count": len(frame_rows),
+        "generated_unsafe_spoken_exclusion_count": len(
+            generated_unsafe_exclusion_ids
+        ),
+        "generated_unsafe_spoken_exclusion_ids_sha256": (
+            generated_unsafe_ids_sha256
+        ),
+        "retained_apostrophe_direction_exclusion_count": len(
+            retained_apostrophe_direction_ids
+        ),
+        "retained_apostrophe_direction_exclusion_ids_sha256": (
+            retained_apostrophe_direction_ids_sha256
+        ),
         "retained_numeric_punctuation_exclusion_count": len(
-            retained_numeric_regeneration_queue
+            retained_numeric_exclusion_ids
         ),
         "retained_numeric_punctuation_exclusion_ids_sha256": (
             retained_numeric_ids_sha256
         ),
-        "retained_numeric_punctuation_reason_counts": dict(
-            sorted(retained_numeric_reason_counts.items())
+        "retained_unsafe_spoken_exclusion_count": len(
+            retained_unsafe_exclusion_ids
+        ),
+        "retained_unsafe_spoken_exclusion_ids_sha256": (
+            retained_unsafe_ids_sha256
+        ),
+        "unsafe_spoken_regeneration_queue_count": len(
+            unsafe_spoken_regeneration_queue
+        ),
+        "unsafe_spoken_transformation_reason_counts": dict(
+            sorted(unsafe_spoken_reason_counts.items())
         ),
         "schema_version": "abby_voice_canonical_reconciliation_v2",
         "source_digests": dict(sorted(source_digests.items())),
@@ -1666,9 +1745,7 @@ def reconcile_canonical_release(
         supersession_rows=supersession_rows,
         excluded_audio_rows=excluded_audio_rows,
         quality_exclusion_rows=quality_exclusion_rows,
-        retained_numeric_regeneration_rows=(
-            retained_numeric_regeneration_queue
-        ),
+        unsafe_spoken_regeneration_rows=unsafe_spoken_regeneration_queue,
         regeneration_inventory_rows=regeneration_inventory_rows,
         frame_template_rows=tuple(
             sorted(frame_template_rows, key=lambda item: str(item["frame_id"]))
@@ -1989,6 +2066,7 @@ def build_canonical_release(
         supersession_path = temporary / "supersession-map.jsonl"
         excluded_path = temporary / "excluded-legacy-audio.jsonl"
         quality_exclusion_path = temporary / "excluded-whisper-audio.jsonl"
+        unsafe_spoken_queue_path = temporary / "unsafe-spoken-regeneration.jsonl"
         regeneration_inventory_path = temporary / "regeneration-inventory.jsonl"
         bucket_inventory_path = temporary / "bucket-audio-inventory.jsonl"
         regeneration_plan_path = temporary / "regeneration-plan.json"
@@ -2003,6 +2081,10 @@ def build_canonical_release(
         _write_jsonl(
             quality_exclusion_path,
             reconciliation.quality_exclusion_rows,
+        )
+        _write_jsonl(
+            unsafe_spoken_queue_path,
+            reconciliation.unsafe_spoken_regeneration_rows,
         )
         _write_jsonl(
             regeneration_inventory_path,
@@ -2116,6 +2198,19 @@ def build_canonical_release(
                 schema_type="abby_voice_quality_audio_exclusion_v2",
                 row_count=len(reconciliation.quality_exclusion_rows),
                 kind="excluded_whisper_audio",
+            ),
+            _support_source(
+                source=unsafe_spoken_queue_path,
+                relative_path=(
+                    "metadata/unsafe-spoken-regeneration-queue.jsonl"
+                ),
+                schema_type=(
+                    "abby_voice_unsafe_spoken_regeneration_queue_v1"
+                ),
+                row_count=len(
+                    reconciliation.unsafe_spoken_regeneration_rows
+                ),
+                kind="unsafe_spoken_regeneration_queue",
             ),
             _support_source(
                 source=frame_map_path,

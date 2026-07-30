@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ from scripts.validate_abby_regeneration_whisper import (
     _transcribe_resiliently,
     load_receipt_events,
     run_validation,
+    semantic_corruption_items,
     validation_artifact_paths,
 )
 
@@ -274,3 +276,102 @@ def test_run_validation_requires_an_exact_model_revision(tmp_path: Path) -> None
             maximum_wer_bp=3_500,
             transcribe_many=lambda paths: ["The shelter is open tonight."],
         )
+
+
+def test_semantic_corruption_scan_is_narrow_and_redacted() -> None:
+    rows = [
+        (
+            3,
+            {
+                "id": "corrupt",
+                "sourceIds": ["response-3"],
+                "text": "Call Lane County’South two four hour crisis line.",
+            },
+        ),
+        (
+            4,
+            {
+                "id": "valid",
+                "sourceIds": ["response-4"],
+                "text": "Call Salem’s camp safety line.",
+            },
+        ),
+        (
+            5,
+            {
+                "id": "st-vincent",
+                "sourceIds": ["response-5"],
+                "text": "Call Street. Vincent de Paul for rent assistance.",
+            },
+        ),
+        (
+            6,
+            {
+                "id": "st-marys-charles",
+                "sourceIds": ["response-6"],
+                "text": (
+                    "Ask Street. Mary’s Catholic Church, then Street. Charles."
+                ),
+            },
+        ),
+    ]
+
+    assert semantic_corruption_items(rows) == [
+        {
+            "active_eligible": False,
+            "audio_id": "corrupt",
+            "expected_text_sha256": sha256(
+                rows[0][1]["text"].encode()
+            ).hexdigest(),
+            "manifest_index": 3,
+            "reasons": ["apostrophe_direction_expansion"],
+            "source_ids": ["response-3"],
+        },
+        {
+            "active_eligible": False,
+            "audio_id": "st-vincent",
+            "expected_text_sha256": sha256(
+                rows[2][1]["text"].encode()
+            ).hexdigest(),
+            "manifest_index": 5,
+            "reasons": ["st_abbreviation_expanded_to_street"],
+            "source_ids": ["response-5"],
+        },
+        {
+            "active_eligible": False,
+            "audio_id": "st-marys-charles",
+            "expected_text_sha256": sha256(
+                rows[3][1]["text"].encode()
+            ).hexdigest(),
+            "manifest_index": 6,
+            "reasons": ["st_abbreviation_expanded_to_street"],
+            "source_ids": ["response-6"],
+        },
+    ]
+
+
+def test_semantic_corruption_prevents_all_passed_receipt(
+    tmp_path: Path,
+) -> None:
+    text = "Call Lane County’South two four hour crisis line."
+    manifest = _write_manifest(tmp_path, [text])
+    prefix = tmp_path / "full-validation"
+
+    checkpoint = _run(
+        manifest,
+        prefix,
+        lambda paths: [text for _ in paths],
+    )
+
+    assert checkpoint["failed_count"] == 0
+    artifacts = validation_artifact_paths(
+        prefix, shard_count=1, shard_index=0
+    )
+    receipt = json.loads(artifacts["receipt"].read_text(encoding="utf-8"))
+    semantic = json.loads(
+        artifacts["semantic_corruptions"].read_text(encoding="utf-8")
+    )
+    assert receipt["all_passed"] is False
+    assert receipt["semantic_corruption_count"] == 1
+    assert semantic["corruption_count"] == 1
+    assert text not in json.dumps(semantic)

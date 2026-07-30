@@ -18,6 +18,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.validate_abby_regeneration_whisper import (  # noqa: E402
     FAILURE_MANIFEST_SCHEMA,
     RECEIPT_SCHEMA,
+    SEMANTIC_CORRUPTION_SCHEMA,
     atomic_write_json,
 )
 
@@ -117,6 +118,24 @@ def _build_failure_subset(
         raise ValueError("failure manifest and base receipt models differ")
     if failures.get("model_revision") != base.get("model_revision"):
         raise ValueError("failure manifest and base receipt revisions differ")
+    semantic_path = _resolve_evidence_path(
+        str(base.get("semantic_corruption_manifest") or ""),
+        base_receipt_path,
+    )
+    if not semantic_path.is_file():
+        raise ValueError("base semantic-corruption manifest is missing")
+    semantic_digest = _sha256_path(semantic_path)
+    if semantic_digest != base.get("semantic_corruption_manifest_sha256"):
+        raise ValueError("base semantic-corruption manifest hash is invalid")
+    semantic = _load_object(semantic_path)
+    if semantic.get("schema_version") != SEMANTIC_CORRUPTION_SCHEMA:
+        raise ValueError("semantic-corruption manifest has an unexpected schema")
+    if semantic.get("manifest_sha256") != manifest_digest:
+        raise ValueError("semantic-corruption manifest binds another corpus")
+    if int(semantic.get("corruption_count") or 0) != int(
+        base.get("semantic_corruption_count") or 0
+    ):
+        raise ValueError("semantic-corruption count differs from base receipt")
 
     rows = manifest.get("responses")
     if not isinstance(rows, list):
@@ -209,6 +228,8 @@ def _build_failure_subset(
             "baseValidationReceiptSha256": _sha256_path(base_receipt_path),
             "canonicalManifest": _display_path(canonical_manifest_path),
             "canonicalManifestSha256": manifest_digest,
+            "semanticCorruptionManifest": _display_path(semantic_path),
+            "semanticCorruptionManifestSha256": semantic_digest,
         },
     }
     atomic_write_json(output_path, payload)
@@ -304,6 +325,27 @@ def build_adjudication_receipt(
         raise ValueError("subset failure-manifest binding differs from base")
     if source.get("canonicalManifestSha256") != base.get("manifest_sha256"):
         raise ValueError("subset canonical-manifest binding differs from base")
+    if source.get("semanticCorruptionManifestSha256") != base.get(
+        "semantic_corruption_manifest_sha256"
+    ):
+        raise ValueError("subset semantic-corruption binding differs from base")
+    semantic_path = _resolve_evidence_path(
+        str(source.get("semanticCorruptionManifest") or ""),
+        subset_manifest_path,
+    )
+    if not semantic_path.is_file():
+        raise ValueError("subset semantic-corruption manifest is missing")
+    semantic = _load_object(semantic_path)
+    if semantic.get("schema_version") != SEMANTIC_CORRUPTION_SCHEMA:
+        raise ValueError("subset semantic-corruption schema is invalid")
+    semantic_items = semantic.get("items")
+    if not isinstance(semantic_items, list):
+        raise ValueError("semantic-corruption manifest has no item list")
+    semantic_ids = {
+        str(item.get("audio_id") or "")
+        for item in semantic_items
+        if isinstance(item, dict)
+    }
 
     rows = subset.get("responses")
     if not isinstance(rows, list) or len(rows) != int(
@@ -356,9 +398,9 @@ def build_adjudication_receipt(
             raise ValueError(
                 f"stronger item {audio_id} expected-text hash differs from base"
             )
-        passed = event.get("passed") is True
+        acoustic_passed = event.get("passed") is True
         gates = stronger["gates"]
-        if passed and (
+        if acoustic_passed and (
             event.get("numeric_sequences_match") is not True
             or event.get("forbidden_negative_detected") is not False
             or int(event.get("normalized_similarity_bp") or 0)
@@ -370,6 +412,8 @@ def build_adjudication_receipt(
             raise ValueError(
                 f"stronger item {audio_id} claims pass without satisfying gates"
             )
+        semantic_excluded = audio_id in semantic_ids
+        passed = acoustic_passed and not semantic_excluded
         decisions.append(
             {
                 "adjudicated_passed": passed,
@@ -380,6 +424,8 @@ def build_adjudication_receipt(
                 "stronger_validation_receipt_id": event[
                     "validation_receipt_id"
                 ],
+                "semantic_corruption_excluded": semantic_excluded,
+                "stronger_acoustic_passed": acoustic_passed,
             }
         )
     passed_ids = [
@@ -415,6 +461,10 @@ def build_adjudication_receipt(
         "evidence_only": True,
         "schema_version": ADJUDICATION_SCHEMA,
         "selected_count": len(decisions),
+        "semantic_corruption_count": len(semantic_ids),
+        "semantic_corruption_ids": sorted(semantic_ids),
+        "semantic_corruption_manifest": _display_path(semantic_path),
+        "semantic_corruption_manifest_sha256": _sha256_path(semantic_path),
         "still_failed_count": len(failed_ids),
         "still_failed_ids": failed_ids,
         "stronger_model_name": stronger_model_name,

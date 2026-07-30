@@ -59,6 +59,13 @@ ITEM_SCHEMA = "abby_voice_full_whisper_validation_item_v3"
 CHECKPOINT_SCHEMA = "abby_voice_full_whisper_validation_checkpoint_v3"
 RECEIPT_SCHEMA = "abby_voice_full_whisper_validation_receipt_v3"
 FAILURE_MANIFEST_SCHEMA = "abby_voice_full_whisper_failures_v2"
+SEMANTIC_CORRUPTION_SCHEMA = "abby_voice_semantic_corruptions_v2"
+_APOSTROPHE_DIRECTION_EXPANSION = re.compile(
+    r"\b(?:Lane County|Salem)[’'](?:North|South|East|West)\b"
+)
+_CONFIRMED_ST_ABBREVIATION_EXPANSION = re.compile(
+    r"\bStreet\.\s+(?:Vincent|Mary[’']s|Charles)\b"
+)
 
 
 def _utc_now() -> str:
@@ -157,6 +164,9 @@ def validation_artifact_paths(
         "lock": stem.with_suffix(".lock"),
         "failures": stem.with_suffix(".failures.json"),
         "receipt": stem.with_suffix(".receipt.json"),
+        "semantic_corruptions": stem.with_suffix(
+            ".semantic-corruptions.json"
+        ),
     }
 
 
@@ -606,6 +616,38 @@ def _failure_reasons(
     return reasons
 
 
+def semantic_corruption_items(
+    rows: Sequence[tuple[int, dict[str, Any]]],
+) -> list[dict[str, Any]]:
+    """Return redacted expected-text corruptions that acoustic ASR cannot clear."""
+
+    items: list[dict[str, Any]] = []
+    for manifest_index, row in rows:
+        expected = str(row.get("text") or "")
+        reasons: list[str] = []
+        if _APOSTROPHE_DIRECTION_EXPANSION.search(expected):
+            reasons.append("apostrophe_direction_expansion")
+        if _CONFIRMED_ST_ABBREVIATION_EXPANSION.search(expected):
+            reasons.append("st_abbreviation_expanded_to_street")
+        if not reasons:
+            continue
+        items.append(
+            {
+                "active_eligible": False,
+                "audio_id": str(row.get("id") or ""),
+                "expected_text_sha256": sha256(expected.encode()).hexdigest(),
+                "manifest_index": manifest_index,
+                "reasons": reasons,
+                "source_ids": [
+                    str(value)
+                    for value in row.get("sourceIds") or []
+                    if str(value)
+                ],
+            }
+        )
+    return items
+
+
 def _checkpoint_payload(
     *,
     manifest_path: Path,
@@ -956,6 +998,33 @@ def run_validation(
         if status == "complete":
             ordered = [latest[str(row["id"])] for _, row in rows]
             rows_by_id = {str(row["id"]): row for _, row in rows}
+            semantic_items = semantic_corruption_items(rows)
+            semantic_reason_counts = {
+                reason: sum(
+                    reason in item["reasons"] for item in semantic_items
+                )
+                for reason in (
+                    "apostrophe_direction_expansion",
+                    "st_abbreviation_expanded_to_street",
+                )
+            }
+            semantic_manifest = {
+                "corruption_count": len(semantic_items),
+                "items": semantic_items,
+                "manifest_sha256": manifest_digest,
+                "reason_counts": semantic_reason_counts,
+                "release_eligible_count": len(rows) - len(semantic_items),
+                "scan_rule": (
+                    "confirmed_abbreviation_and_apostrophe_direction_rules_v2"
+                ),
+                "schema_version": SEMANTIC_CORRUPTION_SCHEMA,
+            }
+            atomic_write_json(
+                artifacts["semantic_corruptions"], semantic_manifest
+            )
+            semantic_manifest_digest = _sha256_path(
+                artifacts["semantic_corruptions"]
+            )
             failed_items = []
             for event in ordered:
                 if event.get("passed") is True:
@@ -1004,7 +1073,9 @@ def run_validation(
             atomic_write_json(artifacts["failures"], failure_manifest)
             failure_manifest_digest = _sha256_path(artifacts["failures"])
             final_receipt = {
-                "all_passed": summary["failed_count"] == 0,
+                "all_passed": (
+                    summary["failed_count"] == 0 and not semantic_items
+                ),
                 "completed_at": _utc_now(),
                 "device": device,
                 "dtype": dtype,
@@ -1030,6 +1101,14 @@ def run_validation(
                 "remote_writes": False,
                 "run_fingerprint": fingerprint,
                 "schema_version": RECEIPT_SCHEMA,
+                "semantic_corruption_count": len(semantic_items),
+                "semantic_corruption_manifest": _display_path(
+                    artifacts["semantic_corruptions"]
+                ),
+                "semantic_corruption_manifest_sha256": (
+                    semantic_manifest_digest
+                ),
+                "semantic_corruption_reason_counts": semantic_reason_counts,
                 "shard_count": shard_count,
                 "shard_index": shard_index,
                 "validation_receipt_id": (
@@ -1041,6 +1120,8 @@ def run_validation(
                             + _sha256_path(artifacts["ledger"])
                             + "\0"
                             + fingerprint
+                            + "\0"
+                            + semantic_manifest_digest
                         ).encode()
                     ).hexdigest()
                 ),

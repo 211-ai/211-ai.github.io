@@ -24,7 +24,7 @@ from typing import Any, Final
 
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
-VOICE_ROUTER_ADAPTER_VERSION = "1.2"
+VOICE_ROUTER_ADAPTER_VERSION = "1.3"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
     "aac": "audio/aac",
     "flac": "audio/flac",
@@ -39,6 +39,14 @@ _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
 }
 _PACKAGE_INDEXTTS_PROVIDER: object | None = None
 _PACKAGE_INDEXTTS_PROVIDER_KEY: tuple[object, ...] = ()
+_VOICE_SURFACE_ALIASES: Final[dict[str, str]] = {
+    "web": "website",
+    "website": "website",
+    "sip": "telephone",
+    "telephone": "telephone",
+    "telephony": "telephone",
+    "twilio": "telephone",
+}
 
 # Residual discoverability anchors for objective/ABBY-VOICE-G010. Keep the exact
 # evidence phrases stable so embedding/AST scans re-find them on this authorized
@@ -101,6 +109,30 @@ def _text_field(payload: Mapping[str, object], *names: str) -> str | None:
 def _mapping_field(payload: Mapping[str, object], *names: str) -> dict[str, object]:
     value = _field(payload, *names)
     return dict(value) if isinstance(value, Mapping) else {}
+
+
+def _voice_surface(
+    payload: Mapping[str, object],
+    context: Mapping[str, object],
+) -> str:
+    """Resolve the public surface without retaining call/session identifiers."""
+
+    payload_surface = _text_field(payload, "surface")
+    context_surface = _text_field(context, "surface")
+    def normalize(value: str) -> str:
+        requested = value.casefold()
+        try:
+            return _VOICE_SURFACE_ALIASES[requested]
+        except KeyError as exc:
+            raise ValueError(
+                f"unsupported wallet voice surface: {requested}"
+            ) from exc
+
+    if payload_surface and context_surface:
+        if normalize(payload_surface) != normalize(context_surface):
+            raise ValueError("wallet voice payload has conflicting surfaces")
+    requested = str(payload_surface or context_surface or "website")
+    return normalize(requested)
 
 
 def _decode_audio(value: object | None) -> bytes | str | None:
@@ -449,6 +481,7 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         # it is absent and audio exists, the canonical STT provider is used.
         transcript = _text_field(payload, "userPrompt", "user_prompt")
     context = _mapping_field(payload, "context")
+    context["surface"] = _voice_surface(payload, context)
     grounding = _mapping_field(payload, "grounding")
     stt_options = _mapping_field(payload, "stt_options", "sttOptions")
     tts_options = _mapping_field(payload, "tts_options", "ttsOptions")
@@ -496,6 +529,27 @@ def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> d
     return payload
 
 
+def _response_dag_stage_configuration(
+    *,
+    sink: object | None,
+    validation_receipt: object | None,
+    audio_descriptor: Mapping[str, object] | None,
+) -> bool:
+    """Fail closed on partial opt-in to local response-DAG staging."""
+
+    values = (sink, validation_receipt, audio_descriptor)
+    if not any(value is not None for value in values):
+        return False
+    if sink is None or validation_receipt is None or audio_descriptor is None:
+        raise ValueError(
+            "response-DAG staging requires response_dag_sink, "
+            "validation_receipt, and audio_descriptor together"
+        )
+    if not isinstance(audio_descriptor, Mapping):
+        raise TypeError("response-DAG audio_descriptor must be a mapping")
+    return True
+
+
 class WalletVoiceRouterAdapter:
     """Feature-flagged wallet adoption facade over ``process_voice_turn``."""
 
@@ -511,11 +565,20 @@ class WalletVoiceRouterAdapter:
         stt_provider: object | None = None,
         tts_provider: object | None = None,
         audio_resolver: object | None = None,
+        response_dag_sink: object | None = None,
+        validation_receipt: object | None = None,
+        audio_descriptor: Mapping[str, object] | None = None,
+        response_dag_response_id: str = "",
     ) -> dict[str, object] | None:
         if not self.enabled:
             return None
         if not isinstance(payload, Mapping):
             raise TypeError("wallet voice payload must be a mapping")
+        stage_response_dag = _response_dag_stage_configuration(
+            sink=response_dag_sink,
+            validation_receipt=validation_receipt,
+            audio_descriptor=audio_descriptor,
+        )
         request = build_voice_turn_request(payload)
         response_text = request.fallback_text
         provider = template_provider or _WalletResponsePlanProvider(response_text)
@@ -537,7 +600,28 @@ class WalletVoiceRouterAdapter:
             tts_provider_instance=tts,
             audio_resolver=audio_resolver,
         )
-        return serialize_voice_turn_result(result)
+        queued = None
+        if stage_response_dag:
+            queued = result.enqueue_validated_cache_miss_candidate(
+                sink=response_dag_sink,
+                validation_receipt=validation_receipt,
+                audio_descriptor=audio_descriptor,
+                response_id=str(response_dag_response_id or "").strip(),
+                surface=str(request.context.get("surface") or ""),
+            )
+        serialized = serialize_voice_turn_result(result)
+        if stage_response_dag:
+            serialized["response_dag_queue"] = (
+                queued.to_dict()
+                if queued is not None
+                else {
+                    "candidate_id": None,
+                    "publication_status": "not_applicable",
+                    "remote_writes": False,
+                    "status": "not_queued",
+                }
+            )
+        return serialized
 
 
 def process_wallet_voice_turn(
@@ -549,6 +633,10 @@ def process_wallet_voice_turn(
     stt_provider: object | None = None,
     tts_provider: object | None = None,
     audio_resolver: object | None = None,
+    response_dag_sink: object | None = None,
+    validation_receipt: object | None = None,
+    audio_descriptor: Mapping[str, object] | None = None,
+    response_dag_response_id: str = "",
 ) -> dict[str, object] | None:
     """Process one wallet proxy envelope when the staged flag is enabled."""
 
@@ -559,6 +647,10 @@ def process_wallet_voice_turn(
         stt_provider=stt_provider,
         tts_provider=tts_provider,
         audio_resolver=audio_resolver,
+        response_dag_sink=response_dag_sink,
+        validation_receipt=validation_receipt,
+        audio_descriptor=audio_descriptor,
+        response_dag_response_id=response_dag_response_id,
     )
 
 
