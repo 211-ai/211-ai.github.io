@@ -1849,7 +1849,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-029 Implement Crypto IR compliance objective: Integrate XRPL and Xaman transaction guards
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
