@@ -1914,7 +1914,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-030 Implement Crypto IR compliance objective: Integrate the Ethereum transaction guard
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
