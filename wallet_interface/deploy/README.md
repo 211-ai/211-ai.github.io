@@ -158,7 +158,8 @@ Recommended wiring:
 1. Build and publish `wallet_interface/ui/` with the existing Pages workflow.
 2. Set GitHub repository or environment variables for the Pages workflow:
   `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
-  `ABBY_PAGES_ACTOR_DID`, and optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`.
+  `ABBY_PAGES_ACTOR_DID`, optional `ABBY_PAGES_FILECOIN_UPLOAD_URL`, and
+  optional `ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL`.
 3. Set `WALLET_API_CORS_ORIGINS` on the API to the exact GitHub Pages origin.
 4. Keep secrets only on the API/proof/storage side. GitHub Pages assets are
    public.
@@ -215,7 +216,17 @@ ABBY_RUNTIME_ACTOR_DID=did:key:demo
 ABBY_RUNTIME_VOICE_PROXY_INFER_URL=https://voice.example.com/api/voice/infer
 ABBY_RUNTIME_VOICE_PROXY_TTS_URL=https://voice.example.com/api/voice/tts
 ABBY_RUNTIME_VOICE_PROXY_STT_URL=https://voice.example.com/api/voice/stt
+ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL=https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/<pinned-commit-sha>/data/abby_voice_v2/<release-id>/metadata/runtime-precomputed-audio-manifest.json
+WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL=https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/<pinned-commit-sha>/data/abby_voice_v2/<release-id>/metadata/runtime-precomputed-audio-manifest.json
+WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS=15
+WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS=60
 ```
+
+The container startup script and Pages workflow reject Hugging Face manifest
+URLs that do not pin a 40-64 character commit SHA. Leave the variable empty
+until the approved append-only release has produced its immutable commit. Set
+the browser `ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL` and server
+`WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL` to the exact same release manifest.
 
 When the same-origin wallet bridge targets the Publicus IndexTTS Space, set a
 Hugging Face token for the bridge in addition to the Space URL. The wallet API
@@ -252,6 +263,7 @@ that points at the prod API:
 ABBY_PAGES_WALLET_API_BASE_URL=https://211-ai.com
 ABBY_PAGES_WALLET_ID=wallet-demo
 ABBY_PAGES_ACTOR_DID=did:key:demo
+ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL=https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/<pinned-commit-sha>/data/abby_voice_v2/<release-id>/metadata/runtime-precomputed-audio-manifest.json
 ```
 
 If your GitHub Pages project URL is, for example,

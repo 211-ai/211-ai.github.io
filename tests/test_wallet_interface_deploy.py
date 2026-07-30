@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -11,6 +12,9 @@ DEPLOY_ROOT = Path(__file__).parent.parent / "wallet_interface" / "deploy"
 K8S_ROOT = DEPLOY_ROOT / "kubernetes"
 CLOUDFLARE_ROOT = DEPLOY_ROOT / "cloudflare"
 DOCS_ROOT = Path(__file__).parent.parent / "docs"
+REPO_ROOT = Path(__file__).parent.parent
+UI_ROOT = REPO_ROOT / "wallet_interface" / "ui"
+PAGES_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "abby-ui-pages.yml"
 
 
 def test_wallet_deploy_reference_files_exist() -> None:
@@ -119,6 +123,145 @@ def test_wallet_voice_deploy_defaults_use_publicus_batch_primary() -> None:
         "IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND: "
         "${IPFS_DATASETS_VOICE_REPLY_PROVIDER_KIND:-remote-proxy}"
     ) in compose
+
+
+def test_precomputed_audio_runtime_config_is_effective_and_explicit() -> None:
+    template = json.loads(
+        (DEPLOY_ROOT / "runtime-config.template.json").read_text(encoding="utf-8")
+    )
+    startup_script = (DEPLOY_ROOT / "40-runtime-config.sh").read_text(
+        encoding="utf-8"
+    )
+    dockerfile = (DEPLOY_ROOT / "Dockerfile.ui").read_text(encoding="utf-8")
+    compose = (DEPLOY_ROOT / "docker-compose.wallet.yml").read_text(
+        encoding="utf-8"
+    )
+    config_map = (K8S_ROOT / "configmap.yaml").read_text(encoding="utf-8")
+    ui_deployment = (K8S_ROOT / "ui-deployment.yaml").read_text(encoding="utf-8")
+    workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
+    ui_package = json.loads((UI_ROOT / "package.json").read_text(encoding="utf-8"))
+
+    assert template["precomputedAudio"]["manifestUrl"] == (
+        "${ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL}"
+    )
+    assert 'export ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL="' in startup_script
+    assert "/resolve/[0-9a-fA-F]{40,64}/" in startup_script
+    assert "${ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL}" in startup_script
+    assert "runtime-config.template.json /opt/abby/runtime-config.template.json" in dockerfile
+    assert "40-runtime-config.sh /docker-entrypoint.d/40-runtime-config.sh" in dockerfile
+    assert "RUN npm ci" in dockerfile
+    assert "@rollup/rollup-linux-x64-musl" not in ui_package["devDependencies"]
+    assert "ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL:" in compose
+    assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL:" in compose
+    assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS:-15" in compose
+    assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS:-60" in compose
+    assert 'ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL: ""' in config_map
+    assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL: ""' in config_map
+    assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS: "15"' in config_map
+    assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS: "60"' in config_map
+    assert "key: ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL" in ui_deployment
+    assert "vars.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL" in workflow
+    assert "configure_precomputed_audio_runtime.mjs" in workflow
+    assert "resolve/main" not in template["precomputedAudio"]["manifestUrl"]
+
+
+def test_precomputed_audio_runtime_shell_rejects_mutable_hf_refs(
+    tmp_path: Path,
+) -> None:
+    if shutil.which("envsubst") is None:
+        pytest.skip("envsubst is unavailable")
+
+    script = DEPLOY_ROOT / "40-runtime-config.sh"
+    syntax = subprocess.run(
+        ["sh", "-n", str(script)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert syntax.returncode == 0, syntax.stderr
+
+    pinned_revision = "a" * 40
+    pinned_url = (
+        "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/"
+        f"{pinned_revision}/data/abby_voice_v2/release-1/metadata/"
+        "runtime-precomputed-audio-manifest.json"
+    )
+    pinned_output = tmp_path / "runtime-config.pinned.json"
+    base_env = os.environ.copy()
+    base_env.update(
+        {
+            "ABBY_RUNTIME_CONFIG_TEMPLATE_PATH": str(
+                DEPLOY_ROOT / "runtime-config.template.json"
+            ),
+            "ABBY_RUNTIME_CONFIG_OUTPUT_PATH": str(pinned_output),
+            "ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL": pinned_url,
+        }
+    )
+    accepted = subprocess.run(
+        ["sh", str(script)],
+        env=base_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert accepted.returncode == 0, accepted.stderr
+    assert json.loads(pinned_output.read_text(encoding="utf-8"))[
+        "precomputedAudio"
+    ]["manifestUrl"] == pinned_url
+
+    mutable_output = tmp_path / "runtime-config.mutable.json"
+    mutable_env = {
+        **base_env,
+        "ABBY_RUNTIME_CONFIG_OUTPUT_PATH": str(mutable_output),
+        "ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL": (
+            "https://huggingface.co/datasets/Publicus/211-abby-tts/"
+            "resolve/main/manifest.json"
+        ),
+    }
+    rejected = subprocess.run(
+        ["sh", str(script)],
+        env=mutable_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert rejected.returncode != 0
+    assert "must pin a 40-64 character Hugging Face commit SHA" in rejected.stderr
+    assert not mutable_output.exists()
+
+    query_bypass_env = {
+        **mutable_env,
+        "ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL": (
+            "https://huggingface.co/datasets/Publicus/211-abby-tts/"
+            f"resolve/main/manifest.json?decoy=/resolve/{pinned_revision}/"
+        ),
+    }
+    query_bypass = subprocess.run(
+        ["sh", str(script)],
+        env=query_bypass_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert query_bypass.returncode != 0
+
+
+def test_pages_precomputed_audio_configurator() -> None:
+    if shutil.which("node") is None:
+        pytest.skip("node is unavailable")
+
+    result = subprocess.run(
+        [
+            "node",
+            "--test",
+            "scripts/configure_precomputed_audio_runtime.test.mjs",
+        ],
+        cwd=UI_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, f"{result.stdout}\n{result.stderr}"
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:

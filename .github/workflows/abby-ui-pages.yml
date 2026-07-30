@@ -40,6 +40,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test precomputed-audio runtime selection
+        run: npm run test:precomputed-runtime
+
+      - name: Configure precomputed-audio runtime selection
+        env:
+          ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL: ${{ vars.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL }}
+        run: node scripts/configure_precomputed_audio_runtime.mjs public/runtime-config.json
+
       - name: Build
         run: npm run build
 

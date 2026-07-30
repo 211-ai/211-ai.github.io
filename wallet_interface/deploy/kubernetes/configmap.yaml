@@ -18,6 +18,13 @@ data:
   WALLET_AUTO_LOAD_REPOSITORY: "true"
   WALLET_AUTO_PERSIST: "true"
   WALLET_API_CORS_ORIGINS: https://wallet-ui.example.com
+  # Set only to an approved immutable release. Hugging Face URLs must use
+  # /resolve/<40-64-character-commit-sha>/ rather than a mutable branch name.
+  ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL: ""
+  # Keep the server resolver on the same approved immutable release.
+  WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL: ""
+  WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS: "15"
+  WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS: "60"
   WALLET_OPS_INTERVAL_SECONDS: "300"
   WALLET_OPS_ALERT_ON: "error"
   WALLET_ALERT_RETENTION_POLICY_REF: replace-with-alert-retention-policy-id
