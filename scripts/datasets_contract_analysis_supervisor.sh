@@ -9,6 +9,7 @@ CODEX_BIN="${DATASETS_CONTRACT_ANALYSIS_CODEX_BIN:-/usr/local/bin/codex}"
 GROK_BIN="${DATASETS_CONTRACT_ANALYSIS_GROK_BIN:-/home/barberb/.local/bin/grok}"
 GROK_MODEL="${DATASETS_CONTRACT_ANALYSIS_GROK_MODEL:-grok-4.5}"
 SWISSKNIFE_ROOT="${DATASETS_CONTRACT_ANALYSIS_SWISSKNIFE_ROOT:-/home/barberb/swissknife}"
+DATASETS_ROOT="${REPO_ROOT}/ipfs_datasets_py"
 
 PROGRAM_ROOT="${REPO_ROOT}/data/datasets_contract_analysis/agent_supervisor"
 OBJECTIVE_PATH="${REPO_ROOT}/docs/planning/DATASETS_CONTRACT_ANALYSIS_OBJECTIVES.md"
@@ -24,6 +25,7 @@ GENERATION_PATH="${PROGRAM_ROOT}/objective_generation.json"
 PLAN_EVALUATION_PATH="${PROGRAM_ROOT}/plan_evaluations.json"
 ANALYSIS_ESCALATION_PATH="${PROGRAM_ROOT}/analysis_escalation.json"
 GOAL_QUALITY_PATH="${PROGRAM_ROOT}/goal-quality.json"
+AST_BASELINE_PATH="${REPO_ROOT}/data/datasets_contract_analysis/scans/ipfs_datasets_py/baseline/ast-baseline.json"
 REQUIRE_TYPED_GOALS="${DATASETS_CONTRACT_ANALYSIS_REQUIRE_TYPED_GOALS:-0}"
 
 RUNTIME_ROOT="${PROGRAM_ROOT}/runtime"
@@ -91,12 +93,12 @@ check_swissknife_root() {
   fi
   if ! top_level="$(git -C "${SWISSKNIFE_ROOT}" rev-parse --show-toplevel 2>/dev/null)"; then
     echo "Swissknife analysis root is unavailable or not a Git repository: ${SWISSKNIFE_ROOT}" >&2
-    echo "Bootstrap may continue, but whole-repository coverage and exhaustion claims must remain INCOMPLETE_SCAN." >&2
+    echo "Bootstrap may continue, but Swissknife boundary coverage claims remain unavailable." >&2
     return 0
   fi
   if [[ "$(cd "${SWISSKNIFE_ROOT}" && pwd -P)" != "$(cd "${top_level}" && pwd -P)" ]]; then
     echo "Swissknife analysis root is not the repository top level: ${SWISSKNIFE_ROOT}" >&2
-    echo "Whole-repository coverage and exhaustion claims must remain INCOMPLETE_SCAN." >&2
+    echo "Swissknife boundary coverage claims remain unavailable." >&2
     return 0
   fi
   if [[ -n "$(git -C "${SWISSKNIFE_ROOT}" status --porcelain --untracked-files=normal)" ]]; then
@@ -105,6 +107,32 @@ check_swissknife_root() {
   else
     echo "Swissknife analysis root: clean, configured read-only at $(git -C "${SWISSKNIFE_ROOT}" rev-parse HEAD)"
   fi
+}
+
+check_datasets_root() {
+  local checkout_commit=""
+  local checkout_tree=""
+  local pinned_commit=""
+  if ! git -C "${DATASETS_ROOT}" rev-parse --show-toplevel >/dev/null 2>&1; then
+    echo "primary ipfs_datasets_py analysis root is unavailable: ${DATASETS_ROOT}" >&2
+    return 2
+  fi
+  checkout_commit="$(git -C "${DATASETS_ROOT}" rev-parse HEAD)"
+  checkout_tree="$(git -C "${DATASETS_ROOT}" rev-parse HEAD^{tree})"
+  pinned_commit="$(
+    git -C "${REPO_ROOT}" ls-tree HEAD ipfs_datasets_py |
+      awk '$1 == "160000" && $2 == "commit" {print $3}'
+  )"
+  if [[ -z "${pinned_commit}" || "${checkout_commit}" != "${pinned_commit}" ]]; then
+    echo "primary ipfs_datasets_py checkout does not match the superproject gitlink" >&2
+    echo "checkout=${checkout_commit:-missing} gitlink=${pinned_commit:-missing}" >&2
+    return 2
+  fi
+  if [[ -n "$(git -C "${DATASETS_ROOT}" status --porcelain --untracked-files=normal)" ]]; then
+    echo "primary ipfs_datasets_py analysis root is dirty: ${DATASETS_ROOT}" >&2
+    return 2
+  fi
+  echo "Primary ipfs_datasets_py proof target: clean at commit ${checkout_commit}, tree ${checkout_tree}."
 }
 
 validate_objective_control_plane() {
@@ -351,11 +379,12 @@ print(json.dumps(value, sort_keys=True))' \
 }
 
 seed_objectives() {
-  local force_existing_goals="${1:-true}"
+  local force_existing_goals="${1:-false}"
   local -a forced_goal_args=()
   prepare_runtime
   require_target_checkout
   require_supervisors_stopped
+  check_datasets_root
   check_swissknife_root
   validate_objective_control_plane
   if [[ "${force_existing_goals}" == "true" ]]; then
@@ -490,6 +519,7 @@ run_reconciliation_preflight() {
   prepare_runtime
   require_target_checkout
   require_supervisors_stopped
+  check_datasets_root
   check_swissknife_root
   validate_objective_control_plane
   reconcile_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" 0 "${WORKTREE_ROOT}/codex"
@@ -514,9 +544,9 @@ start_codex_lane() {
     --objective-summary-prefix "Implement datasets symbolic contract objective"
     --objective-goal-prefix "${GOAL_ID_PREFIX}"
     --objective-root-goal-id DSCON-G000
-    --objective-root-goal-title "Deliver deterministic contract-drift discovery and repair"
-    --objective-tracking-document-title "Datasets Manipulator and Swissknife Symbolic Contract Objective Heap"
-    --objective-mission-term "dataset,contract,proof,security,swissknife,ipfs"
+    --objective-root-goal-title "Deliver deterministic ipfs_datasets_py contract-drift discovery and repair"
+    --objective-tracking-document-title "ipfs_datasets_py Symbolic Contract and Dataset Manipulator Objective Heap"
+    --objective-mission-term "ipfs_datasets_py,dataset,contract,proof,security,cid,ast,logic"
     --objective-scan-min-open-tasks 4
     --objective-scan-max-findings 16
     --objective-scan-cooldown-seconds 300
@@ -529,7 +559,8 @@ start_codex_lane() {
     --no-objective-ast-dataset
     --no-objective-goal-completion-reconcile
     --no-objective-goal-migration
-    --codebase-refill-scan
+    # Generic whole-superproject codebase refill is intentionally disabled.
+    # G620 replaces it with the package-scoped contract-analysis provider.
     --codebase-scan-discovery-dir "${CODEBASE_DISCOVERY_DIR}"
     --codebase-scan-discovery-output-path data/datasets_contract_analysis/agent_supervisor/discovery/codebase
     --codebase-scan-min-open-tasks 4
@@ -539,7 +570,6 @@ start_codex_lane() {
     --codebase-scan-skip-prefix data
     --codebase-scan-skip-prefix artifacts
     --codebase-scan-commit-outputs
-    --allow-codebase-refill-with-objective-work
     --auto-commit-generated-dirty
     --generated-dirty-path docs/planning/DATASETS_CONTRACT_ANALYSIS_OBJECTIVES.md
     --generated-dirty-path docs/planning/DATASETS_CONTRACT_ANALYSIS_TODO.md
@@ -593,6 +623,7 @@ wait_for_lane() {
 start_supervisors() {
   prepare_runtime
   require_target_checkout
+  check_datasets_root
   check_swissknife_root
   require_executable "${CODEX_BIN}"
   require_executable "${GROK_BIN}"
@@ -668,6 +699,11 @@ write_health_snapshot() {
   local swissknife_commit=""
   local swissknife_git=false
   local swissknife_clean=false
+  local datasets_commit=""
+  local datasets_tree=""
+  local datasets_pinned_commit=""
+  local datasets_clean=false
+  local datasets_current=false
   local pid=""
   local tmp_path="${RUNTIME_ROOT}/supervisor-health.json.tmp.$$"
   if pid="$(read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")"; then
@@ -688,10 +724,25 @@ write_health_snapshot() {
       swissknife_clean=true
     fi
   fi
+  if datasets_commit="$(git -C "${DATASETS_ROOT}" rev-parse HEAD 2>/dev/null)"; then
+    datasets_tree="$(git -C "${DATASETS_ROOT}" rev-parse HEAD^{tree} 2>/dev/null || true)"
+    datasets_pinned_commit="$(
+      git -C "${REPO_ROOT}" ls-tree HEAD ipfs_datasets_py 2>/dev/null |
+        awk '$1 == "160000" && $2 == "commit" {print $3}'
+    )"
+    if [[ -z "$(git -C "${DATASETS_ROOT}" status --porcelain --untracked-files=normal)" ]]; then
+      datasets_clean=true
+    fi
+    if [[ -n "${datasets_pinned_commit}" && "${datasets_commit}" == "${datasets_pinned_commit}" ]]; then
+      datasets_current=true
+    fi
+  fi
   "${PYTHON_BIN}" - \
     "${tmp_path}" "${healthy}" "${MERGE_TARGET_BRANCH}" \
     "${TODO_PATH#${REPO_ROOT}/}" "${GRAPH_PATH#${REPO_ROOT}/}" \
     "${SWISSKNIFE_ROOT}" "${swissknife_git}" "${swissknife_clean}" "${swissknife_commit}" \
+    "${DATASETS_ROOT}" "${datasets_clean}" "${datasets_current}" "${datasets_commit}" "${datasets_tree}" "${datasets_pinned_commit}" \
+    "${AST_BASELINE_PATH}" \
     "${codex_supervisor_pid}" "${codex_daemon_pid}" "${grok_supervisor_pid}" "${grok_daemon_pid}" \
     "$([[ -f "${CODEX_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" \
     "$([[ -f "${GROK_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" <<'PY'
@@ -702,12 +753,46 @@ from datetime import datetime, timezone
 
 (
     output, healthy, branch, board, graph, swissknife_root, swissknife_git,
-    swissknife_clean, swissknife_commit, codex_supervisor, codex_daemon,
+    swissknife_clean, swissknife_commit, datasets_root, datasets_clean,
+    datasets_current, datasets_commit, datasets_tree, datasets_pinned_commit,
+    ast_baseline_path, codex_supervisor, codex_daemon,
     grok_supervisor, grok_daemon, codex_incident, grok_incident,
 ) = sys.argv[1:]
 
 def pid(value):
     return None if value == "null" else int(value)
+
+baseline_path = pathlib.Path(ast_baseline_path)
+try:
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+except (OSError, TypeError, ValueError):
+    baseline = {}
+baseline_repository = (
+    baseline.get("repository")
+    if isinstance(baseline.get("repository"), dict)
+    else {}
+)
+baseline_coverage = (
+    baseline.get("coverage")
+    if isinstance(baseline.get("coverage"), dict)
+    else {}
+)
+baseline_commit = str(baseline_repository.get("commit") or "")
+baseline_tree = str(baseline_repository.get("tree") or "")
+baseline_current = bool(
+    baseline.get("status") == "complete"
+    and baseline_coverage.get("analysis_complete") is True
+    and baseline_commit
+    and baseline_commit == datasets_commit
+    and baseline_tree
+    and baseline_tree == datasets_tree
+)
+proof_scan_root = baseline_path.parent.parent
+proof_receipt_paths = [
+    proof_scan_root / "scan-receipt.json",
+    proof_scan_root / "proof-root.json",
+    proof_scan_root / "finding-root.json",
+]
 
 payload = {
     "schema": "datasets-contract-analysis-supervisor-health/v1",
@@ -716,6 +801,27 @@ payload = {
     "merge_target_branch": branch,
     "task_board": board,
     "objective_graph": graph,
+    "primary_target": {
+        "logical_root": "ipfs_datasets_py",
+        "root": datasets_root,
+        "clean": datasets_clean == "true",
+        "matches_superproject_gitlink": datasets_current == "true",
+        "commit": datasets_commit or None,
+        "tree": datasets_tree or None,
+        "pinned_commit": datasets_pinned_commit or None,
+    },
+    "analysis": {
+        "ast_baseline": {
+            "path": ast_baseline_path,
+            "status": baseline.get("status"),
+            "authority": baseline.get("authority"),
+            "receipt_cid": baseline.get("receipt_cid"),
+            "commit": baseline_commit or None,
+            "tree": baseline_tree or None,
+            "current": baseline_current,
+        },
+        "proof_receipts_present": all(path.is_file() for path in proof_receipt_paths),
+    },
     "swissknife": {
         "root": swissknife_root,
         "configured_read_only": True,
@@ -750,6 +856,7 @@ show_status() {
   local failed=0
   local healthy=true
   prepare_runtime
+  check_datasets_root || failed=1
   check_swissknife_root
   show_lane_status "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
   show_lane_status "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
@@ -840,7 +947,10 @@ usage() {
 
 case "${1:-}" in
   seed)
-    with_lifecycle_lock seed_objectives true
+    # A seed is an evidence-gap scan, not a request to reopen every existing
+    # goal. Explicit force-goal operations remain available through the
+    # objective daemon for reviewed recovery workflows.
+    with_lifecycle_lock seed_objectives false
     ;;
   refill)
     with_lifecycle_lock seed_objectives false
