@@ -7,8 +7,12 @@ speech service, a GraphRAG deployment, IPFS, or Hugging Face.
 from __future__ import annotations
 
 import base64
+import io
 import json
+import math
+import struct
 import sys
+import wave
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -47,13 +51,37 @@ from ipfs_datasets_py.voice.response_dag import (  # noqa: E402
 )
 
 
+def _valid_test_wav() -> bytes:
+    """Return deterministic PCM audio accepted by the production validator."""
+
+    sample_rate = 16_000
+    frame_count = sample_rate // 4
+    pcm = b"".join(
+        struct.pack(
+            "<h",
+            round(6_000 * math.sin(2 * math.pi * 440 * frame / sample_rate)),
+        )
+        for frame in range(frame_count)
+    )
+    output = io.BytesIO()
+    with wave.open(output, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(sample_rate)
+        audio.writeframes(pcm)
+    return output.getvalue()
+
+
+VALID_TEST_WAV = _valid_test_wav()
+
+
 @dataclass
 class RecordingSpeechProvider:
     """Deterministic provider implementing both halves of the legacy protocol."""
 
     name: str
     transcript: str = "I need food assistance near me"
-    audio: bytes = b"RIFF-grounded-abby-audio"
+    audio: bytes = VALID_TEST_WAV
     stt_error: Exception | None = None
     tts_error: Exception | None = None
     calls: list[tuple[str, dict[str, Any]]] = field(default_factory=list)
@@ -215,7 +243,7 @@ def test_full_audio_turn_runs_in_order_and_returns_grounded_receipt() -> None:
     assert result.response_text == (
         "Community Food Network can help. Call 503-555-0111."
     )
-    assert result.audio == b"RIFF-grounded-abby-audio"
+    assert result.audio == VALID_TEST_WAV
     assert result.audio_format == "wav"
     assert result.template_id == "food-frame-v2"
     assert result.intent == "food_assistance"
@@ -486,7 +514,7 @@ def test_graph_rag_adapter_normalizes_mapping_without_optional_imports() -> None
 
 def test_result_serialization_is_json_safe_and_omits_raw_private_audio() -> None:
     raw_input = b"private-synthetic-input-audio"
-    raw_output = b"RIFF-synthetic-output"
+    raw_output = VALID_TEST_WAV
     result = process_voice_turn(
         VoiceTurnRequest(audio=raw_input, request_id="turn-json-1"),
         stt_provider=RecordingSpeechProvider("abby-stt"),
@@ -537,7 +565,7 @@ def test_validated_live_tts_miss_stops_at_local_response_dag_dry_run(
     )
     live_tts = RecordingSpeechProvider(
         "abby-live-tts",
-        audio=b"RIFF-validated-live-cache-miss-WAVE",
+        audio=VALID_TEST_WAV,
     )
     result = process_voice_turn(
         VoiceTurnRequest(

@@ -8,10 +8,14 @@ Hugging Face service.
 
 from __future__ import annotations
 
+import io
 import json
+import math
 import re
+import struct
 import sys
 import time
+import wave
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -45,6 +49,30 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
 
 GOLDEN_PATH = ROOT / "data/abby_voice/eval/golden_voice_turns.jsonl"
 PRIVATE_AUDIO = b"PRIVATE-CALLER-AUDIO-MUST-NOT-APPEAR-IN-RECEIPT"
+
+
+def _valid_test_wav() -> bytes:
+    """Return deterministic PCM audio accepted by the production validator."""
+
+    sample_rate = 16_000
+    frame_count = sample_rate // 4
+    pcm = b"".join(
+        struct.pack(
+            "<h",
+            round(6_000 * math.sin(2 * math.pi * 440 * frame / sample_rate)),
+        )
+        for frame in range(frame_count)
+    )
+    output = io.BytesIO()
+    with wave.open(output, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(sample_rate)
+        audio.writeframes(pcm)
+    return output.getvalue()
+
+
+VALID_TEST_WAV = _valid_test_wav()
 
 
 def _golden_rows() -> list[dict[str, Any]]:
@@ -107,7 +135,7 @@ def _response_plan(row: Mapping[str, Any]) -> VoiceResponsePlan | None:
 class GoldenSpeechProvider:
     name: str
     transcript: str
-    audio: bytes = b"RIFF\x00\x00\x00\x00WAVEsynthetic-abby-audio"
+    audio: bytes = VALID_TEST_WAV
     fail_transcription: bool = False
     fail_synthesis: bool = False
     calls: list[tuple[str, str]] = field(default_factory=list)
