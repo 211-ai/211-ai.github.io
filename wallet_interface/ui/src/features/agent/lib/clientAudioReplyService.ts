@@ -6,6 +6,7 @@ import {
   type RemoteAudioGenerationResult,
 } from "./remoteAudioClient";
 import { parseVoiceGraphRagPrompt } from "./voiceGraphRagPrompt";
+import type { VoiceTurnResult } from "./voiceTurnResult";
 
 type ClientAudioProvider = "remote-voice-proxy" | "local-liquidai" | "browser-speech";
 const LOCAL_AUDIO_RETRY_COOLDOWN_MS = 60_000;
@@ -59,6 +60,7 @@ export type ClientAudioReplyResult =
       modelName: string;
       provider: "remote-voice-proxy" | "local-liquidai";
       text?: string;
+      voiceTurnResult?: VoiceTurnResult;
     }
   | {
       kind: "browser-speech";
@@ -67,6 +69,7 @@ export type ClientAudioReplyResult =
       provider: "browser-speech";
       fallbackForModel: string;
       fallbackReason: string;
+      voiceTurnResult?: VoiceTurnResult;
     };
 
 export type ClientAudioWarmupResult =
@@ -575,6 +578,7 @@ export class ClientAudioReplyService {
           result.text,
           result.modelName,
           "Voice proxy returned text only; using browser speech output.",
+          result.voiceTurnResult,
         );
       }
       throw new Error("Voice proxy returned text only, but browser speech output is unavailable.");
@@ -586,6 +590,7 @@ export class ClientAudioReplyService {
       modelName: result.modelName,
       provider: "remote-voice-proxy",
       text: result.text,
+      voiceTurnResult: result.voiceTurnResult,
     };
   }
 
@@ -663,7 +668,12 @@ export class ClientAudioReplyService {
       : AUDIO_CHAT_CONFIG.warmupTimeoutMs + AUDIO_CHAT_CONFIG.requestTimeoutMs;
   }
 
-  private browserSpeechFallback(text: string, fallbackForModel: string, fallbackReason: string): ClientAudioReplyResult {
+  private browserSpeechFallback(
+    text: string,
+    fallbackForModel: string,
+    fallbackReason: string,
+    voiceTurnResult?: VoiceTurnResult,
+  ): ClientAudioReplyResult {
     return {
       kind: "browser-speech",
       text,
@@ -671,6 +681,7 @@ export class ClientAudioReplyService {
       provider: "browser-speech",
       fallbackForModel,
       fallbackReason,
+      voiceTurnResult,
     };
   }
 

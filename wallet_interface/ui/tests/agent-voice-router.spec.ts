@@ -14,10 +14,34 @@ import {
   voiceTurnResultAudioBlob,
   voiceTurnResultText,
 } from "../src/features/agent/lib/voiceTurnResult";
+import { ClientAudioReplyService } from "../src/features/agent/lib/clientAudioReplyService";
 
-const AUDIO_BASE64 = Buffer.from("RIFF-unified-wallet-audio", "utf8").toString("base64");
+const AUDIO_BYTES = createMinimalWav();
+const AUDIO_BASE64 = AUDIO_BYTES.toString("base64");
 const UI_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const REPO_ROOT = resolve(UI_ROOT, "../..");
+
+function createMinimalWav(): Buffer {
+  const sampleCount = 8;
+  const bytes = Buffer.alloc(44 + sampleCount * 2);
+  bytes.write("RIFF", 0, "ascii");
+  bytes.writeUInt32LE(bytes.length - 8, 4);
+  bytes.write("WAVE", 8, "ascii");
+  bytes.write("fmt ", 12, "ascii");
+  bytes.writeUInt32LE(16, 16);
+  bytes.writeUInt16LE(1, 20);
+  bytes.writeUInt16LE(1, 22);
+  bytes.writeUInt32LE(16_000, 24);
+  bytes.writeUInt32LE(32_000, 28);
+  bytes.writeUInt16LE(2, 32);
+  bytes.writeUInt16LE(16, 34);
+  bytes.write("data", 36, "ascii");
+  bytes.writeUInt32LE(sampleCount * 2, 40);
+  for (let index = 0; index < sampleCount; index += 1) {
+    bytes.writeInt16LE(index % 2 ? 2_000 : -2_000, 44 + index * 2);
+  }
+  return bytes;
+}
 
 /**
  * Residual G010 discoverability anchors (exact evidence phrases):
@@ -104,10 +128,15 @@ test.describe("unified wallet voice-turn receipt", () => {
     const audio = voiceTurnResultAudioBlob(result!);
     expect(audio).toBeDefined();
     expect(audio?.type).toBe("audio/wav");
-    expect(await audio?.text()).toBe("RIFF-unified-wallet-audio");
+    const decoded = Buffer.from(await audio!.arrayBuffer());
+    expect(decoded.length).toBe(AUDIO_BYTES.length);
+    expect(decoded.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(decoded.subarray(8, 12).toString("ascii")).toBe("WAVE");
+    expect(decoded.readUInt32LE(40)).toBeGreaterThan(0);
+    expect(decoded.subarray(44).some((value) => value !== 0)).toBe(true);
   });
 
-  test("makes degraded text-only receipts explicit and keeps browser fallback text usable", () => {
+  test("makes degraded text-only receipts explicit and preserves them through browser speech", async () => {
     const result = parseVoiceTurnResult({
       request_id: "wallet-text-only",
       status: "text_only",
@@ -135,6 +164,46 @@ test.describe("unified wallet voice-turn receipt", () => {
     expect(result?.provenance.sttProvider).toBe("supplied_transcript");
     expect(result?.provenance.templateProvider).toBe("wallet-graphrag");
     expect(result?.provenance.ttsProvider).toBe("abby_indextts");
+
+    const service = new ClientAudioReplyService({
+      generateRemoteAudio: async () => ({
+        modelName: "abby_indextts",
+        text: voiceTurnResultText(result!),
+        voiceTurnResult: result!,
+      }),
+      preflightRemoteAudioProxy: async () => ({
+        modelName: "abby_indextts",
+        text: "ready",
+      }),
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+    const browserDelivery = await service.generateAudio("I need help.");
+    expect(browserDelivery).toMatchObject({
+      kind: "browser-speech",
+      provider: "browser-speech",
+      text: "Please try again or use browser speech.",
+      fallbackReason: "Voice proxy returned text only; using browser speech output.",
+      voiceTurnResult: {
+        requestId: "wallet-text-only",
+        status: "text_only",
+        degraded: true,
+        fallbackReasons: ["tts_failed"],
+        audioSizeBytes: 0,
+      },
+    });
+    expect(browserDelivery.voiceTurnResult?.traces).toEqual([
+      {
+        stage: "synthesis",
+        status: "failed",
+        durationMs: 3,
+        provider: undefined,
+        error: "provider unavailable",
+        details: {},
+      },
+    ]);
+    expect(browserDelivery.voiceTurnResult?.provenance.outputAudioSha256).toBeUndefined();
   });
 
   test("does not reinterpret an unrelated legacy payload as a unified receipt", () => {

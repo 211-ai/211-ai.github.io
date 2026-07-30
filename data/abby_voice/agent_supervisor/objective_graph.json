@@ -1,8 +1,8 @@
 {
-  "active_goal_count": 8,
-  "completed_goal_count": 13,
-  "generated_at": "2026-07-26T20:36:28.464476+00:00",
-  "goal_count": 29,
+  "active_goal_count": 13,
+  "completed_goal_count": 15,
+  "generated_at": "2026-07-28T21:43:32.073519+00:00",
+  "goal_count": 36,
   "goals": [
     {
       "bundle": "abby-voice/integration",
@@ -152,7 +152,12 @@
         "audio reconciliation",
         "deterministic release construction",
         "runtime resolution",
-        "post-publication verification"
+        "post-publication verification",
+        "authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "residual parent-term repair for worksets: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
+        "authoritative evidence map for TTS/ASR execution: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "residual dual-subset repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md",
+        "retry-budget repair: data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md"
       ],
       "fib_priority": 5001,
       "goal_id": "ABBY-VOICE-G011",
@@ -357,7 +362,8 @@
         "existing sibling isolation and single-flight receipts",
         "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
         "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
-        "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md"
+        "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md",
+        "objective validation repair via data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md"
       ],
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
@@ -372,13 +378,18 @@
     {
       "bundle": "abby-voice/audio-reconciliation",
       "evidence": [
-        "audio reconciliation",
-        "receipt-to-audio-row reconciler",
-        "decode and acoustic validator",
-        "TTS-to-ASR round-trip evaluation",
-        "exact critical-slot checks",
-        "terminal quarantine reason taxonomy",
-        "complete row disposition report"
+        "audio reconciliation in `ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py` (`reconcile_voice_job_result`",
+        "`AUDIO_RECONCILIATION_EVIDENCE_TERM`",
+        "`G017_REQUIRED_EVIDENCE_TERMS`",
+        "disposition taxonomy",
+        "reciprocal `AbbyVoiceAudio`/`AbbyVoiceProvenance` promotion)",
+        "versioned `AudioQualityPolicy` plus decode/acoustic and TTS-to-ASR round-trip gates in `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` (`validate_decode_and_acoustic`",
+        "`validate_tts_asr_roundtrip`",
+        "exact critical-slot fidelity",
+        "`G017_AUDIO_QUALITY_EVIDENCE_TERMS`)",
+        "focused offline suite `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` including `test_g017_audio_reconciliation_evidence_terms_are_discoverable`",
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md",
+        "retry-budget repair `ABBY-VOICE-AUTO-028` evidence `data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md`"
       ],
       "fib_priority": 8005,
       "goal_id": "ABBY-VOICE-G017",
@@ -405,7 +416,8 @@
         "local WebGPU",
         "and browser speech fallback branches",
         "the rollout runbook defines canary receipts and flag-off rollback",
-        "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates"
+        "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates",
+        "residual scan closure for the three-term acceptance subset: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md"
       ],
       "fib_priority": 13000,
       "goal_id": "ABBY-VOICE-G010",
@@ -487,7 +499,8 @@
         "sharded ZSTD Parquet descriptors",
         "GraphRAG support-index artifact",
         "byte-identical rebuild",
-        "exhaustive local release validator"
+        "exhaustive local release validator",
+        "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md"
       ],
       "fib_priority": 13001,
       "goal_id": "ABBY-VOICE-G018",
@@ -532,12 +545,16 @@
     {
       "bundle": "abby-voice/runtime-release",
       "evidence": [
-        "runtime resolution",
-        "revision-pinned streaming/release loader",
+        "runtime resolution via `process_voice_turn(...",
+        "audio_resolver=PrecomputedVoiceAudioResolver)`",
+        "revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA",
+        "descriptor validation",
         "content-addressed GraphRAG restore",
-        "exact audio resolver",
-        "stale-slot regression test",
-        "text-only or live-TTS fallback receipt"
+        "Hub streaming pinned through `HuggingFaceStreamingLoader`)",
+        "exact audio resolver matching spoken-text SHA-256 plus full synthesis identity",
+        "stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes",
+        "text-only or live-TTS fallback receipt",
+        "ABBY-VOICE-G019 objective-validation repair receipt"
       ],
       "fib_priority": 13002,
       "goal_id": "ABBY-VOICE-G019",
@@ -545,7 +562,7 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "active",
+      "status": "complete",
       "title": "Load pinned releases and resolve precomputed audio safely",
       "track": "voice-integration"
     },
@@ -587,7 +604,8 @@
         "worker-crash recovery test",
         "capability/resource backpressure test",
         "real-provider canary protocol",
-        "privacy and lineage audit"
+        "privacy and lineage audit",
+        "ABBY-VOICE-G020 completion and objective-validation repair receipt"
       ],
       "fib_priority": 21000,
       "goal_id": "ABBY-VOICE-G020",
@@ -595,7 +613,7 @@
         "ABBY-VOICE-G011"
       ],
       "refinement_depth": "4",
-      "status": "active",
+      "status": "complete",
       "title": "Prove the distributed dataset-to-voice pipeline end to end",
       "track": "voice-evaluation"
     },
@@ -619,13 +637,153 @@
       "status": "active",
       "title": "Publish and promote an immutable Hugging Face release",
       "track": "voice-release"
+    },
+    {
+      "bundle": "abby-voice/regeneration-runtime",
+      "evidence": [
+        "endpoint contract probe",
+        "deterministic 3908-row regeneration workset",
+        "canary regeneration receipt",
+        "cache-miss event receipt",
+        "append-only response-DAG dry-run candidate",
+        "website multi-turn hit/miss report",
+        "telephone multi-turn hit/miss report",
+        "Whisper round-trip validation",
+        "package ownership and thin-wrapper validation"
+      ],
+      "fib_priority": 34000,
+      "goal_id": "ABBY-VOICE-G030",
+      "parents": [
+        "ABBY-VOICE-G001"
+      ],
+      "refinement_depth": "1",
+      "status": "active",
+      "title": "Regenerate queued Abby audio and validate the multi-surface voice runtime",
+      "track": "voice-regeneration"
+    },
+    {
+      "bundle": "abby-voice/regeneration-endpoint",
+      "evidence": [
+        "endpoint contract probe",
+        "deterministic regeneration workset",
+        "retry and resume receipt",
+        "fake-provider integration test",
+        "quarantine receipt",
+        "live-canary dry-run manifest"
+      ],
+      "fib_priority": 34001,
+      "goal_id": "ABBY-VOICE-G031",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Build the endpoint-safe Abby regeneration runner",
+      "track": "voice-regeneration"
+    },
+    {
+      "bundle": "abby-voice/cache-miss-response-dag",
+      "evidence": [
+        "cache-miss event contract",
+        "deterministic response-DAG candidate",
+        "slotted template and vocabulary rows",
+        "duplicate-event idempotency test",
+        "Hugging Face publication dry-run receipt"
+      ],
+      "fib_priority": 34002,
+      "goal_id": "ABBY-VOICE-G032",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Append cache-miss response-DAG candidates locally",
+      "track": "voice-data"
+    },
+    {
+      "bundle": "abby-voice/web-multiturn-runtime",
+      "evidence": [
+        "website adapter contract",
+        "multi-turn browser fixture",
+        "ASR injection fixture",
+        "exact hit and miss trace",
+        "text-only degradation assertion"
+      ],
+      "fib_priority": 34003,
+      "goal_id": "ABBY-VOICE-G033",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Validate the website multi-turn voice agent",
+      "track": "voice-web"
+    },
+    {
+      "bundle": "abby-voice/telephone-multiturn-runtime",
+      "evidence": [
+        "telephone adapter contract",
+        "multi-turn call fixture",
+        "normalized phone and address slot assertions",
+        "provider timeout and retry fixture",
+        "escalation trace"
+      ],
+      "fib_priority": 34004,
+      "goal_id": "ABBY-VOICE-G034",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Validate the telephone multi-turn support line",
+      "track": "voice-telephone"
+    },
+    {
+      "bundle": "abby-voice/regeneration-evaluation",
+      "evidence": [
+        "deterministic conversation corpus",
+        "hit and miss metric schema",
+        "website and telephone reports",
+        "Whisper normalized transcript comparison",
+        "threshold gate",
+        "privacy-safe failure samples"
+      ],
+      "fib_priority": 34005,
+      "goal_id": "ABBY-VOICE-G035",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Measure multi-turn cache and audio quality",
+      "track": "voice-evaluation"
+    },
+    {
+      "bundle": "abby-voice/regeneration-runtime",
+      "evidence": [
+        "child completion receipts",
+        "end-to-end local validation",
+        "website and telephone metric report",
+        "Whisper quality report",
+        "no-remote-write audit"
+      ],
+      "fib_priority": 34006,
+      "goal_id": "ABBY-VOICE-G036",
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "refinement_depth": "2",
+      "status": "active",
+      "title": "Complete the local Abby regeneration runtime integration gate",
+      "track": "voice-integration"
     }
   ],
   "graph": {
     "children": {
       "ABBY-VOICE-G001": [
         "ABBY-VOICE-G002",
-        "ABBY-VOICE-G004"
+        "ABBY-VOICE-G004",
+        "ABBY-VOICE-G030"
       ],
       "ABBY-VOICE-G002": [
         "ABBY-VOICE-G003",
@@ -679,6 +837,14 @@
         "ABBY-VOICE-G023",
         "ABBY-VOICE-G024",
         "ABBY-VOICE-G025"
+      ],
+      "ABBY-VOICE-G030": [
+        "ABBY-VOICE-G031",
+        "ABBY-VOICE-G032",
+        "ABBY-VOICE-G033",
+        "ABBY-VOICE-G034",
+        "ABBY-VOICE-G035",
+        "ABBY-VOICE-G036"
       ]
     },
     "depths": {
@@ -710,7 +876,14 @@
       "ABBY-VOICE-G026": 4,
       "ABBY-VOICE-G027": 4,
       "ABBY-VOICE-G028": 4,
-      "ABBY-VOICE-G029": 4
+      "ABBY-VOICE-G029": 4,
+      "ABBY-VOICE-G030": 1,
+      "ABBY-VOICE-G031": 2,
+      "ABBY-VOICE-G032": 2,
+      "ABBY-VOICE-G033": 2,
+      "ABBY-VOICE-G034": 2,
+      "ABBY-VOICE-G035": 2,
+      "ABBY-VOICE-G036": 2
     },
     "edges": [
       {
@@ -897,6 +1070,41 @@
         "from": "ABBY-VOICE-G006",
         "kind": "refines",
         "to": "ABBY-VOICE-G029"
+      },
+      {
+        "from": "ABBY-VOICE-G001",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G030"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G031"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G032"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G033"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G034"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G035"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "refines",
+        "to": "ABBY-VOICE-G036"
       }
     ],
     "evidence_edges": [
@@ -1426,6 +1634,11 @@
         "to": "evidence:0ec35c79de8122e2"
       },
       {
+        "from": "ABBY-VOICE-G010",
+        "kind": "requires_evidence",
+        "to": "evidence:ebf26d19e6e0793a"
+      },
+      {
         "from": "ABBY-VOICE-G011",
         "kind": "requires_evidence",
         "to": "evidence:af213913f913d9f8"
@@ -1464,6 +1677,31 @@
         "from": "ABBY-VOICE-G011",
         "kind": "requires_evidence",
         "to": "evidence:956fba27e035436b"
+      },
+      {
+        "from": "ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:b8a1a5cff421d3e7"
+      },
+      {
+        "from": "ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:9e165c5bdf79ec57"
+      },
+      {
+        "from": "ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:625bc6312d5dbbd7"
+      },
+      {
+        "from": "ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:02194027c9baf70f"
+      },
+      {
+        "from": "ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:f7b25be5e701629a"
       },
       {
         "from": "ABBY-VOICE-G012",
@@ -1711,39 +1949,69 @@
         "to": "evidence:5df308299ba97d1f"
       },
       {
-        "from": "ABBY-VOICE-G017",
+        "from": "ABBY-VOICE-G016",
         "kind": "requires_evidence",
-        "to": "evidence:2a0a317bc68c26fa"
+        "to": "evidence:d961de143e65d009"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:0db2a4db2ede685b"
+        "to": "evidence:57245cf6602d1084"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:cf6f1891504c1853"
+        "to": "evidence:0e540e660b67191c"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:57ad89a8299c9ffd"
+        "to": "evidence:124705188b967100"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:87a0c28ed3e6dab8"
+        "to": "evidence:21ae4b91b0e45ab6"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:d1417bb2b3c3d02a"
+        "to": "evidence:a7981bb41c04fa6c"
       },
       {
         "from": "ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:370a0400618c620a"
+        "to": "evidence:79e5b88b2825fdbf"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:5081378e63ab2783"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:3a9fe4185fd62145"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:771d53fcc1e17e3b"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:0f40502d28cb68a8"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:fc78c5be603568f8"
+      },
+      {
+        "from": "ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:b95bb93564300da8"
       },
       {
         "from": "ABBY-VOICE-G018",
@@ -1781,14 +2049,29 @@
         "to": "evidence:2e4b8540d16ee90a"
       },
       {
-        "from": "ABBY-VOICE-G019",
+        "from": "ABBY-VOICE-G018",
         "kind": "requires_evidence",
-        "to": "evidence:d2c4f0d10c2702d1"
+        "to": "evidence:144ae4be3fdd271b"
       },
       {
         "from": "ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:afe6f02f242d859a"
+        "to": "evidence:8d4f8e5331760ca1"
+      },
+      {
+        "from": "ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:525c6214ca99ae80"
+      },
+      {
+        "from": "ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:46a19dd6e494f74b"
+      },
+      {
+        "from": "ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:af99f26d4f33454e"
       },
       {
         "from": "ABBY-VOICE-G019",
@@ -1798,17 +2081,27 @@
       {
         "from": "ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:fd7d424e78a1d77f"
+        "to": "evidence:ad8ec53750ccd3a7"
       },
       {
         "from": "ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:a2e93d3983f90017"
+        "to": "evidence:0e37c471c7f57095"
+      },
+      {
+        "from": "ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:40f25c4e59315a4a"
       },
       {
         "from": "ABBY-VOICE-G019",
         "kind": "requires_evidence",
         "to": "evidence:af3468c4a7b57516"
+      },
+      {
+        "from": "ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:c5908f2e891d0c22"
       },
       {
         "from": "ABBY-VOICE-G020",
@@ -1839,6 +2132,11 @@
         "from": "ABBY-VOICE-G020",
         "kind": "requires_evidence",
         "to": "evidence:948b6f373661711f"
+      },
+      {
+        "from": "ABBY-VOICE-G020",
+        "kind": "requires_evidence",
+        "to": "evidence:4016a149319f67c4"
       },
       {
         "from": "ABBY-VOICE-G021",
@@ -1914,6 +2212,211 @@
         "from": "ABBY-VOICE-G029",
         "kind": "requires_evidence",
         "to": "evidence:400e553a84c14a5d"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:b579da0d3818b53b"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:1887928288f2ab74"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:7338b42a6ccee10b"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:3e61f3f55d338345"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:5d506184c5ec7d29"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:dcafae3a25dd575b"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:a6a62c64b620b6eb"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:b559b4a80140a447"
+      },
+      {
+        "from": "ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:5fa5712e91680379"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:f02604790e6e1688"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:303503700e3ba899"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:9025fd83cf740b30"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:496c61b42d6631e6"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:22eee8fdcbb492c0"
+      },
+      {
+        "from": "ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:9ccf90ff6888f264"
+      },
+      {
+        "from": "ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:339b363510021ba6"
+      },
+      {
+        "from": "ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:233647cf87dd3c00"
+      },
+      {
+        "from": "ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:14c3c4e3836b4be6"
+      },
+      {
+        "from": "ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:dd5d57ae28ee0328"
+      },
+      {
+        "from": "ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:a65d65a4feafb511"
+      },
+      {
+        "from": "ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:291fe883b8ed19b4"
+      },
+      {
+        "from": "ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:f1df1323cac2a60b"
+      },
+      {
+        "from": "ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:bb516aba66048a16"
+      },
+      {
+        "from": "ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:9b01a8c6f6a36dcb"
+      },
+      {
+        "from": "ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:cb11182b3ec4aee9"
+      },
+      {
+        "from": "ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:0902babcfac8a318"
+      },
+      {
+        "from": "ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:e3232ea316f857cd"
+      },
+      {
+        "from": "ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:26713056185588aa"
+      },
+      {
+        "from": "ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:edb3f263e2b41f21"
+      },
+      {
+        "from": "ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:92905efa5c6de69c"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:c9aaee5abe2354ba"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:310462754e63dff3"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:d9362d521a460e55"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:fc8056d4a601eb8f"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:ebcdd410bd1112ec"
+      },
+      {
+        "from": "ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:0c91a40ff9d2f885"
+      },
+      {
+        "from": "ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:2f5a3e159526ae21"
+      },
+      {
+        "from": "ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:ebc9c80590e4fbc2"
+      },
+      {
+        "from": "ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:1d2b1245780db9e1"
+      },
+      {
+        "from": "ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:a76997e7e3c57af7"
+      },
+      {
+        "from": "ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:d6d73e47f7fbdfff"
       }
     ],
     "evidence_nodes": [
@@ -2443,6 +2946,11 @@
         "id": "evidence:0ec35c79de8122e2"
       },
       {
+        "acceptance_criterion": "residual scan closure for the three-term acceptance subset: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G010",
+        "id": "evidence:ebf26d19e6e0793a"
+      },
+      {
         "acceptance_criterion": "immutable inventory",
         "goal_id": "ABBY-VOICE-G011",
         "id": "evidence:af213913f913d9f8"
@@ -2481,6 +2989,31 @@
         "acceptance_criterion": "post-publication verification",
         "goal_id": "ABBY-VOICE-G011",
         "id": "evidence:956fba27e035436b"
+      },
+      {
+        "acceptance_criterion": "authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:b8a1a5cff421d3e7"
+      },
+      {
+        "acceptance_criterion": "residual parent-term repair for worksets: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:9e165c5bdf79ec57"
+      },
+      {
+        "acceptance_criterion": "authoritative evidence map for TTS/ASR execution: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:625bc6312d5dbbd7"
+      },
+      {
+        "acceptance_criterion": "residual dual-subset repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:02194027c9baf70f"
+      },
+      {
+        "acceptance_criterion": "retry-budget repair: data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md",
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:f7b25be5e701629a"
       },
       {
         "acceptance_criterion": "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
@@ -2728,39 +3261,69 @@
         "id": "evidence:5df308299ba97d1f"
       },
       {
-        "acceptance_criterion": "audio reconciliation",
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:2a0a317bc68c26fa"
+        "acceptance_criterion": "objective validation repair via data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:d961de143e65d009"
       },
       {
-        "acceptance_criterion": "receipt-to-audio-row reconciler",
+        "acceptance_criterion": "audio reconciliation in `ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py` (`reconcile_voice_job_result`",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:0db2a4db2ede685b"
+        "id": "evidence:57245cf6602d1084"
       },
       {
-        "acceptance_criterion": "decode and acoustic validator",
+        "acceptance_criterion": "`AUDIO_RECONCILIATION_EVIDENCE_TERM`",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:cf6f1891504c1853"
+        "id": "evidence:0e540e660b67191c"
       },
       {
-        "acceptance_criterion": "TTS-to-ASR round-trip evaluation",
+        "acceptance_criterion": "`G017_REQUIRED_EVIDENCE_TERMS`",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:57ad89a8299c9ffd"
+        "id": "evidence:124705188b967100"
       },
       {
-        "acceptance_criterion": "exact critical-slot checks",
+        "acceptance_criterion": "disposition taxonomy",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:87a0c28ed3e6dab8"
+        "id": "evidence:21ae4b91b0e45ab6"
       },
       {
-        "acceptance_criterion": "terminal quarantine reason taxonomy",
+        "acceptance_criterion": "reciprocal `AbbyVoiceAudio`/`AbbyVoiceProvenance` promotion)",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:d1417bb2b3c3d02a"
+        "id": "evidence:a7981bb41c04fa6c"
       },
       {
-        "acceptance_criterion": "complete row disposition report",
+        "acceptance_criterion": "versioned `AudioQualityPolicy` plus decode/acoustic and TTS-to-ASR round-trip gates in `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` (`validate_decode_and_acoustic`",
         "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:370a0400618c620a"
+        "id": "evidence:79e5b88b2825fdbf"
+      },
+      {
+        "acceptance_criterion": "`validate_tts_asr_roundtrip`",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:5081378e63ab2783"
+      },
+      {
+        "acceptance_criterion": "exact critical-slot fidelity",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:3a9fe4185fd62145"
+      },
+      {
+        "acceptance_criterion": "`G017_AUDIO_QUALITY_EVIDENCE_TERMS`)",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:771d53fcc1e17e3b"
+      },
+      {
+        "acceptance_criterion": "focused offline suite `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` including `test_g017_audio_reconciliation_evidence_terms_are_discoverable`",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:0f40502d28cb68a8"
+      },
+      {
+        "acceptance_criterion": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:fc78c5be603568f8"
+      },
+      {
+        "acceptance_criterion": "retry-budget repair `ABBY-VOICE-AUTO-028` evidence `data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md`",
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:b95bb93564300da8"
       },
       {
         "acceptance_criterion": "deterministic release construction",
@@ -2798,14 +3361,29 @@
         "id": "evidence:2e4b8540d16ee90a"
       },
       {
-        "acceptance_criterion": "runtime resolution",
-        "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:d2c4f0d10c2702d1"
+        "acceptance_criterion": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md",
+        "goal_id": "ABBY-VOICE-G018",
+        "id": "evidence:144ae4be3fdd271b"
       },
       {
-        "acceptance_criterion": "revision-pinned streaming/release loader",
+        "acceptance_criterion": "runtime resolution via `process_voice_turn(...",
         "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:afe6f02f242d859a"
+        "id": "evidence:8d4f8e5331760ca1"
+      },
+      {
+        "acceptance_criterion": "audio_resolver=PrecomputedVoiceAudioResolver)`",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:525c6214ca99ae80"
+      },
+      {
+        "acceptance_criterion": "revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:46a19dd6e494f74b"
+      },
+      {
+        "acceptance_criterion": "descriptor validation",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:af99f26d4f33454e"
       },
       {
         "acceptance_criterion": "content-addressed GraphRAG restore",
@@ -2813,19 +3391,29 @@
         "id": "evidence:0520b0360db58375"
       },
       {
-        "acceptance_criterion": "exact audio resolver",
+        "acceptance_criterion": "Hub streaming pinned through `HuggingFaceStreamingLoader`)",
         "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:fd7d424e78a1d77f"
+        "id": "evidence:ad8ec53750ccd3a7"
       },
       {
-        "acceptance_criterion": "stale-slot regression test",
+        "acceptance_criterion": "exact audio resolver matching spoken-text SHA-256 plus full synthesis identity",
         "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:a2e93d3983f90017"
+        "id": "evidence:0e37c471c7f57095"
+      },
+      {
+        "acceptance_criterion": "stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:40f25c4e59315a4a"
       },
       {
         "acceptance_criterion": "text-only or live-TTS fallback receipt",
         "goal_id": "ABBY-VOICE-G019",
         "id": "evidence:af3468c4a7b57516"
+      },
+      {
+        "acceptance_criterion": "ABBY-VOICE-G019 objective-validation repair receipt",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:c5908f2e891d0c22"
       },
       {
         "acceptance_criterion": "offline deterministic fixture",
@@ -2856,6 +3444,11 @@
         "acceptance_criterion": "privacy and lineage audit",
         "goal_id": "ABBY-VOICE-G020",
         "id": "evidence:948b6f373661711f"
+      },
+      {
+        "acceptance_criterion": "ABBY-VOICE-G020 completion and objective-validation repair receipt",
+        "goal_id": "ABBY-VOICE-G020",
+        "id": "evidence:4016a149319f67c4"
       },
       {
         "acceptance_criterion": "post-publication verification",
@@ -2931,6 +3524,211 @@
         "acceptance_criterion": "ABBY-VOICE-G006 completion receipt",
         "goal_id": "ABBY-VOICE-G029",
         "id": "evidence:400e553a84c14a5d"
+      },
+      {
+        "acceptance_criterion": "endpoint contract probe",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:b579da0d3818b53b"
+      },
+      {
+        "acceptance_criterion": "deterministic 3908-row regeneration workset",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:1887928288f2ab74"
+      },
+      {
+        "acceptance_criterion": "canary regeneration receipt",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:7338b42a6ccee10b"
+      },
+      {
+        "acceptance_criterion": "cache-miss event receipt",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:3e61f3f55d338345"
+      },
+      {
+        "acceptance_criterion": "append-only response-DAG dry-run candidate",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:5d506184c5ec7d29"
+      },
+      {
+        "acceptance_criterion": "website multi-turn hit/miss report",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:dcafae3a25dd575b"
+      },
+      {
+        "acceptance_criterion": "telephone multi-turn hit/miss report",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:a6a62c64b620b6eb"
+      },
+      {
+        "acceptance_criterion": "Whisper round-trip validation",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:b559b4a80140a447"
+      },
+      {
+        "acceptance_criterion": "package ownership and thin-wrapper validation",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:5fa5712e91680379"
+      },
+      {
+        "acceptance_criterion": "endpoint contract probe",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:f02604790e6e1688"
+      },
+      {
+        "acceptance_criterion": "deterministic regeneration workset",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:303503700e3ba899"
+      },
+      {
+        "acceptance_criterion": "retry and resume receipt",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:9025fd83cf740b30"
+      },
+      {
+        "acceptance_criterion": "fake-provider integration test",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:496c61b42d6631e6"
+      },
+      {
+        "acceptance_criterion": "quarantine receipt",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:22eee8fdcbb492c0"
+      },
+      {
+        "acceptance_criterion": "live-canary dry-run manifest",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:9ccf90ff6888f264"
+      },
+      {
+        "acceptance_criterion": "cache-miss event contract",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:339b363510021ba6"
+      },
+      {
+        "acceptance_criterion": "deterministic response-DAG candidate",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:233647cf87dd3c00"
+      },
+      {
+        "acceptance_criterion": "slotted template and vocabulary rows",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:14c3c4e3836b4be6"
+      },
+      {
+        "acceptance_criterion": "duplicate-event idempotency test",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:dd5d57ae28ee0328"
+      },
+      {
+        "acceptance_criterion": "Hugging Face publication dry-run receipt",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:a65d65a4feafb511"
+      },
+      {
+        "acceptance_criterion": "website adapter contract",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:291fe883b8ed19b4"
+      },
+      {
+        "acceptance_criterion": "multi-turn browser fixture",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:f1df1323cac2a60b"
+      },
+      {
+        "acceptance_criterion": "ASR injection fixture",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:bb516aba66048a16"
+      },
+      {
+        "acceptance_criterion": "exact hit and miss trace",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:9b01a8c6f6a36dcb"
+      },
+      {
+        "acceptance_criterion": "text-only degradation assertion",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:cb11182b3ec4aee9"
+      },
+      {
+        "acceptance_criterion": "telephone adapter contract",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:0902babcfac8a318"
+      },
+      {
+        "acceptance_criterion": "multi-turn call fixture",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:e3232ea316f857cd"
+      },
+      {
+        "acceptance_criterion": "normalized phone and address slot assertions",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:26713056185588aa"
+      },
+      {
+        "acceptance_criterion": "provider timeout and retry fixture",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:edb3f263e2b41f21"
+      },
+      {
+        "acceptance_criterion": "escalation trace",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:92905efa5c6de69c"
+      },
+      {
+        "acceptance_criterion": "deterministic conversation corpus",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:c9aaee5abe2354ba"
+      },
+      {
+        "acceptance_criterion": "hit and miss metric schema",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:310462754e63dff3"
+      },
+      {
+        "acceptance_criterion": "website and telephone reports",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:d9362d521a460e55"
+      },
+      {
+        "acceptance_criterion": "Whisper normalized transcript comparison",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:fc8056d4a601eb8f"
+      },
+      {
+        "acceptance_criterion": "threshold gate",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:ebcdd410bd1112ec"
+      },
+      {
+        "acceptance_criterion": "privacy-safe failure samples",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:0c91a40ff9d2f885"
+      },
+      {
+        "acceptance_criterion": "child completion receipts",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:2f5a3e159526ae21"
+      },
+      {
+        "acceptance_criterion": "end-to-end local validation",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:ebc9c80590e4fbc2"
+      },
+      {
+        "acceptance_criterion": "website and telephone metric report",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:1d2b1245780db9e1"
+      },
+      {
+        "acceptance_criterion": "Whisper quality report",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:a76997e7e3c57af7"
+      },
+      {
+        "acceptance_criterion": "no-remote-write audit",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:d6d73e47f7fbdfff"
       }
     ],
     "lifecycle": {
@@ -2940,9 +3738,14 @@
         "ABBY-VOICE-G016",
         "ABBY-VOICE-G017",
         "ABBY-VOICE-G018",
-        "ABBY-VOICE-G019",
-        "ABBY-VOICE-G020",
-        "ABBY-VOICE-G021"
+        "ABBY-VOICE-G021",
+        "ABBY-VOICE-G030",
+        "ABBY-VOICE-G031",
+        "ABBY-VOICE-G032",
+        "ABBY-VOICE-G033",
+        "ABBY-VOICE-G034",
+        "ABBY-VOICE-G035",
+        "ABBY-VOICE-G036"
       ],
       "schedulable_goal_ids": [
         "ABBY-VOICE-G010",
@@ -2950,14 +3753,19 @@
         "ABBY-VOICE-G016",
         "ABBY-VOICE-G017",
         "ABBY-VOICE-G018",
-        "ABBY-VOICE-G019",
-        "ABBY-VOICE-G020",
-        "ABBY-VOICE-G021"
+        "ABBY-VOICE-G021",
+        "ABBY-VOICE-G030",
+        "ABBY-VOICE-G031",
+        "ABBY-VOICE-G032",
+        "ABBY-VOICE-G033",
+        "ABBY-VOICE-G034",
+        "ABBY-VOICE-G035",
+        "ABBY-VOICE-G036"
       ],
       "state_counts": {
-        "active": 8,
+        "active": 13,
         "blocked": 8,
-        "verified_complete": 13
+        "verified_complete": 15
       },
       "terminal_goal_ids": [
         "ABBY-VOICE-G001",
@@ -2973,6 +3781,8 @@
         "ABBY-VOICE-G013",
         "ABBY-VOICE-G014",
         "ABBY-VOICE-G015",
+        "ABBY-VOICE-G019",
+        "ABBY-VOICE-G020",
         "ABBY-VOICE-G022",
         "ABBY-VOICE-G023",
         "ABBY-VOICE-G024",
@@ -3228,7 +4038,8 @@
           "local WebGPU",
           "and browser speech fallback branches",
           "the rollout runbook defines canary receipts and flag-off rollback",
-          "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates"
+          "the ABBY-VOICE-AUTO-010 objective-validation repair receipt records both required gates",
+          "residual scan closure for the three-term acceptance subset: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3251,7 +4062,12 @@
           "audio reconciliation",
           "deterministic release construction",
           "runtime resolution",
-          "post-publication verification"
+          "post-publication verification",
+          "authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+          "residual parent-term repair for worksets: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
+          "authoritative evidence map for TTS/ASR execution: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+          "residual dual-subset repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md",
+          "retry-budget repair: data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3352,7 +4168,7 @@
       },
       "ABBY-VOICE-G016": {
         "completion_evidence": {
-          "validation_receipt": "the exact three-file offline gate remains the daemon authority; AUTO-015 recorded 90 tests, the post-AUTO-026 residual surface re-ran the same three paths with **93 passed**, and AUTO-029 re-anchored residual scan closure on the same gate with **94 passed**. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition."
+          "validation_receipt": "the exact three-file offline gate remains the daemon authority; AUTO-015 recorded 90 tests, the post-AUTO-026 residual surface re-ran the same three paths with **93 passed**, AUTO-029 re-anchored residual scan closure with **94 passed**, and AUTO-031 re-anchored the phrase `objective validation repair` on the same gate with **95 passed**. The objective remains active until the implementation daemon performs its authoritative validation, merge, and backlog transition."
         },
         "goal_id": "ABBY-VOICE-G016",
         "lifecycle_state": "active",
@@ -3372,7 +4188,8 @@
           "existing sibling isolation and single-flight receipts",
           "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
           "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-015-objective-validation-repair.md",
-          "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md"
+          "residual scan closure: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-026-objective-validation-repair.md",
+          "objective validation repair via data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3387,13 +4204,18 @@
           "ABBY-VOICE-G011"
         ],
         "required_evidence": [
-          "audio reconciliation",
-          "receipt-to-audio-row reconciler",
-          "decode and acoustic validator",
-          "TTS-to-ASR round-trip evaluation",
-          "exact critical-slot checks",
-          "terminal quarantine reason taxonomy",
-          "complete row disposition report"
+          "audio reconciliation in `ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py` (`reconcile_voice_job_result`",
+          "`AUDIO_RECONCILIATION_EVIDENCE_TERM`",
+          "`G017_REQUIRED_EVIDENCE_TERMS`",
+          "disposition taxonomy",
+          "reciprocal `AbbyVoiceAudio`/`AbbyVoiceProvenance` promotion)",
+          "versioned `AudioQualityPolicy` plus decode/acoustic and TTS-to-ASR round-trip gates in `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` (`validate_decode_and_acoustic`",
+          "`validate_tts_asr_roundtrip`",
+          "exact critical-slot fidelity",
+          "`G017_AUDIO_QUALITY_EVIDENCE_TERMS`)",
+          "focused offline suite `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` including `test_g017_audio_reconciliation_evidence_terms_are_discoverable`",
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md",
+          "retry-budget repair `ABBY-VOICE-AUTO-028` evidence `data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md`"
         ],
         "schedulable": true,
         "status": "active",
@@ -3414,7 +4236,8 @@
           "sharded ZSTD Parquet descriptors",
           "GraphRAG support-index artifact",
           "byte-identical rebuild",
-          "exhaustive local release validator"
+          "exhaustive local release validator",
+          "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md"
         ],
         "schedulable": true,
         "status": "active",
@@ -3424,27 +4247,31 @@
       "ABBY-VOICE-G019": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G019",
-        "lifecycle_state": "active",
+        "lifecycle_state": "verified_complete",
         "parents": [
           "ABBY-VOICE-G011"
         ],
         "required_evidence": [
-          "runtime resolution",
-          "revision-pinned streaming/release loader",
+          "runtime resolution via `process_voice_turn(...",
+          "audio_resolver=PrecomputedVoiceAudioResolver)`",
+          "revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA",
+          "descriptor validation",
           "content-addressed GraphRAG restore",
-          "exact audio resolver",
-          "stale-slot regression test",
-          "text-only or live-TTS fallback receipt"
+          "Hub streaming pinned through `HuggingFaceStreamingLoader`)",
+          "exact audio resolver matching spoken-text SHA-256 plus full synthesis identity",
+          "stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes",
+          "text-only or live-TTS fallback receipt",
+          "ABBY-VOICE-G019 objective-validation repair receipt"
         ],
-        "schedulable": true,
-        "status": "active",
-        "terminal": false,
+        "schedulable": false,
+        "status": "complete",
+        "terminal": true,
         "title": "Load pinned releases and resolve precomputed audio safely"
       },
       "ABBY-VOICE-G020": {
         "completion_evidence": {},
         "goal_id": "ABBY-VOICE-G020",
-        "lifecycle_state": "active",
+        "lifecycle_state": "verified_complete",
         "parents": [
           "ABBY-VOICE-G011"
         ],
@@ -3454,11 +4281,12 @@
           "worker-crash recovery test",
           "capability/resource backpressure test",
           "real-provider canary protocol",
-          "privacy and lineage audit"
+          "privacy and lineage audit",
+          "ABBY-VOICE-G020 completion and objective-validation repair receipt"
         ],
-        "schedulable": true,
-        "status": "active",
-        "terminal": false,
+        "schedulable": false,
+        "status": "complete",
+        "terminal": true,
         "title": "Prove the distributed dataset-to-voice pipeline end to end"
       },
       "ABBY-VOICE-G021": {
@@ -3601,6 +4429,145 @@
         "status": "blocked",
         "terminal": true,
         "title": "Prove ABBY-VOICE-G006 completion receipt for Produce a safe Hugging Face bucket and dataset migration plan"
+      },
+      "ABBY-VOICE-G030": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G030",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G001"
+        ],
+        "required_evidence": [
+          "endpoint contract probe",
+          "deterministic 3908-row regeneration workset",
+          "canary regeneration receipt",
+          "cache-miss event receipt",
+          "append-only response-DAG dry-run candidate",
+          "website multi-turn hit/miss report",
+          "telephone multi-turn hit/miss report",
+          "Whisper round-trip validation",
+          "package ownership and thin-wrapper validation"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Regenerate queued Abby audio and validate the multi-surface voice runtime"
+      },
+      "ABBY-VOICE-G031": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G031",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "endpoint contract probe",
+          "deterministic regeneration workset",
+          "retry and resume receipt",
+          "fake-provider integration test",
+          "quarantine receipt",
+          "live-canary dry-run manifest"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Build the endpoint-safe Abby regeneration runner"
+      },
+      "ABBY-VOICE-G032": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G032",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "cache-miss event contract",
+          "deterministic response-DAG candidate",
+          "slotted template and vocabulary rows",
+          "duplicate-event idempotency test",
+          "Hugging Face publication dry-run receipt"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Append cache-miss response-DAG candidates locally"
+      },
+      "ABBY-VOICE-G033": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G033",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "website adapter contract",
+          "multi-turn browser fixture",
+          "ASR injection fixture",
+          "exact hit and miss trace",
+          "text-only degradation assertion"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Validate the website multi-turn voice agent"
+      },
+      "ABBY-VOICE-G034": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G034",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "telephone adapter contract",
+          "multi-turn call fixture",
+          "normalized phone and address slot assertions",
+          "provider timeout and retry fixture",
+          "escalation trace"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Validate the telephone multi-turn support line"
+      },
+      "ABBY-VOICE-G035": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G035",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "deterministic conversation corpus",
+          "hit and miss metric schema",
+          "website and telephone reports",
+          "Whisper normalized transcript comparison",
+          "threshold gate",
+          "privacy-safe failure samples"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Measure multi-turn cache and audio quality"
+      },
+      "ABBY-VOICE-G036": {
+        "completion_evidence": {},
+        "goal_id": "ABBY-VOICE-G036",
+        "lifecycle_state": "active",
+        "parents": [
+          "ABBY-VOICE-G030"
+        ],
+        "required_evidence": [
+          "child completion receipts",
+          "end-to-end local validation",
+          "website and telephone metric report",
+          "Whisper quality report",
+          "no-remote-write audit"
+        ],
+        "schedulable": true,
+        "status": "active",
+        "terminal": false,
+        "title": "Complete the local Abby regeneration runtime integration gate"
       }
     },
     "nodes": [
@@ -3632,7 +4599,14 @@
       "ABBY-VOICE-G026",
       "ABBY-VOICE-G027",
       "ABBY-VOICE-G028",
-      "ABBY-VOICE-G029"
+      "ABBY-VOICE-G029",
+      "ABBY-VOICE-G030",
+      "ABBY-VOICE-G031",
+      "ABBY-VOICE-G032",
+      "ABBY-VOICE-G033",
+      "ABBY-VOICE-G034",
+      "ABBY-VOICE-G035",
+      "ABBY-VOICE-G036"
     ],
     "roots": [
       "ABBY-VOICE-G001"
@@ -3643,14 +4617,19 @@
       "ABBY-VOICE-G016",
       "ABBY-VOICE-G017",
       "ABBY-VOICE-G018",
-      "ABBY-VOICE-G019",
-      "ABBY-VOICE-G020",
-      "ABBY-VOICE-G021"
+      "ABBY-VOICE-G021",
+      "ABBY-VOICE-G030",
+      "ABBY-VOICE-G031",
+      "ABBY-VOICE-G032",
+      "ABBY-VOICE-G033",
+      "ABBY-VOICE-G034",
+      "ABBY-VOICE-G035",
+      "ABBY-VOICE-G036"
     ],
     "state_counts": {
-      "active": 8,
+      "active": 13,
       "blocked": 8,
-      "verified_complete": 13
+      "verified_complete": 15
     },
     "terminal_goal_ids": [
       "ABBY-VOICE-G001",
@@ -3666,6 +4645,8 @@
       "ABBY-VOICE-G013",
       "ABBY-VOICE-G014",
       "ABBY-VOICE-G015",
+      "ABBY-VOICE-G019",
+      "ABBY-VOICE-G020",
       "ABBY-VOICE-G022",
       "ABBY-VOICE-G023",
       "ABBY-VOICE-G024",
@@ -3689,66 +4670,66 @@
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 8,
+      "required_evidence_count": 13,
       "sort_key": [
         5001,
         0,
-        -64,
+        -85,
         3,
         "ABBY-VOICE-G011"
       ],
       "status": "active",
       "title": "Normalize and materialize the Abby voice dataset",
       "track": "voice-data",
-      "work_surface_score": 64
+      "work_surface_score": 85
     },
     {
       "fib_priority": 8004,
       "goal_id": "ABBY-VOICE-G016",
       "graph_depth": 4,
       "heap_index": 1,
-      "output_count": 7,
+      "output_count": 8,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 13,
+      "required_evidence_count": 14,
       "sort_key": [
         8004,
         0,
-        -86,
+        -92,
         4,
         "ABBY-VOICE-G016"
       ],
       "status": "active",
       "title": "Add idempotent recovery resource admission and provider batching",
       "track": "voice-scheduling",
-      "work_surface_score": 86
+      "work_surface_score": 92
     },
     {
       "fib_priority": 8005,
       "goal_id": "ABBY-VOICE-G017",
       "graph_depth": 4,
       "heap_index": 2,
-      "output_count": 3,
+      "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 7,
+      "required_evidence_count": 12,
       "sort_key": [
         8005,
         0,
-        -56,
+        -78,
         4,
         "ABBY-VOICE-G017"
       ],
       "status": "active",
       "title": "Reconcile generated audio and enforce round-trip quality",
       "track": "voice-quality",
-      "work_surface_score": 56
+      "work_surface_score": 78
     },
     {
       "fib_priority": 13000,
@@ -3762,18 +4743,18 @@
       ],
       "priority": "P1",
       "priority_rank": 1,
-      "required_evidence_count": 13,
+      "required_evidence_count": 14,
       "sort_key": [
         13000,
         1,
-        -76,
+        -80,
         7,
         "ABBY-VOICE-G010"
       ],
       "status": "active",
       "title": "Adopt the unified router in wallet_interface",
       "track": "voice-integration",
-      "work_surface_score": 76
+      "work_surface_score": 80
     },
     {
       "fib_priority": 13001,
@@ -3786,72 +4767,24 @@
       ],
       "priority": "P0",
       "priority_rank": 0,
-      "required_evidence_count": 7,
+      "required_evidence_count": 8,
       "sort_key": [
         13001,
         0,
-        -55,
+        -59,
         4,
         "ABBY-VOICE-G018"
       ],
       "status": "active",
       "title": "Build and validate deterministic Hugging Face releases",
       "track": "voice-data",
-      "work_surface_score": 55
-    },
-    {
-      "fib_priority": 13002,
-      "goal_id": "ABBY-VOICE-G019",
-      "graph_depth": 4,
-      "heap_index": 5,
-      "output_count": 4,
-      "parents": [
-        "ABBY-VOICE-G011"
-      ],
-      "priority": "P0",
-      "priority_rank": 0,
-      "required_evidence_count": 6,
-      "sort_key": [
-        13002,
-        0,
-        -53,
-        4,
-        "ABBY-VOICE-G019"
-      ],
-      "status": "active",
-      "title": "Load pinned releases and resolve precomputed audio safely",
-      "track": "voice-integration",
-      "work_surface_score": 53
-    },
-    {
-      "fib_priority": 21000,
-      "goal_id": "ABBY-VOICE-G020",
-      "graph_depth": 4,
-      "heap_index": 6,
-      "output_count": 3,
-      "parents": [
-        "ABBY-VOICE-G011"
-      ],
-      "priority": "P0",
-      "priority_rank": 0,
-      "required_evidence_count": 6,
-      "sort_key": [
-        21000,
-        0,
-        -44,
-        4,
-        "ABBY-VOICE-G020"
-      ],
-      "status": "active",
-      "title": "Prove the distributed dataset-to-voice pipeline end to end",
-      "track": "voice-evaluation",
-      "work_surface_score": 44
+      "work_surface_score": 59
     },
     {
       "fib_priority": 21001,
       "goal_id": "ABBY-VOICE-G021",
       "graph_depth": 4,
-      "heap_index": 7,
+      "heap_index": 5,
       "output_count": 4,
       "parents": [
         "ABBY-VOICE-G011"
@@ -3870,12 +4803,180 @@
       "title": "Publish and promote an immutable Hugging Face release",
       "track": "voice-release",
       "work_surface_score": 51
+    },
+    {
+      "fib_priority": 34000,
+      "goal_id": "ABBY-VOICE-G030",
+      "graph_depth": 1,
+      "heap_index": 6,
+      "output_count": 7,
+      "parents": [
+        "ABBY-VOICE-G001"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 9,
+      "sort_key": [
+        34000,
+        0,
+        -83,
+        1,
+        "ABBY-VOICE-G030"
+      ],
+      "status": "active",
+      "title": "Regenerate queued Abby audio and validate the multi-surface voice runtime",
+      "track": "voice-regeneration",
+      "work_surface_score": 83
+    },
+    {
+      "fib_priority": 34001,
+      "goal_id": "ABBY-VOICE-G031",
+      "graph_depth": 2,
+      "heap_index": 7,
+      "output_count": 5,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 6,
+      "sort_key": [
+        34001,
+        0,
+        -56,
+        2,
+        "ABBY-VOICE-G031"
+      ],
+      "status": "active",
+      "title": "Build the endpoint-safe Abby regeneration runner",
+      "track": "voice-regeneration",
+      "work_surface_score": 56
+    },
+    {
+      "fib_priority": 34002,
+      "goal_id": "ABBY-VOICE-G032",
+      "graph_depth": 2,
+      "heap_index": 8,
+      "output_count": 5,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 5,
+      "sort_key": [
+        34002,
+        0,
+        -55,
+        2,
+        "ABBY-VOICE-G032"
+      ],
+      "status": "active",
+      "title": "Append cache-miss response-DAG candidates locally",
+      "track": "voice-data",
+      "work_surface_score": 55
+    },
+    {
+      "fib_priority": 34003,
+      "goal_id": "ABBY-VOICE-G033",
+      "graph_depth": 2,
+      "heap_index": 9,
+      "output_count": 4,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 5,
+      "sort_key": [
+        34003,
+        0,
+        -43,
+        2,
+        "ABBY-VOICE-G033"
+      ],
+      "status": "active",
+      "title": "Validate the website multi-turn voice agent",
+      "track": "voice-web",
+      "work_surface_score": 43
+    },
+    {
+      "fib_priority": 34004,
+      "goal_id": "ABBY-VOICE-G034",
+      "graph_depth": 2,
+      "heap_index": 10,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 5,
+      "sort_key": [
+        34004,
+        0,
+        -41,
+        2,
+        "ABBY-VOICE-G034"
+      ],
+      "status": "active",
+      "title": "Validate the telephone multi-turn support line",
+      "track": "voice-telephone",
+      "work_surface_score": 41
+    },
+    {
+      "fib_priority": 34005,
+      "goal_id": "ABBY-VOICE-G035",
+      "graph_depth": 2,
+      "heap_index": 11,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 6,
+      "sort_key": [
+        34005,
+        0,
+        -48,
+        2,
+        "ABBY-VOICE-G035"
+      ],
+      "status": "active",
+      "title": "Measure multi-turn cache and audio quality",
+      "track": "voice-evaluation",
+      "work_surface_score": 48
+    },
+    {
+      "fib_priority": 34006,
+      "goal_id": "ABBY-VOICE-G036",
+      "graph_depth": 2,
+      "heap_index": 12,
+      "output_count": 3,
+      "parents": [
+        "ABBY-VOICE-G030"
+      ],
+      "priority": "P0",
+      "priority_rank": 0,
+      "required_evidence_count": 5,
+      "sort_key": [
+        34006,
+        0,
+        -50,
+        2,
+        "ABBY-VOICE-G036"
+      ],
+      "status": "active",
+      "title": "Complete the local Abby regeneration runtime integration gate",
+      "track": "voice-integration",
+      "work_surface_score": 50
     }
   ],
-  "objective_path": "/home/barberb/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
-  "schema": "ipfs_accelerate_py.agent_supervisor.objective_graph",
+  "objective_path": "/home/barberb/211-AI/211-AI/.worktrees/abby-voice-objective-control-v10/docs/planning/ABBY_VOICE_ROUTER_OBJECTIVE_HEAP.md",
+  "schema": "ipfs_accelerate_py.agent_supervisor.objectives.objective_graph",
   "thought_graph": {
-    "edge_count": 397,
+    "edge_count": 511,
     "edges": [
       {
         "from": "goal:ABBY-VOICE-G001",
@@ -4704,6 +5805,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G010",
+        "kind": "requires_evidence",
+        "to": "evidence:ebf26d19e6e0"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G010",
         "kind": "validated_by",
         "to": "validation:854345f277f3"
       },
@@ -4776,6 +5882,31 @@
         "from": "goal:ABBY-VOICE-G011",
         "kind": "requires_evidence",
         "to": "evidence:956fba27e035"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:b8a1a5cff421"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:9e165c5bdf79"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:625bc6312d5d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:02194027c9ba"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G011",
+        "kind": "requires_evidence",
+        "to": "evidence:f7b25be5e701"
       },
       {
         "from": "goal:ABBY-VOICE-G011",
@@ -5244,6 +6375,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G016",
+        "kind": "requires_evidence",
+        "to": "evidence:d961de143e65"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
         "kind": "validated_by",
         "to": "validation:f81b964fde0a"
       },
@@ -5284,6 +6420,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G016",
+        "kind": "touches_surface",
+        "to": "code_surface:ec699acc3542"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G016",
         "kind": "targets_interoperability",
         "to": "interoperability_pair:7551126c1fcc"
       },
@@ -5295,37 +6436,62 @@
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:2a0a317bc68c"
+        "to": "evidence:57245cf6602d"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:0db2a4db2ede"
+        "to": "evidence:0e540e660b67"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:cf6f1891504c"
+        "to": "evidence:124705188b96"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:57ad89a8299c"
+        "to": "evidence:21ae4b91b0e4"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:87a0c28ed3e6"
+        "to": "evidence:a7981bb41c04"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:d1417bb2b3c3"
+        "to": "evidence:79e5b88b2825"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
         "kind": "requires_evidence",
-        "to": "evidence:370a0400618c"
+        "to": "evidence:5081378e63ab"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:3a9fe4185fd6"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:771d53fcc1e1"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:0f40502d28cb"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:fc78c5be6035"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "requires_evidence",
+        "to": "evidence:b95bb9356430"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
@@ -5346,6 +6512,11 @@
         "from": "goal:ABBY-VOICE-G017",
         "kind": "touches_surface",
         "to": "code_surface:d6871a4bc3bc"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G017",
+        "kind": "touches_surface",
+        "to": "code_surface:50a611d0cd57"
       },
       {
         "from": "goal:ABBY-VOICE-G017",
@@ -5394,6 +6565,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G018",
+        "kind": "requires_evidence",
+        "to": "evidence:144ae4be3fdd"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G018",
         "kind": "validated_by",
         "to": "validation:dadc2de2f2db"
       },
@@ -5430,12 +6606,22 @@
       {
         "from": "goal:ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:d2c4f0d10c27"
+        "to": "evidence:8d4f8e533176"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:afe6f02f242d"
+        "to": "evidence:525c6214ca99"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:46a19dd6e494"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:af99f26d4f33"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
@@ -5445,17 +6631,27 @@
       {
         "from": "goal:ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:fd7d424e78a1"
+        "to": "evidence:ad8ec53750cc"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
         "kind": "requires_evidence",
-        "to": "evidence:a2e93d3983f9"
+        "to": "evidence:0e37c471c7f5"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:40f25c4e5931"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
         "kind": "requires_evidence",
         "to": "evidence:af3468c4a7b5"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G019",
+        "kind": "requires_evidence",
+        "to": "evidence:c5908f2e891d"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
@@ -5481,6 +6677,11 @@
         "from": "goal:ABBY-VOICE-G019",
         "kind": "touches_surface",
         "to": "code_surface:244e32670fab"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G019",
+        "kind": "touches_surface",
+        "to": "code_surface:c4590594a76a"
       },
       {
         "from": "goal:ABBY-VOICE-G019",
@@ -5524,6 +6725,11 @@
       },
       {
         "from": "goal:ABBY-VOICE-G020",
+        "kind": "requires_evidence",
+        "to": "evidence:4016a149319f"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G020",
         "kind": "validated_by",
         "to": "validation:d13bed583ef1"
       },
@@ -5541,6 +6747,11 @@
         "from": "goal:ABBY-VOICE-G020",
         "kind": "touches_surface",
         "to": "code_surface:43aede6cda7f"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G020",
+        "kind": "touches_surface",
+        "to": "code_surface:1e148a2a1199"
       },
       {
         "from": "goal:ABBY-VOICE-G020",
@@ -5861,9 +7072,469 @@
         "from": "goal:ABBY-VOICE-G029",
         "kind": "touches_surface",
         "to": "code_surface:3f73bdf93452"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:b579da0d3818"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:1887928288f2"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:7338b42a6cce"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:3e61f3f55d33"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:5d506184c5ec"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:dcafae3a25dd"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:a6a62c64b620"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:b559b4a80140"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "requires_evidence",
+        "to": "evidence:5fa5712e9168"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "validated_by",
+        "to": "validation:1c392d322d62"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:45e834074d20"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:25ea11f4df2c"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:66b172451aa8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:d16a847d1af9"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:20581207a335"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:893508696e74"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "touches_surface",
+        "to": "code_surface:5158c7ee8938"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G030",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:6ef7ad119fdf"
+      },
+      {
+        "from": "interoperability_pair:6ef7ad119fdf",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:6ef7ad119fdf"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:f02604790e6e"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:303503700e3b"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:9025fd83cf74"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:496c61b42d66"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:22eee8fdcbb4"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "requires_evidence",
+        "to": "evidence:9ccf90ff6888"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "validated_by",
+        "to": "validation:9cab5e053d5e"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "touches_surface",
+        "to": "code_surface:cca58074753b"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "touches_surface",
+        "to": "code_surface:78888f2d1650"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "touches_surface",
+        "to": "code_surface:90703b76b4fb"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "touches_surface",
+        "to": "code_surface:d6b11edf9007"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "touches_surface",
+        "to": "code_surface:1417cfd8508e"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G031",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:ffa2088f12be"
+      },
+      {
+        "from": "interoperability_pair:ffa2088f12be",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:ffa2088f12be"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:339b36351002"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:233647cf87dd"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:14c3c4e3836b"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:dd5d57ae28ee"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "requires_evidence",
+        "to": "evidence:a65d65a4feaf"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "validated_by",
+        "to": "validation:261d5d78ee2a"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "touches_surface",
+        "to": "code_surface:fd3ce72f9f13"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "touches_surface",
+        "to": "code_surface:186c2ddd34f6"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "touches_surface",
+        "to": "code_surface:7582e047bc0d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "touches_surface",
+        "to": "code_surface:8b3e7cec5fde"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "touches_surface",
+        "to": "code_surface:daf5d4f5f620"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G032",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:fbf689e180da"
+      },
+      {
+        "from": "interoperability_pair:fbf689e180da",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:fbf689e180da"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:291fe883b8ed"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:f1df1323cac2"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:bb516aba6604"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:9b01a8c6f6a3"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "requires_evidence",
+        "to": "evidence:cb11182b3ec4"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "validated_by",
+        "to": "validation:84378594e369"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "touches_surface",
+        "to": "code_surface:e408929f0756"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "touches_surface",
+        "to": "code_surface:388d0044e4a6"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "touches_surface",
+        "to": "code_surface:bfcbf23f6417"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "touches_surface",
+        "to": "code_surface:63bc6d91495a"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G033",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:51a74a8355c0"
+      },
+      {
+        "from": "interoperability_pair:51a74a8355c0",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:51a74a8355c0"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:0902babcfac8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:e3232ea316f8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:267130561855"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:edb3f263e2b4"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "requires_evidence",
+        "to": "evidence:92905efa5c6d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "validated_by",
+        "to": "validation:3f98667d3f95"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "touches_surface",
+        "to": "code_surface:7813e472f762"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "touches_surface",
+        "to": "code_surface:519908d2381f"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "touches_surface",
+        "to": "code_surface:30495812bab8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G034",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:cdf6bbb5486b"
+      },
+      {
+        "from": "interoperability_pair:cdf6bbb5486b",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:cdf6bbb5486b"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:c9aaee5abe23"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:310462754e63"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:d9362d521a46"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:fc8056d4a601"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:ebcdd410bd11"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "requires_evidence",
+        "to": "evidence:0c91a40ff9d2"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "validated_by",
+        "to": "validation:8eb0996ed11a"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "touches_surface",
+        "to": "code_surface:3be9f039908f"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "touches_surface",
+        "to": "code_surface:205e382c10ef"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "touches_surface",
+        "to": "code_surface:6995e850f46d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G035",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:ac8ee398256d"
+      },
+      {
+        "from": "interoperability_pair:ac8ee398256d",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:ac8ee398256d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:2f5a3e159526"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:ebc9c80590e4"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:1d2b1245780d"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:a76997e7e3c5"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "requires_evidence",
+        "to": "evidence:d6d73e47f7fb"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "validated_by",
+        "to": "validation:e59c639e0df8"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "touches_surface",
+        "to": "code_surface:5814f89d6705"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "touches_surface",
+        "to": "code_surface:85f8beef851a"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "touches_surface",
+        "to": "code_surface:67017ed3b189"
+      },
+      {
+        "from": "goal:ABBY-VOICE-G036",
+        "kind": "targets_interoperability",
+        "to": "interoperability_pair:4f41fc8797b1"
+      },
+      {
+        "from": "interoperability_pair:4f41fc8797b1",
+        "kind": "needs_test_strategy",
+        "to": "test_strategy:4f41fc8797b1"
       }
     ],
-    "node_count": 426,
+    "node_count": 547,
     "nodes": [
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -5894,11 +7565,25 @@
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/schema.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "code_surface:1417cfd8508e",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G021",
         "id": "code_surface:147381fe28db",
         "kind": "code_surface",
         "path": "docs/runbooks/ABBY_VOICE_HF_RELEASE.md",
         "thought": "Inspect or modify `docs/runbooks/ABBY_VOICE_HF_RELEASE.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "code_surface:186c2ddd34f6",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_cache_miss.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_cache_miss.py` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G001",
@@ -5929,6 +7614,27 @@
         "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-23-abby-voice-auto-006-objective-validation-repair.md` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G020",
+        "id": "code_surface:1e148a2a1199",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-020-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-020-objective-validation-repair.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:20581207a335",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "code_surface:205e382c10ef",
+        "kind": "code_surface",
+        "path": "docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md",
+        "thought": "Inspect or modify `docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G006",
         "id": "code_surface:21dea9ca0bb2",
         "kind": "code_surface",
@@ -5950,6 +7656,13 @@
         "thought": "Inspect or modify `data/abby_voice/releases/release-manifest.json` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:25ea11f4df2c",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G015",
         "id": "code_surface:2b21911a4f3e",
         "kind": "code_surface",
@@ -5962,6 +7675,13 @@
         "kind": "code_surface",
         "path": "data/abby_voice/huggingface/migration-plan.json",
         "thought": "Inspect or modify `data/abby_voice/huggingface/migration-plan.json` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "code_surface:30495812bab8",
+        "kind": "code_surface",
+        "path": "docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md",
+        "thought": "Inspect or modify `docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G012",
@@ -5985,11 +7705,25 @@
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "code_surface:388d0044e4a6",
+        "kind": "code_surface",
+        "path": "wallet_interface/ui/src/features/agent",
+        "thought": "Inspect or modify `wallet_interface/ui/src/features/agent` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G009",
         "id": "code_surface:3b111ff4610f",
         "kind": "code_surface",
         "path": "benchmarks/bench_abby_voice_router.py",
         "thought": "Inspect or modify `benchmarks/bench_abby_voice_router.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "code_surface:3be9f039908f",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G022",
@@ -6032,6 +7766,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py",
         "thought": "Inspect or modify `ipfs_datasets_py/tests/unit/voice/test_abby_voice_graphrag.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:45e834074d20",
+        "kind": "code_surface",
+        "path": "docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md",
+        "thought": "Inspect or modify `docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G011",
@@ -6083,6 +7824,27 @@
         "thought": "Inspect or modify `data/abby_voice/normalized/quarantine.jsonl` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "code_surface:50a611d0cd57",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:5158c7ee8938",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "code_surface:519908d2381f",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G027",
         "id": "code_surface:579224828e8e",
         "kind": "code_surface",
@@ -6095,6 +7857,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py",
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/release_loader.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "code_surface:5814f89d6705",
+        "kind": "code_surface",
+        "path": "docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md",
+        "thought": "Inspect or modify `docs/runbooks/ABBY_VOICE_REGENERATION_RUNTIME_IMPROVEMENT_PLAN.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G016",
@@ -6146,6 +7915,13 @@
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/huggingface/release.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "code_surface:63bc6d91495a",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G024",
         "id": "code_surface:640c482cfc33",
         "kind": "code_surface",
@@ -6158,6 +7934,20 @@
         "kind": "code_surface",
         "path": "docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md",
         "thought": "Inspect or modify `docs/runbooks/ABBY_VOICE_ROUTER_ROLLOUT.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:66b172451aa8",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "code_surface:67017ed3b189",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/ABBY-VOICE-G030-completion.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G024",
@@ -6186,6 +7976,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/ipfs_datasets_py/voice/workset.py",
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/workset.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "code_surface:6995e850f46d",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G021",
@@ -6223,6 +8020,27 @@
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/p2p_tasks/orchestrator.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "code_surface:7582e047bc0d",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "code_surface:7813e472f762",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "code_surface:78888f2d1650",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/voice/regeneration.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/regeneration.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G016",
         "id": "code_surface:8115481545b1",
         "kind": "code_surface",
@@ -6237,11 +8055,32 @@
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/contracts.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "code_surface:85f8beef851a",
+        "kind": "code_surface",
+        "path": "docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md",
+        "thought": "Inspect or modify `docs/reports/ABBY_VOICE_DISTRIBUTED_EVALUATION.md` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "code_surface:889e8db84acb",
         "kind": "code_surface",
         "path": "docs/data/ABBY_VOICE_GRAPHRAG.md",
         "thought": "Inspect or modify `docs/data/ABBY_VOICE_GRAPHRAG.md` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:893508696e74",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "code_surface:8b3e7cec5fde",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice/hf_release.py` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G003",
@@ -6270,6 +8109,13 @@
         "kind": "code_surface",
         "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py",
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs/executor.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "code_surface:90703b76b4fb",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/ml/accelerate_integration/voice_jobs.py` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G012",
@@ -6440,6 +8286,13 @@
         "thought": "Inspect or modify `data/abby_voice/normalized/quality-report.json` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "code_surface:bfcbf23f6417",
+        "kind": "code_surface",
+        "path": "wallet_interface/ui/tests",
+        "thought": "Inspect or modify `wallet_interface/ui/tests` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "code_surface:c1daffb5af8f",
         "kind": "code_surface",
@@ -6466,6 +8319,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py",
         "thought": "Inspect or modify `ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "code_surface:c4590594a76a",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-019-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-019-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -6531,6 +8391,13 @@
         "thought": "Inspect or modify `data/abby_voice/eval/golden_voice_turns.jsonl` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "code_surface:cca58074753b",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_jobs` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G011",
         "id": "code_surface:ce027bc40a61",
         "kind": "code_surface",
@@ -6543,6 +8410,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py",
         "thought": "Inspect or modify `ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_release.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "code_surface:d16a847d1af9",
+        "kind": "code_surface",
+        "path": "ipfs_datasets_py/ipfs_datasets_py/voice",
+        "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/voice` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G024",
@@ -6587,6 +8461,20 @@
         "thought": "Inspect or modify `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "code_surface:d6b11edf9007",
+        "kind": "code_surface",
+        "path": "scripts/precompute_indextts_responses.py",
+        "thought": "Inspect or modify `scripts/precompute_indextts_responses.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "code_surface:daf5d4f5f620",
+        "kind": "code_surface",
+        "path": "tests/voice",
+        "thought": "Inspect or modify `tests/voice` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G018",
         "id": "code_surface:df43abfbc62e",
         "kind": "code_surface",
@@ -6613,6 +8501,13 @@
         "kind": "code_surface",
         "path": "data/abby_voice/huggingface/migration-plan.json",
         "thought": "Inspect or modify `data/abby_voice/huggingface/migration-plan.json` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "code_surface:e408929f0756",
+        "kind": "code_surface",
+        "path": "wallet_interface/helpers/_voice_router_adapter.py",
+        "thought": "Inspect or modify `wallet_interface/helpers/_voice_router_adapter.py` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G009",
@@ -6648,6 +8543,13 @@
         "kind": "code_surface",
         "path": "ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py",
         "thought": "Inspect or modify `ipfs_datasets_py/ipfs_datasets_py/logic/intent_ir/source_adapters/snapshot.py` as part of this objective."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "code_surface:ec699acc3542",
+        "kind": "code_surface",
+        "path": "data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md",
+        "thought": "Inspect or modify `data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md` as part of this objective."
       },
       {
         "goal_id": "ABBY-VOICE-G010",
@@ -6713,6 +8615,13 @@
         "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py` as part of this objective."
       },
       {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "code_surface:fd3ce72f9f13",
+        "kind": "code_surface",
+        "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+        "thought": "Inspect or modify `ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py` as part of this objective."
+      },
+      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "code_surface:feacb75dabfe",
         "kind": "code_surface",
@@ -6739,6 +8648,13 @@
         "kind": "evidence_requirement",
         "term": "existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions",
         "thought": "Find or create repository evidence proving `existing `ResourceScheduler` CPU/RAM/disk/GPU/provider backpressure assertions`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:02194027c9ba",
+        "kind": "evidence_requirement",
+        "term": "residual dual-subset repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `residual dual-subset repair: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-027-objective-validation-repair.md`."
       },
       {
         "goal_id": "ABBY-VOICE-G025",
@@ -6790,11 +8706,25 @@
         "thought": "Find or create repository evidence proving `synthesis`."
       },
       {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:0902babcfac8",
+        "kind": "evidence_requirement",
+        "term": "telephone adapter contract",
+        "thought": "Find or create repository evidence proving `telephone adapter contract`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G020",
         "id": "evidence:097c8ffe2f56",
         "kind": "evidence_requirement",
         "term": "DuckDB TTS-to-validate-to-ASR workflow receipt",
         "thought": "Find or create repository evidence proving `DuckDB TTS-to-validate-to-ASR workflow receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:0c91a40ff9d2",
+        "kind": "evidence_requirement",
+        "term": "privacy-safe failure samples",
+        "thought": "Find or create repository evidence proving `privacy-safe failure samples`."
       },
       {
         "goal_id": "ABBY-VOICE-G006",
@@ -6804,11 +8734,18 @@
         "thought": "Find or create repository evidence proving `dry-run copy upload and delete plan`."
       },
       {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:0db2a4db2ede",
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:0e37c471c7f5",
         "kind": "evidence_requirement",
-        "term": "receipt-to-audio-row reconciler",
-        "thought": "Find or create repository evidence proving `receipt-to-audio-row reconciler`."
+        "term": "exact audio resolver matching spoken-text SHA-256 plus full synthesis identity",
+        "thought": "Find or create repository evidence proving `exact audio resolver matching spoken-text SHA-256 plus full synthesis identity`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:0e540e660b67",
+        "kind": "evidence_requirement",
+        "term": "`AUDIO_RECONCILIATION_EVIDENCE_TERM`",
+        "thought": "Find or create repository evidence proving ``AUDIO_RECONCILIATION_EVIDENCE_TERM``."
       },
       {
         "goal_id": "ABBY-VOICE-G006",
@@ -6832,6 +8769,13 @@
         "thought": "Find or create repository evidence proving `the rollout runbook defines canary receipts and flag-off rollback`."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:0f40502d28cb",
+        "kind": "evidence_requirement",
+        "term": "focused offline suite `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` including `test_g017_audio_reconciliation_evidence_terms_are_discoverable`",
+        "thought": "Find or create repository evidence proving `focused offline suite `ipfs_datasets_py/tests/unit/voice/test_abby_voice_audio_reconcile.py` including `test_g017_audio_reconciliation_evidence_terms_are_discoverable``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G013",
         "id": "evidence:1016036a7825",
         "kind": "evidence_requirement",
@@ -6853,11 +8797,39 @@
         "thought": "Find or create repository evidence proving `strict schema`."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:124705188b96",
+        "kind": "evidence_requirement",
+        "term": "`G017_REQUIRED_EVIDENCE_TERMS`",
+        "thought": "Find or create repository evidence proving ``G017_REQUIRED_EVIDENCE_TERMS``."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G018",
+        "id": "evidence:144ae4be3fdd",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-018-objective-validation-repair.md`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:14c3c4e3836b",
+        "kind": "evidence_requirement",
+        "term": "slotted template and vocabulary rows",
+        "thought": "Find or create repository evidence proving `slotted template and vocabulary rows`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G006",
         "id": "evidence:15c0a13d4fca",
         "kind": "evidence_requirement",
         "term": "Hugging Face dataset YAML with separate configs and splits",
         "thought": "Find or create repository evidence proving `Hugging Face dataset YAML with separate configs and splits`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:1887928288f2",
+        "kind": "evidence_requirement",
+        "term": "deterministic 3908-row regeneration workset",
+        "thought": "Find or create repository evidence proving `deterministic 3908-row regeneration workset`."
       },
       {
         "goal_id": "ABBY-VOICE-G014",
@@ -6888,6 +8860,13 @@
         "thought": "Find or create repository evidence proving `full-hash deterministic task IDs`."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:1d2b1245780d",
+        "kind": "evidence_requirement",
+        "term": "website and telephone metric report",
+        "thought": "Find or create repository evidence proving `website and telephone metric report`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G003",
         "id": "evidence:1dbbd2521de2",
         "kind": "evidence_requirement",
@@ -6902,6 +8881,13 @@
         "thought": "Find or create repository evidence proving `dependency-light `AbbyVoiceDatasetNormalizer``."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:21ae4b91b0e4",
+        "kind": "evidence_requirement",
+        "term": "disposition taxonomy",
+        "thought": "Find or create repository evidence proving `disposition taxonomy`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G009",
         "id": "evidence:2211ade94d7c",
         "kind": "evidence_requirement",
@@ -6914,6 +8900,20 @@
         "kind": "evidence_requirement",
         "term": "schema-versioned voice turns",
         "thought": "Find or create repository evidence proving `schema-versioned voice turns`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:22eee8fdcbb4",
+        "kind": "evidence_requirement",
+        "term": "quarantine receipt",
+        "thought": "Find or create repository evidence proving `quarantine receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:233647cf87dd",
+        "kind": "evidence_requirement",
+        "term": "deterministic response-DAG candidate",
+        "thought": "Find or create repository evidence proving `deterministic response-DAG candidate`."
       },
       {
         "goal_id": "ABBY-VOICE-G006",
@@ -6937,6 +8937,13 @@
         "thought": "Find or create repository evidence proving `provenance`."
       },
       {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:267130561855",
+        "kind": "evidence_requirement",
+        "term": "normalized phone and address slot assertions",
+        "thought": "Find or create repository evidence proving `normalized phone and address slot assertions`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G009",
         "id": "evidence:26e62d0ddc7c",
         "kind": "evidence_requirement",
@@ -6951,18 +8958,18 @@
         "thought": "Find or create repository evidence proving `privacy-safe `AbbyProviderReceipt` attempt history embedded in structured degraded `VoiceTurnResult` traces`."
       },
       {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:291fe883b8ed",
+        "kind": "evidence_requirement",
+        "term": "website adapter contract",
+        "thought": "Find or create repository evidence proving `website adapter contract`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G018",
         "id": "evidence:29b035e2fe45",
         "kind": "evidence_requirement",
         "term": "extracted generic release helpers",
         "thought": "Find or create repository evidence proving `extracted generic release helpers`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:2a0a317bc68c",
-        "kind": "evidence_requirement",
-        "term": "audio reconciliation",
-        "thought": "Find or create repository evidence proving `audio reconciliation`."
       },
       {
         "goal_id": "ABBY-VOICE-G009",
@@ -6986,11 +8993,39 @@
         "thought": "Find or create repository evidence proving `ABBY-VOICE-G002 completion receipt`."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:2f5a3e159526",
+        "kind": "evidence_requirement",
+        "term": "child completion receipts",
+        "thought": "Find or create repository evidence proving `child completion receipts`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:303503700e3b",
+        "kind": "evidence_requirement",
+        "term": "deterministic regeneration workset",
+        "thought": "Find or create repository evidence proving `deterministic regeneration workset`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:310462754e63",
+        "kind": "evidence_requirement",
+        "term": "hit and miss metric schema",
+        "thought": "Find or create repository evidence proving `hit and miss metric schema`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G013",
         "id": "evidence:3276dbe7a901",
         "kind": "evidence_requirement",
         "term": "canonical four-config bundle",
         "thought": "Find or create repository evidence proving `canonical four-config bundle`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:339b36351002",
+        "kind": "evidence_requirement",
+        "term": "cache-miss event contract",
+        "thought": "Find or create repository evidence proving `cache-miss event contract`."
       },
       {
         "goal_id": "ABBY-VOICE-G015",
@@ -7005,13 +9040,6 @@
         "kind": "evidence_requirement",
         "term": "dry-run diff and cost receipt",
         "thought": "Find or create repository evidence proving `dry-run diff and cost receipt`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:370a0400618c",
-        "kind": "evidence_requirement",
-        "term": "complete row disposition report",
-        "thought": "Find or create repository evidence proving `complete row disposition report`."
       },
       {
         "goal_id": "ABBY-VOICE-G004",
@@ -7035,11 +9063,25 @@
         "thought": "Find or create repository evidence proving ``abby_voice_audio_v2``."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:3a9fe4185fd6",
+        "kind": "evidence_requirement",
+        "term": "exact critical-slot fidelity",
+        "thought": "Find or create repository evidence proving `exact critical-slot fidelity`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G008",
         "id": "evidence:3d2e48b151ac",
         "kind": "evidence_requirement",
         "term": "deterministic fallback response",
         "thought": "Find or create repository evidence proving `deterministic fallback response`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:3e61f3f55d33",
+        "kind": "evidence_requirement",
+        "term": "cache-miss event receipt",
+        "thought": "Find or create repository evidence proving `cache-miss event receipt`."
       },
       {
         "goal_id": "ABBY-VOICE-G015",
@@ -7054,6 +9096,20 @@
         "kind": "evidence_requirement",
         "term": "ABBY-VOICE-G006 completion receipt",
         "thought": "Find or create repository evidence proving `ABBY-VOICE-G006 completion receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G020",
+        "id": "evidence:4016a149319f",
+        "kind": "evidence_requirement",
+        "term": "ABBY-VOICE-G020 completion and objective-validation repair receipt",
+        "thought": "Find or create repository evidence proving `ABBY-VOICE-G020 completion and objective-validation repair receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:40f25c4e5931",
+        "kind": "evidence_requirement",
+        "term": "stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes",
+        "thought": "Find or create repository evidence proving `stale-slot regression test invalidating phone/address/ZIP/hours/eligibility/amount/emergency slot changes`."
       },
       {
         "goal_id": "ABBY-VOICE-G005",
@@ -7084,11 +9140,25 @@
         "thought": "Find or create repository evidence proving ``benchmarks/bench_abby_voice_router.py` provides the offline latency/cache/fallback gate`."
       },
       {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:46a19dd6e494",
+        "kind": "evidence_requirement",
+        "term": "revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA",
+        "thought": "Find or create repository evidence proving `revision-pinned streaming/release loader `AbbyVoiceReleaseLoader` (immutable commit SHA`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G015",
         "id": "evidence:477e76357078",
         "kind": "evidence_requirement",
         "term": "backend-manager API regression fix",
         "thought": "Find or create repository evidence proving `backend-manager API regression fix`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:496c61b42d66",
+        "kind": "evidence_requirement",
+        "term": "fake-provider integration test",
+        "thought": "Find or create repository evidence proving `fake-provider integration test`."
       },
       {
         "goal_id": "ABBY-VOICE-G004",
@@ -7098,11 +9168,25 @@
         "thought": "Find or create repository evidence proving `ABBY-VOICE-G004 objective-validation repair receipt`."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:5081378e63ab",
+        "kind": "evidence_requirement",
+        "term": "`validate_tts_asr_roundtrip`",
+        "thought": "Find or create repository evidence proving ``validate_tts_asr_roundtrip``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "evidence:5099f8ae41a9",
         "kind": "evidence_requirement",
         "term": "fail-closed current-evidence slot binding that never uses historical response values as facts",
         "thought": "Find or create repository evidence proving `fail-closed current-evidence slot binding that never uses historical response values as facts`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:525c6214ca99",
+        "kind": "evidence_requirement",
+        "term": "audio_resolver=PrecomputedVoiceAudioResolver)`",
+        "thought": "Find or create repository evidence proving `audio_resolver=PrecomputedVoiceAudioResolver)``."
       },
       {
         "goal_id": "ABBY-VOICE-G007",
@@ -7147,6 +9231,13 @@
         "thought": "Find or create repository evidence proving `ABBY-VOICE-G008 completion receipt`."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:57245cf6602d",
+        "kind": "evidence_requirement",
+        "term": "audio reconciliation in `ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py` (`reconcile_voice_job_result`",
+        "thought": "Find or create repository evidence proving `audio reconciliation in `ipfs_datasets_py/ipfs_datasets_py/voice/reconcile.py` (`reconcile_voice_job_result``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G014",
         "id": "evidence:5743aa782bbe",
         "kind": "evidence_requirement",
@@ -7159,13 +9250,6 @@
         "kind": "evidence_requirement",
         "term": "grounded slot binding implementation",
         "thought": "Find or create repository evidence proving `grounded slot binding implementation`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:57ad89a8299c",
-        "kind": "evidence_requirement",
-        "term": "TTS-to-ASR round-trip evaluation",
-        "thought": "Find or create repository evidence proving `TTS-to-ASR round-trip evaluation`."
       },
       {
         "goal_id": "ABBY-VOICE-G003",
@@ -7187,6 +9271,13 @@
         "kind": "evidence_requirement",
         "term": "integration tests with fake GraphRAG provider",
         "thought": "Find or create repository evidence proving `integration tests with fake GraphRAG provider`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:5d506184c5ec",
+        "kind": "evidence_requirement",
+        "term": "append-only response-DAG dry-run candidate",
+        "thought": "Find or create repository evidence proving `append-only response-DAG dry-run candidate`."
       },
       {
         "goal_id": "ABBY-VOICE-G003",
@@ -7215,6 +9306,20 @@
         "kind": "evidence_requirement",
         "term": "local WebGPU",
         "thought": "Find or create repository evidence proving `local WebGPU`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:5fa5712e9168",
+        "kind": "evidence_requirement",
+        "term": "package ownership and thin-wrapper validation",
+        "thought": "Find or create repository evidence proving `package ownership and thin-wrapper validation`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:625bc6312d5d",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map for TTS/ASR execution: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map for TTS/ASR execution: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-014-objective-validation-repair.md`."
       },
       {
         "goal_id": "ABBY-VOICE-G023",
@@ -7294,11 +9399,25 @@
         "thought": "Find or create repository evidence proving `and graph hybrid ranking`."
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:7338b42a6cce",
+        "kind": "evidence_requirement",
+        "term": "canary regeneration receipt",
+        "thought": "Find or create repository evidence proving `canary regeneration receipt`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "evidence:746c0e3b6705",
         "kind": "evidence_requirement",
         "term": "lexical",
         "thought": "Find or create repository evidence proving `lexical`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:771d53fcc1e1",
+        "kind": "evidence_requirement",
+        "term": "`G017_AUDIO_QUALITY_EVIDENCE_TERMS`)",
+        "thought": "Find or create repository evidence proving ``G017_AUDIO_QUALITY_EVIDENCE_TERMS`)`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7313,6 +9432,13 @@
         "kind": "evidence_requirement",
         "term": "ABBY-VOICE-G003 completion receipt",
         "thought": "Find or create repository evidence proving `ABBY-VOICE-G003 completion receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:79e5b88b2825",
+        "kind": "evidence_requirement",
+        "term": "versioned `AudioQualityPolicy` plus decode/acoustic and TTS-to-ASR round-trip gates in `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` (`validate_decode_and_acoustic`",
+        "thought": "Find or create repository evidence proving `versioned `AudioQualityPolicy` plus decode/acoustic and TTS-to-ASR round-trip gates in `ipfs_datasets_py/ipfs_datasets_py/voice/audio_quality.py` (`validate_decode_and_acoustic``."
       },
       {
         "goal_id": "ABBY-VOICE-G005",
@@ -7406,13 +9532,6 @@
         "thought": "Find or create repository evidence proving `injected `IPLDVectorStore``."
       },
       {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:87a0c28ed3e6",
-        "kind": "evidence_requirement",
-        "term": "exact critical-slot checks",
-        "thought": "Find or create repository evidence proving `exact critical-slot checks`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G021",
         "id": "evidence:87b759d174be",
         "kind": "evidence_requirement",
@@ -7432,6 +9551,13 @@
         "kind": "evidence_requirement",
         "term": "accessibility/readability",
         "thought": "Find or create repository evidence proving `accessibility/readability`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:8d4f8e533176",
+        "kind": "evidence_requirement",
+        "term": "runtime resolution via `process_voice_turn(...",
+        "thought": "Find or create repository evidence proving `runtime resolution via `process_voice_turn(...`."
       },
       {
         "goal_id": "ABBY-VOICE-G011",
@@ -7474,6 +9600,20 @@
         "kind": "evidence_requirement",
         "term": "fuzzy-review quarantine",
         "thought": "Find or create repository evidence proving `fuzzy-review quarantine`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:9025fd83cf74",
+        "kind": "evidence_requirement",
+        "term": "retry and resume receipt",
+        "thought": "Find or create repository evidence proving `retry and resume receipt`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:92905efa5c6d",
+        "kind": "evidence_requirement",
+        "term": "escalation trace",
+        "thought": "Find or create repository evidence proving `escalation trace`."
       },
       {
         "goal_id": "ABBY-VOICE-G009",
@@ -7532,11 +9672,32 @@
         "thought": "Find or create repository evidence proving `and `HuggingFaceSkillCenterFetcher` imports remain compatible`."
       },
       {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:9b01a8c6f6a3",
+        "kind": "evidence_requirement",
+        "term": "exact hit and miss trace",
+        "thought": "Find or create repository evidence proving `exact hit and miss trace`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G002",
         "id": "evidence:9bdf79daa5a3",
         "kind": "evidence_requirement",
         "term": "serializable VoiceProviderCapabilities and ProviderInfo metadata",
         "thought": "Find or create repository evidence proving `serializable VoiceProviderCapabilities and ProviderInfo metadata`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:9ccf90ff6888",
+        "kind": "evidence_requirement",
+        "term": "live-canary dry-run manifest",
+        "thought": "Find or create repository evidence proving `live-canary dry-run manifest`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:9e165c5bdf79",
+        "kind": "evidence_requirement",
+        "term": "residual parent-term repair for worksets: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `residual parent-term repair for worksets: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-024-objective-validation-repair.md`."
       },
       {
         "goal_id": "ABBY-VOICE-G012",
@@ -7581,13 +9742,6 @@
         "thought": "Find or create repository evidence proving ``abby_voice_response_v2``."
       },
       {
-        "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:a2e93d3983f9",
-        "kind": "evidence_requirement",
-        "term": "stale-slot regression test",
-        "thought": "Find or create repository evidence proving `stale-slot regression test`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G011",
         "id": "evidence:a33b03b2005f",
         "kind": "evidence_requirement",
@@ -7623,6 +9777,13 @@
         "thought": "Find or create repository evidence proving `lazy `abby_indextts` and `abby_whisper` router capabilities and aliases`."
       },
       {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:a65d65a4feaf",
+        "kind": "evidence_requirement",
+        "term": "Hugging Face publication dry-run receipt",
+        "thought": "Find or create repository evidence proving `Hugging Face publication dry-run receipt`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G027",
         "id": "evidence:a685a19b9e6d",
         "kind": "evidence_requirement",
@@ -7630,11 +9791,32 @@
         "thought": "Find or create repository evidence proving `proposed canonical prefix layout`."
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:a6a62c64b620",
+        "kind": "evidence_requirement",
+        "term": "telephone multi-turn hit/miss report",
+        "thought": "Find or create repository evidence proving `telephone multi-turn hit/miss report`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G005",
         "id": "evidence:a75173a64683",
         "kind": "evidence_requirement",
         "term": "grounded slot-fidelity and factual-claim gates",
         "thought": "Find or create repository evidence proving `grounded slot-fidelity and factual-claim gates`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:a76997e7e3c5",
+        "kind": "evidence_requirement",
+        "term": "Whisper quality report",
+        "thought": "Find or create repository evidence proving `Whisper quality report`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:a7981bb41c04",
+        "kind": "evidence_requirement",
+        "term": "reciprocal `AbbyVoiceAudio`/`AbbyVoiceProvenance` promotion)",
+        "thought": "Find or create repository evidence proving `reciprocal `AbbyVoiceAudio`/`AbbyVoiceProvenance` promotion)`."
       },
       {
         "goal_id": "ABBY-VOICE-G020",
@@ -7649,6 +9831,13 @@
         "kind": "evidence_requirement",
         "term": "text/audio duplicate winner ledger",
         "thought": "Find or create repository evidence proving `text/audio duplicate winner ledger`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:ad8ec53750cc",
+        "kind": "evidence_requirement",
+        "term": "Hub streaming pinned through `HuggingFaceStreamingLoader`)",
+        "thought": "Find or create repository evidence proving `Hub streaming pinned through `HuggingFaceStreamingLoader`)`."
       },
       {
         "goal_id": "ABBY-VOICE-G003",
@@ -7673,10 +9862,10 @@
       },
       {
         "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:afe6f02f242d",
+        "id": "evidence:af99f26d4f33",
         "kind": "evidence_requirement",
-        "term": "revision-pinned streaming/release loader",
-        "thought": "Find or create repository evidence proving `revision-pinned streaming/release loader`."
+        "term": "descriptor validation",
+        "thought": "Find or create repository evidence proving `descriptor validation`."
       },
       {
         "goal_id": "ABBY-VOICE-G020",
@@ -7714,6 +9903,20 @@
         "thought": "Find or create repository evidence proving `and media type`."
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:b559b4a80140",
+        "kind": "evidence_requirement",
+        "term": "Whisper round-trip validation",
+        "thought": "Find or create repository evidence proving `Whisper round-trip validation`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:b579da0d3818",
+        "kind": "evidence_requirement",
+        "term": "endpoint contract probe",
+        "thought": "Find or create repository evidence proving `endpoint contract probe`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "evidence:b61932c92ccb",
         "kind": "evidence_requirement",
@@ -7735,11 +9938,32 @@
         "thought": "Find or create repository evidence proving `persisted attempt/backoff/lease state`."
       },
       {
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:b8a1a5cff421",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map for deterministic audio worksets: data/abby_voice/agent_supervisor/discovery/2026-07-25-abby-voice-auto-012-objective-validation-repair.md`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:b95bb9356430",
+        "kind": "evidence_requirement",
+        "term": "retry-budget repair `ABBY-VOICE-AUTO-028` evidence `data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md`",
+        "thought": "Find or create repository evidence proving `retry-budget repair `ABBY-VOICE-AUTO-028` evidence `data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-26-abby-voice-auto-028-abby-voice-auto-016-retry-budget.md``."
+      },
+      {
         "goal_id": "ABBY-VOICE-G016",
         "id": "evidence:b97688bcfc9e",
         "kind": "evidence_requirement",
         "term": "existing sibling isolation and single-flight receipts",
         "thought": "Find or create repository evidence proving `existing sibling isolation and single-flight receipts`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:bb516aba6604",
+        "kind": "evidence_requirement",
+        "term": "ASR injection fixture",
+        "thought": "Find or create repository evidence proving `ASR injection fixture`."
       },
       {
         "goal_id": "ABBY-VOICE-G005",
@@ -7798,6 +10022,13 @@
         "thought": "Find or create repository evidence proving ``HuggingFaceRepository` records a pinned dataset commit`."
       },
       {
+        "goal_id": "ABBY-VOICE-G019",
+        "id": "evidence:c5908f2e891d",
+        "kind": "evidence_requirement",
+        "term": "ABBY-VOICE-G019 objective-validation repair receipt",
+        "thought": "Find or create repository evidence proving `ABBY-VOICE-G019 objective-validation repair receipt`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G001",
         "id": "evidence:c5d5ad5e2f34",
         "kind": "evidence_requirement",
@@ -7826,11 +10057,25 @@
         "thought": "Find or create repository evidence proving `serialization`."
       },
       {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:c9aaee5abe23",
+        "kind": "evidence_requirement",
+        "term": "deterministic conversation corpus",
+        "thought": "Find or create repository evidence proving `deterministic conversation corpus`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G016",
         "id": "evidence:c9be076c5bcd",
         "kind": "evidence_requirement",
         "term": "priority-aware atomic claims",
         "thought": "Find or create repository evidence proving `priority-aware atomic claims`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:cb11182b3ec4",
+        "kind": "evidence_requirement",
+        "term": "text-only degradation assertion",
+        "thought": "Find or create repository evidence proving `text-only degradation assertion`."
       },
       {
         "goal_id": "ABBY-VOICE-G002",
@@ -7868,32 +10113,11 @@
         "thought": "Find or create repository evidence proving `and browser speech fallback branches`."
       },
       {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:cf6f1891504c",
-        "kind": "evidence_requirement",
-        "term": "decode and acoustic validator",
-        "thought": "Find or create repository evidence proving `decode and acoustic validator`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G017",
-        "id": "evidence:d1417bb2b3c3",
-        "kind": "evidence_requirement",
-        "term": "terminal quarantine reason taxonomy",
-        "thought": "Find or create repository evidence proving `terminal quarantine reason taxonomy`."
-      },
-      {
         "goal_id": "ABBY-VOICE-G011",
         "id": "evidence:d2a71b43b9fc",
         "kind": "evidence_requirement",
         "term": "TTS/ASR execution",
         "thought": "Find or create repository evidence proving `TTS/ASR execution`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:d2c4f0d10c27",
-        "kind": "evidence_requirement",
-        "term": "runtime resolution",
-        "thought": "Find or create repository evidence proving `runtime resolution`."
       },
       {
         "goal_id": "ABBY-VOICE-G010",
@@ -7924,6 +10148,13 @@
         "thought": "Find or create repository evidence proving `an injected GraphRAG response-template retrieval boundary`."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:d6d73e47f7fb",
+        "kind": "evidence_requirement",
+        "term": "no-remote-write audit",
+        "thought": "Find or create repository evidence proving `no-remote-write audit`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G009",
         "id": "evidence:d7c4dc6dd090",
         "kind": "evidence_requirement",
@@ -7950,6 +10181,20 @@
         "kind": "evidence_requirement",
         "term": "capability-aware registry routing",
         "thought": "Find or create repository evidence proving `capability-aware registry routing`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:d9362d521a46",
+        "kind": "evidence_requirement",
+        "term": "website and telephone reports",
+        "thought": "Find or create repository evidence proving `website and telephone reports`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G016",
+        "id": "evidence:d961de143e65",
+        "kind": "evidence_requirement",
+        "term": "objective validation repair via data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `objective validation repair via data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-031-objective-validation-repair.md`."
       },
       {
         "goal_id": "ABBY-VOICE-G009",
@@ -7987,6 +10232,20 @@
         "thought": "Find or create repository evidence proving `VoiceTurnProvenance`."
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "evidence:dcafae3a25dd",
+        "kind": "evidence_requirement",
+        "term": "website multi-turn hit/miss report",
+        "thought": "Find or create repository evidence proving `website multi-turn hit/miss report`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "evidence:dd5d57ae28ee",
+        "kind": "evidence_requirement",
+        "term": "duplicate-event idempotency test",
+        "thought": "Find or create repository evidence proving `duplicate-event idempotency test`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G009",
         "id": "evidence:ded0e53750b8",
         "kind": "evidence_requirement",
@@ -8006,6 +10265,13 @@
         "kind": "evidence_requirement",
         "term": "`HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot`",
         "thought": "Find or create repository evidence proving ``HuggingFaceSnapshot` and `HuggingFaceSnapshotCache` provide the reusable immutable snapshot/cache contract while the existing `SkillCenterSnapshot``."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:e3232ea316f8",
+        "kind": "evidence_requirement",
+        "term": "multi-turn call fixture",
+        "thought": "Find or create repository evidence proving `multi-turn call fixture`."
       },
       {
         "goal_id": "ABBY-VOICE-G010",
@@ -8036,11 +10302,53 @@
         "thought": "Find or create repository evidence proving `legacy STT`."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "evidence:ebc9c80590e4",
+        "kind": "evidence_requirement",
+        "term": "end-to-end local validation",
+        "thought": "Find or create repository evidence proving `end-to-end local validation`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:ebcdd410bd11",
+        "kind": "evidence_requirement",
+        "term": "threshold gate",
+        "thought": "Find or create repository evidence proving `threshold gate`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G010",
+        "id": "evidence:ebf26d19e6e0",
+        "kind": "evidence_requirement",
+        "term": "residual scan closure for the three-term acceptance subset: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `residual scan closure for the three-term acceptance subset: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-017-objective-validation-repair.md`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "evidence:edb3f263e2b4",
+        "kind": "evidence_requirement",
+        "term": "provider timeout and retry fixture",
+        "thought": "Find or create repository evidence proving `provider timeout and retry fixture`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G013",
         "id": "evidence:ef889afb0195",
         "kind": "evidence_requirement",
         "term": "complete inventory-to-disposition ledger",
         "thought": "Find or create repository evidence proving `complete inventory-to-disposition ledger`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "evidence:f02604790e6e",
+        "kind": "evidence_requirement",
+        "term": "endpoint contract probe",
+        "thought": "Find or create repository evidence proving `endpoint contract probe`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "evidence:f1df1323cac2",
+        "kind": "evidence_requirement",
+        "term": "multi-turn browser fixture",
+        "thought": "Find or create repository evidence proving `multi-turn browser fixture`."
       },
       {
         "goal_id": "ABBY-VOICE-G018",
@@ -8092,6 +10400,13 @@
         "thought": "Find or create repository evidence proving `worker and service capability parity`."
       },
       {
+        "goal_id": "ABBY-VOICE-G011",
+        "id": "evidence:f7b25be5e701",
+        "kind": "evidence_requirement",
+        "term": "retry-budget repair: data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md",
+        "thought": "Find or create repository evidence proving `retry-budget repair: data/abby_voice/agent_supervisor/recovery_v10/objective_control/discovery/2026-07-27-abby-voice-auto-032-abby-voice-auto-027-retry-budget.md`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G014",
         "id": "evidence:f7dedb8099e2",
         "kind": "evidence_requirement",
@@ -8113,6 +10428,20 @@
         "thought": "Find or create repository evidence proving `the UI normalizer consumes that receipt while preserving legacy payloads`."
       },
       {
+        "goal_id": "ABBY-VOICE-G017",
+        "id": "evidence:fc78c5be6035",
+        "kind": "evidence_requirement",
+        "term": "authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md",
+        "thought": "Find or create repository evidence proving `authoritative evidence map: data/abby_voice/agent_supervisor/discovery/2026-07-26-abby-voice-auto-016-objective-validation-repair.md`."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "evidence:fc8056d4a601",
+        "kind": "evidence_requirement",
+        "term": "Whisper normalized transcript comparison",
+        "thought": "Find or create repository evidence proving `Whisper normalized transcript comparison`."
+      },
+      {
         "goal_id": "ABBY-VOICE-G001",
         "id": "evidence:fd04983583bd",
         "kind": "evidence_requirement",
@@ -8125,13 +10454,6 @@
         "kind": "evidence_requirement",
         "term": "grounded factuality",
         "thought": "Find or create repository evidence proving `grounded factuality`."
-      },
-      {
-        "goal_id": "ABBY-VOICE-G019",
-        "id": "evidence:fd7d424e78a1",
-        "kind": "evidence_requirement",
-        "term": "exact audio resolver",
-        "thought": "Find or create repository evidence proving `exact audio resolver`."
       },
       {
         "goal_id": "ABBY-VOICE-G003",
@@ -8332,7 +10654,7 @@
         "id": "goal:ABBY-VOICE-G019",
         "kind": "goal",
         "priority": "P0",
-        "status": "active",
+        "status": "complete",
         "thought": "Load an immutable Abby release into the GraphRAG template provider and resolve precomputed audio only when the rendered spoken text and complete synthesis identity match.",
         "title": "Load pinned releases and resolve precomputed audio safely",
         "track": "voice-integration"
@@ -8342,7 +10664,7 @@
         "id": "goal:ABBY-VOICE-G020",
         "kind": "goal",
         "priority": "P0",
-        "status": "active",
+        "status": "complete",
         "thought": "Demonstrate a restart-safe fixture and approved canary flow from pinned source inventory through TTS validation ASR release loading GraphRAG slotting and final voice output.",
         "title": "Prove the distributed dataset-to-voice pipeline end to end",
         "track": "voice-evaluation"
@@ -8438,6 +10760,76 @@
         "track": "voice-data"
       },
       {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "goal:ABBY-VOICE-G030",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Regenerate the deterministic phone and address repair queue through the package-owned voice job stack, validate website and telephone multi-turn behavior, and produce an append-only response-DAG candidate for every cache miss.",
+        "title": "Regenerate queued Abby audio and validate the multi-surface voice runtime",
+        "track": "voice-regeneration"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "goal:ABBY-VOICE-G031",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Convert the audited repair queue into deterministic idempotent voice jobs and provide a resumable Hugging Face IndexTTS runner with a bounded, explicitly approved live-canary boundary.",
+        "title": "Build the endpoint-safe Abby regeneration runner",
+        "track": "voice-regeneration"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "goal:ABBY-VOICE-G032",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Turn every validated live-TTS cache miss into a deterministic append-only response-DAG candidate containing its slotted template, vocabulary, lineage, and audio descriptor.",
+        "title": "Append cache-miss response-DAG candidates locally",
+        "track": "voice-data"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "goal:ABBY-VOICE-G033",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Exercise the website voice adapter through deterministic multi-turn ASR-injected conversations and verify exact resolver, GraphRAG, fallback, and audio-result behavior.",
+        "title": "Validate the website multi-turn voice agent",
+        "track": "voice-web"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "goal:ABBY-VOICE-G034",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Exercise the telephone webhook or SIP adapter through deterministic multi-turn calls while preserving normalized phone and address speech, barge-in state, and text-only escalation behavior.",
+        "title": "Validate the telephone multi-turn support line",
+        "track": "voice-telephone"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "goal:ABBY-VOICE-G035",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Score website and telephone conversation fixtures for exact cache hits, template and GraphRAG hits, fallback misses, response-DAG candidates, and Whisper round-trip quality.",
+        "title": "Measure multi-turn cache and audio quality",
+        "track": "voice-evaluation"
+      },
+      {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "goal:ABBY-VOICE-G036",
+        "kind": "goal",
+        "priority": "P0",
+        "status": "active",
+        "thought": "Verify current-tree-bound completion receipts for all regeneration runtime subgoals, run the local end-to-end gate, and prove that no remote Hugging Face mutation occurred.",
+        "title": "Complete the local Abby regeneration runtime integration gate",
+        "track": "voice-integration"
+      },
+      {
         "goal_id": "ABBY-VOICE-G021",
         "id": "interoperability_pair:016f93f045cf",
         "kind": "interoperability_pair",
@@ -8475,6 +10867,25 @@
         "thought": "Prove these components interoperate through contracts and tests."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "interoperability_pair:4f41fc8797b1",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "interoperability_pair:51a74a8355c0",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "interoperability_pair:520cbe64d3a8",
         "kind": "interoperability_pair",
@@ -8497,6 +10908,16 @@
         "id": "interoperability_pair:6562841d3a21",
         "kind": "interoperability_pair",
         "submodules": [
+          "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "interoperability_pair:6ef7ad119fdf",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py",
           "ipfs_datasets_py"
         ],
         "thought": "Prove these components interoperate through contracts and tests."
@@ -8550,6 +10971,16 @@
         "thought": "Prove these components interoperate through contracts and tests."
       },
       {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "interoperability_pair:ac8ee398256d",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
         "goal_id": "ABBY-VOICE-G019",
         "id": "interoperability_pair:ad71e5b5128b",
         "kind": "interoperability_pair",
@@ -8574,6 +11005,15 @@
         "kind": "interoperability_pair",
         "submodules": [
           "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "interoperability_pair:cdf6bbb5486b",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py"
         ],
         "thought": "Prove these components interoperate through contracts and tests."
       },
@@ -8635,6 +11075,26 @@
         "thought": "Prove these components interoperate through contracts and tests."
       },
       {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "interoperability_pair:fbf689e180da",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "interoperability_pair:ffa2088f12be",
+        "kind": "interoperability_pair",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Prove these components interoperate through contracts and tests."
+      },
+      {
         "goal_id": "ABBY-VOICE-G021",
         "id": "test_strategy:016f93f045cf",
         "kind": "test_strategy",
@@ -8672,6 +11132,25 @@
         "thought": "Write or update integration tests that exercise the shared runtime boundary."
       },
       {
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "test_strategy:4f41fc8797b1",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "test_strategy:51a74a8355c0",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
         "goal_id": "ABBY-VOICE-G007",
         "id": "test_strategy:520cbe64d3a8",
         "kind": "test_strategy",
@@ -8694,6 +11173,16 @@
         "id": "test_strategy:6562841d3a21",
         "kind": "test_strategy",
         "submodules": [
+          "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "test_strategy:6ef7ad119fdf",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py",
           "ipfs_datasets_py"
         ],
         "thought": "Write or update integration tests that exercise the shared runtime boundary."
@@ -8747,6 +11236,16 @@
         "thought": "Write or update integration tests that exercise the shared runtime boundary."
       },
       {
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "test_strategy:ac8ee398256d",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
         "goal_id": "ABBY-VOICE-G019",
         "id": "test_strategy:ad71e5b5128b",
         "kind": "test_strategy",
@@ -8771,6 +11270,15 @@
         "kind": "test_strategy",
         "submodules": [
           "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "test_strategy:cdf6bbb5486b",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py"
         ],
         "thought": "Write or update integration tests that exercise the shared runtime boundary."
       },
@@ -8832,6 +11340,26 @@
         "thought": "Write or update integration tests that exercise the shared runtime boundary."
       },
       {
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "test_strategy:fbf689e180da",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "test_strategy:ffa2088f12be",
+        "kind": "test_strategy",
+        "submodules": [
+          "ipfs_accelerate_py",
+          "ipfs_datasets_py"
+        ],
+        "thought": "Write or update integration tests that exercise the shared runtime boundary."
+      },
+      {
         "command": "python -m pytest -q ipfs_datasets_py/tests/unit/voice tests/voice && python benchmarks/bench_abby_voice_router.py --offline --check",
         "goal_id": "ABBY-VOICE-G024",
         "id": "validation:05897ed7cf43",
@@ -8853,6 +11381,13 @@
         "thought": "Run this validation before closing the goal."
       },
       {
+        "command": "python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py",
+        "goal_id": "ABBY-VOICE-G030",
+        "id": "validation:1c392d322d62",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
         "command": "python -m pytest -q ipfs_datasets_py/tests/unit/logic/intent_ir/test_skillcenter_snapshot.py ipfs_datasets_py/tests/unit/huggingface/test_voice_source_snapshot.py",
         "goal_id": "ABBY-VOICE-G012",
         "id": "validation:1d9c30dfb1f4",
@@ -8867,9 +11402,23 @@
         "thought": "Run this validation before closing the goal."
       },
       {
+        "command": "python -m pytest -q ipfs_accelerate_py/test/test_voice_cache_miss.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_response_dag.py tests/voice/test_abby_voice_pipeline.py",
+        "goal_id": "ABBY-VOICE-G032",
+        "id": "validation:261d5d78ee2a",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
         "command": "python -m pytest -q ipfs_accelerate_py/test/test_voice_router_graphrag.py",
         "goal_id": "ABBY-VOICE-G008",
         "id": "validation:34bb365d32ae",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
+        "command": "python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_safety.py tests/test_precompute_indextts_batch.py",
+        "goal_id": "ABBY-VOICE-G034",
+        "id": "validation:3f98667d3f95",
         "kind": "validation_strategy",
         "thought": "Run this validation before closing the goal."
       },
@@ -8916,9 +11465,30 @@
         "thought": "Run this validation before closing the goal."
       },
       {
+        "command": "python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py",
+        "goal_id": "ABBY-VOICE-G033",
+        "id": "validation:84378594e369",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
         "command": "python -m pytest -q wallet_interface/tests && npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts",
         "goal_id": "ABBY-VOICE-G010",
         "id": "validation:854345f277f3",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
+        "command": "python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py",
+        "goal_id": "ABBY-VOICE-G035",
+        "id": "validation:8eb0996ed11a",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
+        "command": "python -m pytest -q ipfs_accelerate_py/test/test_voice_job_worker.py ipfs_datasets_py/tests/unit/ml/test_voice_job_bridge.py ipfs_datasets_py/tests/unit/voice/test_abby_voice_regeneration.py tests/test_precompute_indextts_batch.py",
+        "goal_id": "ABBY-VOICE-G031",
+        "id": "validation:9cab5e053d5e",
         "kind": "validation_strategy",
         "thought": "Run this validation before closing the goal."
       },
@@ -8996,6 +11566,13 @@
         "command": "python -m pytest -q ipfs_datasets_py/tests/unit/voice/test_abby_voice_hf_publish.py && python scripts/publish_abby_voice_release.py --manifest data/abby_voice/releases/release-manifest.json --dry-run",
         "goal_id": "ABBY-VOICE-G021",
         "id": "validation:daf63f314d46",
+        "kind": "validation_strategy",
+        "thought": "Run this validation before closing the goal."
+      },
+      {
+        "command": "python -m pytest -q tests/voice/test_abby_voice_multiturn_e2e.py tests/voice/test_abby_voice_pipeline.py tests/voice/test_abby_voice_distributed_pipeline.py tests/voice/test_abby_voice_safety.py ipfs_accelerate_py/test/test_voice_router_precomputed_audio.py tests/test_upload_hf_abby_tts_dataset.py",
+        "goal_id": "ABBY-VOICE-G036",
+        "id": "validation:e59c639e0df8",
         "kind": "validation_strategy",
         "thought": "Run this validation before closing the goal."
       },

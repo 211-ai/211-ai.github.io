@@ -8,10 +8,14 @@ Hugging Face service.
 
 from __future__ import annotations
 
+import io
 import json
+import math
 import re
+import struct
 import sys
 import time
+import wave
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -27,6 +31,7 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     DEFAULT_GROUNDED_FALLBACK,
     GroundedSlot,
     GraphRAGVoiceTemplateProvider,
+    TelephoneTurnState,
     VoiceGroundingSource,
     VoiceResponsePlan,
     VoiceStageTrace,
@@ -34,6 +39,7 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     VoiceTurnResult,
     VoiceProviderCapabilities,
     clear_voice_router_caches,
+    process_telephone_turn,
     process_voice_turn,
     register_voice_provider,
     speech_to_text,
@@ -43,6 +49,30 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
 
 GOLDEN_PATH = ROOT / "data/abby_voice/eval/golden_voice_turns.jsonl"
 PRIVATE_AUDIO = b"PRIVATE-CALLER-AUDIO-MUST-NOT-APPEAR-IN-RECEIPT"
+
+
+def _valid_test_wav() -> bytes:
+    """Return deterministic PCM audio accepted by the production validator."""
+
+    sample_rate = 16_000
+    frame_count = sample_rate // 4
+    pcm = b"".join(
+        struct.pack(
+            "<h",
+            round(6_000 * math.sin(2 * math.pi * 440 * frame / sample_rate)),
+        )
+        for frame in range(frame_count)
+    )
+    output = io.BytesIO()
+    with wave.open(output, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(sample_rate)
+        audio.writeframes(pcm)
+    return output.getvalue()
+
+
+VALID_TEST_WAV = _valid_test_wav()
 
 
 def _golden_rows() -> list[dict[str, Any]]:
@@ -105,7 +135,7 @@ def _response_plan(row: Mapping[str, Any]) -> VoiceResponsePlan | None:
 class GoldenSpeechProvider:
     name: str
     transcript: str
-    audio: bytes = b"RIFF\x00\x00\x00\x00WAVEsynthetic-abby-audio"
+    audio: bytes = VALID_TEST_WAV
     fail_transcription: bool = False
     fail_synthesis: bool = False
     calls: list[tuple[str, str]] = field(default_factory=list)
@@ -370,6 +400,40 @@ def test_stage_traces_are_ordered_and_have_finite_latency() -> None:
     assert result.total_duration_ms < 1000
 
 
+def test_telephone_max_turns_escalates_without_provider_dispatch_or_call_id_leak() -> None:
+    state = TelephoneTurnState(
+        call_id="private-synthetic-provider-call-id",
+        turn_index=2,
+        max_turns=2,
+        barge_in=True,
+    )
+    result = process_telephone_turn(
+        VoiceTurnRequest(
+            transcript="One more question",
+            request_id="telephone-max-turns",
+        ),
+        state,
+    )
+
+    assert result.status == "text_only"
+    assert result.audio is None
+    assert result.provenance.stt_provider == "not_dispatched"
+    assert result.fallback_reasons == (
+        "telephone_max_turns_reached",
+        "telephone_human_escalation",
+    )
+    assert [trace.stage for trace in result.traces] == [
+        "telephone_ingress",
+        "telephone_escalation",
+        "telephone_egress",
+    ]
+    assert result.traces[1].details["reason"] == "maximum_turns_reached"
+    assert result.traces[2].details["delivery"] == "text_only_handoff"
+    receipt = json.dumps(result.to_dict(), sort_keys=True)
+    assert "private-synthetic-provider-call-id" not in receipt
+    assert state.call_id_sha256 in receipt
+
+
 def test_graphrag_adapter_is_injected_and_prompt_is_auditable() -> None:
     row = next(row for row in _golden_rows() if row["case_id"] == "food_current_grounded")
     captured: dict[str, Any] = {}
@@ -404,3 +468,14 @@ def test_legacy_speech_to_text_keeps_plain_string_contract_offline() -> None:
     )
     assert result == "synthetic legacy transcript"
     assert isinstance(result, str)
+
+
+def test_returned_audio_transcript_threshold_rejects_a_changed_fact() -> None:
+    """Whisper or an injected equivalent must match normalized expected text."""
+
+    normalized_expected = "call nine one one now"
+    injected_equivalent_exact = "call nine one one now"
+    changed_fact = "call nine one two now"
+
+    assert _word_error_rate(normalized_expected, injected_equivalent_exact) == 0
+    assert _word_error_rate(normalized_expected, changed_fact) > 0

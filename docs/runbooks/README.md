@@ -10,3 +10,4 @@ This directory contains operational runbooks for the 211-AI platform. Runbooks a
 | `CHAINLINK_ZKML_LLM_ROUTER_RUNBOOK.md` | Chainlink ZK/ML LLM router operational runbook |
 | `WORLD_ID_IDKIT_STAGING_RUNBOOK.md` | World ID IDKit staging environment runbook |
 | `PROVEKIT_ZKP_OPERATIONS.md` | ProveKit ZKP operational procedures |
+| `ABBY_VOICE_PUBLICUS_REGENERATION_SERVICE.md` | Publicus IndexTTS regeneration service, quota backoff, and recovery |

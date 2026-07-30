@@ -54,21 +54,42 @@ from ._tts_gradio import (
 # Credential helpers
 # ---------------------------------------------------------------------------
 
+_HF_TOKEN_ENV_NAMES = (
+    "WALLET_INDEXTTS_HF_TOKEN",
+    "HF_TOKEN",
+    "HUGGINGFACEHUB_API_TOKEN",
+    "IPFS_DATASETS_PY_HF_API_TOKEN",
+    "HUGGINGFACE_API_TOKEN",
+    "HUGGINGFACE_HUB_TOKEN",
+    "HF_API_TOKEN",
+)
+
+
+def _cached_hf_token() -> str:
+    """Read the token written by ``hf auth login`` when available."""
+
+    try:
+        from huggingface_hub import get_token  # noqa: WPS433
+
+        return str(get_token() or "").strip()
+    except (ImportError, OSError, RuntimeError, ValueError):
+        return ""
+
 
 def _configured_hf_token() -> str:
-    if resolve_secret is None:  # pragma: no cover
-        return os.getenv("HF_TOKEN", "").strip()
-    return (
-        resolve_secret(
-            "WALLET_INDEXTTS_HF_TOKEN",
-            "HF_TOKEN",
-            "HUGGINGFACEHUB_API_TOKEN",
-            "IPFS_DATASETS_PY_HF_API_TOKEN",
-            "HUGGINGFACE_API_TOKEN",
-            "HUGGINGFACE_HUB_TOKEN",
-        )
-        or ""
-    ).strip()
+    token = ""
+    if resolve_secret is not None:
+        try:
+            token = str(resolve_secret(*_HF_TOKEN_ENV_NAMES) or "").strip()
+        except (OSError, RuntimeError, ValueError):
+            token = ""
+    if token:
+        return token
+    for name in _HF_TOKEN_ENV_NAMES:
+        token = os.getenv(name, "").strip()
+        if token:
+            return token
+    return _cached_hf_token()
 
 
 def _indextts_headers(*, accept: str = "application/json") -> dict[str, str]:
@@ -110,7 +131,8 @@ def _publicus_indextts_credential_warning() -> dict[str, Any] | None:
         "code": "publicus_indextts_missing_hf_token",
         "message": (
             "Publicus IndexTTS is configured without a Hugging Face token. "
-            "Set WALLET_INDEXTTS_HF_TOKEN or HF_TOKEN and keep X-HF-Bill-To set to the Publicus account."
+            "Set WALLET_INDEXTTS_HF_TOKEN or HF_TOKEN (or run `hf auth login` "
+            "for a host process) and keep X-HF-Bill-To set to the Publicus account."
         ),
         "spaceUrl": _indextts_space_base_url(),
         "modelName": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo"),
@@ -196,20 +218,25 @@ def _run_hf_whisper_stt(
 ) -> dict[str, Any]:
     if not audio:
         raise ValueError("audio is required")
-    if resolve_secret is None:  # pragma: no cover
-        token = os.getenv("HF_TOKEN", "").strip()
-    else:
-        token = (
-            resolve_secret(
-                "WALLET_HF_WHISPER_TOKEN",
-                "IPFS_DATASETS_PY_HF_API_TOKEN",
-                "HF_TOKEN",
-                "HUGGINGFACEHUB_API_TOKEN",
-                "HUGGINGFACE_API_TOKEN",
-                "HUGGINGFACE_HUB_TOKEN",
-            )
-            or ""
-        ).strip()
+    token = ""
+    if resolve_secret is not None:
+        try:
+            token = str(
+                resolve_secret(
+                    "WALLET_HF_WHISPER_TOKEN",
+                    "IPFS_DATASETS_PY_HF_API_TOKEN",
+                    "HF_TOKEN",
+                    "HUGGINGFACEHUB_API_TOKEN",
+                    "HUGGINGFACE_API_TOKEN",
+                    "HUGGINGFACE_HUB_TOKEN",
+                    "HF_API_TOKEN",
+                )
+                or ""
+            ).strip()
+        except (OSError, RuntimeError, ValueError):
+            token = ""
+    if not token:
+        token = _configured_hf_token()
     if not token:
         raise ValueError("Hugging Face token is required for Whisper STT")
     selected_model = _hf_whisper_model_name(model_name)

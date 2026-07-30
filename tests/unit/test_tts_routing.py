@@ -200,6 +200,118 @@ class TestRunIndexttsTtsWithBatchFallback(unittest.TestCase):
         "latency": {"result_path": "batch"},
     }
 
+    def setUp(self):
+        # Legacy compatibility cases below intentionally exercise the
+        # operator-controlled single-first mode.
+        self._package_provider = patch(
+            "wallet_interface.helpers._voice_router_adapter._package_indextts_tts_provider",
+            return_value=None,
+        )
+        self._package_provider.start()
+        self._batch_enabled = patch(
+            "wallet_interface.helpers._tts._indextts_batch_enabled",
+            return_value=False,
+        )
+        self._batch_enabled.start()
+
+    def tearDown(self):
+        self._batch_enabled.stop()
+        self._package_provider.stop()
+
+    def test_public_entry_point_uses_package_batch_and_spoken_normalization(self):
+        from wallet_interface.helpers._tts import _run_indextts_tts_with_batch_fallback
+
+        class _Package:
+            endpoints = ("https://publicus-indextts-2-demo.hf.space",)
+            default_model = "Publicus/IndexTTS-2-Demo"
+            last_receipt = None
+
+            def __init__(self):
+                self.texts = []
+
+            def synthesize_batch(self, texts, **kwargs):
+                self.texts.extend(texts)
+                return (b"RIFF-package-audio",)
+
+        package = _Package()
+        with patch(
+            "wallet_interface.helpers._voice_router_adapter._package_indextts_tts_provider",
+            return_value=package,
+        ), patch(
+            "wallet_interface.helpers._tts._indextts_batch_enabled",
+            return_value=True,
+        ):
+            result = _run_indextts_tts_with_batch_fallback(
+                text="Call (503) 555-1212.",
+            )
+
+        self.assertEqual(result["provider"], "ipfs_accelerate_py-abby-indextts")
+        self.assertEqual(result["latency"]["result_path"], "package-publicus-batch")
+        self.assertEqual(package.texts, [result["text"]])
+        self.assertNotIn("(", result["text"])
+        self.assertNotIn(")", result["text"])
+        self.assertNotIn("-", result["text"])
+
+    def test_uses_publicus_batch_first_when_batch_mode_enabled(self):
+        from wallet_interface.helpers._tts import _run_indextts_tts_with_batch_fallback
+
+        with patch(
+            "wallet_interface.helpers._tts._indextts_batch_enabled",
+            return_value=True,
+        ), patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_batch_tts",
+            return_value=self._BATCH_RESULT,
+        ) as batch_tts, patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_tts",
+        ) as single_tts:
+            result = _run_indextts_tts_with_batch_fallback(text="hello")
+
+        self.assertEqual(result["audioBase64"], "BATCH_FALLBACK")
+        self.assertEqual(result["latency"]["result_path"], "publicus-batch-primary")
+        batch_tts.assert_called_once()
+        single_tts.assert_not_called()
+
+    def test_batch_primary_failure_uses_single_only_when_batch_not_required(self):
+        from wallet_interface.helpers._tts import _run_indextts_tts_with_batch_fallback
+
+        with patch(
+            "wallet_interface.helpers._tts._indextts_batch_enabled",
+            return_value=True,
+        ), patch(
+            "wallet_interface.helpers._tts._indextts_require_batch_mode",
+            return_value=False,
+        ), patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_batch_tts",
+            side_effect=ValueError("batch unavailable"),
+        ), patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_tts",
+            return_value=self._SINGLE_RESULT,
+        ) as single_tts:
+            result = _run_indextts_tts_with_batch_fallback(text="hello")
+
+        self.assertEqual(result["audioBase64"], "SINGLE")
+        single_tts.assert_called_once()
+
+    def test_required_batch_does_not_silently_switch_to_single(self):
+        from wallet_interface.helpers._tts import _run_indextts_tts_with_batch_fallback
+
+        with patch(
+            "wallet_interface.helpers._tts._indextts_batch_enabled",
+            return_value=True,
+        ), patch(
+            "wallet_interface.helpers._tts._indextts_require_batch_mode",
+            return_value=True,
+        ), patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_batch_tts",
+            side_effect=ValueError("batch unavailable"),
+        ), patch(
+            "wallet_interface.helpers._tts._run_indextts_gradio_tts",
+        ) as single_tts:
+            with self.assertRaises(ValueError):
+                _run_indextts_tts_with_batch_fallback(text="hello")
+
+        single_tts.assert_not_called()
+
     def test_returns_single_result_when_single_succeeds(self):
         from wallet_interface.helpers._tts import _run_indextts_tts_with_batch_fallback
 

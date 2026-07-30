@@ -23,6 +23,11 @@ import wave
 from contextlib import contextmanager
 from typing import Any
 
+DEFAULT_INDEXTTS_SPACE_URL = "https://publicus-indextts-2-demo.hf.space"
+DEFAULT_INDEXTTS_FALLBACK_SPACE_URL = "https://indexteam-indextts-2-demo.hf.space"
+DEFAULT_INDEXTTS_MODEL_NAME = "Publicus/IndexTTS-2-Demo"
+DEFAULT_INDEXTTS_FALLBACK_MODEL_NAME = "IndexTeam/IndexTTS-2-Demo"
+
 # ---------------------------------------------------------------------------
 # Thread-local override state
 # ---------------------------------------------------------------------------
@@ -48,11 +53,11 @@ def _indextts_space_base_url() -> str:
     override = str(getattr(_INDEXTTS_ACTIVE_SPACE_URL, "value", "") or "").strip().rstrip("/")
     if override:
         return override
-    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://publicus-indextts-2-demo.hf.space").strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", DEFAULT_INDEXTTS_SPACE_URL).strip().rstrip("/")
 
 
 def _indextts_fallback_space_base_url() -> str:
-    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+    return os.getenv("WALLET_INDEXTTS_FALLBACK_SPACE_URL", DEFAULT_INDEXTTS_FALLBACK_SPACE_URL).strip().rstrip("/")
 
 
 def _indextts_space_base_urls() -> list[str]:
@@ -65,8 +70,8 @@ def _indextts_space_base_urls() -> list[str]:
 
 
 def _indextts_model_name() -> str:
-    primary_model = os.getenv("WALLET_INDEXTTS_MODEL_NAME", "Publicus/IndexTTS-2-Demo").strip()
-    fallback_model = os.getenv("WALLET_INDEXTTS_FALLBACK_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo").strip()
+    primary_model = os.getenv("WALLET_INDEXTTS_MODEL_NAME", DEFAULT_INDEXTTS_MODEL_NAME).strip()
+    fallback_model = os.getenv("WALLET_INDEXTTS_FALLBACK_MODEL_NAME", DEFAULT_INDEXTTS_FALLBACK_MODEL_NAME).strip()
     active_space = _indextts_space_base_url().strip().rstrip("/")
     if active_space and active_space == _indextts_fallback_space_base_url():
         return fallback_model or primary_model
@@ -152,6 +157,13 @@ def _indextts_single_batch_fallback_enabled() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _indextts_batch_enabled() -> bool:
+    """Return whether one-item requests should use Publicus ``gen_batch`` first."""
+
+    value = str(os.getenv("WALLET_INDEXTTS_BATCH_ENABLED", "true")).strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
 def _indextts_require_batch_mode() -> bool:
     if bool(getattr(_INDEXTTS_FORCE_REQUIRE_BATCH, "value", False)):
         return True
@@ -173,7 +185,10 @@ def _hf_whisper_model_name(model_name: str | None = None) -> str:
 def _indextts_attempt_timeout_seconds(space_index: int, total_spaces: int) -> float:
     default_timeout = _indextts_timeout_seconds()
     if total_spaces > 1 and space_index == 0:
-        return min(default_timeout, 20.0)
+        # Publicus ZeroGPU jobs regularly need more than 20 seconds to leave
+        # the queue and synthesize.  Use the configured endpoint budget rather
+        # than prematurely diverting normal traffic to the IndexTeam fallback.
+        return min(default_timeout, _indextts_endpoint_timeout_seconds())
     if total_spaces > 1 and space_index == total_spaces - 1:
         return min(default_timeout, 45.0)
     return default_timeout

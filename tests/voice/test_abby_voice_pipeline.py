@@ -7,8 +7,12 @@ speech service, a GraphRAG deployment, IPFS, or Hugging Face.
 from __future__ import annotations
 
 import base64
+import io
 import json
+import math
+import struct
 import sys
+import wave
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -19,12 +23,15 @@ import pytest
 # package name.  Prefer that checkout over any separately installed copy.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PACKAGE_ROOT = REPO_ROOT / "ipfs_accelerate_py"
+DATASETS_PACKAGE_ROOT = REPO_ROOT / "ipfs_datasets_py"
 sys.path.insert(0, str(PACKAGE_ROOT))
+sys.path.insert(0, str(DATASETS_PACKAGE_ROOT))
 
 from ipfs_accelerate_py.voice_router import (  # noqa: E402
     DEFAULT_GROUNDED_FALLBACK,
     GraphRAGVoiceTemplateProvider,
     GroundedSlot,
+    PrecomputedAudioResolution,
     VoiceGroundingSource,
     VoiceResponsePlan,
     VoiceStageTrace,
@@ -36,6 +43,36 @@ from ipfs_accelerate_py.voice_router import (  # noqa: E402
     speech_to_text,
     text_to_speech,
 )
+from ipfs_datasets_py.voice.hf_release import (  # noqa: E402
+    materialize_response_dag_dry_run,
+)
+from ipfs_datasets_py.voice.response_dag import (  # noqa: E402
+    append_response_dag_candidate,
+)
+
+
+def _valid_test_wav() -> bytes:
+    """Return deterministic PCM audio accepted by the production validator."""
+
+    sample_rate = 16_000
+    frame_count = sample_rate // 4
+    pcm = b"".join(
+        struct.pack(
+            "<h",
+            round(6_000 * math.sin(2 * math.pi * 440 * frame / sample_rate)),
+        )
+        for frame in range(frame_count)
+    )
+    output = io.BytesIO()
+    with wave.open(output, "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(sample_rate)
+        audio.writeframes(pcm)
+    return output.getvalue()
+
+
+VALID_TEST_WAV = _valid_test_wav()
 
 
 @dataclass
@@ -44,7 +81,7 @@ class RecordingSpeechProvider:
 
     name: str
     transcript: str = "I need food assistance near me"
-    audio: bytes = b"RIFF-grounded-abby-audio"
+    audio: bytes = VALID_TEST_WAV
     stt_error: Exception | None = None
     tts_error: Exception | None = None
     calls: list[tuple[str, dict[str, Any]]] = field(default_factory=list)
@@ -206,7 +243,7 @@ def test_full_audio_turn_runs_in_order_and_returns_grounded_receipt() -> None:
     assert result.response_text == (
         "Community Food Network can help. Call 503-555-0111."
     )
-    assert result.audio == b"RIFF-grounded-abby-audio"
+    assert result.audio == VALID_TEST_WAV
     assert result.audio_format == "wav"
     assert result.template_id == "food-frame-v2"
     assert result.intent == "food_assistance"
@@ -334,6 +371,34 @@ def test_retrieval_failure_is_deterministic_visible_and_still_synthesized(
     assert second_tts.calls[-1][1]["text"] == DEFAULT_GROUNDED_FALLBACK
 
 
+def test_graphrag_miss_uses_fallback_llm_slotted_plan_before_tts() -> None:
+    """Fallback LLM providers must return the same grounded slotted plan shape."""
+
+    primary = RecordingTemplateProvider(plan=None)
+    fallback = RecordingTemplateProvider(
+        plan=_grounded_plan(),
+        provider_name="fallback-llm-slotted-template",
+    )
+    tts = RecordingSpeechProvider("abby-tts")
+
+    result = process_voice_turn(
+        VoiceTurnRequest(transcript="food", request_id="turn-fallback-llm-1"),
+        template_provider=primary,
+        fallback_template_provider=fallback,
+        tts_provider=tts,
+    )
+
+    assert result.status == "degraded"
+    assert result.response_text == "Community Food Network can help. Call 503-555-0111."
+    assert result.provenance.template_provider == "fallback-llm-slotted-template"
+    assert result.provenance.template_id == "food-frame-v2"
+    assert result.provenance.grounded_slots
+    assert "template_retrieval_failed" in _fallback_codes(result)
+    assert "fallback_template_provider_used" in _fallback_codes(result)
+    assert _trace_status(result, "fallback_retrieval") == "succeeded"
+    assert tts.calls[-1][1]["text"] == result.response_text
+
+
 def test_tts_failure_returns_text_only_degradation_without_false_audio() -> None:
     tts = RecordingSpeechProvider(
         "tts-down",
@@ -449,7 +514,7 @@ def test_graph_rag_adapter_normalizes_mapping_without_optional_imports() -> None
 
 def test_result_serialization_is_json_safe_and_omits_raw_private_audio() -> None:
     raw_input = b"private-synthetic-input-audio"
-    raw_output = b"RIFF-synthetic-output"
+    raw_output = VALID_TEST_WAV
     result = process_voice_turn(
         VoiceTurnRequest(audio=raw_input, request_id="turn-json-1"),
         stt_provider=RecordingSpeechProvider("abby-stt"),
@@ -473,6 +538,104 @@ def test_result_serialization_is_json_safe_and_omits_raw_private_audio() -> None
     assert result.cache_key
     assert raw_input.hex() not in result.cache_key
     assert result.transcript not in result.cache_key
+
+
+def test_validated_live_tts_miss_stops_at_local_response_dag_dry_run(
+    tmp_path: Path,
+) -> None:
+    """One miss becomes one slotted append receipt without a remote write."""
+
+    class ExactAudioMiss:
+        def resolve(
+            self, *_args: object, **_kwargs: object
+        ) -> PrecomputedAudioResolution:
+            return PrecomputedAudioResolution(
+                status="miss",
+                reason="no_precomputed_candidates",
+                details={"candidate_count": 0},
+            )
+
+    plan = VoiceResponsePlan(
+        template_id="phone-frame-v1",
+        template="Call {phone}.",
+        slots=(GroundedSlot("phone", "503-555-0111", ("food-record",)),),
+        evidence=(_source(),),
+        intent="resource_phone",
+        confidence=0.99,
+    )
+    live_tts = RecordingSpeechProvider(
+        "abby-live-tts",
+        audio=VALID_TEST_WAV,
+    )
+    result = process_voice_turn(
+        VoiceTurnRequest(
+            transcript="What number should I call?",
+            request_id="turn-cache-miss-1",
+            tts_provider="abby-live-tts",
+            tts_model="IndexTTS-2",
+            voice="abby",
+            output_format="wav",
+        ),
+        template_provider=RecordingTemplateProvider(plan=plan),
+        tts_provider=live_tts,
+        audio_resolver=ExactAudioMiss(),
+    )
+
+    event = result.validated_cache_miss_event(
+        validation_receipt_id="asr-round-trip-pass-1",
+        response_id="phone-response-v1",
+    )
+    duplicate = result.validated_cache_miss_event(
+        validation_receipt_id="asr-round-trip-pass-retry",
+        response_id="phone-response-v1",
+    )
+    assert event is not None and duplicate is not None
+    assert event.event_id == duplicate.event_id
+    assert event.ready_for_dag_append is True
+    assert result.transcript not in json.dumps(event.to_dict(), sort_keys=True)
+    assert live_tts.audio.hex() not in json.dumps(event.to_dict(), sort_keys=True)
+
+    candidate = append_response_dag_candidate(
+        event,
+        response_text=result.response_text,
+        audio_descriptor={
+            "byte_length": len(live_tts.audio),
+            "content_sha256": result.provenance.output_audio_sha256,
+            "media_type": "audio/wav",
+            "uri": "hf://datasets/Publicus/211-abby-tts/audio/phone-response-v1.wav",
+        },
+        template_text=plan.template,
+        slot_bindings={
+            "phone": {
+                "source_cids": [result.sources[0].cid],
+                "value": result.provenance.grounded_slots[0].value,
+            }
+        },
+    )
+    receipt = materialize_response_dag_dry_run(
+        candidate,
+        output_dir=tmp_path / "response-dag-release",
+    )
+    receipt_again = materialize_response_dag_dry_run(
+        candidate,
+        output_dir=tmp_path / "response-dag-release-rebuild",
+    )
+
+    assert len(candidate.template_rows) == 1
+    assert len(candidate.vocabulary_rows) == 1
+    assert any("/rows/templates.jsonl" in path for path in candidate.file_payloads())
+    assert any("/rows/vocabulary.jsonl" in path for path in candidate.file_payloads())
+    assert receipt.publication_plan["upload_file_count"] == len(
+        candidate.file_payloads()
+    )
+    assert receipt.to_dict()["publication_status"] == "local_only"
+    assert receipt.to_dict()["remote_write_contacted"] is False
+    assert receipt.to_dict()["remote_writes"] is False
+    assert receipt.receipt_sha256 == receipt_again.receipt_sha256
+    assert (
+        receipt.publication_plan_sha256
+        == receipt_again.publication_plan_sha256
+    )
 
 
 @pytest.mark.parametrize(

@@ -17,13 +17,28 @@ from __future__ import annotations
 
 import base64
 import binascii
+import hashlib
 import os
 from collections.abc import Mapping
 from typing import Any, Final
 
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
-VOICE_ROUTER_ADAPTER_VERSION = "1.0"
+VOICE_ROUTER_ADAPTER_VERSION = "1.2"
+_AUDIO_MIME_TYPES: Final[dict[str, str]] = {
+    "aac": "audio/aac",
+    "flac": "audio/flac",
+    "m4a": "audio/mp4",
+    "mp3": "audio/mpeg",
+    "mpeg": "audio/mpeg",
+    "ogg": "audio/ogg",
+    "opus": "audio/ogg",
+    "wav": "audio/wav",
+    "wave": "audio/wav",
+    "webm": "audio/webm",
+}
+_PACKAGE_INDEXTTS_PROVIDER: object | None = None
+_PACKAGE_INDEXTTS_PROVIDER_KEY: tuple[object, ...] = ()
 
 # Residual discoverability anchors for objective/ABBY-VOICE-G010. Keep the exact
 # evidence phrases stable so embedding/AST scans re-find them on this authorized
@@ -81,6 +96,11 @@ def _text_field(payload: Mapping[str, object], *names: str) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _mapping_field(payload: Mapping[str, object], *names: str) -> dict[str, object]:
+    value = _field(payload, *names)
+    return dict(value) if isinstance(value, Mapping) else {}
 
 
 def _decode_audio(value: object | None) -> bytes | str | None:
@@ -173,6 +193,9 @@ class _WalletTTSProvider:
 
     cache_identity = "wallet-interface-indextts-v1"
 
+    def __init__(self) -> None:
+        self.last_result: dict[str, Any] | None = None
+
     def synthesize(
         self,
         text: str,
@@ -181,13 +204,212 @@ class _WalletTTSProvider:
         model_name: str | None = None,
         device: str | None = None,
         output_format: str | None = None,
+        reference_audio: object | None = None,
+        reference_audio_name: str | None = None,
+        reference_audio_mime_type: str | None = None,
         **_: object,
     ) -> bytes:
-        from ._tts import _run_indextts_tts_with_batch_fallback  # noqa: WPS433
+        from ._tts import (  # noqa: WPS433
+            _run_indextts_compatibility_tts_with_batch_fallback,
+        )
 
-        result = _run_indextts_tts_with_batch_fallback(text=text, voice_description=voice)
+        result = _run_indextts_compatibility_tts_with_batch_fallback(
+            text=text,
+            voice_description=voice,
+            reference_audio=(
+                reference_audio
+                if isinstance(reference_audio, bytes)
+                else None
+            ),
+            reference_audio_name=reference_audio_name,
+            reference_audio_mime_type=reference_audio_mime_type,
+        )
+        self.last_result = dict(result)
         audio, _ = _audio_from_tts_result(result)
         return audio
+
+
+def _package_indextts_tts_provider() -> object | None:
+    """Build the package-owned Publicus provider with wallet credentials."""
+
+    global _PACKAGE_INDEXTTS_PROVIDER
+    global _PACKAGE_INDEXTTS_PROVIDER_KEY
+
+    explicitly_configured = (
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_URLS", "").strip()
+        or os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_URL", "").strip()
+    )
+    if explicitly_configured:
+        configured = explicitly_configured
+    else:
+        from ._tts_config import _indextts_space_base_url  # noqa: WPS433
+
+        configured = _indextts_space_base_url()
+    endpoints: list[str] = []
+    for candidate in configured.replace(",", " ").split():
+        normalized = candidate.strip().rstrip("/")
+        if normalized and normalized not in endpoints:
+            endpoints.append(normalized)
+    from ._tts_http import _configured_hf_token  # noqa: WPS433
+
+    token = _configured_hf_token()
+    token_digest = (
+        hashlib.sha256(token.encode("utf-8")).hexdigest()[:16] if token else ""
+    )
+    provider_key: tuple[object, ...] = (
+        tuple(endpoints),
+        token_digest,
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_MODEL", ""),
+        os.getenv("WALLET_INDEXTTS_MODEL_NAME", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_HF_BILL_TO", ""),
+        os.getenv("WALLET_INDEXTTS_HF_BILL_TO", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_BACKEND", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_REFERENCE_AUDIO", ""),
+        os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_PATH", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH", ""),
+        os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_API_NAME", ""),
+        os.getenv("WALLET_INDEXTTS_API_NAME", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_BATCH_API_NAME", ""),
+        os.getenv("WALLET_INDEXTTS_BATCH_API_NAME", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_FN_INDEX", ""),
+        os.getenv("WALLET_INDEXTTS_FN_INDEX", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_BATCH_FN_INDEX", ""),
+        os.getenv("WALLET_INDEXTTS_BATCH_FN_INDEX", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_TIMEOUT_SECONDS", ""),
+        os.getenv("IPFS_ACCELERATE_PY_ABBY_INDEXTTS_MAX_RETRIES", ""),
+    )
+    if (
+        _PACKAGE_INDEXTTS_PROVIDER is not None
+        and provider_key == _PACKAGE_INDEXTTS_PROVIDER_KEY
+    ):
+        return _PACKAGE_INDEXTTS_PROVIDER
+
+    try:
+        from ipfs_accelerate_py.voice_providers.abby import (  # noqa: WPS433
+            IndexTTSHTTPProvider,
+        )
+
+        _PACKAGE_INDEXTTS_PROVIDER = IndexTTSHTTPProvider.from_environment(
+            endpoints=tuple(endpoints),
+            token=token,
+        )
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError):
+        _PACKAGE_INDEXTTS_PROVIDER = None
+        _PACKAGE_INDEXTTS_PROVIDER_KEY = ()
+        return None
+    _PACKAGE_INDEXTTS_PROVIDER_KEY = provider_key
+    return _PACKAGE_INDEXTTS_PROVIDER
+
+
+class _WalletTTSCompatibilityReceipt:
+    """Receipt emitted when the package provider needed the legacy wallet path."""
+
+    degraded = True
+
+    def __init__(self, package_provider: object, error: Exception) -> None:
+        receipt = getattr(package_provider, "last_receipt", None)
+        to_dict = getattr(receipt, "to_dict", None)
+        try:
+            package_receipt = to_dict() if callable(to_dict) else None
+        except Exception:
+            package_receipt = None
+        self.package_receipt = package_receipt
+        self.error_code = str(
+            getattr(error, "code", "") or error.__class__.__name__
+        )
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "provider": "wallet_indextts_compatibility",
+            "operation": "synthesis",
+            "status": "degraded",
+            "degraded": True,
+            "selected_backend": "wallet_gradio_compatibility",
+            "package_error_code": self.error_code,
+            "package_receipt": self.package_receipt,
+        }
+
+
+class _PackageFirstTTSProvider:
+    """Use package-native Publicus batch synthesis, then the wallet shim."""
+
+    cache_identity = "wallet-package-first-indextts-v2"
+
+    def __init__(self, package_provider: object) -> None:
+        self.package_provider = package_provider
+        self.compatibility_provider = _WalletTTSProvider()
+        self.last_receipt: object | None = None
+        self.last_backend = ""
+        self.last_spoken_text = ""
+
+    def synthesize(
+        self,
+        text: str,
+        *,
+        voice: str | None = None,
+        model_name: str | None = None,
+        device: str | None = None,
+        output_format: str | None = None,
+        **options: object,
+    ) -> bytes:
+        from ._tts_config import _indextts_batch_enabled  # noqa: WPS433
+        from ._tts_normalization import (  # noqa: WPS433
+            _normalize_indextts_spoken_text,
+        )
+
+        spoken_text = _normalize_indextts_spoken_text(text)
+        self.last_spoken_text = spoken_text
+        try:
+            synthesize_batch = getattr(self.package_provider, "synthesize_batch", None)
+            if _indextts_batch_enabled() and callable(synthesize_batch):
+                outputs = synthesize_batch(
+                    [spoken_text],
+                    voice=voice,
+                    model_name=model_name,
+                    device=device,
+                    output_format=output_format,
+                    **options,
+                )
+                if (
+                    not isinstance(outputs, (list, tuple))
+                    or len(outputs) != 1
+                    or not isinstance(outputs[0], bytes)
+                    or not outputs[0]
+                ):
+                    raise TypeError("package IndexTTS batch returned invalid audio")
+                audio = outputs[0]
+                self.last_backend = "package-publicus-batch"
+            else:
+                synthesize = getattr(self.package_provider, "synthesize")
+                audio = synthesize(
+                    spoken_text,
+                    voice=voice,
+                    model_name=model_name,
+                    device=device,
+                    output_format=output_format,
+                    **options,
+                )
+                self.last_backend = "package-indextts-single"
+            if not isinstance(audio, bytes) or not audio:
+                raise TypeError("package IndexTTS returned invalid audio")
+            self.last_receipt = getattr(self.package_provider, "last_receipt", None)
+            return audio
+        except Exception as package_error:
+            audio = self.compatibility_provider.synthesize(
+                text,
+                voice=voice,
+                model_name=model_name,
+                device=device,
+                output_format=output_format,
+                **options,
+            )
+            self.last_receipt = _WalletTTSCompatibilityReceipt(
+                self.package_provider,
+                package_error,
+            )
+            self.last_backend = "wallet-gradio-compatibility"
+            return audio
 
 
 class _WalletResponsePlanProvider:
@@ -226,10 +448,10 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         # generation.  Reusing userPrompt avoids a second paid STT call.  If
         # it is absent and audio exists, the canonical STT provider is used.
         transcript = _text_field(payload, "userPrompt", "user_prompt")
-    context_value = _field(payload, "context")
-    grounding_value = _field(payload, "grounding")
-    context = dict(context_value) if isinstance(context_value, Mapping) else {}
-    grounding = dict(grounding_value) if isinstance(grounding_value, Mapping) else {}
+    context = _mapping_field(payload, "context")
+    grounding = _mapping_field(payload, "grounding")
+    stt_options = _mapping_field(payload, "stt_options", "sttOptions")
+    tts_options = _mapping_field(payload, "tts_options", "ttsOptions")
     return voice_turn_request(
         audio=audio,
         transcript=transcript,
@@ -243,12 +465,15 @@ def build_voice_turn_request(payload: Mapping[str, object]) -> Any:
         tts_provider=_text_field(payload, "tts_provider", "ttsProvider"),
         stt_model=_text_field(payload, "stt_model", "sttModel"),
         tts_model=_text_field(payload, "tts_model", "ttsModel"),
+        device=_text_field(payload, "device"),
         output_format=_text_field(payload, "output_format", "outputFormat"),
         fallback_text=(
             _text_field(payload, "fallbackText", "fallback_text", "response_text", "responseText")
             or _text_field(payload, "text")
             or "I’m sorry, I couldn’t complete that voice request. Please try again."
         ),
+        stt_options=stt_options,
+        tts_options=tts_options,
     )
 
 
@@ -263,7 +488,11 @@ def serialize_voice_turn_result(result: Any, *, include_audio: bool = True) -> d
         payload["audio_base64"] = encoded
         # Keep the camelCase spelling consumed by older wallet proxy clients.
         payload["audioBase64"] = encoded
-        payload["audio_mime_type"] = f"audio/{result.audio_format or 'wav'}"
+        audio_format = str(result.audio_format or "wav").strip().lower().lstrip(".")
+        payload["audio_mime_type"] = _AUDIO_MIME_TYPES.get(
+            audio_format,
+            f"audio/{audio_format}",
+        )
     return payload
 
 
@@ -278,8 +507,10 @@ class WalletVoiceRouterAdapter:
         payload: Mapping[str, object],
         *,
         template_provider: object | None = None,
+        fallback_template_provider: object | None = None,
         stt_provider: object | None = None,
         tts_provider: object | None = None,
+        audio_resolver: object | None = None,
     ) -> dict[str, object] | None:
         if not self.enabled:
             return None
@@ -289,13 +520,22 @@ class WalletVoiceRouterAdapter:
         response_text = request.fallback_text
         provider = template_provider or _WalletResponsePlanProvider(response_text)
         stt = stt_provider or _WalletSTTProvider()
-        tts = tts_provider or _WalletTTSProvider()
+        package_tts = (
+            _package_indextts_tts_provider() if tts_provider is None else None
+        )
+        tts = (
+            tts_provider
+            or (_PackageFirstTTSProvider(package_tts) if package_tts else None)
+            or _WalletTTSProvider()
+        )
         _, _, process_voice_turn = _router_contracts()
         result = process_voice_turn(
             request,
             stt_provider_instance=stt,
             template_provider=provider,
+            fallback_template_provider=fallback_template_provider,
             tts_provider_instance=tts,
+            audio_resolver=audio_resolver,
         )
         return serialize_voice_turn_result(result)
 
@@ -305,16 +545,20 @@ def process_wallet_voice_turn(
     *,
     enabled: bool | None = None,
     template_provider: object | None = None,
+    fallback_template_provider: object | None = None,
     stt_provider: object | None = None,
     tts_provider: object | None = None,
+    audio_resolver: object | None = None,
 ) -> dict[str, object] | None:
     """Process one wallet proxy envelope when the staged flag is enabled."""
 
     return WalletVoiceRouterAdapter(enabled=enabled).process(
         payload,
         template_provider=template_provider,
+        fallback_template_provider=fallback_template_provider,
         stt_provider=stt_provider,
         tts_provider=tts_provider,
+        audio_resolver=audio_resolver,
     )
 
 

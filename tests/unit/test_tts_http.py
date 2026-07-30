@@ -42,10 +42,12 @@ class TestConfiguredHfToken:
         (fn, *_) = _import_tts_http()
         env_keys = [
             "WALLET_INDEXTTS_HF_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN",
-            "IPFS_DATASETS_PY_HF_API_TOKEN", "HUGGINGFACE_API_TOKEN", "HUGGINGFACE_HUB_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN", "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN", "HF_API_TOKEN",
         ]
         with patch.dict(os.environ, {k: "" for k in env_keys}):
-            with patch("wallet_interface.helpers._tts_http.resolve_secret", return_value=None):
+            with patch("wallet_interface.helpers._tts_http.resolve_secret", return_value=None), \
+                 patch("wallet_interface.helpers._tts_http._cached_hf_token", return_value=""):
                 result = fn()
         assert result == ""
 
@@ -63,7 +65,14 @@ class TestConfiguredHfToken:
 
     def test_returns_empty_string_for_none(self):
         (fn, *_) = _import_tts_http()
-        with patch("wallet_interface.helpers._tts_http.resolve_secret", return_value=None):
+        env_keys = [
+            "WALLET_INDEXTTS_HF_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN", "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN", "HF_API_TOKEN",
+        ]
+        with patch.dict(os.environ, {key: "" for key in env_keys}), \
+             patch("wallet_interface.helpers._tts_http.resolve_secret", return_value=None), \
+             patch("wallet_interface.helpers._tts_http._cached_hf_token", return_value=""):
             result = fn()
         assert result == ""
 
@@ -71,9 +80,26 @@ class TestConfiguredHfToken:
         (fn, *_) = _import_tts_http()
         # When resolve_secret is None (dep unavailable), falls back to os.getenv
         with patch("wallet_interface.helpers._tts_http.resolve_secret", None):
-            with patch.dict(os.environ, {"HF_TOKEN": "fallback-token"}):
+            with patch.dict(os.environ, {"HF_TOKEN": "fallback-token"}), \
+                 patch("wallet_interface.helpers._tts_http._cached_hf_token", return_value=""):
                 result = fn()
         assert result == "fallback-token"
+
+    def test_falls_back_to_hf_cli_cached_token(self):
+        (fn, *_) = _import_tts_http()
+        env_keys = [
+            "WALLET_INDEXTTS_HF_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN", "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN", "HF_API_TOKEN",
+        ]
+        with patch.dict(os.environ, {key: "" for key in env_keys}), \
+             patch("wallet_interface.helpers._tts_http.resolve_secret", return_value=None), \
+             patch(
+                 "wallet_interface.helpers._tts_http._cached_hf_token",
+                 return_value="cached-cli-token",
+             ):
+            result = fn()
+        assert result == "cached-cli-token"
 
 
 # ---------------------------------------------------------------------------
