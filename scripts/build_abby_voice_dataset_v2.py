@@ -79,11 +79,15 @@ def _load_input(path: Path) -> Any:
 
 
 def normalize_paths(
-    paths: list[Path], *, config: NormalizationConfig
+    paths: list[Path],
+    *,
+    config: NormalizationConfig,
+    audio_root: Path | None = None,
 ) -> NormalizationResult:
     """Load and normalize paths in stable path order."""
 
     sources = []
+    resolved_audio_root = audio_root.resolve() if audio_root is not None else None
     for path in _discover_inputs(paths):
         raw_bytes = path.read_bytes()
         sources.append(
@@ -91,7 +95,7 @@ def normalize_paths(
                 _load_input(path),
                 _display_path(path),
                 sha256(raw_bytes).hexdigest(),
-                path.parent,
+                resolved_audio_root or path.parent,
             )
         )
     if not sources:
@@ -255,6 +259,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         required=True,
         help="Local output directory. No remote state is changed.",
     )
+    parser.add_argument(
+        "--audio-root",
+        type=Path,
+        help=(
+            "Base directory for relative audio paths in every input manifest. "
+            "Defaults to each manifest's parent directory."
+        ),
+    )
     parser.add_argument("--locale", default="en-US")
     parser.add_argument("--license-id", default="NOASSERTION")
     parser.add_argument(
@@ -302,12 +314,20 @@ def main(argv: list[str] | None = None) -> int:
         require_audio=args.require_audio,
         require_grounding_for_claims=not args.allow_ungrounded_claims,
     )
-    result = normalize_paths(input_paths, config=config)
+    result = normalize_paths(
+        input_paths,
+        config=config,
+        audio_root=args.audio_root,
+    )
     manifest = write_dataset(result, args.output_dir)
     if args.check or args.check_idempotence:
         validate_build(result, args.output_dir, manifest)
     if args.check_idempotence:
-        rerun = normalize_paths(input_paths, config=config)
+        rerun = normalize_paths(
+            input_paths,
+            config=config,
+            audio_root=args.audio_root,
+        )
         if render_artifacts(result) != render_artifacts(rerun):
             raise RuntimeError("normalization is not byte-identical on rerun")
         if _manifest_for(result, render_artifacts(result)) != _manifest_for(

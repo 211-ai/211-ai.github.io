@@ -2046,9 +2046,15 @@ class SyntheticTelephoneTTS:
         self.spoken.append(text)
         if self.fail_with_timeout:
             raise TimeoutError("synthetic telephone provider timeout")
-        # The fully synthetic fixture makes the provider input recoverable
-        # from its output so the asserted audio transcript is deterministic.
-        return b"RIFF\x00\x00\x00\x00WAVE" + text.encode("utf-8")
+        # Keep the fixture decodable by the production audio-quality gate while
+        # retaining the provider input in an ignored RIFF metadata chunk.  The
+        # previous header-only pseudo-WAV was correctly rejected after the
+        # router began validating every live/fallback TTS boundary.
+        payload = build_minimal_wav(frames=3_600, amplitude=9_000)
+        encoded = text.encode("utf-8")
+        padding = b"\x00" if len(encoded) % 2 else b""
+        payload += b"JUNK" + len(encoded).to_bytes(4, "little") + encoded + padding
+        return payload[:4] + (len(payload) - 8).to_bytes(4, "little") + payload[8:]
 
     def transcribe(self, audio: object, **kwargs: object) -> str:
         raise AssertionError("telephone fixture injects text at the ASR boundary")
@@ -2101,8 +2107,11 @@ class SyntheticTelephonePlans:
 
 
 def _synthetic_telephone_audio_text(audio: bytes) -> str:
-    assert audio.startswith(b"RIFF\x00\x00\x00\x00WAVE")
-    return audio[12:].decode("utf-8")
+    assert audio.startswith(b"RIFF") and audio[8:12] == b"WAVE"
+    marker = audio.rfind(b"JUNK")
+    assert marker >= 12
+    text_length = int.from_bytes(audio[marker + 4 : marker + 8], "little")
+    return audio[marker + 8 : marker + 8 + text_length].decode("utf-8")
 
 
 def _assert_no_telephone_audio_markers(text: str) -> None:
