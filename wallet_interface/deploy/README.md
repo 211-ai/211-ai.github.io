@@ -220,6 +220,12 @@ ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL=https://huggingface.co/datasets/Publ
 WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL=https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/<pinned-commit-sha>/data/abby_voice_v2/<release-id>/metadata/runtime-precomputed-audio-manifest.json
 WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS=15
 WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS=60
+WALLET_ABBY_VOICE_GRAPHRAG_MINIMUM_CONFIDENCE=0.35
+IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_QUEUE_ROOT=/var/lib/211-ai/abby-response-dag
+IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_PROVIDER=abby_whisper
+IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_MODEL=openai/whisper-base
+IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_LANGUAGE=en
+IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_MAX_WER_BP=0
 ```
 
 The container startup script and Pages workflow reject Hugging Face manifest
@@ -227,6 +233,17 @@ URLs that do not pin a 40-64 character commit SHA. Leave the variable empty
 until the approved append-only release has produced its immutable commit. Set
 the browser `ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL` and server
 `WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL` to the exact same release manifest.
+That manifest also selects the same release's GraphRAG index; a hit above
+`WALLET_ABBY_VOICE_GRAPHRAG_MINIMUM_CONFIDENCE` is used before the LLM
+fallback.
+
+On a GraphRAG and precomputed-audio miss, the server may synthesize a response
+through the Publicus IndexTTS backend. The generated audio is independently
+transcribed and compared with the expected text before it is appended to the
+private, content-addressed response-DAG queue. The queue and validated audio
+live under the existing `/var/lib/211-ai` durable volume. No request handler
+writes to Hugging Face: a separately reviewed operator or supervisor release
+job drains these candidates into a later append-only dataset release.
 
 When the same-origin wallet bridge targets the Publicus IndexTTS Space, set a
 Hugging Face token for the bridge in addition to the Space URL. The wallet API

@@ -155,10 +155,38 @@ def test_precomputed_audio_runtime_config_is_effective_and_explicit() -> None:
     assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL:" in compose
     assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS:-15" in compose
     assert "WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS:-60" in compose
+    assert "WALLET_ABBY_VOICE_GRAPHRAG_MINIMUM_CONFIDENCE:-0.35" in compose
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_QUEUE_ROOT:"
+        " ${IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_QUEUE_ROOT:"
+        "-/var/lib/211-ai/abby-response-dag}"
+    ) in compose
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_PROVIDER:"
+        " ${IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_PROVIDER:"
+        "-abby_whisper}"
+    ) in compose
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_MAX_WER_BP:"
+        " ${IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_MAX_WER_BP:-0}"
+    ) in compose
     assert 'ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL: ""' in config_map
     assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_URL: ""' in config_map
     assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_TIMEOUT_SECONDS: "15"' in config_map
     assert 'WALLET_ABBY_VOICE_RUNTIME_MANIFEST_RETRY_SECONDS: "60"' in config_map
+    assert 'WALLET_ABBY_VOICE_GRAPHRAG_MINIMUM_CONFIDENCE: "0.35"' in config_map
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_QUEUE_ROOT:"
+        " /var/lib/211-ai/abby-response-dag"
+    ) in config_map
+    assert (
+        "IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_PROVIDER:"
+        " abby_whisper"
+    ) in config_map
+    assert (
+        'IPFS_ACCELERATE_PY_ABBY_RESPONSE_DAG_VALIDATOR_MAX_WER_BP: "0"'
+        in config_map
+    )
     assert "key: ABBY_RUNTIME_PRECOMPUTED_AUDIO_MANIFEST_URL" in ui_deployment
     assert "vars.ABBY_PAGES_PRECOMPUTED_AUDIO_MANIFEST_URL" in workflow
     assert "configure_precomputed_audio_runtime.mjs" in workflow
