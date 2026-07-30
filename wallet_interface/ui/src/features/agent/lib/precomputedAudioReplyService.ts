@@ -49,8 +49,8 @@ export interface PrecomputedAudioReplyMatch {
 }
 
 const LOCAL_PRECOMPUTED_AUDIO_MANIFEST_URL = "/assets/audio/precomputed/211-dag-indextts/manifest.json";
-const DEFAULT_REMOTE_PRECOMPUTED_AUDIO_MANIFEST_URL =
-  "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/main/audio/abby-tts/current/metadata/abby_tts_runtime_manifest.json";
+const PINNED_HUGGING_FACE_REVISION = /^[0-9a-f]{40,64}$/i;
+const URL_VALIDATION_BASE = "https://local.invalid/";
 
 let manifestPromise: Promise<PreparedPrecomputedAudioEntry[] | undefined> | undefined;
 
@@ -129,7 +129,7 @@ async function loadFirstAvailableManifest(urls: string[]): Promise<PreparedPreco
         throw new Error(`Precomputed audio manifest unavailable (${response.status}) at ${manifestUrl}`);
       }
       const manifest = (await response.json()) as PrecomputedAudioManifest;
-      return prepareManifestEntries(manifest.responses || []);
+      return prepareManifestEntries(manifest.responses || [], manifestUrl);
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error || `Failed to load ${manifestUrl}`));
     }
@@ -143,17 +143,29 @@ async function loadFirstAvailableManifest(urls: string[]): Promise<PreparedPreco
 function getPrecomputedAudioManifestUrls(): string[] {
   const runtimeUrl = readRuntimePrecomputedAudioManifestUrl();
   const envUrl = normalizeOptionalString(import.meta.env?.VITE_ABBY_TTS_MANIFEST_URL as string | undefined);
-  return dedupeStrings(
-    [runtimeUrl, envUrl, DEFAULT_REMOTE_PRECOMPUTED_AUDIO_MANIFEST_URL, LOCAL_PRECOMPUTED_AUDIO_MANIFEST_URL].filter(
+  const requestedUrls = dedupeStrings(
+    [runtimeUrl, envUrl, LOCAL_PRECOMPUTED_AUDIO_MANIFEST_URL].filter(
       (value): value is string => Boolean(value),
     ),
   );
+  return requestedUrls.filter((value) => {
+    const safe = isSafePrecomputedAudioManifestUrl(value);
+    if (!safe) {
+      console.warn(
+        "Ignoring mutable or unsupported precomputed-audio manifest URL; configure a pinned Hugging Face commit SHA.",
+      );
+    }
+    return safe;
+  });
 }
 
-function prepareManifestEntries(entries: PrecomputedAudioManifestEntry[]): PreparedPrecomputedAudioEntry[] {
+function prepareManifestEntries(
+  entries: PrecomputedAudioManifestEntry[],
+  manifestUrl: string,
+): PreparedPrecomputedAudioEntry[] {
   return entries
     .map((entry) => {
-      const resolvedAudioUrl = resolveAudioUrl(entry);
+      const resolvedAudioUrl = resolveAudioUrl(entry, manifestUrl);
       if (!resolvedAudioUrl) {
         return undefined;
       }
@@ -179,16 +191,52 @@ function prepareManifestEntries(entries: PrecomputedAudioManifestEntry[]): Prepa
     .filter((entry): entry is PreparedPrecomputedAudioEntry => Boolean(entry));
 }
 
-function resolveAudioUrl(entry: PrecomputedAudioManifestEntry): string | undefined {
+function resolveAudioUrl(entry: PrecomputedAudioManifestEntry, manifestUrl: string): string | undefined {
   const candidate = entry.preferredAudioUrl || entry.mp3Url || entry.audioUrl;
   if (!candidate?.trim()) {
     return undefined;
   }
+  return resolvePrecomputedAudioUrl(candidate, manifestUrl);
+}
+
+export function resolvePrecomputedAudioUrl(candidate: string, manifestUrl: string): string {
   try {
-    return new URL(candidate, document.baseURI).toString();
+    const manifestBase = new URL(
+      manifestUrl,
+      typeof document === "undefined" ? URL_VALIDATION_BASE : document.baseURI,
+    );
+    return new URL(candidate, manifestBase).toString();
   } catch {
     return candidate;
   }
+}
+
+export function isSafePrecomputedAudioManifestUrl(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return false;
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(
+      trimmed,
+      typeof document === "undefined" ? URL_VALIDATION_BASE : document.baseURI,
+    );
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    return false;
+  }
+  if (parsed.hostname.toLowerCase() !== "huggingface.co") {
+    return true;
+  }
+  const pathParts = parsed.pathname.split("/").filter(Boolean);
+  const resolveIndex = pathParts.indexOf("resolve");
+  if (resolveIndex < 0 || resolveIndex + 1 >= pathParts.length) {
+    return false;
+  }
+  return PINNED_HUGGING_FACE_REVISION.test(decodeURIComponent(pathParts[resolveIndex + 1]));
 }
 
 function hasMatchingRoute(entryRoutes: Set<string>, routeHints: Set<string>): boolean {

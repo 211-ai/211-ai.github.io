@@ -15,6 +15,10 @@ import {
   voiceTurnResultText,
 } from "../src/features/agent/lib/voiceTurnResult";
 import { ClientAudioReplyService } from "../src/features/agent/lib/clientAudioReplyService";
+import {
+  isSafePrecomputedAudioManifestUrl,
+  resolvePrecomputedAudioUrl,
+} from "../src/features/agent/lib/precomputedAudioReplyService";
 
 const AUDIO_BYTES = createMinimalWav();
 const AUDIO_BASE64 = AUDIO_BYTES.toString("base64");
@@ -54,6 +58,27 @@ function createMinimalWav(): Buffer {
  * wallet_interface/tests/test_voice_router_adapter.py (outside task-owned paths).
  */
 test.describe("unified wallet voice-turn receipt", () => {
+  test("requires immutable Hugging Face audio manifests and preserves their pinned base", () => {
+    const revision = "a".repeat(40);
+    const manifestUrl =
+      `https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/${revision}` +
+      "/data/abby_voice_v2/release-1/metadata/runtime-precomputed-audio-manifest.json";
+
+    expect(
+      isSafePrecomputedAudioManifestUrl(
+        "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/main/manifest.json",
+      ),
+    ).toBe(false);
+    expect(isSafePrecomputedAudioManifestUrl(manifestUrl)).toBe(true);
+    expect(isSafePrecomputedAudioManifestUrl("/assets/audio/local/manifest.json")).toBe(true);
+    expect(
+      resolvePrecomputedAudioUrl("../assets/audio/abby-tts-safe.mp3", manifestUrl),
+    ).toBe(
+      `https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/${revision}` +
+        "/data/abby_voice_v2/release-1/assets/audio/abby-tts-safe.mp3",
+    );
+  });
+
   test("focused tests cover provenance for the canonical receipt and decode audio", async () => {
     expect(FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM).toBe("focused tests cover provenance");
 

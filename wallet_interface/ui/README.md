@@ -377,10 +377,16 @@ config can override Abby's precomputed audio manifest at runtime with:
 ```json
 {
   "precomputedAudio": {
-    "manifestUrl": "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/main/audio/abby-tts/current/metadata/abby_tts_runtime_manifest.json"
+    "manifestUrl": "https://huggingface.co/datasets/Publicus/211-abby-tts/resolve/<pinned-commit-sha>/data/abby_voice_v2/<release-id>/metadata/runtime-precomputed-audio-manifest.json"
   }
 }
 ```
+
+Hugging Face manifest URLs must use the immutable commit SHA returned by the
+append-only release publication. Mutable revisions such as `main`, `master`,
+and `latest` are rejected by the client. Relative audio paths in the manifest
+resolve against that pinned manifest URL, keeping every fetched clip on the
+same reviewed release.
 
 The UI is mobile-first and also includes desktop layouts. The mobile home screen
 keeps the required primary actions as two cards: "Emergency contacts" followed
