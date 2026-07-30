@@ -2635,7 +2635,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-041 Implement Crypto IR compliance objective: Build lineage-safe partitions and retrieval fences
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
