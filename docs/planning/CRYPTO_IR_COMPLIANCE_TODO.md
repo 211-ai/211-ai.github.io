@@ -2505,7 +2505,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-039 Implement Crypto IR compliance objective: Implement bounded inert Solidity parsing and normalization
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
