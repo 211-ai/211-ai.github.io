@@ -1524,7 +1524,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-024 Implement Crypto IR compliance objective: Implement World Chain contract and World ID verifier semantics
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
