@@ -38,6 +38,8 @@ CODEX_STATE_PREFIX="crypto_ir_compliance_codex"
 GROK_STATE_PREFIX="crypto_ir_compliance_grok"
 CODEX_LOG="${LOG_DIR}/codex-supervisor.log"
 GROK_LOG="${LOG_DIR}/grok-supervisor.log"
+CODEX_SERVICE_UNIT="crypto-ir-compliance-codex"
+GROK_SERVICE_UNIT="crypto-ir-compliance-grok"
 
 TASK_HEADER_PREFIX="## CRYPTOIR-"
 TASK_ID_PREFIX="CRYPTOIR-"
@@ -449,6 +451,35 @@ common_supervisor_args() {
     --log-level INFO
 }
 
+launch_durable_lane() {
+  local service_unit="$1"
+  local log_path="$2"
+  shift 2
+  local environment_name=""
+  local python_executable=""
+  local -a environment_args=()
+  python_executable="$(command -v "${PYTHON_BIN}")"
+  require_executable "${python_executable}"
+  for environment_name in \
+    PATH HOME PYTHONPATH PYTHONDONTWRITEBYTECODE PYTHONHASHSEED \
+    IPFS_ACCELERATE_DUCKDB_ONLY IPFS_ACCEL_SKIP_CORE IPFS_KIT_DISABLE \
+    IPFS_DATASETS_AUTO_INSTALL IPFS_AUTO_INSTALL \
+    IPFS_DATASETS_PY_MINIMAL_IMPORTS \
+    IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER \
+    IPFS_ACCELERATE_AGENT_GROK_BIN IPFS_ACCELERATE_AGENT_GROK_MODEL; do
+    if [[ -v "${environment_name}" ]]; then
+      environment_args+=(--pass-env "${environment_name}")
+    fi
+  done
+  "${PYTHON_BIN}" \
+    -m ipfs_accelerate_py.agent_supervisor.durable_process \
+    --unit "${service_unit}" \
+    --working-directory "${REPO_ROOT}" \
+    --log-path "${log_path}" \
+    "${environment_args[@]}" \
+    -- "${python_executable}" "$@"
+}
+
 reconcile_lane() {
   local label="$1"
   local state_dir="$2"
@@ -534,12 +565,11 @@ start_codex_lane() {
     --generated-dirty-path docs/planning/CRYPTO_IR_COMPLIANCE_TODO.md
     --generated-dirty-path data/crypto_ir_compliance/agent_supervisor
   )
-  (
-    cd "${REPO_ROOT}"
-    nohup setsid --fork "${PYTHON_BIN}" \
-      -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" </dev/null >>"${CODEX_LOG}" 2>&1 &
-  )
+  launch_durable_lane \
+    "${CODEX_SERVICE_UNIT}" \
+    "${CODEX_LOG}" \
+    -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
+    "${args[@]}"
 }
 
 start_grok_lane() {
@@ -553,13 +583,14 @@ start_grok_lane() {
     --no-objective-goal-migration
   )
   (
-    cd "${REPO_ROOT}"
-    IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER=grok-build \
-    IPFS_ACCELERATE_AGENT_GROK_BIN="${GROK_BIN}" \
-    IPFS_ACCELERATE_AGENT_GROK_MODEL="${GROK_MODEL}" \
-    nohup setsid --fork "${PYTHON_BIN}" \
+    export IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER=grok-build
+    export IPFS_ACCELERATE_AGENT_GROK_BIN="${GROK_BIN}"
+    export IPFS_ACCELERATE_AGENT_GROK_MODEL="${GROK_MODEL}"
+    launch_durable_lane \
+      "${GROK_SERVICE_UNIT}" \
+      "${GROK_LOG}" \
       -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" </dev/null >>"${GROK_LOG}" 2>&1 &
+      "${args[@]}"
   )
 }
 
@@ -674,23 +705,53 @@ write_health_snapshot() {
   "${PYTHON_BIN}" - \
     "${tmp_path}" "${healthy}" "${MERGE_TARGET_BRANCH}" \
     "${TODO_PATH#${REPO_ROOT}/}" "${GRAPH_PATH#${REPO_ROOT}/}" \
+    "${TODO_PATH}" "${GRAPH_PATH}" "${TASK_HEADER_PREFIX}" \
     "${repository_commit}" "${datasets_commit}" \
     "${codex_supervisor_pid}" "${codex_daemon_pid}" "${grok_supervisor_pid}" "${grok_daemon_pid}" \
     "$([[ -f "${CODEX_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" \
     "$([[ -f "${GROK_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" <<'PY'
+import collections
 import json
 import pathlib
+import re
 import sys
 from datetime import datetime, timezone
 
+from ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_daemon import (
+    parse_task_file,
+)
+
 (
-    output, healthy, branch, board, graph, repository_commit, datasets_commit,
+    output, healthy, branch, board, graph,
+    board_source, graph_source, task_header_prefix,
+    repository_commit, datasets_commit,
     codex_supervisor, codex_daemon, grok_supervisor, grok_daemon,
     codex_incident, grok_incident,
 ) = sys.argv[1:]
 
 def pid(value):
     return None if value == "null" else int(value)
+
+tasks = parse_task_file(pathlib.Path(board_source), task_header_prefix)
+status_counts = collections.Counter(
+    str(task.status).strip().lower().replace(" ", "_")
+    for task in tasks
+)
+planned_tasks = []
+for task in tasks:
+    match = re.fullmatch(r"CRYPTOIR-(\d+)", task.task_id)
+    if match and int(match.group(1)) <= 46:
+        planned_tasks.append(task)
+planned_status_counts = collections.Counter(
+    str(task.status).strip().lower().replace(" ", "_")
+    for task in planned_tasks
+)
+try:
+    objective_graph = json.loads(
+        pathlib.Path(graph_source).read_text(encoding="utf-8")
+    )
+except (OSError, TypeError, ValueError):
+    objective_graph = {}
 
 payload = {
     "schema": "crypto-ir-contract-compliance-supervisor-health/v1",
@@ -702,6 +763,37 @@ payload = {
     "source": {
         "repository_commit": repository_commit or None,
         "ipfs_datasets_py_commit": datasets_commit or None,
+    },
+    "implementation_progress": {
+        "authority": "task_board",
+        "total": len(tasks),
+        "completed": status_counts["completed"],
+        "todo": status_counts["todo"],
+        "in_progress": status_counts["in_progress"],
+        "blocked": status_counts["blocked"],
+        "completed_percent": round(
+            100 * status_counts["completed"] / len(tasks), 1
+        ) if tasks else 0.0,
+        "planned_scope": {
+            "task_id_range": "CRYPTOIR-001..CRYPTOIR-046",
+            "total": len(planned_tasks),
+            "completed": planned_status_counts["completed"],
+            "completed_percent": round(
+                100 * planned_status_counts["completed"] / len(planned_tasks),
+                1,
+            ) if planned_tasks else 0.0,
+        },
+    },
+    "objective_lifecycle": {
+        "authority": "proof-gated_objective_graph",
+        "completion_reconciliation_enabled": False,
+        "verification_state": "unverified",
+        "generated_at": objective_graph.get("generated_at"),
+        "goal_count": objective_graph.get("goal_count"),
+        "active_goal_count": objective_graph.get("active_goal_count"),
+        "verified_completed_goal_count": objective_graph.get(
+            "completed_goal_count"
+        ),
     },
     "codex": {
         "provider": "chatgpt-codex",
