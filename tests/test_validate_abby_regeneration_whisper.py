@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from hashlib import sha256
 from pathlib import Path
 
 import pytest
 
 from scripts.validate_abby_regeneration_whisper import (
+    DEFAULT_MANIFEST,
     ITEM_SCHEMA,
     _transcribe_resiliently,
     load_receipt_events,
@@ -373,5 +375,27 @@ def test_semantic_corruption_prevents_all_passed_receipt(
     )
     assert receipt["all_passed"] is False
     assert receipt["semantic_corruption_count"] == 1
+    assert receipt["semantic_override_exclusion_count"] == 1
+    assert receipt[
+        "semantic_corruption_unique_audio_ids_sha256"
+    ] == sha256(b"item-0\n").hexdigest()
     assert semantic["corruption_count"] == 1
+    assert semantic["unique_audio_ids_sha256"] == sha256(
+        b"item-0\n"
+    ).hexdigest()
     assert text not in json.dumps(semantic)
+
+
+def test_canonical_regeneration_semantic_override_inventory() -> None:
+    payload = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
+
+    items = semantic_corruption_items(
+        list(enumerate(payload["responses"]))
+    )
+
+    assert len(items) == 42
+    assert len({item["audio_id"] for item in items}) == 42
+    assert Counter(reason for item in items for reason in item["reasons"]) == {
+        "apostrophe_direction_expansion": 9,
+        "st_abbreviation_expanded_to_street": 33,
+    }

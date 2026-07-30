@@ -1008,6 +1008,12 @@ def run_validation(
                     "st_abbreviation_expanded_to_street",
                 )
             }
+            semantic_ids = sorted(item["audio_id"] for item in semantic_items)
+            if len(semantic_ids) != len(set(semantic_ids)):
+                raise ValueError("semantic corruption scan produced duplicate IDs")
+            semantic_ids_digest = sha256(
+                (("\n".join(semantic_ids) + "\n") if semantic_ids else "").encode()
+            ).hexdigest()
             semantic_manifest = {
                 "corruption_count": len(semantic_items),
                 "items": semantic_items,
@@ -1018,6 +1024,7 @@ def run_validation(
                     "confirmed_abbreviation_and_apostrophe_direction_rules_v2"
                 ),
                 "schema_version": SEMANTIC_CORRUPTION_SCHEMA,
+                "unique_audio_ids_sha256": semantic_ids_digest,
             }
             atomic_write_json(
                 artifacts["semantic_corruptions"], semantic_manifest
@@ -1109,6 +1116,10 @@ def run_validation(
                     semantic_manifest_digest
                 ),
                 "semantic_corruption_reason_counts": semantic_reason_counts,
+                "semantic_corruption_unique_audio_ids_sha256": (
+                    semantic_ids_digest
+                ),
+                "semantic_override_exclusion_count": len(semantic_items),
                 "shard_count": shard_count,
                 "shard_index": shard_index,
                 "validation_receipt_id": (

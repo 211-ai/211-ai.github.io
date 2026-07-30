@@ -136,6 +136,33 @@ def _build_failure_subset(
         base.get("semantic_corruption_count") or 0
     ):
         raise ValueError("semantic-corruption count differs from base receipt")
+    semantic_items = semantic.get("items")
+    if not isinstance(semantic_items, list):
+        raise ValueError("semantic-corruption manifest has no item list")
+    semantic_ids = sorted(
+        str(item.get("audio_id") or "")
+        for item in semantic_items
+        if isinstance(item, dict)
+    )
+    if (
+        len(semantic_ids) != len(semantic_items)
+        or any(not audio_id for audio_id in semantic_ids)
+        or len(semantic_ids) != len(set(semantic_ids))
+    ):
+        raise ValueError("semantic-corruption manifest IDs are invalid")
+    semantic_ids_digest = sha256(
+        (("\n".join(semantic_ids) + "\n") if semantic_ids else "").encode()
+    ).hexdigest()
+    if semantic.get("unique_audio_ids_sha256") != semantic_ids_digest:
+        raise ValueError("semantic-corruption unique-ID hash is invalid")
+    if base.get(
+        "semantic_corruption_unique_audio_ids_sha256"
+    ) != semantic_ids_digest:
+        raise ValueError("semantic-corruption unique-ID hash differs from base")
+    if int(base.get("semantic_override_exclusion_count") or 0) != len(
+        semantic_ids
+    ):
+        raise ValueError("semantic override count differs from base receipt")
 
     rows = manifest.get("responses")
     if not isinstance(rows, list):
@@ -346,6 +373,19 @@ def build_adjudication_receipt(
         for item in semantic_items
         if isinstance(item, dict)
     }
+    semantic_ids_digest = sha256(
+        (
+            ("\n".join(sorted(semantic_ids)) + "\n")
+            if semantic_ids
+            else ""
+        ).encode()
+    ).hexdigest()
+    if semantic.get("unique_audio_ids_sha256") != semantic_ids_digest:
+        raise ValueError("semantic-corruption unique-ID hash is invalid")
+    if base.get(
+        "semantic_corruption_unique_audio_ids_sha256"
+    ) != semantic_ids_digest:
+        raise ValueError("semantic-corruption unique-ID hash differs from base")
 
     rows = subset.get("responses")
     if not isinstance(rows, list) or len(rows) != int(
@@ -465,6 +505,8 @@ def build_adjudication_receipt(
         "semantic_corruption_ids": sorted(semantic_ids),
         "semantic_corruption_manifest": _display_path(semantic_path),
         "semantic_corruption_manifest_sha256": _sha256_path(semantic_path),
+        "semantic_corruption_unique_audio_ids_sha256": semantic_ids_digest,
+        "semantic_override_exclusion_count": len(semantic_ids),
         "still_failed_count": len(failed_ids),
         "still_failed_ids": failed_ids,
         "stronger_model_name": stronger_model_name,

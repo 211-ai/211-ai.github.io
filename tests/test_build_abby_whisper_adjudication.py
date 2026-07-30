@@ -72,6 +72,7 @@ def _base_evidence(tmp_path: Path, count: int = 5) -> tuple[Path, Path, Path]:
         },
     )
     semantic_path = tmp_path / "semantic-corruptions.json"
+    semantic_ids_digest = sha256(b"audio-0\n").hexdigest()
     atomic_write_json(
         semantic_path,
         {
@@ -98,6 +99,7 @@ def _base_evidence(tmp_path: Path, count: int = 5) -> tuple[Path, Path, Path]:
                 "confirmed_abbreviation_and_apostrophe_direction_rules_v2"
             ),
             "schema_version": SEMANTIC_CORRUPTION_SCHEMA,
+            "unique_audio_ids_sha256": semantic_ids_digest,
         },
     )
     receipt_path = tmp_path / "base-receipt.json"
@@ -121,6 +123,10 @@ def _base_evidence(tmp_path: Path, count: int = 5) -> tuple[Path, Path, Path]:
             "semantic_corruption_count": 1,
             "semantic_corruption_manifest": str(semantic_path),
             "semantic_corruption_manifest_sha256": _digest(semantic_path),
+            "semantic_corruption_unique_audio_ids_sha256": (
+                semantic_ids_digest
+            ),
+            "semantic_override_exclusion_count": 1,
         },
     )
     return manifest_path, receipt_path, failure_path
