@@ -2830,7 +2830,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-044 Implement Crypto IR compliance objective: Implement bounded formal-learning runs and checkpoint receipts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
