@@ -2960,7 +2960,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-046 Implement Crypto IR compliance objective: Add the advisory Crypto IR bridge and deterministic release gate
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
