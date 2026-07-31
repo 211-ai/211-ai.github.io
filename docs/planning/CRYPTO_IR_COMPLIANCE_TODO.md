@@ -2895,7 +2895,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-045 Implement Crypto IR compliance objective: Evaluate leakage, grounding, abstention, and prover agreement
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
