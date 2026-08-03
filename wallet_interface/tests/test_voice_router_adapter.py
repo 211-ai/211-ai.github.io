@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import base64
+import io
+import struct
+import wave
 
 from ipfs_accelerate_py.voice_router import VoiceResponsePlan
 from wallet_interface.helpers._voice_router_adapter import (
@@ -14,13 +17,30 @@ from wallet_interface.helpers._voice_router_adapter import (
 )
 
 
+def _minimal_wav(*, frames: int = 160, sample_rate: int = 16_000) -> bytes:
+    """Return a tiny PCM WAV the voice-router decode gate accepts."""
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as handle:
+        handle.setnchannels(1)
+        handle.setsampwidth(2)
+        handle.setframerate(sample_rate)
+        samples = b"".join(
+            struct.pack("<h", 1_000 if index % 2 else -1_000) for index in range(frames)
+        )
+        handle.writeframes(samples)
+    return buffer.getvalue()
+
+
+_VALID_TTS_AUDIO = _minimal_wav()
+
+
 class _TTS:
     def __init__(self) -> None:
         self.texts: list[str] = []
 
     def synthesize(self, text: str, **_: object) -> bytes:
         self.texts.append(text)
-        return b"RIFF-unified-wallet-audio"
+        return _VALID_TTS_AUDIO
 
 
 class _Templates:
@@ -73,7 +93,7 @@ def test_enabled_adapter_returns_canonical_receipt_and_audio_wire_field() -> Non
     assert payload["voice_router"] is True
     assert payload["status"] == "completed"
     assert payload["response_text"] == "A safe response for the caller."
-    assert payload["audio_base64"] == base64.b64encode(b"RIFF-unified-wallet-audio").decode("ascii")
+    assert payload["audio_base64"] == base64.b64encode(_VALID_TTS_AUDIO).decode("ascii")
     assert payload["audioBase64"] == payload["audio_base64"]
     assert payload["provenance"]["template_id"] == "wallet-test-response"  # type: ignore[index]
     assert [trace["stage"] for trace in payload["traces"]] == [  # type: ignore[index]
@@ -143,7 +163,7 @@ def test_adapter_prefers_compatible_package_provider(monkeypatch) -> None:
 
         def synthesize_batch(self, texts: list[str], **_: object) -> tuple[bytes, ...]:
             self.batches.append(list(texts))
-            return (b"RIFF-package-publicus-batch",)
+            return (_VALID_TTS_AUDIO,)
 
     package_tts = _PackageTTS()
     monkeypatch.setattr(
@@ -175,13 +195,13 @@ def test_package_failure_uses_wallet_gradio_compatibility_provider(monkeypatch) 
 
     monkeypatch.setattr(
         "wallet_interface.helpers._voice_router_adapter._WalletTTSProvider.synthesize",
-        lambda self, text, **options: b"RIFF-wallet-compatibility",
+        lambda self, text, **options: _VALID_TTS_AUDIO,
     )
     provider = _PackageFirstTTSProvider(_FailedPackage())
 
     audio = provider.synthesize("hello")
 
-    assert audio == b"RIFF-wallet-compatibility"
+    assert audio == _VALID_TTS_AUDIO
     assert provider.last_receipt is not None
     assert provider.last_receipt.degraded is True  # type: ignore[attr-defined]
     assert (
