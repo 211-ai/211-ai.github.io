@@ -1,0 +1,1482 @@
+{
+  "evaluation_count": 27,
+  "evaluations": [
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G001",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-001:focused-1",
+          "dependencies": [],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "docs/architecture/VOICE_CUSTOMER_CARE_PLATFORM_ARCHITECTURE.md",
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/__init__.py",
+            "tests/customer_care/test_platform_contract.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/contracts.py"
+          ],
+          "predicted_symbols": [
+            "InteractionRequest",
+            "InteractionResult",
+            "ConversationOrchestrator",
+            "DomainPackRuntime"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Deliver the reusable voice customer-care platform boundary",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_platform_contract.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_platform_contract.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-001",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G002",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-002:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/domain_pack.py",
+            "ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py",
+            "docs/schemas/VOICE_CUSTOMER_CARE_DOMAIN_PACK.md"
+          ],
+          "predicted_symbols": [
+            "DomainPackManifestV1",
+            "DomainPackArtifact",
+            "validate_domain_pack",
+            "domain_pack_cid"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define an immutable swappable domain-pack contract",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-002",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G003",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-003:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/graph.py",
+            "ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py",
+            "docs/schemas/VOICE_CUSTOMER_CARE_GRAPH.md"
+          ],
+          "predicted_symbols": [
+            "ConversationGraph",
+            "ConversationNode",
+            "ConversationEdge",
+            "GuardExpression",
+            "compile_bounded_loop"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Generalize the conversation and action DAG schema",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-003",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G004",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-004:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/compiler.py",
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/cli.py",
+            "ipfs_datasets_py/tests/unit/conversation/test_compiler.py"
+          ],
+          "predicted_symbols": [
+            "DomainPackCompiler",
+            "CompilationReceipt",
+            "compile_domain_pack",
+            "validate_compiled_pack"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build the deterministic domain-pack compiler and validator",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_compiler.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_compiler.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-004",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G006",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-005:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py",
+            "ipfs_accelerate_py/test/test_action_runtime_contracts.py",
+            "docs/schemas/VOICE_CUSTOMER_CARE_ACTIONS.md"
+          ],
+          "predicted_symbols": [
+            "ActionDescriptor",
+            "ActionProposal",
+            "ActionDecision",
+            "ActionInvocation",
+            "ActionReceipt",
+            "ActionStatus"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define typed action lifecycle contracts",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_runtime_contracts.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_runtime_contracts.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-005",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G005",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-006:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/retrieval.py",
+            "ipfs_datasets_py/tests/unit/conversation/test_retrieval.py",
+            "ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py"
+          ],
+          "predicted_symbols": [
+            "ConversationPlanProvider",
+            "GroundedResponseCandidate",
+            "ActionProposalCandidate",
+            "retrieve_conversation_plan"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Generalize GraphRAG retrieval into grounded response and action proposals",
+          "validation_commands": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_retrieval.py ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_retrieval.py ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-006",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G008",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-007:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/intent_ir.py",
+            "ipfs_accelerate_py/test/test_action_policy.py",
+            "docs/specs/VOICE_CUSTOMER_CARE_ACTION_POLICY.md"
+          ],
+          "predicted_symbols": [
+            "ActionPolicy",
+            "ActionRisk",
+            "SideEffectClass",
+            "ConsentReceipt",
+            "ConfirmationReceipt",
+            "ActionIntentIRAdapter",
+            "evaluate_action"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Enforce policy capability consent and confirmation before execution",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_policy.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_policy.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-007",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G009",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-008:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/receipts.py",
+            "ipfs_accelerate_py/test/test_action_execution.py"
+          ],
+          "predicted_symbols": [
+            "ActionExecutor",
+            "ActionReceiptStore",
+            "IdempotencyRecord",
+            "execute_action",
+            "replay_action"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add content-addressed idempotent execution receipts and replay",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_execution.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_execution.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-008",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G010",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-009:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/session.py",
+            "wallet_interface/helpers/customer_care_case_store.py",
+            "tests/customer_care/test_privacy_boundaries.py"
+          ],
+          "predicted_symbols": [
+            "SessionState",
+            "CaseStore",
+            "DataClassification",
+            "RetentionPolicy",
+            "WalletCaseStore"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Establish tenant session privacy and case-store boundaries",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_privacy_boundaries.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_privacy_boundaries.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-009",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G011",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-010:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/mcp.py",
+            "ipfs_accelerate_py/test/test_action_mcp_adapter.py"
+          ],
+          "predicted_symbols": [
+            "MCPActionAdapter",
+            "MCPPlusPlusActionAdapter",
+            "MCPInterfaceBinding"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Implement the MCP and MCP++ action adapter",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_mcp_adapter.py ipfs_accelerate_py/mcp/tests/test_mcp_server_mcplusplus_idl.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_mcp_adapter.py ipfs_accelerate_py/mcp/tests/test_mcp_server_mcplusplus_idl.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-010",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G012",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-011:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py",
+            "ipfs_accelerate_py/test/test_action_cli_adapter.py"
+          ],
+          "predicted_symbols": [
+            "CLIActionAdapter",
+            "CLIActionRegistration",
+            "build_argv",
+            "CLISandboxPolicy"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Implement the sandboxed CLI action adapter",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_cli_adapter.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_cli_adapter.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-011",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G013",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-012:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/python.py",
+            "ipfs_accelerate_py/test/test_action_python_adapter.py"
+          ],
+          "predicted_symbols": [
+            "PythonActionAdapter",
+            "CallableRegistration",
+            "RegisteredCallableResolver"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Implement the registered Python callable adapter",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_python_adapter.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_python_adapter.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-012",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G014",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-013:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/workflow.py",
+            "ipfs_accelerate_py/test/test_action_workflow_adapter.py"
+          ],
+          "predicted_symbols": [
+            "WorkflowActionAdapter",
+            "TaskActionAdapter",
+            "WorkflowActionHandle"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Implement durable workflow and task adapters",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_workflow_adapter.py ipfs_accelerate_py/test/test_p2p_workflow_scheduler.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_workflow_adapter.py ipfs_accelerate_py/test/test_p2p_workflow_scheduler.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-013",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G016",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-014:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/handoff.py",
+            "ipfs_accelerate_py/test/test_human_handoff.py"
+          ],
+          "predicted_symbols": [
+            "HandoffRequest",
+            "HandoffQueue",
+            "HandoffReceipt",
+            "HandoffStatus"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build human-handoff queue and transfer contracts",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_human_handoff.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_human_handoff.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-014",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G019",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-015:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_datasets_py/ipfs_datasets_py/conversation/forms.py",
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/intake.py",
+            "tests/customer_care/test_intake_forms.py"
+          ],
+          "predicted_symbols": [
+            "IntakeForm",
+            "IntakeField",
+            "IntakeSession",
+            "CaseLifecycle"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Define reusable intake forms and case lifecycle",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_intake_forms.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_intake_forms.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-015",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G015",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-016:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/agent_supervisor.py",
+            "ipfs_accelerate_py/test/test_action_supervisor_adapter.py"
+          ],
+          "predicted_symbols": [
+            "AgentSupervisorActionAdapter",
+            "SupervisorActionRegistration",
+            "SupervisorControlService"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Implement the agent-supervisor action adapter",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_supervisor_adapter.py ipfs_accelerate_py/test/api/test_agent_supervisor_control_plane.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_supervisor_adapter.py ipfs_accelerate_py/test/api/test_agent_supervisor_control_plane.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-016",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G017",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-017:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/telephony.py",
+            "ipfs_accelerate_py/test/test_customer_care_telephony.py"
+          ],
+          "predicted_symbols": [
+            "TelephonyPort",
+            "TelephonySession",
+            "TelephonyTransferAdapter",
+            "process_telephone_interaction"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build provider-neutral telephony ingress egress and transfer adapters",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_customer_care_telephony.py ipfs_accelerate_py/test/test_voice_router_graphrag.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_customer_care_telephony.py ipfs_accelerate_py/test/test_voice_router_graphrag.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-017",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G018",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-018:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/orchestrator.py",
+            "ipfs_accelerate_py/test/test_conversation_orchestrator.py"
+          ],
+          "predicted_symbols": [
+            "ConversationOrchestrator",
+            "InteractionRequest",
+            "InteractionResult",
+            "advance_conversation"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Compose the deterministic conversation and action orchestrator",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_conversation_orchestrator.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_conversation_orchestrator.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-018",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G022",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-019:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "data/domain_packs/211-ai/manifest.json",
+            "scripts/build_211_customer_care_pack.py",
+            "tests/customer_care/test_211_domain_pack.py"
+          ],
+          "predicted_symbols": [
+            "build_211_customer_care_pack",
+            "AbbyDomainPackAdapter",
+            "ServicePortalPackAdapter"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Migrate 211 and Abby assets into a reference domain pack",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_211_domain_pack.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_211_domain_pack.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-019",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G023",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-020:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "data/domain_packs/example-helpdesk/manifest.json",
+            "tests/customer_care/test_domain_pack_swap.py"
+          ],
+          "predicted_symbols": [
+            "ExampleHelpdeskPack",
+            "load_domain_pack",
+            "switch_domain_pack"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Prove data swapping with a non-211 reference pack",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_domain_pack_swap.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_domain_pack_swap.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-020",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G020",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-021:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/service.py",
+            "wallet_interface/routes/customer_care.py",
+            "tests/customer_care/test_gateway.py"
+          ],
+          "predicted_symbols": [
+            "CustomerCareService",
+            "CustomerCareGateway",
+            "InteractionEventStream"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Expose a transport-neutral customer-care gateway",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_gateway.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_gateway.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-021",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G024",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-022:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/assurance.py",
+            "ipfs_accelerate_py/test/test_action_assurance.py",
+            "tests/customer_care/fixtures/adversarial_actions.jsonl",
+            "docs/reports/VOICE_CUSTOMER_CARE_ASSURANCE.md"
+          ],
+          "predicted_symbols": [
+            "ActionSafetyInvariant",
+            "ConversationProofObligation",
+            "verify_action_trace",
+            "verify_conversation_graph"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add formal safety contract and adversarial evaluation gates",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_assurance.py tests/customer_care"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_assurance.py tests/customer_care exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-022",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G021",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-023:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "wallet_interface/ui/src/customer_care",
+            "wallet_interface/ui/src/app/CustomerCareScreen.tsx",
+            "wallet_interface/ui/src/app/CustomerCareOperatorScreen.tsx",
+            "wallet_interface/ui/tests/customer-care.spec.ts"
+          ],
+          "predicted_symbols": [
+            "CustomerCareScreen",
+            "CustomerCareOperatorScreen",
+            "ActionTimeline",
+            "HandoffQueuePanel"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build the reusable portal shell and operator console",
+          "validation_commands": [
+            "npm --prefix wallet_interface/ui test -- --runInBand"
+          ],
+          "validation_proof": [
+            "npm --prefix wallet_interface/ui test -- --runInBand exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-023",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G025",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-024:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "docs/runbooks/VOICE_CUSTOMER_CARE_OPERATIONS.md",
+            "docs/specs/VOICE_CUSTOMER_CARE_THREAT_MODEL.md",
+            "tests/customer_care/test_operational_readiness.py"
+          ],
+          "predicted_symbols": [
+            "CustomerCareHealth",
+            "ActionMetric",
+            "PackCanary",
+            "rollback_domain_pack"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Add observability operations deployment and rollback",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_operational_readiness.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_operational_readiness.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-024",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G027",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-025:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "scripts/ops/voice_customer_care_supervisor.py",
+            "tests/customer_care/test_supervisor_program.py"
+          ],
+          "predicted_symbols": [
+            "ObjectiveGoal",
+            "ObjectiveFinding",
+            "ContractMismatchTask",
+            "BundleSupervisor",
+            "SelfImprovementEpoch"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Establish bounded autonomous refill and contract-mismatch repair",
+          "validation_commands": [
+            "PYTHONPATH=ipfs_accelerate_py python -m ipfs_accelerate_py.agent_supervisor.objectives.bundle_supervisor --repo-root . --bundle-index-path data/voice_customer_care/agent_supervisor/objective_bundles/index.json --state-root data/voice_customer_care/agent_supervisor/lane_state --worktree-root /tmp/voice-care-agent-worktrees --manifest-path data/voice_customer_care/agent_supervisor/lane-manifest.json --task-prefix VOICE-CARE-AUTO- --max-lanes 6 --no-implement"
+          ],
+          "validation_proof": [
+            "PYTHONPATH=ipfs_accelerate_py python -m ipfs_accelerate_py.agent_supervisor.objectives.bundle_supervisor --repo-root . --bundle-index-path data/voice_customer_care/agent_supervisor/objective_bundles/index.json --state-root data/voice_customer_care/agent_supervisor/lane_state --worktree-root /tmp/voice-care-agent-worktrees --manifest-path data/voice_customer_care/agent_supervisor/lane-manifest.json --task-prefix VOICE-CARE-AUTO- --max-lanes 6 --no-implement exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-025",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G026",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-026:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "tests/customer_care/test_end_to_end.py",
+            "docs/reports/VOICE_CUSTOMER_CARE_END_TO_END.md"
+          ],
+          "predicted_symbols": [
+            "test_211_end_to_end",
+            "test_helpdesk_end_to_end",
+            "verify_receipt_chain"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Prove the complete platform with two offline end-to-end journeys",
+          "validation_commands": [
+            "python -m pytest -q tests/customer_care/test_end_to_end.py tests/voice wallet_interface/tests/test_voice_router_adapter.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q tests/customer_care/test_end_to_end.py tests/voice wallet_interface/tests/test_voice_router_adapter.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-026",
+      "used_fallback": false
+    },
+    {
+      "analysis_inconclusive": false,
+      "evaluator_version": "objective-plan-evaluator-v1",
+      "goal_id": "VOICE-CARE-G007",
+      "rejected": [],
+      "router_error": null,
+      "selected": {
+        "branch": {
+          "branch_id": "fallback:VOICE-CARE-AUTO-027:focused-1",
+          "dependencies": [
+            "VOICE-CARE-G001"
+          ],
+          "estimated_cost": 1.0,
+          "expected_objective_delta": 0.7,
+          "predicted_files": [
+            "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py",
+            "ipfs_accelerate_py/test/test_action_catalog.py"
+          ],
+          "predicted_symbols": [
+            "ActionCatalog",
+            "ActionRegistration",
+            "ActionResolver",
+            "CatalogSnapshot"
+          ],
+          "risk": 0.2,
+          "source": "deterministic_fallback",
+          "summary": "Deterministic focused plan for Build the deployment-owned action catalog and resolver",
+          "validation_commands": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_catalog.py"
+          ],
+          "validation_proof": [
+            "python -m pytest -q ipfs_accelerate_py/test/test_action_catalog.py exits with status 0"
+          ]
+        },
+        "rationale": [
+          "expected objective delta contributes 385000 millionths",
+          "risk adjustment contributes 200000 millionths",
+          "cost efficiency contributes 75000 millionths",
+          "validation proof contributes 50000 millionths",
+          "total deterministic score is 710000 millionths"
+        ],
+        "score_millionths": 710000
+      },
+      "selection_rationale": [
+        "expected objective delta contributes 385000 millionths",
+        "risk adjustment contributes 200000 millionths",
+        "cost efficiency contributes 75000 millionths",
+        "validation proof contributes 50000 millionths",
+        "total deterministic score is 710000 millionths"
+      ],
+      "source": "deterministic_planner",
+      "task_id": "VOICE-CARE-AUTO-027",
+      "used_fallback": false
+    }
+  ],
+  "schema": "ipfs_accelerate_py.agent_supervisor.objective_plan_evaluations@1"
+}
