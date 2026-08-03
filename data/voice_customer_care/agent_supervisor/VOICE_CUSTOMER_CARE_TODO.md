@@ -1,0 +1,1864 @@
+# Objective Todo
+
+## VOICE-CARE-AUTO-001 Implement reusable voice customer-care objective: Deliver the reusable voice customer-care platform boundary
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: platform
+- Depends on:
+- Outputs: docs/architecture/VOICE_CUSTOMER_CARE_PLATFORM_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/__init__.py, tests/customer_care/test_platform_contract.py
+- Validation: python -m pytest -q tests/customer_care/test_platform_contract.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-001-objective-gap-5bd0ca07ed30.md
+- Bundle: voice-care/platform-contract
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-platform-contract.todo.md
+- Bundle strategy: explicit
+- Graph parents: none
+- Graph depth: 0
+- Objective heap index: 0
+- Parallel lane: voice-care-platform
+- Conflict policy: establish additive protocols and shared ownership first; preserve existing speech_to_text, text_to_speech, process_voice_turn, and process_telephone_turn behavior
+- Predicted files: docs/architecture/VOICE_CUSTOMER_CARE_PLATFORM_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/__init__.py, tests/customer_care/test_platform_contract.py, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/contracts.py
+- Changed paths:
+- Context paths: docs/architecture/VOICE_CUSTOMER_CARE_PLATFORM_ARCHITECTURE.md, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/__init__.py, tests/customer_care/test_platform_contract.py
+- AST symbols: InteractionRequest, InteractionResult, ConversationOrchestrator, DomainPackRuntime
+- Interfaces: voice_router, conversation GraphRAG, action runtime, portal gateway
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G001
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/76d6d8bef95ae5f6521555a5f0145531451dedb11b51db972bd461f4da5ce595
+- Canonical task CID: baguqeerao3lnrpxzlls7muqvkws7afcvgfcr33nrdni5xfzl2rq7jws44wkq
+- Semantic identity: objective-evidence-obligation/v1/a638990fe363f44bc4d7cd84e5d26dc31a24aee58ac888de21876219d5d54def
+- Acceptance subset: architecture ownership map
+- Preconditions: objective goal VOICE-CARE-G001 is schedulable
+- Effects: satisfy evidence requirement: architecture ownership map
+- Evidence subset: architecture ownership map
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G001
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/a638990fe363f44bc4d7cd84e5d26dc31a24aee58ac888de21876219d5d54def
+- Missing evidence: architecture ownership map
+- Embedding query: reusable voice customer care intake conversation action orchestration domain pack platform
+- AST query: InteractionRequest, InteractionResult, ConversationOrchestrator, DomainPackRuntime
+- Surplus group: objective/VOICE-CARE-G001
+- Merge key: 5931be91743bd7fe
+- Merge family: objective/VOICE-CARE-G001
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: c03b20b2c8d7f865
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G001. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-001-objective-gap-5bd0ca07ed30.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (architecture ownership map), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-002 Implement reusable voice customer-care objective: Define an immutable swappable domain-pack contract
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: domain-data
+- Depends on:
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/conversation/domain_pack.py, ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py, docs/schemas/VOICE_CUSTOMER_CARE_DOMAIN_PACK.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-002-objective-gap-5fb6c39923e0.md
+- Bundle: voice-care/domain-pack
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-domain-pack.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 1
+- Parallel lane: voice-care-data
+- Conflict policy: schemas contain data and references only; reject executable code, raw commands, import paths, endpoints, secrets, and policy widening
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/conversation/domain_pack.py, ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py, docs/schemas/VOICE_CUSTOMER_CARE_DOMAIN_PACK.md
+- Changed paths:
+- Context paths: ipfs_datasets_py/ipfs_datasets_py/conversation/domain_pack.py, ipfs_datasets_py/tests/unit/conversation/test_domain_pack.py, docs/schemas/VOICE_CUSTOMER_CARE_DOMAIN_PACK.md
+- AST symbols: DomainPackManifestV1, DomainPackArtifact, validate_domain_pack, domain_pack_cid
+- Interfaces: CID multiformats, GraphRAG inputs, action descriptor references
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G002
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/65be79aaddf5e06966733b281111dcf98271e4831f56e3f6475239b0915a374a
+- Canonical task CID: baguqeeramw7htkw56xqgsztthmubceo47gbhdzedd5loh5shki43bek2g5fa
+- Semantic identity: objective-evidence-obligation/v1/658ea0b7d21c8d4e5fca9e87a86421f8d34c31568e32f8f904bdc9cc9fd6a0f1
+- Acceptance subset: malicious and incomplete pack rejection tests
+- Preconditions: objective goal VOICE-CARE-G002 is schedulable
+- Effects: satisfy evidence requirement: malicious and incomplete pack rejection tests
+- Evidence subset: malicious and incomplete pack rejection tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G002
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/658ea0b7d21c8d4e5fca9e87a86421f8d34c31568e32f8f904bdc9cc9fd6a0f1
+- Missing evidence: malicious and incomplete pack rejection tests
+- Embedding query: immutable domain pack manifest CID knowledge ontology forms actions policies localization branding evaluations
+- AST query: DomainPackManifestV1, DomainPackArtifact, validate_domain_pack, domain_pack_cid
+- Surplus group: objective/VOICE-CARE-G002
+- Merge key: 066c38f32b84f01a
+- Merge family: objective/VOICE-CARE-G002
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 7ac40ec354136dd0
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G002. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-002-objective-gap-5fb6c39923e0.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (malicious and incomplete pack rejection tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-003 Implement reusable voice customer-care objective: Generalize the conversation and action DAG schema
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: domain-data
+- Depends on: VOICE-CARE-AUTO-002
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/conversation/graph.py, ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py, docs/schemas/VOICE_CUSTOMER_CARE_GRAPH.md
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-003-objective-gap-95b1a1fbffec.md
+- Bundle: voice-care/graph-schema
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-graph-schema.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 2
+- Parallel lane: voice-care-data
+- Conflict policy: retain append-only response-DAG compatibility; guards are data-only and side-effect-free
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/conversation/graph.py, ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py, docs/schemas/VOICE_CUSTOMER_CARE_GRAPH.md
+- Changed paths:
+- Context paths: ipfs_datasets_py/ipfs_datasets_py/conversation/graph.py, ipfs_datasets_py/tests/unit/conversation/test_graph_schema.py, docs/schemas/VOICE_CUSTOMER_CARE_GRAPH.md
+- AST symbols: ConversationGraph, ConversationNode, ConversationEdge, GuardExpression, compile_bounded_loop
+- Interfaces: response_dag, slotted response graph, domain pack
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G003
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/521f055d27eb1d7a6d27a3fb7c8329195863fbc4fa018d9e50d8bde474927784
+- Canonical task CID: baguqeerakipqkxjh5moxu3jhup5xzazjdfmgh66e7iay3hsq3c66i5eso6ca
+- Semantic identity: objective-evidence-obligation/v1/074ff9ad2be12418be9faba0edcb1a4882d9e62cc98fa2ce9b41599fd34c1804
+- Acceptance subset: guard AST, graph integrity validation
+- Preconditions: objective goal VOICE-CARE-G003 is schedulable
+- Effects: satisfy evidence requirement: guard AST, satisfy evidence requirement: graph integrity validation
+- Evidence subset: guard AST, graph integrity validation
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G003
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/074ff9ad2be12418be9faba0edcb1a4882d9e62cc98fa2ce9b41599fd34c1804
+- Missing evidence: guard AST, graph integrity validation
+- Embedding query: generic conversation DAG intent evidence response form decision action confirmation handoff terminal guard
+- AST query: ConversationGraph, ConversationNode, ConversationEdge, GuardExpression, compile_bounded_loop
+- Surplus group: objective/VOICE-CARE-G003
+- Merge key: b5d0a48dab09da1b
+- Merge family: objective/VOICE-CARE-G003
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 0d5844582b897768
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G003. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-003-objective-gap-95b1a1fbffec.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (guard AST, graph integrity validation), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-004 Implement reusable voice customer-care objective: Build the deterministic domain-pack compiler and validator
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: domain-data
+- Depends on: VOICE-CARE-AUTO-002, VOICE-CARE-AUTO-003
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/conversation/compiler.py, ipfs_datasets_py/ipfs_datasets_py/conversation/cli.py, ipfs_datasets_py/tests/unit/conversation/test_compiler.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_compiler.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-004-objective-gap-7af35550f39e.md
+- Bundle: voice-care/domain-pack-compiler
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-domain-pack-compiler.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 3
+- Parallel lane: voice-care-data
+- Conflict policy: compilation is local and read-only with respect to source data; no implicit upload, pin, or mutable remote fetch
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/conversation/compiler.py, ipfs_datasets_py/ipfs_datasets_py/conversation/cli.py, ipfs_datasets_py/tests/unit/conversation/test_compiler.py
+- Changed paths:
+- Context paths: ipfs_datasets_py/ipfs_datasets_py/conversation/compiler.py, ipfs_datasets_py/ipfs_datasets_py/conversation/cli.py, ipfs_datasets_py/tests/unit/conversation/test_compiler.py
+- AST symbols: DomainPackCompiler, CompilationReceipt, compile_domain_pack, validate_compiled_pack
+- Interfaces: domain pack schemas, multiformats CID, GraphRAG index
+- Submodules: ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G004
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/73cbc65614fcfd2f12d85b48aa7d24c9a26848122bf46bef2fda712cd48bd583
+- Canonical task CID: baguqeeraopf4mvqu7t6s6ewylneku7jezgrgqsasfp2gx3zp3jyszvel2wbq
+- Semantic identity: objective-evidence-obligation/v1/97b9ee9c17361461a022525f97bc292705255193dd255a694e9337beaf96544c
+- Acceptance subset: reproducibility receipt, actionable validation diagnostics
+- Preconditions: objective goal VOICE-CARE-G004 is schedulable
+- Effects: satisfy evidence requirement: reproducibility receipt, satisfy evidence requirement: actionable validation diagnostics
+- Evidence subset: reproducibility receipt, actionable validation diagnostics
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G004
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/97b9ee9c17361461a022525f97bc292705255193dd255a694e9337beaf96544c
+- Missing evidence: reproducibility receipt, actionable validation diagnostics
+- Embedding query: deterministic domain pack compiler graph retrieval form localization evaluation CID cache diagnostics
+- AST query: DomainPackCompiler, CompilationReceipt, compile_domain_pack, validate_compiled_pack
+- Surplus group: objective/VOICE-CARE-G004
+- Merge key: 0cd87ec8d5e720bd
+- Merge family: objective/VOICE-CARE-G004
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 4aef12cab5edb967
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G004. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-004-objective-gap-7af35550f39e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (reproducibility receipt, actionable validation diagnostics), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-005 Implement reusable voice customer-care objective: Define typed action lifecycle contracts
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: action-runtime
+- Depends on: VOICE-CARE-AUTO-003
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py, ipfs_accelerate_py/test/test_action_runtime_contracts.py, docs/schemas/VOICE_CUSTOMER_CARE_ACTIONS.md
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_runtime_contracts.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-005-objective-gap-347058dd518f.md
+- Bundle: voice-care/action-contracts
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-action-contracts.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 4
+- Parallel lane: voice-care-runtime
+- Conflict policy: keep contracts transport-neutral and optional-dependency safe; adapters cannot redefine lifecycle semantics
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py, ipfs_accelerate_py/test/test_action_runtime_contracts.py, docs/schemas/VOICE_CUSTOMER_CARE_ACTIONS.md
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py, ipfs_accelerate_py/test/test_action_runtime_contracts.py, docs/schemas/VOICE_CUSTOMER_CARE_ACTIONS.md
+- AST symbols: ActionDescriptor, ActionProposal, ActionDecision, ActionInvocation, ActionReceipt, ActionStatus
+- Interfaces: domain graph action_ref, MCP IDL, workflow, human handoff
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G006
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/c633b58a08c156d9d2992cf78e06bac0c34e5093964ac274347fe55aaf2b1f6b
+- Canonical task CID: baguqeerayyz3lcqiyflntuuzft3y4bv2ydbu4uetszfme5bup7svvlzld5vq
+- Semantic identity: objective-evidence-obligation/v1/49cb9e69e2c36f126a1d4ba5ddab29d7665df1c8f4680d977d67ec95f7cfc3f4
+- Acceptance subset: redaction-safe serialization, invalid transition tests
+- Preconditions: objective goal VOICE-CARE-G006 is schedulable
+- Effects: satisfy evidence requirement: redaction-safe serialization, satisfy evidence requirement: invalid transition tests
+- Evidence subset: redaction-safe serialization, invalid transition tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G006
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/49cb9e69e2c36f126a1d4ba5ddab29d7665df1c8f4680d977d67ec95f7cfc3f4
+- Missing evidence: redaction-safe serialization, invalid transition tests
+- Embedding query: action descriptor proposal decision invocation receipt lifecycle status schema hash redaction
+- AST query: ActionDescriptor, ActionProposal, ActionDecision, ActionInvocation, ActionReceipt, ActionStatus
+- Surplus group: objective/VOICE-CARE-G006
+- Merge key: 67feb877882cd5f3
+- Merge family: objective/VOICE-CARE-G006
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: aba831a3046d6a6c
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G006. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-005-objective-gap-347058dd518f.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (redaction-safe serialization, invalid transition tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-006 Implement reusable voice customer-care objective: Generalize GraphRAG retrieval into grounded response and action proposals
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: retrieval
+- Depends on: VOICE-CARE-AUTO-003, VOICE-CARE-AUTO-004
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/conversation/retrieval.py, ipfs_datasets_py/tests/unit/conversation/test_retrieval.py, ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py
+- Validation: python -m pytest -q ipfs_datasets_py/tests/unit/conversation/test_retrieval.py ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-006-objective-gap-077c239e1e93.md
+- Bundle: voice-care/retrieval
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-retrieval.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 5
+- Parallel lane: voice-care-retrieval
+- Conflict policy: retrieved content can rank registered action references but cannot create descriptors, authority, commands, imports, endpoints, or credentials
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/conversation/retrieval.py, ipfs_datasets_py/tests/unit/conversation/test_retrieval.py, ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py
+- Changed paths:
+- Context paths: ipfs_datasets_py/ipfs_datasets_py/conversation/retrieval.py, ipfs_datasets_py/tests/unit/conversation/test_retrieval.py, ipfs_accelerate_py/test/test_conversation_retrieval_adapter.py
+- AST symbols: ConversationPlanProvider, GroundedResponseCandidate, ActionProposalCandidate, retrieve_conversation_plan
+- Interfaces: SlottedResponseIndex, GraphRAGVoiceTemplateProvider, domain pack, action proposal
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G005
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/6bc0e07579368f6749cfa639beff8bfd26f62252c670d3c57a6aa1bbdabdfeef
+- Canonical task CID: baguqeeranpaoa5lzg2hwosopuy43574l7utpmissyzynhrl2nkq3xwv573xq
+- Semantic identity: objective-evidence-obligation/v1/f3939f24d943d7ec627c29546dd4e273a7c3f57cddda3406a4a28c8699641c13
+- Acceptance subset: generic retrieval protocol, action proposal candidates, Abby adapter compatibility
+- Preconditions: objective goal VOICE-CARE-G005 is schedulable
+- Effects: satisfy evidence requirement: generic retrieval protocol, satisfy evidence requirement: action proposal candidates, satisfy evidence requirement: Abby adapter compatibility
+- Evidence subset: generic retrieval protocol, action proposal candidates, Abby adapter compatibility
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G005
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/f3939f24d943d7ec627c29546dd4e273a7c3f57cddda3406a4a28c8699641c13
+- Missing evidence: generic retrieval protocol, action proposal candidates, Abby adapter compatibility
+- Embedding query: GraphRAG grounded response action proposal evidence argument provenance confidence non execution
+- AST query: ConversationPlanProvider, GroundedResponseCandidate, ActionProposalCandidate, retrieve_conversation_plan
+- Surplus group: objective/VOICE-CARE-G005
+- Merge key: 87d2932fdc342d95
+- Merge family: objective/VOICE-CARE-G005
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 7ebe40792bd11681
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G005. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-006-objective-gap-077c239e1e93.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (generic retrieval protocol, action proposal candidates, Abby adapter compatibility), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-007 Implement reusable voice customer-care objective: Enforce policy capability consent and confirmation before execution
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: security
+- Depends on: VOICE-CARE-AUTO-005, VOICE-CARE-G007
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/intent_ir.py, ipfs_accelerate_py/test/test_action_policy.py, docs/specs/VOICE_CUSTOMER_CARE_ACTION_POLICY.md
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_policy.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-007-objective-gap-28560c5bd129.md
+- Bundle: voice-care/action-policy
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-action-policy.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 7
+- Parallel lane: voice-care-security
+- Conflict policy: reuse and preserve the existing Intent IR pre-dispatch envelope; domain and request policy can only narrow deployment authority; retrieval confidence never substitutes for consent or capability
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/intent_ir.py, ipfs_accelerate_py/test/test_action_policy.py, docs/specs/VOICE_CUSTOMER_CARE_ACTION_POLICY.md
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/intent_ir.py, ipfs_accelerate_py/test/test_action_policy.py, docs/specs/VOICE_CUSTOMER_CARE_ACTION_POLICY.md
+- AST symbols: ActionPolicy, ActionRisk, SideEffectClass, ConsentReceipt, ConfirmationReceipt, ActionIntentIRAdapter, evaluate_action
+- Interfaces: ipfs_datasets_py logic Intent IR, MCP++ UCAN, temporal policy, wallet grants, domain policy overlay
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G008
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/f85317f11bad3f410c4c9d6931ee80aaf0588f483c4c5862078e7c9129e751da
+- Canonical task CID: baguqeera7bjrp4i3vu7ucdcmtvutd3uavlyfrd2ihrgfqyqhrz6jckphkhna
+- Semantic identity: objective-evidence-obligation/v1/4c5fd5000d862123f12eca1caff7e52072f8a1eb8fd22f46ff20e70be8d383f2
+- Acceptance subset: temporal expiry, policy-narrowing tests, emergency and code-change gates
+- Preconditions: objective goal VOICE-CARE-G008 is schedulable
+- Effects: satisfy evidence requirement: temporal expiry, satisfy evidence requirement: policy-narrowing tests, satisfy evidence requirement: emergency and code-change gates
+- Evidence subset: temporal expiry, policy-narrowing tests, emergency and code-change gates
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G008
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/4c5fd5000d862123f12eca1caff7e52072f8a1eb8fd22f46ff20e70be8d383f2
+- Missing evidence: temporal expiry, policy-narrowing tests, emergency and code-change gates
+- Embedding query: action policy capability consent confirmation risk side effect tenant channel temporal decision
+- AST query: ActionPolicy, ActionRisk, SideEffectClass, ConsentReceipt, ConfirmationReceipt, ActionIntentIRAdapter, evaluate_action
+- Surplus group: objective/VOICE-CARE-G008
+- Merge key: e547736c2a19157d
+- Merge family: objective/VOICE-CARE-G008
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 64cf896dfa94a6cf
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G008. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-007-objective-gap-28560c5bd129.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (temporal expiry, policy-narrowing tests, emergency and code-change gates), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-008 Implement reusable voice customer-care objective: Add content-addressed idempotent execution receipts and replay
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: action-runtime
+- Depends on: VOICE-CARE-AUTO-005, VOICE-CARE-AUTO-007
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/receipts.py, ipfs_accelerate_py/test/test_action_execution.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_execution.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-008-objective-gap-d420f333e08c.md
+- Bundle: voice-care/action-execution
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-action-execution.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 8
+- Parallel lane: voice-care-runtime
+- Conflict policy: never retry an unknown or non-idempotent external side effect automatically; storage adapters remain optional
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/receipts.py, ipfs_accelerate_py/test/test_action_execution.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py, ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/receipts.py, ipfs_accelerate_py/test/test_action_execution.py
+- AST symbols: ActionExecutor, ActionReceiptStore, IdempotencyRecord, execute_action, replay_action
+- Interfaces: MCP++ CID artifacts, event DAG, ipfs_kit storage adapter
+- Submodules: ipfs_accelerate_py, ipfs_kit_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G009
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/960b722710305b11b9e151c92982d7ceae14f9f9253bc3e5e8ce71cb4bcb76ee
+- Canonical task CID: baguqeerasyfxejyqgbnrdopbkhestawxz2xbj6pzeu54hzpizzy4ws6lo3xa
+- Semantic identity: objective-evidence-obligation/v1/872e05e09ae2d17b712ef45b3922e4b4118f9fe08cb2ef17ae842e3b35285199
+- Acceptance subset: crash/retry/replay tests
+- Preconditions: objective goal VOICE-CARE-G009 is schedulable
+- Effects: satisfy evidence requirement: crash/retry/replay tests
+- Evidence subset: crash/retry/replay tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G009
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/872e05e09ae2d17b712ef45b3922e4b4118f9fe08cb2ef17ae842e3b35285199
+- Missing evidence: crash/retry/replay tests
+- Embedding query: content addressed action execution idempotency receipt replay retry compensation event DAG crash recovery
+- AST query: ActionExecutor, ActionReceiptStore, IdempotencyRecord, execute_action, replay_action
+- Surplus group: objective/VOICE-CARE-G009
+- Merge key: fe9537a81ca45411
+- Merge family: objective/VOICE-CARE-G009
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f3d9d12aca108dd2
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G009. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-008-objective-gap-d420f333e08c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (crash/retry/replay tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-009 Implement reusable voice customer-care objective: Establish tenant session privacy and case-store boundaries
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: privacy
+- Depends on: VOICE-CARE-AUTO-002, VOICE-CARE-AUTO-005, VOICE-CARE-AUTO-007
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/session.py, wallet_interface/helpers/customer_care_case_store.py, tests/customer_care/test_privacy_boundaries.py
+- Validation: python -m pytest -q tests/customer_care/test_privacy_boundaries.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-009-objective-gap-7b8962151473.md
+- Bundle: voice-care/privacy-tenancy
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-privacy-tenancy.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 9
+- Parallel lane: voice-care-security
+- Conflict policy: public pack and GraphRAG artifacts never contain private intake, transcript, precise location, case, credential, or action-result data
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/session.py, wallet_interface/helpers/customer_care_case_store.py, tests/customer_care/test_privacy_boundaries.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/session.py, wallet_interface/helpers/customer_care_case_store.py, tests/customer_care/test_privacy_boundaries.py
+- AST symbols: SessionState, CaseStore, DataClassification, RetentionPolicy, WalletCaseStore
+- Interfaces: wallet records, HMIS consent, action receipts, domain pack cache
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G010
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/85f8087588dabdcefae88c94c41747f42229eb96cfc3c3c3a8efa95fcb3010e5
+- Canonical task CID: baguqeeraqx4aq5mi3k6456xirskmif2h6qrct24wz7b4hq5i56uv7szqcdsq
+- Semantic identity: objective-evidence-obligation/v1/9c1a1d23e3110ec1a9b8152b0e978b17726c18d0e4e5f597c650654aeefe1450
+- Acceptance subset: SessionState and CaseStore protocols, cross-tenant non-interference and cache-poisoning tests
+- Preconditions: objective goal VOICE-CARE-G010 is schedulable
+- Effects: satisfy evidence requirement: SessionState and CaseStore protocols, satisfy evidence requirement: cross-tenant non-interference and cache-poisoning tests
+- Evidence subset: SessionState and CaseStore protocols, cross-tenant non-interference and cache-poisoning tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G010
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/9c1a1d23e3110ec1a9b8152b0e978b17726c18d0e4e5f597c650654aeefe1450
+- Missing evidence: SessionState and CaseStore protocols, cross-tenant non-interference and cache-poisoning tests
+- Embedding query: tenant session case store privacy retention redaction wallet isolation cache non interference
+- AST query: SessionState, CaseStore, DataClassification, RetentionPolicy, WalletCaseStore
+- Surplus group: objective/VOICE-CARE-G010
+- Merge key: 3f3dfb270f3f68dd
+- Merge family: objective/VOICE-CARE-G010
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: adad6f51a6058a38
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G010. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-009-objective-gap-7b8962151473.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (SessionState and CaseStore protocols, cross-tenant non-interference and cache-poisoning tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-010 Implement reusable voice customer-care objective: Implement the MCP and MCP++ action adapter
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: adapters
+- Depends on: VOICE-CARE-G007, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/mcp.py, ipfs_accelerate_py/test/test_action_mcp_adapter.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_mcp_adapter.py ipfs_accelerate_py/mcp/tests/test_mcp_server_mcplusplus_idl.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-010-objective-gap-36954e05f4b3.md
+- Bundle: voice-care/adapter-mcp
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-adapter-mcp.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 10
+- Parallel lane: voice-care-adapters
+- Conflict policy: use canonical mcp_server surfaces; do not add a second dispatcher or bypass IDL and policy checks
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/mcp.py, ipfs_accelerate_py/test/test_action_mcp_adapter.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/mcp.py, ipfs_accelerate_py/test/test_action_mcp_adapter.py
+- AST symbols: MCPActionAdapter, MCPPlusPlusActionAdapter, MCPInterfaceBinding
+- Interfaces: unified MCP tools_dispatch, IDL registry, UCAN delegation, temporal policy
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G011
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/34b8f2b2738889cd5a13d26416b9a0d3e41b29e278c925a505654228a2840674
+- Canonical task CID: baguqeerags4pfmttrce42wqt2jsbnona2psbwkpcpdesljifmvbcriueaz2a
+- Semantic identity: objective-evidence-obligation/v1/89466396c296eba98855f21bb5d10d1568918a07aa20431136c2e0d9afc7e276
+- Acceptance subset: fake server tests
+- Preconditions: objective goal VOICE-CARE-G011 is schedulable
+- Effects: satisfy evidence requirement: fake server tests
+- Evidence subset: fake server tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G011
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/89466396c296eba98855f21bb5d10d1568918a07aa20431136c2e0d9afc7e276
+- Missing evidence: fake server tests
+- Embedding query: MCP MCP++ action adapter dispatch IDL UCAN temporal policy CID artifact event DAG
+- AST query: MCPActionAdapter, MCPPlusPlusActionAdapter, MCPInterfaceBinding
+- Surplus group: objective/VOICE-CARE-G011
+- Merge key: 6afc8927119c3c3a
+- Merge family: objective/VOICE-CARE-G011
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 38a58d3707ca4eac
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G011. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-010-objective-gap-36954e05f4b3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (fake server tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-011 Implement reusable voice customer-care objective: Implement the sandboxed CLI action adapter
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: adapters
+- Depends on: VOICE-CARE-G007, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py, ipfs_accelerate_py/test/test_action_cli_adapter.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_cli_adapter.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-011-objective-gap-537d667a967b.md
+- Bundle: voice-care/adapter-cli
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-adapter-cli.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 11
+- Parallel lane: voice-care-adapters
+- Conflict policy: never use shell expansion, shell=True, caller-controlled cwd, arbitrary environment inheritance, or pack-defined executable paths
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py, ipfs_accelerate_py/test/test_action_cli_adapter.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py, ipfs_accelerate_py/test/test_action_cli_adapter.py
+- AST symbols: CLIActionAdapter, CLIActionRegistration, build_argv, CLISandboxPolicy
+- Interfaces: native CLI MCP tools, subprocess execution policy
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G012
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/34ff85b043826f62f6c98db67f78365f990bcaacd481da68b15f460b3f2cb769
+- Canonical task CID: baguqeeragt7ylmcdqjxwf5wjrw3h66bwl6mqxsvm2sa5u2frl5dawpzmw5uq
+- Semantic identity: objective-evidence-obligation/v1/715f652fc559f678e3288e2b5720c275b642390418da3672cbd9d659e413d837
+- Acceptance subset: sandbox/resource policy, injection and environment-leak tests
+- Preconditions: objective goal VOICE-CARE-G012 is schedulable
+- Effects: satisfy evidence requirement: sandbox/resource policy, satisfy evidence requirement: injection and environment-leak tests
+- Evidence subset: sandbox/resource policy, injection and environment-leak tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G012
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/715f652fc559f678e3288e2b5720c275b642390418da3672cbd9d659e413d837
+- Missing evidence: sandbox/resource policy, injection and environment-leak tests
+- Embedding query: sandbox CLI action adapter argv allowlist executable identity timeout resource output redaction injection
+- AST query: CLIActionAdapter, CLIActionRegistration, build_argv, CLISandboxPolicy
+- Surplus group: objective/VOICE-CARE-G012
+- Merge key: 9a9cdfc41a740d02
+- Merge family: objective/VOICE-CARE-G012
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: a0bb7f5b46d7ec43
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G012. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-011-objective-gap-537d667a967b.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (sandbox/resource policy, injection and environment-leak tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-012 Implement reusable voice customer-care objective: Implement the registered Python callable adapter
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: adapters
+- Depends on: VOICE-CARE-G007, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/python.py, ipfs_accelerate_py/test/test_action_python_adapter.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_python_adapter.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-012-objective-gap-68c4f2d3f8ab.md
+- Bundle: voice-care/adapter-python
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-adapter-python.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 12
+- Parallel lane: voice-care-adapters
+- Conflict policy: no caller-supplied imports, eval, exec, arbitrary getattr chains, or implicit global singleton resolution
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/python.py, ipfs_accelerate_py/test/test_action_python_adapter.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/python.py, ipfs_accelerate_py/test/test_action_python_adapter.py
+- AST symbols: PythonActionAdapter, CallableRegistration, RegisteredCallableResolver
+- Interfaces: action catalog, application service methods
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G013
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/abb9bb10a2b5ff720046e08a39e43a0ead5d0860d595e3b541baf5b5741957eb
+- Canonical task CID: baguqeeravo43wefcwx7xeacg4cfdtzb2b2wv2cda2wk6hnkbxl23k5azk7vq
+- Semantic identity: objective-evidence-obligation/v1/6c5530527e135468f2f4d9b1b8900eaeb091bc5e437940445620a0feaa38be37
+- Acceptance subset: arbitrary-import and attribute-traversal rejection tests
+- Preconditions: objective goal VOICE-CARE-G013 is schedulable
+- Effects: satisfy evidence requirement: arbitrary-import and attribute-traversal rejection tests
+- Evidence subset: arbitrary-import and attribute-traversal rejection tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G013
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/6c5530527e135468f2f4d9b1b8900eaeb091bc5e437940445620a0feaa38be37
+- Missing evidence: arbitrary-import and attribute-traversal rejection tests
+- Embedding query: Python callable class method action adapter registration dependency injection async schema timeout
+- AST query: PythonActionAdapter, CallableRegistration, RegisteredCallableResolver
+- Surplus group: objective/VOICE-CARE-G013
+- Merge key: f0a27dafd2b4c043
+- Merge family: objective/VOICE-CARE-G013
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 169252e4fbc337e6
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G013. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-012-objective-gap-68c4f2d3f8ab.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (arbitrary-import and attribute-traversal rejection tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-013 Implement reusable voice customer-care objective: Implement durable workflow and task adapters
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: adapters
+- Depends on: VOICE-CARE-G007, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/workflow.py, ipfs_accelerate_py/test/test_action_workflow_adapter.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_workflow_adapter.py ipfs_accelerate_py/test/test_p2p_workflow_scheduler.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-013-objective-gap-e9726a202660.md
+- Bundle: voice-care/adapter-workflow
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-adapter-workflow.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 13
+- Parallel lane: voice-care-adapters
+- Conflict policy: adapt canonical workflow/task APIs and preserve original idempotency identity across retries
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/workflow.py, ipfs_accelerate_py/test/test_action_workflow_adapter.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/workflow.py, ipfs_accelerate_py/test/test_action_workflow_adapter.py
+- AST symbols: WorkflowActionAdapter, TaskActionAdapter, WorkflowActionHandle
+- Interfaces: mcplusplus workflow tools, p2p workflow scheduler, task queue
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G014
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/a49e4d9df67ea3a9e601e2c3e17bc9b6bc6cce1ffd95d5250803acd29de44e81
+- Canonical task CID: baguqeerauspe3hpwp2r2tzqb4lb6c66jw26gztq77wk5kjiiaownfhpej2aq
+- Semantic identity: objective-evidence-obligation/v1/285de71b37db67dad99eb1e107f50db72b797c24357ff1b0298946cd923a4bf4
+- Acceptance subset: fake scheduler and crash-recovery tests
+- Preconditions: objective goal VOICE-CARE-G014 is schedulable
+- Effects: satisfy evidence requirement: fake scheduler and crash-recovery tests
+- Evidence subset: fake scheduler and crash-recovery tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G014
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/285de71b37db67dad99eb1e107f50db72b797c24357ff1b0298946cd923a4bf4
+- Missing evidence: fake scheduler and crash-recovery tests
+- Embedding query: durable workflow P2P task action adapter submit status progress cancel result idempotency
+- AST query: WorkflowActionAdapter, TaskActionAdapter, WorkflowActionHandle
+- Surplus group: objective/VOICE-CARE-G014
+- Merge key: 16a8e9f0fb1d60b2
+- Merge family: objective/VOICE-CARE-G014
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: b563fc295fc5fbce
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G014. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-013-objective-gap-e9726a202660.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (fake scheduler and crash-recovery tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-014 Implement reusable voice customer-care objective: Build human-handoff queue and transfer contracts
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: human-care
+- Depends on: VOICE-CARE-AUTO-005, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008, VOICE-CARE-AUTO-009
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/handoff.py, ipfs_accelerate_py/test/test_human_handoff.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_human_handoff.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-014-objective-gap-758361e9b5cb.md
+- Bundle: voice-care/human-handoff
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-human-handoff.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 14
+- Parallel lane: voice-care-human
+- Conflict policy: distinguish requested, queued, assigned, accepted, transferring, connected, failed, expired, and unknown; share only consented minimum context
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/handoff.py, ipfs_accelerate_py/test/test_human_handoff.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/handoff.py, ipfs_accelerate_py/test/test_human_handoff.py
+- AST symbols: HandoffRequest, HandoffQueue, HandoffReceipt, HandoffStatus
+- Interfaces: telephone transfer, operator console, case store
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G016
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/9898649a14e8073ca6b3b4bfe23e09ab473fb9a1ad25dc14fdd1c262af0dc237
+- Canonical task CID: baguqeeratcmgjgqu5adtzjvtws76epqjvndt7onbvus5yfh52hbgflynyi3q
+- Semantic identity: objective-evidence-obligation/v1/31f38983900a112fab54ddcd5a1893d46f1def231fada15d0eb2980190a9232f
+- Acceptance subset: priority/skill routing, fake queue tests
+- Preconditions: objective goal VOICE-CARE-G016 is schedulable
+- Effects: satisfy evidence requirement: priority/skill routing, satisfy evidence requirement: fake queue tests
+- Evidence subset: priority/skill routing, fake queue tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G016
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/31f38983900a112fab54ddcd5a1893d46f1def231fada15d0eb2980190a9232f
+- Missing evidence: priority/skill routing, fake queue tests
+- Embedding query: human handoff queue assignment transfer connected disposition privacy consent skills priority
+- AST query: HandoffRequest, HandoffQueue, HandoffReceipt, HandoffStatus
+- Surplus group: objective/VOICE-CARE-G016
+- Merge key: 4f2b9e1c9dbb293c
+- Merge family: objective/VOICE-CARE-G016
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 39179626aeb72ac5
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G016. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-014-objective-gap-758361e9b5cb.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (priority/skill routing, fake queue tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-015 Implement reusable voice customer-care objective: Define reusable intake forms and case lifecycle
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: intake
+- Depends on: VOICE-CARE-AUTO-002, VOICE-CARE-AUTO-009
+- Outputs: ipfs_datasets_py/ipfs_datasets_py/conversation/forms.py, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/intake.py, tests/customer_care/test_intake_forms.py
+- Validation: python -m pytest -q tests/customer_care/test_intake_forms.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-015-objective-gap-3b160e7741c6.md
+- Bundle: voice-care/intake
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-intake.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 15
+- Parallel lane: voice-care-portal
+- Conflict policy: collect the minimum required data progressively; application packs define labels but cannot weaken data classification or consent
+- Predicted files: ipfs_datasets_py/ipfs_datasets_py/conversation/forms.py, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/intake.py, tests/customer_care/test_intake_forms.py
+- Changed paths:
+- Context paths: ipfs_datasets_py/ipfs_datasets_py/conversation/forms.py, ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/intake.py, tests/customer_care/test_intake_forms.py
+- AST symbols: IntakeForm, IntakeField, IntakeSession, CaseLifecycle
+- Interfaces: domain pack forms, SessionState, CaseStore, wallet/HMIS consent
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G019
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/ec9f78bc4359af06e549fd52596c9a9b1a2201da5754cf41f90731f96c0c16c5
+- Canonical task CID: baguqeera5spxrpcdlgxqnzkj7vjfs3e2tmnceao2k5km6qpza4y7s3amc3cq
+- Semantic identity: objective-evidence-obligation/v1/43325848d0233b17d9d0220fd413a24b357b1540042d5c86245cacf92cbdde5c
+- Acceptance subset: web form projection, synthetic accessibility and privacy tests
+- Preconditions: objective goal VOICE-CARE-G019 is schedulable
+- Effects: satisfy evidence requirement: web form projection, satisfy evidence requirement: synthetic accessibility and privacy tests
+- Evidence subset: web form projection, synthetic accessibility and privacy tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G019
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/43325848d0233b17d9d0220fd413a24b357b1540042d5c86245cacf92cbdde5c
+- Missing evidence: web form projection, synthetic accessibility and privacy tests
+- Embedding query: reusable client intake dynamic forms voice web consent disclosure case lifecycle follow up disposition
+- AST query: IntakeForm, IntakeField, IntakeSession, CaseLifecycle
+- Surplus group: objective/VOICE-CARE-G019
+- Merge key: f18cf313ff427d01
+- Merge family: objective/VOICE-CARE-G019
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 4cca318af2e4f9eb
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G019. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-015-objective-gap-3b160e7741c6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (web form projection, synthetic accessibility and privacy tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-016 Implement reusable voice customer-care objective: Implement the agent-supervisor action adapter
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: adapters
+- Depends on: VOICE-CARE-G007, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/agent_supervisor.py, ipfs_accelerate_py/test/test_action_supervisor_adapter.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_supervisor_adapter.py ipfs_accelerate_py/test/api/test_agent_supervisor_control_plane.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-016-objective-gap-8b1ce1732d2e.md
+- Bundle: voice-care/adapter-supervisor
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-adapter-supervisor.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 16
+- Parallel lane: voice-care-supervisor-adapter
+- Conflict policy: use the transport-neutral control service; voice or GraphRAG input alone cannot authorize repository mutation or implementation start
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/agent_supervisor.py, ipfs_accelerate_py/test/test_action_supervisor_adapter.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/agent_supervisor.py, ipfs_accelerate_py/test/test_action_supervisor_adapter.py
+- AST symbols: AgentSupervisorActionAdapter, SupervisorActionRegistration, SupervisorControlService
+- Interfaces: agent supervisor control contracts, CLI parity, MCP supervisor tools
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G015
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/40ae798ede6ca42f08144c124ee67b451c2e160bfc585576e17618ca97f0d526
+- Canonical task CID: baguqeeraicxhtdw6nssc6caujqje5zt3iuoc4fql7rmfk5xboymmvf7q2uta
+- Semantic identity: objective-evidence-obligation/v1/174816d82e11834891906585239cb6644cec04816c224397ae47347ab9d6e955
+- Acceptance subset: fake-control-service tests
+- Preconditions: objective goal VOICE-CARE-G015 is schedulable
+- Effects: satisfy evidence requirement: fake-control-service tests
+- Evidence subset: fake-control-service tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G015
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/174816d82e11834891906585239cb6644cec04816c224397ae47347ab9d6e955
+- Missing evidence: fake-control-service tests
+- Embedding query: agent supervisor action adapter control service objective refine backlog refill start pause resume drain retry validation replay
+- AST query: AgentSupervisorActionAdapter, SupervisorActionRegistration, SupervisorControlService
+- Surplus group: objective/VOICE-CARE-G015
+- Merge key: 265ddc0b2a913c73
+- Merge family: objective/VOICE-CARE-G015
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 0e0f6b5acd26bc14
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G015. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-016-objective-gap-8b1ce1732d2e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (fake-control-service tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-017 Implement reusable voice customer-care objective: Build provider-neutral telephony ingress egress and transfer adapters
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: telephony
+- Depends on: VOICE-CARE-AUTO-006, VOICE-CARE-AUTO-014
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/telephony.py, ipfs_accelerate_py/test/test_customer_care_telephony.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_customer_care_telephony.py ipfs_accelerate_py/test/test_voice_router_graphrag.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-017-objective-gap-1024381f120c.md
+- Bundle: voice-care/telephony
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-telephony.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 17
+- Parallel lane: voice-care-telephony
+- Conflict policy: keep vendor SDKs optional behind adapters; tests use signed synthetic requests and no real calls
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/telephony.py, ipfs_accelerate_py/test/test_customer_care_telephony.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/telephony.py, ipfs_accelerate_py/test/test_customer_care_telephony.py
+- AST symbols: TelephonyPort, TelephonySession, TelephonyTransferAdapter, process_telephone_interaction
+- Interfaces: TelephoneTurnState, process_telephone_turn, HandoffQueue
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G017
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/140ce3be26b97a6a3c88a6f0a4909f43dbf40c3838997ab2f4b3a1d4f75c4fcf
+- Canonical task CID: baguqeeracqgohprgxf5gupeiu3ykjee7ipn7idbyhcmxvmxuwoq5j524j7hq
+- Semantic identity: objective-evidence-obligation/v1/4f585162e005faf4c8c07661bf020b0c61dd04de89cc83e2cd789dc78e388f1d
+- Acceptance subset: telephony port contracts, signed webhook validation, transfer-confirmation matrix, multi-turn tests
+- Preconditions: objective goal VOICE-CARE-G017 is schedulable
+- Effects: satisfy evidence requirement: telephony port contracts, satisfy evidence requirement: signed webhook validation, satisfy evidence requirement: transfer-confirmation matrix, satisfy evidence requirement: multi-turn tests
+- Evidence subset: telephony port contracts, signed webhook validation, transfer-confirmation matrix, multi-turn tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G017
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/4f585162e005faf4c8c07661bf020b0c61dd04de89cc83e2cd789dc78e388f1d
+- Missing evidence: telephony port contracts, signed webhook validation, transfer-confirmation matrix, multi-turn tests
+- Embedding query: telephone webhook SIP media stream DTMF barge in transfer human handoff provider neutral
+- AST query: TelephonyPort, TelephonySession, TelephonyTransferAdapter, process_telephone_interaction
+- Surplus group: objective/VOICE-CARE-G017
+- Merge key: a6769009fcd69f92
+- Merge family: objective/VOICE-CARE-G017
+- Merge role: aggregate
+- Work item count: 4
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 347ec536536cddc6
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G017. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-017-objective-gap-1024381f120c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (telephony port contracts, signed webhook validation, transfer-confirmation matrix, multi-turn tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-018 Implement reusable voice customer-care objective: Compose the deterministic conversation and action orchestrator
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: orchestration
+- Depends on: VOICE-CARE-AUTO-006, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008, VOICE-CARE-AUTO-010, VOICE-CARE-AUTO-011, VOICE-CARE-AUTO-012, VOICE-CARE-AUTO-013, VOICE-CARE-AUTO-016, VOICE-CARE-AUTO-014
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/orchestrator.py, ipfs_accelerate_py/test/test_conversation_orchestrator.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_conversation_orchestrator.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-018-objective-gap-e29dae7ae482.md
+- Bundle: voice-care/orchestrator
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-orchestrator.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 18
+- Parallel lane: voice-care-integration
+- Conflict policy: orchestrator composes established contracts; it cannot bypass policy, catalog, case-store, receipt, or adapter boundaries
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/orchestrator.py, ipfs_accelerate_py/test/test_conversation_orchestrator.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/orchestrator.py, ipfs_accelerate_py/test/test_conversation_orchestrator.py
+- AST symbols: ConversationOrchestrator, InteractionRequest, InteractionResult, advance_conversation
+- Interfaces: voice router, retrieval provider, action executor, handoff queue, case store
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G018
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/0896951b5fab60a707036f7d236ab071fe28c9852ba1074d09bb2ed45180195a
+- Canonical task CID: baguqeerabcljkg27vnqkobydn56sg2vqoh7crsmffoqqotijxmxniumadfna
+- Semantic identity: objective-evidence-obligation/v1/e1cd357796781245c4814610c47e96e439f5acd226897d5f8b5fd6a0c37865fd
+- Acceptance subset: interruption/resume, multi-action sequencing, failure and compensation tests
+- Preconditions: objective goal VOICE-CARE-G018 is schedulable
+- Effects: satisfy evidence requirement: interruption/resume, satisfy evidence requirement: multi-action sequencing, satisfy evidence requirement: failure and compensation tests
+- Evidence subset: interruption/resume, multi-action sequencing, failure and compensation tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G018
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/e1cd357796781245c4814610c47e96e439f5acd226897d5f8b5fd6a0c37865fd
+- Missing evidence: interruption/resume, multi-action sequencing, failure and compensation tests
+- Embedding query: conversation action orchestrator session retrieval form clarify confirm execute result response handoff resume
+- AST query: ConversationOrchestrator, InteractionRequest, InteractionResult, advance_conversation
+- Surplus group: objective/VOICE-CARE-G018
+- Merge key: 617e2e5f56145bd6
+- Merge family: objective/VOICE-CARE-G018
+- Merge role: aggregate
+- Work item count: 3
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 9e878beff603c08a
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G018. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-018-objective-gap-e29dae7ae482.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (interruption/resume, multi-action sequencing, failure and compensation tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-019 Implement reusable voice customer-care objective: Migrate 211 and Abby assets into a reference domain pack
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: reference-pack
+- Depends on: VOICE-CARE-AUTO-004, VOICE-CARE-AUTO-006, VOICE-CARE-AUTO-018, VOICE-CARE-AUTO-015
+- Outputs: data/domain_packs/211-ai/manifest.json, scripts/build_211_customer_care_pack.py, tests/customer_care/test_211_domain_pack.py
+- Validation: python -m pytest -q tests/customer_care/test_211_domain_pack.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-019-objective-gap-90e3470f5119.md
+- Bundle: voice-care/pack-211
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-pack-211.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 19
+- Parallel lane: voice-care-reference-packs
+- Conflict policy: migration is deterministic and read-only toward remote corpus/Hugging Face sources; preserve current voice and portal behavior as explicit compatibility gates
+- Predicted files: data/domain_packs/211-ai/manifest.json, scripts/build_211_customer_care_pack.py, tests/customer_care/test_211_domain_pack.py
+- Changed paths:
+- Context paths: data/domain_packs/211-ai/manifest.json, scripts/build_211_customer_care_pack.py, tests/customer_care/test_211_domain_pack.py
+- AST symbols: build_211_customer_care_pack, AbbyDomainPackAdapter, ServicePortalPackAdapter
+- Interfaces: Abby voice schema, slotted response DAG, portal package, GraphRAG
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G022
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/8e73b1dd7e3a677c1b9ef69e439bd21d2d0fc262b0d5f0a301e5743d0f03a02a
+- Canonical task CID: baguqeerarzz3dxl6hjtxyg4662pehg6sduwq7qtcwdk7biyb4v2d2dyduava
+- Semantic identity: objective-evidence-obligation/v1/cd291dd73d795b631cf5a8bc814a35bcedfdb66700c35812d21ab23fbbe54b0d
+- Acceptance subset: source and output CIDs, offline 211 smoke tests
+- Preconditions: objective goal VOICE-CARE-G022 is schedulable
+- Effects: satisfy evidence requirement: source and output CIDs, satisfy evidence requirement: offline 211 smoke tests
+- Evidence subset: source and output CIDs, offline 211 smoke tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G022
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/cd291dd73d795b631cf5a8bc814a35bcedfdb66700c35812d21ab23fbbe54b0d
+- Missing evidence: source and output CIDs, offline 211 smoke tests
+- Embedding query: 211 Abby domain pack service corpus voice DAG response template live agent portal action migration
+- AST query: build_211_customer_care_pack, AbbyDomainPackAdapter, ServicePortalPackAdapter
+- Surplus group: objective/VOICE-CARE-G022
+- Merge key: 632075a144826422
+- Merge family: objective/VOICE-CARE-G022
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: d7094b3d2c87565e
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G022. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-019-objective-gap-90e3470f5119.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (source and output CIDs, offline 211 smoke tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-020 Implement reusable voice customer-care objective: Prove data swapping with a non-211 reference pack
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: reference-pack
+- Depends on: VOICE-CARE-AUTO-004, VOICE-CARE-AUTO-006, VOICE-CARE-AUTO-018, VOICE-CARE-AUTO-015
+- Outputs: data/domain_packs/example-helpdesk/manifest.json, tests/customer_care/test_domain_pack_swap.py
+- Validation: python -m pytest -q tests/customer_care/test_domain_pack_swap.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-020-objective-gap-a88203f2d7ce.md
+- Bundle: voice-care/pack-example
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-pack-example.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 20
+- Parallel lane: voice-care-reference-packs
+- Conflict policy: no conditional engine code keyed to either pack ID; fixture contains synthetic public data and fake actions only
+- Predicted files: data/domain_packs/example-helpdesk/manifest.json, tests/customer_care/test_domain_pack_swap.py
+- Changed paths:
+- Context paths: data/domain_packs/example-helpdesk/manifest.json, tests/customer_care/test_domain_pack_swap.py
+- AST symbols: ExampleHelpdeskPack, load_domain_pack, switch_domain_pack
+- Interfaces: domain compiler, orchestrator, gateway, portal shell
+- Submodules: ipfs_datasets_py, ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G023
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/7a0c455236abeaf0bf398daaaadbce3bc47b4a7d4a7f9485b5f9d1ce573801e6
+- Canonical task CID: baguqeerapigekurwvpvpbpzzrwvkvw6ohpchwst5jj7zjbnv7hi44vzyahta
+- Semantic identity: objective-evidence-obligation/v1/17526f1cb9309f2c9d8ddbab88d96e3ed164ae3837b7ab75b4b1cf41c4417434
+- Acceptance subset: distinct ontology/forms/actions/branding
+- Preconditions: objective goal VOICE-CARE-G023 is schedulable
+- Effects: satisfy evidence requirement: distinct ontology/forms/actions/branding
+- Evidence subset: distinct ontology/forms/actions/branding
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G023
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/17526f1cb9309f2c9d8ddbab88d96e3ed164ae3837b7ab75b4b1cf41c4417434
+- Missing evidence: distinct ontology/forms/actions/branding
+- Embedding query: non 211 synthetic helpdesk domain pack swap reusable engine portal action isolation
+- AST query: ExampleHelpdeskPack, load_domain_pack, switch_domain_pack
+- Surplus group: objective/VOICE-CARE-G023
+- Merge key: 10e4b03260b87463
+- Merge family: objective/VOICE-CARE-G023
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 4c8c8631c2f02471
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G023. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-020-objective-gap-a88203f2d7ce.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (distinct ontology/forms/actions/branding), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-021 Implement reusable voice customer-care objective: Expose a transport-neutral customer-care gateway
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: api
+- Depends on: VOICE-CARE-AUTO-017, VOICE-CARE-AUTO-018, VOICE-CARE-AUTO-015
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/service.py, wallet_interface/routes/customer_care.py, tests/customer_care/test_gateway.py
+- Validation: python -m pytest -q tests/customer_care/test_gateway.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-021-objective-gap-30db3c44352a.md
+- Bundle: voice-care/gateway
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-gateway.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 21
+- Parallel lane: voice-care-api
+- Conflict policy: transport adapters delegate to one service and cannot reconstruct policy or execution state
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/service.py, wallet_interface/routes/customer_care.py, tests/customer_care/test_gateway.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/conversation_runtime/service.py, wallet_interface/routes/customer_care.py, tests/customer_care/test_gateway.py
+- AST symbols: CustomerCareService, CustomerCareGateway, InteractionEventStream
+- Interfaces: orchestrator, telephony adapter, portal API, operator console
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G020
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/51f693705272f56999e738cd73f069c083bcd2c00713958d9c31a14112099d96
+- Canonical task CID: baguqeerakh3jg4csol2wtgphhdgxh4djycb3zuwaa4jzldm4ggquceqjtwla
+- Semantic identity: objective-evidence-obligation/v1/c8d0553b6decc487b56681cf61be67ea6323f6dda81d7596b291fcd508a1302a
+- Acceptance subset: idempotent endpoints, HTTP/WebSocket contract tests
+- Preconditions: objective goal VOICE-CARE-G020 is schedulable
+- Effects: satisfy evidence requirement: idempotent endpoints, satisfy evidence requirement: HTTP/WebSocket contract tests
+- Evidence subset: idempotent endpoints, HTTP/WebSocket contract tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G020
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/c8d0553b6decc487b56681cf61be67ea6323f6dda81d7596b291fcd508a1302a
+- Missing evidence: idempotent endpoints, HTTP/WebSocket contract tests
+- Embedding query: customer care gateway API session turn form confirm action handoff status resume cancel stream
+- AST query: CustomerCareService, CustomerCareGateway, InteractionEventStream
+- Surplus group: objective/VOICE-CARE-G020
+- Merge key: ff3e404bd30046a6
+- Merge family: objective/VOICE-CARE-G020
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 150d32303e5a312b
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G020. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-021-objective-gap-30db3c44352a.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (idempotent endpoints, HTTP/WebSocket contract tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-022 Implement reusable voice customer-care objective: Add formal safety contract and adversarial evaluation gates
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: assurance
+- Depends on: VOICE-CARE-AUTO-003, VOICE-CARE-AUTO-007, VOICE-CARE-AUTO-008, VOICE-CARE-AUTO-018
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/assurance.py, ipfs_accelerate_py/test/test_action_assurance.py, tests/customer_care/fixtures/adversarial_actions.jsonl, docs/reports/VOICE_CUSTOMER_CARE_ASSURANCE.md
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_assurance.py tests/customer_care
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-022-objective-gap-f263f8b2dff5.md
+- Bundle: voice-care/assurance
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-assurance.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 22
+- Parallel lane: voice-care-assurance
+- Conflict policy: distinguish tests, bounded model checks, solver candidates, reconstructed proofs, and kernel-verified proofs; absence of a prover is not a proof
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/assurance.py, ipfs_accelerate_py/test/test_action_assurance.py, tests/customer_care/fixtures/adversarial_actions.jsonl, docs/reports/VOICE_CUSTOMER_CARE_ASSURANCE.md
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/assurance.py, ipfs_accelerate_py/test/test_action_assurance.py, tests/customer_care/fixtures/adversarial_actions.jsonl, docs/reports/VOICE_CUSTOMER_CARE_ASSURANCE.md
+- AST symbols: ActionSafetyInvariant, ConversationProofObligation, verify_action_trace, verify_conversation_graph
+- Interfaces: ipfs_datasets_py logic providers, agent supervisor proof adapters, MCP contract obligations
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G024
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/a76f838008b642e0a0a5e1092d14209134e7bddc68b5872b7480b9f40ab9c1e2
+- Canonical task CID: baguqeerau5xyhaaiwzbobiff4ees2fbase2oppo4nc2yok3uqc47icvzyhra
+- Semantic identity: objective-evidence-obligation/v1/dbc2db3d0fab3edb0aaed6fe20d21868c9897acb79ebef8c92271aa4d666dc9a
+- Acceptance subset: formal obligations and proof receipts
+- Preconditions: objective goal VOICE-CARE-G024 is schedulable
+- Effects: satisfy evidence requirement: formal obligations and proof receipts
+- Evidence subset: formal obligations and proof receipts
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G024
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/dbc2db3d0fab3edb0aaed6fe20d21868c9897acb79ebef8c92271aa4d666dc9a
+- Missing evidence: formal obligations and proof receipts
+- Embedding query: formal proof conversation graph action safety consent confirmation descriptor binding tenant non interference retry handoff
+- AST query: ActionSafetyInvariant, ConversationProofObligation, verify_action_trace, verify_conversation_graph
+- Surplus group: objective/VOICE-CARE-G024
+- Merge key: 7b73f938a6ad151b
+- Merge family: objective/VOICE-CARE-G024
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: a219a790ac4cd363
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G024. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-022-objective-gap-f263f8b2dff5.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (formal obligations and proof receipts), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-023 Implement reusable voice customer-care objective: Build the reusable portal shell and operator console
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: portal
+- Depends on: VOICE-CARE-AUTO-015, VOICE-CARE-AUTO-021
+- Outputs: wallet_interface/ui/src/customer_care, wallet_interface/ui/src/app/CustomerCareScreen.tsx, wallet_interface/ui/src/app/CustomerCareOperatorScreen.tsx, wallet_interface/ui/tests/customer-care.spec.ts
+- Validation: npm --prefix wallet_interface/ui test -- --runInBand
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-023-objective-gap-b57ab3d408ea.md
+- Bundle: voice-care/portal
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-portal.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 23
+- Parallel lane: voice-care-portal
+- Conflict policy: UI receives public presentation data and authorized private projections only; it never executes tools directly or stores secrets/private case plaintext in public caches
+- Predicted files: wallet_interface/ui/src/customer_care, wallet_interface/ui/src/app/CustomerCareScreen.tsx, wallet_interface/ui/src/app/CustomerCareOperatorScreen.tsx, wallet_interface/ui/tests/customer-care.spec.ts
+- Changed paths:
+- Context paths: wallet_interface/ui/src/customer_care, wallet_interface/ui/src/app/CustomerCareScreen.tsx, wallet_interface/ui/src/app/CustomerCareOperatorScreen.tsx, wallet_interface/ui/tests/customer-care.spec.ts
+- AST symbols: CustomerCareScreen, CustomerCareOperatorScreen, ActionTimeline, HandoffQueuePanel
+- Interfaces: customer-care gateway, wallet grants, domain-pack presentation
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G021
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/c2621a01866e692dfbe1c9a3899d4b1ed995d72d4e4dfd09a0bbbe90e548918f
+- Canonical task CID: baguqeerayjrbuamgnzus367bzgrythkld3mzlvznjzg72cnaxo7jbzkisghq
+- Semantic identity: objective-evidence-obligation/v1/def9cb2f6ffa3225e32c18ee2f39c36f84d47d3a7a45e63a2d26aecefd8ef316
+- Acceptance subset: domain-pack presentation adapter, accessibility/mobile/offline tests
+- Preconditions: objective goal VOICE-CARE-G021 is schedulable
+- Effects: satisfy evidence requirement: domain-pack presentation adapter, satisfy evidence requirement: accessibility/mobile/offline tests
+- Evidence subset: domain-pack presentation adapter, accessibility/mobile/offline tests
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G021
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/def9cb2f6ffa3225e32c18ee2f39c36f84d47d3a7a45e63a2d26aecefd8ef316
+- Missing evidence: domain-pack presentation adapter, accessibility/mobile/offline tests
+- Embedding query: reusable customer portal operator console intake grounded answer action confirmation workflow handoff disposition
+- AST query: CustomerCareScreen, CustomerCareOperatorScreen, ActionTimeline, HandoffQueuePanel
+- Surplus group: objective/VOICE-CARE-G021
+- Merge key: a090cde48acf5f09
+- Merge family: objective/VOICE-CARE-G021
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 6ce52b93460dd6a8
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G021. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-023-objective-gap-b57ab3d408ea.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (domain-pack presentation adapter, accessibility/mobile/offline tests), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-024 Implement reusable voice customer-care objective: Add observability operations deployment and rollback
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: operations
+- Depends on: VOICE-CARE-AUTO-008, VOICE-CARE-AUTO-014, VOICE-CARE-AUTO-021, VOICE-CARE-AUTO-023, VOICE-CARE-AUTO-022
+- Outputs: docs/runbooks/VOICE_CUSTOMER_CARE_OPERATIONS.md, docs/specs/VOICE_CUSTOMER_CARE_THREAT_MODEL.md, tests/customer_care/test_operational_readiness.py
+- Validation: python -m pytest -q tests/customer_care/test_operational_readiness.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-024-objective-gap-618e47447267.md
+- Bundle: voice-care/operations
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-operations.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 24
+- Parallel lane: voice-care-operations
+- Conflict policy: metrics and evidence use bounded labels and redacted identities; no raw transcript, audio, case values, secrets, or action payloads
+- Predicted files: docs/runbooks/VOICE_CUSTOMER_CARE_OPERATIONS.md, docs/specs/VOICE_CUSTOMER_CARE_THREAT_MODEL.md, tests/customer_care/test_operational_readiness.py
+- Changed paths:
+- Context paths: docs/runbooks/VOICE_CUSTOMER_CARE_OPERATIONS.md, docs/specs/VOICE_CUSTOMER_CARE_THREAT_MODEL.md, tests/customer_care/test_operational_readiness.py
+- AST symbols: CustomerCareHealth, ActionMetric, PackCanary, rollback_domain_pack
+- Interfaces: gateway, action receipts, telephony, supervisor runtime, portal
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G025
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/504e7b3575787bda3ef50300209825fe5107a357fef1e004f2fe8f99bb73e34a
+- Canonical task CID: baguqeerakbhhwnlvpb55upxvamacbgbf7ziqpi2x73y6abhs72hzto3t4nfa
+- Semantic identity: objective-evidence-obligation/v1/da8e784207c3d824fe064aba1b9cac9988f59f805f4494d9f520a06478071433
+- Acceptance subset: pack/action canary, failure drills
+- Preconditions: objective goal VOICE-CARE-G025 is schedulable
+- Effects: satisfy evidence requirement: pack/action canary, satisfy evidence requirement: failure drills
+- Evidence subset: pack/action canary, failure drills
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G025
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/da8e784207c3d824fe064aba1b9cac9988f59f805f4494d9f520a06478071433
+- Missing evidence: pack/action canary, failure drills
+- Embedding query: customer care observability operations deployment SLO health canary incident feature flag rollback privacy
+- AST query: CustomerCareHealth, ActionMetric, PackCanary, rollback_domain_pack
+- Surplus group: objective/VOICE-CARE-G025
+- Merge key: 0831d4ef85de58e6
+- Merge family: objective/VOICE-CARE-G025
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 10a83f3693677beb
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G025. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-024-objective-gap-618e47447267.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (pack/action canary, failure drills), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-025 Implement reusable voice customer-care objective: Establish bounded autonomous refill and contract-mismatch repair
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P1
+- Track: supervisor
+- Depends on: VOICE-CARE-AUTO-002, VOICE-CARE-AUTO-005, VOICE-CARE-AUTO-022
+- Outputs: scripts/ops/voice_customer_care_supervisor.py, tests/customer_care/test_supervisor_program.py
+- Validation: PYTHONPATH=ipfs_accelerate_py python -m ipfs_accelerate_py.agent_supervisor.objectives.bundle_supervisor --repo-root . --bundle-index-path data/voice_customer_care/agent_supervisor/objective_bundles/index.json --state-root data/voice_customer_care/agent_supervisor/lane_state --worktree-root /tmp/voice-care-agent-worktrees --manifest-path data/voice_customer_care/agent_supervisor/lane-manifest.json --task-prefix VOICE-CARE-AUTO- --max-lanes 6 --no-implement
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-025-objective-gap-aaa737f1fcca.md
+- Bundle: voice-care/supervisor-control
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-supervisor-control.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 25
+- Parallel lane: voice-care-supervisor-control
+- Conflict policy: objective heap, todo board, generated graph/index, and runbook are protected control-plane inputs; generated implementation tasks are bounded by exact predicted paths, symbols, interfaces, and validations; deduplicate by canonical task identity and serialize overlapping contracts
+- Predicted files: scripts/ops/voice_customer_care_supervisor.py, tests/customer_care/test_supervisor_program.py
+- Changed paths:
+- Context paths: scripts/ops/voice_customer_care_supervisor.py, tests/customer_care/test_supervisor_program.py, docs/planning/VOICE_CUSTOMER_CARE_AGENT_SUPERVISOR_RUNBOOK.md
+- AST symbols: ObjectiveGoal, ObjectiveFinding, ContractMismatchTask, BundleSupervisor, SelfImprovementEpoch
+- Interfaces: objective daemon, analysis/proof providers, task sources, bundle supervisor, self-improvement refill
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G027
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/911d4b9ea4399c37df8865090c50bb2a042ff4c9d71c8602e52aae061cc7cbd0
+- Canonical task CID: baguqeeraseouxhvehgodpx4imueqyuf3ficc75gj24oimaxffkxamhghzpia
+- Semantic identity: objective-evidence-obligation/v1/122dc830b00fbfdd13af96e6bac3cbe9b340cc6ef999e4216a8aecdf9dd3326a
+- Acceptance subset: lane conflict map
+- Preconditions: objective goal VOICE-CARE-G027 is schedulable
+- Effects: satisfy evidence requirement: lane conflict map
+- Evidence subset: lane conflict map
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G027
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/122dc830b00fbfdd13af96e6bac3cbe9b340cc6ef999e4216a8aecdf9dd3326a
+- Missing evidence: lane conflict map
+- Embedding query: agent supervisor objective scan AST GraphRAG formal plan contract mismatch vulnerability bundle lane refill
+- AST query: ObjectiveGoal, ObjectiveFinding, ContractMismatchTask, BundleSupervisor, SelfImprovementEpoch
+- Surplus group: objective/VOICE-CARE-G027
+- Merge key: 00894ed4b0528cb2
+- Merge family: objective/VOICE-CARE-G027
+- Merge role: aggregate
+- Work item count: 1
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 7a7eb8ef1e77d3f3
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G027. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-025-objective-gap-aaa737f1fcca.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (lane conflict map), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-026 Implement reusable voice customer-care objective: Prove the complete platform with two offline end-to-end journeys
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: integration
+- Depends on: VOICE-CARE-AUTO-010, VOICE-CARE-AUTO-011, VOICE-CARE-AUTO-012, VOICE-CARE-AUTO-013, VOICE-CARE-AUTO-016, VOICE-CARE-AUTO-017, VOICE-CARE-AUTO-018, VOICE-CARE-AUTO-021, VOICE-CARE-AUTO-023, VOICE-CARE-AUTO-019, VOICE-CARE-AUTO-020, VOICE-CARE-AUTO-022, VOICE-CARE-AUTO-024
+- Outputs: tests/customer_care/test_end_to_end.py, docs/reports/VOICE_CUSTOMER_CARE_END_TO_END.md
+- Validation: python -m pytest -q tests/customer_care/test_end_to_end.py tests/voice wallet_interface/tests/test_voice_router_adapter.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-026-objective-gap-0462977bc884.md
+- Bundle: voice-care/end-to-end
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-end-to-end.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 26
+- Parallel lane: voice-care-integration
+- Conflict policy: use synthetic input and fake/local adapters only; live telephony, remote mutation, paid providers, and production supervisor start require separate human approval
+- Predicted files: tests/customer_care/test_end_to_end.py, docs/reports/VOICE_CUSTOMER_CARE_END_TO_END.md
+- Changed paths:
+- Context paths: tests/customer_care/test_end_to_end.py, docs/reports/VOICE_CUSTOMER_CARE_END_TO_END.md
+- AST symbols: test_211_end_to_end, test_helpdesk_end_to_end, verify_receipt_chain
+- Interfaces: all customer-care platform boundaries
+- Submodules: ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G026
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/f0cb079d14c1018fb28a72cc657f925f53658ce77ee4175d8a45e11478c72741
+- Canonical task CID: baguqeera6dfqphiuyeay7mukolggk74sl5jwldhhp3sboxmkixqri6ghe5aq
+- Semantic identity: objective-evidence-obligation/v1/063e148cb495f8e465445dffae82511d9f460d7145d74fb0ab8dcb5bac374694
+- Acceptance subset: cross-channel equivalence, domain-swap proof
+- Preconditions: objective goal VOICE-CARE-G026 is schedulable
+- Effects: satisfy evidence requirement: cross-channel equivalence, satisfy evidence requirement: domain-swap proof
+- Evidence subset: cross-channel equivalence, domain-swap proof
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G026
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/063e148cb495f8e465445dffae82511d9f460d7145d74fb0ab8dcb5bac374694
+- Missing evidence: cross-channel equivalence, domain-swap proof
+- Embedding query: end to end voice web customer care 211 non 211 intake action MCP CLI callable workflow supervisor human handoff
+- AST query: test_211_end_to_end, test_helpdesk_end_to_end, verify_receipt_chain
+- Surplus group: objective/VOICE-CARE-G026
+- Merge key: 0e44a9c47dcc68fb
+- Merge family: objective/VOICE-CARE-G026
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: f4a7d49e31abf0bd
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G026. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-026-objective-gap-0462977bc884.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (cross-channel equivalence, domain-swap proof), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## VOICE-CARE-AUTO-027 Implement reusable voice customer-care objective: Build the deployment-owned action catalog and resolver
+
+- Status: todo
+- Completion: manual
+- Is schedulable: true
+- Review only: false
+- Priority: P0
+- Track: action-runtime
+- Depends on: VOICE-CARE-AUTO-005
+- Outputs: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- Validation: python -m pytest -q ipfs_accelerate_py/test/test_action_catalog.py
+- Board namespace: VOICE_CUSTOMER_CARE_TODO.md
+- Evidence inputs: data/voice_customer_care/agent_supervisor/discovery
+- Discovery evidence: /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-027-objective-gap-0c4c41e406b0.md
+- Bundle: voice-care/action-catalog
+- Bundle shard: data/voice_customer_care/agent_supervisor/objective_bundles/voice-care-action-catalog.todo.md
+- Bundle strategy: explicit
+- Graph parents: VOICE-CARE-G001
+- Graph depth: 1
+- Objective heap index: 0
+- Parallel lane: voice-care-runtime
+- Conflict policy: domain packs may reference catalog entries but never register, replace, or widen them
+- Predicted files: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- Changed paths:
+- Context paths: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- AST symbols: ActionCatalog, ActionRegistration, ActionResolver, CatalogSnapshot
+- Interfaces: MCP IDL registry, CLI registry, callable registry, workflow registry, supervisor control
+- Submodules: ipfs_accelerate_py
+- Generated artifacts:
+- Allow concurrent with:
+- Goal id: VOICE-CARE-G007
+- Completion authority: local
+- External authority blockers:
+- Canonical task key: task/v1/616932d9c9b130a4b37c3a64accee5df35f806b1813028145cef3b151a0e160e
+- Canonical task CID: baguqeeramfutfwojweykjm34hjskztxf3427qbvrqeycqfc4545rkgqocyha
+- Semantic identity: objective-evidence-obligation/v1/1ac6927654fbdfbd7a7e59949b20710e13d9aceb305eafc8c0c36d98de78637c
+- Acceptance subset: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- Preconditions: objective goal VOICE-CARE-G007 is schedulable
+- Effects: satisfy evidence requirement: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, satisfy evidence requirement: ipfs_accelerate_py/test/test_action_catalog.py
+- Evidence subset: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- Resource class: cpu-medium
+- Token class: medium
+- Estimated tokens: 0
+- Context budget tokens: 4096
+- Provider role: grok, codex-review
+- Resources: cpu-medium
+- Merge fate: objective/VOICE-CARE-G007
+- Rejection reasons: none (accepted)
+- Evidence obligation key: objective-evidence-obligation/v1/1ac6927654fbdfbd7a7e59949b20710e13d9aceb305eafc8c0c36d98de78637c
+- Missing evidence: ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py
+- Embedding query: deployment action catalog resolver allowlist descriptor CID schema interface capability lazy adapter
+- AST query: ActionCatalog, ActionRegistration, ActionResolver, CatalogSnapshot
+- Surplus group: objective/VOICE-CARE-G007
+- Merge key: 8261e7c25576c66c
+- Merge family: objective/VOICE-CARE-G007
+- Merge role: aggregate
+- Work item count: 2
+- Work scope: goal_subgoal_multi_evidence_batch
+- Goal packet:
+- Goal packet role:
+- Goal packet goals:
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Completion goal bindings: {}
+- Completion task bindings:
+- Candidate kind: aggregate
+- Todo vector key: 5e51483c197b9896
+- Acceptance: Objective scan filed this gap for VOICE-CARE-G007. Use evidence in /home/barberb/211-AI/211-AI/data/voice_customer_care/agent_supervisor/discovery/2026-08-03-voice-care-auto-027-objective-gap-0c4c41e406b0.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py, ipfs_accelerate_py/test/test_action_catalog.py), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
