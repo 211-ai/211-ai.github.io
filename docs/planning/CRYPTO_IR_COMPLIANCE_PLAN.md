@@ -1,7 +1,9 @@
 # Crypto IR, Smart-Contract Assurance, and Transaction Compliance Plan
 
-Status: approved for bounded supervised implementation on the dedicated
-integration branch `codex/crypto-ir-contract-compliance`.
+Status: integrated from the reviewed implementation branch
+`codex/crypto-ir-contract-compliance`. Operational supervisor runs target
+`main` by default; a different reviewed checkout must be selected explicitly
+with `CRYPTO_IR_COMPLIANCE_MERGE_TARGET_BRANCH`.
 
 This is an engineering and assurance plan, not a legal opinion, an OFAC
 license, or a declaration that any person or transaction is lawful. Legal and

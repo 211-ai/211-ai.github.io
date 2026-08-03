@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="${SCRIPT_DIR}/$(basename "${BASH_SOURCE[0]}")"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ACCELERATE_ROOT="${IPFS_ACCELERATE_SOURCE_ROOT:-${REPO_ROOT}/ipfs_accelerate_py}"
 PYTHON_BIN="${CRYPTO_IR_COMPLIANCE_PYTHON:-python3}"
@@ -38,11 +39,19 @@ CODEX_STATE_PREFIX="crypto_ir_compliance_codex"
 GROK_STATE_PREFIX="crypto_ir_compliance_grok"
 CODEX_LOG="${LOG_DIR}/codex-supervisor.log"
 GROK_LOG="${LOG_DIR}/grok-supervisor.log"
+SERVICE_NAMESPACE="$(
+  "${PYTHON_BIN}" -c \
+    'import hashlib, sys; print(hashlib.sha256(sys.argv[1].encode()).hexdigest()[:12])' \
+    "${REPO_ROOT}"
+)"
+CODEX_SERVICE_UNIT="crypto-ir-compliance-${SERVICE_NAMESPACE}-codex"
+GROK_SERVICE_UNIT="crypto-ir-compliance-${SERVICE_NAMESPACE}-grok"
+SYSTEMCTL_BIN="${CRYPTO_IR_COMPLIANCE_SYSTEMCTL_BIN:-$(command -v systemctl || true)}"
 
 TASK_HEADER_PREFIX="## CRYPTOIR-"
 TASK_ID_PREFIX="CRYPTOIR-"
 GOAL_ID_PREFIX="CRYPTOIR-G"
-MERGE_TARGET_BRANCH="codex/crypto-ir-contract-compliance"
+MERGE_TARGET_BRANCH="${CRYPTO_IR_COMPLIANCE_MERGE_TARGET_BRANCH:-main}"
 
 export PYTHONPATH="${ACCELERATE_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
 export PYTHONDONTWRITEBYTECODE=1
@@ -247,11 +256,193 @@ read_live_pid() {
   return 1
 }
 
+pid_matches_lane_process() {
+  local pid="$1"
+  local module_fragment="$2"
+  local state_dir="$3"
+  local state_prefix="$4"
+  local argument=""
+  local index=0
+  local found_module=0
+  local found_state_dir=0
+  local found_state_prefix=0
+  local -a arguments=()
+  if [[ ! -r "/proc/${pid}/cmdline" ]]; then
+    return 1
+  fi
+  mapfile -d '' -t arguments <"/proc/${pid}/cmdline"
+  for ((index = 0; index < ${#arguments[@]}; index++)); do
+    argument="${arguments[index]}"
+    if [[ "${argument}" == "-m" \
+      && "${arguments[index + 1]:-}" == "${module_fragment}" ]]; then
+      found_module=1
+    fi
+    if [[ "${argument}" == "--state-dir" \
+      && "${arguments[index + 1]:-}" == "${state_dir}" ]] \
+      || [[ "${argument}" == "--state-dir=${state_dir}" ]]; then
+      found_state_dir=1
+    fi
+    if [[ "${argument}" == "--state-prefix" \
+      && "${arguments[index + 1]:-}" == "${state_prefix}" ]] \
+      || [[ "${argument}" == "--state-prefix=${state_prefix}" ]]; then
+      found_state_prefix=1
+    fi
+  done
+  [[ "${found_module}" -eq 1 && "${found_state_dir}" -eq 1 && "${found_state_prefix}" -eq 1 ]]
+}
+
+service_unit_name() {
+  local unit_name="$1"
+  if [[ "${unit_name}" == *.service ]]; then
+    printf '%s\n' "${unit_name}"
+  else
+    printf '%s.service\n' "${unit_name}"
+  fi
+}
+
+launch_receipt_path() {
+  printf '%s/%s.launch.json\n' "${LIFECYCLE_DIR}" "$1"
+}
+
+durable_receipt_valid() {
+  local receipt_path="$1"
+  local unit_name="$2"
+  [[ -f "${receipt_path}" ]] || return 1
+  "${PYTHON_BIN}" -c \
+    'import json, pathlib, sys
+path = pathlib.Path(sys.argv[1])
+expected_unit = sys.argv[2]
+try:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    pid = int(payload.get("pid") or 0)
+except (OSError, TypeError, ValueError):
+    raise SystemExit(1)
+valid = (
+    payload.get("backend") == "systemd-user"
+    and payload.get("unit_name") == expected_unit
+    and payload.get("active_state") == "active"
+    and pid > 0
+)
+raise SystemExit(0 if valid else 1)' \
+    "${receipt_path}" "$(service_unit_name "${unit_name}")"
+}
+
+service_has_durable_receipt() {
+  durable_receipt_valid "$(launch_receipt_path "$1")" "$1"
+}
+
+service_properties() {
+  local unit_name="$1"
+  if [[ -z "${SYSTEMCTL_BIN}" || ! -x "${SYSTEMCTL_BIN}" ]]; then
+    return 1
+  fi
+  "${SYSTEMCTL_BIN}" --user show --no-pager \
+    --property=LoadState --property=ActiveState \
+    --property=SubState --property=MainPID \
+    "$(service_unit_name "${unit_name}")" 2>/dev/null
+}
+
+service_unit_state() {
+  local unit_name="$1"
+  local properties=""
+  local load_state=""
+  local active_state=""
+  if [[ -z "${SYSTEMCTL_BIN}" || ! -x "${SYSTEMCTL_BIN}" ]]; then
+    if [[ -e "$(launch_receipt_path "${unit_name}")" \
+      || -L "$(launch_receipt_path "${unit_name}")" ]]; then
+      printf 'error\n'
+    else
+      printf 'unavailable\n'
+    fi
+    return 0
+  fi
+  if ! properties="$(service_properties "${unit_name}")"; then
+    printf 'error\n'
+    return 0
+  fi
+  load_state="$(sed -n 's/^LoadState=//p' <<<"${properties}" | head -n 1)"
+  active_state="$(sed -n 's/^ActiveState=//p' <<<"${properties}" | head -n 1)"
+  if [[ "${load_state}" == "not-found" ]]; then
+    printf 'not-found\n'
+  elif [[ -z "${load_state}" || -z "${active_state}" ]]; then
+    printf 'error\n'
+  elif [[ "${active_state}" =~ ^(active|activating|reloading|deactivating)$ ]]; then
+    printf 'active\n'
+  else
+    printf 'loaded-inactive\n'
+  fi
+}
+
+service_unit_active_state() {
+  local properties=""
+  if ! properties="$(service_properties "$1")"; then
+    return 1
+  fi
+  sed -n 's/^ActiveState=//p' <<<"${properties}" | head -n 1
+}
+
+service_unit_blocks_start() {
+  local state=""
+  state="$(service_unit_state "$1")"
+  [[ "${state}" == "active" || "${state}" == "loaded-inactive" || "${state}" == "error" ]]
+}
+
+service_unit_quiescent() {
+  local state=""
+  state="$(service_unit_state "$1")"
+  [[ "${state}" == "not-found" || "${state}" == "loaded-inactive" || "${state}" == "unavailable" ]]
+}
+
+read_live_service_pid() {
+  local unit_name="$1"
+  local module_fragment="$2"
+  local state_dir="$3"
+  local state_prefix="$4"
+  local properties=""
+  local active_state=""
+  local pid=""
+  if ! properties="$(service_properties "${unit_name}")"; then
+    return 1
+  fi
+  active_state="$(sed -n 's/^ActiveState=//p' <<<"${properties}" | head -n 1)"
+  pid="$(sed -n 's/^MainPID=\([0-9][0-9]*\)$/\1/p' <<<"${properties}" | head -n 1)"
+  if [[ "${active_state}" =~ ^(active|activating|reloading|deactivating)$ \
+    && -n "${pid}" ]] \
+    && kill -0 "${pid}" 2>/dev/null \
+    && pid_matches_lane_process \
+      "${pid}" "${module_fragment}" "${state_dir}" "${state_prefix}"; then
+    printf '%s\n' "${pid}"
+    return 0
+  fi
+  return 1
+}
+
 read_live_supervisor_pid() {
   local state_dir="$1"
   local state_prefix="$2"
+  local service_unit="${3:-}"
   local pid=""
-  if pid="$(read_live_pid "$(pid_file_for "${state_dir}" "${state_prefix}")")"; then
+  local service_state="not-found"
+  if [[ -n "${service_unit}" ]]; then
+    if pid="$(
+      read_live_service_pid \
+        "${service_unit}" \
+        "ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor" \
+        "${state_dir}" "${state_prefix}"
+    )"; then
+      printf '%s\n' "${pid}"
+      return 0
+    fi
+    service_state="$(service_unit_state "${service_unit}")"
+    if [[ "${service_state}" != "not-found" && "${service_state}" != "unavailable" ]]; then
+      return 1
+    fi
+  fi
+  if pid="$(read_live_pid "$(pid_file_for "${state_dir}" "${state_prefix}")")" \
+    && pid_matches_lane_process \
+      "${pid}" \
+      "ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor" \
+      "${state_dir}" "${state_prefix}"; then
     printf '%s\n' "${pid}"
     return 0
   fi
@@ -262,7 +453,26 @@ read_live_supervisor_pid() {
         "$(supervisor_status_file_for "${state_dir}" "${state_prefix}")" | head -n 1
     )"
   fi
-  if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
+  if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null \
+    && pid_matches_lane_process \
+      "${pid}" \
+      "ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor" \
+      "${state_dir}" "${state_prefix}"; then
+    printf '%s\n' "${pid}"
+    return 0
+  fi
+  return 1
+}
+
+read_live_daemon_pid() {
+  local state_dir="$1"
+  local state_prefix="$2"
+  local pid=""
+  if pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")" \
+    && pid_matches_lane_process \
+      "${pid}" \
+      "ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_daemon" \
+      "${state_dir}" "${state_prefix}"; then
     printf '%s\n' "${pid}"
     return 0
   fi
@@ -272,15 +482,18 @@ read_live_supervisor_pid() {
 lane_fully_running() {
   local state_dir="$1"
   local state_prefix="$2"
-  read_live_supervisor_pid "${state_dir}" "${state_prefix}" >/dev/null \
-    && read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")" >/dev/null
+  local service_unit="$3"
+  read_live_supervisor_pid "${state_dir}" "${state_prefix}" "${service_unit}" >/dev/null \
+    && read_live_daemon_pid "${state_dir}" "${state_prefix}" >/dev/null
 }
 
 any_lane_process_running() {
-  read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" >/dev/null \
-    || read_live_pid "$(daemon_pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")" >/dev/null \
-    || read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" >/dev/null \
-    || read_live_pid "$(daemon_pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")" >/dev/null
+  service_unit_blocks_start "${CODEX_SERVICE_UNIT}" \
+    || service_unit_blocks_start "${GROK_SERVICE_UNIT}" \
+    || read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" >/dev/null \
+    || read_live_daemon_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" >/dev/null \
+    || read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}" >/dev/null \
+    || read_live_daemon_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" >/dev/null
 }
 
 require_supervisors_stopped() {
@@ -293,6 +506,7 @@ require_supervisors_stopped() {
 
 with_lifecycle_lock() {
   local lifecycle_fd
+  local launcher_path="${SCRIPT_PATH}"
   local status=0
   mkdir -p "${LIFECYCLE_DIR}"
   require_executable "$(command -v flock || true)"
@@ -302,7 +516,11 @@ with_lifecycle_lock() {
     exec {lifecycle_fd}>&-
     return 1
   fi
-  "$@" || status=$?
+  CRYPTO_IR_COMPLIANCE_LIB_ONLY=1 \
+    "${BASH:-bash}" -c \
+      'source "$1"; shift; "$@"' \
+      crypto-ir-locked-action "${launcher_path}" "$@" \
+    || status=$?
   flock -u "${lifecycle_fd}"
   exec {lifecycle_fd}>&-
   return "${status}"
@@ -449,6 +667,62 @@ common_supervisor_args() {
     --log-level INFO
 }
 
+launch_durable_lane() {
+  local service_unit="$1"
+  local log_path="$2"
+  shift 2
+  local environment_name=""
+  local python_executable=""
+  local receipt_path=""
+  local receipt_tmp=""
+  local -a environment_args=()
+  receipt_path="$(launch_receipt_path "${service_unit}")"
+  receipt_tmp="${receipt_path}.tmp.$$"
+  python_executable="$(
+    "${PYTHON_BIN}" -c \
+      'import os, sys; print(os.path.abspath(sys.executable))'
+  )"
+  require_executable "${python_executable}"
+  for environment_name in \
+    PATH HOME PYTHONPATH PYTHONDONTWRITEBYTECODE PYTHONHASHSEED \
+    IPFS_ACCELERATE_DUCKDB_ONLY IPFS_ACCEL_SKIP_CORE IPFS_KIT_DISABLE \
+    IPFS_DATASETS_AUTO_INSTALL IPFS_AUTO_INSTALL \
+    IPFS_DATASETS_PY_MINIMAL_IMPORTS \
+    IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER \
+    IPFS_ACCELERATE_AGENT_GROK_BIN IPFS_ACCELERATE_AGENT_GROK_MODEL; do
+    if [[ -v "${environment_name}" ]]; then
+      environment_args+=(--pass-env "${environment_name}")
+    fi
+  done
+  if ! "${PYTHON_BIN}" \
+      -m ipfs_accelerate_py.agent_supervisor.durable_process \
+      --unit "${service_unit}" \
+      --working-directory "${REPO_ROOT}" \
+      --log-path "${log_path}" \
+      "${environment_args[@]}" \
+      -- "${python_executable}" "$@" >"${receipt_tmp}"; then
+    rm -f "${receipt_tmp}"
+    return 1
+  fi
+  if ! durable_receipt_valid "${receipt_tmp}" "${service_unit}"; then
+    echo "durable launch returned an invalid receipt for ${service_unit}" >&2
+    if [[ -n "${SYSTEMCTL_BIN}" && -x "${SYSTEMCTL_BIN}" ]]; then
+      "${SYSTEMCTL_BIN}" --user stop "$(service_unit_name "${service_unit}")" >/dev/null 2>&1 || true
+    fi
+    rm -f "${receipt_tmp}"
+    return 1
+  fi
+  if ! mv "${receipt_tmp}" "${receipt_path}"; then
+    echo "could not persist durable launch receipt for ${service_unit}" >&2
+    if [[ -n "${SYSTEMCTL_BIN}" && -x "${SYSTEMCTL_BIN}" ]]; then
+      "${SYSTEMCTL_BIN}" --user stop "$(service_unit_name "${service_unit}")" >/dev/null 2>&1 || true
+    fi
+    rm -f "${receipt_tmp}"
+    return 1
+  fi
+  cat "${receipt_path}"
+}
+
 reconcile_lane() {
   local label="$1"
   local state_dir="$2"
@@ -488,12 +762,12 @@ reconcile_lane() {
 }
 
 run_reconciliation_preflight() {
-  prepare_runtime
-  require_target_checkout
-  require_supervisors_stopped
-  validate_objective_control_plane
-  reconcile_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" 0 "${WORKTREE_ROOT}/codex"
-  reconcile_lane "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" 1 "${WORKTREE_ROOT}/grok"
+  prepare_runtime || return $?
+  require_target_checkout || return $?
+  require_supervisors_stopped || return $?
+  validate_objective_control_plane || return $?
+  reconcile_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" 0 "${WORKTREE_ROOT}/codex" || return $?
+  reconcile_lane "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" 1 "${WORKTREE_ROOT}/grok" || return $?
 }
 
 start_codex_lane() {
@@ -534,12 +808,11 @@ start_codex_lane() {
     --generated-dirty-path docs/planning/CRYPTO_IR_COMPLIANCE_TODO.md
     --generated-dirty-path data/crypto_ir_compliance/agent_supervisor
   )
-  (
-    cd "${REPO_ROOT}"
-    nohup setsid --fork "${PYTHON_BIN}" \
-      -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" </dev/null >>"${CODEX_LOG}" 2>&1 &
-  )
+  launch_durable_lane \
+    "${CODEX_SERVICE_UNIT}" \
+    "${CODEX_LOG}" \
+    -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
+    "${args[@]}"
 }
 
 start_grok_lane() {
@@ -553,13 +826,14 @@ start_grok_lane() {
     --no-objective-goal-migration
   )
   (
-    cd "${REPO_ROOT}"
-    IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER=grok-build \
-    IPFS_ACCELERATE_AGENT_GROK_BIN="${GROK_BIN}" \
-    IPFS_ACCELERATE_AGENT_GROK_MODEL="${GROK_MODEL}" \
-    nohup setsid --fork "${PYTHON_BIN}" \
+    export IPFS_ACCELERATE_AGENT_IMPLEMENTATION_PROVIDER=grok-build
+    export IPFS_ACCELERATE_AGENT_GROK_BIN="${GROK_BIN}"
+    export IPFS_ACCELERATE_AGENT_GROK_MODEL="${GROK_MODEL}"
+    launch_durable_lane \
+      "${GROK_SERVICE_UNIT}" \
+      "${GROK_LOG}" \
       -m ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor \
-      "${args[@]}" </dev/null >>"${GROK_LOG}" 2>&1 &
+      "${args[@]}"
   )
 }
 
@@ -567,10 +841,11 @@ wait_for_lane() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
+  local service_unit="$4"
   local attempt
   for attempt in {1..60}; do
-    if lane_fully_running "${state_dir}" "${state_prefix}"; then
-      echo "${label} supervisor started with pid $(read_live_supervisor_pid "${state_dir}" "${state_prefix}") and managed daemon pid $(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")."
+    if lane_fully_running "${state_dir}" "${state_prefix}" "${service_unit}"; then
+      echo "${label} supervisor started with pid $(read_live_supervisor_pid "${state_dir}" "${state_prefix}" "${service_unit}") and managed daemon pid $(read_live_daemon_pid "${state_dir}" "${state_prefix}")."
       return 0
     fi
     sleep 1
@@ -580,12 +855,12 @@ wait_for_lane() {
 }
 
 start_supervisors() {
-  prepare_runtime
-  require_target_checkout
-  require_executable "${CODEX_BIN}"
-  require_executable "${GROK_BIN}"
-  if lane_fully_running "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" \
-    && lane_fully_running "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}"; then
+  prepare_runtime || return $?
+  require_target_checkout || return $?
+  require_executable "${CODEX_BIN}" || return $?
+  require_executable "${GROK_BIN}" || return $?
+  if lane_fully_running "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" \
+    && lane_fully_running "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}"; then
     echo "Both supervisors are already running."
     show_status
     return
@@ -598,11 +873,24 @@ start_supervisors() {
     echo "objective artifacts are absent; run '$0 seed', review and commit the generated control plane, then retry start" >&2
     return 1
   fi
-  run_reconciliation_preflight
-  start_codex_lane
-  start_grok_lane
-  wait_for_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}"
-  wait_for_lane "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}"
+  if ! run_reconciliation_preflight; then
+    echo "supervisor reconciliation preflight failed; no lane was launched" >&2
+    return 1
+  fi
+  if ! start_codex_lane; then
+    return 1
+  fi
+  if ! start_grok_lane; then
+    echo "Grok lane launch failed; rolling back the Codex lane." >&2
+    stop_supervisors || true
+    return 1
+  fi
+  if ! wait_for_lane "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" \
+    || ! wait_for_lane "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}"; then
+    echo "one or more lanes failed startup verification; stopping both lanes" >&2
+    stop_supervisors || true
+    return 1
+  fi
   show_status
 }
 
@@ -610,6 +898,7 @@ show_lane_status() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
+  local service_unit="$4"
   local failed=0
   local status_path
   local incident_path="${state_dir}/implementation-protected-path-incident.json"
@@ -617,14 +906,14 @@ show_lane_status() {
   local supervisor_pid=""
   local daemon_pid=""
   status_path="$(supervisor_status_file_for "${state_dir}" "${state_prefix}")"
-  if supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
+  if supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" "${service_unit}")"; then
     echo "${label} supervisor: running (pid ${supervisor_pid})"
     ps -p "${supervisor_pid}" -o pid=,etime=,stat=,args=
   else
     echo "${label} supervisor: stopped"
     return 1
   fi
-  if daemon_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")"; then
+  if daemon_pid="$(read_live_daemon_pid "${state_dir}" "${state_prefix}")"; then
     echo "${label} daemon: running (pid ${daemon_pid})"
     ps -p "${daemon_pid}" -o pid=,etime=,stat=,args=
   else
@@ -657,16 +946,16 @@ write_health_snapshot() {
   local datasets_commit=""
   local pid=""
   local tmp_path="${RUNTIME_ROOT}/supervisor-health.json.tmp.$$"
-  if pid="$(read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")"; then
+  if pid="$(read_live_supervisor_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}")"; then
     codex_supervisor_pid="${pid}"
   fi
-  if pid="$(read_live_pid "$(daemon_pid_file_for "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")")"; then
+  if pid="$(read_live_daemon_pid "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}")"; then
     codex_daemon_pid="${pid}"
   fi
-  if pid="$(read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")"; then
+  if pid="$(read_live_supervisor_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}")"; then
     grok_supervisor_pid="${pid}"
   fi
-  if pid="$(read_live_pid "$(daemon_pid_file_for "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")")"; then
+  if pid="$(read_live_daemon_pid "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}")"; then
     grok_daemon_pid="${pid}"
   fi
   repository_commit="$(git -C "${REPO_ROOT}" rev-parse HEAD 2>/dev/null || true)"
@@ -674,23 +963,53 @@ write_health_snapshot() {
   "${PYTHON_BIN}" - \
     "${tmp_path}" "${healthy}" "${MERGE_TARGET_BRANCH}" \
     "${TODO_PATH#${REPO_ROOT}/}" "${GRAPH_PATH#${REPO_ROOT}/}" \
+    "${TODO_PATH}" "${GRAPH_PATH}" "${TASK_HEADER_PREFIX}" \
     "${repository_commit}" "${datasets_commit}" \
     "${codex_supervisor_pid}" "${codex_daemon_pid}" "${grok_supervisor_pid}" "${grok_daemon_pid}" \
     "$([[ -f "${CODEX_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" \
     "$([[ -f "${GROK_STATE_DIR}/implementation-protected-path-incident.json" ]] && echo true || echo false)" <<'PY'
+import collections
 import json
 import pathlib
+import re
 import sys
 from datetime import datetime, timezone
 
+from ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_daemon import (
+    parse_task_file,
+)
+
 (
-    output, healthy, branch, board, graph, repository_commit, datasets_commit,
+    output, healthy, branch, board, graph,
+    board_source, graph_source, task_header_prefix,
+    repository_commit, datasets_commit,
     codex_supervisor, codex_daemon, grok_supervisor, grok_daemon,
     codex_incident, grok_incident,
 ) = sys.argv[1:]
 
 def pid(value):
     return None if value == "null" else int(value)
+
+tasks = parse_task_file(pathlib.Path(board_source), task_header_prefix)
+status_counts = collections.Counter(
+    str(task.status).strip().lower().replace(" ", "_")
+    for task in tasks
+)
+planned_tasks = []
+for task in tasks:
+    match = re.fullmatch(r"CRYPTOIR-(\d+)", task.task_id)
+    if match and int(match.group(1)) <= 46:
+        planned_tasks.append(task)
+planned_status_counts = collections.Counter(
+    str(task.status).strip().lower().replace(" ", "_")
+    for task in planned_tasks
+)
+try:
+    objective_graph = json.loads(
+        pathlib.Path(graph_source).read_text(encoding="utf-8")
+    )
+except (OSError, TypeError, ValueError):
+    objective_graph = {}
 
 payload = {
     "schema": "crypto-ir-contract-compliance-supervisor-health/v1",
@@ -702,6 +1021,37 @@ payload = {
     "source": {
         "repository_commit": repository_commit or None,
         "ipfs_datasets_py_commit": datasets_commit or None,
+    },
+    "implementation_progress": {
+        "authority": "task_board",
+        "total": len(tasks),
+        "completed": status_counts["completed"],
+        "todo": status_counts["todo"],
+        "in_progress": status_counts["in_progress"],
+        "blocked": status_counts["blocked"],
+        "completed_percent": round(
+            100 * status_counts["completed"] / len(tasks), 1
+        ) if tasks else 0.0,
+        "planned_scope": {
+            "task_id_range": "CRYPTOIR-001..CRYPTOIR-046",
+            "total": len(planned_tasks),
+            "completed": planned_status_counts["completed"],
+            "completed_percent": round(
+                100 * planned_status_counts["completed"] / len(planned_tasks),
+                1,
+            ) if planned_tasks else 0.0,
+        },
+    },
+    "objective_lifecycle": {
+        "authority": "proof-gated_objective_graph",
+        "completion_reconciliation_enabled": False,
+        "verification_state": "unverified",
+        "generated_at": objective_graph.get("generated_at"),
+        "goal_count": objective_graph.get("goal_count"),
+        "active_goal_count": objective_graph.get("active_goal_count"),
+        "verified_completed_goal_count": objective_graph.get(
+            "completed_goal_count"
+        ),
     },
     "codex": {
         "provider": "chatgpt-codex",
@@ -730,8 +1080,8 @@ show_status() {
   local failed=0
   local healthy=true
   prepare_runtime
-  show_lane_status "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
-  show_lane_status "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
+  show_lane_status "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" || failed=1
+  show_lane_status "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}" || failed=1
   if [[ "${failed}" -ne 0 ]]; then
     healthy=false
   fi
@@ -748,14 +1098,69 @@ request_lane_stop() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
+  local service_unit="$4"
   local pid=""
-  if pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
-    echo "Stopping ${label} supervisor ${pid}."
-    kill "${pid}"
+  local raw_pid=""
+  local active_state=""
+  local service_state=""
+  if pid="$(read_live_service_pid \
+    "${service_unit}" \
+    "ipfs_accelerate_py.agent_supervisor.todo_daemon.implementation_supervisor" \
+    "${state_dir}" "${state_prefix}")"; then
+    echo "Stopping ${label} service $(service_unit_name "${service_unit}") with supervisor pid ${pid}."
+    if ! "${SYSTEMCTL_BIN}" --user stop "$(service_unit_name "${service_unit}")"; then
+      echo "failed to stop ${label} service $(service_unit_name "${service_unit}")" >&2
+      return 1
+    fi
     return 0
   fi
-  if pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")"; then
+  service_state="$(service_unit_state "${service_unit}")"
+  case "${service_state}" in
+    active)
+      active_state="$(service_unit_active_state "${service_unit}" || true)"
+      if [[ "${active_state}" =~ ^(activating|reloading|deactivating)$ ]] \
+        && service_has_durable_receipt "${service_unit}"; then
+        if [[ "${active_state}" == "deactivating" ]]; then
+          echo "${label} service $(service_unit_name "${service_unit}") is already stopping."
+          return 0
+        fi
+        echo "Stopping transitional ${label} service $(service_unit_name "${service_unit}") (${active_state})."
+        if ! "${SYSTEMCTL_BIN}" --user stop "$(service_unit_name "${service_unit}")"; then
+          echo "failed to stop transitional ${label} service $(service_unit_name "${service_unit}")" >&2
+          return 1
+        fi
+        return 0
+      fi
+      echo "${label} service $(service_unit_name "${service_unit}") is active but its process identity does not match this lane; refusing to stop it." >&2
+      return 1
+      ;;
+    error)
+      echo "could not inspect ${label} service $(service_unit_name "${service_unit}"); refusing PID fallback" >&2
+      return 1
+      ;;
+    loaded-inactive)
+      echo "${label} service $(service_unit_name "${service_unit}") is already inactive."
+      return 0
+      ;;
+  esac
+  if pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}")"; then
+    echo "Stopping legacy ${label} supervisor ${pid}."
+    if ! kill "${pid}"; then
+      echo "failed to stop legacy ${label} supervisor ${pid}" >&2
+      return 1
+    fi
+    return 0
+  fi
+  if raw_pid="$(read_live_pid "$(pid_file_for "${state_dir}" "${state_prefix}")")"; then
+    echo "${label} supervisor pid file points to live pid ${raw_pid}, but its process identity does not match this lane; refusing to signal it." >&2
+    return 1
+  fi
+  if pid="$(read_live_daemon_pid "${state_dir}" "${state_prefix}")"; then
     echo "${label} daemon ${pid} is live without its owner; refusing a race-prone direct stop." >&2
+    return 1
+  fi
+  if raw_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")")"; then
+    echo "${label} daemon pid file points to live pid ${raw_pid}, but its process identity does not match this lane; refusing to signal it." >&2
     return 1
   fi
   echo "${label} supervisor is already stopped."
@@ -765,21 +1170,30 @@ wait_for_lane_stop() {
   local label="$1"
   local state_dir="$2"
   local state_prefix="$3"
+  local service_unit="$4"
   local state_path="${state_dir}/${state_prefix}_task_state.json"
   local attempt
   local daemon_pid=""
   local supervisor_pid=""
+  local service_state=""
   for attempt in {1..30}; do
-    supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
-    daemon_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")" 2>/dev/null || true)"
-    if [[ -z "${supervisor_pid}" && -z "${daemon_pid}" ]]; then
+    supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" "${service_unit}" 2>/dev/null || true)"
+    daemon_pid="$(read_live_daemon_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
+    service_state="$(service_unit_state "${service_unit}")"
+    if [[ "${service_state}" == "error" ]]; then
+      echo "could not inspect ${label} service $(service_unit_name "${service_unit}") while waiting for shutdown" >&2
+      return 1
+    fi
+    if [[ -z "${supervisor_pid}" && -z "${daemon_pid}" ]] \
+      && service_unit_quiescent "${service_unit}"; then
       break
     fi
     sleep 1
   done
-  supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
-  daemon_pid="$(read_live_pid "$(daemon_pid_file_for "${state_dir}" "${state_prefix}")" 2>/dev/null || true)"
-  if [[ -n "${supervisor_pid}" || -n "${daemon_pid}" ]]; then
+  supervisor_pid="$(read_live_supervisor_pid "${state_dir}" "${state_prefix}" "${service_unit}" 2>/dev/null || true)"
+  daemon_pid="$(read_live_daemon_pid "${state_dir}" "${state_prefix}" 2>/dev/null || true)"
+  if [[ -n "${supervisor_pid}" || -n "${daemon_pid}" ]] \
+    || ! service_unit_quiescent "${service_unit}"; then
     echo "${label} shutdown did not quiesce within 30 seconds." >&2
     return 1
   fi
@@ -805,10 +1219,10 @@ raise SystemExit(0 if payload.get("implementation_in_progress") is True else 1)'
 stop_supervisors() {
   local failed=0
   prepare_runtime
-  request_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
-  request_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
-  wait_for_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" || failed=1
-  wait_for_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" || failed=1
+  request_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" || failed=1
+  request_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}" || failed=1
+  wait_for_lane_stop "Codex" "${CODEX_STATE_DIR}" "${CODEX_STATE_PREFIX}" "${CODEX_SERVICE_UNIT}" || failed=1
+  wait_for_lane_stop "Grok" "${GROK_STATE_DIR}" "${GROK_STATE_PREFIX}" "${GROK_SERVICE_UNIT}" || failed=1
   write_health_snapshot false
   return "${failed}"
 }
@@ -817,27 +1231,29 @@ usage() {
   echo "Usage: $0 {seed|refill|doctor|start|status|stop}"
 }
 
-case "${1:-}" in
-  seed)
-    with_lifecycle_lock seed_objectives true
-    ;;
-  refill)
-    with_lifecycle_lock seed_objectives false
-    ;;
-  doctor)
-    with_lifecycle_lock run_reconciliation_preflight
-    ;;
-  start)
-    with_lifecycle_lock start_supervisors
-    ;;
-  status)
-    show_status
-    ;;
-  stop)
-    with_lifecycle_lock stop_supervisors
-    ;;
-  *)
-    usage >&2
-    exit 2
-    ;;
-esac
+if [[ "${CRYPTO_IR_COMPLIANCE_LIB_ONLY:-0}" != "1" ]]; then
+  case "${1:-}" in
+    seed)
+      with_lifecycle_lock seed_objectives true
+      ;;
+    refill)
+      with_lifecycle_lock seed_objectives false
+      ;;
+    doctor)
+      with_lifecycle_lock run_reconciliation_preflight
+      ;;
+    start)
+      with_lifecycle_lock start_supervisors
+      ;;
+    status)
+      show_status
+      ;;
+    stop)
+      with_lifecycle_lock stop_supervisors
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+fi

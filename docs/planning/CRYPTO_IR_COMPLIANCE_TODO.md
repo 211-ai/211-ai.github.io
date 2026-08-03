@@ -7,7 +7,10 @@ agents must not hand-edit generated task status, evidence, or identity fields.
 
 Program invariants:
 
-- Integration branch: `codex/crypto-ir-contract-compliance`.
+- The reviewed implementation originated on
+  `codex/crypto-ir-contract-compliance`; operational supervisor runs target
+  `main` unless `CRYPTO_IR_COMPLIANCE_MERGE_TARGET_BRANCH` explicitly selects
+  another reviewed checkout.
 - Processors remain read-only and non-custodial; no task may add secret
   retention, signing, approval, submission, broadcast, or external reporting.
 - Crypto IR adapts existing `ir_core`, `security_ir`, `software_contracts`,
@@ -2635,7 +2638,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-041 Implement Crypto IR compliance objective: Build lineage-safe partitions and retrieval fences
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -2700,7 +2703,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-042 Implement Crypto IR compliance objective: Build bounded provenance-preserving hybrid GraphRAG
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -2765,7 +2768,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-043 Implement Crypto IR compliance objective: Compile Security IR candidates and formal-learning records
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -2830,7 +2833,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-044 Implement Crypto IR compliance objective: Implement bounded formal-learning runs and checkpoint receipts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -2895,7 +2898,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-045 Implement Crypto IR compliance objective: Evaluate leakage, grounding, abstention, and prover agreement
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false
@@ -2960,7 +2963,7 @@ The objective daemon appends canonical `CRYPTOIR-*` task blocks below.
 
 ## CRYPTOIR-046 Implement Crypto IR compliance objective: Add the advisory Crypto IR bridge and deterministic release gate
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Is schedulable: true
 - Review only: false

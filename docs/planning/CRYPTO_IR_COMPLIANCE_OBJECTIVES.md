@@ -8,8 +8,10 @@ projection is
 
 Program invariants:
 
-- Integration target is `codex/crypto-ir-contract-compliance`, pinned to the
-  reviewed wallet and software-contract baseline recorded in the plan.
+- The reviewed implementation originated on
+  `codex/crypto-ir-contract-compliance`. Operational supervisor runs target
+  `main` by default; any alternate target must be selected explicitly with
+  `CRYPTO_IR_COMPLIANCE_MERGE_TARGET_BRANCH`.
 - `processors.wallets` and `processors.smart_contracts` remain read-only:
   they never retain secrets, sign, approve, submit, or broadcast.
 - Crypto IR reuses `ir_core`, `security_ir`, `software_contracts`, and the
