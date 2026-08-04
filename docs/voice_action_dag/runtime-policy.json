@@ -1,0 +1,103 @@
+{
+  "schema": "voice-action/runtime-policy@1",
+  "program_id": "voice-action-dag-abby-v1",
+  "board_namespace": "voice-action-dag-abby-v1",
+  "policy_revision": "voice-action-001-bootstrap",
+  "launch_profile_path": "docs/planning/voice_action_dag_abby.supervisor.json",
+  "plan_validator_path": "scripts/validate_voice_action_dag_abby_plan.py",
+  "control_script_path": "scripts/voice_action_dag/supervisor_control.py",
+  "merge_target": {
+    "branch": "agent/voice-action-dag-abby",
+    "base_ref": "origin/main",
+    "expected_base_commit": "12a7ef36645bf597de329dbfabe0ce5b2e0c4df9",
+    "required_before_worker_start": true,
+    "require_clean_recursive_tree": true,
+    "fast_forward_merges_only": true,
+    "create_only_from_pinned_base": true
+  },
+  "shards": {
+    "task_shard_count": 4,
+    "strict_task_sharding": true,
+    "refill_owner_lane_id": "voice-action-grok-0",
+    "sole_refill_owner": true,
+    "lanes": [
+      {
+        "lane_id": "voice-action-grok-0",
+        "provider": "grok-build",
+        "task_shard_index": 0,
+        "objective_refill_owner": true,
+        "codebase_refill_owner": true,
+        "repo_git_gc_owner": true
+      },
+      {
+        "lane_id": "voice-action-codex-1",
+        "provider": "codex",
+        "task_shard_index": 1,
+        "objective_refill_owner": false,
+        "codebase_refill_owner": false,
+        "repo_git_gc_owner": false
+      },
+      {
+        "lane_id": "voice-action-grok-2",
+        "provider": "grok-build",
+        "task_shard_index": 2,
+        "objective_refill_owner": false,
+        "codebase_refill_owner": false,
+        "repo_git_gc_owner": false
+      },
+      {
+        "lane_id": "voice-action-codex-3",
+        "provider": "codex",
+        "task_shard_index": 3,
+        "objective_refill_owner": false,
+        "codebase_refill_owner": false,
+        "repo_git_gc_owner": false
+      }
+    ]
+  },
+  "refill": {
+    "initially_enabled": false,
+    "enable_after_task_id": "VOICE-ACTION-001",
+    "required_bootstrap_receipts": [
+      "protected-path-policy",
+      "semantic-deduplication",
+      "bounded-refill-budget",
+      "sole-refill-owner"
+    ],
+    "transfer_authority_on_provider_failure": false
+  },
+  "protected_paths": [
+    "docs/planning/VOICE_ACTION_DAG_ABBY_INTEGRATION_PLAN.md",
+    "docs/planning/voice_action_dag_abby.objectives.md",
+    "docs/planning/voice_action_dag_abby.todo.md",
+    "docs/planning/voice_action_dag_abby.supervisor.json",
+    "scripts/validate_voice_action_dag_abby_plan.py"
+  ],
+  "worker_constraints": {
+    "network": "deny",
+    "credentials": "deny",
+    "publication": "deny",
+    "live_telephony": "deny",
+    "live_sms": "deny",
+    "hf_publish": "deny",
+    "require_fake_adapters": true,
+    "allow_abby_dataset_read": true,
+    "allow_tmp_assets_smoke_write": true
+  },
+  "state_layout": {
+    "external_state_required": true,
+    "state_root_env": "VOICE_ACTION_DAG_SUPERVISOR_STATE_ROOT",
+    "worktree_root": "worktrees",
+    "lane_state_root": "lanes",
+    "log_root": "logs",
+    "projection_root": "projection",
+    "shared_merge_queue": "merge-queue",
+    "secrets_in_argv_allowed": false
+  },
+  "defaults": {
+    "publication_enabled": false,
+    "credentials_enabled": false,
+    "live_transports_enabled": false,
+    "refill_enabled": false
+  }
+}
