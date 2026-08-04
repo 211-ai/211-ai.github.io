@@ -1,0 +1,273 @@
+{
+  "schema": "voice-action/route-gap-matrix@1",
+  "schema_version": 1,
+  "program_id": "voice-action-dag-abby-v1",
+  "board_namespace": "voice-action-dag-abby-v1",
+  "goal_id": "VOICE-ACTION-G010",
+  "task_id": "VOICE-ACTION-002",
+  "generated_at": "2026-08-04T06:16:28Z",
+  "slotted_response_dag": "docs/phone_dialog_generation/slotted_response_dag.json",
+  "classification_enum": [
+    "content-only",
+    "proposal-eligible",
+    "safety-overlay"
+  ],
+  "route_census": {
+    "app_surface_navigation": 113,
+    "calendar_event_support": 290,
+    "clarifying_prompt": 65,
+    "grounded_211_answer": 2145,
+    "live_agent": 6992,
+    "provider_contact_support": 226,
+    "repeat_or_restate": 2220,
+    "safety_guardrail_support": 563,
+    "service_interaction_support": 82,
+    "speech_unclear_clarification": 632,
+    "template_guided_fallback": 86,
+    "wallet_document_support": 246
+  },
+  "route_census_total": 13660,
+  "routes": [
+    {
+      "route": "app_surface_navigation",
+      "edge_count": 113,
+      "classification": "proposal-eligible",
+      "today": "Spoken navigation guidance only",
+      "target_logical_action": "open_app_surface",
+      "voice_bridge_mapped": true,
+      "catalog_descriptor_id": "voice.cli.open_app_surface.v1",
+      "ui_tool_binding": "navigate / surfaceRegistry (not voice-DAG bound)",
+      "audio_action_frames": "missing",
+      "adapter_status": "CLI probe only (/usr/bin/true); real app-tool adapter missing",
+      "gaps": [
+        "No GraphRAG-driven ActionProposalCandidate",
+        "UI navigate tool not bound to voice route admission",
+        "Missing confirmation/outcome Abby audio frames"
+      ]
+    },
+    {
+      "route": "calendar_event_support",
+      "edge_count": 290,
+      "classification": "proposal-eligible",
+      "today": "Spoken appointment guidance only",
+      "target_logical_action": "open_calendar_support",
+      "voice_bridge_mapped": true,
+      "catalog_descriptor_id": "voice.cli.open_calendar_support.v1",
+      "ui_tool_binding": "buildIcsCalendar / buildCalendarAction (browser handoff)",
+      "audio_action_frames": "missing",
+      "adapter_status": "CLI probe only; calendar read/create adapter missing",
+      "gaps": [
+        "create_calendar_reminder not in pilot catalog",
+        "Browser ICS handoff not receipted through action_runtime",
+        "Missing confirmation/outcome Abby audio frames"
+      ]
+    },
+    {
+      "route": "clarifying_prompt",
+      "edge_count": 65,
+      "classification": "content-only",
+      "today": "Clarifying question / slot collection",
+      "target_logical_action": null,
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none",
+      "audio_action_frames": "response speech only",
+      "adapter_status": "no_action",
+      "gaps": []
+    },
+    {
+      "route": "grounded_211_answer",
+      "edge_count": 2145,
+      "classification": "proposal-eligible",
+      "today": "Grounded resource answer (content plane)",
+      "target_logical_action": "open_service_detail",
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "search_211_services / answer_211_question / service detail",
+      "audio_action_frames": "response speech only; no action frames",
+      "adapter_status": "No catalog descriptor; optional service-open not wired",
+      "gaps": [
+        "Optional service open/cite not mapped in voice_bridge",
+        "open_service_detail descriptor missing from default catalog",
+        "Action proposals not emitted from GraphRAG evidence"
+      ]
+    },
+    {
+      "route": "live_agent",
+      "edge_count": 6992,
+      "classification": "proposal-eligible",
+      "today": "Spoken handoff guidance; telephony degrades to text-only human_handoff metadata",
+      "target_logical_action": "handoff_live_agent",
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none (metadata-only escalation)",
+      "audio_action_frames": "response speech only; no verified-transfer frames",
+      "adapter_status": "No verified transfer adapter; never claim transfer success",
+      "gaps": [
+        "handoff_live_agent descriptor missing from default catalog",
+        "No warm-transfer / queue receipt",
+        "voice_router telephone path is metadata-only escalation",
+        "Must never claim unverified transfer success"
+      ]
+    },
+    {
+      "route": "provider_contact_support",
+      "edge_count": 226,
+      "classification": "proposal-eligible",
+      "today": "Spoken phone/contact scripts only",
+      "target_logical_action": "provide_provider_contact",
+      "voice_bridge_mapped": true,
+      "catalog_descriptor_id": "voice.cli.provide_provider_contact.v1",
+      "ui_tool_binding": "buildCallAction / buildTextAction / messages surfaces",
+      "audio_action_frames": "missing",
+      "adapter_status": "CLI probe only; messaging adapter missing",
+      "gaps": [
+        "read_provider_messages / leave_provider_message not catalog-bound",
+        "No verified send/receive receipt from voice path",
+        "Missing confirmation/outcome Abby audio frames"
+      ]
+    },
+    {
+      "route": "repeat_or_restate",
+      "edge_count": 2220,
+      "classification": "content-only",
+      "today": "Repeat/restate frame",
+      "target_logical_action": null,
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none",
+      "audio_action_frames": "response speech only",
+      "adapter_status": "no_action",
+      "gaps": []
+    },
+    {
+      "route": "safety_guardrail_support",
+      "edge_count": 563,
+      "classification": "safety-overlay",
+      "today": "Safety/crisis wording; may bypass normal slot filling",
+      "target_logical_action": "escalate_safety",
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none (policy overlay)",
+      "audio_action_frames": "safety speech only",
+      "adapter_status": "Policy-driven emergency/handoff overlay not catalog-bound",
+      "gaps": [
+        "escalate_safety descriptor missing",
+        "Safety auto-path must stay policy-owned, not content-owned",
+        "Overlay must compose with live_agent without silent success claims"
+      ]
+    },
+    {
+      "route": "service_interaction_support",
+      "edge_count": 82,
+      "classification": "proposal-eligible",
+      "today": "Spoken follow-up guidance only",
+      "target_logical_action": "review_service_interaction",
+      "voice_bridge_mapped": true,
+      "catalog_descriptor_id": "voice.cli.review_service_interaction.v1",
+      "ui_tool_binding": "serviceActionService / serviceInteractionService",
+      "audio_action_frames": "missing",
+      "adapter_status": "CLI probe only; service interaction adapter missing",
+      "gaps": [
+        "schedule_service_callback not catalog-bound",
+        "Service interaction intents not emitted from voice admission",
+        "Missing confirmation/outcome Abby audio frames"
+      ]
+    },
+    {
+      "route": "speech_unclear_clarification",
+      "edge_count": 632,
+      "classification": "content-only",
+      "today": "Clarification when speech is unclear",
+      "target_logical_action": null,
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none",
+      "audio_action_frames": "response speech only",
+      "adapter_status": "no_action",
+      "gaps": []
+    },
+    {
+      "route": "template_guided_fallback",
+      "edge_count": 86,
+      "classification": "content-only",
+      "today": "Safe template fallback",
+      "target_logical_action": null,
+      "voice_bridge_mapped": false,
+      "catalog_descriptor_id": null,
+      "ui_tool_binding": "none",
+      "audio_action_frames": "response speech only",
+      "adapter_status": "no_action",
+      "gaps": []
+    },
+    {
+      "route": "wallet_document_support",
+      "edge_count": 246,
+      "classification": "proposal-eligible",
+      "today": "Spoken document list guidance only",
+      "target_logical_action": "open_wallet_documents",
+      "voice_bridge_mapped": true,
+      "catalog_descriptor_id": "voice.cli.open_wallet_documents.v1",
+      "ui_tool_binding": "uploads/wallet surfaces (not voice-DAG bound)",
+      "audio_action_frames": "missing",
+      "adapter_status": "CLI probe only; real wallet-docs adapter missing",
+      "gaps": [
+        "No receipted open of wallet docs from voice admission",
+        "Missing confirmation/outcome Abby audio frames"
+      ]
+    }
+  ],
+  "program_gaps": [
+    {
+      "id": "G1",
+      "title": "Dual-plane schema for Abby library",
+      "status": "open",
+      "summary": "Slotted DAG lacks optional route→logical_action and action prompt/outcome frames."
+    },
+    {
+      "id": "G2",
+      "title": "Catalog of program actions",
+      "status": "partial",
+      "summary": "Five CLI probe descriptors exist; pilot set (handoff, calendar write, messaging, service callback, safety) incomplete."
+    },
+    {
+      "id": "G3",
+      "title": "Retrieval that proposes actions without authority",
+      "status": "open",
+      "summary": "GraphRAG returns content only; ActionProposalCandidate not emitted from evidence."
+    },
+    {
+      "id": "G4",
+      "title": "Real adapters (not /usr/bin/true)",
+      "status": "open",
+      "summary": "App tool, calendar, messaging, service, and human handoff adapters missing."
+    },
+    {
+      "id": "G5",
+      "title": "Abby audio continuity for actions",
+      "status": "open",
+      "summary": "No first-class confirmation/success/deny/fail audio frames for logical actions."
+    },
+    {
+      "id": "G6",
+      "title": "End-to-end proofs with the real dataset",
+      "status": "open",
+      "summary": "Route-sampled offline suites for proposal/deny/permit/handoff truthfulness not shipped."
+    },
+    {
+      "id": "G7",
+      "title": "Parallel supervisor program",
+      "status": "partial",
+      "summary": "Board/profile/control bootstrap present; inventory wave completes with this artifact set."
+    }
+  ],
+  "acceptance": {
+    "route_census_matches_slotted_dag": true,
+    "each_route_classified": true,
+    "allowed_classifications": [
+      "content-only",
+      "proposal-eligible",
+      "safety-overlay"
+    ]
+  }
+}
