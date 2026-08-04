@@ -677,5 +677,9 @@ Program invariants:
 - Bundle: voice-action/policy
 - Parallel lane: wave-06-binding
 - Resource class: cpu-small
+- Predicted files: data/voice_action_dag/agent_supervisor/shards/1/discovery, docs/planning/voice_action_dag_abby.todo.md
+- Conflict policy: Operator-only reconciliation of dirty worktrees; never auto-commit, stash, or discard unknown checkout content.
+- Symbolic first: true
+- LLM context budget bytes: 4096
 - Validation: test -f /home/barberb/211-AI/211-AI/data/voice_action_dag/agent_supervisor/shards/1/discovery/2026-08-04-voice-action-033-reconciliation-c462e6b6862b.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by main_checkout_dirty. This task is intentionally operator-gated because unknown dirty checkout content must not be committed, stashed, or discarded automatically. Use evidence and the machine-readable reconciliation plan in /home/barberb/211-AI/211-AI/data/voice_action_dag/agent_supervisor/shards/1/discovery/2026-08-04-voice-action-033-reconciliation-c462e6b6862b.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
