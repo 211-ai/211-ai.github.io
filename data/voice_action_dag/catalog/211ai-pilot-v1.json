@@ -1,0 +1,232 @@
+{
+  "catalog_id": "211ai-pilot-v1",
+  "descriptors": [
+    {
+      "adapter": "human",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.human.escalate_safety.v1",
+      "logical_action": "escalate_safety",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "policy_driven",
+        "family": "safety",
+        "truthfulness": "never_claim_transfer_without_receipt"
+      },
+      "requires_confirmation": false,
+      "risk_class": "human",
+      "side_effect_class": "network"
+    },
+    {
+      "adapter": "human",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.human.handoff_live_agent.v1",
+      "logical_action": "handoff_live_agent",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "explicit_or_policy",
+        "family": "handoff",
+        "truthfulness": "never_claim_transfer_without_receipt"
+      },
+      "requires_confirmation": true,
+      "risk_class": "human",
+      "side_effect_class": "network"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.create_calendar_reminder.v1",
+      "logical_action": "create_calendar_reminder",
+      "metadata": {
+        "auth_required": "true",
+        "confirmation_mode": "explicit_plus_auth",
+        "family": "calendar"
+      },
+      "requires_confirmation": true,
+      "risk_class": "write",
+      "side_effect_class": "local_write"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.leave_provider_message.v1",
+      "logical_action": "leave_provider_message",
+      "metadata": {
+        "auth_required": "true",
+        "confirmation_mode": "explicit_plus_auth",
+        "family": "messaging"
+      },
+      "requires_confirmation": true,
+      "risk_class": "write",
+      "side_effect_class": "external_mutation"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.open_app_surface.v1",
+      "logical_action": "open_app_surface",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "explicit",
+        "family": "app_surface"
+      },
+      "requires_confirmation": true,
+      "risk_class": "read",
+      "side_effect_class": "local_read"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.open_service_detail.v1",
+      "logical_action": "open_service_detail",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "explicit",
+        "family": "service"
+      },
+      "requires_confirmation": true,
+      "risk_class": "read",
+      "side_effect_class": "local_read"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.open_wallet_documents.v1",
+      "logical_action": "open_wallet_documents",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "explicit",
+        "family": "wallet_documents"
+      },
+      "requires_confirmation": true,
+      "risk_class": "read",
+      "side_effect_class": "local_read"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.read_calendar.v1",
+      "logical_action": "read_calendar",
+      "metadata": {
+        "auth_required": "false",
+        "confirmation_mode": "explicit",
+        "family": "calendar"
+      },
+      "requires_confirmation": true,
+      "risk_class": "read",
+      "side_effect_class": "local_read"
+    },
+    {
+      "adapter": "python",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.python.read_provider_messages.v1",
+      "logical_action": "read_provider_messages",
+      "metadata": {
+        "auth_required": "true",
+        "confirmation_mode": "explicit_plus_auth",
+        "family": "messaging"
+      },
+      "requires_confirmation": true,
+      "risk_class": "read",
+      "side_effect_class": "local_read"
+    },
+    {
+      "adapter": "workflow",
+      "allowed_channels": [
+        "voice",
+        "chat",
+        "test"
+      ],
+      "allowed_tenants": [
+        "*"
+      ],
+      "descriptor_id": "voice.workflow.schedule_service_callback.v1",
+      "logical_action": "schedule_service_callback",
+      "metadata": {
+        "auth_required": "true",
+        "confirmation_mode": "explicit_plus_auth",
+        "family": "service"
+      },
+      "requires_confirmation": true,
+      "risk_class": "write",
+      "side_effect_class": "external_mutation"
+    }
+  ],
+  "logical_actions": [
+    "create_calendar_reminder",
+    "escalate_safety",
+    "handoff_live_agent",
+    "leave_provider_message",
+    "open_app_surface",
+    "open_service_detail",
+    "open_wallet_documents",
+    "read_calendar",
+    "read_provider_messages",
+    "schedule_service_callback"
+  ],
+  "policy_revision": "pilot-v1",
+  "schema": "voice-action/catalog@1",
+  "version": "1"
+}
