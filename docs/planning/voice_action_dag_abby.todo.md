@@ -516,7 +516,7 @@ Program invariants:
 ## VOICE-ACTION-026 Speak action outcomes via precomputed audio when available
 
 - Status: completed
-- Completion: landed (cherry-pick after binding_stale; tests passed)
+- Completion: manual
 - Priority: P0
 - Track: abby-audio
 - Depends on: VOICE-ACTION-025, VOICE-ACTION-010
@@ -734,5 +734,9 @@ Program invariants:
 - Bundle: voice-action/ui
 - Parallel lane: wave-05-ui
 - Resource class: cpu-small
+- Predicted files: data/voice_action_dag/agent_supervisor/shards/1/discovery, docs/planning/voice_action_dag_abby.todo.md
+- Conflict policy: Operator-only reconciliation of preflight-conflicting merge candidates; never auto-force or discard unknown checkout content.
+- Symbolic first: true
+- LLM context budget bytes: 4096
 - Validation: test -f /home/barberb/211-AI/211-AI/data/voice_action_dag/agent_supervisor/shards/1/discovery/2026-08-04-voice-action-035-reconciliation-342c8641632d.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. This task is intentionally operator-gated because unknown dirty checkout content must not be committed, stashed, or discarded automatically. Use evidence and the machine-readable reconciliation plan in /home/barberb/211-AI/211-AI/data/voice_action_dag/agent_supervisor/shards/1/discovery/2026-08-04-voice-action-035-reconciliation-342c8641632d.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
