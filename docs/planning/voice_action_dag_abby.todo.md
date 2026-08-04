@@ -495,7 +495,7 @@ Program invariants:
 
 ## VOICE-ACTION-025 Stage or generate precomputed audio for action speech frames
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: abby-audio
