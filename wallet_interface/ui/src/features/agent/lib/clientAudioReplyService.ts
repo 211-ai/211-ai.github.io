@@ -104,6 +104,9 @@ interface ClientAudioReplyServiceOptions {
     fallbackText?: string;
     localModelName?: string;
     audioBlob?: Blob;
+    route?: string;
+    confirmAction?: boolean;
+    requestId?: string;
   }) => Promise<RemoteAudioGenerationResult>;
   preflightRemoteAudioProxy?: (mode?: "tts" | "voice-reply") => Promise<RemoteAudioGenerationResult>;
   getLocalAudioBlockReason?: () => string | undefined;
@@ -119,6 +122,11 @@ export interface ClientVoiceReplyRequest {
   userPrompt?: string;
   fallbackText: string;
   audioBlob?: Blob;
+  /** Slotted response-DAG route for action proposals. */
+  route?: string;
+  /** Explicit confirmation for a previously proposed logical action. */
+  confirmAction?: boolean;
+  requestId?: string;
 }
 
 export class ClientAudioReplyService {
@@ -144,6 +152,9 @@ export class ClientAudioReplyService {
     fallbackText?: string;
     localModelName?: string;
     audioBlob?: Blob;
+    route?: string;
+    confirmAction?: boolean;
+    requestId?: string;
   }) => Promise<RemoteAudioGenerationResult>;
   private readonly preflightRemoteAudioProxy: (mode?: "tts" | "voice-reply") => Promise<RemoteAudioGenerationResult>;
   private readonly getLocalAudioBlockReason: () => string | undefined;
@@ -384,6 +395,9 @@ export class ClientAudioReplyService {
           fallbackText: normalizedFallback || undefined,
           audioBlob: input.audioBlob,
           localModelName: modelName,
+          route: input.route,
+          confirmAction: input.confirmAction,
+          requestId: input.requestId,
           onProgress: options.onProgress,
         });
       } catch (error) {
@@ -529,6 +543,9 @@ export class ClientAudioReplyService {
     fallbackText?: string;
     audioBlob?: Blob;
     localModelName: string;
+    route?: string;
+    confirmAction?: boolean;
+    requestId?: string;
     onProgress?: (progress: ClientAudioProgress) => void;
     requireAudioBlob?: boolean;
     skipPreflight?: boolean;
@@ -559,6 +576,9 @@ export class ClientAudioReplyService {
       fallbackText: options.fallbackText,
       audioBlob: options.audioBlob,
       localModelName: options.localModelName,
+      route: options.route,
+      confirmAction: options.confirmAction,
+      requestId: options.requestId,
     });
     this.remoteAudioLastError = undefined;
     this.remoteAudioLastUsedAt = new Date().toISOString();

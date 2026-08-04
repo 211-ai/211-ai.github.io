@@ -14,6 +14,12 @@ import {
 } from "../lib/voiceGraphRagPrompt";
 import { createWavBlobFromFloat32Chunks } from "../lib/voiceProxyPayload";
 import { preflightRemoteSpeechToTextProxy, transcribeRemoteSpeech } from "../lib/remoteAudioClient";
+import {
+  voiceActionLabel,
+  voiceActionNeedsConfirmation,
+  type VoiceActionSurface,
+  type VoiceTurnResult,
+} from "../lib/voiceTurnResult";
 import { Button } from "../../../shared/components/ui";
 
 type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "speaking" | "unavailable";
@@ -165,8 +171,11 @@ export function AgentAudioChatSurface({
   const [statusDetail, setStatusDetail] = useState("");
   const [audioDiagnostic, setAudioDiagnostic] = useState("");
   const [voiceDetectionEnabled, setVoiceDetectionEnabled] = useState(true);
+  const [pendingVoiceAction, setPendingVoiceAction] = useState<VoiceActionSurface | null>(null);
+  const [voiceActionBusy, setVoiceActionBusy] = useState(false);
   const finalTranscriptRef = useRef("");
   const pendingVoiceTranscriptRef = useRef("");
+  const lastVoiceReplyRequestRef = useRef<ClientVoiceReplyRequest | null>(null);
   const audioProgressRequestIdRef = useRef(0);
   const lastSpokenAssistantIdRef = useRef<string | undefined>(getLastAssistantMessage(messages)?.id);
   const micAnalyserRef = useRef<AnalyserNode | null>(null);
@@ -838,6 +847,7 @@ export function AgentAudioChatSurface({
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
       console.warn("[Abby] IndexTTS proxy failed for completed assistant response; trying voice fallback.", error);
       try {
+        lastVoiceReplyRequestRef.current = voiceInferenceRequest;
         const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
           onProgress: (progress) => updateModelProgress(requestId, progress),
         });
@@ -869,6 +879,7 @@ export function AgentAudioChatSurface({
   async function playAudioReplyResult(result: ClientAudioReplyResult, fallbackText: string, requestId: number) {
     if (audioProgressRequestIdRef.current !== requestId) return;
     setModelProgress(null);
+    notePendingVoiceAction(result.voiceTurnResult);
     if (!openRef.current || mutedRef.current) return;
     if (result.kind === "audio") {
       const audioUrl = URL.createObjectURL(result.audioBlob);
@@ -882,6 +893,74 @@ export function AgentAudioChatSurface({
     setStatusDetail("Using browser speech output.");
     setAudioDiagnostic(result.fallbackReason);
     playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
+  }
+
+  function notePendingVoiceAction(voiceTurnResult?: VoiceTurnResult) {
+    const action = voiceTurnResult?.action;
+    if (voiceActionNeedsConfirmation(action)) {
+      setPendingVoiceAction(action || null);
+      setStatusDetail(`Action needs confirmation: ${action?.proposal?.logicalAction || "reviewed action"}`);
+      return;
+    }
+    if (action?.status === "executed") {
+      setPendingVoiceAction(null);
+      setStatusDetail("Confirmed action completed.");
+      return;
+    }
+    if (action?.status === "execution_disabled") {
+      setPendingVoiceAction(action);
+      setStatusDetail(action.error || "Action confirmation is disabled on this deployment.");
+      return;
+    }
+    if (action?.status === "execution_failed") {
+      setPendingVoiceAction(action);
+      setStatusDetail(action.receipt?.error || action.error || "Confirmed action failed.");
+      return;
+    }
+    // Non-actionable routes clear any prior pending card.
+    if (!action?.proposal) {
+      setPendingVoiceAction(null);
+    }
+  }
+
+  async function confirmPendingVoiceAction() {
+    const pending = pendingVoiceAction;
+    if (!pending?.proposal || voiceActionBusy) return;
+    setVoiceActionBusy(true);
+    const requestId = ++audioProgressRequestIdRef.current;
+    setSessionState("thinking");
+    setStatusDetail("Confirming reviewed action…");
+    try {
+      const prior = lastVoiceReplyRequestRef.current;
+      const result = await clientAudioReplyService.generateVoiceReply(
+        {
+          prompt: prior?.prompt || pending.proposal.logicalAction,
+          systemPrompt: prior?.systemPrompt,
+          userPrompt: prior?.userPrompt || pending.proposal.logicalAction,
+          fallbackText: prior?.fallbackText || "Action confirmed.",
+          audioBlob: prior?.audioBlob,
+          route: pending.route || pending.proposal.route,
+          confirmAction: true,
+          requestId: `voice-action-${pending.proposal.proposalId}`,
+        },
+        {
+          onProgress: (progress) => updateModelProgress(requestId, progress),
+        },
+      );
+      await playAudioReplyResult(result, prior?.fallbackText || "Action confirmed.", requestId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Action confirmation failed.";
+      setStatusDetail(message);
+      setAudioDiagnostic(message);
+      setSessionState("ready");
+    } finally {
+      setVoiceActionBusy(false);
+    }
+  }
+
+  function dismissPendingVoiceAction() {
+    setPendingVoiceAction(null);
+    setStatusDetail("Action confirmation dismissed.");
   }
 
   async function playAudioUrlSource(
@@ -1180,6 +1259,41 @@ export function AgentAudioChatSurface({
       {audioDiagnostic ? (
         <div aria-label="Audio diagnostic" className="agent-audio-diagnostic" role="alert">
           {audioDiagnostic}
+        </div>
+      ) : null}
+
+      {pendingVoiceAction && voiceActionNeedsConfirmation(pendingVoiceAction) ? (
+        <div
+          aria-label="Voice action confirmation"
+          className="agent-audio-action-confirm"
+          role="region"
+        >
+          <strong>{voiceActionLabel(pendingVoiceAction)}</strong>
+          <small>
+            {pendingVoiceAction.proposal?.logicalAction
+              ? `Reviewed action “${pendingVoiceAction.proposal.logicalAction}” needs your confirmation before any tool runs.`
+              : "A reviewed action needs your confirmation before any tool runs."}
+          </small>
+          <div className="agent-audio-controls">
+            <Button
+              ariaLabel="Confirm reviewed voice action"
+              disabled={voiceActionBusy}
+              onClick={() => {
+                void confirmPendingVoiceAction();
+              }}
+              variant="primary"
+            >
+              <span>{voiceActionBusy ? "Confirming…" : "Confirm action"}</span>
+            </Button>
+            <Button
+              ariaLabel="Dismiss voice action confirmation"
+              disabled={voiceActionBusy}
+              onClick={dismissPendingVoiceAction}
+              variant="secondary"
+            >
+              <span>Not now</span>
+            </Button>
+          </div>
         </div>
       ) : null}
 

@@ -88,6 +88,44 @@ export interface VoiceTurnProvenance {
   metadata: Record<string, unknown>;
 }
 
+export interface VoiceActionProposal {
+  proposalId: string;
+  descriptorId: string;
+  logicalAction: string;
+  arguments: Record<string, string>;
+  route?: string;
+  source?: string;
+  confidence?: number;
+}
+
+export interface VoiceActionDecision {
+  decisionId: string;
+  kind: string;
+  proposalId: string;
+  descriptorId: string;
+  reason?: string;
+  permitsExecution?: boolean;
+}
+
+export interface VoiceActionReceipt {
+  receiptId: string;
+  status: string;
+  exitCode?: number | null;
+  adapter?: string;
+  error?: string;
+}
+
+/** Fail-closed action surface attached by the unified wallet voice adapter. */
+export interface VoiceActionSurface {
+  route?: string;
+  status: string;
+  proposal?: VoiceActionProposal | null;
+  decision?: VoiceActionDecision | null;
+  receipt?: VoiceActionReceipt | null;
+  executionEnabled?: boolean;
+  error?: string;
+}
+
 export interface VoiceTurnResult {
   contractVersion?: string;
   requestId: string;
@@ -105,6 +143,7 @@ export interface VoiceTurnResult {
   fallbackReason?: string;
   providerSelection: Record<string, string | undefined>;
   cacheKey?: string;
+  action?: VoiceActionSurface;
   raw: Record<string, unknown>;
 }
 
@@ -158,8 +197,20 @@ export function parseVoiceTurnResult(value: unknown): VoiceTurnResult | null {
     fallbackReason: primaryFallbackReason || fallbackReasons[0],
     providerSelection,
     cacheKey: firstString(payload, ["cache_key", "cacheKey"]),
+    action: normalizeActionSurface(payload.action ?? payload.actionSurface),
     raw: payload,
   };
+}
+
+export function voiceActionNeedsConfirmation(action?: VoiceActionSurface | null): boolean {
+  if (!action?.proposal) return false;
+  const status = (action.status || "").toLowerCase();
+  return status === "confirm" || status === "confirmation_required";
+}
+
+export function voiceActionLabel(action?: VoiceActionSurface | null): string {
+  const logical = action?.proposal?.logicalAction?.replace(/_/g, " ") || "this action";
+  return `Confirm ${logical}`;
 }
 
 export function voiceTurnResultAudioBlob(result: VoiceTurnResult): Blob | undefined {
@@ -257,6 +308,73 @@ function normalizeProviderSelection(value: UnknownRecord): Record<string, string
     transcription: firstString(value, ["transcription"]),
     retrieval: firstString(value, ["retrieval"]),
     synthesis: firstString(value, ["synthesis"]),
+  };
+}
+
+function normalizeActionSurface(value: unknown): VoiceActionSurface | undefined {
+  if (!isRecord(value)) return undefined;
+  const status = firstString(value, ["status"]) || "unknown";
+  const proposalRaw = isRecord(value.proposal) ? value.proposal : null;
+  const decisionRaw = isRecord(value.decision) ? value.decision : null;
+  const receiptRaw = isRecord(value.receipt) ? value.receipt : null;
+  const proposal = proposalRaw
+    ? {
+        proposalId: firstString(proposalRaw, ["proposal_id", "proposalId"]) || "",
+        descriptorId: firstString(proposalRaw, ["descriptor_id", "descriptorId"]) || "",
+        logicalAction: firstString(proposalRaw, ["logical_action", "logicalAction"]) || "",
+        arguments: isRecord(proposalRaw.arguments)
+          ? Object.fromEntries(
+              Object.entries(proposalRaw.arguments).flatMap(([key, entry]) =>
+                typeof entry === "string" ? [[key, entry]] : [],
+              ),
+            )
+          : {},
+        route: firstString(proposalRaw, ["route"]),
+        source: firstString(proposalRaw, ["source"]),
+        confidence: firstNumber(proposalRaw, ["confidence"]),
+      }
+    : null;
+  const decision = decisionRaw
+    ? {
+        decisionId: firstString(decisionRaw, ["decision_id", "decisionId"]) || "",
+        kind: firstString(decisionRaw, ["kind"]) || "",
+        proposalId: firstString(decisionRaw, ["proposal_id", "proposalId"]) || "",
+        descriptorId: firstString(decisionRaw, ["descriptor_id", "descriptorId"]) || "",
+        reason: firstString(decisionRaw, ["reason"]),
+        permitsExecution: typeof decisionRaw.permits_execution === "boolean"
+          ? decisionRaw.permits_execution
+          : typeof decisionRaw.permitsExecution === "boolean"
+            ? decisionRaw.permitsExecution
+            : undefined,
+      }
+    : null;
+  const receipt = receiptRaw
+    ? {
+        receiptId: firstString(receiptRaw, ["receipt_id", "receiptId"]) || "",
+        status: firstString(receiptRaw, ["status"]) || "",
+        exitCode:
+          typeof receiptRaw.exit_code === "number"
+            ? receiptRaw.exit_code
+            : typeof receiptRaw.exitCode === "number"
+              ? receiptRaw.exitCode
+              : null,
+        adapter: firstString(receiptRaw, ["adapter"]),
+        error: firstString(receiptRaw, ["error"]),
+      }
+    : null;
+  return {
+    route: firstString(value, ["route"]),
+    status,
+    proposal,
+    decision,
+    receipt,
+    executionEnabled:
+      typeof value.execution_enabled === "boolean"
+        ? value.execution_enabled
+        : typeof value.executionEnabled === "boolean"
+          ? value.executionEnabled
+          : undefined,
+    error: firstString(value, ["error"]),
   };
 }
 

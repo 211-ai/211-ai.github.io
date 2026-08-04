@@ -11,10 +11,13 @@ import {
   G010_REQUIRED_EVIDENCE_TERMS,
   isVoiceTurnResultPayload,
   parseVoiceTurnResult,
+  voiceActionLabel,
+  voiceActionNeedsConfirmation,
   voiceTurnResultAudioBlob,
   voiceTurnResultText,
 } from "../src/features/agent/lib/voiceTurnResult";
 import { ClientAudioReplyService } from "../src/features/agent/lib/clientAudioReplyService";
+import { createVoiceProxyFormData } from "../src/features/agent/lib/voiceProxyPayload";
 
 const AUDIO_BYTES = createMinimalWav();
 const AUDIO_BASE64 = AUDIO_BYTES.toString("base64");
@@ -54,6 +57,56 @@ function createMinimalWav(): Buffer {
  * wallet_interface/tests/test_voice_router_adapter.py (outside task-owned paths).
  */
 test.describe("unified wallet voice-turn receipt", () => {
+  test("parses fail-closed action surface and confirms only on explicit form flag", async () => {
+    const receipt = {
+      request_id: "wallet-action-1",
+      status: "completed",
+      transcript: "Open wallet documents",
+      response_text: "Open your Wallet documents surface.",
+      spoken_text: "Open your Wallet documents surface.",
+      action: {
+        route: "app_surface_navigation",
+        status: "confirm",
+        execution_enabled: false,
+        proposal: {
+          proposal_id: "prop-1",
+          descriptor_id: "voice.cli.open_app_surface.v1",
+          logical_action: "open_app_surface",
+          arguments: {},
+        },
+        decision: {
+          decision_id: "dec-1",
+          kind: "confirm",
+          proposal_id: "prop-1",
+          descriptor_id: "voice.cli.open_app_surface.v1",
+          reason: "confirmation_required",
+          permits_execution: false,
+        },
+        receipt: null,
+      },
+      provenance: { pipeline: "abby-grounded-voice-v1" },
+      traces: [],
+      fallback_reasons: [],
+    };
+    const result = parseVoiceTurnResult(receipt);
+    expect(result?.action?.route).toBe("app_surface_navigation");
+    expect(result?.action?.proposal?.logicalAction).toBe("open_app_surface");
+    expect(voiceActionNeedsConfirmation(result?.action)).toBe(true);
+    expect(voiceActionLabel(result?.action)).toContain("open app surface");
+
+    const form = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "Open your Wallet documents surface.",
+      userPrompt: "Open wallet documents",
+      route: "app_surface_navigation",
+      confirmAction: true,
+      requestId: "confirm-1",
+    });
+    expect(form.get("route")).toBe("app_surface_navigation");
+    expect(form.get("confirm_action")).toBe("true");
+    expect(form.get("request_id")).toBe("confirm-1");
+  });
+
   test("focused tests cover provenance for the canonical receipt and decode audio", async () => {
     expect(FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM).toBe("focused tests cover provenance");
 

@@ -8,6 +8,11 @@ export function createVoiceProxyFormData(input: {
   userPrompt?: string;
   fallbackText?: string;
   audioBlob?: Blob;
+  /** Slotted response-DAG route for fail-closed action proposals. */
+  route?: string;
+  /** Explicit confirmation to admit a reviewed CLI action after a proposal. */
+  confirmAction?: boolean;
+  requestId?: string;
 }): FormData {
   const text = input.text.trim();
   if (!text) {
@@ -19,6 +24,8 @@ export function createVoiceProxyFormData(input: {
   const systemPrompt = input.systemPrompt?.trim();
   const userPrompt = input.userPrompt?.trim();
   const fallbackText = input.fallbackText?.trim();
+  const route = input.route?.trim();
+  const requestId = input.requestId?.trim();
 
   const formData = new FormData();
   formData.append("audio", audioBlob, "input.wav");
@@ -37,6 +44,17 @@ export function createVoiceProxyFormData(input: {
   if (fallbackText) {
     formData.append("fallbackText", fallbackText);
     formData.append("fallback_text", fallbackText);
+  }
+  if (route) {
+    formData.append("route", route);
+  }
+  if (typeof input.confirmAction === "boolean") {
+    formData.append("confirm_action", input.confirmAction ? "true" : "false");
+    formData.append("action_confirm", input.confirmAction ? "true" : "false");
+  }
+  if (requestId) {
+    formData.append("request_id", requestId);
+    formData.append("requestId", requestId);
   }
   return formData;
 }

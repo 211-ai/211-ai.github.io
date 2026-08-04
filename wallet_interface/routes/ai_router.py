@@ -36,6 +36,10 @@ from ..helpers import (
     _silent_wav_bytes,
     _wallet_router_subject,
 )
+from ..helpers._voice_router_adapter import (
+    is_unified_voice_router_enabled,
+    process_wallet_voice_turn,
+)
 from ..schemas import (
     AddTextDocumentRequest,
     WalletEmbeddingsRouterRequest,
@@ -225,19 +229,52 @@ def create_router(service: WalletInterfaceService):
         fallbackText: str | None = Form(default=None),
         fallback_text: str | None = Form(default=None),
         voice_description: str | None = Form(default=None),
+        route: str | None = Form(default=None),
+        confirm_action: str | None = Form(default=None),
+        action_confirm: str | None = Form(default=None),
+        request_id: str | None = Form(default=None),
+        requestId: str | None = Form(default=None),
     ) -> dict[str, Any]:
         try:
             reference_audio = await audio.read() if audio is not None else None
             reference_name = getattr(audio, "filename", None) if audio is not None else None
             reference_type = getattr(audio, "content_type", None) if audio is not None else None
+            resolved_user_prompt = user_prompt or userPrompt
+            resolved_fallback = fallback_text or fallbackText
+            resolved_confirm = confirm_action or action_confirm
+
+            # Staged unified router: when enabled, return the canonical voice
+            # receipt (including fail-closed action proposal/decision/receipt).
+            if is_unified_voice_router_enabled():
+                envelope: dict[str, Any] = {
+                    "mode": mode or "voice-reply",
+                    "text": text or resolved_fallback or "",
+                    "user_prompt": resolved_user_prompt or text or "",
+                    "fallback_text": resolved_fallback or text or "",
+                    "voice": voice_description,
+                    "request_id": request_id or requestId,
+                    "route": route,
+                    "confirm_action": resolved_confirm,
+                    "channel": "voice",
+                }
+                if reference_audio:
+                    envelope["audio_bytes"] = reference_audio
+                unified = process_wallet_voice_turn(envelope, enabled=True)
+                if unified is not None:
+                    # Preserve legacy text field for older proxy clients.
+                    if "text" not in unified and unified.get("response_text"):
+                        unified = dict(unified)
+                        unified["text"] = unified.get("response_text")
+                    return unified
+
             reply_text, generation_latency = _run_indextts_with_endpoint_retry(
                 "infer-generate",
                 lambda: _generate_indextts_voice_reply_text(
                     mode=mode,
                     text=text,
                     system_prompt=system_prompt or systemPrompt,
-                    user_prompt=user_prompt or userPrompt,
-                    fallback_text=fallback_text or fallbackText,
+                    user_prompt=resolved_user_prompt,
+                    fallback_text=resolved_fallback,
                 ),
             )
             audio_payload = _run_indextts_with_endpoint_retry(

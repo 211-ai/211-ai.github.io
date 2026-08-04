@@ -112,6 +112,9 @@ export async function generateRemoteAudio(options: {
   fallbackText?: string;
   localModelName?: string;
   audioBlob?: Blob;
+  route?: string;
+  confirmAction?: boolean;
+  requestId?: string;
 }): Promise<RemoteAudioGenerationResult> {
   const endpoints = getRemoteVoiceProxyEndpoints(options.mode);
   if (!AUDIO_CHAT_CONFIG.voiceProxyEnabled || endpoints.length === 0) {
@@ -241,6 +244,9 @@ function buildRequestInit(options: {
   userPrompt?: string;
   fallbackText?: string;
   audioBlob?: Blob;
+  route?: string;
+  confirmAction?: boolean;
+  requestId?: string;
 }): RequestInit {
   if (options.mode === "tts") {
     return {
@@ -259,6 +265,9 @@ function buildRequestInit(options: {
       systemPrompt: options.systemPrompt,
       userPrompt: options.userPrompt,
       fallbackText: options.fallbackText,
+      route: options.route,
+      confirmAction: options.confirmAction,
+      requestId: options.requestId,
     }),
   };
 }
