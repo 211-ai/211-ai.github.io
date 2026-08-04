@@ -155,7 +155,7 @@ Program invariants:
 
 ## VOICE-ACTION-008 Implement Abby-aware action proposal retrieval
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval
