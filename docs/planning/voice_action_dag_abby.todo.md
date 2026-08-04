@@ -275,7 +275,7 @@ Program invariants:
 
 ## VOICE-ACTION-014 Wire UI navigation/document tools as admitted backends for app adapter
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-app
