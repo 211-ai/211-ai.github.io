@@ -535,7 +535,7 @@ Program invariants:
 
 ## VOICE-ACTION-027 Complete AgentAudioChatSurface confirm UX for all pilot statuses
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: ui
