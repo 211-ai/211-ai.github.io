@@ -315,7 +315,7 @@ Program invariants:
 
 ## VOICE-ACTION-016 Bind calendar adapter to wallet calendar service with fake transport
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-calendar
