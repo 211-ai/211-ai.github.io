@@ -195,7 +195,7 @@ Program invariants:
 
 ## VOICE-ACTION-010 Attach proposals on process_voice_turn provenance metadata
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: voice-integration
