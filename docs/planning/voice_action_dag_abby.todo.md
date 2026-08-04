@@ -335,7 +335,7 @@ Program invariants:
 
 ## VOICE-ACTION-017 Implement messaging adapter (read + leave provider message)
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-messages
