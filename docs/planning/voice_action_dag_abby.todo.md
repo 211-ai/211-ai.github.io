@@ -175,7 +175,7 @@ Program invariants:
 
 ## VOICE-ACTION-009 Upgrade voice_bridge to catalog-validated multi-route proposals
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval
