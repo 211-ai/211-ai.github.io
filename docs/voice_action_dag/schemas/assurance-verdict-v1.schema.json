@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://211-ai.local/schemas/voice-action-dag/assurance-verdict-v1.schema.json",
+  "title": "Voice Action DAG Assurance Verdict v1",
+  "description": "Machine-readable assurance verdict for dual-plane integration doctrine compliance (VOICE-ACTION-003). Fail-closed: unknown or fail never grants execute authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "program_id",
+    "board_namespace",
+    "doctrine_id",
+    "issued_at",
+    "planes",
+    "package_ownership",
+    "forbidden_content_fields",
+    "confirmation_rules",
+    "handoff_truthfulness",
+    "invariants",
+    "verdict",
+    "evidence"
+  ],
+  "properties": {
+    "schema": {
+      "const": "voice-action/assurance-verdict@1"
+    },
+    "program_id": {
+      "const": "voice-action-dag-abby-v1"
+    },
+    "board_namespace": {
+      "const": "voice-action-dag-abby-v1"
+    },
+    "doctrine_id": {
+      "const": "voice-action/integration-doctrine@1"
+    },
+    "doctrine_path": {
+      "type": "string",
+      "const": "docs/voice_action_dag/INTEGRATION_DOCTRINE.md"
+    },
+    "issued_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^VOICE-ACTION-[0-9]{3}$"
+        },
+        "goal_id": {
+          "type": "string",
+          "pattern": "^VOICE-ACTION-G[0-9]{3}$"
+        },
+        "tree_id": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 64
+        },
+        "catalog_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "content_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "planes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content", "authority", "separation_enforced"],
+      "properties": {
+        "content": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "may_emit_logical_proposals", "may_execute"],
+          "properties": {
+            "name": {
+              "const": "content"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "may_emit_logical_proposals": {
+              "const": true
+            },
+            "may_execute": {
+              "const": false
+            },
+            "assets": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "owns_catalog",
+            "owns_policy",
+            "owns_confirmation",
+            "owns_adapters",
+            "owns_receipts"
+          ],
+          "properties": {
+            "name": {
+              "const": "authority"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "owns_catalog": {
+              "const": true
+            },
+            "owns_policy": {
+              "const": true
+            },
+            "owns_confirmation": {
+              "const": true
+            },
+            "owns_adapters": {
+              "const": true
+            },
+            "owns_receipts": {
+              "const": true
+            }
+          }
+        },
+        "separation_enforced": {
+          "const": true
+        },
+        "authority_monotonicity": {
+          "const": "retrieval_never_increases_authority"
+        }
+      }
+    },
+    "package_ownership": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/packageOwner"
+      }
+    },
+    "forbidden_content_fields": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "command",
+          "argv",
+          "executable",
+          "shell",
+          "cwd",
+          "env",
+          "import_path",
+          "url",
+          "credentials",
+          "secret",
+          "webhook"
+        ]
+      }
+    },
+    "forbidden_content_path_suffix": {
+      "const": "_path"
+    },
+    "confirmation_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieval_alone_never_executes",
+        "read_requires_confirmation",
+        "write_requires_confirmation_and_auth",
+        "deny_without_confirm",
+        "safety_auto_path_documented"
+      ],
+      "properties": {
+        "retrieval_alone_never_executes": {
+          "const": true
+        },
+        "read_requires_confirmation": {
+          "const": true
+        },
+        "write_requires_confirmation_and_auth": {
+          "const": true
+        },
+        "deny_without_confirm": {
+          "const": true
+        },
+        "safety_auto_path_documented": {
+          "const": true
+        },
+        "descriptor_requires_confirmation_honored": {
+          "type": "boolean"
+        }
+      }
+    },
+    "handoff_truthfulness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "never_claim_unverified_transfer_success",
+        "metadata_only_is_not_success",
+        "request_distinct_from_completed_transfer",
+        "outcome_speech_requires_receipt"
+      ],
+      "properties": {
+        "never_claim_unverified_transfer_success": {
+          "const": true
+        },
+        "metadata_only_is_not_success": {
+          "const": true
+        },
+        "request_distinct_from_completed_transfer": {
+          "const": true
+        },
+        "outcome_speech_requires_receipt": {
+          "const": true
+        },
+        "live_agent_route": {
+          "const": "live_agent"
+        },
+        "logical_action": {
+          "const": "handoff_live_agent"
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/invariantRecord"
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["pass", "fail", "unknown"],
+      "description": "pass grants no execute by itself; fail and unknown are fail-closed for admission."
+    },
+    "verdict_grants_execute": {
+      "const": false,
+      "description": "Assurance verdicts never grant execute authority."
+    },
+    "fail_closed": {
+      "const": true
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidenceItem"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "packageOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "plane_focus", "owns"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "enum": [
+            "ipfs_datasets_py",
+            "ipfs_accelerate_py",
+            "wallet_interface",
+            "docs/phone_dialog_generation"
+          ]
+        },
+        "plane_focus": {
+          "type": "string",
+          "enum": [
+            "content",
+            "authority",
+            "authority+orchestration",
+            "product/UI",
+            "content-generation"
+          ]
+        },
+        "owns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "must_not_own": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "invariantRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "satisfied"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INV-[A-Z]+-[0-9]{3}$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512
+        },
+        "satisfied": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "doctrine",
+            "schema",
+            "test",
+            "inventory",
+            "receipt",
+            "digest"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "digest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}
