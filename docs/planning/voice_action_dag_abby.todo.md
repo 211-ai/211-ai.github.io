@@ -686,7 +686,7 @@ Program invariants:
 
 ## VOICE-ACTION-034 Resolve validation retry-budget failure for VOICE-ACTION-027
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
