@@ -1,0 +1,5151 @@
+{
+  "schema": "voice-action/component-inventory@1",
+  "schema_version": 1,
+  "program_id": "voice-action-dag-abby-v1",
+  "board_namespace": "voice-action-dag-abby-v1",
+  "goal_id": "VOICE-ACTION-G010",
+  "task_id": "VOICE-ACTION-002",
+  "generated_at": "2026-08-04T06:16:28Z",
+  "repository_head": "f2febada0daeac6414bc6f5aa4468272556920c0",
+  "purpose": "Deterministic inventory of Abby slotted DAG routes, voice_router, action_runtime, GraphRAG, UI tools, service actions, and handoff gaps for the voice-action dual-plane integration.",
+  "slotted_response_dag": {
+    "path": "docs/phone_dialog_generation/slotted_response_dag.json",
+    "sha256": "89ddb937155efa868ad32b89de39d046cc9552ef5b32c6f79a72850efb26e402",
+    "byte_count": 67091910,
+    "git_revision": "173e2c2b2d2c52eac018b647ccbd4938457d253e",
+    "route_counts": {
+      "app_surface_navigation": 113,
+      "calendar_event_support": 290,
+      "clarifying_prompt": 65,
+      "grounded_211_answer": 2145,
+      "live_agent": 6992,
+      "provider_contact_support": 226,
+      "repeat_or_restate": 2220,
+      "safety_guardrail_support": 563,
+      "service_interaction_support": 82,
+      "speech_unclear_clarification": 632,
+      "template_guided_fallback": 86,
+      "wallet_document_support": 246
+    },
+    "route_count_total": 13660,
+    "route_names": [
+      "app_surface_navigation",
+      "calendar_event_support",
+      "clarifying_prompt",
+      "grounded_211_answer",
+      "live_agent",
+      "provider_contact_support",
+      "repeat_or_restate",
+      "safety_guardrail_support",
+      "service_interaction_support",
+      "speech_unclear_clarification",
+      "template_guided_fallback",
+      "wallet_document_support"
+    ]
+  },
+  "components": {
+    "voice_router": {
+      "id": "voice_router",
+      "plane": "content+orchestration",
+      "owner": "ipfs_accelerate_py",
+      "role": "STT → GraphRAG/template retrieval → TTS/precomputed audio receipt; wallet adapter adoption.",
+      "modules": [
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+          "byte_count": 271045,
+          "line_count": 7283,
+          "sha256": "15aab6b0d9e9d61f6c88b28a0b79bbdf9112d021ebaf30911f6faf2f198e823f",
+          "git_revision": null,
+          "symbol_count": 202,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "VOICE_TURN_CONTRACT_VERSION",
+              "qualname": "VOICE_TURN_CONTRACT_VERSION",
+              "lineno": 112
+            },
+            {
+              "kind": "constant",
+              "name": "TELEPHONE_TURN_CONTRACT_VERSION",
+              "qualname": "TELEPHONE_TURN_CONTRACT_VERSION",
+              "lineno": 113
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_STAGE_STATUSES",
+              "qualname": "VOICE_STAGE_STATUSES",
+              "lineno": 114
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_TURN_STATUSES",
+              "qualname": "VOICE_TURN_STATUSES",
+              "lineno": 115
+            },
+            {
+              "kind": "constant",
+              "name": "USAGE_ROUTING_REQUIREMENT_ID",
+              "qualname": "USAGE_ROUTING_REQUIREMENT_ID",
+              "lineno": 118
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_TTS_USAGE_OPERATION",
+              "qualname": "VOICE_TTS_USAGE_OPERATION",
+              "lineno": 119
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_STT_USAGE_OPERATION",
+              "qualname": "VOICE_STT_USAGE_OPERATION",
+              "lineno": 120
+            },
+            {
+              "kind": "constant",
+              "name": "_LAST_USAGE_ADMISSION",
+              "qualname": "_LAST_USAGE_ADMISSION",
+              "lineno": 122
+            },
+            {
+              "kind": "constant",
+              "name": "_LAST_VOICE_USAGE_TRACE",
+              "qualname": "_LAST_VOICE_USAGE_TRACE",
+              "lineno": 123
+            },
+            {
+              "kind": "constant",
+              "name": "_RECEIPT_UNSAFE_DIMENSION_MARKERS",
+              "qualname": "_RECEIPT_UNSAFE_DIMENSION_MARKERS",
+              "lineno": 127
+            },
+            {
+              "kind": "class",
+              "name": "VoiceRouterError",
+              "qualname": "VoiceRouterError",
+              "lineno": 144
+            },
+            {
+              "kind": "class",
+              "name": "UsageCapacityError",
+              "qualname": "UsageCapacityError",
+              "lineno": 148
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "UsageCapacityError.__init__",
+              "lineno": 151
+            },
+            {
+              "kind": "function",
+              "name": "_set_last_usage_admission",
+              "qualname": "_set_last_usage_admission",
+              "lineno": 165
+            },
+            {
+              "kind": "function",
+              "name": "get_last_usage_admission",
+              "qualname": "get_last_usage_admission",
+              "lineno": 169
+            },
+            {
+              "kind": "function",
+              "name": "_set_last_voice_usage_trace",
+              "qualname": "_set_last_voice_usage_trace",
+              "lineno": 179
+            },
+            {
+              "kind": "function",
+              "name": "get_last_voice_usage_trace",
+              "qualname": "get_last_voice_usage_trace",
+              "lineno": 183
+            },
+            {
+              "kind": "function",
+              "name": "_truthy",
+              "qualname": "_truthy",
+              "lineno": 190
+            },
+            {
+              "kind": "function",
+              "name": "_cache_enabled",
+              "qualname": "_cache_enabled",
+              "lineno": 194
+            },
+            {
+              "kind": "function",
+              "name": "_response_cache_enabled",
+              "qualname": "_response_cache_enabled",
+              "lineno": 203
+            },
+            {
+              "kind": "function",
+              "name": "_stable_kwargs_digest",
+              "qualname": "_stable_kwargs_digest",
+              "lineno": 213
+            },
+            {
+              "kind": "function",
+              "name": "_text_digest",
+              "qualname": "_text_digest",
+              "lineno": 223
+            },
+            {
+              "kind": "function",
+              "name": "_audio_digest",
+              "qualname": "_audio_digest",
+              "lineno": 227
+            },
+            {
+              "kind": "function",
+              "name": "_provider_instance_cache_identity",
+              "qualname": "_provider_instance_cache_identity",
+              "lineno": 242
+            },
+            {
+              "kind": "function",
+              "name": "_tts_response_cache_key",
+              "qualname": "_tts_response_cache_key",
+              "lineno": 275
+            },
+            {
+              "kind": "function",
+              "name": "_stt_response_cache_key",
+              "qualname": "_stt_response_cache_key",
+              "lineno": 297
+            },
+            {
+              "kind": "class",
+              "name": "VoiceProvider",
+              "qualname": "VoiceProvider",
+              "lineno": 317
+            },
+            {
+              "kind": "method",
+              "name": "synthesize",
+              "qualname": "VoiceProvider.synthesize",
+              "lineno": 325
+            },
+            {
+              "kind": "method",
+              "name": "transcribe",
+              "qualname": "VoiceProvider.transcribe",
+              "lineno": 336
+            },
+            {
+              "kind": "class",
+              "name": "VoiceProviderCapabilities",
+              "qualname": "VoiceProviderCapabilities",
+              "lineno": 351
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceProviderCapabilities.__post_init__",
+              "lineno": 359
+            },
+            {
+              "kind": "method",
+              "name": "can_transcribe",
+              "qualname": "VoiceProviderCapabilities.can_transcribe",
+              "lineno": 378
+            },
+            {
+              "kind": "method",
+              "name": "can_synthesize",
+              "qualname": "VoiceProviderCapabilities.can_synthesize",
+              "lineno": 382
+            },
+            {
+              "kind": "method",
+              "name": "supports",
+              "qualname": "VoiceProviderCapabilities.supports",
+              "lineno": 385
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceProviderCapabilities.to_dict",
+              "lineno": 401
+            },
+            {
+              "kind": "method",
+              "name": "from_dict",
+              "qualname": "VoiceProviderCapabilities.from_dict",
+              "lineno": 410
+            },
+            {
+              "kind": "class",
+              "name": "ProviderInfo",
+              "qualname": "ProviderInfo",
+              "lineno": 434
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ProviderInfo.__post_init__",
+              "lineno": 441
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ProviderInfo.to_dict",
+              "lineno": 453
+            },
+            {
+              "kind": "constant",
+              "name": "_PROVIDER_REGISTRY",
+              "qualname": "_PROVIDER_REGISTRY",
+              "lineno": 461
+            },
+            {
+              "kind": "constant",
+              "name": "_PROVIDER_REGISTRY_REVISIONS",
+              "qualname": "_PROVIDER_REGISTRY_REVISIONS",
+              "lineno": 462
+            },
+            {
+              "kind": "function",
+              "name": "register_voice_provider",
+              "qualname": "register_voice_provider",
+              "lineno": 465
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_PROVIDER_CAPABILITIES",
+              "qualname": "_BUILTIN_PROVIDER_CAPABILITIES",
+              "lineno": 496
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_PROVIDER_ALIASES",
+              "qualname": "_BUILTIN_PROVIDER_ALIASES",
+              "lineno": 512
+            },
+            {
+              "kind": "constant",
+              "name": "_AUDIO_MIME_TYPES",
+              "qualname": "_AUDIO_MIME_TYPES",
+              "lineno": 531
+            },
+            {
+              "kind": "constant",
+              "name": "_VOICE_CATALOG_PROVENANCE",
+              "qualname": "_VOICE_CATALOG_PROVENANCE",
+              "lineno": 547
+            },
+            {
+              "kind": "class",
+              "name": "_VoiceCatalogMetadata",
+              "qualname": "_VoiceCatalogMetadata",
+              "lineno": 551
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_VOICE_CATALOG",
+              "qualname": "_BUILTIN_VOICE_CATALOG",
+              "lineno": 570
+            },
+            {
+              "kind": "function",
+              "name": "_catalog_name",
+              "qualname": "_catalog_name",
+              "lineno": 690
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_operation",
+              "qualname": "_canonical_operation",
+              "lineno": 705
+            },
+            {
+              "kind": "function",
+              "name": "_mime_types",
+              "qualname": "_mime_types",
+              "lineno": 732
+            },
+            {
+              "kind": "function",
+              "name": "_provider_aliases",
+              "qualname": "_provider_aliases",
+              "lineno": 743
+            },
+            {
+              "kind": "function",
+              "name": "_provider_catalog_metadata",
+              "qualname": "_provider_catalog_metadata",
+              "lineno": 755
+            },
+            {
+              "kind": "function",
+              "name": "_provider_configuration",
+              "qualname": "_provider_configuration",
+              "lineno": 774
+            },
+            {
+              "kind": "function",
+              "name": "_provider_state",
+              "qualname": "_provider_state",
+              "lineno": 836
+            },
+            {
+              "kind": "function",
+              "name": "_provider_capability_descriptors",
+              "qualname": "_provider_capability_descriptors",
+              "lineno": 856
+            },
+            {
+              "kind": "function",
+              "name": "_provider_descriptor",
+              "qualname": "_provider_descriptor",
+              "lineno": 895
+            },
+            {
+              "kind": "function",
+              "name": "_catalog_provider_names",
+              "qualname": "_catalog_provider_names",
+              "lineno": 957
+            },
+            {
+              "kind": "function",
+              "name": "_model_names_for_provider",
+              "qualname": "_model_names_for_provider",
+              "lineno": 964
+            },
+            {
+              "kind": "function",
+              "name": "_model_descriptors_for_provider",
+              "qualname": "_model_descriptors_for_provider",
+              "lineno": 1015
+            },
+            {
+              "kind": "function",
+              "name": "_descriptor_operations",
+              "qualname": "_descriptor_operations",
+              "lineno": 1086
+            },
+            {
+              "kind": "function",
+              "name": "_label",
+              "qualname": "_label",
+              "lineno": 1096
+            },
+            {
+              "kind": "function",
+              "name": "_matches_catalog_constraints",
+              "qualname": "_matches_catalog_constraints",
+              "lineno": 1100
+            },
+            {
+              "kind": "function",
+              "name": "list_providers",
+              "qualname": "list_providers",
+              "lineno": 1201
+            },
+            {
+              "kind": "function",
+              "name": "get_provider_descriptor",
+              "qualname": "get_provider_descriptor",
+              "lineno": 1244
+            },
+            {
+              "kind": "function",
+              "name": "list_models",
+              "qualname": "list_models",
+              "lineno": 1258
+            },
+            {
+              "kind": "function",
+              "name": "resolve_model",
+              "qualname": "resolve_model",
+              "lineno": 1316
+            },
+            {
+              "kind": "function",
+              "name": "get_catalog_snapshot",
+              "qualname": "get_catalog_snapshot",
+              "lineno": 1475
+            },
+            {
+              "kind": "function",
+              "name": "get_voice_provider_capabilities",
+              "qualname": "get_voice_provider_capabilities",
+              "lineno": 1515
+            },
+            {
+              "kind": "function",
+              "name": "_coalesce_env",
+              "qualname": "_coalesce_env",
+              "lineno": 1534
+            },
+            {
+              "kind": "constant",
+              "name": "DEFAULT_GROUNDED_FALLBACK",
+              "qualname": "DEFAULT_GROUNDED_FALLBACK",
+              "lineno": 1546
+            },
+            {
+              "kind": "function",
+              "name": "_sha256_bytes",
+              "qualname": "_sha256_bytes",
+              "lineno": 1552
+            },
+            {
+              "kind": "function",
+              "name": "_sha256_text",
+              "qualname": "_sha256_text",
+              "lineno": 1556
+            },
+            {
+              "kind": "function",
+              "name": "_json_safe",
+              "qualname": "_json_safe",
+              "lineno": 1560
+            },
+            {
+              "kind": "class",
+              "name": "GroundingEvidence",
+              "qualname": "GroundingEvidence",
+              "lineno": 1582
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GroundingEvidence.__post_init__",
+              "lineno": 1592
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GroundingEvidence.to_dict",
+              "lineno": 1600
+            },
+            {
+              "kind": "class",
+              "name": "GroundedSlot",
+              "qualname": "GroundedSlot",
+              "lineno": 1616
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GroundedSlot.__post_init__",
+              "lineno": 1623
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GroundedSlot.to_dict",
+              "lineno": 1640
+            },
+            {
+              "kind": "class",
+              "name": "VoiceResponsePlan",
+              "qualname": "VoiceResponsePlan",
+              "lineno": 1649
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceResponsePlan.__post_init__",
+              "lineno": 1660
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceResponsePlan.to_dict",
+              "lineno": 1674
+            },
+            {
+              "kind": "method",
+              "name": "sources",
+              "qualname": "VoiceResponsePlan.sources",
+              "lineno": 1686
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTemplateProvider",
+              "qualname": "VoiceTemplateProvider",
+              "lineno": 1692
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "VoiceTemplateProvider.retrieve",
+              "lineno": 1695
+            },
+            {
+              "kind": "class",
+              "name": "VoiceStageTrace",
+              "qualname": "VoiceStageTrace",
+              "lineno": 1705
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceStageTrace.__post_init__",
+              "lineno": 1715
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceStageTrace.to_dict",
+              "lineno": 1741
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnRequest",
+              "qualname": "VoiceTurnRequest",
+              "lineno": 1753
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnRequest.__post_init__",
+              "lineno": 1784
+            },
+            {
+              "kind": "method",
+              "name": "effective_language",
+              "qualname": "VoiceTurnRequest.effective_language",
+              "lineno": 1873
+            },
+            {
+              "kind": "method",
+              "name": "input_audio_sha256",
+              "qualname": "VoiceTurnRequest.input_audio_sha256",
+              "lineno": 1877
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnRequest.to_dict",
+              "lineno": 1895
+            },
+            {
+              "kind": "class",
+              "name": "TelephoneTurnState",
+              "qualname": "TelephoneTurnState",
+              "lineno": 1939
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "TelephoneTurnState.__post_init__",
+              "lineno": 1954
+            },
+            {
+              "kind": "method",
+              "name": "call_id_sha256",
+              "qualname": "TelephoneTurnState.call_id_sha256",
+              "lineno": 1979
+            },
+            {
+              "kind": "method",
+              "name": "to_context",
+              "qualname": "TelephoneTurnState.to_context",
+              "lineno": 1982
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "TelephoneTurnState.to_dict",
+              "lineno": 1995
+            },
+            {
+              "kind": "method",
+              "name": "advance",
+              "qualname": "TelephoneTurnState.advance",
+              "lineno": 1998
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnProvenance",
+              "qualname": "VoiceTurnProvenance",
+              "lineno": 2018
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnProvenance.__post_init__",
+              "lineno": 2034
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnProvenance.to_dict",
+              "lineno": 2068
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnResult",
+              "qualname": "VoiceTurnResult",
+              "lineno": 2087
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnResult.__post_init__",
+              "lineno": 2101
+            },
+            {
+              "kind": "method",
+              "name": "spoken_text",
+              "qualname": "VoiceTurnResult.spoken_text",
+              "lineno": 2148
+            },
+            {
+              "kind": "method",
+              "name": "fallbacks",
+              "qualname": "VoiceTurnResult.fallbacks",
+              "lineno": 2152
+            },
+            {
+              "kind": "method",
+              "name": "fallback_reason",
+              "qualname": "VoiceTurnResult.fallback_reason",
+              "lineno": 2157
+            },
+            {
+              "kind": "method",
+              "name": "degraded",
+              "qualname": "VoiceTurnResult.degraded",
+              "lineno": 2162
+            },
+            {
+              "kind": "method",
+              "name": "template_id",
+              "qualname": "VoiceTurnResult.template_id",
+              "lineno": 2166
+            },
+            {
+              "kind": "method",
+              "name": "intent",
+              "qualname": "VoiceTurnResult.intent",
+              "lineno": 2170
+            },
+            {
+              "kind": "method",
+              "name": "sources",
+              "qualname": "VoiceTurnResult.sources",
+              "lineno": 2175
+            },
+            {
+              "kind": "method",
+              "name": "total_duration_ms",
+              "qualname": "VoiceTurnResult.total_duration_ms",
+              "lineno": 2179
+            },
+            {
+              "kind": "method",
+              "name": "provider_selection",
+              "qualname": "VoiceTurnResult.provider_selection",
+              "lineno": 2183
+            },
+            {
+              "kind": "method",
+              "name": "validated_cache_miss_event",
+              "qualname": "VoiceTurnResult.validated_cache_miss_event",
+              "lineno": 2190
+            },
+            {
+              "kind": "method",
+              "name": "is_live_tts_cache_miss",
+              "qualname": "VoiceTurnResult.is_live_tts_cache_miss",
+              "lineno": 2220
+            },
+            {
+              "kind": "method",
+              "name": "enqueue_validated_cache_miss_candidate",
+              "qualname": "VoiceTurnResult.enqueue_validated_cache_miss_candidate",
+              "lineno": 2227
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnResult.to_dict",
+              "lineno": 2262
+            },
+            {
+              "kind": "function",
+              "name": "_coerce_evidence",
+              "qualname": "_coerce_evidence",
+              "lineno": 2288
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_evidence",
+              "qualname": "_normalize_evidence",
+              "lineno": 2327
+            },
+            {
+              "kind": "function",
+              "name": "_source_ids_for_fact",
+              "qualname": "_source_ids_for_fact",
+              "lineno": 2342
+            },
+            {
+              "kind": "function",
+              "name": "_coerce_response_plan",
+              "qualname": "_coerce_response_plan",
+              "lineno": 2362
+            },
+            {
+              "kind": "function",
+              "name": "_call_with_supported_keywords",
+              "qualname": "_call_with_supported_keywords",
+              "lineno": 2427
+            },
+            {
+              "kind": "class",
+              "name": "GraphRAGVoiceTemplateProvider",
+              "qualname": "GraphRAGVoiceTemplateProvider",
+              "lineno": 2451
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "GraphRAGVoiceTemplateProvider.__init__",
+              "lineno": 2462
+            },
+            {
+              "kind": "method",
+              "name": "_backend_callable",
+              "qualname": "GraphRAGVoiceTemplateProvider._backend_callable",
+              "lineno": 2469
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve",
+              "lineno": 2483
+            },
+            {
+              "kind": "function",
+              "name": "_get_openai_provider",
+              "qualname": "_get_openai_provider",
+              "lineno": 2559
+            },
+            {
+              "kind": "function",
+              "name": "_get_elevenlabs_provider",
+              "qualname": "_get_elevenlabs_provider",
+              "lineno": 2713
+            },
+            {
+              "kind": "function",
+              "name": "_get_assemblyai_provider",
+              "qualname": "_get_assemblyai_provider",
+              "lineno": 2789
+            },
+            {
+              "kind": "function",
+              "name": "_get_huggingface_provider",
+              "qualname": "_get_huggingface_provider",
+              "lineno": 2916
+            },
+            {
+              "kind": "function",
+              "name": "_await_from_sync",
+              "qualname": "_await_from_sync",
+              "lineno": 3081
+            },
+            {
+              "kind": "constant",
+              "name": "_BACKEND_RESULT_MISSING",
+              "qualname": "_BACKEND_RESULT_MISSING",
+              "lineno": 3112
+            },
+            {
+              "kind": "function",
+              "name": "_backend_manager_result_value",
+              "qualname": "_backend_manager_result_value",
+              "lineno": 3115
+            },
+            {
+              "kind": "function",
+              "name": "_get_backend_manager_provider",
+              "qualname": "_get_backend_manager_provider",
+              "lineno": 3136
+            },
+            {
+              "kind": "function",
+              "name": "_provider_cache_key",
+              "qualname": "_provider_cache_key",
+              "lineno": 3256
+            },
+            {
+              "kind": "function",
+              "name": "_builtin_provider_by_name",
+              "qualname": "_builtin_provider_by_name",
+              "lineno": 3331
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_provider_uncached",
+              "qualname": "_resolve_provider_uncached",
+              "lineno": 3364
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_provider_cached",
+              "qualname": "_resolve_provider_cached",
+              "lineno": 3406
+            },
+            {
+              "kind": "function",
+              "name": "get_voice_provider",
+              "qualname": "get_voice_provider",
+              "lineno": 3411
+            },
+            {
+              "kind": "function",
+              "name": "_provider_display_name",
+              "qualname": "_provider_display_name",
+              "lineno": 3448
+            },
+            {
+              "kind": "function",
+              "name": "_template_provider_name",
+              "qualname": "_template_provider_name",
+              "lineno": 3459
+            },
+            {
+              "kind": "function",
+              "name": "_collaborator_cache_identity",
+              "qualname": "_collaborator_cache_identity",
+              "lineno": 3465
+            },
+            {
+              "kind": "function",
+              "name": "_safe_stage_error",
+              "qualname": "_safe_stage_error",
+              "lineno": 3481
+            },
+            {
+              "kind": "function",
+              "name": "_duration_ms",
+              "qualname": "_duration_ms",
+              "lineno": 3529
+            },
+            {
+              "kind": "function",
+              "name": "_voice_turn_cache_key",
+              "qualname": "_voice_turn_cache_key",
+              "lineno": 3533
+            },
+            {
+              "kind": "function",
+              "name": "voice_turn_cache_key",
+              "qualname": "voice_turn_cache_key",
+              "lineno": 3582
+            },
+            {
+              "kind": "function",
+              "name": "_registry_supports",
+              "qualname": "_registry_supports",
+              "lineno": 3602
+            },
+            {
+              "kind": "function",
+              "name": "_provider_candidates",
+              "qualname": "_provider_candidates",
+              "lineno": 3612
+            },
+            {
+              "kind": "function",
+              "name": "_provider_receipt_details",
+              "qualname": "_provider_receipt_details",
+              "lineno": 3654
+            },
+            {
+              "kind": "function",
+              "name": "_close_awaitable_result",
+              "qualname": "_close_awaitable_result",
+              "lineno": 3667
+            },
+            {
+              "kind": "function",
+              "name": "_grounding_override_slots",
+              "qualname": "_grounding_override_slots",
+              "lineno": 3679
+            },
+            {
+              "kind": "function",
+              "name": "_template_fields",
+              "qualname": "_template_fields",
+              "lineno": 3712
+            },
+            {
+              "kind": "constant",
+              "name": "_TELEPHONE_DIGIT_WORDS",
+              "qualname": "_TELEPHONE_DIGIT_WORDS",
+              "lineno": 3719
+            },
+            {
+              "kind": "constant",
+              "name": "_TELEPHONE_UNSAFE_SPOKEN_MARKER_RE",
+              "qualname": "_TELEPHONE_UNSAFE_SPOKEN_MARKER_RE",
+              "lineno": 3731
+            },
+            {
+              "kind": "function",
+              "name": "_telephone_digits_to_words",
+              "qualname": "_telephone_digits_to_words",
+              "lineno": 3738
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_telephone_slot_value",
+              "qualname": "_normalize_telephone_slot_value",
+              "lineno": 3746
+            },
+            {
+              "kind": "function",
+              "name": "_assert_telephone_spoken_safety",
+              "qualname": "_assert_telephone_spoken_safety",
+              "lineno": 3804
+            },
+            {
+              "kind": "function",
+              "name": "_render_grounded_plan",
+              "qualname": "_render_grounded_plan",
+              "lineno": 3815
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_spoken_text",
+              "qualname": "_normalize_spoken_text",
+              "lineno": 3895
+            },
+            {
+              "kind": "function",
+              "name": "_audio_format",
+              "qualname": "_audio_format",
+              "lineno": 3900
+            },
+            {
+              "kind": "function",
+              "name": "_voice_tts_artifact_policy",
+              "qualname": "_voice_tts_artifact_policy",
+              "lineno": 3914
+            },
+            {
+              "kind": "function",
+              "name": "_validate_router_tts_audio",
+              "qualname": "_validate_router_tts_audio",
+              "lineno": 3937
+            },
+            {
+              "kind": "function",
+              "name": "_synthesis_identity_from_request",
+              "qualname": "_synthesis_identity_from_request",
+              "lineno": 3974
+            },
+            {
+              "kind": "function",
+              "name": "process_voice_turn",
+              "qualname": "process_voice_turn",
+              "lineno": 4029
+            },
+            {
+              "kind": "function",
+              "name": "process_telephone_turn",
+              "qualname": "process_telephone_turn",
+              "lineno": 4601
+            },
+            {
+              "kind": "function",
+              "name": "estimate_synthesis_tokens",
+              "qualname": "estimate_synthesis_tokens",
+              "lineno": 4808
+            },
+            {
+              "kind": "function",
+              "name": "_audio_media_bytes",
+              "qualname": "_audio_media_bytes",
+              "lineno": 4821
+            },
+            {
+              "kind": "function",
+              "name": "_parse_wav_duration_seconds",
+              "qualname": "_parse_wav_duration_seconds",
+              "lineno": 4834
+            },
+            {
+              "kind": "function",
+              "name": "estimate_audio_seconds",
+              "qualname": "estimate_audio_seconds",
+              "lineno": 4870
+            },
+            {
+              "kind": "function",
+              "name": "estimate_synthesis_usage",
+              "qualname": "estimate_synthesis_usage",
+              "lineno": 4919
+            },
+            {
+              "kind": "function",
+              "name": "estimate_transcription_usage",
+              "qualname": "estimate_transcription_usage",
+              "lineno": 4962
+            },
+            {
+              "kind": "function",
+              "name": "settle_synthesis_usage",
+              "qualname": "settle_synthesis_usage",
+              "lineno": 5006
+            },
+            {
+              "kind": "function",
+              "name": "settle_transcription_usage",
+              "qualname": "settle_transcription_usage",
+              "lineno": 5040
+            },
+            {
+              "kind": "function",
+              "name": "planning_required_usage",
+              "qualname": "planning_required_usage",
+              "lineno": 5075
+            },
+            {
+              "kind": "function",
+              "name": "apply_voice_stream_settlements",
+              "qualname": "apply_voice_stream_settlements",
+              "lineno": 5096
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_usage_policy",
+              "qualname": "_normalize_usage_policy",
+              "lineno": 5118
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_is_off",
+              "qualname": "_usage_mode_is_off",
+              "lineno": 5130
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_observes_only",
+              "qualname": "_usage_mode_observes_only",
+              "lineno": 5139
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_enforces",
+              "qualname": "_usage_mode_enforces",
+              "lineno": 5149
+            },
+            {
+              "kind": "function",
+              "name": "_voice_compatibility_labels",
+              "qualname": "_voice_compatibility_labels",
+              "lineno": 5159
+            },
+            {
+              "kind": "function",
+              "name": "voice_fallback_compatible",
+              "qualname": "voice_fallback_compatible",
+              "lineno": 5241
+            },
+            {
+              "kind": "function",
+              "name": "_build_voice_static_candidate",
+              "qualname": "_build_voice_static_candidate",
+              "lineno": 5300
+            },
+            {
+              "kind": "function",
+              "name": "_filter_compatible_voice_candidates",
+              "qualname": "_filter_compatible_voice_candidates",
+              "lineno": 5355
+            },
+            {
+              "kind": "function",
+              "name": "_admission_result_to_trace",
+              "qualname": "_admission_result_to_trace",
+              "lineno": 5368
+            },
+            {
+              "kind": "function",
+              "name": "_parse_provider_observation",
+              "qualname": "_parse_provider_observation",
+              "lineno": 5402
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_usage_pin",
+              "qualname": "_resolve_usage_pin",
+              "lineno": 5490
+            },
+            {
+              "kind": "function",
+              "name": "_bind_usage_routing_request",
+              "qualname": "_bind_usage_routing_request",
+              "lineno": 5522
+            },
+            {
+              "kind": "function",
+              "name": "_effective_policy_for_pin",
+              "qualname": "_effective_policy_for_pin",
+              "lineno": 5573
+            },
+            {
+              "kind": "function",
+              "name": "_tts_cache_lookup",
+              "qualname": "_tts_cache_lookup",
+              "lineno": 5596
+            },
+            {
+              "kind": "function",
+              "name": "_tts_cache_store",
+              "qualname": "_tts_cache_store",
+              "lineno": 5634
+            },
+            {
+              "kind": "function",
+              "name": "_stt_cache_lookup",
+              "qualname": "_stt_cache_lookup",
+              "lineno": 5667
+            },
+            {
+              "kind": "function",
+              "name": "_stt_cache_store",
+              "qualname": "_stt_cache_store",
+              "lineno": 5697
+            },
+            {
+              "kind": "function",
+              "name": "_write_output_path",
+              "qualname": "_write_output_path",
+              "lineno": 5728
+            },
+            {
+              "kind": "function",
+              "name": "_legacy_text_to_speech",
+              "qualname": "_legacy_text_to_speech",
+              "lineno": 5736
+            },
+            {
+              "kind": "function",
+              "name": "_legacy_speech_to_text",
+              "qualname": "_legacy_speech_to_text",
+              "lineno": 5817
+            },
+            {
+              "kind": "function",
+              "name": "_record_voice_usage_observe_shadow",
+              "qualname": "_record_voice_usage_observe_shadow",
+              "lineno": 5897
+            },
+            {
+              "kind": "function",
+              "name": "_text_to_speech_with_usage_admission",
+              "qualname": "_text_to_speech_with_usage_admission",
+              "lineno": 5969
+            },
+            {
+              "kind": "function",
+              "name": "_speech_to_text_with_usage_admission",
+              "qualname": "_speech_to_text_with_usage_admission",
+              "lineno": 6429
+            },
+            {
+              "kind": "function",
+              "name": "text_to_speech",
+              "qualname": "text_to_speech",
+              "lineno": 6861
+            },
+            {
+              "kind": "function",
+              "name": "speech_to_text",
+              "qualname": "speech_to_text",
+              "lineno": 7018
+            },
+            {
+              "kind": "function",
+              "name": "clear_voice_router_caches",
+              "qualname": "clear_voice_router_caches",
+              "lineno": 7162
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/helpers/_voice_router_adapter.py",
+          "byte_count": 24596,
+          "line_count": 633,
+          "sha256": "e8cc47c2e1c7a393db192cffbfc8fcfc3e7ad07b79c87e86a94b09ac57578a6f",
+          "git_revision": "36262022db924d08f1a2d290112dc96ccdd3b146",
+          "symbol_count": 40,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "UNIFIED_VOICE_ROUTER_FLAG",
+              "qualname": "UNIFIED_VOICE_ROUTER_FLAG",
+              "lineno": 26
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_ROUTER_ADAPTER_VERSION",
+              "qualname": "VOICE_ROUTER_ADAPTER_VERSION",
+              "lineno": 27
+            },
+            {
+              "kind": "constant",
+              "name": "_AUDIO_MIME_TYPES",
+              "qualname": "_AUDIO_MIME_TYPES",
+              "lineno": 28
+            },
+            {
+              "kind": "constant",
+              "name": "_PACKAGE_INDEXTTS_PROVIDER",
+              "qualname": "_PACKAGE_INDEXTTS_PROVIDER",
+              "lineno": 40
+            },
+            {
+              "kind": "constant",
+              "name": "_PACKAGE_INDEXTTS_PROVIDER_KEY",
+              "qualname": "_PACKAGE_INDEXTTS_PROVIDER_KEY",
+              "lineno": 41
+            },
+            {
+              "kind": "constant",
+              "name": "G010_AUTHORITATIVE_EVIDENCE_MAP",
+              "qualname": "G010_AUTHORITATIVE_EVIDENCE_MAP",
+              "lineno": 46
+            },
+            {
+              "kind": "constant",
+              "name": "G010_RESIDUAL_EVIDENCE_MAP",
+              "qualname": "G010_RESIDUAL_EVIDENCE_MAP",
+              "lineno": 50
+            },
+            {
+              "kind": "constant",
+              "name": "FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM",
+              "qualname": "FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM",
+              "lineno": 54
+            },
+            {
+              "kind": "constant",
+              "name": "AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM",
+              "qualname": "AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM",
+              "lineno": 55
+            },
+            {
+              "kind": "constant",
+              "name": "AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM",
+              "qualname": "AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM",
+              "lineno": 58
+            },
+            {
+              "kind": "constant",
+              "name": "G010_REQUIRED_EVIDENCE_TERMS",
+              "qualname": "G010_REQUIRED_EVIDENCE_TERMS",
+              "lineno": 61
+            },
+            {
+              "kind": "function",
+              "name": "_truthy",
+              "qualname": "_truthy",
+              "lineno": 69
+            },
+            {
+              "kind": "function",
+              "name": "is_unified_voice_router_enabled",
+              "qualname": "is_unified_voice_router_enabled",
+              "lineno": 73
+            },
+            {
+              "kind": "function",
+              "name": "_field",
+              "qualname": "_field",
+              "lineno": 85
+            },
+            {
+              "kind": "function",
+              "name": "_text_field",
+              "qualname": "_text_field",
+              "lineno": 93
+            },
+            {
+              "kind": "function",
+              "name": "_mapping_field",
+              "qualname": "_mapping_field",
+              "lineno": 101
+            },
+            {
+              "kind": "function",
+              "name": "_decode_audio",
+              "qualname": "_decode_audio",
+              "lineno": 106
+            },
+            {
+              "kind": "function",
+              "name": "_router_contracts",
+              "qualname": "_router_contracts",
+              "lineno": 125
+            },
+            {
+              "kind": "class",
+              "name": "_WalletSTTProvider",
+              "qualname": "_WalletSTTProvider",
+              "lineno": 137
+            },
+            {
+              "kind": "method",
+              "name": "transcribe",
+              "qualname": "_WalletSTTProvider.transcribe",
+              "lineno": 142
+            },
+            {
+              "kind": "function",
+              "name": "_audio_from_tts_result",
+              "qualname": "_audio_from_tts_result",
+              "lineno": 167
+            },
+            {
+              "kind": "class",
+              "name": "_WalletTTSProvider",
+              "qualname": "_WalletTTSProvider",
+              "lineno": 191
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "_WalletTTSProvider.__init__",
+              "lineno": 196
+            },
+            {
+              "kind": "method",
+              "name": "synthesize",
+              "qualname": "_WalletTTSProvider.synthesize",
+              "lineno": 199
+            },
+            {
+              "kind": "function",
+              "name": "_package_indextts_tts_provider",
+              "qualname": "_package_indextts_tts_provider",
+              "lineno": 232
+            },
+            {
+              "kind": "class",
+              "name": "_WalletTTSCompatibilityReceipt",
+              "qualname": "_WalletTTSCompatibilityReceipt",
+              "lineno": 305
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "_WalletTTSCompatibilityReceipt.__init__",
+              "lineno": 310
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "_WalletTTSCompatibilityReceipt.to_dict",
+              "lineno": 322
+            },
+            {
+              "kind": "class",
+              "name": "_PackageFirstTTSProvider",
+              "qualname": "_PackageFirstTTSProvider",
+              "lineno": 334
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "_PackageFirstTTSProvider.__init__",
+              "lineno": 339
+            },
+            {
+              "kind": "method",
+              "name": "synthesize",
+              "qualname": "_PackageFirstTTSProvider.synthesize",
+              "lineno": 346
+            },
+            {
+              "kind": "class",
+              "name": "_WalletResponsePlanProvider",
+              "qualname": "_WalletResponsePlanProvider",
+              "lineno": 415
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "_WalletResponsePlanProvider.__init__",
+              "lineno": 425
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "_WalletResponsePlanProvider.retrieve",
+              "lineno": 428
+            },
+            {
+              "kind": "function",
+              "name": "build_voice_turn_request",
+              "qualname": "build_voice_turn_request",
+              "lineno": 437
+            },
+            {
+              "kind": "function",
+              "name": "serialize_voice_turn_result",
+              "qualname": "serialize_voice_turn_result",
+              "lineno": 480
+            },
+            {
+              "kind": "class",
+              "name": "WalletVoiceRouterAdapter",
+              "qualname": "WalletVoiceRouterAdapter",
+              "lineno": 499
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "WalletVoiceRouterAdapter.__init__",
+              "lineno": 502
+            },
+            {
+              "kind": "method",
+              "name": "process",
+              "qualname": "WalletVoiceRouterAdapter.process",
+              "lineno": 505
+            },
+            {
+              "kind": "function",
+              "name": "process_wallet_voice_turn",
+              "qualname": "process_wallet_voice_turn",
+              "lineno": 561
+            }
+          ]
+        }
+      ],
+      "required_ast_symbols": {
+        "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py": [
+          "process_voice_turn",
+          "VoiceTurnRequest",
+          "VoiceTurnResult",
+          "VoiceResponsePlan",
+          "speech_to_text",
+          "text_to_speech"
+        ],
+        "wallet_interface/helpers/_voice_router_adapter.py": [
+          "WalletVoiceRouterAdapter",
+          "process_wallet_voice_turn",
+          "is_unified_voice_router_enabled",
+          "serialize_voice_turn_result"
+        ]
+      },
+      "extra_notes": []
+    },
+    "action_runtime": {
+      "id": "action_runtime",
+      "plane": "authority",
+      "owner": "ipfs_accelerate_py",
+      "role": "Fail-closed proposal → policy → catalog → adapter execution; voice_bridge maps 5 routes.",
+      "modules": [
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/__init__.py",
+          "byte_count": 1029,
+          "line_count": 39,
+          "sha256": "aa51990355f2399770ca375e9ab66395c1a192c2a19b0c86bce536a3f7a32ed4",
+          "git_revision": null,
+          "symbol_count": 0,
+          "parse_error": null,
+          "symbols": []
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py",
+          "byte_count": 6607,
+          "line_count": 202,
+          "sha256": "8251e0be73495ac33908d546bf4ab47f62c9189793f873c55546d5e561349e7c",
+          "git_revision": null,
+          "symbol_count": 15,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "class",
+              "name": "RiskClass",
+              "qualname": "RiskClass",
+              "lineno": 12
+            },
+            {
+              "kind": "class",
+              "name": "SideEffectClass",
+              "qualname": "SideEffectClass",
+              "lineno": 19
+            },
+            {
+              "kind": "class",
+              "name": "ActionDecisionKind",
+              "qualname": "ActionDecisionKind",
+              "lineno": 27
+            },
+            {
+              "kind": "class",
+              "name": "ActionStatus",
+              "qualname": "ActionStatus",
+              "lineno": 36
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_bytes",
+              "qualname": "_canonical_bytes",
+              "lineno": 48
+            },
+            {
+              "kind": "function",
+              "name": "content_digest",
+              "qualname": "content_digest",
+              "lineno": 58
+            },
+            {
+              "kind": "class",
+              "name": "ActionProposal",
+              "qualname": "ActionProposal",
+              "lineno": 63
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ActionProposal.__post_init__",
+              "lineno": 79
+            },
+            {
+              "kind": "method",
+              "name": "arguments_digest",
+              "qualname": "ActionProposal.arguments_digest",
+              "lineno": 91
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionProposal.to_dict",
+              "lineno": 94
+            },
+            {
+              "kind": "class",
+              "name": "ActionDecision",
+              "qualname": "ActionDecision",
+              "lineno": 113
+            },
+            {
+              "kind": "method",
+              "name": "permits_execution",
+              "qualname": "ActionDecision.permits_execution",
+              "lineno": 128
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionDecision.to_dict",
+              "lineno": 134
+            },
+            {
+              "kind": "class",
+              "name": "ActionReceipt",
+              "qualname": "ActionReceipt",
+              "lineno": 151
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionReceipt.to_dict",
+              "lineno": 170
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py",
+          "byte_count": 3695,
+          "line_count": 100,
+          "sha256": "1a51fa7c93a41630a053323678c806889f06f9da212c5793a17f7de7a8f8e270",
+          "git_revision": null,
+          "symbol_count": 11,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "class",
+              "name": "ActionDescriptor",
+              "qualname": "ActionDescriptor",
+              "lineno": 17
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ActionDescriptor.__post_init__",
+              "lineno": 30
+            },
+            {
+              "kind": "method",
+              "name": "digest",
+              "qualname": "ActionDescriptor.digest",
+              "lineno": 37
+            },
+            {
+              "kind": "class",
+              "name": "ActionCatalog",
+              "qualname": "ActionCatalog",
+              "lineno": 53
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "ActionCatalog.__init__",
+              "lineno": 56
+            },
+            {
+              "kind": "method",
+              "name": "register",
+              "qualname": "ActionCatalog.register",
+              "lineno": 61
+            },
+            {
+              "kind": "method",
+              "name": "get",
+              "qualname": "ActionCatalog.get",
+              "lineno": 66
+            },
+            {
+              "kind": "method",
+              "name": "require",
+              "qualname": "ActionCatalog.require",
+              "lineno": 69
+            },
+            {
+              "kind": "method",
+              "name": "list_ids",
+              "qualname": "ActionCatalog.list_ids",
+              "lineno": 75
+            },
+            {
+              "kind": "function",
+              "name": "resolve_reviewed_executable",
+              "qualname": "resolve_reviewed_executable",
+              "lineno": 79
+            },
+            {
+              "kind": "function",
+              "name": "os_access_executable",
+              "qualname": "os_access_executable",
+              "lineno": 97
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py",
+          "byte_count": 5947,
+          "line_count": 172,
+          "sha256": "3b6c51c9066d21440e814927dc78ab8f2d00099b5bffd6f9772e4ac8fcbb15d4",
+          "git_revision": null,
+          "symbol_count": 6,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "class",
+              "name": "ActionPolicyEngine",
+              "qualname": "ActionPolicyEngine",
+              "lineno": 19
+            },
+            {
+              "kind": "method",
+              "name": "decide",
+              "qualname": "ActionPolicyEngine.decide",
+              "lineno": 20
+            },
+            {
+              "kind": "class",
+              "name": "FailClosedPolicy",
+              "qualname": "FailClosedPolicy",
+              "lineno": 24
+            },
+            {
+              "kind": "method",
+              "name": "grant",
+              "qualname": "FailClosedPolicy.grant",
+              "lineno": 39
+            },
+            {
+              "kind": "method",
+              "name": "decide",
+              "qualname": "FailClosedPolicy.decide",
+              "lineno": 61
+            },
+            {
+              "kind": "method",
+              "name": "_decision",
+              "qualname": "FailClosedPolicy._decision",
+              "lineno": 147
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py",
+          "byte_count": 2596,
+          "line_count": 65,
+          "sha256": "1d63f0e6b6a601edd2ea1c1ba9eafb640b8cdfb5938b4b5c7de29f6c6a1ec261",
+          "git_revision": null,
+          "symbol_count": 3,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "class",
+              "name": "ActionExecutor",
+              "qualname": "ActionExecutor",
+              "lineno": 14
+            },
+            {
+              "kind": "method",
+              "name": "evaluate",
+              "qualname": "ActionExecutor.evaluate",
+              "lineno": 21
+            },
+            {
+              "kind": "method",
+              "name": "execute",
+              "qualname": "ActionExecutor.execute",
+              "lineno": 24
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/voice_bridge.py",
+          "byte_count": 4192,
+          "line_count": 122,
+          "sha256": "6e76a87425dc264871103fefc4fb1475d940510a483c77104efc25c30a7b055a",
+          "git_revision": null,
+          "symbol_count": 5,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "DEFAULT_ROUTE_TO_LOGICAL_ACTION",
+              "qualname": "DEFAULT_ROUTE_TO_LOGICAL_ACTION",
+              "lineno": 19
+            },
+            {
+              "kind": "constant",
+              "name": "DEFAULT_LOGICAL_ACTION_TO_DESCRIPTOR",
+              "qualname": "DEFAULT_LOGICAL_ACTION_TO_DESCRIPTOR",
+              "lineno": 28
+            },
+            {
+              "kind": "function",
+              "name": "propose_from_voice_route",
+              "qualname": "propose_from_voice_route",
+              "lineno": 37
+            },
+            {
+              "kind": "class",
+              "name": "VoiceActionBridge",
+              "qualname": "VoiceActionBridge",
+              "lineno": 82
+            },
+            {
+              "kind": "method",
+              "name": "propose",
+              "qualname": "VoiceActionBridge.propose",
+              "lineno": 93
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py",
+          "byte_count": 13072,
+          "line_count": 364,
+          "sha256": "e6ae5c9485abde093427bd3be531fec6c536c291e7bebd36cc4f2853e6c2ab66",
+          "git_revision": null,
+          "symbol_count": 14,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "_SAFE_ARG_RE",
+              "qualname": "_SAFE_ARG_RE",
+              "lineno": 37
+            },
+            {
+              "kind": "constant",
+              "name": "_INJECTION_MARKERS",
+              "qualname": "_INJECTION_MARKERS",
+              "lineno": 38
+            },
+            {
+              "kind": "class",
+              "name": "CLISandboxPolicy",
+              "qualname": "CLISandboxPolicy",
+              "lineno": 60
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "CLISandboxPolicy.__post_init__",
+              "lineno": 74
+            },
+            {
+              "kind": "class",
+              "name": "CLIActionRegistration",
+              "qualname": "CLIActionRegistration",
+              "lineno": 85
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "CLIActionRegistration.__post_init__",
+              "lineno": 96
+            },
+            {
+              "kind": "method",
+              "name": "interface_identity",
+              "qualname": "CLIActionRegistration.interface_identity",
+              "lineno": 108
+            },
+            {
+              "kind": "function",
+              "name": "_validate_argv_token",
+              "qualname": "_validate_argv_token",
+              "lineno": 112
+            },
+            {
+              "kind": "function",
+              "name": "build_argv",
+              "qualname": "build_argv",
+              "lineno": 128
+            },
+            {
+              "kind": "class",
+              "name": "CLIActionAdapter",
+              "qualname": "CLIActionAdapter",
+              "lineno": 151
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "CLIActionAdapter.__init__",
+              "lineno": 154
+            },
+            {
+              "kind": "method",
+              "name": "get_registration",
+              "qualname": "CLIActionAdapter.get_registration",
+              "lineno": 169
+            },
+            {
+              "kind": "method",
+              "name": "invoke",
+              "qualname": "CLIActionAdapter.invoke",
+              "lineno": 172
+            },
+            {
+              "kind": "method",
+              "name": "_failed",
+              "qualname": "CLIActionAdapter._failed",
+              "lineno": 343
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/helpers/_voice_action_surface.py",
+          "byte_count": 10755,
+          "line_count": 298,
+          "sha256": "d2d83ed2473c2e8ecb049db38b781ca6a5b64fe462b8b18b08d0c24260af7924",
+          "git_revision": "36262022db924d08f1a2d290112dc96ccdd3b146",
+          "symbol_count": 12,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "VOICE_ACTION_EXECUTE_FLAG",
+              "qualname": "VOICE_ACTION_EXECUTE_FLAG",
+              "lineno": 21
+            },
+            {
+              "kind": "constant",
+              "name": "APP_SURFACE_DESCRIPTOR_ID",
+              "qualname": "APP_SURFACE_DESCRIPTOR_ID",
+              "lineno": 24
+            },
+            {
+              "kind": "constant",
+              "name": "WALLET_DOCS_DESCRIPTOR_ID",
+              "qualname": "WALLET_DOCS_DESCRIPTOR_ID",
+              "lineno": 25
+            },
+            {
+              "kind": "constant",
+              "name": "CALENDAR_DESCRIPTOR_ID",
+              "qualname": "CALENDAR_DESCRIPTOR_ID",
+              "lineno": 26
+            },
+            {
+              "kind": "constant",
+              "name": "SERVICE_INTERACTION_DESCRIPTOR_ID",
+              "qualname": "SERVICE_INTERACTION_DESCRIPTOR_ID",
+              "lineno": 27
+            },
+            {
+              "kind": "constant",
+              "name": "PROVIDER_CONTACT_DESCRIPTOR_ID",
+              "qualname": "PROVIDER_CONTACT_DESCRIPTOR_ID",
+              "lineno": 28
+            },
+            {
+              "kind": "function",
+              "name": "_truthy",
+              "qualname": "_truthy",
+              "lineno": 31
+            },
+            {
+              "kind": "function",
+              "name": "is_voice_action_execute_enabled",
+              "qualname": "is_voice_action_execute_enabled",
+              "lineno": 35
+            },
+            {
+              "kind": "function",
+              "name": "_text",
+              "qualname": "_text",
+              "lineno": 47
+            },
+            {
+              "kind": "function",
+              "name": "extract_voice_route",
+              "qualname": "extract_voice_route",
+              "lineno": 54
+            },
+            {
+              "kind": "function",
+              "name": "build_default_action_stack",
+              "qualname": "build_default_action_stack",
+              "lineno": 96
+            },
+            {
+              "kind": "function",
+              "name": "attach_action_surface",
+              "qualname": "attach_action_surface",
+              "lineno": 180
+            }
+          ]
+        }
+      ],
+      "required_ast_symbols": {
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py": [
+          "ActionProposal",
+          "ActionDecision",
+          "ActionReceipt",
+          "RiskClass",
+          "SideEffectClass"
+        ],
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/catalog.py": [
+          "ActionCatalog",
+          "ActionDescriptor"
+        ],
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/voice_bridge.py": [
+          "VoiceActionBridge",
+          "propose_from_voice_route",
+          "DEFAULT_ROUTE_TO_LOGICAL_ACTION"
+        ],
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/policy.py": [
+          "FailClosedPolicy",
+          "ActionPolicyEngine"
+        ],
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/executor.py": [
+          "ActionExecutor"
+        ],
+        "wallet_interface/helpers/_voice_action_surface.py": [
+          "attach_action_surface",
+          "build_default_action_stack",
+          "extract_voice_route",
+          "is_voice_action_execute_enabled"
+        ]
+      },
+      "extra_notes": []
+    },
+    "graphrag": {
+      "id": "graphrag",
+      "plane": "content",
+      "owner": "ipfs_datasets_py",
+      "role": "Deterministic grounded retrieval over Abby templates/slotted DAG; content plane only.",
+      "modules": [
+        {
+          "path": "ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py",
+          "byte_count": 63385,
+          "line_count": 1727,
+          "sha256": "6a47fb993aaa75b4bed3d52232c3901eae84c5e691c3d3d3e553935005ab095c",
+          "git_revision": null,
+          "symbol_count": 75,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "GRAPHRAG_INDEX_SCHEMA_VERSION",
+              "qualname": "GRAPHRAG_INDEX_SCHEMA_VERSION",
+              "lineno": 45
+            },
+            {
+              "kind": "constant",
+              "name": "_TOKEN_RE",
+              "qualname": "_TOKEN_RE",
+              "lineno": 46
+            },
+            {
+              "kind": "constant",
+              "name": "_SAFE_SLOT_RE",
+              "qualname": "_SAFE_SLOT_RE",
+              "lineno": 47
+            },
+            {
+              "kind": "constant",
+              "name": "_VECTOR_DIMENSIONS",
+              "qualname": "_VECTOR_DIMENSIONS",
+              "lineno": 48
+            },
+            {
+              "kind": "constant",
+              "name": "_STOPWORDS",
+              "qualname": "_STOPWORDS",
+              "lineno": 49
+            },
+            {
+              "kind": "class",
+              "name": "GraphRAGIngestionError",
+              "qualname": "GraphRAGIngestionError",
+              "lineno": 76
+            },
+            {
+              "kind": "class",
+              "name": "UnsafeSlotBindingError",
+              "qualname": "UnsafeSlotBindingError",
+              "lineno": 80
+            },
+            {
+              "kind": "function",
+              "name": "_plain_json_value",
+              "qualname": "_plain_json_value",
+              "lineno": 84
+            },
+            {
+              "kind": "function",
+              "name": "_json_safe",
+              "qualname": "_json_safe",
+              "lineno": 100
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_json",
+              "qualname": "_canonical_json",
+              "lineno": 117
+            },
+            {
+              "kind": "function",
+              "name": "_content_cid",
+              "qualname": "_content_cid",
+              "lineno": 127
+            },
+            {
+              "kind": "function",
+              "name": "_validate_probability",
+              "qualname": "_validate_probability",
+              "lineno": 136
+            },
+            {
+              "kind": "function",
+              "name": "_tokens",
+              "qualname": "_tokens",
+              "lineno": 146
+            },
+            {
+              "kind": "function",
+              "name": "_sparse_vector",
+              "qualname": "_sparse_vector",
+              "lineno": 154
+            },
+            {
+              "kind": "function",
+              "name": "_cosine",
+              "qualname": "_cosine",
+              "lineno": 169
+            },
+            {
+              "kind": "function",
+              "name": "_token_cosine",
+              "qualname": "_token_cosine",
+              "lineno": 180
+            },
+            {
+              "kind": "function",
+              "name": "_normalized_phrase",
+              "qualname": "_normalized_phrase",
+              "lineno": 193
+            },
+            {
+              "kind": "function",
+              "name": "_mapping",
+              "qualname": "_mapping",
+              "lineno": 197
+            },
+            {
+              "kind": "function",
+              "name": "_sync_result",
+              "qualname": "_sync_result",
+              "lineno": 201
+            },
+            {
+              "kind": "function",
+              "name": "_call_supported",
+              "qualname": "_call_supported",
+              "lineno": 218
+            },
+            {
+              "kind": "class",
+              "name": "EvidenceRecord",
+              "qualname": "EvidenceRecord",
+              "lineno": 236
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "EvidenceRecord.__post_init__",
+              "lineno": 246
+            },
+            {
+              "kind": "method",
+              "name": "from_mapping",
+              "qualname": "EvidenceRecord.from_mapping",
+              "lineno": 282
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "EvidenceRecord.to_dict",
+              "lineno": 319
+            },
+            {
+              "kind": "class",
+              "name": "GraphNode",
+              "qualname": "GraphNode",
+              "lineno": 331
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GraphNode.__post_init__",
+              "lineno": 339
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GraphNode.to_dict",
+              "lineno": 344
+            },
+            {
+              "kind": "class",
+              "name": "GraphEdge",
+              "qualname": "GraphEdge",
+              "lineno": 354
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GraphEdge.__post_init__",
+              "lineno": 363
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GraphEdge.to_dict",
+              "lineno": 368
+            },
+            {
+              "kind": "class",
+              "name": "TemplateGraphSnapshot",
+              "qualname": "TemplateGraphSnapshot",
+              "lineno": 379
+            },
+            {
+              "kind": "method",
+              "name": "build",
+              "qualname": "TemplateGraphSnapshot.build",
+              "lineno": 388
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "TemplateGraphSnapshot.to_dict",
+              "lineno": 404
+            },
+            {
+              "kind": "class",
+              "name": "IngestionReceipt",
+              "qualname": "IngestionReceipt",
+              "lineno": 414
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "IngestionReceipt.to_dict",
+              "lineno": 431
+            },
+            {
+              "kind": "class",
+              "name": "TemplateMatch",
+              "qualname": "TemplateMatch",
+              "lineno": 450
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "TemplateMatch.to_dict",
+              "lineno": 464
+            },
+            {
+              "kind": "class",
+              "name": "_EmbeddingDocument",
+              "qualname": "_EmbeddingDocument",
+              "lineno": 486
+            },
+            {
+              "kind": "method",
+              "name": "chunk_id",
+              "qualname": "_EmbeddingDocument.chunk_id",
+              "lineno": 495
+            },
+            {
+              "kind": "method",
+              "name": "content",
+              "qualname": "_EmbeddingDocument.content",
+              "lineno": 499
+            },
+            {
+              "kind": "method",
+              "name": "embedding",
+              "qualname": "_EmbeddingDocument.embedding",
+              "lineno": 503
+            },
+            {
+              "kind": "function",
+              "name": "_node_id",
+              "qualname": "_node_id",
+              "lineno": 507
+            },
+            {
+              "kind": "function",
+              "name": "_edge",
+              "qualname": "_edge",
+              "lineno": 511
+            },
+            {
+              "kind": "function",
+              "name": "_merge_rows",
+              "qualname": "_merge_rows",
+              "lineno": 535
+            },
+            {
+              "kind": "function",
+              "name": "_coerce_bundle",
+              "qualname": "_coerce_bundle",
+              "lineno": 560
+            },
+            {
+              "kind": "function",
+              "name": "_build_graph",
+              "qualname": "_build_graph",
+              "lineno": 578
+            },
+            {
+              "kind": "class",
+              "name": "SlottedResponseIndex",
+              "qualname": "SlottedResponseIndex",
+              "lineno": 837
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "SlottedResponseIndex.__init__",
+              "lineno": 848
+            },
+            {
+              "kind": "method",
+              "name": "from_rows",
+              "qualname": "SlottedResponseIndex.from_rows",
+              "lineno": 884
+            },
+            {
+              "kind": "method",
+              "name": "bundle",
+              "qualname": "SlottedResponseIndex.bundle",
+              "lineno": 903
+            },
+            {
+              "kind": "method",
+              "name": "graph",
+              "qualname": "SlottedResponseIndex.graph",
+              "lineno": 907
+            },
+            {
+              "kind": "method",
+              "name": "graph_cid",
+              "qualname": "SlottedResponseIndex.graph_cid",
+              "lineno": 911
+            },
+            {
+              "kind": "method",
+              "name": "index_cid",
+              "qualname": "SlottedResponseIndex.index_cid",
+              "lineno": 915
+            },
+            {
+              "kind": "method",
+              "name": "last_collaborator_errors",
+              "qualname": "SlottedResponseIndex.last_collaborator_errors",
+              "lineno": 919
+            },
+            {
+              "kind": "method",
+              "name": "_index_content",
+              "qualname": "SlottedResponseIndex._index_content",
+              "lineno": 924
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "SlottedResponseIndex.to_dict",
+              "lineno": 939
+            },
+            {
+              "kind": "method",
+              "name": "from_dict",
+              "qualname": "SlottedResponseIndex.from_dict",
+              "lineno": 946
+            },
+            {
+              "kind": "method",
+              "name": "ingest_records",
+              "qualname": "SlottedResponseIndex.ingest_records",
+              "lineno": 981
+            },
+            {
+              "kind": "method",
+              "name": "ingest",
+              "qualname": "SlottedResponseIndex.ingest",
+              "lineno": 1027
+            },
+            {
+              "kind": "method",
+              "name": "_build_documents",
+              "qualname": "SlottedResponseIndex._build_documents",
+              "lineno": 1122
+            },
+            {
+              "kind": "method",
+              "name": "_embed",
+              "qualname": "SlottedResponseIndex._embed",
+              "lineno": 1160
+            },
+            {
+              "kind": "method",
+              "name": "_publish_graph",
+              "qualname": "SlottedResponseIndex._publish_graph",
+              "lineno": 1171
+            },
+            {
+              "kind": "method",
+              "name": "_publish_vectors",
+              "qualname": "SlottedResponseIndex._publish_vectors",
+              "lineno": 1219
+            },
+            {
+              "kind": "method",
+              "name": "_query_variants",
+              "qualname": "SlottedResponseIndex._query_variants",
+              "lineno": 1273
+            },
+            {
+              "kind": "method",
+              "name": "_external_vector_scores",
+              "qualname": "SlottedResponseIndex._external_vector_scores",
+              "lineno": 1309
+            },
+            {
+              "kind": "method",
+              "name": "search",
+              "qualname": "SlottedResponseIndex.search",
+              "lineno": 1365
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_current_evidence",
+              "qualname": "_normalize_current_evidence",
+              "lineno": 1486
+            },
+            {
+              "kind": "function",
+              "name": "_bind_template",
+              "qualname": "_bind_template",
+              "lineno": 1540
+            },
+            {
+              "kind": "class",
+              "name": "GraphRAGVoiceTemplateProvider",
+              "qualname": "GraphRAGVoiceTemplateProvider",
+              "lineno": 1613
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "GraphRAGVoiceTemplateProvider.__init__",
+              "lineno": 1618
+            },
+            {
+              "kind": "method",
+              "name": "from_rows",
+              "qualname": "GraphRAGVoiceTemplateProvider.from_rows",
+              "lineno": 1632
+            },
+            {
+              "kind": "method",
+              "name": "retrieve_candidates",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve_candidates",
+              "lineno": 1653
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve",
+              "lineno": 1687
+            },
+            {
+              "kind": "method",
+              "name": "retrieve_voice_template",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve_voice_template",
+              "lineno": 1708
+            },
+            {
+              "kind": "method",
+              "name": "retrieve_template",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve_template",
+              "lineno": 1711
+            }
+          ]
+        },
+        {
+          "path": "ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py",
+          "byte_count": 24831,
+          "line_count": 671,
+          "sha256": "959d9d167eb308606201250d24df491f63a7e2d1810471058a1b42202df9e113",
+          "git_revision": null,
+          "symbol_count": 28,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "ABBY_VOICE_RESPONSE_DAG_APPEND_SCHEMA_VERSION",
+              "qualname": "ABBY_VOICE_RESPONSE_DAG_APPEND_SCHEMA_VERSION",
+              "lineno": 23
+            },
+            {
+              "kind": "constant",
+              "name": "ABBY_VOICE_RESPONSE_DAG_RELEASE_SCHEMA_VERSION",
+              "qualname": "ABBY_VOICE_RESPONSE_DAG_RELEASE_SCHEMA_VERSION",
+              "lineno": 24
+            },
+            {
+              "kind": "constant",
+              "name": "_SHA256_RE",
+              "qualname": "_SHA256_RE",
+              "lineno": 28
+            },
+            {
+              "kind": "constant",
+              "name": "_SECRET_KEY_MARKERS",
+              "qualname": "_SECRET_KEY_MARKERS",
+              "lineno": 29
+            },
+            {
+              "kind": "class",
+              "name": "AbbyVoiceResponseDAGError",
+              "qualname": "AbbyVoiceResponseDAGError",
+              "lineno": 39
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_bytes",
+              "qualname": "_canonical_bytes",
+              "lineno": 43
+            },
+            {
+              "kind": "function",
+              "name": "_stable_id",
+              "qualname": "_stable_id",
+              "lineno": 47
+            },
+            {
+              "kind": "function",
+              "name": "_text",
+              "qualname": "_text",
+              "lineno": 51
+            },
+            {
+              "kind": "function",
+              "name": "_digest",
+              "qualname": "_digest",
+              "lineno": 58
+            },
+            {
+              "kind": "function",
+              "name": "_json_safe",
+              "qualname": "_json_safe",
+              "lineno": 67
+            },
+            {
+              "kind": "function",
+              "name": "_mapping",
+              "qualname": "_mapping",
+              "lineno": 95
+            },
+            {
+              "kind": "function",
+              "name": "_placeholder_names",
+              "qualname": "_placeholder_names",
+              "lineno": 109
+            },
+            {
+              "kind": "function",
+              "name": "_render_slotted_template",
+              "qualname": "_render_slotted_template",
+              "lineno": 125
+            },
+            {
+              "kind": "function",
+              "name": "_freeze_json",
+              "qualname": "_freeze_json",
+              "lineno": 153
+            },
+            {
+              "kind": "function",
+              "name": "_thaw_json",
+              "qualname": "_thaw_json",
+              "lineno": 163
+            },
+            {
+              "kind": "function",
+              "name": "_edge",
+              "qualname": "_edge",
+              "lineno": 171
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_audio_descriptor",
+              "qualname": "_normalize_audio_descriptor",
+              "lineno": 183
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_slot_bindings",
+              "qualname": "_normalize_slot_bindings",
+              "lineno": 242
+            },
+            {
+              "kind": "class",
+              "name": "ResponseDAGAppendCandidate",
+              "qualname": "ResponseDAGAppendCandidate",
+              "lineno": 290
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ResponseDAGAppendCandidate.__post_init__",
+              "lineno": 303
+            },
+            {
+              "kind": "method",
+              "name": "identity_dict",
+              "qualname": "ResponseDAGAppendCandidate.identity_dict",
+              "lineno": 396
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ResponseDAGAppendCandidate.to_dict",
+              "lineno": 408
+            },
+            {
+              "kind": "method",
+              "name": "template_rows",
+              "qualname": "ResponseDAGAppendCandidate.template_rows",
+              "lineno": 415
+            },
+            {
+              "kind": "method",
+              "name": "vocabulary_rows",
+              "qualname": "ResponseDAGAppendCandidate.vocabulary_rows",
+              "lineno": 425
+            },
+            {
+              "kind": "method",
+              "name": "file_payloads",
+              "qualname": "ResponseDAGAppendCandidate.file_payloads",
+              "lineno": 434
+            },
+            {
+              "kind": "method",
+              "name": "release_manifest",
+              "qualname": "ResponseDAGAppendCandidate.release_manifest",
+              "lineno": 458
+            },
+            {
+              "kind": "method",
+              "name": "materialize",
+              "qualname": "ResponseDAGAppendCandidate.materialize",
+              "lineno": 481
+            },
+            {
+              "kind": "function",
+              "name": "append_response_dag_candidate",
+              "qualname": "append_response_dag_candidate",
+              "lineno": 524
+            }
+          ]
+        },
+        {
+          "path": "docs/phone_dialog_generation/slotted_response_dag.json",
+          "byte_count": 67091910,
+          "line_count": 1171787,
+          "sha256": "89ddb937155efa868ad32b89de39d046cc9552ef5b32c6f79a72850efb26e402",
+          "git_revision": "173e2c2b2d2c52eac018b647ccbd4938457d253e",
+          "symbol_count": 0,
+          "parse_error": null,
+          "symbols": []
+        }
+      ],
+      "required_ast_symbols": {
+        "ipfs_datasets_py/ipfs_datasets_py/voice/graphrag.py": [
+          "GraphRAGVoiceTemplateProvider",
+          "SlottedResponseIndex",
+          "EvidenceRecord",
+          "TemplateMatch",
+          "TemplateGraphSnapshot"
+        ],
+        "ipfs_datasets_py/ipfs_datasets_py/voice/response_dag.py": [
+          "ResponseDAGAppendCandidate",
+          "append_response_dag_candidate"
+        ]
+      },
+      "extra_notes": []
+    },
+    "ui_tools": {
+      "id": "ui_tools",
+      "plane": "product/UI",
+      "owner": "wallet_interface",
+      "role": "Browser agent tools (navigate, calendar, messages, service plans) exist but are not bound to voice DAG routes.",
+      "modules": [
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/toolExecutor.ts",
+          "byte_count": 19048,
+          "line_count": 586,
+          "sha256": "17d0d39736ef3edfe39ad6d2f85ec9c0ab59dd4d7b1bf3965801a7d37a8a4175",
+          "git_revision": "b3377b46e1ed8105db4646c97dea36c4c70fdafc",
+          "symbol_count": 14,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "type",
+              "name": "AgentToolExecutorEvent",
+              "qualname": "AgentToolExecutorEvent",
+              "lineno": 19
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutionSucceeded",
+              "qualname": "AgentToolExecutionSucceeded",
+              "lineno": 48
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutionFailed",
+              "qualname": "AgentToolExecutionFailed",
+              "lineno": 55
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutionWaitingForConfirmation",
+              "qualname": "AgentToolExecutionWaitingForConfirmation",
+              "lineno": 62
+            },
+            {
+              "kind": "type",
+              "name": "AgentToolExecutionOutcome",
+              "qualname": "AgentToolExecutionOutcome",
+              "lineno": 69
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutorOptions",
+              "qualname": "AgentToolExecutorOptions",
+              "lineno": 74
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutionOptions",
+              "qualname": "AgentToolExecutionOptions",
+              "lineno": 89
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutorValidation",
+              "qualname": "AgentToolExecutorValidation",
+              "lineno": 100
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutorValidationFailure",
+              "qualname": "AgentToolExecutorValidationFailure",
+              "lineno": 106
+            },
+            {
+              "kind": "type",
+              "name": "AgentToolExecutorValidationResult",
+              "qualname": "AgentToolExecutorValidationResult",
+              "lineno": 111
+            },
+            {
+              "kind": "interface",
+              "name": "AgentToolExecutor",
+              "qualname": "AgentToolExecutor",
+              "lineno": 115
+            },
+            {
+              "kind": "function",
+              "name": "createAgentToolExecutor",
+              "qualname": "createAgentToolExecutor",
+              "lineno": 136
+            },
+            {
+              "kind": "function",
+              "name": "isToolExecutorConfirmationRequired",
+              "qualname": "isToolExecutorConfirmationRequired",
+              "lineno": 355
+            },
+            {
+              "kind": "function",
+              "name": "isToolExecutorResult",
+              "qualname": "isToolExecutorResult",
+              "lineno": 361
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/surfaceRegistry.ts",
+          "byte_count": 30938,
+          "line_count": 943,
+          "sha256": "25ed963c78cdcef5c2145744be6bb611ca2107a08e3235aa25a7e12159240559",
+          "git_revision": "b3377b46e1ed8105db4646c97dea36c4c70fdafc",
+          "symbol_count": 17,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "const",
+              "name": "SURFACE_CONTEXT_SCOPES",
+              "qualname": "SURFACE_CONTEXT_SCOPES",
+              "lineno": 16
+            },
+            {
+              "kind": "type",
+              "name": "SurfaceContextScope",
+              "qualname": "SurfaceContextScope",
+              "lineno": 17
+            },
+            {
+              "kind": "interface",
+              "name": "SurfaceContextProviderDefinition",
+              "qualname": "SurfaceContextProviderDefinition",
+              "lineno": 19
+            },
+            {
+              "kind": "interface",
+              "name": "AgentSurfaceDefinition",
+              "qualname": "AgentSurfaceDefinition",
+              "lineno": 26
+            },
+            {
+              "kind": "const",
+              "name": "agentSurfaces",
+              "qualname": "agentSurfaces",
+              "lineno": 790
+            },
+            {
+              "kind": "const",
+              "name": "agentToolDefinitions",
+              "qualname": "agentToolDefinitions",
+              "lineno": 797
+            },
+            {
+              "kind": "function",
+              "name": "isSurfaceContextScope",
+              "qualname": "isSurfaceContextScope",
+              "lineno": 818
+            },
+            {
+              "kind": "function",
+              "name": "isSurfaceContextProviderDefinition",
+              "qualname": "isSurfaceContextProviderDefinition",
+              "lineno": 822
+            },
+            {
+              "kind": "function",
+              "name": "isAgentSurfaceDefinition",
+              "qualname": "isAgentSurfaceDefinition",
+              "lineno": 832
+            },
+            {
+              "kind": "function",
+              "name": "isRegisteredAgentToolDefinition",
+              "qualname": "isRegisteredAgentToolDefinition",
+              "lineno": 844
+            },
+            {
+              "kind": "function",
+              "name": "validateSurfaceRegistry",
+              "qualname": "validateSurfaceRegistry",
+              "lineno": 848
+            },
+            {
+              "kind": "function",
+              "name": "getSurfaceDefinition",
+              "qualname": "getSurfaceDefinition",
+              "lineno": 908
+            },
+            {
+              "kind": "function",
+              "name": "getRouteLabel",
+              "qualname": "getRouteLabel",
+              "lineno": 912
+            },
+            {
+              "kind": "function",
+              "name": "getToolDefinition",
+              "qualname": "getToolDefinition",
+              "lineno": 916
+            },
+            {
+              "kind": "function",
+              "name": "listToolsForSurface",
+              "qualname": "listToolsForSurface",
+              "lineno": 924
+            },
+            {
+              "kind": "function",
+              "name": "canUseToolOnSurface",
+              "qualname": "canUseToolOnSurface",
+              "lineno": 931
+            },
+            {
+              "kind": "function",
+              "name": "listContextProvidersForSurface",
+              "qualname": "listContextProvidersForSurface",
+              "lineno": 936
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/tools/navigationTools.ts",
+          "byte_count": 21571,
+          "line_count": 502,
+          "sha256": "d004de7b57fd0b182378053c4c675a3d57e9671a70641c74d4010e91485f923b",
+          "git_revision": "b3377b46e1ed8105db4646c97dea36c4c70fdafc",
+          "symbol_count": 12,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "interface",
+              "name": "NavigationSurface",
+              "qualname": "NavigationSurface",
+              "lineno": 11
+            },
+            {
+              "kind": "const",
+              "name": "navigationSurfaces",
+              "qualname": "navigationSurfaces",
+              "lineno": 98
+            },
+            {
+              "kind": "const",
+              "name": "navigationRouteIds",
+              "qualname": "navigationRouteIds",
+              "lineno": 104
+            },
+            {
+              "kind": "function",
+              "name": "navigateAction",
+              "qualname": "navigateAction",
+              "lineno": 107
+            },
+            {
+              "kind": "function",
+              "name": "readSurfaceContextAction",
+              "qualname": "readSurfaceContextAction",
+              "lineno": 131
+            },
+            {
+              "kind": "function",
+              "name": "buildSafeSurfaceContext",
+              "qualname": "buildSafeSurfaceContext",
+              "lineno": 145
+            },
+            {
+              "kind": "function",
+              "name": "summarizeRouteState",
+              "qualname": "summarizeRouteState",
+              "lineno": 169
+            },
+            {
+              "kind": "function",
+              "name": "formatSurfaceContextSummary",
+              "qualname": "formatSurfaceContextSummary",
+              "lineno": 173
+            },
+            {
+              "kind": "function",
+              "name": "canNavigateToRoute",
+              "qualname": "canNavigateToRoute",
+              "lineno": 184
+            },
+            {
+              "kind": "function",
+              "name": "validateNavigationRouteCoverage",
+              "qualname": "validateNavigationRouteCoverage",
+              "lineno": 188
+            },
+            {
+              "kind": "function",
+              "name": "resolveNavigationRoute",
+              "qualname": "resolveNavigationRoute",
+              "lineno": 211
+            },
+            {
+              "kind": "function",
+              "name": "summarizeCurrentScreenAction",
+              "qualname": "summarizeCurrentScreenAction",
+              "lineno": 231
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/tools/servicePlanTools.ts",
+          "byte_count": 20242,
+          "line_count": 516,
+          "sha256": "96d605f3d78b7bf7bd2dfd2d144027cefceabf1f447c4ddcf1b1b0f09cae50e1",
+          "git_revision": "b3377b46e1ed8105db4646c97dea36c4c70fdafc",
+          "symbol_count": 5,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "function",
+              "name": "saveServiceAction",
+              "qualname": "saveServiceAction",
+              "lineno": 40
+            },
+            {
+              "kind": "function",
+              "name": "createServicePlanAction",
+              "qualname": "createServicePlanAction",
+              "lineno": 87
+            },
+            {
+              "kind": "function",
+              "name": "addServicePlanChecklistItemAction",
+              "qualname": "addServicePlanChecklistItemAction",
+              "lineno": 137
+            },
+            {
+              "kind": "function",
+              "name": "setServicePlanReminderAction",
+              "qualname": "setServicePlanReminderAction",
+              "lineno": 151
+            },
+            {
+              "kind": "function",
+              "name": "recordServiceInteractionAction",
+              "qualname": "recordServiceInteractionAction",
+              "lineno": 170
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/tools/contactTools.ts",
+          "byte_count": 14134,
+          "line_count": 374,
+          "sha256": "0f0da56b7a5245feafd4020fac385f79e1cd4d370bba2a1fe580b9033eb64446",
+          "git_revision": "b3377b46e1ed8105db4646c97dea36c4c70fdafc",
+          "symbol_count": 6,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "function",
+              "name": "addRecipientAction",
+              "qualname": "addRecipientAction",
+              "lineno": 21
+            },
+            {
+              "kind": "function",
+              "name": "editRecipientAction",
+              "qualname": "editRecipientAction",
+              "lineno": 44
+            },
+            {
+              "kind": "function",
+              "name": "removeRecipientAction",
+              "qualname": "removeRecipientAction",
+              "lineno": 70
+            },
+            {
+              "kind": "function",
+              "name": "requestShelterContactAction",
+              "qualname": "requestShelterContactAction",
+              "lineno": 96
+            },
+            {
+              "kind": "function",
+              "name": "approveShelterContactRequestAction",
+              "qualname": "approveShelterContactRequestAction",
+              "lineno": 145
+            },
+            {
+              "kind": "function",
+              "name": "denyShelterContactRequestAction",
+              "qualname": "denyShelterContactRequestAction",
+              "lineno": 153
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/calendar/lib/ics.ts",
+          "byte_count": 6526,
+          "line_count": 206,
+          "sha256": "4cf54b99fa64f2d28fcc1a837d0d79d40e6bc68c2a1c4557f87eda486b850f5f",
+          "git_revision": "d7346de0ce136c2f1a12edc820bdc359180f75e1",
+          "symbol_count": 8,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "interface",
+              "name": "IcsAlarmInput",
+              "qualname": "IcsAlarmInput",
+              "lineno": 1
+            },
+            {
+              "kind": "interface",
+              "name": "IcsEventInput",
+              "qualname": "IcsEventInput",
+              "lineno": 6
+            },
+            {
+              "kind": "interface",
+              "name": "IcsCalendarInput",
+              "qualname": "IcsCalendarInput",
+              "lineno": 21
+            },
+            {
+              "kind": "function",
+              "name": "buildIcsCalendar",
+              "qualname": "buildIcsCalendar",
+              "lineno": 30
+            },
+            {
+              "kind": "function",
+              "name": "buildIcsEvent",
+              "qualname": "buildIcsEvent",
+              "lineno": 48
+            },
+            {
+              "kind": "function",
+              "name": "createIcsBlob",
+              "qualname": "createIcsBlob",
+              "lineno": 52
+            },
+            {
+              "kind": "function",
+              "name": "createIcsFileName",
+              "qualname": "createIcsFileName",
+              "lineno": 57
+            },
+            {
+              "kind": "function",
+              "name": "escapeIcsText",
+              "qualname": "escapeIcsText",
+              "lineno": 67
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts",
+          "byte_count": 15785,
+          "line_count": 403,
+          "sha256": "4af394f48a86d7e36b45df3eaaf5c0655b7cc5c49c3c6a0b8376637edf4bc940",
+          "git_revision": "65d87e2ec27edf99d2c1e6ca8f31babc3dc1598c",
+          "symbol_count": 24,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "const",
+              "name": "G010_AUTHORITATIVE_EVIDENCE_MAP",
+              "qualname": "G010_AUTHORITATIVE_EVIDENCE_MAP",
+              "lineno": 17
+            },
+            {
+              "kind": "const",
+              "name": "G010_RESIDUAL_EVIDENCE_MAP",
+              "qualname": "G010_RESIDUAL_EVIDENCE_MAP",
+              "lineno": 21
+            },
+            {
+              "kind": "const",
+              "name": "FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM",
+              "qualname": "FOCUSED_TESTS_COVER_PROVENANCE_EVIDENCE_TERM",
+              "lineno": 25
+            },
+            {
+              "kind": "const",
+              "name": "AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM",
+              "qualname": "AGENT_AUDIO_CHAT_SURFACE_RETAINS_SPEECH_RECOGNITION_EVIDENCE_TERM",
+              "lineno": 34
+            },
+            {
+              "kind": "const",
+              "name": "AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM",
+              "qualname": "AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM",
+              "lineno": 38
+            },
+            {
+              "kind": "const",
+              "name": "G010_REQUIRED_EVIDENCE_TERMS",
+              "qualname": "G010_REQUIRED_EVIDENCE_TERMS",
+              "lineno": 41
+            },
+            {
+              "kind": "type",
+              "name": "VoiceTurnStatus",
+              "qualname": "VoiceTurnStatus",
+              "lineno": 48
+            },
+            {
+              "kind": "type",
+              "name": "VoiceStageStatus",
+              "qualname": "VoiceStageStatus",
+              "lineno": 50
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceTurnTrace",
+              "qualname": "VoiceTurnTrace",
+              "lineno": 52
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceTurnEvidence",
+              "qualname": "VoiceTurnEvidence",
+              "lineno": 61
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceTurnGroundedSlot",
+              "qualname": "VoiceTurnGroundedSlot",
+              "lineno": 70
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceTurnProvenance",
+              "qualname": "VoiceTurnProvenance",
+              "lineno": 76
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceActionProposal",
+              "qualname": "VoiceActionProposal",
+              "lineno": 91
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceActionDecision",
+              "qualname": "VoiceActionDecision",
+              "lineno": 101
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceActionReceipt",
+              "qualname": "VoiceActionReceipt",
+              "lineno": 110
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceActionSurface",
+              "qualname": "VoiceActionSurface",
+              "lineno": 119
+            },
+            {
+              "kind": "interface",
+              "name": "VoiceTurnResult",
+              "qualname": "VoiceTurnResult",
+              "lineno": 129
+            },
+            {
+              "kind": "function",
+              "name": "isVoiceTurnResultPayload",
+              "qualname": "isVoiceTurnResultPayload",
+              "lineno": 154
+            },
+            {
+              "kind": "function",
+              "name": "parseVoiceTurnResult",
+              "qualname": "parseVoiceTurnResult",
+              "lineno": 161
+            },
+            {
+              "kind": "function",
+              "name": "voiceActionNeedsConfirmation",
+              "qualname": "voiceActionNeedsConfirmation",
+              "lineno": 205
+            },
+            {
+              "kind": "function",
+              "name": "voiceActionLabel",
+              "qualname": "voiceActionLabel",
+              "lineno": 211
+            },
+            {
+              "kind": "function",
+              "name": "voiceTurnResultAudioBlob",
+              "qualname": "voiceTurnResultAudioBlob",
+              "lineno": 216
+            },
+            {
+              "kind": "function",
+              "name": "voiceTurnResultText",
+              "qualname": "voiceTurnResultText",
+              "lineno": 224
+            },
+            {
+              "kind": "function",
+              "name": "base64ToBlob",
+              "qualname": "base64ToBlob",
+              "lineno": 228
+            }
+          ]
+        }
+      ],
+      "required_ast_symbols": {
+        "wallet_interface/ui/src/features/agent/lib/toolExecutor.ts": [
+          "createAgentToolExecutor",
+          "AgentToolExecutor"
+        ],
+        "wallet_interface/ui/src/features/agent/lib/surfaceRegistry.ts": [
+          "SURFACE_CONTEXT_SCOPES"
+        ],
+        "wallet_interface/ui/src/features/agent/lib/tools/navigationTools.ts": [
+          "NavigationSurface"
+        ],
+        "wallet_interface/ui/src/features/calendar/lib/ics.ts": [
+          "buildIcsCalendar"
+        ],
+        "wallet_interface/ui/src/features/agent/lib/voiceTurnResult.ts": [
+          "VoiceActionSurface",
+          "parseVoiceTurnResult"
+        ]
+      },
+      "extra_notes": []
+    },
+    "service_actions": {
+      "id": "service_actions",
+      "plane": "product/UI",
+      "owner": "wallet_interface",
+      "role": "Browser service handoffs (call/text/email/map/share/calendar) with observed-status only; not voice-admitted.",
+      "modules": [
+        {
+          "path": "wallet_interface/ui/src/features/service-navigation/lib/serviceActionService.ts",
+          "byte_count": 20334,
+          "line_count": 596,
+          "sha256": "ccd1b03517c7131499621fa9c20a6d6f81bd70d023f438803838ef291a79690f",
+          "git_revision": "d7346de0ce136c2f1a12edc820bdc359180f75e1",
+          "symbol_count": 29,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "type",
+              "name": "ServiceActionKind",
+              "qualname": "ServiceActionKind",
+              "lineno": 8
+            },
+            {
+              "kind": "type",
+              "name": "ServiceMapProvider",
+              "qualname": "ServiceMapProvider",
+              "lineno": 9
+            },
+            {
+              "kind": "type",
+              "name": "ServiceActionHandoff",
+              "qualname": "ServiceActionHandoff",
+              "lineno": 10
+            },
+            {
+              "kind": "type",
+              "name": "ServiceActionObservedStatus",
+              "qualname": "ServiceActionObservedStatus",
+              "lineno": 11
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceActionContext",
+              "qualname": "ServiceActionContext",
+              "lineno": 20
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceActionDescriptor",
+              "qualname": "ServiceActionDescriptor",
+              "lineno": 30
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceActionInvocationResult",
+              "qualname": "ServiceActionInvocationResult",
+              "lineno": 48
+            },
+            {
+              "kind": "interface",
+              "name": "CallActionInput",
+              "qualname": "CallActionInput",
+              "lineno": 56
+            },
+            {
+              "kind": "interface",
+              "name": "TextActionInput",
+              "qualname": "TextActionInput",
+              "lineno": 62
+            },
+            {
+              "kind": "interface",
+              "name": "EmailActionInput",
+              "qualname": "EmailActionInput",
+              "lineno": 66
+            },
+            {
+              "kind": "interface",
+              "name": "MapActionInput",
+              "qualname": "MapActionInput",
+              "lineno": 74
+            },
+            {
+              "kind": "interface",
+              "name": "ShareActionInput",
+              "qualname": "ShareActionInput",
+              "lineno": 82
+            },
+            {
+              "kind": "interface",
+              "name": "CalendarActionInput",
+              "qualname": "CalendarActionInput",
+              "lineno": 91
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceActionInvokeOptions",
+              "qualname": "ServiceActionInvokeOptions",
+              "lineno": 105
+            },
+            {
+              "kind": "function",
+              "name": "buildCallAction",
+              "qualname": "buildCallAction",
+              "lineno": 120
+            },
+            {
+              "kind": "function",
+              "name": "buildTextAction",
+              "qualname": "buildTextAction",
+              "lineno": 139
+            },
+            {
+              "kind": "function",
+              "name": "buildEmailAction",
+              "qualname": "buildEmailAction",
+              "lineno": 160
+            },
+            {
+              "kind": "function",
+              "name": "buildMapAction",
+              "qualname": "buildMapAction",
+              "lineno": 184
+            },
+            {
+              "kind": "function",
+              "name": "buildMapLinks",
+              "qualname": "buildMapLinks",
+              "lineno": 209
+            },
+            {
+              "kind": "function",
+              "name": "buildShareAction",
+              "qualname": "buildShareAction",
+              "lineno": 216
+            },
+            {
+              "kind": "function",
+              "name": "buildCalendarAction",
+              "qualname": "buildCalendarAction",
+              "lineno": 240
+            },
+            {
+              "kind": "function",
+              "name": "invokeLinkAction",
+              "qualname": "invokeLinkAction",
+              "lineno": 272
+            },
+            {
+              "kind": "function",
+              "name": "invokeCallAction",
+              "qualname": "invokeCallAction",
+              "lineno": 294
+            },
+            {
+              "kind": "function",
+              "name": "invokeTextAction",
+              "qualname": "invokeTextAction",
+              "lineno": 298
+            },
+            {
+              "kind": "function",
+              "name": "invokeEmailAction",
+              "qualname": "invokeEmailAction",
+              "lineno": 302
+            },
+            {
+              "kind": "function",
+              "name": "invokeMapAction",
+              "qualname": "invokeMapAction",
+              "lineno": 306
+            },
+            {
+              "kind": "function",
+              "name": "shareServiceAction",
+              "qualname": "shareServiceAction",
+              "lineno": 310
+            },
+            {
+              "kind": "function",
+              "name": "downloadCalendarAction",
+              "qualname": "downloadCalendarAction",
+              "lineno": 354
+            },
+            {
+              "kind": "function",
+              "name": "shareCalendarAction",
+              "qualname": "shareCalendarAction",
+              "lineno": 389
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/ui/src/features/service-navigation/lib/serviceInteractionService.ts",
+          "byte_count": 15486,
+          "line_count": 430,
+          "sha256": "cd9a6f2740dde7d3b4ea978c89d35171156dc7ef4447cdf28646e6a256ae9760",
+          "git_revision": "316def0c9c4819ba5bd714db05267bec00f44966",
+          "symbol_count": 15,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "type",
+              "name": "ServiceInteractionType",
+              "qualname": "ServiceInteractionType",
+              "lineno": 12
+            },
+            {
+              "kind": "type",
+              "name": "ServiceInteractionChannel",
+              "qualname": "ServiceInteractionChannel",
+              "lineno": 31
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceInteractionIntentContext",
+              "qualname": "ServiceInteractionIntentContext",
+              "lineno": 42
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceInteractionIntent",
+              "qualname": "ServiceInteractionIntent",
+              "lineno": 52
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceInteractionIntentOptions",
+              "qualname": "ServiceInteractionIntentOptions",
+              "lineno": 75
+            },
+            {
+              "kind": "interface",
+              "name": "ManualServiceInteractionIntentInput",
+              "qualname": "ManualServiceInteractionIntentInput",
+              "lineno": 100
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceInteractionIntentResult",
+              "qualname": "ServiceInteractionIntentResult",
+              "lineno": 105
+            },
+            {
+              "kind": "interface",
+              "name": "ServiceInteractionIntentEmitResult",
+              "qualname": "ServiceInteractionIntentEmitResult",
+              "lineno": 111
+            },
+            {
+              "kind": "type",
+              "name": "ServiceInteractionIntentCreator",
+              "qualname": "ServiceInteractionIntentCreator",
+              "lineno": 116
+            },
+            {
+              "kind": "function",
+              "name": "buildServiceInteractionIntent",
+              "qualname": "buildServiceInteractionIntent",
+              "lineno": 160
+            },
+            {
+              "kind": "function",
+              "name": "buildManualServiceInteractionIntent",
+              "qualname": "buildManualServiceInteractionIntent",
+              "lineno": 206
+            },
+            {
+              "kind": "function",
+              "name": "emitWalletServiceInteractionIntent",
+              "qualname": "emitWalletServiceInteractionIntent",
+              "lineno": 250
+            },
+            {
+              "kind": "const",
+              "name": "buildWalletServiceInteractionIntent",
+              "qualname": "buildWalletServiceInteractionIntent",
+              "lineno": 274
+            },
+            {
+              "kind": "const",
+              "name": "captureServiceInteractionIntent",
+              "qualname": "captureServiceInteractionIntent",
+              "lineno": 275
+            },
+            {
+              "kind": "const",
+              "name": "emitServiceInteractionIntent",
+              "qualname": "emitServiceInteractionIntent",
+              "lineno": 276
+            }
+          ]
+        }
+      ],
+      "required_ast_symbols": {
+        "wallet_interface/ui/src/features/service-navigation/lib/serviceActionService.ts": [
+          "buildCallAction",
+          "buildCalendarAction",
+          "buildShareAction",
+          "invokeLinkAction",
+          "ServiceActionDescriptor"
+        ],
+        "wallet_interface/ui/src/features/service-navigation/lib/serviceInteractionService.ts": [
+          "buildServiceInteractionIntent",
+          "emitWalletServiceInteractionIntent",
+          "ServiceInteractionIntent"
+        ]
+      },
+      "extra_notes": []
+    },
+    "handoff": {
+      "id": "handoff",
+      "plane": "authority+channel",
+      "owner": "ipfs_accelerate_py + wallet_interface",
+      "role": "Human handoff / live_agent is metadata-only escalation today; ActionDecisionKind.HANDOFF exists but no verified transfer adapter.",
+      "modules": [
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py",
+          "byte_count": 271045,
+          "line_count": 7283,
+          "sha256": "15aab6b0d9e9d61f6c88b28a0b79bbdf9112d021ebaf30911f6faf2f198e823f",
+          "git_revision": null,
+          "symbol_count": 202,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "VOICE_TURN_CONTRACT_VERSION",
+              "qualname": "VOICE_TURN_CONTRACT_VERSION",
+              "lineno": 112
+            },
+            {
+              "kind": "constant",
+              "name": "TELEPHONE_TURN_CONTRACT_VERSION",
+              "qualname": "TELEPHONE_TURN_CONTRACT_VERSION",
+              "lineno": 113
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_STAGE_STATUSES",
+              "qualname": "VOICE_STAGE_STATUSES",
+              "lineno": 114
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_TURN_STATUSES",
+              "qualname": "VOICE_TURN_STATUSES",
+              "lineno": 115
+            },
+            {
+              "kind": "constant",
+              "name": "USAGE_ROUTING_REQUIREMENT_ID",
+              "qualname": "USAGE_ROUTING_REQUIREMENT_ID",
+              "lineno": 118
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_TTS_USAGE_OPERATION",
+              "qualname": "VOICE_TTS_USAGE_OPERATION",
+              "lineno": 119
+            },
+            {
+              "kind": "constant",
+              "name": "VOICE_STT_USAGE_OPERATION",
+              "qualname": "VOICE_STT_USAGE_OPERATION",
+              "lineno": 120
+            },
+            {
+              "kind": "constant",
+              "name": "_LAST_USAGE_ADMISSION",
+              "qualname": "_LAST_USAGE_ADMISSION",
+              "lineno": 122
+            },
+            {
+              "kind": "constant",
+              "name": "_LAST_VOICE_USAGE_TRACE",
+              "qualname": "_LAST_VOICE_USAGE_TRACE",
+              "lineno": 123
+            },
+            {
+              "kind": "constant",
+              "name": "_RECEIPT_UNSAFE_DIMENSION_MARKERS",
+              "qualname": "_RECEIPT_UNSAFE_DIMENSION_MARKERS",
+              "lineno": 127
+            },
+            {
+              "kind": "class",
+              "name": "VoiceRouterError",
+              "qualname": "VoiceRouterError",
+              "lineno": 144
+            },
+            {
+              "kind": "class",
+              "name": "UsageCapacityError",
+              "qualname": "UsageCapacityError",
+              "lineno": 148
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "UsageCapacityError.__init__",
+              "lineno": 151
+            },
+            {
+              "kind": "function",
+              "name": "_set_last_usage_admission",
+              "qualname": "_set_last_usage_admission",
+              "lineno": 165
+            },
+            {
+              "kind": "function",
+              "name": "get_last_usage_admission",
+              "qualname": "get_last_usage_admission",
+              "lineno": 169
+            },
+            {
+              "kind": "function",
+              "name": "_set_last_voice_usage_trace",
+              "qualname": "_set_last_voice_usage_trace",
+              "lineno": 179
+            },
+            {
+              "kind": "function",
+              "name": "get_last_voice_usage_trace",
+              "qualname": "get_last_voice_usage_trace",
+              "lineno": 183
+            },
+            {
+              "kind": "function",
+              "name": "_truthy",
+              "qualname": "_truthy",
+              "lineno": 190
+            },
+            {
+              "kind": "function",
+              "name": "_cache_enabled",
+              "qualname": "_cache_enabled",
+              "lineno": 194
+            },
+            {
+              "kind": "function",
+              "name": "_response_cache_enabled",
+              "qualname": "_response_cache_enabled",
+              "lineno": 203
+            },
+            {
+              "kind": "function",
+              "name": "_stable_kwargs_digest",
+              "qualname": "_stable_kwargs_digest",
+              "lineno": 213
+            },
+            {
+              "kind": "function",
+              "name": "_text_digest",
+              "qualname": "_text_digest",
+              "lineno": 223
+            },
+            {
+              "kind": "function",
+              "name": "_audio_digest",
+              "qualname": "_audio_digest",
+              "lineno": 227
+            },
+            {
+              "kind": "function",
+              "name": "_provider_instance_cache_identity",
+              "qualname": "_provider_instance_cache_identity",
+              "lineno": 242
+            },
+            {
+              "kind": "function",
+              "name": "_tts_response_cache_key",
+              "qualname": "_tts_response_cache_key",
+              "lineno": 275
+            },
+            {
+              "kind": "function",
+              "name": "_stt_response_cache_key",
+              "qualname": "_stt_response_cache_key",
+              "lineno": 297
+            },
+            {
+              "kind": "class",
+              "name": "VoiceProvider",
+              "qualname": "VoiceProvider",
+              "lineno": 317
+            },
+            {
+              "kind": "method",
+              "name": "synthesize",
+              "qualname": "VoiceProvider.synthesize",
+              "lineno": 325
+            },
+            {
+              "kind": "method",
+              "name": "transcribe",
+              "qualname": "VoiceProvider.transcribe",
+              "lineno": 336
+            },
+            {
+              "kind": "class",
+              "name": "VoiceProviderCapabilities",
+              "qualname": "VoiceProviderCapabilities",
+              "lineno": 351
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceProviderCapabilities.__post_init__",
+              "lineno": 359
+            },
+            {
+              "kind": "method",
+              "name": "can_transcribe",
+              "qualname": "VoiceProviderCapabilities.can_transcribe",
+              "lineno": 378
+            },
+            {
+              "kind": "method",
+              "name": "can_synthesize",
+              "qualname": "VoiceProviderCapabilities.can_synthesize",
+              "lineno": 382
+            },
+            {
+              "kind": "method",
+              "name": "supports",
+              "qualname": "VoiceProviderCapabilities.supports",
+              "lineno": 385
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceProviderCapabilities.to_dict",
+              "lineno": 401
+            },
+            {
+              "kind": "method",
+              "name": "from_dict",
+              "qualname": "VoiceProviderCapabilities.from_dict",
+              "lineno": 410
+            },
+            {
+              "kind": "class",
+              "name": "ProviderInfo",
+              "qualname": "ProviderInfo",
+              "lineno": 434
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ProviderInfo.__post_init__",
+              "lineno": 441
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ProviderInfo.to_dict",
+              "lineno": 453
+            },
+            {
+              "kind": "constant",
+              "name": "_PROVIDER_REGISTRY",
+              "qualname": "_PROVIDER_REGISTRY",
+              "lineno": 461
+            },
+            {
+              "kind": "constant",
+              "name": "_PROVIDER_REGISTRY_REVISIONS",
+              "qualname": "_PROVIDER_REGISTRY_REVISIONS",
+              "lineno": 462
+            },
+            {
+              "kind": "function",
+              "name": "register_voice_provider",
+              "qualname": "register_voice_provider",
+              "lineno": 465
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_PROVIDER_CAPABILITIES",
+              "qualname": "_BUILTIN_PROVIDER_CAPABILITIES",
+              "lineno": 496
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_PROVIDER_ALIASES",
+              "qualname": "_BUILTIN_PROVIDER_ALIASES",
+              "lineno": 512
+            },
+            {
+              "kind": "constant",
+              "name": "_AUDIO_MIME_TYPES",
+              "qualname": "_AUDIO_MIME_TYPES",
+              "lineno": 531
+            },
+            {
+              "kind": "constant",
+              "name": "_VOICE_CATALOG_PROVENANCE",
+              "qualname": "_VOICE_CATALOG_PROVENANCE",
+              "lineno": 547
+            },
+            {
+              "kind": "class",
+              "name": "_VoiceCatalogMetadata",
+              "qualname": "_VoiceCatalogMetadata",
+              "lineno": 551
+            },
+            {
+              "kind": "constant",
+              "name": "_BUILTIN_VOICE_CATALOG",
+              "qualname": "_BUILTIN_VOICE_CATALOG",
+              "lineno": 570
+            },
+            {
+              "kind": "function",
+              "name": "_catalog_name",
+              "qualname": "_catalog_name",
+              "lineno": 690
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_operation",
+              "qualname": "_canonical_operation",
+              "lineno": 705
+            },
+            {
+              "kind": "function",
+              "name": "_mime_types",
+              "qualname": "_mime_types",
+              "lineno": 732
+            },
+            {
+              "kind": "function",
+              "name": "_provider_aliases",
+              "qualname": "_provider_aliases",
+              "lineno": 743
+            },
+            {
+              "kind": "function",
+              "name": "_provider_catalog_metadata",
+              "qualname": "_provider_catalog_metadata",
+              "lineno": 755
+            },
+            {
+              "kind": "function",
+              "name": "_provider_configuration",
+              "qualname": "_provider_configuration",
+              "lineno": 774
+            },
+            {
+              "kind": "function",
+              "name": "_provider_state",
+              "qualname": "_provider_state",
+              "lineno": 836
+            },
+            {
+              "kind": "function",
+              "name": "_provider_capability_descriptors",
+              "qualname": "_provider_capability_descriptors",
+              "lineno": 856
+            },
+            {
+              "kind": "function",
+              "name": "_provider_descriptor",
+              "qualname": "_provider_descriptor",
+              "lineno": 895
+            },
+            {
+              "kind": "function",
+              "name": "_catalog_provider_names",
+              "qualname": "_catalog_provider_names",
+              "lineno": 957
+            },
+            {
+              "kind": "function",
+              "name": "_model_names_for_provider",
+              "qualname": "_model_names_for_provider",
+              "lineno": 964
+            },
+            {
+              "kind": "function",
+              "name": "_model_descriptors_for_provider",
+              "qualname": "_model_descriptors_for_provider",
+              "lineno": 1015
+            },
+            {
+              "kind": "function",
+              "name": "_descriptor_operations",
+              "qualname": "_descriptor_operations",
+              "lineno": 1086
+            },
+            {
+              "kind": "function",
+              "name": "_label",
+              "qualname": "_label",
+              "lineno": 1096
+            },
+            {
+              "kind": "function",
+              "name": "_matches_catalog_constraints",
+              "qualname": "_matches_catalog_constraints",
+              "lineno": 1100
+            },
+            {
+              "kind": "function",
+              "name": "list_providers",
+              "qualname": "list_providers",
+              "lineno": 1201
+            },
+            {
+              "kind": "function",
+              "name": "get_provider_descriptor",
+              "qualname": "get_provider_descriptor",
+              "lineno": 1244
+            },
+            {
+              "kind": "function",
+              "name": "list_models",
+              "qualname": "list_models",
+              "lineno": 1258
+            },
+            {
+              "kind": "function",
+              "name": "resolve_model",
+              "qualname": "resolve_model",
+              "lineno": 1316
+            },
+            {
+              "kind": "function",
+              "name": "get_catalog_snapshot",
+              "qualname": "get_catalog_snapshot",
+              "lineno": 1475
+            },
+            {
+              "kind": "function",
+              "name": "get_voice_provider_capabilities",
+              "qualname": "get_voice_provider_capabilities",
+              "lineno": 1515
+            },
+            {
+              "kind": "function",
+              "name": "_coalesce_env",
+              "qualname": "_coalesce_env",
+              "lineno": 1534
+            },
+            {
+              "kind": "constant",
+              "name": "DEFAULT_GROUNDED_FALLBACK",
+              "qualname": "DEFAULT_GROUNDED_FALLBACK",
+              "lineno": 1546
+            },
+            {
+              "kind": "function",
+              "name": "_sha256_bytes",
+              "qualname": "_sha256_bytes",
+              "lineno": 1552
+            },
+            {
+              "kind": "function",
+              "name": "_sha256_text",
+              "qualname": "_sha256_text",
+              "lineno": 1556
+            },
+            {
+              "kind": "function",
+              "name": "_json_safe",
+              "qualname": "_json_safe",
+              "lineno": 1560
+            },
+            {
+              "kind": "class",
+              "name": "GroundingEvidence",
+              "qualname": "GroundingEvidence",
+              "lineno": 1582
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GroundingEvidence.__post_init__",
+              "lineno": 1592
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GroundingEvidence.to_dict",
+              "lineno": 1600
+            },
+            {
+              "kind": "class",
+              "name": "GroundedSlot",
+              "qualname": "GroundedSlot",
+              "lineno": 1616
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "GroundedSlot.__post_init__",
+              "lineno": 1623
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "GroundedSlot.to_dict",
+              "lineno": 1640
+            },
+            {
+              "kind": "class",
+              "name": "VoiceResponsePlan",
+              "qualname": "VoiceResponsePlan",
+              "lineno": 1649
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceResponsePlan.__post_init__",
+              "lineno": 1660
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceResponsePlan.to_dict",
+              "lineno": 1674
+            },
+            {
+              "kind": "method",
+              "name": "sources",
+              "qualname": "VoiceResponsePlan.sources",
+              "lineno": 1686
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTemplateProvider",
+              "qualname": "VoiceTemplateProvider",
+              "lineno": 1692
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "VoiceTemplateProvider.retrieve",
+              "lineno": 1695
+            },
+            {
+              "kind": "class",
+              "name": "VoiceStageTrace",
+              "qualname": "VoiceStageTrace",
+              "lineno": 1705
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceStageTrace.__post_init__",
+              "lineno": 1715
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceStageTrace.to_dict",
+              "lineno": 1741
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnRequest",
+              "qualname": "VoiceTurnRequest",
+              "lineno": 1753
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnRequest.__post_init__",
+              "lineno": 1784
+            },
+            {
+              "kind": "method",
+              "name": "effective_language",
+              "qualname": "VoiceTurnRequest.effective_language",
+              "lineno": 1873
+            },
+            {
+              "kind": "method",
+              "name": "input_audio_sha256",
+              "qualname": "VoiceTurnRequest.input_audio_sha256",
+              "lineno": 1877
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnRequest.to_dict",
+              "lineno": 1895
+            },
+            {
+              "kind": "class",
+              "name": "TelephoneTurnState",
+              "qualname": "TelephoneTurnState",
+              "lineno": 1939
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "TelephoneTurnState.__post_init__",
+              "lineno": 1954
+            },
+            {
+              "kind": "method",
+              "name": "call_id_sha256",
+              "qualname": "TelephoneTurnState.call_id_sha256",
+              "lineno": 1979
+            },
+            {
+              "kind": "method",
+              "name": "to_context",
+              "qualname": "TelephoneTurnState.to_context",
+              "lineno": 1982
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "TelephoneTurnState.to_dict",
+              "lineno": 1995
+            },
+            {
+              "kind": "method",
+              "name": "advance",
+              "qualname": "TelephoneTurnState.advance",
+              "lineno": 1998
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnProvenance",
+              "qualname": "VoiceTurnProvenance",
+              "lineno": 2018
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnProvenance.__post_init__",
+              "lineno": 2034
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnProvenance.to_dict",
+              "lineno": 2068
+            },
+            {
+              "kind": "class",
+              "name": "VoiceTurnResult",
+              "qualname": "VoiceTurnResult",
+              "lineno": 2087
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "VoiceTurnResult.__post_init__",
+              "lineno": 2101
+            },
+            {
+              "kind": "method",
+              "name": "spoken_text",
+              "qualname": "VoiceTurnResult.spoken_text",
+              "lineno": 2148
+            },
+            {
+              "kind": "method",
+              "name": "fallbacks",
+              "qualname": "VoiceTurnResult.fallbacks",
+              "lineno": 2152
+            },
+            {
+              "kind": "method",
+              "name": "fallback_reason",
+              "qualname": "VoiceTurnResult.fallback_reason",
+              "lineno": 2157
+            },
+            {
+              "kind": "method",
+              "name": "degraded",
+              "qualname": "VoiceTurnResult.degraded",
+              "lineno": 2162
+            },
+            {
+              "kind": "method",
+              "name": "template_id",
+              "qualname": "VoiceTurnResult.template_id",
+              "lineno": 2166
+            },
+            {
+              "kind": "method",
+              "name": "intent",
+              "qualname": "VoiceTurnResult.intent",
+              "lineno": 2170
+            },
+            {
+              "kind": "method",
+              "name": "sources",
+              "qualname": "VoiceTurnResult.sources",
+              "lineno": 2175
+            },
+            {
+              "kind": "method",
+              "name": "total_duration_ms",
+              "qualname": "VoiceTurnResult.total_duration_ms",
+              "lineno": 2179
+            },
+            {
+              "kind": "method",
+              "name": "provider_selection",
+              "qualname": "VoiceTurnResult.provider_selection",
+              "lineno": 2183
+            },
+            {
+              "kind": "method",
+              "name": "validated_cache_miss_event",
+              "qualname": "VoiceTurnResult.validated_cache_miss_event",
+              "lineno": 2190
+            },
+            {
+              "kind": "method",
+              "name": "is_live_tts_cache_miss",
+              "qualname": "VoiceTurnResult.is_live_tts_cache_miss",
+              "lineno": 2220
+            },
+            {
+              "kind": "method",
+              "name": "enqueue_validated_cache_miss_candidate",
+              "qualname": "VoiceTurnResult.enqueue_validated_cache_miss_candidate",
+              "lineno": 2227
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "VoiceTurnResult.to_dict",
+              "lineno": 2262
+            },
+            {
+              "kind": "function",
+              "name": "_coerce_evidence",
+              "qualname": "_coerce_evidence",
+              "lineno": 2288
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_evidence",
+              "qualname": "_normalize_evidence",
+              "lineno": 2327
+            },
+            {
+              "kind": "function",
+              "name": "_source_ids_for_fact",
+              "qualname": "_source_ids_for_fact",
+              "lineno": 2342
+            },
+            {
+              "kind": "function",
+              "name": "_coerce_response_plan",
+              "qualname": "_coerce_response_plan",
+              "lineno": 2362
+            },
+            {
+              "kind": "function",
+              "name": "_call_with_supported_keywords",
+              "qualname": "_call_with_supported_keywords",
+              "lineno": 2427
+            },
+            {
+              "kind": "class",
+              "name": "GraphRAGVoiceTemplateProvider",
+              "qualname": "GraphRAGVoiceTemplateProvider",
+              "lineno": 2451
+            },
+            {
+              "kind": "method",
+              "name": "__init__",
+              "qualname": "GraphRAGVoiceTemplateProvider.__init__",
+              "lineno": 2462
+            },
+            {
+              "kind": "method",
+              "name": "_backend_callable",
+              "qualname": "GraphRAGVoiceTemplateProvider._backend_callable",
+              "lineno": 2469
+            },
+            {
+              "kind": "method",
+              "name": "retrieve",
+              "qualname": "GraphRAGVoiceTemplateProvider.retrieve",
+              "lineno": 2483
+            },
+            {
+              "kind": "function",
+              "name": "_get_openai_provider",
+              "qualname": "_get_openai_provider",
+              "lineno": 2559
+            },
+            {
+              "kind": "function",
+              "name": "_get_elevenlabs_provider",
+              "qualname": "_get_elevenlabs_provider",
+              "lineno": 2713
+            },
+            {
+              "kind": "function",
+              "name": "_get_assemblyai_provider",
+              "qualname": "_get_assemblyai_provider",
+              "lineno": 2789
+            },
+            {
+              "kind": "function",
+              "name": "_get_huggingface_provider",
+              "qualname": "_get_huggingface_provider",
+              "lineno": 2916
+            },
+            {
+              "kind": "function",
+              "name": "_await_from_sync",
+              "qualname": "_await_from_sync",
+              "lineno": 3081
+            },
+            {
+              "kind": "constant",
+              "name": "_BACKEND_RESULT_MISSING",
+              "qualname": "_BACKEND_RESULT_MISSING",
+              "lineno": 3112
+            },
+            {
+              "kind": "function",
+              "name": "_backend_manager_result_value",
+              "qualname": "_backend_manager_result_value",
+              "lineno": 3115
+            },
+            {
+              "kind": "function",
+              "name": "_get_backend_manager_provider",
+              "qualname": "_get_backend_manager_provider",
+              "lineno": 3136
+            },
+            {
+              "kind": "function",
+              "name": "_provider_cache_key",
+              "qualname": "_provider_cache_key",
+              "lineno": 3256
+            },
+            {
+              "kind": "function",
+              "name": "_builtin_provider_by_name",
+              "qualname": "_builtin_provider_by_name",
+              "lineno": 3331
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_provider_uncached",
+              "qualname": "_resolve_provider_uncached",
+              "lineno": 3364
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_provider_cached",
+              "qualname": "_resolve_provider_cached",
+              "lineno": 3406
+            },
+            {
+              "kind": "function",
+              "name": "get_voice_provider",
+              "qualname": "get_voice_provider",
+              "lineno": 3411
+            },
+            {
+              "kind": "function",
+              "name": "_provider_display_name",
+              "qualname": "_provider_display_name",
+              "lineno": 3448
+            },
+            {
+              "kind": "function",
+              "name": "_template_provider_name",
+              "qualname": "_template_provider_name",
+              "lineno": 3459
+            },
+            {
+              "kind": "function",
+              "name": "_collaborator_cache_identity",
+              "qualname": "_collaborator_cache_identity",
+              "lineno": 3465
+            },
+            {
+              "kind": "function",
+              "name": "_safe_stage_error",
+              "qualname": "_safe_stage_error",
+              "lineno": 3481
+            },
+            {
+              "kind": "function",
+              "name": "_duration_ms",
+              "qualname": "_duration_ms",
+              "lineno": 3529
+            },
+            {
+              "kind": "function",
+              "name": "_voice_turn_cache_key",
+              "qualname": "_voice_turn_cache_key",
+              "lineno": 3533
+            },
+            {
+              "kind": "function",
+              "name": "voice_turn_cache_key",
+              "qualname": "voice_turn_cache_key",
+              "lineno": 3582
+            },
+            {
+              "kind": "function",
+              "name": "_registry_supports",
+              "qualname": "_registry_supports",
+              "lineno": 3602
+            },
+            {
+              "kind": "function",
+              "name": "_provider_candidates",
+              "qualname": "_provider_candidates",
+              "lineno": 3612
+            },
+            {
+              "kind": "function",
+              "name": "_provider_receipt_details",
+              "qualname": "_provider_receipt_details",
+              "lineno": 3654
+            },
+            {
+              "kind": "function",
+              "name": "_close_awaitable_result",
+              "qualname": "_close_awaitable_result",
+              "lineno": 3667
+            },
+            {
+              "kind": "function",
+              "name": "_grounding_override_slots",
+              "qualname": "_grounding_override_slots",
+              "lineno": 3679
+            },
+            {
+              "kind": "function",
+              "name": "_template_fields",
+              "qualname": "_template_fields",
+              "lineno": 3712
+            },
+            {
+              "kind": "constant",
+              "name": "_TELEPHONE_DIGIT_WORDS",
+              "qualname": "_TELEPHONE_DIGIT_WORDS",
+              "lineno": 3719
+            },
+            {
+              "kind": "constant",
+              "name": "_TELEPHONE_UNSAFE_SPOKEN_MARKER_RE",
+              "qualname": "_TELEPHONE_UNSAFE_SPOKEN_MARKER_RE",
+              "lineno": 3731
+            },
+            {
+              "kind": "function",
+              "name": "_telephone_digits_to_words",
+              "qualname": "_telephone_digits_to_words",
+              "lineno": 3738
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_telephone_slot_value",
+              "qualname": "_normalize_telephone_slot_value",
+              "lineno": 3746
+            },
+            {
+              "kind": "function",
+              "name": "_assert_telephone_spoken_safety",
+              "qualname": "_assert_telephone_spoken_safety",
+              "lineno": 3804
+            },
+            {
+              "kind": "function",
+              "name": "_render_grounded_plan",
+              "qualname": "_render_grounded_plan",
+              "lineno": 3815
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_spoken_text",
+              "qualname": "_normalize_spoken_text",
+              "lineno": 3895
+            },
+            {
+              "kind": "function",
+              "name": "_audio_format",
+              "qualname": "_audio_format",
+              "lineno": 3900
+            },
+            {
+              "kind": "function",
+              "name": "_voice_tts_artifact_policy",
+              "qualname": "_voice_tts_artifact_policy",
+              "lineno": 3914
+            },
+            {
+              "kind": "function",
+              "name": "_validate_router_tts_audio",
+              "qualname": "_validate_router_tts_audio",
+              "lineno": 3937
+            },
+            {
+              "kind": "function",
+              "name": "_synthesis_identity_from_request",
+              "qualname": "_synthesis_identity_from_request",
+              "lineno": 3974
+            },
+            {
+              "kind": "function",
+              "name": "process_voice_turn",
+              "qualname": "process_voice_turn",
+              "lineno": 4029
+            },
+            {
+              "kind": "function",
+              "name": "process_telephone_turn",
+              "qualname": "process_telephone_turn",
+              "lineno": 4601
+            },
+            {
+              "kind": "function",
+              "name": "estimate_synthesis_tokens",
+              "qualname": "estimate_synthesis_tokens",
+              "lineno": 4808
+            },
+            {
+              "kind": "function",
+              "name": "_audio_media_bytes",
+              "qualname": "_audio_media_bytes",
+              "lineno": 4821
+            },
+            {
+              "kind": "function",
+              "name": "_parse_wav_duration_seconds",
+              "qualname": "_parse_wav_duration_seconds",
+              "lineno": 4834
+            },
+            {
+              "kind": "function",
+              "name": "estimate_audio_seconds",
+              "qualname": "estimate_audio_seconds",
+              "lineno": 4870
+            },
+            {
+              "kind": "function",
+              "name": "estimate_synthesis_usage",
+              "qualname": "estimate_synthesis_usage",
+              "lineno": 4919
+            },
+            {
+              "kind": "function",
+              "name": "estimate_transcription_usage",
+              "qualname": "estimate_transcription_usage",
+              "lineno": 4962
+            },
+            {
+              "kind": "function",
+              "name": "settle_synthesis_usage",
+              "qualname": "settle_synthesis_usage",
+              "lineno": 5006
+            },
+            {
+              "kind": "function",
+              "name": "settle_transcription_usage",
+              "qualname": "settle_transcription_usage",
+              "lineno": 5040
+            },
+            {
+              "kind": "function",
+              "name": "planning_required_usage",
+              "qualname": "planning_required_usage",
+              "lineno": 5075
+            },
+            {
+              "kind": "function",
+              "name": "apply_voice_stream_settlements",
+              "qualname": "apply_voice_stream_settlements",
+              "lineno": 5096
+            },
+            {
+              "kind": "function",
+              "name": "_normalize_usage_policy",
+              "qualname": "_normalize_usage_policy",
+              "lineno": 5118
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_is_off",
+              "qualname": "_usage_mode_is_off",
+              "lineno": 5130
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_observes_only",
+              "qualname": "_usage_mode_observes_only",
+              "lineno": 5139
+            },
+            {
+              "kind": "function",
+              "name": "_usage_mode_enforces",
+              "qualname": "_usage_mode_enforces",
+              "lineno": 5149
+            },
+            {
+              "kind": "function",
+              "name": "_voice_compatibility_labels",
+              "qualname": "_voice_compatibility_labels",
+              "lineno": 5159
+            },
+            {
+              "kind": "function",
+              "name": "voice_fallback_compatible",
+              "qualname": "voice_fallback_compatible",
+              "lineno": 5241
+            },
+            {
+              "kind": "function",
+              "name": "_build_voice_static_candidate",
+              "qualname": "_build_voice_static_candidate",
+              "lineno": 5300
+            },
+            {
+              "kind": "function",
+              "name": "_filter_compatible_voice_candidates",
+              "qualname": "_filter_compatible_voice_candidates",
+              "lineno": 5355
+            },
+            {
+              "kind": "function",
+              "name": "_admission_result_to_trace",
+              "qualname": "_admission_result_to_trace",
+              "lineno": 5368
+            },
+            {
+              "kind": "function",
+              "name": "_parse_provider_observation",
+              "qualname": "_parse_provider_observation",
+              "lineno": 5402
+            },
+            {
+              "kind": "function",
+              "name": "_resolve_usage_pin",
+              "qualname": "_resolve_usage_pin",
+              "lineno": 5490
+            },
+            {
+              "kind": "function",
+              "name": "_bind_usage_routing_request",
+              "qualname": "_bind_usage_routing_request",
+              "lineno": 5522
+            },
+            {
+              "kind": "function",
+              "name": "_effective_policy_for_pin",
+              "qualname": "_effective_policy_for_pin",
+              "lineno": 5573
+            },
+            {
+              "kind": "function",
+              "name": "_tts_cache_lookup",
+              "qualname": "_tts_cache_lookup",
+              "lineno": 5596
+            },
+            {
+              "kind": "function",
+              "name": "_tts_cache_store",
+              "qualname": "_tts_cache_store",
+              "lineno": 5634
+            },
+            {
+              "kind": "function",
+              "name": "_stt_cache_lookup",
+              "qualname": "_stt_cache_lookup",
+              "lineno": 5667
+            },
+            {
+              "kind": "function",
+              "name": "_stt_cache_store",
+              "qualname": "_stt_cache_store",
+              "lineno": 5697
+            },
+            {
+              "kind": "function",
+              "name": "_write_output_path",
+              "qualname": "_write_output_path",
+              "lineno": 5728
+            },
+            {
+              "kind": "function",
+              "name": "_legacy_text_to_speech",
+              "qualname": "_legacy_text_to_speech",
+              "lineno": 5736
+            },
+            {
+              "kind": "function",
+              "name": "_legacy_speech_to_text",
+              "qualname": "_legacy_speech_to_text",
+              "lineno": 5817
+            },
+            {
+              "kind": "function",
+              "name": "_record_voice_usage_observe_shadow",
+              "qualname": "_record_voice_usage_observe_shadow",
+              "lineno": 5897
+            },
+            {
+              "kind": "function",
+              "name": "_text_to_speech_with_usage_admission",
+              "qualname": "_text_to_speech_with_usage_admission",
+              "lineno": 5969
+            },
+            {
+              "kind": "function",
+              "name": "_speech_to_text_with_usage_admission",
+              "qualname": "_speech_to_text_with_usage_admission",
+              "lineno": 6429
+            },
+            {
+              "kind": "function",
+              "name": "text_to_speech",
+              "qualname": "text_to_speech",
+              "lineno": 6861
+            },
+            {
+              "kind": "function",
+              "name": "speech_to_text",
+              "qualname": "speech_to_text",
+              "lineno": 7018
+            },
+            {
+              "kind": "function",
+              "name": "clear_voice_router_caches",
+              "qualname": "clear_voice_router_caches",
+              "lineno": 7162
+            }
+          ]
+        },
+        {
+          "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py",
+          "byte_count": 6607,
+          "line_count": 202,
+          "sha256": "8251e0be73495ac33908d546bf4ab47f62c9189793f873c55546d5e561349e7c",
+          "git_revision": null,
+          "symbol_count": 15,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "class",
+              "name": "RiskClass",
+              "qualname": "RiskClass",
+              "lineno": 12
+            },
+            {
+              "kind": "class",
+              "name": "SideEffectClass",
+              "qualname": "SideEffectClass",
+              "lineno": 19
+            },
+            {
+              "kind": "class",
+              "name": "ActionDecisionKind",
+              "qualname": "ActionDecisionKind",
+              "lineno": 27
+            },
+            {
+              "kind": "class",
+              "name": "ActionStatus",
+              "qualname": "ActionStatus",
+              "lineno": 36
+            },
+            {
+              "kind": "function",
+              "name": "_canonical_bytes",
+              "qualname": "_canonical_bytes",
+              "lineno": 48
+            },
+            {
+              "kind": "function",
+              "name": "content_digest",
+              "qualname": "content_digest",
+              "lineno": 58
+            },
+            {
+              "kind": "class",
+              "name": "ActionProposal",
+              "qualname": "ActionProposal",
+              "lineno": 63
+            },
+            {
+              "kind": "method",
+              "name": "__post_init__",
+              "qualname": "ActionProposal.__post_init__",
+              "lineno": 79
+            },
+            {
+              "kind": "method",
+              "name": "arguments_digest",
+              "qualname": "ActionProposal.arguments_digest",
+              "lineno": 91
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionProposal.to_dict",
+              "lineno": 94
+            },
+            {
+              "kind": "class",
+              "name": "ActionDecision",
+              "qualname": "ActionDecision",
+              "lineno": 113
+            },
+            {
+              "kind": "method",
+              "name": "permits_execution",
+              "qualname": "ActionDecision.permits_execution",
+              "lineno": 128
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionDecision.to_dict",
+              "lineno": 134
+            },
+            {
+              "kind": "class",
+              "name": "ActionReceipt",
+              "qualname": "ActionReceipt",
+              "lineno": 151
+            },
+            {
+              "kind": "method",
+              "name": "to_dict",
+              "qualname": "ActionReceipt.to_dict",
+              "lineno": 170
+            }
+          ]
+        },
+        {
+          "path": "wallet_interface/helpers/_voice_action_surface.py",
+          "byte_count": 10755,
+          "line_count": 298,
+          "sha256": "d2d83ed2473c2e8ecb049db38b781ca6a5b64fe462b8b18b08d0c24260af7924",
+          "git_revision": "36262022db924d08f1a2d290112dc96ccdd3b146",
+          "symbol_count": 12,
+          "parse_error": null,
+          "symbols": [
+            {
+              "kind": "constant",
+              "name": "VOICE_ACTION_EXECUTE_FLAG",
+              "qualname": "VOICE_ACTION_EXECUTE_FLAG",
+              "lineno": 21
+            },
+            {
+              "kind": "constant",
+              "name": "APP_SURFACE_DESCRIPTOR_ID",
+              "qualname": "APP_SURFACE_DESCRIPTOR_ID",
+              "lineno": 24
+            },
+            {
+              "kind": "constant",
+              "name": "WALLET_DOCS_DESCRIPTOR_ID",
+              "qualname": "WALLET_DOCS_DESCRIPTOR_ID",
+              "lineno": 25
+            },
+            {
+              "kind": "constant",
+              "name": "CALENDAR_DESCRIPTOR_ID",
+              "qualname": "CALENDAR_DESCRIPTOR_ID",
+              "lineno": 26
+            },
+            {
+              "kind": "constant",
+              "name": "SERVICE_INTERACTION_DESCRIPTOR_ID",
+              "qualname": "SERVICE_INTERACTION_DESCRIPTOR_ID",
+              "lineno": 27
+            },
+            {
+              "kind": "constant",
+              "name": "PROVIDER_CONTACT_DESCRIPTOR_ID",
+              "qualname": "PROVIDER_CONTACT_DESCRIPTOR_ID",
+              "lineno": 28
+            },
+            {
+              "kind": "function",
+              "name": "_truthy",
+              "qualname": "_truthy",
+              "lineno": 31
+            },
+            {
+              "kind": "function",
+              "name": "is_voice_action_execute_enabled",
+              "qualname": "is_voice_action_execute_enabled",
+              "lineno": 35
+            },
+            {
+              "kind": "function",
+              "name": "_text",
+              "qualname": "_text",
+              "lineno": 47
+            },
+            {
+              "kind": "function",
+              "name": "extract_voice_route",
+              "qualname": "extract_voice_route",
+              "lineno": 54
+            },
+            {
+              "kind": "function",
+              "name": "build_default_action_stack",
+              "qualname": "build_default_action_stack",
+              "lineno": 96
+            },
+            {
+              "kind": "function",
+              "name": "attach_action_surface",
+              "qualname": "attach_action_surface",
+              "lineno": 180
+            }
+          ]
+        }
+      ],
+      "required_ast_symbols": {
+        "ipfs_accelerate_py/ipfs_accelerate_py/voice_router.py": [
+          "process_voice_turn",
+          "TelephoneTurnState"
+        ],
+        "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/contracts.py": [
+          "ActionDecisionKind"
+        ],
+        "wallet_interface/helpers/_voice_action_surface.py": [
+          "attach_action_surface"
+        ]
+      },
+      "extra_notes": [
+        "voice_router telephone path degrades to text-only human_handoff provider metadata",
+        "live_agent route is not in DEFAULT_ROUTE_TO_LOGICAL_ACTION",
+        "No telephony transfer receipt; never claim unverified success"
+      ]
+    }
+  },
+  "required_component_ids": [
+    "action_runtime",
+    "graphrag",
+    "handoff",
+    "service_actions",
+    "ui_tools",
+    "voice_router"
+  ],
+  "acceptance_coverage": {
+    "route_census_matches_slotted_dag": true,
+    "route_classifications_complete": true,
+    "components_bound": [
+      "action_runtime",
+      "graphrag",
+      "handoff",
+      "service_actions",
+      "ui_tools",
+      "voice_router"
+    ],
+    "ast_symbols_bound": true,
+    "repo_revisions_bound": true,
+    "voice_bridge_mapped_routes": [
+      "app_surface_navigation",
+      "calendar_event_support",
+      "provider_contact_support",
+      "service_interaction_support",
+      "wallet_document_support"
+    ],
+    "content_only_routes": [
+      "clarifying_prompt",
+      "repeat_or_restate",
+      "speech_unclear_clarification",
+      "template_guided_fallback"
+    ],
+    "proposal_eligible_routes": [
+      "app_surface_navigation",
+      "calendar_event_support",
+      "grounded_211_answer",
+      "live_agent",
+      "provider_contact_support",
+      "service_interaction_support",
+      "wallet_document_support"
+    ],
+    "safety_overlay_routes": [
+      "safety_guardrail_support"
+    ]
+  }
+}
