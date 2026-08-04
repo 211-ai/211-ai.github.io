@@ -515,8 +515,8 @@ Program invariants:
 
 ## VOICE-ACTION-026 Speak action outcomes via precomputed audio when available
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: landed (cherry-pick after binding_stale; tests passed)
 - Priority: P0
 - Track: abby-audio
 - Depends on: VOICE-ACTION-025, VOICE-ACTION-010
