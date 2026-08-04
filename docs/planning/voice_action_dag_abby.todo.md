@@ -435,7 +435,7 @@ Program invariants:
 
 ## VOICE-ACTION-022 Integrate handoff with telephone turn escalation path
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-handoff
