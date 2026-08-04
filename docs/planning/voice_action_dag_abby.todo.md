@@ -15,7 +15,7 @@ Program invariants:
 
 ## VOICE-ACTION-001 Bootstrap supervisor control and protected plan namespace
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: operations
@@ -35,7 +35,7 @@ Program invariants:
 
 ## VOICE-ACTION-002 Inventory Abby DAG, audio, action_runtime, UI tools, and handoff gaps
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: architecture
@@ -55,7 +55,7 @@ Program invariants:
 
 ## VOICE-ACTION-003 Freeze dual-plane integration doctrine and ownership map
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: architecture
@@ -75,7 +75,7 @@ Program invariants:
 
 ## VOICE-ACTION-004 Define Abby content→logical-action link schema
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: content-links
@@ -95,7 +95,7 @@ Program invariants:
 
 ## VOICE-ACTION-005 Build deterministic slotted DAG action-link projection
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: content-links
@@ -115,7 +115,7 @@ Program invariants:
 
 ## VOICE-ACTION-006 Publish 211-AI pilot ActionDescriptor catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: catalog
@@ -135,7 +135,7 @@ Program invariants:
 
 ## VOICE-ACTION-007 Expand policy matrix for read/write/human/safety classes
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: policy
@@ -475,7 +475,7 @@ Program invariants:
 
 ## VOICE-ACTION-024 Author Abby confirmation and outcome speech frames for pilot actions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: abby-audio
