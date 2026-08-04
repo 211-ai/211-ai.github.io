@@ -455,7 +455,7 @@ Program invariants:
 
 ## VOICE-ACTION-023 Implement safety overlay policy for escalate_safety
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-handoff
