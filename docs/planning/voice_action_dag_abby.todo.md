@@ -215,7 +215,7 @@ Program invariants:
 
 ## VOICE-ACTION-011 Harden wallet action surface for multi-descriptor pilot catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: voice-integration
