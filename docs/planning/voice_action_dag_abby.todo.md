@@ -255,7 +255,7 @@ Program invariants:
 
 ## VOICE-ACTION-013 Implement app tool adapter for navigation and wallet documents
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-app
