@@ -235,7 +235,7 @@ Program invariants:
 
 ## VOICE-ACTION-012 Pass route from GraphRAG/template metadata through AI infer API
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: voice-integration
