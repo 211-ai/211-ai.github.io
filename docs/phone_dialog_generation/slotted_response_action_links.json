@@ -1,0 +1,167 @@
+{
+  "links": [
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.open_app_surface.v1",
+      "logical_action": "open_app_surface",
+      "notes": "Pilot app/UI surface navigation proposal",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.open_app_surface.cancelled.v1",
+        "denied": "frame.action.outcome.open_app_surface.denied.v1",
+        "failed": "frame.action.outcome.open_app_surface.failed.v1",
+        "success": "frame.action.outcome.open_app_surface.success.v1",
+        "unknown": "frame.action.outcome.open_app_surface.unknown.v1"
+      },
+      "route": "app_surface_navigation",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.open_calendar_support.v1",
+      "logical_action": "open_calendar_support",
+      "notes": "Pilot calendar support proposal",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.open_calendar_support.cancelled.v1",
+        "denied": "frame.action.outcome.open_calendar_support.denied.v1",
+        "failed": "frame.action.outcome.open_calendar_support.failed.v1",
+        "success": "frame.action.outcome.open_calendar_support.success.v1",
+        "unknown": "frame.action.outcome.open_calendar_support.unknown.v1"
+      },
+      "route": "calendar_event_support",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "content-only",
+      "logical_action": "no_action",
+      "notes": "Slot collection has no side-effect proposal",
+      "route": "clarifying_prompt",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.open_service_detail.v1",
+      "logical_action": "open_service_detail",
+      "notes": "Optional service-detail open from grounded answer",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.open_service_detail.cancelled.v1",
+        "denied": "frame.action.outcome.open_service_detail.denied.v1",
+        "failed": "frame.action.outcome.open_service_detail.failed.v1",
+        "success": "frame.action.outcome.open_service_detail.success.v1",
+        "unknown": "frame.action.outcome.open_service_detail.unknown.v1"
+      },
+      "route": "grounded_211_answer",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.handoff_live_agent.v1",
+      "logical_action": "handoff_live_agent",
+      "notes": "Never claim transfer success without provider receipt",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.handoff_live_agent.cancelled.v1",
+        "denied": "frame.action.outcome.handoff_live_agent.denied.v1",
+        "failed": "frame.action.outcome.handoff_live_agent.failed.v1",
+        "success": "frame.action.outcome.handoff_live_agent.success.v1",
+        "unknown": "frame.action.outcome.handoff_live_agent.unknown.v1"
+      },
+      "route": "live_agent",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.provide_provider_contact.v1",
+      "logical_action": "provide_provider_contact",
+      "notes": "Pilot provider contact / messaging proposal",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.provide_provider_contact.cancelled.v1",
+        "denied": "frame.action.outcome.provide_provider_contact.denied.v1",
+        "failed": "frame.action.outcome.provide_provider_contact.failed.v1",
+        "success": "frame.action.outcome.provide_provider_contact.success.v1",
+        "unknown": "frame.action.outcome.provide_provider_contact.unknown.v1"
+      },
+      "route": "provider_contact_support",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "content-only",
+      "logical_action": "no_action",
+      "notes": "Repeat/restate is speech-only",
+      "route": "repeat_or_restate",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "safety-overlay",
+      "confirmation_frame_id": "frame.action.confirm.escalate_safety.v1",
+      "logical_action": "escalate_safety",
+      "notes": "Safety overlay may propose escalate_safety under policy",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.escalate_safety.cancelled.v1",
+        "denied": "frame.action.outcome.escalate_safety.denied.v1",
+        "failed": "frame.action.outcome.escalate_safety.failed.v1",
+        "success": "frame.action.outcome.escalate_safety.success.v1",
+        "unknown": "frame.action.outcome.escalate_safety.unknown.v1"
+      },
+      "route": "safety_guardrail_support",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.review_service_interaction.v1",
+      "logical_action": "review_service_interaction",
+      "notes": "Pilot service-interaction review proposal",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.review_service_interaction.cancelled.v1",
+        "denied": "frame.action.outcome.review_service_interaction.denied.v1",
+        "failed": "frame.action.outcome.review_service_interaction.failed.v1",
+        "success": "frame.action.outcome.review_service_interaction.success.v1",
+        "unknown": "frame.action.outcome.review_service_interaction.unknown.v1"
+      },
+      "route": "service_interaction_support",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "content-only",
+      "logical_action": "no_action",
+      "notes": "Speech clarification is content-only",
+      "route": "speech_unclear_clarification",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "content-only",
+      "logical_action": "no_action",
+      "notes": "Safe template fallback is content-only",
+      "route": "template_guided_fallback",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    },
+    {
+      "classification": "proposal-eligible",
+      "confirmation_frame_id": "frame.action.confirm.open_wallet_documents.v1",
+      "logical_action": "open_wallet_documents",
+      "notes": "Pilot wallet document surface proposal",
+      "outcome_frame_ids": {
+        "cancelled": "frame.action.outcome.open_wallet_documents.cancelled.v1",
+        "denied": "frame.action.outcome.open_wallet_documents.denied.v1",
+        "failed": "frame.action.outcome.open_wallet_documents.failed.v1",
+        "success": "frame.action.outcome.open_wallet_documents.success.v1",
+        "unknown": "frame.action.outcome.open_wallet_documents.unknown.v1"
+      },
+      "route": "wallet_document_support",
+      "schema": "voice-action/action-link@1",
+      "schema_version": "abby_content_action_link_v1"
+    }
+  ],
+  "schema": "voice-action/action-link@1",
+  "schema_version": "abby_content_action_link_v1",
+  "source": "voice-action-005/slotted-response-action-links"
+}
