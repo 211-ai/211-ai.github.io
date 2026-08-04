@@ -29,6 +29,107 @@ type BrowserAudioContextConstructor = new () => BrowserAudioContext;
 type BrowserAudioWorklet = { addModule: (moduleUrl: string) => Promise<void> };
 type BrowserAudioWorkletNode = AudioWorkletNode;
 
+/**
+ * Pilot voice-action UX statuses rendered by AgentAudioChatSurface.
+ * Terminal outcomes (executed/failed/disabled) come only from the server
+ * action surface — the client never invents an executed receipt.
+ */
+export type VoiceActionPilotUxStatus = "confirm" | "dismiss" | "executed" | "failed" | "disabled";
+
+/** Map a server action surface status onto the pilot UX status set. */
+export function resolveVoiceActionPilotStatus(
+  action?: VoiceActionSurface | null,
+): VoiceActionPilotUxStatus | null {
+  if (!action) return null;
+  const status = (action.status || "").toLowerCase();
+  if (status === "confirm" || status === "confirmation_required") return "confirm";
+  if (status === "executed" || status === "succeeded") return "executed";
+  if (status === "execution_failed" || status === "failed") return "failed";
+  if (status === "execution_disabled" || status === "disabled") return "disabled";
+  if (status === "dismiss" || status === "dismissed") return "dismiss";
+  return null;
+}
+
+/** Accessible region label for each pilot status. */
+export function voiceActionPilotAriaLabel(
+  status: VoiceActionPilotUxStatus,
+  action?: VoiceActionSurface | null,
+): string {
+  const logical = formatVoiceActionLogicalLabel(action);
+  switch (status) {
+    case "confirm":
+      return `Voice action confirmation required for ${logical}`;
+    case "dismiss":
+      return `Voice action confirmation dismissed for ${logical}`;
+    case "executed":
+      return `Voice action executed for ${logical}`;
+    case "failed":
+      return `Voice action failed for ${logical}`;
+    case "disabled":
+      return `Voice action execution disabled for ${logical}`;
+  }
+}
+
+/** Human-readable title for the pilot status card. */
+export function voiceActionPilotTitle(
+  status: VoiceActionPilotUxStatus,
+  action?: VoiceActionSurface | null,
+): string {
+  if (status === "confirm") {
+    return voiceActionLabel(action);
+  }
+  const logical = formatVoiceActionLogicalLabel(action);
+  switch (status) {
+    case "dismiss":
+      return `Dismissed ${logical}`;
+    case "executed":
+      return `Completed ${logical}`;
+    case "failed":
+      return `Failed ${logical}`;
+    case "disabled":
+      return `Disabled ${logical}`;
+  }
+}
+
+/** Detail copy for the pilot status card. */
+export function voiceActionPilotDetail(
+  status: VoiceActionPilotUxStatus,
+  action?: VoiceActionSurface | null,
+): string {
+  const logical = action?.proposal?.logicalAction;
+  switch (status) {
+    case "confirm":
+      return logical
+        ? `Reviewed action “${logical}” needs your confirmation before any tool runs.`
+        : "A reviewed action needs your confirmation before any tool runs.";
+    case "dismiss":
+      return "Action confirmation dismissed. No tool ran from this client.";
+    case "executed":
+      return action?.receipt?.status
+        ? `Confirmed action completed (${action.receipt.status}).`
+        : "Confirmed action completed.";
+    case "failed":
+      return action?.receipt?.error || action?.error || "Confirmed action failed.";
+    case "disabled":
+      return (
+        action?.error ||
+        "Action confirmation is disabled on this deployment. The client cannot bypass server gates."
+      );
+  }
+}
+
+/**
+ * Confirm is admitted only by sending `confirm_action` through the voice proxy.
+ * There is no client-side adapter/CLI execution path in this surface.
+ */
+export function voiceActionConfirmUsesServerGateOnly(): true {
+  return true;
+}
+
+function formatVoiceActionLogicalLabel(action?: VoiceActionSurface | null): string {
+  return action?.proposal?.logicalAction?.replace(/_/g, " ") || "reviewed action";
+}
+
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Welcome to Abby voice. You can start speaking when you are ready.";
 const AUDIO_OPENING_CLIP_PATH = "assets/audio/intro.wav?v=20260515-abby-intro";
@@ -172,6 +273,7 @@ export function AgentAudioChatSurface({
   const [audioDiagnostic, setAudioDiagnostic] = useState("");
   const [voiceDetectionEnabled, setVoiceDetectionEnabled] = useState(true);
   const [pendingVoiceAction, setPendingVoiceAction] = useState<VoiceActionSurface | null>(null);
+  const [voiceActionPilotStatus, setVoiceActionPilotStatus] = useState<VoiceActionPilotUxStatus | null>(null);
   const [voiceActionBusy, setVoiceActionBusy] = useState(false);
   const finalTranscriptRef = useRef("");
   const pendingVoiceTranscriptRef = useRef("");
@@ -241,6 +343,9 @@ export function AgentAudioChatSurface({
       setStatusDetail("");
       setAudioDiagnostic("");
       setMicLevel(0);
+      setPendingVoiceAction(null);
+      setVoiceActionPilotStatus(null);
+      setVoiceActionBusy(false);
       setVoiceDetectionEnabled(true);
       voiceDetectionEnabledRef.current = true;
       resetVoiceActivityDetector();
@@ -257,6 +362,9 @@ export function AgentAudioChatSurface({
       setModelProgress(null);
       setAudioDiagnostic("");
       setMicLevel(0);
+      setPendingVoiceAction(null);
+      setVoiceActionPilotStatus(null);
+      setVoiceActionBusy(false);
       resetVoiceActivityDetector();
     }
     openRef.current = open;
@@ -897,35 +1005,50 @@ export function AgentAudioChatSurface({
 
   function notePendingVoiceAction(voiceTurnResult?: VoiceTurnResult) {
     const action = voiceTurnResult?.action;
-    if (voiceActionNeedsConfirmation(action)) {
+    const pilotStatus = resolveVoiceActionPilotStatus(action);
+    if (pilotStatus === "confirm" && voiceActionNeedsConfirmation(action)) {
+      // Confirm UI only; execution stays fail-closed on the server dual gate.
       setPendingVoiceAction(action || null);
+      setVoiceActionPilotStatus("confirm");
       setStatusDetail(`Action needs confirmation: ${action?.proposal?.logicalAction || "reviewed action"}`);
       return;
     }
-    if (action?.status === "executed") {
-      setPendingVoiceAction(null);
-      setStatusDetail("Confirmed action completed.");
+    if (pilotStatus === "executed") {
+      setPendingVoiceAction(action || null);
+      setVoiceActionPilotStatus("executed");
+      setStatusDetail(voiceActionPilotDetail("executed", action));
       return;
     }
-    if (action?.status === "execution_disabled") {
-      setPendingVoiceAction(action);
-      setStatusDetail(action.error || "Action confirmation is disabled on this deployment.");
+    if (pilotStatus === "disabled") {
+      setPendingVoiceAction(action || null);
+      setVoiceActionPilotStatus("disabled");
+      setStatusDetail(voiceActionPilotDetail("disabled", action));
       return;
     }
-    if (action?.status === "execution_failed") {
-      setPendingVoiceAction(action);
-      setStatusDetail(action.receipt?.error || action.error || "Confirmed action failed.");
+    if (pilotStatus === "failed") {
+      setPendingVoiceAction(action || null);
+      setVoiceActionPilotStatus("failed");
+      setStatusDetail(voiceActionPilotDetail("failed", action));
       return;
     }
-    // Non-actionable routes clear any prior pending card.
-    if (!action?.proposal) {
-      setPendingVoiceAction(null);
+    if (pilotStatus === "dismiss") {
+      setPendingVoiceAction(action || null);
+      setVoiceActionPilotStatus("dismiss");
+      setStatusDetail(voiceActionPilotDetail("dismiss", action));
+      return;
     }
+    // Non-pilot / non-actionable surfaces clear any prior status card.
+    setPendingVoiceAction(null);
+    setVoiceActionPilotStatus(null);
   }
 
   async function confirmPendingVoiceAction() {
     const pending = pendingVoiceAction;
-    if (!pending?.proposal || voiceActionBusy) return;
+    // Only confirm when the server surface still asks for confirmation.
+    if (!pending?.proposal || voiceActionBusy || !voiceActionNeedsConfirmation(pending)) return;
+    // Client cannot bypass server gates: confirm is only a proxy form flag.
+    // No local adapter/CLI execution occurs in this surface.
+    void voiceActionConfirmUsesServerGateOnly();
     setVoiceActionBusy(true);
     const requestId = ++audioProgressRequestIdRef.current;
     setSessionState("thinking");
@@ -940,6 +1063,7 @@ export function AgentAudioChatSurface({
           fallbackText: prior?.fallbackText || "Action confirmed.",
           audioBlob: prior?.audioBlob,
           route: pending.route || pending.proposal.route,
+          // Dual-gate server admission: explicit confirm_action only.
           confirmAction: true,
           requestId: `voice-action-${pending.proposal.proposalId}`,
         },
@@ -947,6 +1071,7 @@ export function AgentAudioChatSurface({
           onProgress: (progress) => updateModelProgress(requestId, progress),
         },
       );
+      // Status (executed/failed/disabled) is derived from the server receipt only.
       await playAudioReplyResult(result, prior?.fallbackText || "Action confirmed.", requestId);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Action confirmation failed.";
@@ -959,8 +1084,24 @@ export function AgentAudioChatSurface({
   }
 
   function dismissPendingVoiceAction() {
+    const pending = pendingVoiceAction;
+    setVoiceActionPilotStatus("dismiss");
+    setStatusDetail(voiceActionPilotDetail("dismiss", pending));
+    // Keep the last action for a11y announcement; clear proposal confirmability.
+    if (pending) {
+      setPendingVoiceAction({
+        ...pending,
+        status: "dismissed",
+      });
+    } else {
+      setPendingVoiceAction(null);
+    }
+  }
+
+  function acknowledgeVoiceActionStatus() {
     setPendingVoiceAction(null);
-    setStatusDetail("Action confirmation dismissed.");
+    setVoiceActionPilotStatus(null);
+    setStatusDetail("");
   }
 
   async function playAudioUrlSource(
@@ -1262,38 +1403,56 @@ export function AgentAudioChatSurface({
         </div>
       ) : null}
 
-      {pendingVoiceAction && voiceActionNeedsConfirmation(pendingVoiceAction) ? (
+      {voiceActionPilotStatus && pendingVoiceAction ? (
         <div
-          aria-label="Voice action confirmation"
-          className="agent-audio-action-confirm"
+          aria-label={voiceActionPilotAriaLabel(voiceActionPilotStatus, pendingVoiceAction)}
+          aria-live="polite"
+          className={`agent-audio-action-confirm agent-audio-action-status-${voiceActionPilotStatus}`}
+          data-voice-action-status={voiceActionPilotStatus}
           role="region"
         >
-          <strong>{voiceActionLabel(pendingVoiceAction)}</strong>
-          <small>
-            {pendingVoiceAction.proposal?.logicalAction
-              ? `Reviewed action “${pendingVoiceAction.proposal.logicalAction}” needs your confirmation before any tool runs.`
-              : "A reviewed action needs your confirmation before any tool runs."}
-          </small>
-          <div className="agent-audio-controls">
-            <Button
-              ariaLabel="Confirm reviewed voice action"
-              disabled={voiceActionBusy}
-              onClick={() => {
-                void confirmPendingVoiceAction();
-              }}
-              variant="primary"
-            >
-              <span>{voiceActionBusy ? "Confirming…" : "Confirm action"}</span>
-            </Button>
-            <Button
-              ariaLabel="Dismiss voice action confirmation"
-              disabled={voiceActionBusy}
-              onClick={dismissPendingVoiceAction}
-              variant="secondary"
-            >
-              <span>Not now</span>
-            </Button>
-          </div>
+          <strong>{voiceActionPilotTitle(voiceActionPilotStatus, pendingVoiceAction)}</strong>
+          <small>{voiceActionPilotDetail(voiceActionPilotStatus, pendingVoiceAction)}</small>
+          {voiceActionPilotStatus === "confirm" ? (
+            <div className="agent-audio-controls">
+              <Button
+                ariaLabel="Confirm reviewed voice action"
+                disabled={voiceActionBusy}
+                onClick={() => {
+                  void confirmPendingVoiceAction();
+                }}
+                variant="primary"
+              >
+                <span>{voiceActionBusy ? "Confirming…" : "Confirm action"}</span>
+              </Button>
+              <Button
+                ariaLabel="Dismiss voice action confirmation"
+                disabled={voiceActionBusy}
+                onClick={dismissPendingVoiceAction}
+                variant="secondary"
+              >
+                <span>Not now</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="agent-audio-controls">
+              <Button
+                ariaLabel={
+                  voiceActionPilotStatus === "dismiss"
+                    ? "Clear dismissed voice action status"
+                    : voiceActionPilotStatus === "executed"
+                      ? "Clear executed voice action status"
+                      : voiceActionPilotStatus === "failed"
+                        ? "Clear failed voice action status"
+                        : "Clear disabled voice action status"
+                }
+                onClick={acknowledgeVoiceActionStatus}
+                variant="secondary"
+              >
+                <span>Dismiss status</span>
+              </Button>
+            </div>
+          )}
         </div>
       ) : null}
 

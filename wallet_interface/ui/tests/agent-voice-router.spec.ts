@@ -15,7 +15,15 @@ import {
   voiceActionNeedsConfirmation,
   voiceTurnResultAudioBlob,
   voiceTurnResultText,
+  type VoiceActionSurface,
 } from "../src/features/agent/lib/voiceTurnResult";
+import {
+  resolveVoiceActionPilotStatus,
+  voiceActionConfirmUsesServerGateOnly,
+  voiceActionPilotAriaLabel,
+  voiceActionPilotDetail,
+  voiceActionPilotTitle,
+} from "../src/features/agent/components/AgentAudioChatSurface";
 import { ClientAudioReplyService } from "../src/features/agent/lib/clientAudioReplyService";
 import { createVoiceProxyFormData } from "../src/features/agent/lib/voiceProxyPayload";
 
@@ -299,5 +307,176 @@ test.describe("unified wallet voice-turn receipt", () => {
     expect(receipt).toContain(AUTO_010_REPAIR_RECEIPT_BOTH_GATES_EVIDENCE_TERM);
     expect(receipt).toContain("python -m pytest -q wallet_interface/tests");
     expect(receipt).toContain("npm --prefix wallet_interface/ui test -- tests/agent-voice-router.spec.ts");
+  });
+});
+
+function pilotAction(status: string, overrides: Partial<VoiceActionSurface> = {}): VoiceActionSurface {
+  return {
+    route: "app_surface_navigation",
+    status,
+    executionEnabled: false,
+    proposal: {
+      proposalId: "prop-pilot-1",
+      descriptorId: "voice.cli.open_app_surface.v1",
+      logicalAction: "open_app_surface",
+      arguments: {},
+    },
+    decision: {
+      decisionId: "dec-pilot-1",
+      kind: status === "confirm" ? "confirm" : status,
+      proposalId: "prop-pilot-1",
+      descriptorId: "voice.cli.open_app_surface.v1",
+      permitsExecution: false,
+    },
+    receipt: null,
+    ...overrides,
+  };
+}
+
+test.describe("AgentAudioChatSurface pilot confirm UX statuses", () => {
+  test("covers confirm/dismiss/executed/failed/disabled pilot statuses with a11y labels", () => {
+    const confirm = pilotAction("confirm");
+    const dismissed = pilotAction("dismissed");
+    const executed = pilotAction("executed", {
+      executionEnabled: true,
+      receipt: { receiptId: "rcpt-1", status: "succeeded" },
+    });
+    const failed = pilotAction("execution_failed", {
+      executionEnabled: true,
+      receipt: { receiptId: "rcpt-2", status: "failed", error: "adapter denied" },
+      error: "adapter denied",
+    });
+    const disabled = pilotAction("execution_disabled", {
+      error: "set VOICE_ACTION_EXECUTE=1 to allow confirmed CLI execution",
+    });
+
+    expect(resolveVoiceActionPilotStatus(confirm)).toBe("confirm");
+    expect(resolveVoiceActionPilotStatus(dismissed)).toBe("dismiss");
+    expect(resolveVoiceActionPilotStatus(executed)).toBe("executed");
+    expect(resolveVoiceActionPilotStatus(failed)).toBe("failed");
+    expect(resolveVoiceActionPilotStatus(disabled)).toBe("disabled");
+    expect(resolveVoiceActionPilotStatus({ status: "no_route" })).toBeNull();
+    expect(resolveVoiceActionPilotStatus(null)).toBeNull();
+
+    expect(voiceActionNeedsConfirmation(confirm)).toBe(true);
+    expect(voiceActionNeedsConfirmation(executed)).toBe(false);
+    expect(voiceActionNeedsConfirmation(failed)).toBe(false);
+    expect(voiceActionNeedsConfirmation(disabled)).toBe(false);
+    expect(voiceActionNeedsConfirmation(dismissed)).toBe(false);
+
+    expect(voiceActionPilotAriaLabel("confirm", confirm)).toBe(
+      "Voice action confirmation required for open app surface",
+    );
+    expect(voiceActionPilotAriaLabel("dismiss", dismissed)).toBe(
+      "Voice action confirmation dismissed for open app surface",
+    );
+    expect(voiceActionPilotAriaLabel("executed", executed)).toBe(
+      "Voice action executed for open app surface",
+    );
+    expect(voiceActionPilotAriaLabel("failed", failed)).toBe(
+      "Voice action failed for open app surface",
+    );
+    expect(voiceActionPilotAriaLabel("disabled", disabled)).toBe(
+      "Voice action execution disabled for open app surface",
+    );
+
+    expect(voiceActionPilotTitle("confirm", confirm)).toContain("open app surface");
+    expect(voiceActionPilotTitle("dismiss", dismissed)).toContain("Dismissed");
+    expect(voiceActionPilotTitle("executed", executed)).toContain("Completed");
+    expect(voiceActionPilotTitle("failed", failed)).toContain("Failed");
+    expect(voiceActionPilotTitle("disabled", disabled)).toContain("Disabled");
+
+    expect(voiceActionPilotDetail("confirm", confirm)).toContain("needs your confirmation");
+    expect(voiceActionPilotDetail("dismiss", dismissed)).toContain("No tool ran from this client");
+    expect(voiceActionPilotDetail("executed", executed)).toContain("completed");
+    expect(voiceActionPilotDetail("failed", failed)).toBe("adapter denied");
+    expect(voiceActionPilotDetail("disabled", disabled)).toContain("VOICE_ACTION_EXECUTE");
+    expect(voiceActionPilotDetail("disabled", pilotAction("execution_disabled"))).toContain(
+      "cannot bypass server gates",
+    );
+  });
+
+  test("confirm path admits only via server confirm_action gate and never auto-executes", () => {
+    expect(voiceActionConfirmUsesServerGateOnly()).toBe(true);
+
+    // Explicit form flag is required; omitting confirmAction must not imply execution.
+    const withoutConfirm = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "Open wallet documents",
+      route: "app_surface_navigation",
+      requestId: "no-confirm-1",
+    });
+    expect(withoutConfirm.get("confirm_action")).toBeNull();
+    expect(withoutConfirm.get("action_confirm")).toBeNull();
+
+    const withConfirm = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "Open wallet documents",
+      route: "app_surface_navigation",
+      confirmAction: true,
+      requestId: "confirm-gate-1",
+    });
+    expect(withConfirm.get("confirm_action")).toBe("true");
+    expect(withConfirm.get("action_confirm")).toBe("true");
+
+    const surfacePath = resolve(
+      UI_ROOT,
+      "src/features/agent/components/AgentAudioChatSurface.tsx",
+    );
+    const source = readFileSync(surfacePath, "utf8");
+
+    // Confirm button + dismiss path present.
+    expect(source).toContain('ariaLabel="Confirm reviewed voice action"');
+    expect(source).toContain('ariaLabel="Dismiss voice action confirmation"');
+    expect(source).toContain("confirmAction: true");
+    expect(source).toContain("voiceActionNeedsConfirmation(pending)");
+    expect(source).toContain("Client cannot bypass server gates");
+
+    // All pilot statuses are rendered with a11y labels / status hooks.
+    expect(source).toContain("agent-audio-action-status-");
+    expect(source).toContain("data-voice-action-status={voiceActionPilotStatus}");
+    for (const status of ["confirm", "dismiss", "executed", "failed", "disabled"] as const) {
+      const serverStatus =
+        status === "failed"
+          ? "execution_failed"
+          : status === "disabled"
+            ? "execution_disabled"
+            : status === "dismiss"
+              ? "dismissed"
+              : status;
+      expect(resolveVoiceActionPilotStatus(pilotAction(serverStatus))).toBe(status);
+      expect(voiceActionPilotAriaLabel(status, pilotAction("confirm"))).toMatch(/Voice action/);
+    }
+
+    // No client-side adapter/CLI execution bypass — surface only proxies confirm_action.
+    expect(source).not.toMatch(/executor\.execute\s*\(/);
+    expect(source).not.toMatch(/ActionExecutor/);
+    expect(source).not.toMatch(/child_process|spawnSync|execSync/);
+    expect(source).toContain("function confirmPendingVoiceAction");
+    expect(source).toContain("function dismissPendingVoiceAction");
+    expect(source).toContain("function notePendingVoiceAction");
+    expect(source).toContain('setVoiceActionPilotStatus("executed")');
+    expect(source).toContain('setVoiceActionPilotStatus("failed")');
+    expect(source).toContain('setVoiceActionPilotStatus("disabled")');
+    expect(source).toContain('setVoiceActionPilotStatus("dismiss")');
+    expect(source).toContain('setVoiceActionPilotStatus("confirm")');
+  });
+
+  test("surface source wires pilot status region a11y labels for every pilot outcome", () => {
+    const surfacePath = resolve(
+      UI_ROOT,
+      "src/features/agent/components/AgentAudioChatSurface.tsx",
+    );
+    const source = readFileSync(surfacePath, "utf8");
+    expect(source).toContain("voiceActionPilotAriaLabel(voiceActionPilotStatus, pendingVoiceAction)");
+    expect(source).toContain('aria-live="polite"');
+    expect(source).toContain("role=\"region\"");
+    expect(source).toContain("Clear executed voice action status");
+    expect(source).toContain("Clear failed voice action status");
+    expect(source).toContain("Clear disabled voice action status");
+    expect(source).toContain("Clear dismissed voice action status");
+    expect(source).toContain("Dismiss status");
+    expect(source).toContain("Confirm action");
+    expect(source).toContain("Not now");
   });
 });
