@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -46,6 +47,71 @@ from ..schemas import (
     WalletLlmRouterRequest,
     WalletMultimodalRouterRequest,
 )
+
+
+def _text_form_value(value: object | None) -> str | None:
+    """Normalize optional form text; empty strings become ``None``."""
+
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _parse_mapping_form_field(value: object | None) -> dict[str, Any] | None:
+    """Parse optional JSON object form fields (GraphRAG / template metadata)."""
+
+    if value is None:
+        return None
+    if isinstance(value, Mapping):
+        return dict(value)
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        parsed = json.loads(text)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return None
+    if not isinstance(parsed, Mapping):
+        return None
+    return dict(parsed)
+
+
+def _route_from_template_metadata(metadata: Mapping[str, Any] | None) -> str | None:
+    """Extract a slotted-DAG route from GraphRAG / template metadata."""
+
+    if not isinstance(metadata, Mapping):
+        return None
+    for key in ("route", "response_route"):
+        route = _text_form_value(metadata.get(key))
+        if route is not None:
+            return route
+    nested = metadata.get("template_metadata") or metadata.get("response_template")
+    if isinstance(nested, Mapping):
+        for key in ("route", "response_route"):
+            route = _text_form_value(nested.get(key))
+            if route is not None:
+                return route
+    return None
+
+
+def _resolve_infer_route(
+    *,
+    route: object | None = None,
+    response_route: object | None = None,
+    template_metadata: Mapping[str, Any] | None = None,
+) -> str | None:
+    """Resolve the response-DAG route for the unified voice infer path.
+
+    Prefer explicit form fields (``route`` / ``response_route``), then fall back
+    to GraphRAG / template metadata so browser and proxy clients can pass the
+    slotted-DAG route without inventing executable authority.
+    """
+
+    direct = _text_form_value(route) or _text_form_value(response_route)
+    if direct is not None:
+        return direct
+    return _route_from_template_metadata(template_metadata)
 
 
 def create_router(service: WalletInterfaceService):
@@ -229,7 +295,13 @@ def create_router(service: WalletInterfaceService):
         fallbackText: str | None = Form(default=None),
         fallback_text: str | None = Form(default=None),
         voice_description: str | None = Form(default=None),
+        # Slotted response-DAG route (from GraphRAG / template metadata or UI).
         route: str | None = Form(default=None),
+        response_route: str | None = Form(default=None),
+        # Optional JSON object carrying GraphRAG / template metadata with a route.
+        template_metadata: str | None = Form(default=None),
+        templateMetadata: str | None = Form(default=None),
+        # Dual-gate confirm: explicit per-request flag; execute still requires operator flag.
         confirm_action: str | None = Form(default=None),
         action_confirm: str | None = Form(default=None),
         request_id: str | None = Form(default=None),
@@ -242,9 +314,19 @@ def create_router(service: WalletInterfaceService):
             resolved_user_prompt = user_prompt or userPrompt
             resolved_fallback = fallback_text or fallbackText
             resolved_confirm = confirm_action or action_confirm
+            parsed_template_metadata = _parse_mapping_form_field(
+                template_metadata or templateMetadata
+            )
+            resolved_route = _resolve_infer_route(
+                route=route,
+                response_route=response_route,
+                template_metadata=parsed_template_metadata,
+            )
 
             # Staged unified router: when enabled, return the canonical voice
             # receipt (including fail-closed action proposal/decision/receipt).
+            # When the flag is off, form route/confirm fields are ignored and the
+            # legacy IndexTTS proxy path below remains unchanged.
             if is_unified_voice_router_enabled():
                 envelope: dict[str, Any] = {
                     "mode": mode or "voice-reply",
@@ -253,10 +335,29 @@ def create_router(service: WalletInterfaceService):
                     "fallback_text": resolved_fallback or text or "",
                     "voice": voice_description,
                     "request_id": request_id or requestId,
-                    "route": route,
-                    "confirm_action": resolved_confirm,
                     "channel": "voice",
                 }
+                if resolved_route is not None:
+                    envelope["route"] = resolved_route
+                    envelope["response_route"] = resolved_route
+                if parsed_template_metadata is not None:
+                    # Preserve GraphRAG metadata for downstream extractors; route
+                    # authority still comes only from resolved_route / provenance.
+                    envelope["template_metadata"] = parsed_template_metadata
+                    envelope["context"] = {
+                        **dict(envelope.get("context") or {}),
+                        "template_metadata": parsed_template_metadata,
+                        **(
+                            {"route": resolved_route}
+                            if resolved_route is not None
+                            else {}
+                        ),
+                    }
+                if resolved_confirm is not None:
+                    # Pass confirm only when the client set it so dual-gate
+                    # evaluation matches attach_action_surface expectations.
+                    envelope["confirm_action"] = resolved_confirm
+                    envelope["action_confirm"] = resolved_confirm
                 if reference_audio:
                     envelope["audio_bytes"] = reference_audio
                 unified = process_wallet_voice_turn(envelope, enabled=True)
