@@ -415,7 +415,7 @@ Program invariants:
 
 ## VOICE-ACTION-021 Implement human handoff adapter and HandoffRequest receipts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-handoff
