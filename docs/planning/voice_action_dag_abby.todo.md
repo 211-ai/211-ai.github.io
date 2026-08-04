@@ -355,7 +355,7 @@ Program invariants:
 
 ## VOICE-ACTION-018 Bind messaging adapter to wallet provider-message surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-messages
