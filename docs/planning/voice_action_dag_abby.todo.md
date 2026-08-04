@@ -295,7 +295,7 @@ Program invariants:
 
 ## VOICE-ACTION-015 Implement calendar adapter (read + create reminder)
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-calendar
