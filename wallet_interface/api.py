@@ -37,6 +37,12 @@ from .helpers._voice_router_adapter import (  # noqa: F401
     route_wallet_voice_turn,
     serialize_voice_turn_result,
 )
+from .helpers._voice_action_surface import (  # noqa: F401
+    VOICE_ACTION_EXECUTE_FLAG,
+    attach_action_surface,
+    extract_voice_route,
+    is_voice_action_execute_enabled,
+)
 
 try:  # resolve_secret is an optional dep; guard it the same way the helpers do.
     from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: F401

@@ -208,3 +208,102 @@ def test_package_failure_uses_wallet_gradio_compatibility_provider(monkeypatch) 
         provider.last_receipt.to_dict()["selected_backend"]  # type: ignore[attr-defined]
         == "wallet_gradio_compatibility"
     )
+
+
+def test_action_surface_proposes_confirm_without_executing() -> None:
+    """Library routes propose actions but never execute without grant + flag."""
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "text": "A safe response for the caller.",
+            "user_prompt": "Open my wallet documents surface",
+            "route": "app_surface_navigation",
+            "request_id": "action-propose-1",
+        },
+        enabled=True,
+        template_provider=_Templates(),
+        tts_provider=_TTS(),
+        action_execute_enabled=False,
+    )
+
+    assert payload is not None
+    assert payload["status"] == "completed"
+    action = payload["action"]
+    assert action["route"] == "app_surface_navigation"
+    assert action["proposal"]["logical_action"] == "open_app_surface"
+    assert action["proposal"]["descriptor_id"] == "voice.cli.open_app_surface.v1"
+    assert "executable" not in action["proposal"]["arguments"]
+    assert action["decision"]["kind"] == "confirm"
+    assert action["receipt"] is None
+    assert action["status"] == "confirm"
+    assert action["execution_enabled"] is False
+
+
+def test_action_surface_executes_only_with_flag_and_confirm(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_VOICE_ACTION_EXECUTE_ENABLED", "1")
+
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "text": "A safe response for the caller.",
+            "user_prompt": "Open calendar",
+            "route": "app_surface_navigation",
+            "confirm_action": True,
+            "request_id": "action-exec-1",
+        },
+        enabled=True,
+        template_provider=_Templates(),
+        tts_provider=_TTS(),
+        action_execute_enabled=True,
+    )
+
+    assert payload is not None
+    action = payload["action"]
+    assert action["status"] == "executed"
+    assert action["receipt"] is not None
+    assert action["receipt"]["status"] == "succeeded"
+    assert action["receipt"]["exit_code"] == 0
+    assert action["decision"]["kind"] == "permit_execute"
+
+
+def test_action_surface_confirm_without_flag_is_blocked() -> None:
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "text": "A safe response for the caller.",
+            "user_prompt": "Open wallet docs",
+            "route": "wallet_document_support",
+            "confirm_action": True,
+            "request_id": "action-blocked-1",
+        },
+        enabled=True,
+        template_provider=_Templates(),
+        tts_provider=_TTS(),
+        action_execute_enabled=False,
+    )
+
+    assert payload is not None
+    action = payload["action"]
+    assert action["status"] == "execution_disabled"
+    assert action["receipt"] is None
+    assert action["proposal"]["logical_action"] == "open_wallet_documents"
+
+
+def test_action_surface_non_tool_route_is_not_actionable() -> None:
+    payload = process_wallet_voice_turn(
+        {
+            "mode": "voice-reply",
+            "text": "A safe response for the caller.",
+            "user_prompt": "I need food help",
+            "route": "grounded_211_answer",
+            "request_id": "action-none-1",
+        },
+        enabled=True,
+        template_provider=_Templates(),
+        tts_provider=_TTS(),
+    )
+
+    assert payload is not None
+    assert payload["action"]["status"] == "route_not_actionable"
+    assert payload["action"]["proposal"] is None

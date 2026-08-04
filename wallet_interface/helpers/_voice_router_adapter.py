@@ -24,7 +24,7 @@ from typing import Any, Final
 
 
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
-VOICE_ROUTER_ADAPTER_VERSION = "1.2"
+VOICE_ROUTER_ADAPTER_VERSION = "1.3"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {
     "aac": "audio/aac",
     "flac": "audio/flac",
@@ -511,6 +511,11 @@ class WalletVoiceRouterAdapter:
         stt_provider: object | None = None,
         tts_provider: object | None = None,
         audio_resolver: object | None = None,
+        action_catalog: object | None = None,
+        action_policy: object | None = None,
+        action_executor: object | None = None,
+        action_execute_enabled: bool | None = None,
+        attach_actions: bool = True,
     ) -> dict[str, object] | None:
         if not self.enabled:
             return None
@@ -537,7 +542,20 @@ class WalletVoiceRouterAdapter:
             tts_provider_instance=tts,
             audio_resolver=audio_resolver,
         )
-        return serialize_voice_turn_result(result)
+        serialized = serialize_voice_turn_result(result)
+        if attach_actions:
+            from ._voice_action_surface import attach_action_surface  # noqa: WPS433
+
+            serialized = attach_action_surface(
+                serialized,
+                request_payload=payload,
+                result=result,
+                catalog=action_catalog,
+                policy=action_policy,
+                executor=action_executor,
+                execute_enabled=action_execute_enabled,
+            )
+        return serialized
 
 
 def process_wallet_voice_turn(
@@ -549,6 +567,11 @@ def process_wallet_voice_turn(
     stt_provider: object | None = None,
     tts_provider: object | None = None,
     audio_resolver: object | None = None,
+    action_catalog: object | None = None,
+    action_policy: object | None = None,
+    action_executor: object | None = None,
+    action_execute_enabled: bool | None = None,
+    attach_actions: bool = True,
 ) -> dict[str, object] | None:
     """Process one wallet proxy envelope when the staged flag is enabled."""
 
@@ -559,6 +582,11 @@ def process_wallet_voice_turn(
         stt_provider=stt_provider,
         tts_provider=tts_provider,
         audio_resolver=audio_resolver,
+        action_catalog=action_catalog,
+        action_policy=action_policy,
+        action_executor=action_executor,
+        action_execute_enabled=action_execute_enabled,
+        attach_actions=attach_actions,
     )
 
 
@@ -584,3 +612,22 @@ __all__ = [
     "serialize_voice_turn_result",
     "voice_router_result_payload",
 ]
+
+
+# Re-export action surface helpers for API/discovery imports.
+try:  # pragma: no cover - thin re-export
+    from ._voice_action_surface import (  # noqa: E402
+        VOICE_ACTION_EXECUTE_FLAG,
+        attach_action_surface,
+        extract_voice_route,
+        is_voice_action_execute_enabled,
+    )
+
+    __all__ += [
+        "VOICE_ACTION_EXECUTE_FLAG",
+        "attach_action_surface",
+        "extract_voice_route",
+        "is_voice_action_execute_enabled",
+    ]
+except Exception:  # pragma: no cover
+    pass
