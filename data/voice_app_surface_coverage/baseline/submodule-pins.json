@@ -1,0 +1,94 @@
+{
+  "decision": "retain_working_pins_document_divergence",
+  "ff_to_origin_main_blocked_for": [
+    "ipfs_accelerate_py",
+    "ipfs_datasets_py"
+  ],
+  "generated_at": "2026-08-05T17:32:12.520808+00:00",
+  "monorepo": {
+    "origin_main_sha": "6e338f55c2b30159708af656ceb10ce01cfa8f82",
+    "path": ".",
+    "working_sha": "6e338f55c2b30159708af656ceb10ce01cfa8f82"
+  },
+  "operator_note": "Fetched origin/main for accelerate and datasets. datasets was temporarily FF'd then restored because origin/main lacks voice action_links/action_retrieval. accelerate remains on working pin (diverged: local voice-action commits vs origin/main). Safety branches preserve pre-VAS-002 SHAs.",
+  "program_id": "voice-app-surface-coverage-v1",
+  "safety_branches": {
+    "ipfs_accelerate_py": "safety/pre-vas-002-accelerate",
+    "ipfs_datasets_py": "safety/pre-vas-002-datasets"
+  },
+  "schema": "voice-app-surface-coverage/submodule-pins@1",
+  "submodules": [
+    {
+      "ahead_of_origin_main": 40,
+      "already_at_origin_main": false,
+      "behind_origin_main": 552,
+      "can_fast_forward_to_origin_main": false,
+      "diverged_from_origin_main": true,
+      "exists": true,
+      "is_git": true,
+      "merge_base_with_origin_main": "e5b514b6f342226ba806eb72bad5f1473e8e8799",
+      "name": "ipfs_accelerate_py",
+      "operator_note": "History diverged from origin/main; FF-only pull refused. Keep working_sha for product continuity; integrate separately.",
+      "origin_main_sha": "6c564578af0b0361741483e80ebcaf405efa1064",
+      "path": "ipfs_accelerate_py",
+      "pin_policy": "use_working_sha",
+      "remote_origin_url": "https://github.com/endomorphosis/ipfs_accelerate_py.git",
+      "required_paths_missing_at_origin_main": [
+        "ipfs_accelerate_py/action_runtime/catalog_211ai.py"
+      ],
+      "required_paths_missing_at_working": [],
+      "safe_to_ff_to_origin_main": false,
+      "status_sb": "## main...origin/main [ahead 40, behind 552]",
+      "working_branch": "main",
+      "working_sha": "071b71f7304e8b3b2f4f8b32ced45094d4f38f0e"
+    },
+    {
+      "ahead_of_origin_main": 2,
+      "already_at_origin_main": false,
+      "behind_origin_main": 521,
+      "can_fast_forward_to_origin_main": false,
+      "diverged_from_origin_main": true,
+      "exists": true,
+      "is_git": true,
+      "merge_base_with_origin_main": "f843f317fae0863ebeb63742a96c68cd72e67a5f",
+      "name": "ipfs_datasets_py",
+      "operator_note": "History diverged from origin/main; FF-only pull refused. Keep working_sha for product continuity; integrate separately.",
+      "origin_main_sha": "293654d7cd49bd3438476c038edab818435a9638",
+      "path": "ipfs_datasets_py",
+      "pin_policy": "use_working_sha",
+      "remote_origin_url": "https://github.com/endomorphosis/ipfs_datasets_py.git",
+      "required_paths_missing_at_origin_main": [
+        "ipfs_datasets_py/voice/action_links.py",
+        "ipfs_datasets_py/voice/action_retrieval.py"
+      ],
+      "required_paths_missing_at_working": [],
+      "safe_to_ff_to_origin_main": false,
+      "status_sb": "## HEAD (no branch)",
+      "working_branch": "HEAD",
+      "working_sha": "29b475858072cbf6ece52efb4a63e6b41b7ae6f0"
+    },
+    {
+      "ahead_of_origin_main": 0,
+      "already_at_origin_main": true,
+      "behind_origin_main": 0,
+      "can_fast_forward_to_origin_main": false,
+      "diverged_from_origin_main": false,
+      "exists": true,
+      "is_git": true,
+      "merge_base_with_origin_main": "80afdad2fa6db5875f40e5f495f26b98b7f3c767",
+      "name": "ipfs_kit_py",
+      "operator_note": "Working pin already matches origin/main.",
+      "origin_main_sha": "80afdad2fa6db5875f40e5f495f26b98b7f3c767",
+      "path": "ipfs_kit_py",
+      "pin_policy": "origin_main",
+      "remote_origin_url": "https://github.com/endomorphosis/ipfs_kit_py",
+      "required_paths_missing_at_origin_main": [],
+      "required_paths_missing_at_working": [],
+      "safe_to_ff_to_origin_main": false,
+      "status_sb": "## HEAD (no branch)",
+      "working_branch": "HEAD",
+      "working_sha": "80afdad2fa6db5875f40e5f495f26b98b7f3c767"
+    }
+  ],
+  "task_id": "VAS-002"
+}

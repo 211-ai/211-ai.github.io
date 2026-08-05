@@ -1,0 +1,35 @@
+{
+  "schema": "voice-app-surface-coverage/runtime-policy@1",
+  "program_id": "voice-app-surface-coverage-v1",
+  "board_namespace": "voice-app-surface-coverage-v1",
+  "merge_target_branch": "agent/voice-app-surface-coverage",
+  "task_shard_count": 4,
+  "refill_owner_lane_id": "vas-grok-0",
+  "network": "deny",
+  "credentials": "deny",
+  "publication": "deny",
+  "live_telephony": "deny",
+  "live_sms": "deny",
+  "hf_publish": "deny",
+  "live_tts_space": "deny",
+  "require_fake_adapters": true,
+  "allow_abby_dataset_read": true,
+  "allow_tmp_assets_smoke_write": true,
+  "allow_variant_corpus_write": true,
+  "human_gated_tasks": {
+    "VAS-002": ["git_fetch_submodules"],
+    "VAS-023": ["live_tts_space", "network"]
+  },
+  "protected_paths": [
+    "docs/planning/VOICE_APP_SURFACE_COVERAGE_PLAN.md",
+    "docs/planning/voice_app_surface_coverage.objectives.md",
+    "docs/planning/voice_app_surface_coverage.todo.md",
+    "docs/planning/voice_app_surface_coverage.supervisor.json",
+    "scripts/validate_voice_app_surface_coverage_plan.py"
+  ],
+  "state_root_env": "VOICE_APP_SURFACE_COVERAGE_SUPERVISOR_STATE_ROOT",
+  "notes": [
+    "Autonomous workers must not flip WALLET_VOICE_ACTION_EXECUTE_ENABLED.",
+    "Submodule pin policy: retain working SHAs when origin/main diverges or lacks required voice modules."
+  ]
+}

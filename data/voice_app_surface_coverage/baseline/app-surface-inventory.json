@@ -1,0 +1,304 @@
+{
+  "counts": {
+    "allowlist": 25,
+    "primary": 18,
+    "provider": 7,
+    "secondary": 6,
+    "surfaces": 25
+  },
+  "generated_at": "2026-08-05T17:33:55.895801+00:00",
+  "mismatches": {
+    "in_allowlist_not_ui": [],
+    "in_route_type_not_ui_tables": [],
+    "in_ui_not_allowlist": [],
+    "in_ui_tables_not_route_type": []
+  },
+  "program_id": "voice-app-surface-coverage-v1",
+  "schema": "voice-app-surface-coverage/app-surface-inventory@1",
+  "sources": {
+    "app_state": "wallet_interface/ui/src/app/appState.ts",
+    "navigation_config": "wallet_interface/ui/src/app/config/navigation.ts",
+    "route_type": "wallet_interface/ui/src/models/abby.ts",
+    "voice_binding": "wallet_interface/helpers/_voice_app_action_binding.py"
+  },
+  "surfaces": [
+    {
+      "binding_label": "Analytics",
+      "family": "secondary",
+      "hash_route": "#/analytics",
+      "id": "analytics",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Analytics",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Audit",
+      "family": "extra",
+      "hash_route": "#/audit",
+      "id": "audit",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Audit",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/models/abby.ts#RouteId"
+    },
+    {
+      "binding_label": "Benefits",
+      "family": "secondary",
+      "hash_route": "#/benefits-protection",
+      "id": "benefits-protection",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Benefits",
+      "removed_standalone": true,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Calendar",
+      "family": "primary",
+      "hash_route": "#/calendar",
+      "id": "calendar",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Calendar",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Check in",
+      "family": "primary",
+      "hash_route": "#/check-in",
+      "id": "check-in",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Check in",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Contacts",
+      "family": "primary",
+      "hash_route": "#/contacts",
+      "id": "contacts",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Contacts",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Exports",
+      "family": "secondary",
+      "hash_route": "#/exports",
+      "id": "exports",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Exports",
+      "removed_standalone": true,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Home",
+      "family": "primary",
+      "hash_route": "#/home",
+      "id": "home",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Home",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Interactions",
+      "family": "primary",
+      "hash_route": "#/interactions",
+      "id": "interactions",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Interactions",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Messages",
+      "family": "primary",
+      "hash_route": "#/messages",
+      "id": "messages",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Messages",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Proofs",
+      "family": "secondary",
+      "hash_route": "#/proof-center",
+      "id": "proof-center",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Proofs",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Staff analytics",
+      "family": "primary",
+      "hash_route": "#/provider-analytics",
+      "id": "provider-analytics",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Staff analytics",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Case management",
+      "family": "primary",
+      "hash_route": "#/provider-cases",
+      "id": "provider-cases",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Case management",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Clients served",
+      "family": "primary",
+      "hash_route": "#/provider-clients",
+      "id": "provider-clients",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Clients served",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Client messages",
+      "family": "primary",
+      "hash_route": "#/provider-messages",
+      "id": "provider-messages",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Client messages",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Staff operations",
+      "family": "primary",
+      "hash_route": "#/provider-operations",
+      "id": "provider-operations",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Staff operations",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "ZK certificates",
+      "family": "primary",
+      "hash_route": "#/provider-proofs",
+      "id": "provider-proofs",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "ZK certificates",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Who can see info",
+      "family": "secondary",
+      "hash_route": "#/recipient-access",
+      "id": "recipient-access",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Who can see info",
+      "removed_standalone": true,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Register",
+      "family": "primary",
+      "hash_route": "#/register",
+      "id": "register",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Register",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Security",
+      "family": "secondary",
+      "hash_route": "#/security",
+      "id": "security",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Security",
+      "removed_standalone": true,
+      "source": "wallet_interface/ui/src/app/appState.ts#secondaryRoutes"
+    },
+    {
+      "binding_label": "Settings",
+      "family": "primary",
+      "hash_route": "#/settings",
+      "id": "settings",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Settings",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Sharing",
+      "family": "primary",
+      "hash_route": "#/sharing-rules",
+      "id": "sharing-rules",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Sharing",
+      "removed_standalone": true,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Provider overview",
+      "family": "primary",
+      "hash_route": "#/shelter",
+      "id": "shelter",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Overview",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Services",
+      "family": "primary",
+      "hash_route": "#/social-services",
+      "id": "social-services",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Services",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    },
+    {
+      "binding_label": "Wallet",
+      "family": "primary",
+      "hash_route": "#/uploads",
+      "id": "uploads",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Wallet",
+      "removed_standalone": false,
+      "source": "wallet_interface/ui/src/app/appState.ts#primaryRoutes"
+    }
+  ],
+  "task_ids": [
+    "VAS-004"
+  ]
+}

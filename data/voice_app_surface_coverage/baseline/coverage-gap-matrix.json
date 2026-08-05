@@ -1,0 +1,434 @@
+{
+  "counts": {
+    "p0_with_holes": 5,
+    "surfaces": 25
+  },
+  "generated_at": "2026-08-05T17:35:10.635655+00:00",
+  "p0_surfaces_with_holes": [
+    "check-in",
+    "contacts",
+    "home",
+    "interactions",
+    "settings"
+  ],
+  "program_id": "voice-app-surface-coverage-v1",
+  "route_density_source": "data/voice_action_dag/baseline/route-gap-matrix.json",
+  "schema": "voice-app-surface-coverage/coverage-gap-matrix@1",
+  "surfaces": [
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "voice_read_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "analytics"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P2",
+      "speech_actions_missing": [],
+      "surface_id": "audit"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "benefits-protection"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface",
+        "read_calendar",
+        "create_calendar_reminder"
+      ],
+      "dag_edge_count_approx": 403,
+      "dag_routes": [
+        "calendar_event_support",
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_actionable",
+      "holes": [],
+      "logical_actions": [
+        "open_app_surface",
+        "read_calendar",
+        "create_calendar_reminder"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "calendar"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 113,
+      "dag_routes": [
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "check-in"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 113,
+      "dag_routes": [
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "contacts"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "exports"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 113,
+      "dag_routes": [
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "home"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 113,
+      "dag_routes": [
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "interactions"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface",
+        "read_provider_messages",
+        "leave_provider_message"
+      ],
+      "dag_edge_count_approx": 226,
+      "dag_routes": [
+        "provider_contact_support"
+      ],
+      "exposure_class": "voice_actionable",
+      "holes": [],
+      "logical_actions": [
+        "open_app_surface",
+        "read_provider_messages",
+        "leave_provider_message"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "messages"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "voice_read_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "proof-center"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P2",
+      "speech_actions_missing": [],
+      "surface_id": "provider-analytics"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "provider-cases"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "provider-clients"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "provider-messages"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P2",
+      "speech_actions_missing": [],
+      "surface_id": "provider-operations"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P2",
+      "speech_actions_missing": [],
+      "surface_id": "provider-proofs"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "recipient-access"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor",
+        "no_dag_route_mapping"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "register"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "security"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 113,
+      "dag_routes": [
+        "app_surface_navigation"
+      ],
+      "exposure_class": "voice_navigable",
+      "holes": [
+        "dag_density_below_p0_floor"
+      ],
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "settings"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "never_voice",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "sharing-rules"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [],
+      "dag_edge_count_approx": 0,
+      "dag_routes": [],
+      "exposure_class": "staff_only",
+      "holes": [],
+      "logical_actions": [],
+      "p0_attention": false,
+      "priority": "P1",
+      "speech_actions_missing": [],
+      "surface_id": "shelter"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_app_surface",
+        "open_service_detail",
+        "schedule_service_callback"
+      ],
+      "dag_edge_count_approx": 2227,
+      "dag_routes": [
+        "grounded_211_answer",
+        "service_interaction_support"
+      ],
+      "exposure_class": "voice_actionable",
+      "holes": [],
+      "logical_actions": [
+        "open_app_surface",
+        "open_service_detail",
+        "schedule_service_callback"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "social-services"
+    },
+    {
+      "catalog_actions_missing": [],
+      "catalog_actions_present": [
+        "open_wallet_documents",
+        "open_app_surface"
+      ],
+      "dag_edge_count_approx": 246,
+      "dag_routes": [
+        "wallet_document_support"
+      ],
+      "exposure_class": "voice_actionable",
+      "holes": [],
+      "logical_actions": [
+        "open_wallet_documents",
+        "open_app_surface"
+      ],
+      "p0_attention": true,
+      "priority": "P0",
+      "speech_actions_missing": [],
+      "surface_id": "uploads"
+    }
+  ],
+  "task_ids": [
+    "VAS-007"
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "schema": "211-ai/voice-care-supervisor-launch-profile@1",
+  "program_id": "voice-app-surface-coverage-v1",
+  "profile_kind": "planned-control-wrapper-input",
+  "consumer_status": "planned-by-VAS-001",
+  "repo_root": ".",
+  "plan_path": "docs/planning/VOICE_APP_SURFACE_COVERAGE_PLAN.md",
+  "objectives_path": "docs/planning/voice_app_surface_coverage.objectives.md",
+  "taskboard_path": "docs/planning/voice_app_surface_coverage.todo.md",
+  "validator_path": "scripts/validate_voice_app_surface_coverage_plan.py",
+  "task_prefix": "## VAS-",
+  "board_namespace": "voice-app-surface-coverage-v1",
+  "merge_target_branch": "agent/voice-app-surface-coverage",
+  "merge_target_creation": {
+    "required_before_worker_start": true,
+    "base_ref": "origin/main",
+    "expected_base_commit": "6e338f55c2b30159708af656ceb10ce01cfa8f82",
+    "require_clean_recursive_tree": true,
+    "fast_forward_merges_only": true
+  },
+  "max_lanes": 4,
+  "task_shard_count": 4,
+  "poll_interval_seconds": 5,
+  "daemon_interval_seconds": 300,
+  "check_interval_seconds": 60,
+  "stale_seconds": 1800,
+  "max_restarts": 3,
+  "max_task_attempts": 5,
+  "implementation_timeout_seconds": 7200,
+  "worktree_submodule_paths": [
+    "ipfs_accelerate_py",
+    "ipfs_datasets_py",
+    "ipfs_kit_py"
+  ],
+  "protected_paths": [
+    "docs/planning/VOICE_APP_SURFACE_COVERAGE_PLAN.md",
+    "docs/planning/voice_app_surface_coverage.objectives.md",
+    "docs/planning/voice_app_surface_coverage.todo.md",
+    "docs/planning/voice_app_surface_coverage.supervisor.json",
+    "scripts/validate_voice_app_surface_coverage_plan.py"
+  ],
+  "state_layout": {
+    "external_state_required": true,
+    "state_root_env": "VOICE_APP_SURFACE_COVERAGE_SUPERVISOR_STATE_ROOT",
+    "worktree_root": "worktrees",
+    "lane_state_root": "lanes",
+    "log_root": "logs",
+    "projection_root": "projection",
+    "shared_merge_queue": "merge-queue",
+    "secrets_in_argv_allowed": false
+  },
+  "refill": {
+    "initially_enabled": false,
+    "enable_after_task_id": "VAS-001",
+    "required_bootstrap_receipts": [
+      "protected-path-policy",
+      "semantic-deduplication",
+      "bounded-refill-budget",
+      "sole-refill-owner",
+      "submodule-pins"
+    ],
+    "owner_lane_id": "vas-grok-0",
+    "transfer_authority_on_provider_failure": false,
+    "minimum_open_tasks": 4,
+    "objective_max_findings": 8,
+    "codebase_max_findings": 5,
+    "max_child_goals_per_refinement": 3,
+    "max_refinement_depth": 4,
+    "surplus_findings_per_goal": 2,
+    "objective_cooldown_seconds": 3600,
+    "codebase_cooldown_seconds": 21600,
+    "objective_timeout_seconds": 900,
+    "codebase_timeout_seconds": 600,
+    "deduplicate_by_semantic_fingerprint": true,
+    "defer_codebase_refill_after_objective_generation": true
+  },
+  "proof_cache": {
+    "enabled": true,
+    "module": "ipfs_accelerate_py.agent_supervisor.proof.formal_verification_cache",
+    "prefer_cache_before_provider": true,
+    "single_flight": true,
+    "rederive_assurance_on_hit": true,
+    "allow_simulated_zk_attested": false,
+    "authority_note": "A cache hit is memoization only and cannot upgrade evidence, authorization, execution, or proof strength."
+  },
+  "lanes": [
+    {
+      "lane_id": "vas-grok-0",
+      "provider": "grok-build",
+      "task_shard_index": 0,
+      "objective_refill_owner": true,
+      "codebase_refill_owner": true,
+      "repo_git_gc_owner": true,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "vas-codex-1",
+      "provider": "codex",
+      "task_shard_index": 1,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "vas-grok-2",
+      "provider": "grok-build",
+      "task_shard_index": 2,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    },
+    {
+      "lane_id": "vas-codex-3",
+      "provider": "codex",
+      "task_shard_index": 3,
+      "objective_refill_owner": false,
+      "codebase_refill_owner": false,
+      "repo_git_gc_owner": false,
+      "resource_class": "cpu-medium"
+    }
+  ],
+  "provider_policy": {
+    "implementation_preference": ["grok-build", "codex"],
+    "review_preference": ["codex-review", "grok-build"],
+    "soft_role": "grok, codex-review",
+    "hard_role_reserved": "grok-implement",
+    "no_cross_provider_mutable_worktree_cascade": true
+  },
+  "default_worker_constraints": {
+    "network": "deny",
+    "credentials": "deny",
+    "publication": "deny",
+    "live_telephony": "deny",
+    "live_sms": "deny",
+    "hf_publish": "deny",
+    "live_tts_space": "deny",
+    "require_fake_adapters": true,
+    "allow_abby_dataset_read": true,
+    "allow_tmp_assets_smoke_write": true,
+    "allow_variant_corpus_write": true
+  },
+  "human_gated_exceptions": {
+    "VAS-002": ["git_fetch_submodules"],
+    "VAS-023": ["live_tts_space", "network"]
+  },
+  "parallel_lane_hints": {
+    "wave-00-control": ["VAS-001"],
+    "wave-00-submodules": ["VAS-002"],
+    "wave-00-repin": ["VAS-003"],
+    "wave-01-inventory-ui": ["VAS-004"],
+    "wave-01-inventory-tools": ["VAS-005"],
+    "wave-01-exposure": ["VAS-006"],
+    "wave-01-gaps": ["VAS-007"],
+    "wave-02-catalog": ["VAS-008"],
+    "wave-02-policy": ["VAS-009"],
+    "wave-02-binding": ["VAS-010"],
+    "wave-02-adapters": ["VAS-011"],
+    "wave-03-variant-schema": ["VAS-012"],
+    "wave-03-variants-p0": ["VAS-013"],
+    "wave-03-variants-p1": ["VAS-014"],
+    "wave-03-dag-calendar-nav": ["VAS-015"],
+    "wave-03-dag-msg-wallet-svc": ["VAS-016"],
+    "wave-03-dag-remaining-p0": ["VAS-017"],
+    "wave-03-action-links": ["VAS-018"],
+    "wave-03-retrieval-eval": ["VAS-019"],
+    "wave-03-retrieval-repair": ["VAS-020"],
+    "wave-04-speech": ["VAS-021"],
+    "wave-04-audio-stage": ["VAS-022"],
+    "wave-04-audio-regen": ["VAS-023"],
+    "wave-04-audio-validate": ["VAS-024"],
+    "wave-05-e2e-matrix": ["VAS-025"],
+    "wave-05-e2e-adv": ["VAS-026"],
+    "wave-05-e2e-dag-sim": ["VAS-027"],
+    "wave-05-ops": ["VAS-028"],
+    "wave-05-projection": ["VAS-029"],
+    "wave-05-signoff": ["VAS-030"]
+  },
+  "p0_client_surfaces": [
+    "home",
+    "check-in",
+    "calendar",
+    "messages",
+    "contacts",
+    "social-services",
+    "interactions",
+    "uploads",
+    "settings"
+  ],
+  "variant_floors": {
+    "P0_unique_user_texts": 200,
+    "P1_unique_user_texts": 50,
+    "e2e_paraphrases_per_p0_surface": 5
+  },
+  "exposure_classes": [
+    "voice_navigable",
+    "voice_actionable",
+    "voice_read_only",
+    "phone_handoff",
+    "staff_only",
+    "never_voice"
+  ],
+  "prerequisite_programs": [
+    "voice-action-dag-abby-v1"
+  ],
+  "abby_content_inputs": [
+    "docs/phone_dialog_generation/slotted_response_dag.json",
+    "docs/phone_dialog_generation/slotted_response_action_links.json",
+    "docs/phone_dialog_generation/action_speech_frames.jsonl"
+  ],
+  "notes": [
+    "Pull ipfs_accelerate_py and ipfs_datasets_py from origin/main before parallel implementation (VAS-002).",
+    "This program deepens surface coverage on top of the governed action plane from voice-action-dag-abby-v1.",
+    "Workers must not place live calls, send SMS, publish HF/IPFS artifacts, or run live TTS Spaces unless a human-gated task explicitly enables that.",
+    "Re-pin expected_base_commit after submodule pointer commits (VAS-003)."
+  ]
+}
