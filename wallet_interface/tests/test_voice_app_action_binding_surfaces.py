@@ -40,13 +40,19 @@ def _session(
     )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXPOSURE = (
+EXPOSURE_CANDIDATES = (
+    REPO_ROOT
+    / "data"
+    / "voice_app_surface_full_coverage"
+    / "baseline"
+    / "voice-exposure-matrix.json",
     REPO_ROOT
     / "data"
     / "voice_app_surface_coverage"
     / "baseline"
-    / "voice-exposure-matrix.json"
+    / "voice-exposure-matrix.json",
 )
+EXPOSURE = next(p for p in EXPOSURE_CANDIDATES if p.is_file())
 
 
 def test_exposure_map_covers_matrix_p0_and_never_voice() -> None:

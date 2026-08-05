@@ -1,0 +1,206 @@
+{
+  "catalog_id": "211ai-pilot-v1",
+  "catalog_version": "1.1",
+  "delta_from_v1": {
+    "open_app_surface_metadata": [
+      "surface_gate",
+      "surface_arg"
+    ],
+    "open_wallet_documents_metadata": [
+      "surface_gate",
+      "default_surface_id"
+    ],
+    "policy_surface_gate": true,
+    "surface_action_matrix": true
+  },
+  "generated_at": "2026-08-05T21:06:40.077143+00:00",
+  "matrix": {
+    "catalog_id": "211ai-pilot-v1",
+    "catalog_version": "1.1",
+    "policy_revision": "pilot-v1.1-surface-coverage",
+    "schema": "voice-action/surface-action-matrix@1",
+    "surfaces": [
+      {
+        "client_voice_open": false,
+        "exposure_class": "voice_read_only",
+        "logical_actions": [],
+        "surface_id": "analytics"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "audit"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "benefits-protection"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "read_calendar",
+          "create_calendar_reminder"
+        ],
+        "surface_id": "calendar"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "check-in"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "contacts"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "exports"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "home"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "interactions"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "read_provider_messages",
+          "leave_provider_message"
+        ],
+        "surface_id": "messages"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "voice_read_only",
+        "logical_actions": [],
+        "surface_id": "proof-center"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-analytics"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-cases"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-clients"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-messages"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-operations"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-proofs"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "recipient-access"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "register"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "security"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "settings"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "sharing-rules"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "shelter"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "open_service_detail",
+          "schedule_service_callback"
+        ],
+        "surface_id": "social-services"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "open_wallet_documents"
+        ],
+        "surface_id": "uploads"
+      }
+    ]
+  },
+  "policy_revision": "pilot-v1.1-surface-coverage",
+  "program_id": "voice-app-surface-full-coverage-v2",
+  "schema": "voice-app-surface-full-coverage/surface-catalog-delta@1",
+  "task_id": "VAS2-010"
+}

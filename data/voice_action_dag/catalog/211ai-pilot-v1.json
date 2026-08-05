@@ -102,7 +102,9 @@
       "metadata": {
         "auth_required": "false",
         "confirmation_mode": "explicit",
-        "family": "app_surface"
+        "family": "app_surface",
+        "surface_arg": "surface_id",
+        "surface_gate": "voice_navigable_or_voice_actionable"
       },
       "requires_confirmation": true,
       "risk_class": "read",
@@ -144,7 +146,9 @@
       "metadata": {
         "auth_required": "false",
         "confirmation_mode": "explicit",
-        "family": "wallet_documents"
+        "default_surface_id": "uploads",
+        "family": "wallet_documents",
+        "surface_gate": "voice_actionable_uploads"
       },
       "requires_confirmation": true,
       "risk_class": "read",
@@ -226,7 +230,192 @@
     "read_provider_messages",
     "schedule_service_callback"
   ],
-  "policy_revision": "pilot-v1",
+  "policy_revision": "pilot-v1.1-surface-coverage",
   "schema": "voice-action/catalog@1",
-  "version": "1"
+  "surface_action_matrix": {
+    "catalog_id": "211ai-pilot-v1",
+    "catalog_version": "1.1",
+    "policy_revision": "pilot-v1.1-surface-coverage",
+    "schema": "voice-action/surface-action-matrix@1",
+    "surfaces": [
+      {
+        "client_voice_open": false,
+        "exposure_class": "voice_read_only",
+        "logical_actions": [],
+        "surface_id": "analytics"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "audit"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "benefits-protection"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "read_calendar",
+          "create_calendar_reminder"
+        ],
+        "surface_id": "calendar"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "check-in"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "contacts"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "exports"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "home"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "interactions"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "read_provider_messages",
+          "leave_provider_message"
+        ],
+        "surface_id": "messages"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "voice_read_only",
+        "logical_actions": [],
+        "surface_id": "proof-center"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-analytics"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-cases"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-clients"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-messages"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-operations"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "provider-proofs"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "recipient-access"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "register"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "security"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_navigable",
+        "logical_actions": [
+          "open_app_surface"
+        ],
+        "surface_id": "settings"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "never_voice",
+        "logical_actions": [],
+        "surface_id": "sharing-rules"
+      },
+      {
+        "client_voice_open": false,
+        "exposure_class": "staff_only",
+        "logical_actions": [],
+        "surface_id": "shelter"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "open_service_detail",
+          "schedule_service_callback"
+        ],
+        "surface_id": "social-services"
+      },
+      {
+        "client_voice_open": true,
+        "exposure_class": "voice_actionable",
+        "logical_actions": [
+          "open_app_surface",
+          "open_wallet_documents"
+        ],
+        "surface_id": "uploads"
+      }
+    ]
+  },
+  "version": "1.1"
 }
