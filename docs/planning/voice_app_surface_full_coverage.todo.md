@@ -600,7 +600,7 @@ Program invariants:
 
 ## VAS2-030 Offline e2e surface matrix for P0+P1 paraphrases
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
@@ -620,7 +620,7 @@ Program invariants:
 
 ## VAS2-031 Adversarial e2e for never_voice and staff_only denies
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
@@ -640,7 +640,7 @@ Program invariants:
 
 ## VAS2-032 DAG-sample simulation suite for real slotted exemplars
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: e2e
@@ -660,7 +660,7 @@ Program invariants:
 
 ## VAS2-033 Operator runbook and enablement checklist
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: operations
@@ -680,7 +680,7 @@ Program invariants:
 
 ## VAS2-034 Coverage dashboard projection for supervisor status
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: operations
@@ -700,7 +700,7 @@ Program invariants:
 
 ## VAS2-035 Program release evidence bundle and signoff
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
