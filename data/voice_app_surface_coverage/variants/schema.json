@@ -1,0 +1,37 @@
+{
+  "schema": "voice-app-surface-coverage/variant-lattice-schema@1",
+  "program_id": "voice-app-surface-coverage-v1",
+  "description": "JSONL row schema for per-surface request variant lattices (VAS-012).",
+  "required_fields": [
+    "variant_id",
+    "surface_id",
+    "user_text",
+    "logical_action",
+    "axes",
+    "priority",
+    "negative"
+  ],
+  "fields": {
+    "variant_id": "stable content-addressable id (sha256 prefix allowed)",
+    "surface_id": "RouteId / navigation surface id",
+    "user_text": "user utterance (unique within surface file)",
+    "logical_action": "catalog logical action or no_action",
+    "axes": "list of axis labels (paraphrase, slot, noise, negative, multiturn)",
+    "priority": "P0 | P1 | P2",
+    "negative": "boolean; if true, expected deny or no_action",
+    "expected_route": "optional slotted-DAG route",
+    "language": "optional BCP-47 tag, default en"
+  },
+  "forbidden_user_text_patterns": [
+    "https?://",
+    "file://",
+    "/etc/",
+    "\\\\",
+    "import ",
+    "os.system"
+  ],
+  "floors": {
+    "P0_unique_user_texts": 200,
+    "P1_unique_user_texts": 50
+  }
+}

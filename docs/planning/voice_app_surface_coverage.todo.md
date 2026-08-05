@@ -158,7 +158,7 @@ Program invariants:
 
 ## VAS-008 Expand pilot catalog for P0 navigable and actionable surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: catalog-policy
@@ -178,7 +178,7 @@ Program invariants:
 
 ## VAS-009 Extend policy matrix for surface roles and channels
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: catalog-policy
@@ -198,7 +198,7 @@ Program invariants:
 
 ## VAS-010 Expand app-surface binding allowlist and aliases
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters
@@ -238,7 +238,7 @@ Program invariants:
 
 ## VAS-012 Build variant lattice schema and generator
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: variants
@@ -258,7 +258,7 @@ Program invariants:
 
 ## VAS-013 Generate P0 client-core surface variant lattices
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: variants
