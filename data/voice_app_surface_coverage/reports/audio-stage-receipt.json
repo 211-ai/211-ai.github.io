@@ -1,17 +1,22 @@
 {
-  "action_frame_count": 40,
-  "action_frames_path": "docs/phone_dialog_generation/action_speech_frames.jsonl",
-  "generated_at": "2026-08-05T18:31:00.321152+00:00",
-  "notes": [
-    "No HF publish from this task.",
-    "Pilot action frames already authored; surface nav frames added as generate_required."
-  ],
+  "command_pilot": "python scripts/stage_abby_action_audio.py --smoke --stage-root data/voice_app_surface_coverage/audio/stage/smoke --verify-resolver",
+  "command_surface": "python scripts/stage_abby_action_audio.py --smoke --frames docs/phone_dialog_generation/surface_navigation_speech_frames.jsonl --stage-root data/voice_app_surface_coverage/audio/stage/smoke-surface --verify-resolver",
+  "generated_at": "2026-08-05T18:32:59.413217+00:00",
+  "pilot_action_smoke": {
+    "resolver_exact_match": "40/40",
+    "row_count": 40,
+    "stage_root": "data/voice_app_surface_coverage/audio/stage/smoke",
+    "verify": "OK"
+  },
   "program_id": "voice-app-surface-coverage-v1",
   "schema": "voice-app-surface-coverage/audio-stage-receipt@1",
-  "stage_root": "data/voice_app_surface_coverage/audio/stage",
-  "staging_command": "python scripts/stage_abby_action_audio.py --smoke --stage-root data/voice_app_surface_coverage/audio/stage/smoke",
-  "status": "ready_for_smoke_stage",
-  "surface_frame_count": 36,
-  "surface_frames_path": "docs/phone_dialog_generation/surface_navigation_speech_frames.jsonl",
+  "status": "smoke_staged",
+  "surface_nav_smoke": {
+    "note": "stage script marks complete=false because surface corpus is not full pilot set; fixtures still resolve.",
+    "resolver_exact_match": "36/36",
+    "row_count": 36,
+    "stage_root": "data/voice_app_surface_coverage/audio/stage/smoke-surface",
+    "verify": "OK"
+  },
   "task_id": "VAS-022"
 }

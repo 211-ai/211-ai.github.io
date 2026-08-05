@@ -1,5 +1,6 @@
 {
   "acceptance": {
+    "audio_smoke_fixtures_staged": true,
     "audio_validated_rows": false,
     "offline_e2e_implemented": true,
     "p0_density_and_variants": true,
@@ -17,12 +18,12 @@
     "submodule_pins": "data/voice_app_surface_coverage/baseline/submodule-pins.json"
   },
   "branch": "agent/voice-app-surface-coverage",
-  "generated_at": "2026-08-05T18:31:00.321152+00:00",
+  "generated_at": "2026-08-05T18:32:59.413217+00:00",
   "program_id": "voice-app-surface-coverage-v1",
   "residuals": [
-    "Live IndexTTS regen deferred (VAS-023 operator gate).",
-    "Whisper adjudication pending staged/regenerated audio.",
-    "Full slotted_response_dag.json merge of expansion packs is operator-gated.",
+    "Production IndexTTS regen still operator-gated (VAS-023); offline smoke fixtures staged for pilot+surface frames.",
+    "Whisper adjudication skipped for synthetic fixtures; run after real TTS.",
+    "Optional merge of expansion packs into full slotted_response_dag.json is operator-gated.",
     "ipfs_accelerate_py / ipfs_datasets_py remain on working pins (diverged from origin/main)."
   ],
   "schema": "voice-app-surface-coverage/program-release-evidence@1",
