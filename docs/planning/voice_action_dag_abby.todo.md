@@ -595,7 +595,7 @@ Program invariants:
 
 ## VOICE-ACTION-030 Add adversarial suite: injection, auto-exec, false transfer claims
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
