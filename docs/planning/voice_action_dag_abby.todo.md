@@ -375,7 +375,7 @@ Program invariants:
 
 ## VOICE-ACTION-019 Implement service interaction / callback adapter
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-service
