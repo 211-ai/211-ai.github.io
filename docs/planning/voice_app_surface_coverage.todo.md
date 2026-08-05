@@ -278,7 +278,7 @@ Program invariants:
 
 ## VAS-014 Generate P1 and staff_only negative variant lattices
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: variants
@@ -298,7 +298,7 @@ Program invariants:
 
 ## VAS-015 Expand slotted DAG density for calendar and app navigation
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -318,7 +318,7 @@ Program invariants:
 
 ## VAS-016 Expand slotted DAG density for messages, wallet, services
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -338,7 +338,7 @@ Program invariants:
 
 ## VAS-017 Expand slotted DAG density for remaining P0 surfaces and check-in
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -358,7 +358,7 @@ Program invariants:
 
 ## VAS-018 Rebuild action-link projection after DAG expansion
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -378,7 +378,7 @@ Program invariants:
 
 ## VAS-019 Evaluate offline retrieval reliability on variant lattice
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval

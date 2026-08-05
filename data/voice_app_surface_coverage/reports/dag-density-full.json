@@ -1,0 +1,114 @@
+{
+  "all_p0_holes_meet_floor": true,
+  "base_route_census": {
+    "app_surface_navigation": 113,
+    "calendar_event_support": 290,
+    "clarifying_prompt": 65,
+    "grounded_211_answer": 2145,
+    "live_agent": 6992,
+    "provider_contact_support": 226,
+    "repeat_or_restate": 2220,
+    "safety_guardrail_support": 563,
+    "service_interaction_support": 82,
+    "speech_unclear_clarification": 632,
+    "template_guided_fallback": 86,
+    "wallet_document_support": 246
+  },
+  "expansion_dir": "data/voice_app_surface_coverage/dag_expansion",
+  "generated_at": "2026-08-05T18:14:55.667364+00:00",
+  "program_id": "voice-app-surface-coverage-v1",
+  "rebuild_path": "Project variant lattices into DAG via scripts/voice_app_surface_coverage/project_dag_expansion.py (additive exemplars; full slotted_response_dag rebuild is operator-gated).",
+  "schema": "voice-app-surface-coverage/dag-density@1",
+  "surfaces": [
+    {
+      "base_route_edge_count": 290,
+      "effective_density": 290,
+      "expansion_exemplars": 400,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "calendar_event_support",
+      "surface_id": "calendar"
+    },
+    {
+      "base_route_edge_count": 113,
+      "effective_density": 200,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "app_surface_navigation",
+      "surface_id": "check-in"
+    },
+    {
+      "base_route_edge_count": 113,
+      "effective_density": 200,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "app_surface_navigation",
+      "surface_id": "contacts"
+    },
+    {
+      "base_route_edge_count": 113,
+      "effective_density": 400,
+      "expansion_exemplars": 400,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "app_surface_navigation",
+      "surface_id": "home"
+    },
+    {
+      "base_route_edge_count": 113,
+      "effective_density": 200,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "app_surface_navigation",
+      "surface_id": "interactions"
+    },
+    {
+      "base_route_edge_count": 226,
+      "effective_density": 226,
+      "expansion_exemplars": 288,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "provider_contact_support",
+      "surface_id": "messages"
+    },
+    {
+      "base_route_edge_count": 113,
+      "effective_density": 200,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "app_surface_navigation",
+      "surface_id": "settings"
+    },
+    {
+      "base_route_edge_count": 2145,
+      "effective_density": 2145,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "grounded_211_answer",
+      "surface_id": "social-services"
+    },
+    {
+      "base_route_edge_count": 246,
+      "effective_density": 246,
+      "expansion_exemplars": 200,
+      "floor": 200,
+      "holes": [],
+      "meets_floor": true,
+      "primary_route": "wallet_document_support",
+      "surface_id": "uploads"
+    }
+  ]
+}
