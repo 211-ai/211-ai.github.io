@@ -58,7 +58,7 @@ PROGRAM_ID = "voice-app-surface-full-coverage-v2"
 TOP1_MIN = 0.55
 TOP3_MIN = 0.75
 # Cancel-like negatives only (authority-gated open attempts are excluded).
-NEG_DENY_MIN = 0.70
+NEG_DENY_MIN = 0.85
 MAX_EVAL_PER_SURFACE = 80  # sample for speed
 
 

@@ -32,7 +32,7 @@
       "classified": 25,
       "present": true
     },
-    "generated_at": "2026-08-05T22:55:53.570494+00:00",
+    "generated_at": "2026-08-05T23:17:44.836680+00:00",
     "inventory": {
       "present": true,
       "surface_count": 25
@@ -70,12 +70,23 @@
       }
     }
   },
-  "generated_at": "2026-08-05T22:55:53.570614+00:00",
+  "generated_at": "2026-08-05T23:17:44.797655+00:00",
   "program_id": "voice-app-surface-full-coverage-v2",
   "residuals": [
-    "Full Whisper ASR adjudication remains deferred_file_presence_gate",
-    "Optional: raise cancel-like negative retrieval further above 0.70"
+    "Optional: further cancel-like negative retrieval above 0.875 if product requires stricter no_action NLU"
   ],
+  "retrieval": {
+    "negative_deny_rate": 0.875,
+    "top1": 1.0,
+    "top3": 1.0
+  },
   "schema": "voice-app-surface-full-coverage/program-release-evidence@1",
-  "status": "green"
+  "status": "green",
+  "whisper_adjudication": {
+    "model": "openai/whisper-tiny.en",
+    "pass_rate": 1.0,
+    "passed": 120,
+    "status": "completed",
+    "total": 120
+  }
 }

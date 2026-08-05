@@ -35,6 +35,12 @@ def main()->int:
             if d.get("counts",{}).get("total_frames",0) < 40: errors.append("too few frames")
     if args.check or args.check_whisper:
         if not wh.is_file(): errors.append("missing whisper receipt")
+        else:
+            d=json.loads(wh.read_text())
+            if d.get("status") not in {"completed","partial"}:
+                errors.append(f"whisper status {d.get('status')}")
+            if args.check and d.get("status")=="completed" and not d.get("meets_pass_rate", True):
+                errors.append("whisper pass rate not met")
     if errors:
         print("audio coverage FAILED:", file=sys.stderr)
         for e in errors: print(" -", e, file=sys.stderr)

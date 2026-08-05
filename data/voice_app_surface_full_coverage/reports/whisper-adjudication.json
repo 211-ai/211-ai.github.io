@@ -1,10 +1,22 @@
 {
-  "schema": "voice-app-surface-full-coverage/whisper-adjudication@1",
+  "failures": [],
+  "generated_at": "2026-08-05T23:16:25.383436+00:00",
+  "ledger_path": "data/voice_app_surface_full_coverage/reports/whisper-adjudication-ledger.jsonl",
+  "meets_pass_rate": true,
+  "model": "openai/whisper-tiny.en",
+  "note": "transformers openai/whisper-tiny.en CPU adjudication; long-form uses return_timestamps=True.",
+  "pass_bp_threshold": 7000,
   "program_id": "voice-app-surface-full-coverage-v2",
-  "task_id": "VAS2-028",
-  "generated_at": "2026-08-05T22:49:16.087144+00:00",
-  "status": "deferred_file_presence_gate",
-  "note": "Full Whisper ASR deferred; production WAVs staged for all speech frames. Interim gate: file presence.",
-  "staged_production_rows": 120,
-  "missing_frames": 0
+  "resolver_path": "data/voice_app_surface_full_coverage/audio/stage/production/metadata/abby_action_precomputed_audio_resolver.jsonl",
+  "schema": "voice-app-surface-full-coverage/whisper-adjudication@1",
+  "status": "completed",
+  "summary": {
+    "adjudicated_pass_rate": 1.0,
+    "errors": 0,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "passed": 120,
+    "total": 120
+  },
+  "task_id": "VAS2-028"
 }
