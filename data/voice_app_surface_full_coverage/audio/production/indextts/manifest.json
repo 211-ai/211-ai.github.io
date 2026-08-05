@@ -1,0 +1,3975 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T22:46:45Z",
+  "provider": "Publicus/IndexTTS-2-Demo",
+  "spaceUrl": "https://publicus-indextts-2-demo.hf.space",
+  "referenceAudio": "abby-reference.wav",
+  "voiceDescription": "Same as the voice reference",
+  "responseCount": 116,
+  "sources": {
+    "dag": "",
+    "results": "",
+    "responseManifest": "data/voice_app_surface_full_coverage/audio/production/response-manifest.json",
+    "slottedResponseIndex": "/home/barberb/211-AI/211-AI/wallet_interface/ui/public/assets/rag/slotted-response-index.json",
+    "includeAssistantResponses": true,
+    "includeVoiceResponses": true,
+    "idScheme": "abby-tts-{sha256(spoken_normalized_text)[:20]}"
+  },
+  "normalization": {
+    "emergencyNumbers": {
+      "211": "two one one",
+      "911": "nine one one"
+    },
+    "addresses": {
+      "directions": {
+        "n": "North",
+        "s": "South",
+        "e": "East",
+        "w": "West",
+        "ne": "North East",
+        "nw": "North West",
+        "se": "South East",
+        "sw": "South West"
+      },
+      "streetSuffixes": {
+        "aly": "Alley",
+        "allee": "Alley",
+        "aly.": "Alley",
+        "ave": "Avenue",
+        "ave.": "Avenue",
+        "aven": "Avenue",
+        "avenu": "Avenue",
+        "avenue": "Avenue",
+        "blvd": "Boulevard",
+        "blvd.": "Boulevard",
+        "boul": "Boulevard",
+        "boulevard": "Boulevard",
+        "cir": "Circle",
+        "cir.": "Circle",
+        "circle": "Circle",
+        "ct": "Court",
+        "ct.": "Court",
+        "court": "Court",
+        "dr": "Drive",
+        "dr.": "Drive",
+        "drive": "Drive",
+        "hwy": "Highway",
+        "hwy.": "Highway",
+        "highway": "Highway",
+        "ln": "Lane",
+        "ln.": "Lane",
+        "lane": "Lane",
+        "loop": "Loop",
+        "pkwy": "Parkway",
+        "pkwy.": "Parkway",
+        "parkway": "Parkway",
+        "pl": "Place",
+        "pl.": "Place",
+        "place": "Place",
+        "rd": "Road",
+        "rd.": "Road",
+        "road": "Road",
+        "st": "Street",
+        "st.": "Street",
+        "street": "Street",
+        "ter": "Terrace",
+        "ter.": "Terrace",
+        "terrace": "Terrace",
+        "trl": "Trail",
+        "trl.": "Trail",
+        "trail": "Trail",
+        "way": "Way"
+      },
+      "unitLabels": {
+        "apt": "Apartment",
+        "apt.": "Apartment",
+        "bldg": "Building",
+        "bldg.": "Building",
+        "fl": "Floor",
+        "fl.": "Floor",
+        "ste": "Suite",
+        "ste.": "Suite",
+        "suite": "Suite",
+        "unit": "Unit"
+      },
+      "numberedStreetOrdinals": true
+    }
+  },
+  "mp3": {
+    "enabled": false,
+    "bitrate": "64k",
+    "preferred": false,
+    "wavDeprecated": false
+  },
+  "batchInference": {
+    "remoteBatchSize": 4,
+    "parallelWorkers": 1,
+    "batchApiName": "/gen_batch",
+    "enabled": true,
+    "requiresBatch": false,
+    "contract": {
+      "singleApiName": "/gen_single",
+      "singleFnIndex": 6,
+      "singleInputCount": 25,
+      "singleContract": "segments-bucket-25-field",
+      "batchApiName": "/gen_batch",
+      "batchRegistered": true,
+      "batchFnIndex": 7,
+      "batchInputCount": 25,
+      "batchContract": "segments-bucket-25-field",
+      "batchUploadApiName": "/gen_batch_with_upload",
+      "batchUploadRegistered": true,
+      "batchUploadFnIndex": 8,
+      "batchUploadInputCount": 29,
+      "uploadResultsApiName": "/upload_generated_results",
+      "uploadResultsRegistered": true,
+      "uploadResultsFnIndex": 9,
+      "autoUploadResultsApiName": "/maybe_auto_upload_generated_results",
+      "autoUploadResultsRegistered": true,
+      "autoUploadResultsFnIndex": 12,
+      "remoteBucketPipelineReady": true,
+      "registeredApiNames": [
+        "/clear_batch_artifact_outputs",
+        "/gen_batch",
+        "/gen_batch_with_upload",
+        "/gen_single",
+        "/load_example",
+        "/maybe_auto_upload_generated_results",
+        "/maybe_auto_upload_single_result",
+        "/on_experimental_change",
+        "/on_input_text_change",
+        "/on_input_text_change_1",
+        "/on_method_select",
+        "/update_prompt_audio",
+        "/upload_generated_results"
+      ],
+      "recommendedMode": "gen_batch_with_upload"
+    }
+  },
+  "responses": [
+    {
+      "id": "abby-tts-021cc9ba515be90d8af8",
+      "textHash": "021cc9ba515be90d8af8",
+      "text": "Yes. I can stay with you while I connect a live two one one specialist to help secure a shelter bed tonight. You\u2019re not doing this alone. Stay in the busiest, well-lit spot near the bus center sign and keep your phone on low power mode. If anyone is actively following you or you feel in immediate danger, call nine one one right away. If we get disconnected, call five zero three \u2026 five four two \u2026 two seven one seven.",
+      "originalTexts": [
+        "Yes. I can stay with you while I connect a live 211 specialist to help secure a shelter bed tonight. You\u2019re not doing this alone. Stay in the busiest, well-lit spot near the bus center sign and keep your phone on low power mode. If anyone is actively following you or you feel in immediate danger, call 911 right away. If we get disconnected, call 5-0-3 \u2026 5-4-2 \u2026 2-7-1-7."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.4792e9eb5ad7.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "failed",
+      "audioPath": "",
+      "mp3Path": "",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-031cfecb443b27953598",
+      "textHash": "031cfecb443b27953598",
+      "text": "I can read your calendar for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.read_calendar.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "failed",
+      "audioPath": "",
+      "mp3Path": "",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-04d7b00da886475ec1c8",
+      "textHash": "04d7b00da886475ec1c8",
+      "text": "I could not open the check-in screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "failed",
+      "audioPath": "",
+      "mp3Path": "",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-07199ec34e5d41335192",
+      "textHash": "07199ec34e5d41335192",
+      "text": "Okay, I will not open the calendar screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "failed",
+      "audioPath": "",
+      "mp3Path": "",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "audioUrl": "",
+      "mp3Url": "",
+      "preferredAudioUrl": ""
+    },
+    {
+      "id": "abby-tts-0b60c3c32bd94213fb87",
+      "textHash": "0b60c3c32bd94213fb87",
+      "text": "Yeah. First number: three six zero, five two one, six five two seven. Backup if that doesn\u2019t answer: nine seven one, three one nine, nine seven nine three. If you want, I can stay with you while you make that call, or give you a 10-second script to say when they pick up.",
+      "originalTexts": [
+        "Yeah. First number: 360, 521, 6527. Backup if that doesn\u2019t answer: 971, 319, 9793. If you want, I can stay with you while you make that call, or give you a 10-second script to say when they pick up."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.9a2fd8118d37.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-0b60c3c32bd94213fb87.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 696398,
+      "latencyMs": 31164,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31164,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-0b60c3c32bd94213fb87.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-0b60c3c32bd94213fb87.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-0b60c3c32bd94213fb87.wav"
+    },
+    {
+      "id": "abby-tts-0bb14a05eb297ecdcb23",
+      "textHash": "0bb14a05eb297ecdcb23",
+      "text": "Okay, I will not open the check-in screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-0bb14a05eb297ecdcb23.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 184910,
+      "latencyMs": 31164,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31164,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-0bb14a05eb297ecdcb23.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-0bb14a05eb297ecdcb23.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-0bb14a05eb297ecdcb23.wav"
+    },
+    {
+      "id": "abby-tts-1007986d8be4b0db4db6",
+      "textHash": "1007986d8be4b0db4db6",
+      "text": "I can schedule a service callback for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.schedule_service_callback.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1007986d8be4b0db4db6.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 260686,
+      "latencyMs": 31164,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31164,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1007986d8be4b0db4db6.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1007986d8be4b0db4db6.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1007986d8be4b0db4db6.wav"
+    },
+    {
+      "id": "abby-tts-10269616b4be2bb8d8af",
+      "textHash": "10269616b4be2bb8d8af",
+      "text": "I opened the service details.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-10269616b4be2bb8d8af.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 126542,
+      "latencyMs": 31164,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31164,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-10269616b4be2bb8d8af.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-10269616b4be2bb8d8af.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-10269616b4be2bb8d8af.wav"
+    },
+    {
+      "id": "abby-tts-12d4c1a140822413e505",
+      "textHash": "12d4c1a140822413e505",
+      "text": "Okay, I will not open the contacts screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-12d4c1a140822413e505.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 176206,
+      "latencyMs": 20976,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 20976,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-12d4c1a140822413e505.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-12d4c1a140822413e505.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-12d4c1a140822413e505.wav"
+    },
+    {
+      "id": "abby-tts-1917ac0247e9cb82674c",
+      "textHash": "1917ac0247e9cb82674c",
+      "text": "I opened your wallet documents.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.success.v1",
+        "frame.action.outcome.open_app_surface.uploads.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1917ac0247e9cb82674c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 132686,
+      "latencyMs": 20976,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 20976,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1917ac0247e9cb82674c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1917ac0247e9cb82674c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1917ac0247e9cb82674c.wav"
+    },
+    {
+      "id": "abby-tts-19646047a90065ae879f",
+      "textHash": "19646047a90065ae879f",
+      "text": "For your safety, I can escalate this to emergency or specialist support. Say yes if you want me to start that escalation now.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.escalate_safety.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-19646047a90065ae879f.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 390734,
+      "latencyMs": 20976,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 20976,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-19646047a90065ae879f.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-19646047a90065ae879f.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-19646047a90065ae879f.wav"
+    },
+    {
+      "id": "abby-tts-1a29ea8ff93d1815fcf7",
+      "textHash": "1a29ea8ff93d1815fcf7",
+      "text": "I finished reading your provider messages.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1a29ea8ff93d1815fcf7.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 183886,
+      "latencyMs": 20976,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 20976,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1a29ea8ff93d1815fcf7.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1a29ea8ff93d1815fcf7.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1a29ea8ff93d1815fcf7.wav"
+    },
+    {
+      "id": "abby-tts-1a961813fc2e12a6ba7b",
+      "textHash": "1a961813fc2e12a6ba7b",
+      "text": "I could not open the contacts screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1a961813fc2e12a6ba7b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 257102,
+      "latencyMs": 38859,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 38859,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1a961813fc2e12a6ba7b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1a961813fc2e12a6ba7b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1a961813fc2e12a6ba7b.wav"
+    },
+    {
+      "id": "abby-tts-1f5222b86de660b98e37",
+      "textHash": "1f5222b86de660b98e37",
+      "text": "Yes. General job help is the best fit for resume support. General job help is the best fit for resume support. Ask for \u201cJob Search Assistance\u201d and \u201cComprehensive Job Assistance Centers.\u201d They can help with resumes, not just job listings. Do you want me to start with general job help now?",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.1f5222b86de6.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1f5222b86de660b98e37.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 732750,
+      "latencyMs": 38859,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 38859,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-1f5222b86de660b98e37.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1f5222b86de660b98e37.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-1f5222b86de660b98e37.wav"
+    },
+    {
+      "id": "abby-tts-2289088d7649025734b4",
+      "textHash": "2289088d7649025734b4",
+      "text": "I could not complete the safety escalation request just now. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2289088d7649025734b4.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 371278,
+      "latencyMs": 38859,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 38859,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2289088d7649025734b4.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2289088d7649025734b4.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2289088d7649025734b4.wav"
+    },
+    {
+      "id": "abby-tts-2d9426429b01d9fe3eeb",
+      "textHash": "2d9426429b01d9fe3eeb",
+      "text": "Yes. The number is five four one, nine six two, seven nine nine four. I\u2019ll say it once more: five four one, nine six two, seven nine nine four.",
+      "originalTexts": [
+        "Yes. The number is 541, 962, 7994. I\u2019ll say it once more: 5-4-1, 9-6-2, 7-9-9-4."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.bc7f71cbba14.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-e95e6a2e8fc5503427e4"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {phone_1}."
+      ],
+      "slottedEdgeIds": [
+        "edge-4e2a418b2a1a4a94ca45"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2d9426429b01d9fe3eeb.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 349262,
+      "latencyMs": 38859,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 38859,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2d9426429b01d9fe3eeb.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2d9426429b01d9fe3eeb.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2d9426429b01d9fe3eeb.wav"
+    },
+    {
+      "id": "abby-tts-2dbd18e3eba9b5b0c178",
+      "textHash": "2dbd18e3eba9b5b0c178",
+      "text": "Of course. I\u2019ll repeat: eight eight eight, five three two, zero five five zero. Call eight eight eight, five three two, zero five five zero.",
+      "originalTexts": [
+        "Of course. I\u2019ll repeat: 888, 532, 0550. Call 888, 532, 0550."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.fce474ed9c2d.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2dbd18e3eba9b5b0c178.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 398926,
+      "latencyMs": 48421,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 48421,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-2dbd18e3eba9b5b0c178.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2dbd18e3eba9b5b0c178.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-2dbd18e3eba9b5b0c178.wav"
+    },
+    {
+      "id": "abby-tts-3444adc40f9ecfdc8429",
+      "textHash": "3444adc40f9ecfdc8429",
+      "text": "You\u2019ve been carrying this all day, and I\u2019m really glad you told me. Let\u2019s do one step right now: call Salem Electric and ask for emergency shutoff hold and a same-day payment plan. The number is five zero three, three six two, three six zero one. I\u2019ll repeat: five zero three, three six two, three six zero one. If anyone in the home needs powered medical equipment or is in immediate danger, call 9 1 1 first. I can stay with you while you call.",
+      "originalTexts": [
+        "You\u2019ve been carrying this all day, and I\u2019m really glad you told me. Let\u2019s do one step right now: call Salem Electric and ask for emergency shutoff hold and a same-day payment plan. The number is 5 0 3, 3 6 2, 3 6 0 1. I\u2019ll repeat: 5 0 3, 3 6 2, 3 6 0 1. If anyone in the home needs powered medical equipment or is in immediate danger, call 9 1 1 first. I can stay with you while you call."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.6e9774107edd.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3444adc40f9ecfdc8429.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1175234,
+      "latencyMs": 48421,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 48421,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3444adc40f9ecfdc8429.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3444adc40f9ecfdc8429.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3444adc40f9ecfdc8429.wav"
+    },
+    {
+      "id": "abby-tts-395c6482c11b5822bcba",
+      "textHash": "395c6482c11b5822bcba",
+      "text": "I could not schedule the service callback right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-395c6482c11b5822bcba.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 219214,
+      "latencyMs": 48421,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 48421,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-395c6482c11b5822bcba.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-395c6482c11b5822bcba.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-395c6482c11b5822bcba.wav"
+    },
+    {
+      "id": "abby-tts-3cfe3f7104d4a30bd0d4",
+      "textHash": "3cfe3f7104d4a30bd0d4",
+      "text": "Yes. I\u2019ll say it slowly. The callback number is: five four one, seven seven nine, four three five seven. Again: five four one, seven seven nine, four three five seven.",
+      "originalTexts": [
+        "Yes. I\u2019ll say it slowly. The callback number is: 5 4 1, 7 7 9, 4 3 5 7. Again: 5 4 1, 7 7 9, 4 3 5 7."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.8ae048969d9b.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-831205c80fe1f2ff6320"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | I\u2019ll say it slowly. | The number is {phone_1}. | I\u2019ll repeat: {phone_1}."
+      ],
+      "slottedEdgeIds": [
+        "edge-effa1f647238a9350502"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3cfe3f7104d4a30bd0d4.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 539726,
+      "latencyMs": 48421,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 48421,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3cfe3f7104d4a30bd0d4.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3cfe3f7104d4a30bd0d4.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3cfe3f7104d4a30bd0d4.wav"
+    },
+    {
+      "id": "abby-tts-3d189841e04c3b7b1bfd",
+      "textHash": "3d189841e04c3b7b1bfd",
+      "text": "I opened the services screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3d189841e04c3b7b1bfd.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 169550,
+      "latencyMs": 33502,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33502,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3d189841e04c3b7b1bfd.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3d189841e04c3b7b1bfd.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3d189841e04c3b7b1bfd.wav"
+    },
+    {
+      "id": "abby-tts-3dca8afccf6157548f1c",
+      "textHash": "3dca8afccf6157548f1c",
+      "text": "Call nine one one now. I\u2019ll repeat: nine one one. Sit or lie down now. Stay still and keep warm while you wait.",
+      "originalTexts": [
+        "Call 9-1-1 now. I\u2019ll repeat: 9-1-1. Sit or lie down now. Stay still and keep warm while you wait."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.814ac713f3e3.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3dca8afccf6157548f1c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 366158,
+      "latencyMs": 33502,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33502,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3dca8afccf6157548f1c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3dca8afccf6157548f1c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3dca8afccf6157548f1c.wav"
+    },
+    {
+      "id": "abby-tts-3ea2545fd16a5ecd3b22",
+      "textHash": "3ea2545fd16a5ecd3b22",
+      "text": "Yes. I\u2019ll say it slow. Call 9 1 1 now. Again: 9 1 1. You said you are shaking, dizzy, and weak. That can be an emergency. Please sit or lie down now, so you do not fall. If someone is near you, ask them to call 9 1 1 for you. Are you alone right now?",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.3ea2545fd16a.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-ca15f1c085785355334c"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat that more slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-a4bfb2abcb0a5cabcabe"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | I\u2019ll say it slow. | Call **9 1 1** now. | Again: **9 1 1**."
+      ],
+      "slottedEdgeIds": [
+        "edge-d392d9b229375cebf021"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3ea2545fd16a5ecd3b22.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 758862,
+      "latencyMs": 33502,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33502,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-3ea2545fd16a5ecd3b22.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3ea2545fd16a5ecd3b22.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-3ea2545fd16a5ecd3b22.wav"
+    },
+    {
+      "id": "abby-tts-4191920b4ada40b579df",
+      "textHash": "4191920b4ada40b579df",
+      "text": "I created the calendar reminder.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4191920b4ada40b579df.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 161870,
+      "latencyMs": 33502,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33502,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4191920b4ada40b579df.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4191920b4ada40b579df.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4191920b4ada40b579df.wav"
+    },
+    {
+      "id": "abby-tts-41939f68b334f9540a3b",
+      "textHash": "41939f68b334f9540a3b",
+      "text": "Absolutely. The first number to try is three six zero, five two one, six five two seven. I\u2019ll repeat it: three six zero, five two one, six five two seven. If that doesn\u2019t connect, backup number is nine seven one, three one nine, nine seven nine three. You can hang up now and call that first number right away.",
+      "originalTexts": [
+        "Absolutely. The first number to try is 360, 521, 6527. I\u2019ll repeat it: 360, 521, 6527. If that doesn\u2019t connect, backup number is 971, 319, 9793. You can hang up now and call that first number right away."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.1fdb785a9ac1.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-04e24553cec6416099ce"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "My phone may die; give me the most important next step."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-6a49573e81e890cb8152"
+      ],
+      "slottedResponseSignatures": [
+        "Absolutely. | The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}. | Backup number: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-b25334acf6920a02cdeb"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-41939f68b334f9540a3b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 712270,
+      "latencyMs": 31411,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31411,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-41939f68b334f9540a3b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-41939f68b334f9540a3b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-41939f68b334f9540a3b.wav"
+    },
+    {
+      "id": "abby-tts-42a7b27a803f789346bf",
+      "textHash": "42a7b27a803f789346bf",
+      "text": "I could not open the settings screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-42a7b27a803f789346bf.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 209486,
+      "latencyMs": 31411,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31411,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-42a7b27a803f789346bf.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-42a7b27a803f789346bf.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-42a7b27a803f789346bf.wav"
+    },
+    {
+      "id": "abby-tts-43f0623ac54caa2a4258",
+      "textHash": "43f0623ac54caa2a4258",
+      "text": "Okay, I will not leave a message for the provider.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-43f0623ac54caa2a4258.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 204878,
+      "latencyMs": 31411,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31411,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-43f0623ac54caa2a4258.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-43f0623ac54caa2a4258.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-43f0623ac54caa2a4258.wav"
+    },
+    {
+      "id": "abby-tts-45c69d316fabb31585b2",
+      "textHash": "45c69d316fabb31585b2",
+      "text": "I could not open the calendar screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-45c69d316fabb31585b2.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 228942,
+      "latencyMs": 31411,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 31411,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-45c69d316fabb31585b2.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-45c69d316fabb31585b2.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-45c69d316fabb31585b2.wav"
+    },
+    {
+      "id": "abby-tts-46cb00d04276403d27af",
+      "textHash": "46cb00d04276403d27af",
+      "text": "Okay, I will not create that calendar reminder.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-46cb00d04276403d27af.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 177742,
+      "latencyMs": 24354,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24354,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-46cb00d04276403d27af.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-46cb00d04276403d27af.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-46cb00d04276403d27af.wav"
+    },
+    {
+      "id": "abby-tts-4921d01b5935d267df77",
+      "textHash": "4921d01b5935d267df77",
+      "text": "I opened the interaction history screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4921d01b5935d267df77.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 166990,
+      "latencyMs": 24354,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24354,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4921d01b5935d267df77.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4921d01b5935d267df77.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4921d01b5935d267df77.wav"
+    },
+    {
+      "id": "abby-tts-4b5978c967b322860446",
+      "textHash": "4b5978c967b322860446",
+      "text": "Yes. Call to Safety is: five zero three, two three five, five three three three. I\u2019ll repeat: five zero three, two three five, five three three three.",
+      "originalTexts": [
+        "Yes. Call to Safety is: 5-0-3, 2-3-5, 5-3-3-3. I\u2019ll repeat: 5-0-3, 2-3-5, 5-3-3-3."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.8def39b6d2a6.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-d236663f261ea721e0cd"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | Call {phone_1}. | I\u2019ll repeat: {phone_1}."
+      ],
+      "slottedEdgeIds": [
+        "edge-d74550b6295479a2f604"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4b5978c967b322860446.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 437326,
+      "latencyMs": 24354,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24354,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4b5978c967b322860446.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4b5978c967b322860446.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4b5978c967b322860446.wav"
+    },
+    {
+      "id": "abby-tts-4c2a81dee54e29c83f87",
+      "textHash": "4c2a81dee54e29c83f87",
+      "text": "I can open the service details for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_service_detail.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4c2a81dee54e29c83f87.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 260686,
+      "latencyMs": 24354,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24354,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4c2a81dee54e29c83f87.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4c2a81dee54e29c83f87.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4c2a81dee54e29c83f87.wav"
+    },
+    {
+      "id": "abby-tts-4cea6bddfb77351844eb",
+      "textHash": "4cea6bddfb77351844eb",
+      "text": "Okay, I will not open the interaction history screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4cea6bddfb77351844eb.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 191054,
+      "latencyMs": 33819,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33819,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4cea6bddfb77351844eb.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4cea6bddfb77351844eb.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4cea6bddfb77351844eb.wav"
+    },
+    {
+      "id": "abby-tts-4dfc2f78ea47828b788c",
+      "textHash": "4dfc2f78ea47828b788c",
+      "text": "Yes. I can do that. For Work Incentives Planning and Assistance, the number is: 503 \u2026 323 \u2026 9159. Again: 503 \u2026 323 \u2026 9159. If you want, I can chunk the address the same Way next.",
+      "originalTexts": [
+        "Yes. I can do that. For Work Incentives Planning and Assistance, the number is: 503 \u2026 323 \u2026 9159. Again: 503 \u2026 323 \u2026 9159. If you want, I can chunk the address the same way next."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.0842db767809.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-b220e1b025305fb7a8df"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "I need {service_1}."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-82e66fd40bab917fd416"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | I can do that. | The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-dafc0938fedb0fec7c22"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4dfc2f78ea47828b788c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 866382,
+      "latencyMs": 33819,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33819,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4dfc2f78ea47828b788c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4dfc2f78ea47828b788c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4dfc2f78ea47828b788c.wav"
+    },
+    {
+      "id": "abby-tts-4e55cf8bab9db9d0871e",
+      "textHash": "4e55cf8bab9db9d0871e",
+      "text": "Okay, I will not open the service details.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4e55cf8bab9db9d0871e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 164430,
+      "latencyMs": 33819,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33819,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-4e55cf8bab9db9d0871e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4e55cf8bab9db9d0871e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-4e55cf8bab9db9d0871e.wav"
+    },
+    {
+      "id": "abby-tts-5156358299bde81adfe0",
+      "textHash": "5156358299bde81adfe0",
+      "text": "I could not open the interaction history screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5156358299bde81adfe0.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 240206,
+      "latencyMs": 33819,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33819,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5156358299bde81adfe0.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5156358299bde81adfe0.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5156358299bde81adfe0.wav"
+    },
+    {
+      "id": "abby-tts-52fcd1fd1391b7773632",
+      "textHash": "52fcd1fd1391b7773632",
+      "text": "I finished reading your calendar.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-52fcd1fd1391b7773632.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 144974,
+      "latencyMs": 23740,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 23740,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-52fcd1fd1391b7773632.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-52fcd1fd1391b7773632.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-52fcd1fd1391b7773632.wav"
+    },
+    {
+      "id": "abby-tts-55c769ec5d8102c56841",
+      "textHash": "55c769ec5d8102c56841",
+      "text": "Okay, I will not open the registration screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.register.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-55c769ec5d8102c56841.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 184910,
+      "latencyMs": 23740,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 23740,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-55c769ec5d8102c56841.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-55c769ec5d8102c56841.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-55c769ec5d8102c56841.wav"
+    },
+    {
+      "id": "abby-tts-5683375ee6a1ede127f7",
+      "textHash": "5683375ee6a1ede127f7",
+      "text": "I opened the settings screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5683375ee6a1ede127f7.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 145998,
+      "latencyMs": 23740,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 23740,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5683375ee6a1ede127f7.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5683375ee6a1ede127f7.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5683375ee6a1ede127f7.wav"
+    },
+    {
+      "id": "abby-tts-586bd42b97af34b062a6",
+      "textHash": "586bd42b97af34b062a6",
+      "text": "The number is five four one, five five three, three three one three. I\u2019ll repeat: five four one, five five three, three three one three.",
+      "originalTexts": [
+        "The number is 541, 553, 3313. I\u2019ll repeat: 541, 553, 3313."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.789adbe61eb4.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-34b3d8543e70f8a276c1"
+      ],
+      "slottedResponseSignatures": [
+        "The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-fe880a29b948affa5b4f"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-586bd42b97af34b062a6.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 529998,
+      "latencyMs": 23740,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 23740,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-586bd42b97af34b062a6.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-586bd42b97af34b062a6.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-586bd42b97af34b062a6.wav"
+    },
+    {
+      "id": "abby-tts-59f594c80d88ee8f5f57",
+      "textHash": "59f594c80d88ee8f5f57",
+      "text": "Of course. Slow and simple: First, dial two one one. Then say: \u201cI\u2019m in Salem. I need emergency child care today so I can keep my work shift.\u201d If the call drops, call two one one again and repeat that same sentence. I can stay with you while you do it.",
+      "originalTexts": [
+        "Of course. Slow and simple: First, dial 2-1-1. Then say: \u201cI\u2019m in Salem. I need emergency child care today so I can keep my work shift.\u201d If the call drops, call 2-1-1 again and repeat that same sentence. I can stay with you while you do it."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.b4f69bd67937.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-59f594c80d88ee8f5f57.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 740430,
+      "latencyMs": 33729,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33729,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-59f594c80d88ee8f5f57.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-59f594c80d88ee8f5f57.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-59f594c80d88ee8f5f57.wav"
+    },
+    {
+      "id": "abby-tts-5a91e7d743c0e25cfa85",
+      "textHash": "5a91e7d743c0e25cfa85",
+      "text": "I scheduled the service callback request.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5a91e7d743c0e25cfa85.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 189006,
+      "latencyMs": 33729,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33729,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5a91e7d743c0e25cfa85.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5a91e7d743c0e25cfa85.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5a91e7d743c0e25cfa85.wav"
+    },
+    {
+      "id": "abby-tts-5fe13cab79863e6ac17c",
+      "textHash": "5fe13cab79863e6ac17c",
+      "text": "I could not complete the live specialist request just now. Please try again, or stay on the line for more options.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5fe13cab79863e6ac17c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 326734,
+      "latencyMs": 33729,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33729,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-5fe13cab79863e6ac17c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5fe13cab79863e6ac17c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-5fe13cab79863e6ac17c.wav"
+    },
+    {
+      "id": "abby-tts-63067adf94f3709ebc21",
+      "textHash": "63067adf94f3709ebc21",
+      "text": "I could not open the home screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-63067adf94f3709ebc21.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 211022,
+      "latencyMs": 33729,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 33729,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-63067adf94f3709ebc21.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-63067adf94f3709ebc21.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-63067adf94f3709ebc21.wav"
+    },
+    {
+      "id": "abby-tts-699f258168093ad60498",
+      "textHash": "699f258168093ad60498",
+      "text": "I could not open your wallet documents right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.failed.v1",
+        "frame.action.outcome.open_app_surface.uploads.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-699f258168093ad60498.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 270926,
+      "latencyMs": 42096,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42096,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-699f258168093ad60498.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-699f258168093ad60498.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-699f258168093ad60498.wav"
+    },
+    {
+      "id": "abby-tts-6a23eb8fb8a910ff816e",
+      "textHash": "6a23eb8fb8a910ff816e",
+      "text": "I opened the requested app screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-6a23eb8fb8a910ff816e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 141390,
+      "latencyMs": 42096,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42096,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-6a23eb8fb8a910ff816e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-6a23eb8fb8a910ff816e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-6a23eb8fb8a910ff816e.wav"
+    },
+    {
+      "id": "abby-tts-6a241569af0f93821a9f",
+      "textHash": "6a241569af0f93821a9f",
+      "text": "Yes. Since you\u2019re under 18 and don\u2019t feel safe, fastest safe option is 9 1 1 and say: \u201cI\u2019m 16, not hurt, but I\u2019m not safe where I am and need youth shelter transport now.\u201d From what I can confirm right now, the listed shelter lines are mostly adult-focused. One line shows \u201cunrestricted\u201d: five four one, nine six two, seven nine nine four. If you want, call that after nine one one and ask for the nearest youth-safe placement.",
+      "originalTexts": [
+        "Yes. Since you\u2019re under 18 and don\u2019t feel safe, fastest safe option is 9 1 1 and say: \u201cI\u2019m 16, not hurt, but I\u2019m not safe where I am and need youth shelter transport now.\u201d From what I can confirm right now, the listed shelter lines are mostly adult-focused. One line shows \u201cunrestricted\u201d: 5 4 1, 9 6 2, 7 9 9 4. If you want, call that after 911 and ask for the nearest youth-safe placement."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.7dc32f5370bb.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-6a241569af0f93821a9f.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1232578,
+      "latencyMs": 42096,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42096,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-6a241569af0f93821a9f.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-6a241569af0f93821a9f.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-6a241569af0f93821a9f.wav"
+    },
+    {
+      "id": "abby-tts-7039e082f24339bc0f34",
+      "textHash": "7039e082f24339bc0f34",
+      "text": "I can open the services screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.social-services.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7039e082f24339bc0f34.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 286286,
+      "latencyMs": 42096,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42096,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7039e082f24339bc0f34.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7039e082f24339bc0f34.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7039e082f24339bc0f34.wav"
+    },
+    {
+      "id": "abby-tts-71367b8aab307d15353b",
+      "textHash": "71367b8aab307d15353b",
+      "text": "Okay, I will not start a safety escalation from here. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-71367b8aab307d15353b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 344142,
+      "latencyMs": 30095,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 30095,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-71367b8aab307d15353b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-71367b8aab307d15353b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-71367b8aab307d15353b.wav"
+    },
+    {
+      "id": "abby-tts-7578e6a3af6dd3cd9989",
+      "textHash": "7578e6a3af6dd3cd9989",
+      "text": "I can open your wallet documents for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_wallet_documents.v1",
+        "frame.action.confirm.open_app_surface.uploads.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7578e6a3af6dd3cd9989.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 262222,
+      "latencyMs": 30095,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 30095,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7578e6a3af6dd3cd9989.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7578e6a3af6dd3cd9989.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7578e6a3af6dd3cd9989.wav"
+    },
+    {
+      "id": "abby-tts-77633332ca23e0bda425",
+      "textHash": "77633332ca23e0bda425",
+      "text": "Absolutely. The shelter number is five four one, nine six two, seven nine nine four. I\u2019ll say it again: five four one, nine six two, seven nine nine four.",
+      "originalTexts": [
+        "Absolutely. The shelter number is 541, 962, 7994. I\u2019ll say it again: 541, 962, 7994."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.6ddefab29373.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-d863ab53c77d910bec31"
+      ],
+      "slottedResponseSignatures": [
+        "Absolutely. | The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-99b563a853ffdfd59c49"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-77633332ca23e0bda425.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 468558,
+      "latencyMs": 30095,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 30095,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-77633332ca23e0bda425.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-77633332ca23e0bda425.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-77633332ca23e0bda425.wav"
+    },
+    {
+      "id": "abby-tts-78745d8630ec2bb87c94",
+      "textHash": "78745d8630ec2bb87c94",
+      "text": "I can open that app screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-78745d8630ec2bb87c94.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 236622,
+      "latencyMs": 30095,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 30095,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-78745d8630ec2bb87c94.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-78745d8630ec2bb87c94.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-78745d8630ec2bb87c94.wav"
+    },
+    {
+      "id": "abby-tts-7b96a67a441afc863405",
+      "textHash": "7b96a67a441afc863405",
+      "text": "Yes. Let\u2019s check safety right now. If he is hard to wake, very confused, or struggling to breathe, call nine one one now. Call nine one one now. Since he is weak and has not eaten since yesterday, this could be urgent. One question: Can you call him right now and tell me if he is awake and speaking clearly?",
+      "originalTexts": [
+        "Yes. Let\u2019s check safety right now. If he is hard to wake, very confused, or struggling to breathe, call 9-1-1 now. Call 9-1-1 now. Since he is weak and has not eaten since yesterday, this could be urgent. One question: Can you call him right now and tell me if he is awake and speaking clearly?"
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.18b190ec7f54.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-cfd2a1c202756d672ede"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Before we do anything else, can we check if he\u2019s safe right now? He sounded weak this morning and said he hadn\u2019t eaten since yesterday."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-ea018658ff0fb9e6e01a"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | Let\u2019s check safety right now. | If he is hard to wake, very confused, or struggling to breathe, call **9-1-1** now. | Call **9-1-1** now."
+      ],
+      "slottedEdgeIds": [
+        "edge-00507e88da95da58c8a3"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7b96a67a441afc863405.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 911438,
+      "latencyMs": 53343,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53343,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7b96a67a441afc863405.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7b96a67a441afc863405.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7b96a67a441afc863405.wav"
+    },
+    {
+      "id": "abby-tts-7fe4728bdb25aae3671b",
+      "textHash": "7fe4728bdb25aae3671b",
+      "text": "Next step: call them now and ask, \u201cDo you take walk-ins today, or is an appointment required?\u201d The number is five four one \u2026 six four six \u2026 seven three eight five. If you want, I can set a reminder so you don\u2019t lose track, what time should I set it for?",
+      "originalTexts": [
+        "Next step: call them now and ask, \u201cDo you take walk-ins today, or is an appointment required?\u201d The number is 5-4-1 \u2026 6-4-6 \u2026 7-3-8-5. If you want, I can set a reminder so you don\u2019t lose track, what time should I set it for?"
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.d5a4c1ea34f7.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7fe4728bdb25aae3671b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 678990,
+      "latencyMs": 53343,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53343,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-7fe4728bdb25aae3671b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7fe4728bdb25aae3671b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-7fe4728bdb25aae3671b.wav"
+    },
+    {
+      "id": "abby-tts-817e078adba367783e3b",
+      "textHash": "817e078adba367783e3b",
+      "text": "Yes. I\u2019ll say it slowly. Call 503\u2026 808\u2026 1256. Again: 503\u2026 808\u2026 1256.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.817e078adba3.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-477e7c290d955fdee785"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | I\u2019ll say it slowly. | Call {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-f025e5d4098dfb91c2bf"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-817e078adba367783e3b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 503374,
+      "latencyMs": 53343,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53343,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-817e078adba367783e3b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-817e078adba367783e3b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-817e078adba367783e3b.wav"
+    },
+    {
+      "id": "abby-tts-835cb6597b4c0df86fae",
+      "textHash": "835cb6597b4c0df86fae",
+      "text": "I could not open the services screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-835cb6597b4c0df86fae.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 271950,
+      "latencyMs": 53343,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53343,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-835cb6597b4c0df86fae.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-835cb6597b4c0df86fae.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-835cb6597b4c0df86fae.wav"
+    },
+    {
+      "id": "abby-tts-8465a48a28035b8a8c85",
+      "textHash": "8465a48a28035b8a8c85",
+      "text": "I could not read your provider messages right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8465a48a28035b8a8c85.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 268366,
+      "latencyMs": 21797,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 21797,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8465a48a28035b8a8c85.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8465a48a28035b8a8c85.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8465a48a28035b8a8c85.wav"
+    },
+    {
+      "id": "abby-tts-88c8a6e569496e60a5b1",
+      "textHash": "88c8a6e569496e60a5b1",
+      "text": "I can open the contacts screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.contacts.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-88c8a6e569496e60a5b1.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 264270,
+      "latencyMs": 21797,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 21797,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-88c8a6e569496e60a5b1.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-88c8a6e569496e60a5b1.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-88c8a6e569496e60a5b1.wav"
+    },
+    {
+      "id": "abby-tts-8bb8b634d94fd3a6f367",
+      "textHash": "8bb8b634d94fd3a6f367",
+      "text": "Okay, I will not open the settings screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8bb8b634d94fd3a6f367.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 153166,
+      "latencyMs": 21797,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 21797,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8bb8b634d94fd3a6f367.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8bb8b634d94fd3a6f367.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8bb8b634d94fd3a6f367.wav"
+    },
+    {
+      "id": "abby-tts-8d9919c49b7dbc0fdc20",
+      "textHash": "8d9919c49b7dbc0fdc20",
+      "text": "I can open the home screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.home.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8d9919c49b7dbc0fdc20.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 222798,
+      "latencyMs": 21797,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 21797,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8d9919c49b7dbc0fdc20.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8d9919c49b7dbc0fdc20.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8d9919c49b7dbc0fdc20.wav"
+    },
+    {
+      "id": "abby-tts-8dbd373bb57de41aec4d",
+      "textHash": "8dbd373bb57de41aec4d",
+      "text": "I could not open the registration screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.register.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8dbd373bb57de41aec4d.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 249934,
+      "latencyMs": 66451,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 66451,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8dbd373bb57de41aec4d.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8dbd373bb57de41aec4d.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8dbd373bb57de41aec4d.wav"
+    },
+    {
+      "id": "abby-tts-8dce059814f3a8af449d",
+      "textHash": "8dce059814f3a8af449d",
+      "text": "I hear you, and you did the right thing calling back. With heavier bleeding and soaking pads faster, this is urgent. Please call nine one one now for immediate medical help, especially this close to delivery. If you\u2019re with her, stay with her, keep her seated or lying down, and don\u2019t leave her alone. If she says she might hurt herself or the baby, tell nine one one that clearly. After you call, I can stay with y.",
+      "originalTexts": [
+        "I hear you, and you did the right thing calling back. With heavier bleeding and soaking pads faster, this is urgent. Please call 911 now for immediate medical help, especially this close to delivery. If you\u2019re with her, stay with her, keep her seated or lying down, and don\u2019t leave her alone. If she says she might hurt herself or the baby, tell 911 that clearly. After you call, I can stay with y..."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.06d4d2990fbd.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8dce059814f3a8af449d.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1112770,
+      "latencyMs": 66451,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 66451,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8dce059814f3a8af449d.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8dce059814f3a8af449d.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8dce059814f3a8af449d.wav"
+    },
+    {
+      "id": "abby-tts-8efc37c7b9c17074b296",
+      "textHash": "8efc37c7b9c17074b296",
+      "text": "Yes. First step: call eight zero zero, three five nine, one eight four five. Slowly: eight hundred \u2026 three five nine \u2026 one eight four five. Backup number: five zero three, five eight one, five two six five. Slowly: five oh three \u2026 five eight one \u2026 five two six five. They said eligibility is for legal issues in Marion or Polk County, and income below one hundred twenty five percent of federal poverty level.",
+      "originalTexts": [
+        "Yes. First step: call (800) 359-1845. Slowly: eight hundred \u2026 three five nine \u2026 one eight four five. Backup number: (503) 581-5265. Slowly: five oh three \u2026 five eight one \u2026 five two six five. They said eligibility is for legal issues in Marion or Polk County, and income below 125% of federal poverty level."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.e310fd820fc3.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-79c4bede19b086e85c6d"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Sorry, can you slow down a little? I\u2019m trying to keep up and I\u2019m kind of overwhelmed."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-223d766231ca0f4ecb1e"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | Call {number_1}, {number_2}, {number_3}. | Slowly: **eight hundred** \u2026 **three five nine** \u2026 **one eight four five**. | Backup number: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-0023b9a6e96a8de33543"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8efc37c7b9c17074b296.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1087566,
+      "latencyMs": 66451,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 66451,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8efc37c7b9c17074b296.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8efc37c7b9c17074b296.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8efc37c7b9c17074b296.wav"
+    },
+    {
+      "id": "abby-tts-8f7f006101ad26181cb9",
+      "textHash": "8f7f006101ad26181cb9",
+      "text": "Yes. The number is nine seven one, five zero six, two six zero nine. I\u2019ll repeat it: nine seven one, five zero six, two six zero nine.",
+      "originalTexts": [
+        "Yes. The number is 971, 506, 2609. I\u2019ll repeat it: 971, 506, 2609."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.ffe236a1cce8.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-dd423cd923dcd3ac696c"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-ef942e5c2846dfd56679"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8f7f006101ad26181cb9.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 373326,
+      "latencyMs": 66451,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 66451,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-8f7f006101ad26181cb9.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8f7f006101ad26181cb9.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-8f7f006101ad26181cb9.wav"
+    },
+    {
+      "id": "abby-tts-912a8bbaa819742212a3",
+      "textHash": "912a8bbaa819742212a3",
+      "text": "I opened the calendar screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-912a8bbaa819742212a3.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 157262,
+      "latencyMs": 18280,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 18280,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-912a8bbaa819742212a3.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-912a8bbaa819742212a3.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-912a8bbaa819742212a3.wav"
+    },
+    {
+      "id": "abby-tts-91536a9be916262df5ce",
+      "textHash": "91536a9be916262df5ce",
+      "text": "Okay, I will not open your wallet documents.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.denied.v1",
+        "frame.action.outcome.open_app_surface.uploads.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-91536a9be916262df5ce.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 189006,
+      "latencyMs": 18280,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 18280,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-91536a9be916262df5ce.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-91536a9be916262df5ce.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-91536a9be916262df5ce.wav"
+    },
+    {
+      "id": "abby-tts-9301e2653e8a53c56880",
+      "textHash": "9301e2653e8a53c56880",
+      "text": "I opened the contacts screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9301e2653e8a53c56880.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 120398,
+      "latencyMs": 18280,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 18280,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9301e2653e8a53c56880.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9301e2653e8a53c56880.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9301e2653e8a53c56880.wav"
+    },
+    {
+      "id": "abby-tts-9485867e986cae9468ff",
+      "textHash": "9485867e986cae9468ff",
+      "text": "I can open the check-in screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.check-in.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9485867e986cae9468ff.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 280654,
+      "latencyMs": 18280,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 18280,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9485867e986cae9468ff.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9485867e986cae9468ff.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9485867e986cae9468ff.wav"
+    },
+    {
+      "id": "abby-tts-959459c2f4da27c090f6",
+      "textHash": "959459c2f4da27c090f6",
+      "text": "I can request a live specialist for you. Say yes to submit the handoff request, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.handoff_live_agent.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-959459c2f4da27c090f6.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 347726,
+      "latencyMs": 29769,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 29769,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-959459c2f4da27c090f6.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-959459c2f4da27c090f6.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-959459c2f4da27c090f6.wav"
+    },
+    {
+      "id": "abby-tts-96e725c7f9261003c539",
+      "textHash": "96e725c7f9261003c539",
+      "text": "I can open the registration screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.register.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-96e725c7f9261003c539.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 263246,
+      "latencyMs": 29769,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 29769,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-96e725c7f9261003c539.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-96e725c7f9261003c539.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-96e725c7f9261003c539.wav"
+    },
+    {
+      "id": "abby-tts-9711cd5484ad6e472454",
+      "textHash": "9711cd5484ad6e472454",
+      "text": "Yes. The number is: eight zero zero, five four four, one seven nine five. I\u2019ll say it once more: eight zero zero, five four four, one seven nine five.",
+      "originalTexts": [
+        "Yes. The number is: 8 0 0, 5 4 4, 1 7 9 5. I\u2019ll say it once more: 800, 544, 1795."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.bdc673f5ede8.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-7f11f280cdf01df2ded0"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | The number is {phone_1}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-5db3cce72c60cb76fbe9"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9711cd5484ad6e472454.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 452686,
+      "latencyMs": 29769,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 29769,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9711cd5484ad6e472454.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9711cd5484ad6e472454.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9711cd5484ad6e472454.wav"
+    },
+    {
+      "id": "abby-tts-98b15016225282d681b5",
+      "textHash": "98b15016225282d681b5",
+      "text": "I could not open the messages screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-98b15016225282d681b5.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 233038,
+      "latencyMs": 29769,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 29769,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-98b15016225282d681b5.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-98b15016225282d681b5.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-98b15016225282d681b5.wav"
+    },
+    {
+      "id": "abby-tts-990659d88fb129b46e1f",
+      "textHash": "990659d88fb129b46e1f",
+      "text": "Okay, I will not read your provider messages.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-990659d88fb129b46e1f.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 149582,
+      "latencyMs": 36306,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 36306,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-990659d88fb129b46e1f.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-990659d88fb129b46e1f.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-990659d88fb129b46e1f.wav"
+    },
+    {
+      "id": "abby-tts-995719eede972e679c05",
+      "textHash": "995719eede972e679c05",
+      "text": "I can create a calendar reminder for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.create_calendar_reminder.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-995719eede972e679c05.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 295502,
+      "latencyMs": 36306,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 36306,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-995719eede972e679c05.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-995719eede972e679c05.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-995719eede972e679c05.wav"
+    },
+    {
+      "id": "abby-tts-9e51357555724f663815",
+      "textHash": "9e51357555724f663815",
+      "text": "You\u2019re doing great, and I\u2019ll go very slowly. The number is: 5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6. I\u2019ll say it once more: 5 \u2026 4 \u2026 1 \u2026 8 \u2026 6 \u2026 4 \u2026 0 \u2026 7 \u2026 7 \u2026 6.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.9e5135755572.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9e51357555724f663815.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 847950,
+      "latencyMs": 36306,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 36306,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9e51357555724f663815.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9e51357555724f663815.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9e51357555724f663815.wav"
+    },
+    {
+      "id": "abby-tts-9f848a7ce9a86059194c",
+      "textHash": "9f848a7ce9a86059194c",
+      "text": "Okay, I will not open the services screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9f848a7ce9a86059194c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 175182,
+      "latencyMs": 36306,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 36306,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9f848a7ce9a86059194c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9f848a7ce9a86059194c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9f848a7ce9a86059194c.wav"
+    },
+    {
+      "id": "abby-tts-9fadf4a86c52c236a04b",
+      "textHash": "9fadf4a86c52c236a04b",
+      "text": "First step: please call 2 \u2026 1 \u2026 1 now. I can\u2019t Place the call for you, but this is the right first number for Lane County near Eugene. Say: \u201cI need to replace my Oregon state ID, and I\u2019m near Eugene. Please give me the nearest office.\u201d I\u2019ll repeat the number: 2 \u2026 1 \u2026 1.",
+      "originalTexts": [
+        "First step: please call 2 \u2026 1 \u2026 1 now. I can\u2019t place the call for you, but this is the right first number for Lane County near Eugene. Say: \u201cI need to replace my Oregon state ID, and I\u2019m near Eugene. Please give me the nearest office.\u201d I\u2019ll repeat the number: 2 \u2026 1 \u2026 1."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.ea1a34575a05.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-db6693cb741aac98c57c"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Can you contact the right place for me, or tell me who to call first?"
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-c403e0a0c8fedac989ce"
+      ],
+      "slottedResponseSignatures": [
+        "First step: please call **2 \u2026 1 \u2026 1** now. | I can\u2019t place the call for you, but this is the right first number for {address_part_1} near {location_1}. | Say: \u201cI need to replace my {location_1} state {entity_1}, and I\u2019m near {location_2}. | Please give me the nearest office.\u201d I\u2019ll repeat the number: **2 \u2026 1 \u2026 1**."
+      ],
+      "slottedEdgeIds": [
+        "edge-0012c16c1877db6a9588"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9fadf4a86c52c236a04b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 858702,
+      "latencyMs": 50017,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50017,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-9fadf4a86c52c236a04b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9fadf4a86c52c236a04b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-9fadf4a86c52c236a04b.wav"
+    },
+    {
+      "id": "abby-tts-a084a117e9b9f6cb0067",
+      "textHash": "a084a117e9b9f6cb0067",
+      "text": "I could not leave a message for the provider right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-a084a117e9b9f6cb0067.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 235598,
+      "latencyMs": 50017,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50017,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-a084a117e9b9f6cb0067.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-a084a117e9b9f6cb0067.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-a084a117e9b9f6cb0067.wav"
+    },
+    {
+      "id": "abby-tts-a4202ed4a6f7d07ffacf",
+      "textHash": "a4202ed4a6f7d07ffacf",
+      "text": "Okay, I will not read your calendar.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-a4202ed4a6f7d07ffacf.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 130126,
+      "latencyMs": 50017,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50017,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-a4202ed4a6f7d07ffacf.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-a4202ed4a6f7d07ffacf.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-a4202ed4a6f7d07ffacf.wav"
+    },
+    {
+      "id": "abby-tts-abb23b874cfdd7b3da1b",
+      "textHash": "abb23b874cfdd7b3da1b",
+      "text": "Next step: write this down now for the ride line office address. 1400 Queen Avenue South.E. Suite 201, Albany, Oregon, nine seven three two two. I\u2019ll repeat once: 1400 Queen Avenue South.E. Suite 201, Albany, Oregon, nine seven three two two.",
+      "originalTexts": [
+        "Next step: write this down now for the ride line office address. 1400 Queen Avenue S.E., Suite 201, Albany, Oregon, 97322. I\u2019ll repeat once: 1400 Queen Avenue S.E., Suite 201, Albany, Oregon, 97322."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.33d203aa98a3.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-ca15f1c085785355334c"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat that more slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-48b9a8092085d4fdf7ce"
+      ],
+      "slottedResponseSignatures": [
+        "I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-ae1f48e2910b4f4952e0"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-abb23b874cfdd7b3da1b.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 934990,
+      "latencyMs": 50017,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50017,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-abb23b874cfdd7b3da1b.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-abb23b874cfdd7b3da1b.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-abb23b874cfdd7b3da1b.wav"
+    },
+    {
+      "id": "abby-tts-acbaad95a94b544005f2",
+      "textHash": "acbaad95a94b544005f2",
+      "text": "I opened the home screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-acbaad95a94b544005f2.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 144462,
+      "latencyMs": 24240,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24240,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-acbaad95a94b544005f2.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-acbaad95a94b544005f2.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-acbaad95a94b544005f2.wav"
+    },
+    {
+      "id": "abby-tts-af0ea12a8fc6fc038f71",
+      "textHash": "af0ea12a8fc6fc038f71",
+      "text": "I can open the messages screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.messages.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-af0ea12a8fc6fc038f71.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 247374,
+      "latencyMs": 24240,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24240,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-af0ea12a8fc6fc038f71.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-af0ea12a8fc6fc038f71.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-af0ea12a8fc6fc038f71.wav"
+    },
+    {
+      "id": "abby-tts-afcb907b76174b52dab1",
+      "textHash": "afcb907b76174b52dab1",
+      "text": "Of course. The number is eight three three, seven four six, eight one six seven. I\u2019ll say it one more time: eight three three, seven four six, eight one six seven.",
+      "originalTexts": [
+        "Of course. The number is 8-3-3, 7-4-6, 8-1-6-7. I\u2019ll say it one more time: 8-3-3, 7-4-6, 8-1-6-7."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.50b1bb444e69.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-7f6ef9a657f2ecbc8a96"
+      ],
+      "slottedResponseSignatures": [
+        "Of course. | The number is {phone_1}. | I\u2019ll repeat: {phone_1}."
+      ],
+      "slottedEdgeIds": [
+        "edge-8182e3782086fc0ec430"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-afcb907b76174b52dab1.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 363598,
+      "latencyMs": 24240,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24240,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-afcb907b76174b52dab1.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-afcb907b76174b52dab1.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-afcb907b76174b52dab1.wav"
+    },
+    {
+      "id": "abby-tts-b060baacae413e053fe0",
+      "textHash": "b060baacae413e053fe0",
+      "text": "I can read your provider messages for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.read_provider_messages.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b060baacae413e053fe0.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 279118,
+      "latencyMs": 24240,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24240,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b060baacae413e053fe0.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b060baacae413e053fe0.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b060baacae413e053fe0.wav"
+    },
+    {
+      "id": "abby-tts-b4f958cae198a3048849",
+      "textHash": "b4f958cae198a3048849",
+      "text": "I opened the check-in screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b4f958cae198a3048849.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 135246,
+      "latencyMs": 24181,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24181,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b4f958cae198a3048849.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b4f958cae198a3048849.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b4f958cae198a3048849.wav"
+    },
+    {
+      "id": "abby-tts-b5f2ef0065a7c572bd8d",
+      "textHash": "b5f2ef0065a7c572bd8d",
+      "text": "I could not read your calendar right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b5f2ef0065a7c572bd8d.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 267342,
+      "latencyMs": 24181,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24181,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b5f2ef0065a7c572bd8d.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b5f2ef0065a7c572bd8d.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b5f2ef0065a7c572bd8d.wav"
+    },
+    {
+      "id": "abby-tts-b6b224e0095e54e5b422",
+      "textHash": "b6b224e0095e54e5b422",
+      "text": "I\u2019ll repeat: five four one, seven six two, four three zero zero. Call five four one, seven six two, four three zero zero.",
+      "originalTexts": [
+        "I\u2019ll repeat: 541, 762, 4300. Call 541, 762, 4300."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.3295dfb16cd2.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-3a53d88d8e9c407972fb"
+      ],
+      "slottedResponseSignatures": [
+        "I\u2019ll repeat: {number_1}, {number_2}, {number_3}. | Call {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-389de5f1421773d7fdb5"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b6b224e0095e54e5b422.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 498254,
+      "latencyMs": 24181,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24181,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b6b224e0095e54e5b422.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b6b224e0095e54e5b422.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b6b224e0095e54e5b422.wav"
+    },
+    {
+      "id": "abby-tts-b706adf985357189374e",
+      "textHash": "b706adf985357189374e",
+      "text": "I opened the registration screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.register.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b706adf985357189374e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 126542,
+      "latencyMs": 24181,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 24181,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b706adf985357189374e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b706adf985357189374e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b706adf985357189374e.wav"
+    },
+    {
+      "id": "abby-tts-b8382c6fe540c974a133",
+      "textHash": "b8382c6fe540c974a133",
+      "text": "I\u2019m really glad you said that. If they\u2019re nearby and you feel in danger right now, call nine one one now. You can say: \u201cI\u2019m being controlled, and I\u2019m scared they\u2019re near me.\u201d If calling isn\u2019t safe, move to the nearest staffed public spot and stay where people can see you. If you want non-police crisis help, call Lane County Mobile Crisis: five four one, six eight two, one zero zero one. You don\u2019t need ID.",
+      "originalTexts": [
+        "I\u2019m really glad you said that. If they\u2019re nearby and you feel in danger right now, call 9-1-1 now. You can say: \u201cI\u2019m being controlled, and I\u2019m scared they\u2019re near me.\u201d If calling isn\u2019t safe, move to the nearest staffed public spot and stay where people can see you. If you want non-police crisis help, call Lane County Mobile Crisis: 5-4-1, 6-8-2, 1-0-0-1. You don\u2019t need ID."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.124893520fff.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b8382c6fe540c974a133.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1068226,
+      "latencyMs": 34756,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 34756,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b8382c6fe540c974a133.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b8382c6fe540c974a133.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b8382c6fe540c974a133.wav"
+    },
+    {
+      "id": "abby-tts-b844cd1185f3473fd206",
+      "textHash": "b844cd1185f3473fd206",
+      "text": "I left the message for the provider.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b844cd1185f3473fd206.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 154190,
+      "latencyMs": 34756,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 34756,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-b844cd1185f3473fd206.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b844cd1185f3473fd206.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-b844cd1185f3473fd206.wav"
+    },
+    {
+      "id": "abby-tts-bb4aa2220eaeeb93d0f4",
+      "textHash": "bb4aa2220eaeeb93d0f4",
+      "text": "I could not open that app screen right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-bb4aa2220eaeeb93d0f4.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 203342,
+      "latencyMs": 34756,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 34756,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-bb4aa2220eaeeb93d0f4.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-bb4aa2220eaeeb93d0f4.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-bb4aa2220eaeeb93d0f4.wav"
+    },
+    {
+      "id": "abby-tts-bc774aedc4019d66ab2c",
+      "textHash": "bc774aedc4019d66ab2c",
+      "text": "The number is five four one, two three two, eight five four six. I\u2019ll repeat: five four one, two three two, eight five four six.",
+      "originalTexts": [
+        "The number is 541, 232, 8546. I\u2019ll repeat: 541, 232, 8546."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.fd124999bce1.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-34b3d8543e70f8a276c1"
+      ],
+      "slottedResponseSignatures": [
+        "The number is {number_1}, {number_2}, {number_3}. | I\u2019ll repeat: {number_1}, {number_2}, {number_3}."
+      ],
+      "slottedEdgeIds": [
+        "edge-75ca7433412ea52d2787"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-bc774aedc4019d66ab2c.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 358990,
+      "latencyMs": 34756,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 34756,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-bc774aedc4019d66ab2c.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-bc774aedc4019d66ab2c.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-bc774aedc4019d66ab2c.wav"
+    },
+    {
+      "id": "abby-tts-c24857967124ab98facc",
+      "textHash": "c24857967124ab98facc",
+      "text": "I hear you, and you\u2019re doing the right thing. Your battery is low, so do this now: call nine one one immediately and put them on speaker. If this call drops, call nine one one again right away. Say: \u201cPossible overdose, slow breathing with pauses, hard to wake.\u201d Keep him on his side and watch his breathing until help gets there.",
+      "originalTexts": [
+        "I hear you, and you\u2019re doing the right thing. Your battery is low, so do this now: call 9-1-1 immediately and put them on speaker. If this call drops, call 9-1-1 again right away. Say: \u201cPossible overdose, slow breathing with pauses, hard to wake.\u201d Keep him on his side and watch his breathing until help gets there."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.b7b494f67653.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c24857967124ab98facc.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 838222,
+      "latencyMs": 50167,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50167,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c24857967124ab98facc.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c24857967124ab98facc.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c24857967124ab98facc.wav"
+    },
+    {
+      "id": "abby-tts-c2dd4f1175424a963973",
+      "textHash": "c2dd4f1175424a963973",
+      "text": "I could not open the service details right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c2dd4f1175424a963973.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 202318,
+      "latencyMs": 50167,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50167,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c2dd4f1175424a963973.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c2dd4f1175424a963973.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c2dd4f1175424a963973.wav"
+    },
+    {
+      "id": "abby-tts-c3dc2d7c7c52a128d3aa",
+      "textHash": "c3dc2d7c7c52a128d3aa",
+      "text": "Of course. Here it is slowly: call the same shelter line you called yesterday. Say: \u201cI completed intake yesterday around 10 a.m. Please check my status, tell me if I\u2019m on the list for tonight, and give me check-in time and location.\u201d If they cannot find your intake, ask them to redo intake while you are still on the phone.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.c3dc2d7c7c52.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c3dc2d7c7c52a128d3aa.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 917582,
+      "latencyMs": 50167,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50167,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c3dc2d7c7c52a128d3aa.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c3dc2d7c7c52a128d3aa.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c3dc2d7c7c52a128d3aa.wav"
+    },
+    {
+      "id": "abby-tts-c7486225925748397100",
+      "textHash": "c7486225925748397100",
+      "text": "I could not create that calendar reminder right now. Please try again in a moment.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.failed.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c7486225925748397100.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 242766,
+      "latencyMs": 50167,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 50167,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-c7486225925748397100.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c7486225925748397100.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-c7486225925748397100.wav"
+    },
+    {
+      "id": "abby-tts-cd8e743355eb76675c34",
+      "textHash": "cd8e743355eb76675c34",
+      "text": "I can leave a message for the provider. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.leave_provider_message.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-cd8e743355eb76675c34.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 286798,
+      "latencyMs": 28760,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 28760,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-cd8e743355eb76675c34.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-cd8e743355eb76675c34.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-cd8e743355eb76675c34.wav"
+    },
+    {
+      "id": "abby-tts-cf260ff9a20b8a95d936",
+      "textHash": "cf260ff9a20b8a95d936",
+      "text": "Your request to speak with a live specialist has been submitted. I will not treat the transfer as complete until a provider confirms it.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-cf260ff9a20b8a95d936.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 386638,
+      "latencyMs": 28760,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 28760,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-cf260ff9a20b8a95d936.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-cf260ff9a20b8a95d936.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-cf260ff9a20b8a95d936.wav"
+    },
+    {
+      "id": "abby-tts-d36e109c711af2d705e0",
+      "textHash": "d36e109c711af2d705e0",
+      "text": "Okay, I will not request a live specialist right now. We can continue here, or you can ask again later.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d36e109c711af2d705e0.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 350286,
+      "latencyMs": 28760,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 28760,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d36e109c711af2d705e0.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d36e109c711af2d705e0.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d36e109c711af2d705e0.wav"
+    },
+    {
+      "id": "abby-tts-d543d4b1df35257dd26e",
+      "textHash": "d543d4b1df35257dd26e",
+      "text": "I can open the settings screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.settings.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d543d4b1df35257dd26e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 230478,
+      "latencyMs": 28760,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 28760,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d543d4b1df35257dd26e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d543d4b1df35257dd26e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d543d4b1df35257dd26e.wav"
+    },
+    {
+      "id": "abby-tts-d60dac9e78aa4c016d73",
+      "textHash": "d60dac9e78aa4c016d73",
+      "text": "Yes. Slowly now: five four one, four seven four, five four five two. Again: five four one, four seven four, five four five two.",
+      "originalTexts": [
+        "Yes. Slowly now: 5 4 1, 4 7 4, 5 4 5 2. Again: 5 4 1, 4 7 4, 5 4 5 2."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.016dc38e2842.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-8ea0fa734016e7f290fe"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Please repeat the number slowly."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-d17502679395bbba74cb"
+      ],
+      "slottedResponseSignatures": [
+        "Yes. | The number is {phone_1}. | I\u2019ll repeat: {phone_1}."
+      ],
+      "slottedEdgeIds": [
+        "edge-4bae042047b0a8b55d88"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d60dac9e78aa4c016d73.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 335438,
+      "latencyMs": 53389,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53389,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d60dac9e78aa4c016d73.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d60dac9e78aa4c016d73.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d60dac9e78aa4c016d73.wav"
+    },
+    {
+      "id": "abby-tts-d666cc966e5303d908af",
+      "textHash": "d666cc966e5303d908af",
+      "text": "Okay, I will not open the messages screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d666cc966e5303d908af.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 166990,
+      "latencyMs": 53389,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53389,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d666cc966e5303d908af.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d666cc966e5303d908af.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d666cc966e5303d908af.wav"
+    },
+    {
+      "id": "abby-tts-d6a30a870d62cb451e51",
+      "textHash": "d6a30a870d62cb451e51",
+      "text": "Yes. We can keep this quiet and simple. Option one: go to a public Place nearby tonight, like a store, lobby, or hospital waiting area, and stay where other people are. Option two: if moving feels risky, stay where you are and keep exits in mind until it\u2019s safer to leave. If danger becomes immediate, call nine one one. If you want, I can connect you to a live two one one person now to help plan a safe Place t.",
+      "originalTexts": [
+        "Yes. We can keep this quiet and simple. Option one: go to a public place nearby tonight, like a store, lobby, or hospital waiting area, and stay where other people are. Option two: if moving feels risky, stay where you are and keep exits in mind until it\u2019s safer to leave. If danger becomes immediate, call 9-1-1. If you want, I can connect you to a live 211 person now to help plan a safe place t..."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.1086b05d6607.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d6a30a870d62cb451e51.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1216706,
+      "latencyMs": 53389,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53389,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-d6a30a870d62cb451e51.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d6a30a870d62cb451e51.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-d6a30a870d62cb451e51.wav"
+    },
+    {
+      "id": "abby-tts-daebc5eb2de50cd003f6",
+      "textHash": "daebc5eb2de50cd003f6",
+      "text": "Most important number first: eight five five, three two eight, six seven one five. Again: eight five five, three two eight, six seven one five. That line is for Oregon EBT and SNAP benefits help. For disability benefits, do you want SSI and SSDI help, or state benefits help?",
+      "originalTexts": [
+        "Most important number first: 8 5 5, 3 2 8, 6 7 1 5. Again: 8 5 5, 3 2 8, 6 7 1 5. That line is for Oregon EBT and SNAP benefits help. For disability benefits, do you want SSI/SSDI help, or state benefits help?"
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.e34308738deb.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-daebc5eb2de50cd003f6.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 751182,
+      "latencyMs": 53389,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 53389,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-daebc5eb2de50cd003f6.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-daebc5eb2de50cd003f6.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-daebc5eb2de50cd003f6.wav"
+    },
+    {
+      "id": "abby-tts-dcaf4fd7578eba362685",
+      "textHash": "dcaf4fd7578eba362685",
+      "text": "Totally hear you, that sounds stressful. A solid option today is the PDX Saints Love Day Center in Portland. Address is: 247 Southeast eighty second Avenue, Portland, nine seven two one six. I\u2019ll say it once more: 247 South East eighty second Avenue. They serve youth and adults, and help with meals, bathrooms, clothing, hygiene kits, wound care, and bus passes. Eligibility is unrestricted, so you can try to walk in today.",
+      "originalTexts": [
+        "Totally hear you, that sounds stressful. A solid option today is the PDX Saints Love Day Center in Portland. Address is: 247 Southeast 82nd Avenue, Portland, 97216. I\u2019ll say it once more: 247 SE 82nd Avenue. They serve youth and adults, and help with meals, bathrooms, clothing, hygiene kits, wound care, and bus passes. Eligibility is unrestricted, so you can try to walk in today."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.21a4439c4ca8.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-dcaf4fd7578eba362685.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1200322,
+      "latencyMs": 51928,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 51928,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-dcaf4fd7578eba362685.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-dcaf4fd7578eba362685.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-dcaf4fd7578eba362685.wav"
+    },
+    {
+      "id": "abby-tts-e01298728164006c2b79",
+      "textHash": "e01298728164006c2b79",
+      "text": "I can open the calendar screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.calendar.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e01298728164006c2b79.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 262222,
+      "latencyMs": 51928,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 51928,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e01298728164006c2b79.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e01298728164006c2b79.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e01298728164006c2b79.wav"
+    },
+    {
+      "id": "abby-tts-e72b0a8be7cc8df2dcd4",
+      "textHash": "e72b0a8be7cc8df2dcd4",
+      "text": "Okay, I will not schedule a service callback.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e72b0a8be7cc8df2dcd4.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 175182,
+      "latencyMs": 51928,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 51928,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e72b0a8be7cc8df2dcd4.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e72b0a8be7cc8df2dcd4.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e72b0a8be7cc8df2dcd4.wav"
+    },
+    {
+      "id": "abby-tts-e8f5f36537ac0a71ad03",
+      "textHash": "e8f5f36537ac0a71ad03",
+      "text": "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `nine one one` now. Call `nine one one` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?",
+      "originalTexts": [
+        "Yes, I hear you. You did the right thing calling. If you feel faint, confused, or like you might pass out, call `9-1-1` now. Call `9-1-1` now. I can stay with you and get you to a live person for a same-day cooling option in Oregon City. One quick question: are you having any heat-sickness signs right now, like dizziness or nausea?"
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.b543dc67a547.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e8f5f36537ac0a71ad03.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 955470,
+      "latencyMs": 51928,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 51928,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e8f5f36537ac0a71ad03.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e8f5f36537ac0a71ad03.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e8f5f36537ac0a71ad03.wav"
+    },
+    {
+      "id": "abby-tts-e94d681caa1173dfb702",
+      "textHash": "e94d681caa1173dfb702",
+      "text": "I can open the interaction history screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.interactions.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e94d681caa1173dfb702.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 253518,
+      "latencyMs": 42253,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42253,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-e94d681caa1173dfb702.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e94d681caa1173dfb702.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-e94d681caa1173dfb702.wav"
+    },
+    {
+      "id": "abby-tts-ec02d366097696d9aac0",
+      "textHash": "ec02d366097696d9aac0",
+      "text": "I opened the messages screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-ec02d366097696d9aac0.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 132174,
+      "latencyMs": 42253,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42253,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-ec02d366097696d9aac0.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-ec02d366097696d9aac0.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-ec02d366097696d9aac0.wav"
+    },
+    {
+      "id": "abby-tts-f0c727155290952951de",
+      "textHash": "f0c727155290952951de",
+      "text": "Yes. I can help. For eviction legal aid in Hillsboro, call Oregon Law Center, Hillsboro office. Main number: 503\u2026 640\u2026 4115. I\u2019ll repeat: 503\u2026 640\u2026 4115. Toll-free: 877\u2026 296\u2026 4076. I\u2019ll repeat: 877\u2026 296\u2026 4076. Address: 230 Northeast Second Avenue, Suite F, Hillsboro, Oregon, nine seven one two four. I can repeat the address slowly if you want. They help low-income people, usually at or below one hundred twenty five percent of federal pove.",
+      "originalTexts": [
+        "Yes. I can help. For eviction legal aid in Hillsboro, call Oregon Law Center, Hillsboro office. Main number: 503\u2026 640\u2026 4115. I\u2019ll repeat: 503\u2026 640\u2026 4115. Toll-free: 877\u2026 296\u2026 4076. I\u2019ll repeat: 877\u2026 296\u2026 4076. Address: 230 Northeast Second Avenue, Suite F, Hillsboro, Oregon, 97124. I can repeat the address slowly if you want. They help low-income people, usually at or below 125% of federal pove..."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.2840cfcda1fe.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f0c727155290952951de.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 1868482,
+      "latencyMs": 42253,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42253,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f0c727155290952951de.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f0c727155290952951de.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f0c727155290952951de.wav"
+    },
+    {
+      "id": "abby-tts-f3aee720c89ebbf93eb7",
+      "textHash": "f3aee720c89ebbf93eb7",
+      "text": "Okay, I will not open the home screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f3aee720c89ebbf93eb7.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 150606,
+      "latencyMs": 42253,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 42253,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f3aee720c89ebbf93eb7.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f3aee720c89ebbf93eb7.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f3aee720c89ebbf93eb7.wav"
+    },
+    {
+      "id": "abby-tts-f9de753e6bbc084dc20e",
+      "textHash": "f9de753e6bbc084dc20e",
+      "text": "Okay, I will not open that app screen.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.denied.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f9de753e6bbc084dc20e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 135246,
+      "latencyMs": 41368,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 41368,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-f9de753e6bbc084dc20e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f9de753e6bbc084dc20e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-f9de753e6bbc084dc20e.wav"
+    },
+    {
+      "id": "abby-tts-fad3e0788237b5a34f33",
+      "textHash": "fad3e0788237b5a34f33",
+      "text": "I\u2019m here with you. The audio was a little unclear just now. Please say one short thing you need most right now: food, housing, bills, or someone to talk to.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.fad3e0788237.v1"
+      ],
+      "priorityScore": 1.0,
+      "slottedIntentIds": [
+        "intent-4baec94c1d16e4206f45"
+      ],
+      "slottedCanonicalQueryTemplates": [
+        "Hi, um... I don't even know what to ask for, I just need help and I can't think straight."
+      ],
+      "slottedResponseFrameIds": [
+        "response-frame-b65b851719580e20c171"
+      ],
+      "slottedResponseSignatures": [
+        "I\u2019m here with you. | The audio was a little unclear just now. | Please say one short thing you need most right now: food, housing, bills, or someone to talk to."
+      ],
+      "slottedEdgeIds": [
+        "edge-0047523629af6274e1c6"
+      ],
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-fad3e0788237b5a34f33.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 474702,
+      "latencyMs": 41368,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 41368,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-fad3e0788237b5a34f33.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-fad3e0788237b5a34f33.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-fad3e0788237b5a34f33.wav"
+    },
+    {
+      "id": "abby-tts-fec728c6301c8223a249",
+      "textHash": "fec728c6301c8223a249",
+      "text": "I hear you, and that\u2019s a lot to carry. If she\u2019s in immediate danger right now, call nine one one first. If not, stay with me and I\u2019ll get you to a live two one one specialist for Beaverton to check tonight\u2019s shelter options and any ride help, and we\u2019ll keep going until you get a real yes. Is she with you right now, and is she in a spot that feels safe for the next few minutes?",
+      "originalTexts": [
+        "I hear you, and that\u2019s a lot to carry. If she\u2019s in immediate danger right now, call 911 first. If not, stay with me and I\u2019ll get you to a live 211 specialist for Beaverton to check tonight\u2019s shelter options and any ride help, and we\u2019ll keep going until you get a real yes. Is she with you right now, and is she in a spot that feels safe for the next few minutes?"
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.dag.high_traffic.9c3f6dd62012.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-fec728c6301c8223a249.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 871502,
+      "latencyMs": 41368,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 41368,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-fec728c6301c8223a249.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-fec728c6301c8223a249.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-fec728c6301c8223a249.wav"
+    },
+    {
+      "id": "abby-tts-ffbef8f56e3cb634dd8e",
+      "textHash": "ffbef8f56e3cb634dd8e",
+      "text": "I started the safety escalation request. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas2_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.success.v1"
+      ],
+      "priorityScore": 1.0,
+      "status": "generated",
+      "audioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-ffbef8f56e3cb634dd8e.wav",
+      "mimeType": "audio/wav",
+      "audioBytes": 345166,
+      "latencyMs": 41368,
+      "batchMode": "batch",
+      "wavDeprecated": false,
+      "batchLatencyMs": 41368,
+      "mp3Path": "",
+      "preferredAudioPath": "data/voice_app_surface_full_coverage/audio/production/indextts/abby-tts-ffbef8f56e3cb634dd8e.wav",
+      "preferredMimeType": "audio/wav",
+      "audioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-ffbef8f56e3cb634dd8e.wav",
+      "mp3Url": "",
+      "preferredAudioUrl": "/assets/audio/precomputed/211-dag-indextts/abby-tts-ffbef8f56e3cb634dd8e.wav"
+    }
+  ]
+}
