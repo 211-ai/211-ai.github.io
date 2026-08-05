@@ -1,0 +1,48 @@
+{
+  "by_route": {
+    "app_surface_navigation": 1200,
+    "calendar_event_support": 400,
+    "grounded_211_answer": 200,
+    "provider_contact_support": 288,
+    "wallet_document_support": 200
+  },
+  "by_surface": {
+    "calendar": 400,
+    "check-in": 200,
+    "contacts": 200,
+    "home": 400,
+    "interactions": 200,
+    "messages": 288,
+    "settings": 200,
+    "social-services": 200,
+    "uploads": 200
+  },
+  "edge_count": 2288,
+  "edges_digest": "sha256:47832bc5cad1ee6ccafe608109a5ca06c899cb6e7dd23b38404a28ec1c26c21a",
+  "edges_path": "docs/phone_dialog_generation/surface_expansion_edges.jsonl",
+  "expansion_dir": "data/voice_app_surface_coverage/dag_expansion",
+  "full_dag_merge": {
+    "note": "Full DAG rewrite remains operator-gated due to 67MB artifact size and GraphRAG rebuild cost.",
+    "operator_command": "python scripts/voice_app_surface_coverage/project_dag_expansion.py --write && # then offline rebuild tooling absorbs surface_expansion_edges.jsonl",
+    "status": "not_applied",
+    "target": "docs/phone_dialog_generation/slotted_response_dag.json"
+  },
+  "generated_at": "2026-08-05T19:48:07.863278+00:00",
+  "p0_surface_floors": {
+    "all_met": true,
+    "met": {
+      "calendar": true,
+      "check-in": true,
+      "contacts": true,
+      "home": true,
+      "interactions": true,
+      "messages": true,
+      "settings": true,
+      "social-services": true,
+      "uploads": true
+    },
+    "minimum": 200
+  },
+  "program_id": "voice-app-surface-coverage-v1",
+  "schema": "voice-app-surface-coverage/dag-expansion-projection@1"
+}
