@@ -575,7 +575,7 @@ Program invariants:
 
 ## VOICE-ACTION-029 Build offline e2e pilot matrix over slotted DAG samples
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
