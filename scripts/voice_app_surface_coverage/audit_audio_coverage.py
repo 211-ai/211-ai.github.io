@@ -21,8 +21,16 @@ def main() -> int:
             errors.append("missing audio-stage-receipt.json")
         else:
             d = json.loads(stage.read_text())
-            if d.get("action_frame_count", 0) < 40:
+            pilot = (d.get("pilot_action_smoke") or {}).get("row_count") or d.get("action_frame_count") or 0
+            if int(pilot) < 40 and d.get("status") not in {"smoke_staged", "ready_for_smoke_stage"}:
                 errors.append("action_frame_count too low")
+            if d.get("status") == "smoke_staged":
+                pilot_n = int((d.get("pilot_action_smoke") or {}).get("row_count") or 0)
+                surf_n = int((d.get("surface_nav_smoke") or {}).get("row_count") or 0)
+                if pilot_n < 40:
+                    errors.append(f"pilot smoke rows {pilot_n} < 40")
+                if surf_n < 36:
+                    errors.append(f"surface smoke rows {surf_n} < 36")
     if args.check_regen_receipt or args.check:
         if not regen.is_file():
             errors.append("missing audio-regen-batch-p0.json")
