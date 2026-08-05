@@ -1,22 +1,26 @@
 {
-  "command_pilot": "python scripts/stage_abby_action_audio.py --smoke --stage-root data/voice_app_surface_coverage/audio/stage/smoke --verify-resolver",
-  "command_surface": "python scripts/stage_abby_action_audio.py --smoke --frames docs/phone_dialog_generation/surface_navigation_speech_frames.jsonl --stage-root data/voice_app_surface_coverage/audio/stage/smoke-surface --verify-resolver",
-  "generated_at": "2026-08-05T18:32:59.413217+00:00",
-  "pilot_action_smoke": {
-    "resolver_exact_match": "40/40",
-    "row_count": 40,
-    "stage_root": "data/voice_app_surface_coverage/audio/stage/smoke",
-    "verify": "OK"
-  },
-  "program_id": "voice-app-surface-coverage-v1",
   "schema": "voice-app-surface-coverage/audio-stage-receipt@1",
-  "status": "smoke_staged",
-  "surface_nav_smoke": {
-    "note": "stage script marks complete=false because surface corpus is not full pilot set; fixtures still resolve.",
-    "resolver_exact_match": "36/36",
-    "row_count": 36,
-    "stage_root": "data/voice_app_surface_coverage/audio/stage/smoke-surface",
-    "verify": "OK"
+  "program_id": "voice-app-surface-coverage-v1",
+  "generated_at": "2026-08-05T20:11:47.780413+00:00",
+  "status": "production_staged",
+  "pilot_action_smoke": {
+    "row_count": 40,
+    "note": "superseded by production stage"
   },
-  "task_id": "VAS-022"
+  "surface_nav_smoke": {
+    "row_count": 36,
+    "note": "superseded by production stage"
+  },
+  "production_p0": {
+    "schema": "voice-app-surface-coverage/production-audio-stage@1",
+    "program_id": "voice-app-surface-coverage-v1",
+    "generated_at": "2026-08-05T20:11:47.780203+00:00",
+    "stage_root": "data/voice_app_surface_coverage/audio/stage/production-p0",
+    "row_count": 76,
+    "missing_count": 0,
+    "missing_frame_ids": [],
+    "wav_count": 76,
+    "unique_source_wavs": 72
+  },
+  "command_production": "scripts/precompute_indextts_responses.py --response-manifest .../vas-p0-response-manifest.json"
 }

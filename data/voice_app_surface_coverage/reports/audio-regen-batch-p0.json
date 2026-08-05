@@ -1,19 +1,29 @@
 {
+  "artifacts": {
+    "indextts_manifest": "data/voice_app_surface_coverage/audio/production/indextts-p0-manifest.json",
+    "resolver": "data/voice_app_surface_coverage/audio/stage/production-p0/metadata/abby_action_precomputed_audio_resolver.jsonl",
+    "response_manifest": "data/voice_app_surface_coverage/audio/production/vas-p0-response-manifest.json",
+    "stage_root": "data/voice_app_surface_coverage/audio/stage/production-p0"
+  },
+  "batch_digest": "sha256:8343625b554802fd7d94f1e80917f4bf989f64dab8b45db6f9150a41ac3c0b17",
   "budgeted_generate_required": {
     "pilot_action_frames": 40,
     "surface_nav_frames": 36,
     "total": 76
   },
-  "generated_at": "2026-08-05T18:31:00.321152+00:00",
-  "live_tts_space": "deny_until_operator_enable",
+  "generated": {
+    "missing_frames": 0,
+    "staged_frames": 76,
+    "unique_texts": 72
+  },
+  "generated_at": "2026-08-05T20:11:47.780413+00:00",
+  "live_tts_space": "https://publicus-indextts-2-demo.hf.space",
+  "model": "Publicus/IndexTTS-2-Demo",
   "operator_steps": [
-    "Export WALLET/HF credentials out of band (never argv).",
-    "Enable live TTS Space only for this task.",
-    "Run IndexTTS precompute for generate_required frames.",
-    "Record batch digest into this receipt and flip status to completed."
+    "completed via live IndexTTS Space using HF token from ~/.cache/huggingface/token"
   ],
   "program_id": "voice-app-surface-coverage-v1",
   "schema": "voice-app-surface-coverage/audio-regen-batch@1",
-  "status": "deferred_operator_gate",
+  "status": "completed",
   "task_id": "VAS-023"
 }

@@ -1,0 +1,1684 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T20:04:01.043476+00:00",
+  "purpose": "VAS-023 P0 production IndexTTS for pilot action + surface nav speech frames",
+  "program_id": "voice-app-surface-coverage-v1",
+  "summary": {
+    "frameCount": 76,
+    "responseCount": 76
+  },
+  "responses": [
+    {
+      "id": "abby-tts-995719eede972e679c05",
+      "textHash": "995719eede972e679c05",
+      "text": "I can create a calendar reminder for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can create a calendar reminder for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.create_calendar_reminder.v1"
+      ],
+      "frameId": "frame.action.confirm.create_calendar_reminder.v1",
+      "logicalAction": "create_calendar_reminder",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-4191920b4ada40b579df",
+      "textHash": "4191920b4ada40b579df",
+      "text": "I created the calendar reminder.",
+      "originalTexts": [
+        "I created the calendar reminder."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.success.v1"
+      ],
+      "frameId": "frame.action.outcome.create_calendar_reminder.success.v1",
+      "logicalAction": "create_calendar_reminder",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-46cb00d04276403d27af",
+      "textHash": "46cb00d04276403d27af",
+      "text": "Okay, I will not create that calendar reminder.",
+      "originalTexts": [
+        "Okay, I will not create that calendar reminder."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.create_calendar_reminder.denied.v1",
+      "logicalAction": "create_calendar_reminder",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-c7486225925748397100",
+      "textHash": "c7486225925748397100",
+      "text": "I could not create that calendar reminder right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not create that calendar reminder right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.create_calendar_reminder.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.create_calendar_reminder.failed.v1",
+      "logicalAction": "create_calendar_reminder",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-19646047a90065ae879f",
+      "textHash": "19646047a90065ae879f",
+      "text": "For your safety, I can escalate this to emergency or specialist support. Say yes if you want me to start that escalation now.",
+      "originalTexts": [
+        "For your safety, I can escalate this to emergency or specialist support. Say yes if you want me to start that escalation now."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.escalate_safety.v1"
+      ],
+      "frameId": "frame.action.confirm.escalate_safety.v1",
+      "logicalAction": "escalate_safety",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-ffbef8f56e3cb634dd8e",
+      "textHash": "ffbef8f56e3cb634dd8e",
+      "text": "I started the safety escalation request. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [
+        "I started the safety escalation request. If you are in immediate danger, call nine one one now."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.success.v1"
+      ],
+      "frameId": "frame.action.outcome.escalate_safety.success.v1",
+      "logicalAction": "escalate_safety",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-71367b8aab307d15353b",
+      "textHash": "71367b8aab307d15353b",
+      "text": "Okay, I will not start a safety escalation from here. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [
+        "Okay, I will not start a safety escalation from here. If you are in immediate danger, call nine one one now."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.escalate_safety.denied.v1",
+      "logicalAction": "escalate_safety",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-2289088d7649025734b4",
+      "textHash": "2289088d7649025734b4",
+      "text": "I could not complete the safety escalation request just now. If you are in immediate danger, call nine one one now.",
+      "originalTexts": [
+        "I could not complete the safety escalation request just now. If you are in immediate danger, call nine one one now."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.escalate_safety.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.escalate_safety.failed.v1",
+      "logicalAction": "escalate_safety",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-959459c2f4da27c090f6",
+      "textHash": "959459c2f4da27c090f6",
+      "text": "I can request a live specialist for you. Say yes to submit the handoff request, or no to cancel.",
+      "originalTexts": [
+        "I can request a live specialist for you. Say yes to submit the handoff request, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.handoff_live_agent.v1"
+      ],
+      "frameId": "frame.action.confirm.handoff_live_agent.v1",
+      "logicalAction": "handoff_live_agent",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-cf260ff9a20b8a95d936",
+      "textHash": "cf260ff9a20b8a95d936",
+      "text": "Your request to speak with a live specialist has been submitted. I will not treat the transfer as complete until a provider confirms it.",
+      "originalTexts": [
+        "Your request to speak with a live specialist has been submitted. I will not treat the transfer as complete until a provider confirms it."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.success.v1"
+      ],
+      "frameId": "frame.action.outcome.handoff_live_agent.success.v1",
+      "logicalAction": "handoff_live_agent",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-d36e109c711af2d705e0",
+      "textHash": "d36e109c711af2d705e0",
+      "text": "Okay, I will not request a live specialist right now. We can continue here, or you can ask again later.",
+      "originalTexts": [
+        "Okay, I will not request a live specialist right now. We can continue here, or you can ask again later."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.handoff_live_agent.denied.v1",
+      "logicalAction": "handoff_live_agent",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-5fe13cab79863e6ac17c",
+      "textHash": "5fe13cab79863e6ac17c",
+      "text": "I could not complete the live specialist request just now. Please try again, or stay on the line for more options.",
+      "originalTexts": [
+        "I could not complete the live specialist request just now. Please try again, or stay on the line for more options."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.handoff_live_agent.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.handoff_live_agent.failed.v1",
+      "logicalAction": "handoff_live_agent",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-cd8e743355eb76675c34",
+      "textHash": "cd8e743355eb76675c34",
+      "text": "I can leave a message for the provider. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can leave a message for the provider. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.leave_provider_message.v1"
+      ],
+      "frameId": "frame.action.confirm.leave_provider_message.v1",
+      "logicalAction": "leave_provider_message",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-b844cd1185f3473fd206",
+      "textHash": "b844cd1185f3473fd206",
+      "text": "I left the message for the provider.",
+      "originalTexts": [
+        "I left the message for the provider."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.success.v1"
+      ],
+      "frameId": "frame.action.outcome.leave_provider_message.success.v1",
+      "logicalAction": "leave_provider_message",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-43f0623ac54caa2a4258",
+      "textHash": "43f0623ac54caa2a4258",
+      "text": "Okay, I will not leave a message for the provider.",
+      "originalTexts": [
+        "Okay, I will not leave a message for the provider."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.leave_provider_message.denied.v1",
+      "logicalAction": "leave_provider_message",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-a084a117e9b9f6cb0067",
+      "textHash": "a084a117e9b9f6cb0067",
+      "text": "I could not leave a message for the provider right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not leave a message for the provider right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.leave_provider_message.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.leave_provider_message.failed.v1",
+      "logicalAction": "leave_provider_message",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-78745d8630ec2bb87c94",
+      "textHash": "78745d8630ec2bb87c94",
+      "text": "I can open that app screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open that app screen for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-6a23eb8fb8a910ff816e",
+      "textHash": "6a23eb8fb8a910ff816e",
+      "text": "I opened the requested app screen.",
+      "originalTexts": [
+        "I opened the requested app screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-f9de753e6bbc084dc20e",
+      "textHash": "f9de753e6bbc084dc20e",
+      "text": "Okay, I will not open that app screen.",
+      "originalTexts": [
+        "Okay, I will not open that app screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-bb4aa2220eaeeb93d0f4",
+      "textHash": "bb4aa2220eaeeb93d0f4",
+      "text": "I could not open that app screen right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open that app screen right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-4c2a81dee54e29c83f87",
+      "textHash": "4c2a81dee54e29c83f87",
+      "text": "I can open the service details for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open the service details for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_service_detail.v1"
+      ],
+      "frameId": "frame.action.confirm.open_service_detail.v1",
+      "logicalAction": "open_service_detail",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-10269616b4be2bb8d8af",
+      "textHash": "10269616b4be2bb8d8af",
+      "text": "I opened the service details.",
+      "originalTexts": [
+        "I opened the service details."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_service_detail.success.v1",
+      "logicalAction": "open_service_detail",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-4e55cf8bab9db9d0871e",
+      "textHash": "4e55cf8bab9db9d0871e",
+      "text": "Okay, I will not open the service details.",
+      "originalTexts": [
+        "Okay, I will not open the service details."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_service_detail.denied.v1",
+      "logicalAction": "open_service_detail",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-c2dd4f1175424a963973",
+      "textHash": "c2dd4f1175424a963973",
+      "text": "I could not open the service details right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open the service details right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_service_detail.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_service_detail.failed.v1",
+      "logicalAction": "open_service_detail",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-7578e6a3af6dd3cd9989",
+      "textHash": "7578e6a3af6dd3cd9989",
+      "text": "I can open your wallet documents for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open your wallet documents for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_wallet_documents.v1"
+      ],
+      "frameId": "frame.action.confirm.open_wallet_documents.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-1917ac0247e9cb82674c",
+      "textHash": "1917ac0247e9cb82674c",
+      "text": "I opened your wallet documents.",
+      "originalTexts": [
+        "I opened your wallet documents."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_wallet_documents.success.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-91536a9be916262df5ce",
+      "textHash": "91536a9be916262df5ce",
+      "text": "Okay, I will not open your wallet documents.",
+      "originalTexts": [
+        "Okay, I will not open your wallet documents."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_wallet_documents.denied.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-699f258168093ad60498",
+      "textHash": "699f258168093ad60498",
+      "text": "I could not open your wallet documents right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open your wallet documents right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_wallet_documents.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_wallet_documents.failed.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-031cfecb443b27953598",
+      "textHash": "031cfecb443b27953598",
+      "text": "I can read your calendar for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can read your calendar for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.read_calendar.v1"
+      ],
+      "frameId": "frame.action.confirm.read_calendar.v1",
+      "logicalAction": "read_calendar",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-52fcd1fd1391b7773632",
+      "textHash": "52fcd1fd1391b7773632",
+      "text": "I finished reading your calendar.",
+      "originalTexts": [
+        "I finished reading your calendar."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.success.v1"
+      ],
+      "frameId": "frame.action.outcome.read_calendar.success.v1",
+      "logicalAction": "read_calendar",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-a4202ed4a6f7d07ffacf",
+      "textHash": "a4202ed4a6f7d07ffacf",
+      "text": "Okay, I will not read your calendar.",
+      "originalTexts": [
+        "Okay, I will not read your calendar."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.read_calendar.denied.v1",
+      "logicalAction": "read_calendar",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-b5f2ef0065a7c572bd8d",
+      "textHash": "b5f2ef0065a7c572bd8d",
+      "text": "I could not read your calendar right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not read your calendar right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_calendar.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.read_calendar.failed.v1",
+      "logicalAction": "read_calendar",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-b060baacae413e053fe0",
+      "textHash": "b060baacae413e053fe0",
+      "text": "I can read your provider messages for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can read your provider messages for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.read_provider_messages.v1"
+      ],
+      "frameId": "frame.action.confirm.read_provider_messages.v1",
+      "logicalAction": "read_provider_messages",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-1a29ea8ff93d1815fcf7",
+      "textHash": "1a29ea8ff93d1815fcf7",
+      "text": "I finished reading your provider messages.",
+      "originalTexts": [
+        "I finished reading your provider messages."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.success.v1"
+      ],
+      "frameId": "frame.action.outcome.read_provider_messages.success.v1",
+      "logicalAction": "read_provider_messages",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-990659d88fb129b46e1f",
+      "textHash": "990659d88fb129b46e1f",
+      "text": "Okay, I will not read your provider messages.",
+      "originalTexts": [
+        "Okay, I will not read your provider messages."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.read_provider_messages.denied.v1",
+      "logicalAction": "read_provider_messages",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-8465a48a28035b8a8c85",
+      "textHash": "8465a48a28035b8a8c85",
+      "text": "I could not read your provider messages right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not read your provider messages right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.read_provider_messages.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.read_provider_messages.failed.v1",
+      "logicalAction": "read_provider_messages",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-1007986d8be4b0db4db6",
+      "textHash": "1007986d8be4b0db4db6",
+      "text": "I can schedule a service callback for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can schedule a service callback for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.schedule_service_callback.v1"
+      ],
+      "frameId": "frame.action.confirm.schedule_service_callback.v1",
+      "logicalAction": "schedule_service_callback",
+      "role": "confirm",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-5a91e7d743c0e25cfa85",
+      "textHash": "5a91e7d743c0e25cfa85",
+      "text": "I scheduled the service callback request.",
+      "originalTexts": [
+        "I scheduled the service callback request."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.success.v1"
+      ],
+      "frameId": "frame.action.outcome.schedule_service_callback.success.v1",
+      "logicalAction": "schedule_service_callback",
+      "role": "success",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-e72b0a8be7cc8df2dcd4",
+      "textHash": "e72b0a8be7cc8df2dcd4",
+      "text": "Okay, I will not schedule a service callback.",
+      "originalTexts": [
+        "Okay, I will not schedule a service callback."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.schedule_service_callback.denied.v1",
+      "logicalAction": "schedule_service_callback",
+      "role": "deny",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-395c6482c11b5822bcba",
+      "textHash": "395c6482c11b5822bcba",
+      "text": "I could not schedule the service callback right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not schedule the service callback right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.schedule_service_callback.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.schedule_service_callback.failed.v1",
+      "logicalAction": "schedule_service_callback",
+      "role": "fail",
+      "surfaceId": null,
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-8d9919c49b7dbc0fdc20",
+      "textHash": "8d9919c49b7dbc0fdc20",
+      "text": "I can open the home screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open the home screen for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.home.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.home.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "home",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-acbaad95a94b544005f2",
+      "textHash": "acbaad95a94b544005f2",
+      "text": "I opened the home screen.",
+      "originalTexts": [
+        "I opened the home screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.home.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "home",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-f3aee720c89ebbf93eb7",
+      "textHash": "f3aee720c89ebbf93eb7",
+      "text": "Okay, I will not open the home screen.",
+      "originalTexts": [
+        "Okay, I will not open the home screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.home.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "home",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-63067adf94f3709ebc21",
+      "textHash": "63067adf94f3709ebc21",
+      "text": "I could not open the home screen right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open the home screen right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.home.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.home.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "home",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-4006ab66509de1e47ebf",
+      "textHash": "4006ab66509de1e47ebf",
+      "text": "I can open check-in for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open check-in for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.check-in.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.check-in.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "check-in",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-5e6ac6fb739e4a950983",
+      "textHash": "5e6ac6fb739e4a950983",
+      "text": "I opened check-in.",
+      "originalTexts": [
+        "I opened check-in."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.check-in.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "check-in",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-6a9c53a59aa72bd2655e",
+      "textHash": "6a9c53a59aa72bd2655e",
+      "text": "Okay, I will not open check-in.",
+      "originalTexts": [
+        "Okay, I will not open check-in."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.check-in.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "check-in",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-cae5c5b3350bb562f53f",
+      "textHash": "cae5c5b3350bb562f53f",
+      "text": "I could not open check-in right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open check-in right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.check-in.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.check-in.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "check-in",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-e7e830c0d2b122372536",
+      "textHash": "e7e830c0d2b122372536",
+      "text": "I can open your calendar screen for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open your calendar screen for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.calendar.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.calendar.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "calendar",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-10d038518ef540f689fc",
+      "textHash": "10d038518ef540f689fc",
+      "text": "I opened your calendar screen.",
+      "originalTexts": [
+        "I opened your calendar screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.calendar.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "calendar",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-c408f5576049ffa36820",
+      "textHash": "c408f5576049ffa36820",
+      "text": "Okay, I will not open your calendar screen.",
+      "originalTexts": [
+        "Okay, I will not open your calendar screen."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.calendar.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "calendar",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-aaf6f706e55598c34e6f",
+      "textHash": "aaf6f706e55598c34e6f",
+      "text": "I could not open your calendar screen right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open your calendar screen right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.calendar.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.calendar.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "calendar",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-cefcf49e28baaf6c3f8c",
+      "textHash": "cefcf49e28baaf6c3f8c",
+      "text": "I can open messages for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open messages for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.messages.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.messages.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "messages",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-2a5d6f71e1a263679a1a",
+      "textHash": "2a5d6f71e1a263679a1a",
+      "text": "I opened messages.",
+      "originalTexts": [
+        "I opened messages."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.messages.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "messages",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-30557f72d3136b3181d1",
+      "textHash": "30557f72d3136b3181d1",
+      "text": "Okay, I will not open messages.",
+      "originalTexts": [
+        "Okay, I will not open messages."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.messages.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "messages",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-d5cdb0c44c0cc273bd78",
+      "textHash": "d5cdb0c44c0cc273bd78",
+      "text": "I could not open messages right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open messages right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.messages.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.messages.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "messages",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-0aa94cf77d191d334ef8",
+      "textHash": "0aa94cf77d191d334ef8",
+      "text": "I can open contacts for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open contacts for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.contacts.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.contacts.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "contacts",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-a783e25c5a1ea1b9ab0a",
+      "textHash": "a783e25c5a1ea1b9ab0a",
+      "text": "I opened contacts.",
+      "originalTexts": [
+        "I opened contacts."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.contacts.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "contacts",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-10484e75bcc173c39a58",
+      "textHash": "10484e75bcc173c39a58",
+      "text": "Okay, I will not open contacts.",
+      "originalTexts": [
+        "Okay, I will not open contacts."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.contacts.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "contacts",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-eafd2bb25c2816c652d9",
+      "textHash": "eafd2bb25c2816c652d9",
+      "text": "I could not open contacts right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open contacts right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.contacts.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.contacts.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "contacts",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-3826fe1bed07e44783ac",
+      "textHash": "3826fe1bed07e44783ac",
+      "text": "I can open services for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open services for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.social-services.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.social-services.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "social-services",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-4210c3b15b9e23f42d5c",
+      "textHash": "4210c3b15b9e23f42d5c",
+      "text": "I opened services.",
+      "originalTexts": [
+        "I opened services."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.social-services.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "social-services",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-850c29d39e7834167a77",
+      "textHash": "850c29d39e7834167a77",
+      "text": "Okay, I will not open services.",
+      "originalTexts": [
+        "Okay, I will not open services."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.social-services.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "social-services",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-9384fb2842574faaa9ed",
+      "textHash": "9384fb2842574faaa9ed",
+      "text": "I could not open services right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open services right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.social-services.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.social-services.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "social-services",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-10e5e69266185735aea1",
+      "textHash": "10e5e69266185735aea1",
+      "text": "I can open your interaction history for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open your interaction history for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.interactions.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.interactions.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "interactions",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-9a8cd2cea9ea8889dca4",
+      "textHash": "9a8cd2cea9ea8889dca4",
+      "text": "I opened your interaction history.",
+      "originalTexts": [
+        "I opened your interaction history."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.interactions.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "interactions",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-3f97d06590f6e3b773df",
+      "textHash": "3f97d06590f6e3b773df",
+      "text": "Okay, I will not open interaction history.",
+      "originalTexts": [
+        "Okay, I will not open interaction history."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.interactions.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "interactions",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-28c333204f3b1aab6027",
+      "textHash": "28c333204f3b1aab6027",
+      "text": "I could not open interaction history right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open interaction history right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.interactions.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.interactions.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "interactions",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-7578e6a3af6dd3cd9989",
+      "textHash": "7578e6a3af6dd3cd9989",
+      "text": "I can open your wallet documents for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open your wallet documents for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.uploads.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.uploads.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "confirm",
+      "surfaceId": "uploads",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-1917ac0247e9cb82674c",
+      "textHash": "1917ac0247e9cb82674c",
+      "text": "I opened your wallet documents.",
+      "originalTexts": [
+        "I opened your wallet documents."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.uploads.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.uploads.success.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "success",
+      "surfaceId": "uploads",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-91536a9be916262df5ce",
+      "textHash": "91536a9be916262df5ce",
+      "text": "Okay, I will not open your wallet documents.",
+      "originalTexts": [
+        "Okay, I will not open your wallet documents."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.uploads.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.uploads.denied.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "deny",
+      "surfaceId": "uploads",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-699f258168093ad60498",
+      "textHash": "699f258168093ad60498",
+      "text": "I could not open your wallet documents right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open your wallet documents right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.uploads.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.uploads.failed.v1",
+      "logicalAction": "open_wallet_documents",
+      "role": "fail",
+      "surfaceId": "uploads",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-fcd8eded27de35cbc8de",
+      "textHash": "fcd8eded27de35cbc8de",
+      "text": "I can open settings for you. Say yes to continue, or no to cancel.",
+      "originalTexts": [
+        "I can open settings for you. Say yes to continue, or no to cancel."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.confirm.open_app_surface.settings.v1"
+      ],
+      "frameId": "frame.action.confirm.open_app_surface.settings.v1",
+      "logicalAction": "open_app_surface",
+      "role": "confirm",
+      "surfaceId": "settings",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-ffe25f1273cbcbd81708",
+      "textHash": "ffe25f1273cbcbd81708",
+      "text": "I opened settings.",
+      "originalTexts": [
+        "I opened settings."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.success.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.settings.success.v1",
+      "logicalAction": "open_app_surface",
+      "role": "success",
+      "surfaceId": "settings",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-77e6fed6a76110341e3b",
+      "textHash": "77e6fed6a76110341e3b",
+      "text": "Okay, I will not open settings.",
+      "originalTexts": [
+        "Okay, I will not open settings."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.denied.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.settings.denied.v1",
+      "logicalAction": "open_app_surface",
+      "role": "deny",
+      "surfaceId": "settings",
+      "priorityScore": 1.0
+    },
+    {
+      "id": "abby-tts-9a85aff06aa80dccac6e",
+      "textHash": "9a85aff06aa80dccac6e",
+      "text": "I could not open settings right now. Please try again in a moment.",
+      "originalTexts": [
+        "I could not open settings right now. Please try again in a moment."
+      ],
+      "routes": [],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "vas_speech_frame"
+      ],
+      "sourceIds": [
+        "frame.action.outcome.open_app_surface.settings.failed.v1"
+      ],
+      "frameId": "frame.action.outcome.open_app_surface.settings.failed.v1",
+      "logicalAction": "open_app_surface",
+      "role": "fail",
+      "surfaceId": "settings",
+      "priorityScore": 1.0
+    }
+  ]
+}

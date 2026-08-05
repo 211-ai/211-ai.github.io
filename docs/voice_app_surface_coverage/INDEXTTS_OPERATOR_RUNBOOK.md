@@ -5,7 +5,11 @@ Task residual: VAS-023 / VAS-024 Whisper
 
 ## Status
 
-Offline **smoke fixtures** are staged and resolve exact-match:
+**Production IndexTTS for VAS-023 P0 completed** (2026-08-05): 76 frames staged under
+`data/voice_app_surface_coverage/audio/stage/production-p0/` from live Space
+`https://publicus-indextts-2-demo.hf.space`. Receipt: `reports/audio-regen-batch-p0.json`.
+
+Offline **smoke fixtures** remain available as fallback and resolve exact-match:
 
 - Pilot actions: `data/voice_app_surface_coverage/audio/stage/smoke/` (40 rows)
 - Surface nav: `data/voice_app_surface_coverage/audio/stage/smoke-surface/` (36 rows)
