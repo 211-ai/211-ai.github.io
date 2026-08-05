@@ -24,7 +24,10 @@
     "submodule_pins": "data/voice_app_surface_coverage/baseline/submodule-pins.json"
   },
   "branch": "agent/voice-app-surface-coverage",
+  "dag_fold_added_edges": 2288,
+  "dag_fold_applied": true,
   "generated_at": "2026-08-05T19:48:08.314814+00:00",
+  "production_indextts": "deferred_operator_gate",
   "program_id": "voice-app-surface-coverage-v1",
   "residuals": [
     "Production IndexTTS regen + Whisper still operator-gated (see docs/voice_app_surface_coverage/INDEXTTS_OPERATOR_RUNBOOK.md). Offline smoke fixtures staged.",
@@ -32,5 +35,13 @@
     "Submodule working pins published for CI (ci/monorepo-pin-*); merge voice modules into submodule main before retargeting monorepo gitlinks (SUBMODULE_PIN_POLICY.md)."
   ],
   "schema": "voice-app-surface-coverage/program-release-evidence@1",
-  "task_id": "VAS-030"
+  "submodule_pins_match_origin_main": true,
+  "task_id": "VAS-030",
+  "updated_at": "2026-08-05T19:59:43.142356+00:00",
+  "upstream": {
+    "accelerate_main": "2fdba70ed71529d1172ca2c631ec5317a5b90d01",
+    "datasets_main": "e6049b6445fb151d231447aebd07ac16b7856802",
+    "ipfs_accelerate_py_pr": 128,
+    "ipfs_datasets_py_pr": 1246
+  }
 }
