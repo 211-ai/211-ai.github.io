@@ -615,7 +615,7 @@ Program invariants:
 
 ## VOICE-ACTION-031 Publish operator runbook and enablement checklist
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: operations
