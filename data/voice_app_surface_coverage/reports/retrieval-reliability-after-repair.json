@@ -1,0 +1,36 @@
+{
+  "changelog": [
+    "No lattice rewrite required; thresholds already green.",
+    "Documented residual calendar pad variants that lack surface keywords."
+  ],
+  "generated_at": "2026-08-05T18:31:00.321152+00:00",
+  "post_repair": {
+    "calendar_top1_hit_rate": 0.9988,
+    "meets_thresholds": true,
+    "note": "No threshold failure; residual confusion documented without lowering gates."
+  },
+  "pre_repair_confusion_top": [
+    {
+      "count": 3,
+      "gold": "calendar",
+      "pred": "none"
+    }
+  ],
+  "pre_repair_failures": [],
+  "program_id": "voice-app-surface-coverage-v1",
+  "repairs": [
+    {
+      "added_keywords": [
+        "on my calendar",
+        "my calendar",
+        "appointments"
+      ],
+      "kind": "keyword_add",
+      "rationale": "3/2430 miss rate (~0.12%) for pad variants without calendar keywords; residual acceptable under thresholds.",
+      "surface_id": "calendar"
+    }
+  ],
+  "schema": "voice-app-surface-coverage/retrieval-repair@1",
+  "source_report": "data/voice_app_surface_coverage/reports/retrieval-reliability.json",
+  "task_id": "VAS-020"
+}

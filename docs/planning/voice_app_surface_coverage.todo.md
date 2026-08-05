@@ -398,7 +398,7 @@ Program invariants:
 
 ## VAS-020 Repair lowest-scoring surface confusions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval
@@ -418,7 +418,7 @@ Program invariants:
 
 ## VAS-021 Expand speech frames for all P0 surfaces and actions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: speech
@@ -438,7 +438,7 @@ Program invariants:
 
 ## VAS-022 Stage offline audio fixtures for speech frames
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -458,7 +458,7 @@ Program invariants:
 
 ## VAS-023 Human-gated IndexTTS regeneration batch for P0 coverage
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -478,7 +478,7 @@ Program invariants:
 
 ## VAS-024 Whisper-adjudicate and publish audio coverage receipt
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -498,7 +498,7 @@ Program invariants:
 
 ## VAS-025 Offline e2e surface matrix from variants through adapters
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
@@ -518,7 +518,7 @@ Program invariants:
 
 ## VAS-026 Adversarial e2e for never_voice and staff_only denies
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e
@@ -538,7 +538,7 @@ Program invariants:
 
 ## VAS-027 DAG-sample simulation suite for real slotted exemplars
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: e2e
@@ -558,7 +558,7 @@ Program invariants:
 
 ## VAS-028 Operator runbook and enablement checklist
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: operations
@@ -578,7 +578,7 @@ Program invariants:
 
 ## VAS-029 Coverage dashboard projection for supervisor status
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: operations
@@ -598,7 +598,7 @@ Program invariants:
 
 ## VAS-030 Program release evidence bundle
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: e2e

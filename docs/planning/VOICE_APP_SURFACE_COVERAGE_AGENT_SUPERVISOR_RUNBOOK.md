@@ -161,3 +161,8 @@ social-services, interactions, uploads, settings.
 Do not fork `action_runtime` contracts needlessly. Prefer additive catalog
 descriptors and density expansion. Reuse offline e2e fake stack patterns from
 `tests/e2e/voice_action_dag/`.
+
+
+## 10. Enablement checklist
+
+See `docs/voice_app_surface_coverage/ENABLEMENT_CHECKLIST.md` (updated 2026-08-05T18:31:00.321152+00:00).

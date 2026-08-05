@@ -1,0 +1,30 @@
+{
+  "acceptance": {
+    "audio_validated_rows": false,
+    "offline_e2e_implemented": true,
+    "p0_density_and_variants": true,
+    "retrieval_thresholds": true,
+    "speech_text_frames": true,
+    "surfaces_classified": true
+  },
+  "artifacts": {
+    "audio_coverage": "data/voice_app_surface_coverage/reports/audio-coverage.json",
+    "control_status": "data/voice_app_surface_coverage/projection/control-status.json",
+    "dag_density": "data/voice_app_surface_coverage/reports/dag-density-full.json",
+    "e2e": "tests/e2e/voice_app_surface_coverage/",
+    "exposure_matrix": "data/voice_app_surface_coverage/baseline/voice-exposure-matrix.json",
+    "retrieval": "data/voice_app_surface_coverage/reports/retrieval-reliability.json",
+    "submodule_pins": "data/voice_app_surface_coverage/baseline/submodule-pins.json"
+  },
+  "branch": "agent/voice-app-surface-coverage",
+  "generated_at": "2026-08-05T18:31:00.321152+00:00",
+  "program_id": "voice-app-surface-coverage-v1",
+  "residuals": [
+    "Live IndexTTS regen deferred (VAS-023 operator gate).",
+    "Whisper adjudication pending staged/regenerated audio.",
+    "Full slotted_response_dag.json merge of expansion packs is operator-gated.",
+    "ipfs_accelerate_py / ipfs_datasets_py remain on working pins (diverged from origin/main)."
+  ],
+  "schema": "voice-app-surface-coverage/program-release-evidence@1",
+  "task_id": "VAS-030"
+}
