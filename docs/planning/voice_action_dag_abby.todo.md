@@ -395,7 +395,7 @@ Program invariants:
 
 ## VOICE-ACTION-020 Bind service adapter to serviceActionService / interaction models
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters-service
