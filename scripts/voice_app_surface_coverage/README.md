@@ -16,3 +16,4 @@ Implementations for board `voice-app-surface-coverage-v1` land here as tasks
 | `project_coverage_status.py` | VAS-029 |
 
 Preflight: `python scripts/validate_voice_app_surface_coverage_plan.py`
+| `project_dag_expansion.py` | residual DAG sidecar projection |
