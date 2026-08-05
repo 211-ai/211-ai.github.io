@@ -1,0 +1,84 @@
+{
+  "artifacts": [
+    {
+      "bytes": 9408,
+      "digest": "sha256:d5da0dd3b7b3aff343ad759b25ad69c845643be614da7add167a60beac989a79",
+      "path": "data/voice_app_surface_coverage/baseline/app-surface-inventory.json",
+      "present": true
+    },
+    {
+      "bytes": 11530,
+      "digest": "sha256:714e41661aca8b3571cd54d7e81b1bccc5ad65a6e136ac36ae090c85269f2af4",
+      "path": "data/voice_app_surface_coverage/baseline/voice-exposure-matrix.json",
+      "present": true
+    },
+    {
+      "bytes": 11288,
+      "digest": "sha256:9a2fb49e692418a055882bb92d65a8f4f16cb1d1c885ee1e455a7be14799dc3d",
+      "path": "data/voice_app_surface_coverage/baseline/coverage-gap-matrix.json",
+      "present": true
+    },
+    {
+      "bytes": 3594,
+      "digest": "sha256:97ae8d6fd784f7538ce7f878e1200fe7ea814ab97d55f6d116e8320b212231b7",
+      "path": "data/voice_app_surface_coverage/baseline/submodule-pins.json",
+      "present": true
+    },
+    {
+      "bytes": 892,
+      "digest": "sha256:0071d980ae007da05aabb9511ba3b0914cf5ff0dc4da7b0967d55c036ae466a5",
+      "path": "data/voice_app_surface_coverage/reports/dag-fold-receipt.json",
+      "present": true
+    },
+    {
+      "bytes": 1180,
+      "digest": "sha256:6ecb529a6e529eeba6c3f1348575f3ccd138f00735e939fb67444a6c3add3535",
+      "path": "data/voice_app_surface_coverage/reports/audio-regen-batch-p0.json",
+      "present": true
+    },
+    {
+      "bytes": 2618,
+      "digest": "sha256:01324c071bc15d5dd3af277721946266e531f70ed8d8aa72b4e4e179ae2ac87d",
+      "path": "data/voice_app_surface_coverage/reports/program-release-evidence.json",
+      "present": true
+    },
+    {
+      "bytes": 58870583,
+      "digest": "sha256:2023086c0206504304ce333e3b2a2c15ff1b202952ebb1a412637cae5929d4fb",
+      "path": "docs/phone_dialog_generation/slotted_response_dag.json",
+      "present": true
+    }
+  ],
+  "gaps_vs_v2_floors": {
+    "audio": {
+      "v1": "76 production IndexTTS frames (pilot speech corpus)",
+      "v2": "Full speech corpus + high-traffic DAG budget + Whisper gate"
+    },
+    "dag": {
+      "v1": "2288 folded surface expansion edges",
+      "v2": "Re-project at raised floors and re-fold"
+    },
+    "surfaces": {
+      "note": "Re-inventory against current UI in VAS2-005+",
+      "v1_inventory_count": 25
+    },
+    "variant_floors": {
+      "delta": "Raise paraphrase floors; regenerate lattices",
+      "v1": {
+        "P0": 200,
+        "P1": 50
+      },
+      "v2": {
+        "P0": 500,
+        "P1": 150,
+        "P2": 80
+      }
+    }
+  },
+  "generated_at": "2026-08-05T20:58:02.310605+00:00",
+  "prerequisite_program": "voice-app-surface-coverage-v1",
+  "program_id": "voice-app-surface-full-coverage-v2",
+  "reuse_policy": "Read-only; do not delete v1 trees. Copy digests into v2 baseline as needed.",
+  "schema": "voice-app-surface-full-coverage/v1-import-receipt@1",
+  "task_id": "VAS2-004"
+}
