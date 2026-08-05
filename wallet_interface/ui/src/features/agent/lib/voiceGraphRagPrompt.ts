@@ -13,12 +13,41 @@ export interface VoiceGraphRagPromptInput {
   assistantText: string;
   evidenceBundles?: EvidenceBundle[];
   maxEvidenceItems?: number;
+  /**
+   * Optional slotted-DAG / planner / tool-selector route known by the graph layer.
+   * Content-plane only; never an executable path.
+   */
+  route?: string | null;
+  /** Additional graph/tool/planner sources consulted when `route` is unset. */
+  routeSources?: VoiceReplyRouteSources;
 }
 
 export interface VoiceGraphRagPromptParts {
   systemPrompt: string;
   userPrompt: string;
   fullPrompt: string;
+  /** Resolved response-DAG route when the graph/tool layer knows one. */
+  route?: string;
+}
+
+/**
+ * Fail-closed sources for a response-DAG route from the agent planner,
+ * tool selector, GraphRAG slotted match, or explicit request fields.
+ */
+export interface VoiceReplyRouteSources {
+  route?: string | null;
+  responseRoute?: string | null;
+  response_route?: string | null;
+  plannerRoute?: string | null;
+  toolRoute?: string | null;
+  slottedResponse?: unknown;
+  metadata?: unknown;
+  graphMetadata?: unknown;
+  templateMetadata?: unknown;
+  toolInput?: unknown;
+  plannerIntent?: unknown;
+  context?: unknown;
+  grounding?: unknown;
 }
 
 const VOICE_ASSISTANT_INSTRUCTIONS = [
@@ -33,6 +62,8 @@ export function buildVoiceGraphRagPromptParts({
   assistantText,
   evidenceBundles = [],
   maxEvidenceItems = MAX_EVIDENCE_ITEMS,
+  route,
+  routeSources,
 }: VoiceGraphRagPromptInput): VoiceGraphRagPromptParts {
   const normalizedUserText = truncatePrompt(
     cleanForPrompt(userText) || "The user asked a voice question.",
@@ -59,11 +90,18 @@ export function buildVoiceGraphRagPromptParts({
     "Evidence bundle for reasoning:",
     evidenceSection,
   ].join("\n");
+  // Explicit non-blank `route` wins over nested routeSources when both are present.
+  // Whitespace-only explicit route is treated as unset so nested graph/tool sources remain usable.
+  const resolvedRoute = resolveVoiceReplyRoute({
+    ...routeSources,
+    route: typeof route === "string" && route.trim() ? route : routeSources?.route,
+  });
 
   return {
     systemPrompt: truncatePrompt(systemPrompt, MAX_PROMPT_CHARACTERS),
     userPrompt: normalizedUserText,
     fullPrompt: truncatePrompt(fullPrompt, MAX_PROMPT_CHARACTERS),
+    ...(resolvedRoute ? { route: resolvedRoute } : {}),
   };
 }
 
@@ -72,13 +110,126 @@ export function buildVoiceGraphRagPrompt({
   assistantText,
   evidenceBundles = [],
   maxEvidenceItems = MAX_EVIDENCE_ITEMS,
+  route,
+  routeSources,
 }: VoiceGraphRagPromptInput): string {
   return buildVoiceGraphRagPromptParts({
     userText,
     assistantText,
     evidenceBundles,
     maxEvidenceItems,
+    route,
+    routeSources,
   }).fullPrompt;
+}
+
+/**
+ * Resolve a response-DAG route from planner/tool/graph sources.
+ *
+ * Prefer an explicit route, then response_route aliases, slotted GraphRAG
+ * metadata, tool-selector input, and planner intent. Missing or blank values
+ * return undefined (fail-closed; never invents a route).
+ */
+export function resolveVoiceReplyRoute(
+  sources?: VoiceReplyRouteSources | string | null | undefined,
+): string | undefined {
+  if (sources == null) {
+    return undefined;
+  }
+  if (typeof sources === "string") {
+    return normalizeVoiceReplyRoute(sources);
+  }
+
+  const direct =
+    normalizeVoiceReplyRoute(sources.route) ||
+    normalizeVoiceReplyRoute(sources.responseRoute) ||
+    normalizeVoiceReplyRoute(sources.response_route) ||
+    normalizeVoiceReplyRoute(sources.plannerRoute) ||
+    normalizeVoiceReplyRoute(sources.toolRoute);
+  if (direct) {
+    return direct;
+  }
+
+  // Planner / tool-selector sources win over generic GraphRAG metadata nests.
+  // Task VOICE-ACTION-028: propagate route from agent planner/tool selector first.
+  const nestedCandidates: unknown[] = [
+    sources.toolInput,
+    sources.plannerIntent,
+    sources.slottedResponse,
+    sources.metadata,
+    sources.graphMetadata,
+    sources.templateMetadata,
+    sources.context,
+    sources.grounding,
+  ];
+
+  for (const candidate of nestedCandidates) {
+    const nested = extractRouteFromUnknown(candidate);
+    if (nested) {
+      return nested;
+    }
+  }
+
+  return undefined;
+}
+
+function extractRouteFromUnknown(value: unknown, depth = 0): string | undefined {
+  if (depth > 3 || value == null) {
+    return undefined;
+  }
+  if (typeof value === "string") {
+    return normalizeVoiceReplyRoute(value);
+  }
+  if (typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const record = value as Record<string, unknown>;
+  const direct =
+    normalizeVoiceReplyRoute(record.route) ||
+    normalizeVoiceReplyRoute(record.responseRoute) ||
+    normalizeVoiceReplyRoute(record.response_route);
+  if (direct) {
+    return direct;
+  }
+  // GraphRAG answer metadata nests the slotted match under slottedResponse.
+  if (record.slottedResponse != null) {
+    const nested = extractRouteFromUnknown(record.slottedResponse, depth + 1);
+    if (nested) {
+      return nested;
+    }
+  }
+  if (record.template_metadata != null || record.templateMetadata != null || record.response_template != null) {
+    const nested =
+      extractRouteFromUnknown(record.template_metadata, depth + 1) ||
+      extractRouteFromUnknown(record.templateMetadata, depth + 1) ||
+      extractRouteFromUnknown(record.response_template, depth + 1);
+    if (nested) {
+      return nested;
+    }
+  }
+  // Planner tool selector: navigate / open tools carry { route } on input.
+  if (record.input != null) {
+    const nested = extractRouteFromUnknown(record.input, depth + 1);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
+}
+
+function normalizeVoiceReplyRoute(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  // Reject values that look like executable authority (paths/URLs/argv).
+  if (/[/\\]/.test(trimmed) || /^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
 }
 
 export function parseVoiceGraphRagPrompt(prompt: string): { systemPrompt: string; userPrompt: string } | undefined {

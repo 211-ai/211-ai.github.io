@@ -5,7 +5,11 @@ import {
   preflightRemoteAudioProxy,
   type RemoteAudioGenerationResult,
 } from "./remoteAudioClient";
-import { parseVoiceGraphRagPrompt } from "./voiceGraphRagPrompt";
+import {
+  parseVoiceGraphRagPrompt,
+  resolveVoiceReplyRoute,
+  type VoiceReplyRouteSources,
+} from "./voiceGraphRagPrompt";
 import type { VoiceTurnResult } from "./voiceTurnResult";
 
 type ClientAudioProvider = "remote-voice-proxy" | "local-liquidai" | "browser-speech";
@@ -124,6 +128,20 @@ export interface ClientVoiceReplyRequest {
   audioBlob?: Blob;
   /** Slotted response-DAG route for action proposals. */
   route?: string;
+  /**
+   * GraphRAG / planner / tool-selector sources used when `route` is unset.
+   * Additive plumbing only; missing sources stay fail-closed.
+   */
+  responseRoute?: string;
+  plannerRoute?: string;
+  toolRoute?: string;
+  slottedResponse?: unknown;
+  metadata?: unknown;
+  graphMetadata?: unknown;
+  templateMetadata?: unknown;
+  toolInput?: unknown;
+  plannerIntent?: unknown;
+  routeSources?: VoiceReplyRouteSources;
   /** Explicit confirmation for a previously proposed logical action. */
   confirmAction?: boolean;
   requestId?: string;
@@ -379,7 +397,9 @@ export class ClientAudioReplyService {
     const normalizedUserPrompt = (input.userPrompt?.trim() || parsedPrompt?.userPrompt || "")
       .slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
     const normalizedFallback = input.fallbackText.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
-    const normalizedSpeechText = normalizedFallback || normalizedPrompt;
+    // Propagate planner/tool/graph route into the voice-reply request when known.
+    // Missing route stays undefined so FormData omits the field safely.
+    const resolvedRoute = resolveVoiceReplyRouteFromRequest(input);
     if (!normalizedPrompt) {
       throw new Error("Voice reply prompt is empty.");
     }
@@ -395,7 +415,8 @@ export class ClientAudioReplyService {
           fallbackText: normalizedFallback || undefined,
           audioBlob: input.audioBlob,
           localModelName: modelName,
-          route: input.route,
+          // Only forward a resolved content-plane route; never invent one.
+          ...(resolvedRoute ? { route: resolvedRoute } : {}),
           confirmAction: input.confirmAction,
           requestId: input.requestId,
           onProgress: options.onProgress,
@@ -576,7 +597,7 @@ export class ClientAudioReplyService {
       fallbackText: options.fallbackText,
       audioBlob: options.audioBlob,
       localModelName: options.localModelName,
-      route: options.route,
+      ...(options.route ? { route: options.route } : {}),
       confirmAction: options.confirmAction,
       requestId: options.requestId,
     });
@@ -817,6 +838,58 @@ function formatError(error: unknown): string {
     return "Local audio runtime could not load in this browser session";
   }
   return message;
+}
+
+/**
+ * Resolve a slotted-DAG / planner / tool-selector route for a voice-reply request.
+ * Prefer explicit `route`, then additive graph/tool sources. Blank or missing → undefined.
+ */
+export function resolveVoiceReplyRouteFromRequest(
+  input: Pick<
+    ClientVoiceReplyRequest,
+    | "route"
+    | "responseRoute"
+    | "plannerRoute"
+    | "toolRoute"
+    | "slottedResponse"
+    | "metadata"
+    | "graphMetadata"
+    | "templateMetadata"
+    | "toolInput"
+    | "plannerIntent"
+    | "routeSources"
+  >,
+): string | undefined {
+  // Top-level request fields win over nested routeSources for the same keys.
+  // Prefer non-blank top-level values so whitespace-only route does not mask nested sources.
+  return resolveVoiceReplyRoute({
+    ...input.routeSources,
+    route: coalesceVoiceRouteField(input.route, input.routeSources?.route),
+    responseRoute: coalesceVoiceRouteField(input.responseRoute, input.routeSources?.responseRoute),
+    response_route: input.routeSources?.response_route,
+    plannerRoute: coalesceVoiceRouteField(input.plannerRoute, input.routeSources?.plannerRoute),
+    toolRoute: coalesceVoiceRouteField(input.toolRoute, input.routeSources?.toolRoute),
+    slottedResponse: input.slottedResponse ?? input.routeSources?.slottedResponse,
+    metadata: input.metadata ?? input.routeSources?.metadata,
+    graphMetadata: input.graphMetadata ?? input.routeSources?.graphMetadata,
+    templateMetadata: input.templateMetadata ?? input.routeSources?.templateMetadata,
+    toolInput: input.toolInput ?? input.routeSources?.toolInput,
+    plannerIntent: input.plannerIntent ?? input.routeSources?.plannerIntent,
+    context: input.routeSources?.context,
+    grounding: input.routeSources?.grounding,
+  });
+}
+
+/** Prefer a non-blank string; blank/whitespace falls through to the alternate source. */
+function coalesceVoiceRouteField(
+  primary: string | null | undefined,
+  fallback: string | null | undefined,
+): string | null | undefined {
+  if (typeof primary === "string" && primary.trim()) {
+    return primary;
+  }
+  // Missing or whitespace-only primary: consult nested routeSources / fallback.
+  return fallback;
 }
 
 export const clientAudioReplyService = new ClientAudioReplyService();

@@ -24,7 +24,14 @@ import {
   voiceActionPilotDetail,
   voiceActionPilotTitle,
 } from "../src/features/agent/components/AgentAudioChatSurface";
-import { ClientAudioReplyService } from "../src/features/agent/lib/clientAudioReplyService";
+import {
+  ClientAudioReplyService,
+  resolveVoiceReplyRouteFromRequest,
+} from "../src/features/agent/lib/clientAudioReplyService";
+import {
+  buildVoiceGraphRagPromptParts,
+  resolveVoiceReplyRoute,
+} from "../src/features/agent/lib/voiceGraphRagPrompt";
 import { createVoiceProxyFormData } from "../src/features/agent/lib/voiceProxyPayload";
 
 const AUDIO_BYTES = createMinimalWav();
@@ -478,5 +485,164 @@ test.describe("AgentAudioChatSurface pilot confirm UX statuses", () => {
     expect(source).toContain("Dismiss status");
     expect(source).toContain("Confirm action");
     expect(source).toContain("Not now");
+  });
+});
+
+test.describe("voice-reply route propagation from graph/tool layer", () => {
+  const wavBlob = () => new Blob([new Uint8Array(AUDIO_BYTES)], { type: "audio/wav" });
+
+  test("resolves planner/tool/graph routes and omits blanks fail-closed", () => {
+    expect(resolveVoiceReplyRoute({ toolInput: { route: "app_surface_navigation" } })).toBe(
+      "app_surface_navigation",
+    );
+    expect(resolveVoiceReplyRoute({ plannerRoute: "wallet_document_support" })).toBe(
+      "wallet_document_support",
+    );
+    expect(
+      resolveVoiceReplyRoute({
+        metadata: { slottedResponse: { route: "calendar_event_support" } },
+      }),
+    ).toBe("calendar_event_support");
+    expect(
+      resolveVoiceReplyRoute({
+        plannerIntent: { input: { route: "service_interaction_support" } },
+      }),
+    ).toBe("service_interaction_support");
+    // toolInput wins over nested metadata.slottedResponse when both are present.
+    expect(
+      resolveVoiceReplyRoute({
+        toolInput: { route: "app_surface_navigation" },
+        metadata: { slottedResponse: { route: "wallet_document_support" } },
+      }),
+    ).toBe("app_surface_navigation");
+    expect(resolveVoiceReplyRoute({ route: "   " })).toBeUndefined();
+    expect(resolveVoiceReplyRoute({ route: "/usr/bin/true" })).toBeUndefined();
+    expect(resolveVoiceReplyRoute({ route: "https://evil.example/x" })).toBeUndefined();
+    expect(resolveVoiceReplyRoute(undefined)).toBeUndefined();
+    expect(resolveVoiceReplyRoute({})).toBeUndefined();
+
+    const promptParts = buildVoiceGraphRagPromptParts({
+      userText: "Open wallet documents",
+      assistantText: "I can open your wallet documents.",
+      routeSources: { toolInput: { route: "wallet_document_support" } },
+    });
+    expect(promptParts.route).toBe("wallet_document_support");
+
+    const noRouteParts = buildVoiceGraphRagPromptParts({
+      userText: "What time is it?",
+      assistantText: "I do not have a clock action for that.",
+    });
+    expect(noRouteParts.route).toBeUndefined();
+  });
+
+  test("when graph/tool layer knows a route, voice-reply FormData includes route; missing route still safe", async () => {
+    // Pure request→FormData path (no browser/network): graph/tool route is included.
+    const toolRoute = resolveVoiceReplyRouteFromRequest({
+      toolInput: { route: "app_surface_navigation" },
+      metadata: { slottedResponse: { route: "wallet_document_support" } },
+    });
+    expect(toolRoute).toBe("app_surface_navigation");
+    const formWithRoute = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "Opening wallet documents.",
+      route: toolRoute,
+      requestId: "route-prop-1",
+    });
+    expect(formWithRoute.get("route")).toBe("app_surface_navigation");
+    expect(formWithRoute.get("mode")).toBe("voice-reply");
+    expect(formWithRoute.get("confirm_action")).toBeNull();
+
+    // Planner-only source also reaches FormData.
+    const plannerRoute = resolveVoiceReplyRouteFromRequest({
+      plannerRoute: "calendar_event_support",
+    });
+    const plannerForm = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "I can open your calendar.",
+      route: plannerRoute,
+    });
+    expect(plannerForm.get("route")).toBe("calendar_event_support");
+
+    // Missing / blank route remains safe: FormData omits route.
+    const missingRoute = resolveVoiceReplyRouteFromRequest({ route: "   " });
+    expect(missingRoute).toBeUndefined();
+    const formWithoutRoute = createVoiceProxyFormData({
+      mode: "voice-reply",
+      text: "Hello.",
+      route: missingRoute,
+    });
+    expect(formWithoutRoute.get("route")).toBeNull();
+    expect(formWithoutRoute.get("confirm_action")).toBeNull();
+
+    // Service wiring: generateVoiceReply forwards the resolved graph/tool route.
+    let capturedWithRoute:
+      | {
+          mode?: string;
+          route?: string;
+        }
+      | undefined;
+    const serviceWithRoute = new ClientAudioReplyService({
+      generateRemoteAudio: async (options) => {
+        capturedWithRoute = {
+          mode: options.mode,
+          route: options.route,
+        };
+        return {
+          modelName: "abby_indextts",
+          text: options.fallbackText || options.text,
+          audioBlob: wavBlob(),
+        };
+      },
+      preflightRemoteAudioProxy: async () => ({
+        modelName: "abby_indextts",
+        text: "ready",
+        audioBlob: wavBlob(),
+      }),
+      hasWebGPU: () => false,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const withRouteResult = await serviceWithRoute.generateVoiceReply({
+      prompt:
+        "User voice query: open wallet documents\nApp draft answer: Opening wallet documents.\nEvidence bundle for reasoning:\nNo external evidence bundle was attached to this turn.",
+      fallbackText: "Opening wallet documents.",
+      toolInput: { route: "app_surface_navigation" },
+      metadata: { slottedResponse: { route: "wallet_document_support" } },
+    });
+    expect(capturedWithRoute).toMatchObject({
+      mode: "voice-reply",
+      route: "app_surface_navigation",
+    });
+    expect(withRouteResult.kind).toBe("audio");
+
+    let capturedWithoutRoute: { route?: string } | undefined;
+    const serviceWithoutRoute = new ClientAudioReplyService({
+      generateRemoteAudio: async (options) => {
+        capturedWithoutRoute = { route: options.route };
+        return {
+          modelName: "abby_indextts",
+          text: options.fallbackText || options.text,
+          audioBlob: wavBlob(),
+        };
+      },
+      preflightRemoteAudioProxy: async () => ({
+        modelName: "abby_indextts",
+        text: "ready",
+        audioBlob: wavBlob(),
+      }),
+      hasWebGPU: () => false,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const withoutRouteResult = await serviceWithoutRoute.generateVoiceReply({
+      prompt:
+        "User voice query: hello\nApp draft answer: Hello.\nEvidence bundle for reasoning:\nNo external evidence bundle was attached to this turn.",
+      fallbackText: "Hello.",
+      route: "   ",
+    });
+    expect(withoutRouteResult.kind).toBe("audio");
+    expect(capturedWithoutRoute?.route).toBeUndefined();
   });
 });
