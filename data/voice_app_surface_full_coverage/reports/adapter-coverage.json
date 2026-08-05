@@ -1,0 +1,69 @@
+{
+  "actions": [
+    {
+      "adapter_binding": "action_runtime.adapters.human_handoff",
+      "descriptor_id": "voice.human.handoff_live_agent.v1",
+      "logical_action": "handoff_live_agent",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "wallet_interface.helpers._voice_app_action_binding / python surface API",
+      "descriptor_id": "voice.python.open_app_surface.v1",
+      "logical_action": "open_app_surface",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "wallet_interface.helpers._voice_app_action_binding",
+      "descriptor_id": "voice.python.open_wallet_documents.v1",
+      "logical_action": "open_wallet_documents",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.calendar",
+      "descriptor_id": "voice.python.read_calendar.v1",
+      "logical_action": "read_calendar",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.calendar",
+      "descriptor_id": "voice.python.create_calendar_reminder.v1",
+      "logical_action": "create_calendar_reminder",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.messaging",
+      "descriptor_id": "voice.python.read_provider_messages.v1",
+      "logical_action": "read_provider_messages",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.messaging",
+      "descriptor_id": "voice.python.leave_provider_message.v1",
+      "logical_action": "leave_provider_message",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.service_interaction",
+      "descriptor_id": "voice.python.open_service_detail.v1",
+      "logical_action": "open_service_detail",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.service_interaction",
+      "descriptor_id": "voice.workflow.schedule_service_callback.v1",
+      "logical_action": "schedule_service_callback",
+      "offline_safe": true
+    },
+    {
+      "adapter_binding": "action_runtime.adapters.human_handoff",
+      "descriptor_id": "voice.human.escalate_safety.v1",
+      "logical_action": "escalate_safety",
+      "offline_safe": true
+    }
+  ],
+  "all_bound": true,
+  "generated_at": "2026-08-05T21:06:40.142044+00:00",
+  "program_id": "voice-app-surface-full-coverage-v2",
+  "schema": "voice-app-surface-full-coverage/adapter-coverage@1",
+  "task_id": "VAS2-013"
+}

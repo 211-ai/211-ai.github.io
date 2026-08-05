@@ -200,7 +200,7 @@ Program invariants:
 
 ## VAS2-010 Expand action catalog for all exposed surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: catalog-policy
@@ -220,7 +220,7 @@ Program invariants:
 
 ## VAS2-011 Expand fail-closed policy matrix for exposure classes
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: catalog-policy
@@ -240,7 +240,7 @@ Program invariants:
 
 ## VAS2-012 Bind app-surface allowlists and exposure gates
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters
@@ -260,7 +260,7 @@ Program invariants:
 
 ## VAS2-013 Wire offline adapters for exposed surface actions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters

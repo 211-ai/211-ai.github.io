@@ -182,7 +182,8 @@ def test_allowlisted_surface_opens_after_permit() -> None:
 def test_multiple_allowlisted_surfaces_open_under_permit() -> None:
     binding = _binding()
     session = _session()
-    for surface in ("home", "messages", "social-services", "proof-center"):
+    # proof-center is voice_read_only and must not open on client voice.
+    for surface in ("home", "messages", "social-services", "settings"):
         proposal = build_app_proposal(
             logical_action=OPEN_APP_SURFACE_LOGICAL,
             arguments={"surface_id": surface},
@@ -196,7 +197,7 @@ def test_multiple_allowlisted_surfaces_open_under_permit() -> None:
         )
         assert receipt.status is ActionStatus.SUCCEEDED, receipt.to_dict()
         assert receipt.public_result["surface_id"] == surface
-    assert binding.active_surface_id == "proof-center"
+    assert binding.active_surface_id == "settings"
     assert len(binding.list_opened(tenant_id="tenant-a")) == 4
 
 
