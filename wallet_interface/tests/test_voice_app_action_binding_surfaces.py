@@ -9,8 +9,10 @@ from ipfs_accelerate_py.action_runtime.contracts import ActionStatus
 
 from wallet_interface.helpers._voice_app_action_binding import (
     OPEN_APP_SURFACE_LOGICAL,
-    SURFACE_EXPOSURE_CLASS,
     WalletAppSession,
+)
+from wallet_interface.helpers._voice_surface_exposure import (
+    SURFACE_EXPOSURE_CLASS,
     get_surface_exposure_class,
     surface_exposure_error,
 )

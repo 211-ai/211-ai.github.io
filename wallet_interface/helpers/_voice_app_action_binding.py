@@ -37,6 +37,12 @@ from ipfs_accelerate_py.action_runtime.contracts import (
     content_digest,
 )
 
+from wallet_interface.helpers._voice_surface_exposure import (
+    SURFACE_EXPOSURE_CLASS,
+    get_surface_exposure_class,
+    surface_exposure_error as _surface_exposure_error_impl,
+)
+
 # Stable pilot descriptor ids (must match catalog_211ai python adapters).
 OPEN_APP_SURFACE_DESCRIPTOR_ID: Final = "voice.python.open_app_surface.v1"
 OPEN_WALLET_DOCUMENTS_DESCRIPTOR_ID: Final = (
@@ -358,6 +364,24 @@ def surface_allowlist_error(surface_id: object | None) -> str | None:
     if resolved is None:
         return "surface_not_allowlisted"
     return None
+
+
+
+def surface_exposure_error(
+    surface_id: object | None,
+    *,
+    channel: object | None = "voice",
+    role: str = "client",
+) -> str | None:
+    """Binding-aware exposure gate (resolves aliases first)."""
+
+    return _surface_exposure_error_impl(
+        surface_id,
+        channel=channel,
+        role=role,
+        resolve=resolve_navigation_surface,
+    )
+
 
 
 @dataclass(frozen=True)
@@ -800,6 +824,28 @@ class WalletAppActionBinding:
             )
         assert surface_id is not None
 
+        channel = session.channel or proposal.channel or "voice"
+        exposure_error = surface_exposure_error(
+            surface_id,
+            channel=channel,
+            role="client",
+        )
+        if exposure_error is not None:
+            return self._denied_receipt(
+                proposal=proposal,
+                decision=decision,
+                error=exposure_error,
+                started=started,
+                public_result={
+                    "ok": "false",
+                    "error": exposure_error,
+                    "surface_id": surface_id,
+                    "exposure_class": str(
+                        get_surface_exposure_class(surface_id) or "never_voice"
+                    ),
+                },
+            )
+
         try:
             record = self.surface_api.open_surface(
                 surface_id=surface_id,
@@ -1066,4 +1112,7 @@ __all__ = [
     "normalize_surface_text",
     "resolve_navigation_surface",
     "surface_allowlist_error",
+    "SURFACE_EXPOSURE_CLASS",
+    "get_surface_exposure_class",
+    "surface_exposure_error",
 ]
