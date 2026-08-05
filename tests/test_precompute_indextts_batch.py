@@ -12,9 +12,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
-from scripts import precompute_indextts_responses as precompute
-
 from ipfs_accelerate_py.voice_jobs.executor import (
     ArtifactPolicy,
     VoiceJobExecutionError,
@@ -30,6 +27,8 @@ from ipfs_datasets_py.voice.regeneration import (
     AbbyVoiceRegenerationPlan,
     read_regeneration_plan,
 )
+
+from scripts import precompute_indextts_responses as precompute
 
 
 def _runner_wav_bytes() -> bytes:

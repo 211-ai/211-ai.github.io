@@ -1,0 +1,13 @@
+{
+  "schema": "voice-app-surface-coverage/merge-base-receipt@1",
+  "program_id": "voice-app-surface-coverage-v1",
+  "task_id": "VAS-003",
+  "status": "deferred_no_monorepo_tip_change",
+  "expected_base_commit_in_profile": "6e338f55c2b30159708af656ceb10ce01cfa8f82",
+  "note": "Monorepo origin/main tip unchanged during VAS-002 submodule pin recording. Re-run VAS-003 after a monorepo commit that updates submodule gitlinks or after merging plan artifacts to main.",
+  "actions_required_before_worker_start": [
+    "Commit plan artifacts when ready",
+    "Create branch agent/voice-app-surface-coverage from pinned base",
+    "If origin/main moves, update merge_target_creation.expected_base_commit and re-run preflight"
+  ]
+}

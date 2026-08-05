@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from scripts.plan_abby_tts_regeneration import endpoint_response_manifest
-
 from ipfs_datasets_py.voice.regeneration import AbbyVoiceRegenerationPlan
+
+from scripts.plan_abby_tts_regeneration import endpoint_response_manifest
 
 
 def _row(index: int) -> dict[str, object]:

@@ -1,0 +1,417 @@
+{
+  "counts_by_class": {
+    "never_voice": 6,
+    "phone_handoff": 0,
+    "staff_only": 7,
+    "voice_actionable": 4,
+    "voice_navigable": 6,
+    "voice_read_only": 2
+  },
+  "doctrine": "docs/voice_app_surface_coverage/VOICE_EXPOSURE_DOCTRINE.md",
+  "generated_at": "2026-08-05T17:35:10.635160+00:00",
+  "notes": [
+    "Initial classification is conservative; human overrides require rationale.",
+    "staff_only and never_voice must deny on client voice/phone channel."
+  ],
+  "program_id": "voice-app-surface-coverage-v1",
+  "schema": "voice-app-surface-coverage/voice-exposure-matrix@1",
+  "surfaces": [
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "voice_read_only",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Analytics",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Prefer spoken summaries later; no client phone navigation by default.",
+      "risk_class": "read",
+      "surface_id": "analytics"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "extra",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Audit",
+      "logical_actions": [],
+      "priority": "P2",
+      "rationale": "Audit trail is staff/ops sensitive.",
+      "risk_class": "admin",
+      "surface_id": "audit"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Benefits",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Benefits protection flows are high-stakes; keep off phone auto-nav.",
+      "risk_class": "read",
+      "surface_id": "benefits-protection"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_actionable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Calendar",
+      "logical_actions": [
+        "open_app_surface",
+        "read_calendar",
+        "create_calendar_reminder"
+      ],
+      "priority": "P0",
+      "rationale": "Core pilot calendar reads/writes with confirm (+auth for write).",
+      "risk_class": "read",
+      "surface_id": "calendar"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Check in",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "Check-in surface is client-facing; mutations stay behind later tools.",
+      "risk_class": "read",
+      "surface_id": "check-in"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Contacts",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "Navigate contacts; sensitive grants stay never_voice.",
+      "risk_class": "read",
+      "surface_id": "contacts"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Exports",
+      "logical_actions": [],
+      "priority": "P0",
+      "rationale": "Bulk export is high risk for voice/phone.",
+      "risk_class": "write",
+      "surface_id": "exports"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Home",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "Client home is a safe navigation target after confirm.",
+      "risk_class": "read",
+      "surface_id": "home"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Interactions",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "History surface open after confirm.",
+      "risk_class": "read",
+      "surface_id": "interactions"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_actionable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Messages",
+      "logical_actions": [
+        "open_app_surface",
+        "read_provider_messages",
+        "leave_provider_message"
+      ],
+      "priority": "P0",
+      "rationale": "Messaging pilot actions with confirm+auth.",
+      "risk_class": "read",
+      "surface_id": "messages"
+    },
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "voice_read_only",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Proofs",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Proofs are sensitive; voice open deferred.",
+      "risk_class": "read",
+      "surface_id": "proof-center"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Staff analytics",
+      "logical_actions": [],
+      "priority": "P2",
+      "rationale": "Staff analytics.",
+      "risk_class": "read",
+      "surface_id": "provider-analytics"
+    },
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Case management",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Case management is staff-only.",
+      "risk_class": "read",
+      "surface_id": "provider-cases"
+    },
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Clients served",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Staff clients list.",
+      "risk_class": "read",
+      "surface_id": "provider-clients"
+    },
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Client messages",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Staff message console; client uses messages surface.",
+      "risk_class": "read",
+      "surface_id": "provider-messages"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Staff operations",
+      "logical_actions": [],
+      "priority": "P2",
+      "rationale": "Staff operations console.",
+      "risk_class": "admin",
+      "surface_id": "provider-operations"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "ZK certificates",
+      "logical_actions": [],
+      "priority": "P2",
+      "rationale": "Staff ZK certificates.",
+      "risk_class": "read",
+      "surface_id": "provider-proofs"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Who can see info",
+      "logical_actions": [],
+      "priority": "P0",
+      "rationale": "Disclosure grants are not voice-amenable by default.",
+      "risk_class": "write",
+      "surface_id": "recipient-access"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Register",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P1",
+      "rationale": "Registration guidance/navigation; submission stays out of auto-execute.",
+      "risk_class": "read",
+      "surface_id": "register"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "secondary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Security",
+      "logical_actions": [],
+      "priority": "P0",
+      "rationale": "Security controls must not be voice-driven.",
+      "risk_class": "admin",
+      "surface_id": "security"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_navigable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Settings",
+      "logical_actions": [
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "Open settings UI only; credential changes never_voice.",
+      "risk_class": "read",
+      "surface_id": "settings"
+    },
+    {
+      "allowed_channels": [],
+      "exposure_class": "never_voice",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Sharing",
+      "logical_actions": [],
+      "priority": "P0",
+      "rationale": "Sharing policy changes require deliberate UI.",
+      "risk_class": "write",
+      "surface_id": "sharing-rules"
+    },
+    {
+      "allowed_channels": [
+        "chat"
+      ],
+      "exposure_class": "staff_only",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": true,
+      "label": "Overview",
+      "logical_actions": [],
+      "priority": "P1",
+      "rationale": "Provider portal overview; deny on client voice channel.",
+      "risk_class": "read",
+      "surface_id": "shelter"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_actionable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Services",
+      "logical_actions": [
+        "open_app_surface",
+        "open_service_detail",
+        "schedule_service_callback"
+      ],
+      "priority": "P0",
+      "rationale": "Service navigation + grounded detail/callback pilot.",
+      "risk_class": "read",
+      "surface_id": "social-services"
+    },
+    {
+      "allowed_channels": [
+        "voice",
+        "chat"
+      ],
+      "exposure_class": "voice_actionable",
+      "family": "primary",
+      "in_navigation_allowlist": true,
+      "is_provider": false,
+      "label": "Wallet",
+      "logical_actions": [
+        "open_wallet_documents",
+        "open_app_surface"
+      ],
+      "priority": "P0",
+      "rationale": "Wallet documents pilot open; no bulk export via voice.",
+      "risk_class": "read",
+      "surface_id": "uploads"
+    }
+  ],
+  "task_ids": [
+    "VAS-006"
+  ]
+}

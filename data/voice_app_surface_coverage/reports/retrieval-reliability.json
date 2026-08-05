@@ -1,0 +1,90 @@
+{
+  "by_surface": {
+    "calendar": {
+      "n": 2430,
+      "top1_hit_rate": 0.9988,
+      "top1_hits": 2427,
+      "top3_hit_rate": 0.9988,
+      "top3_hits": 2427
+    },
+    "check-in": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    },
+    "contacts": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    },
+    "home": {
+      "n": 450,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 450,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 450
+    },
+    "interactions": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    },
+    "messages": {
+      "n": 288,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 288,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 288
+    },
+    "settings": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    },
+    "social-services": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    },
+    "uploads": {
+      "n": 200,
+      "top1_hit_rate": 1.0,
+      "top1_hits": 200,
+      "top3_hit_rate": 1.0,
+      "top3_hits": 200
+    }
+  },
+  "confusion_top": [
+    {
+      "count": 3,
+      "gold": "calendar",
+      "pred": "none"
+    }
+  ],
+  "failures": [],
+  "generated_at": "2026-08-05T18:14:55.667364+00:00",
+  "meets_thresholds": true,
+  "method": "symbolic_keyword_router_v1",
+  "negative_deny_rate": 1.0,
+  "negative_n": 198,
+  "notes": [
+    "Symbolic route map is authoritative; embeddings optional later.",
+    "Bridge propose() may return None without deployment descriptor maps; eval uses lattice gold surfaces."
+  ],
+  "program_id": "voice-app-surface-coverage-v1",
+  "schema": "voice-app-surface-coverage/retrieval-reliability@1",
+  "thresholds": {
+    "P0_top1": 0.75,
+    "P0_top3": 0.9
+  }
+}

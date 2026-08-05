@@ -61,6 +61,12 @@ ignore = [
   "F403",   # star imports — used in routes re-exports during transition
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# Tests bootstrap sys.path then import monorepo packages; isort/E402 fight those blocks.
+"tests/e2e/**/*.py" = ["E402", "I001"]
+"tests/voice/**/*.py" = ["E402", "I001"]
+"wallet_interface/tests/**/*.py" = ["E402", "I001"]
+
 [tool.mypy]
 python_version = "3.11"
 ignore_missing_imports = true

@@ -11,8 +11,9 @@ from __future__ import annotations
 import ast
 import copy
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from scripts.verify_world_aid_duckdb_bootstrap import (
     BootstrapVerificationError,
@@ -44,7 +45,9 @@ def _selection() -> dict[str, Any]:
         "data/worldcoin_human_aid/offline/wheels/"
         "duckdb-1.4.3-cp312-cp312-manylinux_2_28_x86_64.whl"
     )
-    artifact = lambda path: {"path": path, "sha256": "sha256:" + "1" * 64}
+    def artifact(path: str) -> dict[str, str]:
+        return {"path": path, "sha256": "sha256:" + "1" * 64}
+
     return {
         "reviewed_state": {
             "storage_adr": artifact("docs/adr/WORLD_AID_DUCKDB_STORAGE_ADR.md"),

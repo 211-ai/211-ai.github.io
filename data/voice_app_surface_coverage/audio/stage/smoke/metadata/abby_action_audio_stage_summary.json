@@ -1,0 +1,54 @@
+{
+  "complete": true,
+  "confirm_count": 10,
+  "frames_path": "/home/barberb/211-AI/211-AI/docs/phone_dialog_generation/action_speech_frames.jsonl",
+  "logical_action_count": 10,
+  "logical_actions": [
+    "create_calendar_reminder",
+    "escalate_safety",
+    "handoff_live_agent",
+    "leave_provider_message",
+    "open_app_surface",
+    "open_service_detail",
+    "open_wallet_documents",
+    "read_calendar",
+    "read_provider_messages",
+    "schedule_service_callback"
+  ],
+  "outcome_count": 30,
+  "required_roles": [
+    "confirm",
+    "success",
+    "deny",
+    "fail"
+  ],
+  "resolver_path": "/home/barberb/211-AI/211-AI/data/voice_app_surface_coverage/audio/stage/smoke/metadata/abby_action_precomputed_audio_resolver.jsonl",
+  "resolver_relative": "metadata/abby_action_precomputed_audio_resolver.jsonl",
+  "roles": [
+    "confirm",
+    "deny",
+    "fail",
+    "success"
+  ],
+  "row_count": 40,
+  "schema": "voice-action/action-audio-stage-summary@1",
+  "smoke": true,
+  "source": "voice-action-025/abby-action-audio-smoke",
+  "stage_root": "/home/barberb/211-AI/211-AI/data/voice_app_surface_coverage/audio/stage/smoke",
+  "synthesis_identity": {
+    "channels": 1,
+    "codec": "wav",
+    "generation_settings": {
+      "fixture": true,
+      "task_id": "VOICE-ACTION-025",
+      "temperature": 0.0
+    },
+    "locale": "en-US",
+    "model": "action-fixture-v1",
+    "provider": "abby_action_fixture",
+    "provider_version": "1.0.0",
+    "sample_rate_hz": 24000,
+    "voice": "abby"
+  },
+  "task_id": "VOICE-ACTION-025"
+}

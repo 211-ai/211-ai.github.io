@@ -296,8 +296,8 @@ def _run_indextts_tts_with_batch_fallback(
 
     try:
         from ._voice_router_adapter import (  # noqa: WPS433
-            _PackageFirstTTSProvider,
             _package_indextts_tts_provider,
+            _PackageFirstTTSProvider,
         )
 
         package_provider = _package_indextts_tts_provider()

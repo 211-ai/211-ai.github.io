@@ -15,8 +15,9 @@ import hashlib
 import json
 import platform
 import tomllib
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import scripts.verify_world_aid_zkp_toolchain as zkp_verifier
 from scripts.verify_world_aid_zkp_toolchain import (
@@ -46,8 +47,12 @@ def _digest(path: str) -> str:
 
 
 def _selection() -> dict[str, Any]:
-    artifact = lambda path: {"path": path, "sha256": "sha256:" + "1" * 64}
-    reviewed_artifact = lambda path: {"path": path, "sha256": _digest(path)}
+    def artifact(path: str) -> dict[str, str]:
+        return {"path": path, "sha256": "sha256:" + "1" * 64}
+
+    def reviewed_artifact(path: str) -> dict[str, str]:
+        return {"path": path, "sha256": _digest(path)}
+
     architecture = {
         "amd64": "x86_64",
         "arm64": "aarch64",

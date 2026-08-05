@@ -18,7 +18,8 @@ import shutil
 import socket
 import sys
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
+from collections.abc import Mapping
 from unittest import mock
 
 import pytest

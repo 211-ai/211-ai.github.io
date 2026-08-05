@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-
 from ipfs_accelerate_py.llm_consensus import (
     P2P_REQUEST_SCHEMA_VERSION,
     P2P_RESPONSE_SCHEMA_VERSION,

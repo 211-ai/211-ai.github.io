@@ -39,6 +39,7 @@ from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
 )
 
 from .proof_backends import HttpLocationRegionProofBackend  # noqa: E402
+
 # World ID protocol/crypto lives in ipfs_datasets_py; this service is the sole
 # 211-AI cutover owner for application auth, policy, persistence, and DTOs
 # (WALPROC-G130). UI route migration is a later child if needed.

@@ -25,7 +25,8 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
+from collections.abc import Mapping
 
 import pytest
 
@@ -875,7 +876,7 @@ def test_multiturn_chat_uses_canonical_audio_fallback_tts_and_reviews_final_audi
         )
         output_format = str(spec["format"])
         request = VoiceTurnRequest(
-            audio=f"caller-audio-turn-{turn_index}".encode("utf-8"),
+            audio=f"caller-audio-turn-{turn_index}".encode(),
             request_id=f"multiturn-e2e-{turn_index}",
             context={
                 "turn_index": turn_index,
@@ -1033,7 +1034,7 @@ def test_dozen_asr_injected_examples_retrieve_expected_routes_and_whisper_match_
         row = rows_by_route[expected_route]
         result = process_voice_turn(
             VoiceTurnRequest(
-                audio=f"caller-audio-route-review-{index}".encode("utf-8"),
+                audio=f"caller-audio-route-review-{index}".encode(),
                 request_id=f"route-review-{index}-{expected_route}",
                 context={"expected_route": expected_route, "review_index": index},
                 language="en-US",
