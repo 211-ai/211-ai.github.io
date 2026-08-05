@@ -460,7 +460,7 @@ Program invariants:
 
 ## VAS2-023 Author action speech frames for exposed logical actions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: speech
@@ -480,7 +480,7 @@ Program invariants:
 
 ## VAS2-024 Author surface navigation speech frames
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: speech
@@ -500,7 +500,7 @@ Program invariants:
 
 ## VAS2-025 Select and frame high-traffic DAG exemplars for audio
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: speech
@@ -520,7 +520,7 @@ Program invariants:
 
 ## VAS2-026 Stage offline audio scaffolding for full speech corpus
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -540,7 +540,7 @@ Program invariants:
 
 ## VAS2-027 Run production IndexTTS regen for full generate_required set
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -560,7 +560,7 @@ Program invariants:
 
 ## VAS2-028 Whisper-adjudicate production audio batch
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
@@ -580,7 +580,7 @@ Program invariants:
 
 ## VAS2-029 Promote audio manifests and publish coverage receipt
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: audio
