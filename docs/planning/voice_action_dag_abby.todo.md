@@ -555,7 +555,7 @@ Program invariants:
 
 ## VOICE-ACTION-028 Propagate route from agent planner/tool selector into voice-reply requests
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: ui
