@@ -40,6 +40,8 @@ from ipfs_accelerate_py.action_runtime.contracts import (
 from wallet_interface.helpers._voice_surface_exposure import (
     SURFACE_EXPOSURE_CLASS,
     get_surface_exposure_class,
+)
+from wallet_interface.helpers._voice_surface_exposure import (
     surface_exposure_error as _surface_exposure_error_impl,
 )
 
