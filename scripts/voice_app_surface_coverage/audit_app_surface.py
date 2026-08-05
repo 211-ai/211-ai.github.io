@@ -8,7 +8,7 @@ import ast
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -242,7 +242,7 @@ def build_surface_inventory() -> dict[str, Any]:
         "schema": SCHEMA_SURFACE,
         "program_id": PROGRAM_ID,
         "task_ids": ["VAS-004"],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "sources": {
             "route_type": str(ROUTE_TYPE.relative_to(REPO_ROOT)),
             "app_state": str(APP_STATE.relative_to(REPO_ROOT)),
@@ -299,7 +299,7 @@ def build_tool_inventory() -> dict[str, Any]:
         "schema": SCHEMA_TOOL,
         "program_id": PROGRAM_ID,
         "task_ids": ["VAS-005"],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "agent_tools": tools,
         "action_runtime_adapters": adapters,
         "counts": {
@@ -337,7 +337,7 @@ def build_binding_inventory() -> dict[str, Any]:
         "schema": SCHEMA_BINDING,
         "program_id": PROGRAM_ID,
         "task_ids": ["VAS-005"],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "catalog_path": str(CATALOG_JSON.relative_to(REPO_ROOT)),
         "catalog_logical_actions": sorted(set(logical_actions)),
         "descriptors": descriptors,

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Audit DAG + expansion density for voice app surfaces (VAS-015+)."""
 from __future__ import annotations
-import argparse, json, sys
+
+import argparse
+import json
+import sys
 from pathlib import Path
+
 REPO = Path(__file__).resolve().parents[2]
 REPORTS = REPO / "data/voice_app_surface_coverage/reports"
 

@@ -13,7 +13,7 @@ import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -169,7 +169,7 @@ def build_receipt(*, operator_note: str = "") -> dict[str, Any]:
         "schema": SCHEMA,
         "program_id": PROGRAM_ID,
         "task_id": "VAS-002",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "monorepo": {
             "path": ".",
             "working_sha": monorepo_head,

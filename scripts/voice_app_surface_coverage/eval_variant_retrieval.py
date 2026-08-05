@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Evaluate symbolic retrieval reliability on variant lattices (VAS-019)."""
 from __future__ import annotations
-import argparse, json, sys
+
+import argparse
+import json
+import sys
 from pathlib import Path
+
 REPO = Path(__file__).resolve().parents[2]
 REPORT = REPO / "data/voice_app_surface_coverage/reports/retrieval-reliability.json"
 

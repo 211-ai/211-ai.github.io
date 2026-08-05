@@ -7,7 +7,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from ipfs_accelerate_py.hf_space_inference import (
     BatchProcessor,
     BatchState,

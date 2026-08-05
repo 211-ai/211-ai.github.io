@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Audit audio coverage receipts for voice-app-surface-coverage (VAS-022..024)."""
 from __future__ import annotations
-import argparse, json, sys
+
+import argparse
+import json
+import sys
 from pathlib import Path
+
 REPO = Path(__file__).resolve().parents[2]
 REPORTS = REPO / "data/voice_app_surface_coverage/reports"
 

@@ -15,7 +15,6 @@ import pytest
 # ipfs_datasets_py.llm_router at attribute-access time. Guard symbol access so
 # the whole file is skipped when that backend module is absent.
 try:
-    from ipfs_accelerate_py import llm_router
     from ipfs_accelerate_py.llm_consensus import (
         ConsensusReceipt,
         ConsensusRequest,
@@ -27,6 +26,8 @@ try:
         _canonicalize_messages,
         chat_completions_create_consensus,
     )
+
+    from ipfs_accelerate_py import llm_router
 except (ImportError, ModuleNotFoundError):
     pytest.skip("ipfs_accelerate_py.llm_router backend not available in this environment", allow_module_level=True)
 

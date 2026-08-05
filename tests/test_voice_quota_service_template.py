@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 SERVICE_TEMPLATE = (
     Path(__file__).resolve().parents[1]
     / "ops"

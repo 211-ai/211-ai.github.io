@@ -29,6 +29,12 @@ from .helpers._tts_client import (  # noqa: F401
 )
 from .helpers._tts_http import _run_hf_whisper_stt  # noqa: F401
 from .helpers._tts_normalization import _normalize_indextts_spoken_text  # noqa: F401
+from .helpers._voice_action_surface import (  # noqa: F401
+    VOICE_ACTION_EXECUTE_FLAG,
+    attach_action_surface,
+    extract_voice_route,
+    is_voice_action_execute_enabled,
+)
 from .helpers._voice_router_adapter import (  # noqa: F401
     WalletVoiceRouterAdapter,
     build_voice_turn_request,
@@ -36,12 +42,6 @@ from .helpers._voice_router_adapter import (  # noqa: F401
     process_wallet_voice_turn,
     route_wallet_voice_turn,
     serialize_voice_turn_result,
-)
-from .helpers._voice_action_surface import (  # noqa: F401
-    VOICE_ACTION_EXECUTE_FLAG,
-    attach_action_surface,
-    extract_voice_route,
-    is_voice_action_execute_enabled,
 )
 
 try:  # resolve_secret is an optional dep; guard it the same way the helpers do.

@@ -22,7 +22,6 @@ import os
 from collections.abc import Mapping
 from typing import Any, Final
 
-
 UNIFIED_VOICE_ROUTER_FLAG = "WALLET_VOICE_UNIFIED_ROUTER_ENABLED"
 VOICE_ROUTER_ADAPTER_VERSION = "1.3"
 _AUDIO_MIME_TYPES: Final[dict[str, str]] = {

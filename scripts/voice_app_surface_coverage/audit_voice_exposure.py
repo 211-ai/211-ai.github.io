@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -324,7 +324,7 @@ def build_exposure(surface_inv: dict[str, Any]) -> dict[str, Any]:
         "schema": SCHEMA_EXPOSURE,
         "program_id": PROGRAM_ID,
         "task_ids": ["VAS-006"],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "doctrine": "docs/voice_app_surface_coverage/VOICE_EXPOSURE_DOCTRINE.md",
         "counts_by_class": by_class,
         "surfaces": sorted(rows, key=lambda r: r["surface_id"]),
@@ -393,7 +393,7 @@ def build_gaps(
         "schema": SCHEMA_GAPS,
         "program_id": PROGRAM_ID,
         "task_ids": ["VAS-007"],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "route_density_source": str(ROUTE_GAP.relative_to(REPO_ROOT))
         if ROUTE_GAP.is_file()
         else None,
@@ -409,7 +409,7 @@ def build_gaps(
 def write_doctrine() -> None:
     text = """# Voice Exposure Doctrine
 
-Program: `voice-app-surface-coverage-v1`  
+Program: `voice-app-surface-coverage-v1`
 Task: `VAS-006`
 
 ## Purpose

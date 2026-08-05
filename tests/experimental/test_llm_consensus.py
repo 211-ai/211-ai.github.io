@@ -8,7 +8,6 @@ import time
 from dataclasses import dataclass
 
 import pytest
-
 from ipfs_accelerate_py.llm_consensus import (
     CONSENSUS_RECEIPT_SCHEMA_VERSION,
     ConsensusReceipt,

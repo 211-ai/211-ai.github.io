@@ -12,7 +12,6 @@ from __future__ import annotations
 import hashlib
 
 import pytest
-
 from ipfs_accelerate_py.proof_verifiers import (
     ChainlinkCREVerifier,
     ProofContext,

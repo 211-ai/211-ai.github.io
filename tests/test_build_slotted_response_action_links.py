@@ -8,14 +8,14 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from ipfs_datasets_py.voice.action_links import (
     ACTION_LINK_SCHEMA,
     ACTION_LINK_SCHEMA_VERSION,
-    NO_ACTION,
     FORBIDDEN_CONTENT_FIELDS,
+    NO_ACTION,
     parse_action_link_document,
 )
+
 from scripts.build_slotted_response_action_links import (
     CONTENT_ONLY_ROUTES,
     EXPECTED_ROUTE_COUNT,

@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import pytest
-
 from ipfs_accelerate_py.llm_consensus import (
     LocalConsensusOperator,
     ProofReceipt,

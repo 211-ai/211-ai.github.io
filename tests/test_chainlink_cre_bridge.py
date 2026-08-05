@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from ipfs_accelerate_py.chainlink_cre import (
     CRE_VERIFIER_EVENT_VERIFIER_ID,
     ChainlinkCREBridgeClient,

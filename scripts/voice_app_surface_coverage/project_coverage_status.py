@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Project coverage control status for supervisor dashboards (VAS-029)."""
 from __future__ import annotations
-import argparse, json, sys
-from datetime import datetime, timezone
+
+import argparse
+import json
+import sys
+from datetime import UTC, datetime, timezone
 from pathlib import Path
+
 REPO = Path(__file__).resolve().parents[2]
 BASE = REPO / "data/voice_app_surface_coverage"
 OUT = BASE / "projection/control-status.json"
@@ -23,7 +27,7 @@ def main() -> int:
     status = {
         "schema": "voice-app-surface-coverage/control-status@1",
         "program_id": "voice-app-surface-coverage-v1",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "inventory_surfaces": 0,
         "exposure_classified": 0,
         "density_p0_holes_ok": False,

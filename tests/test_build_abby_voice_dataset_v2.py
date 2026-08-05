@@ -4,6 +4,7 @@ import json
 from hashlib import sha256
 
 from ipfs_datasets_py.voice.normalize import NormalizationConfig
+
 from scripts.build_abby_voice_dataset_v2 import normalize_paths
 
 

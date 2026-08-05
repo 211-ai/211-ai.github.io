@@ -8,7 +8,6 @@ from dataclasses import replace
 from typing import Any
 
 import pytest
-
 from ipfs_accelerate_py.chainlink_cre import ChainlinkCREBridgeClient, ChainlinkCREBridgeError
 from ipfs_accelerate_py.llm_consensus import (
     P2P_REQUEST_SCHEMA_VERSION,

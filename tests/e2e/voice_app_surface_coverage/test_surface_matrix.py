@@ -34,6 +34,7 @@ from ipfs_accelerate_py.action_runtime.policy_pilot import (  # noqa: E402
     PilotAdmissionContext,
     PilotPolicy,
 )
+
 from wallet_interface.helpers._voice_app_action_binding import (  # noqa: E402
     InMemoryAppSurfaceApi,
     WalletAppSession,
