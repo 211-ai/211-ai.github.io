@@ -22,9 +22,22 @@
   "edges_path": "docs/phone_dialog_generation/surface_expansion_edges.jsonl",
   "expansion_dir": "data/voice_app_surface_coverage/dag_expansion",
   "full_dag_merge": {
-    "note": "Full DAG rewrite remains operator-gated due to 67MB artifact size and GraphRAG rebuild cost.",
-    "operator_command": "python scripts/voice_app_surface_coverage/project_dag_expansion.py --write && # then offline rebuild tooling absorbs surface_expansion_edges.jsonl",
-    "status": "not_applied",
+    "applied_at": "2026-08-05T19:59:22.792562+00:00",
+    "backup": "docs/phone_dialog_generation/slotted_response_dag.json.pre-vas-fold.bak",
+    "post_digest": "sha256:2023086c0206504304ce333e3b2a2c15ff1b202952ebb1a412637cae5929d4fb",
+    "pre_digest": "sha256:89ddb937155efa868ad32b89de39d046cc9552ef5b32c6f79a72850efb26e402",
+    "stats": {
+      "added_edges": 2288,
+      "added_intents": 2288,
+      "added_response_frames": 9,
+      "added_unique_exemplars": 2288,
+      "final_edge_count": 15911,
+      "final_intent_count": 5865,
+      "sidecar_edge_count": 2288,
+      "skipped_empty": 0,
+      "skipped_existing": 0
+    },
+    "status": "applied",
     "target": "docs/phone_dialog_generation/slotted_response_dag.json"
   },
   "generated_at": "2026-08-05T19:48:07.863278+00:00",

@@ -1,6 +1,5 @@
-# Audio regen operator notes (VAS-023)
+# Audio regen operator notes
 
-Status: **deferred_operator_gate**  
-Generated: `2026-08-05T18:31:00.321152+00:00`
+Updated: `2026-08-05T19:59:43.142356+00:00`
 
-Autonomous workers must not run live IndexTTS Spaces. Operator enables network/Space explicitly.
+Offline smoke OK; production IndexTTS deferred (no HF credentials).

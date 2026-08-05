@@ -1,16 +1,13 @@
 {
-  "decision": "retain_working_pins_document_divergence",
-  "ff_to_origin_main_blocked_for": [
-    "ipfs_accelerate_py",
-    "ipfs_datasets_py"
-  ],
-  "generated_at": "2026-08-05T19:48:08.294122+00:00",
+  "decision": "working_pins_match_origin_main",
+  "ff_to_origin_main_blocked_for": [],
+  "generated_at": "2026-08-05T19:59:43.142356+00:00",
   "monorepo": {
-    "origin_main_sha": "060b63e472fdb005f11341c325d54850d4f2fdc1",
+    "origin_main_sha": "3d41f0dd8c6f7678d19212886112c043b68155c5",
     "path": ".",
-    "working_sha": "060b63e472fdb005f11341c325d54850d4f2fdc1"
+    "working_sha": "3d41f0dd8c6f7678d19212886112c043b68155c5"
   },
-  "operator_note": "CI pin branches published: accelerate ci/monorepo-pin-071b71f73, datasets ci/monorepo-pin-29b475858. Still not FFed to submodule origin/main (voice modules missing / history diverged).",
+  "operator_note": "Both ipfs_accelerate_py and ipfs_datasets_py working pins match origin/main after upstream VOICE-ACTION merges (accelerate PR #128 \u2192 2fdba70ed, datasets PR #1246 \u2192 e6049b644).",
   "program_id": "voice-app-surface-coverage-v1",
   "safety_branches": {
     "ipfs_accelerate_py": "safety/pre-vas-002-accelerate",
@@ -19,53 +16,48 @@
   "schema": "voice-app-surface-coverage/submodule-pins@1",
   "submodules": [
     {
-      "ahead_of_origin_main": 40,
-      "already_at_origin_main": false,
-      "behind_origin_main": 552,
+      "ahead_of_origin_main": 0,
+      "already_at_origin_main": true,
+      "behind_origin_main": 0,
       "can_fast_forward_to_origin_main": false,
-      "diverged_from_origin_main": true,
+      "diverged_from_origin_main": false,
       "exists": true,
       "is_git": true,
-      "merge_base_with_origin_main": "e5b514b6f342226ba806eb72bad5f1473e8e8799",
+      "merge_base_with_origin_main": "2fdba70ed71529d1172ca2c631ec5317a5b90d01",
       "name": "ipfs_accelerate_py",
-      "operator_note": "History diverged from origin/main; FF-only pull refused. Keep working_sha for product continuity; integrate separately.",
-      "origin_main_sha": "6c564578af0b0361741483e80ebcaf405efa1064",
+      "operator_note": "Working pin already matches origin/main.",
+      "origin_main_sha": "2fdba70ed71529d1172ca2c631ec5317a5b90d01",
       "path": "ipfs_accelerate_py",
-      "pin_policy": "use_working_sha",
+      "pin_policy": "origin_main",
       "remote_origin_url": "https://github.com/endomorphosis/ipfs_accelerate_py.git",
-      "required_paths_missing_at_origin_main": [
-        "ipfs_accelerate_py/action_runtime/catalog_211ai.py"
-      ],
-      "required_paths_missing_at_working": [],
-      "safe_to_ff_to_origin_main": false,
-      "status_sb": "## main...origin/main [ahead 40, behind 552]",
-      "working_branch": "main",
-      "working_sha": "071b71f7304e8b3b2f4f8b32ced45094d4f38f0e"
-    },
-    {
-      "ahead_of_origin_main": 2,
-      "already_at_origin_main": false,
-      "behind_origin_main": 521,
-      "can_fast_forward_to_origin_main": false,
-      "diverged_from_origin_main": true,
-      "exists": true,
-      "is_git": true,
-      "merge_base_with_origin_main": "f843f317fae0863ebeb63742a96c68cd72e67a5f",
-      "name": "ipfs_datasets_py",
-      "operator_note": "History diverged from origin/main; FF-only pull refused. Keep working_sha for product continuity; integrate separately.",
-      "origin_main_sha": "293654d7cd49bd3438476c038edab818435a9638",
-      "path": "ipfs_datasets_py",
-      "pin_policy": "use_working_sha",
-      "remote_origin_url": "https://github.com/endomorphosis/ipfs_datasets_py.git",
-      "required_paths_missing_at_origin_main": [
-        "ipfs_datasets_py/voice/action_links.py",
-        "ipfs_datasets_py/voice/action_retrieval.py"
-      ],
+      "required_paths_missing_at_origin_main": [],
       "required_paths_missing_at_working": [],
       "safe_to_ff_to_origin_main": false,
       "status_sb": "## HEAD (no branch)",
       "working_branch": "HEAD",
-      "working_sha": "29b475858072cbf6ece52efb4a63e6b41b7ae6f0"
+      "working_sha": "2fdba70ed71529d1172ca2c631ec5317a5b90d01"
+    },
+    {
+      "ahead_of_origin_main": 0,
+      "already_at_origin_main": true,
+      "behind_origin_main": 0,
+      "can_fast_forward_to_origin_main": false,
+      "diverged_from_origin_main": false,
+      "exists": true,
+      "is_git": true,
+      "merge_base_with_origin_main": "e6049b6445fb151d231447aebd07ac16b7856802",
+      "name": "ipfs_datasets_py",
+      "operator_note": "Working pin already matches origin/main.",
+      "origin_main_sha": "e6049b6445fb151d231447aebd07ac16b7856802",
+      "path": "ipfs_datasets_py",
+      "pin_policy": "origin_main",
+      "remote_origin_url": "https://github.com/endomorphosis/ipfs_datasets_py.git",
+      "required_paths_missing_at_origin_main": [],
+      "required_paths_missing_at_working": [],
+      "safe_to_ff_to_origin_main": false,
+      "status_sb": "## HEAD (no branch)",
+      "working_branch": "HEAD",
+      "working_sha": "e6049b6445fb151d231447aebd07ac16b7856802"
     },
     {
       "ahead_of_origin_main": 0,
