@@ -280,7 +280,7 @@ Program invariants:
 
 ## VAS2-014 Define variant lattice schema and raised floors
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: variants
@@ -300,7 +300,7 @@ Program invariants:
 
 ## VAS2-015 Generate P0 variant lattices (≥500 unique paraphrases)
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: variants
@@ -320,7 +320,7 @@ Program invariants:
 
 ## VAS2-016 Generate P1 variant lattices (≥150 unique paraphrases)
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: variants
@@ -340,7 +340,7 @@ Program invariants:
 
 ## VAS2-017 Generate P2 secondary variant lattices (≥80 where exposed)
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: variants
