@@ -100,7 +100,7 @@ Program invariants:
 
 ## VAS2-005 Inventory all RouteIds, screens, and navigation allowlists
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: inventory
@@ -120,7 +120,7 @@ Program invariants:
 
 ## VAS2-006 Inventory agent tools, service actions, and voice bindings
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: inventory
@@ -140,7 +140,7 @@ Program invariants:
 
 ## VAS2-007 Diff app-surface inventory against v1 baseline
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: inventory
@@ -160,7 +160,7 @@ Program invariants:
 
 ## VAS2-008 Classify voice/phone amenability for every surface
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: exposure
@@ -180,7 +180,7 @@ Program invariants:
 
 ## VAS2-009 Publish coverage gap matrix against DAG, catalog, audio, e2e
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: exposure

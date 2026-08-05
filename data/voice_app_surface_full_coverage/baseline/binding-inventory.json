@@ -1,0 +1,129 @@
+{
+  "catalog_logical_actions": [
+    "create_calendar_reminder",
+    "escalate_safety",
+    "handoff_live_agent",
+    "leave_provider_message",
+    "open_app_surface",
+    "open_service_detail",
+    "open_wallet_documents",
+    "read_calendar",
+    "read_provider_messages",
+    "schedule_service_callback"
+  ],
+  "catalog_path": "data/voice_action_dag/catalog/211ai-pilot-v1.json",
+  "counts": {
+    "allowlist_surfaces": 25,
+    "descriptors": 10,
+    "logical_actions": 10
+  },
+  "descriptors": [
+    {
+      "adapter": "human",
+      "descriptor_id": "voice.human.escalate_safety.v1",
+      "logical_action": "escalate_safety",
+      "requires_confirmation": false,
+      "risk_class": "human"
+    },
+    {
+      "adapter": "human",
+      "descriptor_id": "voice.human.handoff_live_agent.v1",
+      "logical_action": "handoff_live_agent",
+      "requires_confirmation": true,
+      "risk_class": "human"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.create_calendar_reminder.v1",
+      "logical_action": "create_calendar_reminder",
+      "requires_confirmation": true,
+      "risk_class": "write"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.leave_provider_message.v1",
+      "logical_action": "leave_provider_message",
+      "requires_confirmation": true,
+      "risk_class": "write"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.open_app_surface.v1",
+      "logical_action": "open_app_surface",
+      "requires_confirmation": true,
+      "risk_class": "read"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.open_service_detail.v1",
+      "logical_action": "open_service_detail",
+      "requires_confirmation": true,
+      "risk_class": "read"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.open_wallet_documents.v1",
+      "logical_action": "open_wallet_documents",
+      "requires_confirmation": true,
+      "risk_class": "read"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.read_calendar.v1",
+      "logical_action": "read_calendar",
+      "requires_confirmation": true,
+      "risk_class": "read"
+    },
+    {
+      "adapter": "python",
+      "descriptor_id": "voice.python.read_provider_messages.v1",
+      "logical_action": "read_provider_messages",
+      "requires_confirmation": true,
+      "risk_class": "read"
+    },
+    {
+      "adapter": "workflow",
+      "descriptor_id": "voice.workflow.schedule_service_callback.v1",
+      "logical_action": "schedule_service_callback",
+      "requires_confirmation": true,
+      "risk_class": "write"
+    }
+  ],
+  "generated_at": "2026-08-05T20:58:44.501066+00:00",
+  "navigation_allowlist": [
+    "analytics",
+    "audit",
+    "benefits-protection",
+    "calendar",
+    "check-in",
+    "contacts",
+    "exports",
+    "home",
+    "interactions",
+    "messages",
+    "proof-center",
+    "provider-analytics",
+    "provider-cases",
+    "provider-clients",
+    "provider-messages",
+    "provider-operations",
+    "provider-proofs",
+    "recipient-access",
+    "register",
+    "security",
+    "settings",
+    "sharing-rules",
+    "shelter",
+    "social-services",
+    "uploads"
+  ],
+  "program_id": "voice-app-surface-full-coverage-v2",
+  "schema": "voice-app-surface-full-coverage/binding-inventory@1",
+  "task_ids": [
+    "VAS2-006"
+  ],
+  "unbound_notes": [
+    "Most allowlisted surfaces only open via open_app_surface; refined read/write actions remain calendar/messages/service/handoff pilot set."
+  ],
+  "voice_binding_module": "wallet_interface/helpers/_voice_app_action_binding.py"
+}

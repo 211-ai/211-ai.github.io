@@ -1,0 +1,211 @@
+{
+  "action_runtime_adapters": [
+    {
+      "module": "calendar",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/calendar.py"
+    },
+    {
+      "module": "cli",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/cli.py"
+    },
+    {
+      "module": "human_handoff",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/human_handoff.py"
+    },
+    {
+      "module": "messaging",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/messaging.py"
+    },
+    {
+      "module": "service_interaction",
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/action_runtime/adapters/service_interaction.py"
+    }
+  ],
+  "agent_tools": [
+    {
+      "export_count": 4,
+      "exports": [
+        "explainAnalyticsPrivacyBudgetAction",
+        "selectAnalyticsStudyAction",
+        "submitAnalyticsConsentAction",
+        "unselectAnalyticsStudyAction"
+      ],
+      "module": "analyticsTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/analyticsTools.ts"
+    },
+    {
+      "export_count": 3,
+      "exports": [
+        "explainAuditEventAction",
+        "searchAuditEventsAction",
+        "summarizeAuditEventsAction"
+      ],
+      "module": "auditTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/auditTools.ts"
+    },
+    {
+      "export_count": 1,
+      "exports": [
+        "updateCheckInPolicyAction"
+      ],
+      "module": "checkInTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/checkInTools.ts"
+    },
+    {
+      "export_count": 6,
+      "exports": [
+        "addRecipientAction",
+        "approveShelterContactRequestAction",
+        "denyShelterContactRequestAction",
+        "editRecipientAction",
+        "removeRecipientAction",
+        "requestShelterContactAction"
+      ],
+      "module": "contactTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/contactTools.ts"
+    },
+    {
+      "export_count": 2,
+      "exports": [
+        "createVerifiedExportBundleAction",
+        "importExportBundleAction"
+      ],
+      "module": "exportTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/exportTools.ts"
+    },
+    {
+      "export_count": 9,
+      "exports": [
+        "buildSafeSurfaceContext",
+        "canNavigateToRoute",
+        "formatSurfaceContextSummary",
+        "navigateAction",
+        "readSurfaceContextAction",
+        "resolveNavigationRoute",
+        "summarizeCurrentScreenAction",
+        "summarizeRouteState",
+        "validateNavigationRouteCoverage"
+      ],
+      "module": "navigationTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/navigationTools.ts"
+    },
+    {
+      "export_count": 7,
+      "exports": [
+        "buildProofReceiptExplanation",
+        "buildProofStatusSummary",
+        "createLocationRegionProofAction",
+        "createProofAction",
+        "explainProofReceiptAction",
+        "findProofReceipt",
+        "verifyProofStatusAction"
+      ],
+      "module": "proofTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/proofTools.ts"
+    },
+    {
+      "export_count": 6,
+      "exports": [
+        "analyzeGrantedRecordAction",
+        "decideAccessRequestAction",
+        "delegateGrantAction",
+        "recordControllerApprovalAction",
+        "revokeAccessRequestAction",
+        "viewGrantedRecordAction"
+      ],
+      "module": "recipientAccessTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/recipientAccessTools.ts"
+    },
+    {
+      "export_count": 1,
+      "exports": [
+        "updateRegistrationDraftAction"
+      ],
+      "module": "registrationTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/registrationTools.ts"
+    },
+    {
+      "export_count": 3,
+      "exports": [
+        "refreshWalletAuditAction",
+        "restoreWalletSnapshotAction",
+        "saveWalletSnapshotAction"
+      ],
+      "module": "securityTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/securityTools.ts"
+    },
+    {
+      "export_count": 5,
+      "exports": [
+        "getServiceDetailDocIdFromHash",
+        "openCanonicalServiceDetailRoute",
+        "openServiceDetailAction",
+        "serviceDetailRouteHash",
+        "setLocationServiceDetailHash"
+      ],
+      "module": "serviceDetailTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/serviceDetailTools.ts"
+    },
+    {
+      "export_count": 5,
+      "exports": [
+        "addServicePlanChecklistItemAction",
+        "createServicePlanAction",
+        "recordServiceInteractionAction",
+        "saveServiceAction",
+        "setServicePlanReminderAction"
+      ],
+      "module": "servicePlanTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/servicePlanTools.ts"
+    },
+    {
+      "export_count": 4,
+      "exports": [
+        "buildSharingCapabilityPreview",
+        "previewSharingCapabilitiesAction",
+        "setDisclosureScopesAction",
+        "updateRecipientScopesAction"
+      ],
+      "module": "sharingRuleTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/sharingRuleTools.ts"
+    },
+    {
+      "export_count": 9,
+      "exports": [
+        "addShelterAsRecipientAction",
+        "approveShelterContactRequestAction",
+        "approveUserShelterRequestAction",
+        "createManagedUserAccountAction",
+        "createShelterStaffAccountAction",
+        "denyShelterContactRequestAction",
+        "denyUserShelterRequestAction",
+        "requestShelterContactAction",
+        "sendShelterNudgeAction"
+      ],
+      "module": "shelterTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/shelterTools.ts"
+    },
+    {
+      "export_count": 5,
+      "exports": [
+        "classifyUploadMetadata",
+        "classifyUploadedDocumentAction",
+        "repairUploadStorageAction",
+        "summarizeUploadRequirementsAction",
+        "toggleUploadSharedAction"
+      ],
+      "module": "uploadTools.ts",
+      "path": "wallet_interface/ui/src/features/agent/lib/tools/uploadTools.ts"
+    }
+  ],
+  "counts": {
+    "adapter_modules": 5,
+    "agent_tool_modules": 15
+  },
+  "generated_at": "2026-08-05T20:58:44.497665+00:00",
+  "program_id": "voice-app-surface-full-coverage-v2",
+  "schema": "voice-app-surface-full-coverage/tool-inventory@1",
+  "task_ids": [
+    "VAS2-006"
+  ]
+}
