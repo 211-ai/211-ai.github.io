@@ -2,29 +2,34 @@
   "acceptance": {
     "audio_smoke_fixtures_staged": true,
     "audio_validated_rows": false,
+    "dag_expansion_sidecar_projected": true,
     "offline_e2e_implemented": true,
     "p0_density_and_variants": true,
     "retrieval_thresholds": true,
     "speech_text_frames": true,
+    "submodule_pins_published_for_ci": true,
     "surfaces_classified": true
   },
   "artifacts": {
     "audio_coverage": "data/voice_app_surface_coverage/reports/audio-coverage.json",
     "control_status": "data/voice_app_surface_coverage/projection/control-status.json",
     "dag_density": "data/voice_app_surface_coverage/reports/dag-density-full.json",
+    "dag_expansion_edges": "docs/phone_dialog_generation/surface_expansion_edges.jsonl",
+    "dag_expansion_manifest": "data/voice_app_surface_coverage/reports/dag-expansion-projection-manifest.json",
     "e2e": "tests/e2e/voice_app_surface_coverage/",
     "exposure_matrix": "data/voice_app_surface_coverage/baseline/voice-exposure-matrix.json",
+    "indextts_operator_runbook": "docs/voice_app_surface_coverage/INDEXTTS_OPERATOR_RUNBOOK.md",
     "retrieval": "data/voice_app_surface_coverage/reports/retrieval-reliability.json",
+    "submodule_pin_policy": "docs/voice_app_surface_coverage/SUBMODULE_PIN_POLICY.md",
     "submodule_pins": "data/voice_app_surface_coverage/baseline/submodule-pins.json"
   },
   "branch": "agent/voice-app-surface-coverage",
-  "generated_at": "2026-08-05T18:32:59.413217+00:00",
+  "generated_at": "2026-08-05T19:48:08.314814+00:00",
   "program_id": "voice-app-surface-coverage-v1",
   "residuals": [
-    "Production IndexTTS regen still operator-gated (VAS-023); offline smoke fixtures staged for pilot+surface frames.",
-    "Whisper adjudication skipped for synthetic fixtures; run after real TTS.",
-    "Optional merge of expansion packs into full slotted_response_dag.json is operator-gated.",
-    "ipfs_accelerate_py / ipfs_datasets_py remain on working pins (diverged from origin/main)."
+    "Production IndexTTS regen + Whisper still operator-gated (see docs/voice_app_surface_coverage/INDEXTTS_OPERATOR_RUNBOOK.md). Offline smoke fixtures staged.",
+    "Full slotted_response_dag.json fold-in of surface_expansion_edges.jsonl remains operator-gated; sidecar projection shipped and P0 floors met.",
+    "Submodule working pins published for CI (ci/monorepo-pin-*); merge voice modules into submodule main before retargeting monorepo gitlinks (SUBMODULE_PIN_POLICY.md)."
   ],
   "schema": "voice-app-surface-coverage/program-release-evidence@1",
   "task_id": "VAS-030"
