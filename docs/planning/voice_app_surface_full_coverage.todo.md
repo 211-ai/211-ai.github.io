@@ -360,7 +360,7 @@ Program invariants:
 
 ## VAS2-018 Project variant lattices into DAG expansion packs
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -380,7 +380,7 @@ Program invariants:
 
 ## VAS2-019 Fold surface expansion edges into slotted_response_dag
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -400,7 +400,7 @@ Program invariants:
 
 ## VAS2-020 Rebuild slotted_response_action_links for new routes
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: dag
@@ -420,7 +420,7 @@ Program invariants:
 
 ## VAS2-021 Evaluate retrieval reliability on full variant lattice
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval
@@ -440,7 +440,7 @@ Program invariants:
 
 ## VAS2-022 Repair retrieval misses until thresholds pass
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: retrieval
