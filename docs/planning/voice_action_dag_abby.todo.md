@@ -635,7 +635,7 @@ Program invariants:
 
 ## VOICE-ACTION-032 Gate production execute behind signed deployment binding
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: operations
