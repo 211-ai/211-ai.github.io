@@ -218,7 +218,7 @@ Program invariants:
 
 ## VAS-011 Wire missing adapters for newly exposed actionable surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: adapters
