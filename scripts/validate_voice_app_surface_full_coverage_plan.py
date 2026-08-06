@@ -46,7 +46,7 @@ MERGE_TARGET = "agent/voice-app-surface-full-coverage-v2"
 # Kept in sync with launch profile expected_base_commit by automatic housekeeping.
 # Prefer reading the live pin via _current_pinned_base(); this constant is the
 # companion mirror updated by launch_profile_housekeeping.
-PINNED_BASE_COMMIT = "e500ea41268d0d4d57572145e8f2a5e73b9ee638"
+PINNED_BASE_COMMIT = "4a7b5f091568af20d36cdf396d5d0ad13dc44402"
 PROFILE_SCHEMA = "211-ai/voice-care-supervisor-launch-profile@1"
 MERGE_BASE_RECEIPT_PATH = (
     REPO_ROOT
