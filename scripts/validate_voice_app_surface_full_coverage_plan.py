@@ -18,6 +18,10 @@ for import_root in (ACCELERATE_ROOT, REPO_ROOT):
     if str(import_root) not in sys.path:
         sys.path.insert(0, str(import_root))
 
+from ipfs_accelerate_py.agent_supervisor.control.launch_profile_housekeeping import (  # noqa: E402
+    HousekeepError,
+    housekeep_launch_profile_if_needed,
+)
 from ipfs_accelerate_py.agent_supervisor.objectives.objective_graph import (  # noqa: E402
     parse_goal_heap,
 )
@@ -39,8 +43,18 @@ PROGRAM_ID = "voice-app-surface-full-coverage-v2"
 BOARD_NAMESPACE = "voice-app-surface-full-coverage-v2"
 TASK_PREFIX = "## VAS2-"
 MERGE_TARGET = "agent/voice-app-surface-full-coverage-v2"
-PINNED_BASE_COMMIT = "dc7210022d9c1f1bae1edb1db9e110cc33ca0c48"
+# Kept in sync with launch profile expected_base_commit by automatic housekeeping.
+# Prefer reading the live pin via _current_pinned_base(); this constant is the
+# companion mirror updated by launch_profile_housekeeping.
+PINNED_BASE_COMMIT = "e500ea41268d0d4d57572145e8f2a5e73b9ee638"
 PROFILE_SCHEMA = "211-ai/voice-care-supervisor-launch-profile@1"
+MERGE_BASE_RECEIPT_PATH = (
+    REPO_ROOT
+    / "data"
+    / "voice_app_surface_full_coverage"
+    / "baseline"
+    / "merge-base-receipt.json"
+)
 GOAL_ID_RE = re.compile(r"VAS2-G\d{3}")
 TASK_ID_RE = re.compile(r"VAS2-\d{3}")
 
@@ -204,7 +218,55 @@ def _git(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _validate_profile(profile: dict[str, object], *, errors: list[str]) -> None:
+def _current_pinned_base(profile: dict[str, object] | None = None) -> str:
+    """Return the authoritative pin from the launch profile when available."""
+
+    if profile is not None:
+        creation = profile.get("merge_target_creation")
+        if isinstance(creation, dict):
+            pin = str(creation.get("expected_base_commit") or "").strip()
+            if pin:
+                return pin
+    # Fall back to companion constant (may be stale until housekeep rewrites it).
+    return PINNED_BASE_COMMIT
+
+
+def _maybe_housekeep_merge_base(
+    profile_path: Path,
+    *,
+    housekeep: bool,
+    errors: list[str],
+) -> dict[str, object] | None:
+    """Auto re-pin launch profile + companion constant when origin/main advances."""
+
+    if not housekeep:
+        return None
+    try:
+        receipt = housekeep_launch_profile_if_needed(
+            REPO_ROOT,
+            profile_path,
+            companion_pin_paths=(VALIDATOR_PATH,),
+            receipt_path=MERGE_BASE_RECEIPT_PATH,
+            update_merge_target=True,
+            enabled=True,
+        )
+    except HousekeepError as exc:
+        errors.append(f"automatic merge-base housekeeping failed: {exc}")
+        return None
+    # Reload this module's pin constant if the companion file was rewritten on disk.
+    if receipt.get("applied") and receipt.get("new_pin"):
+        global PINNED_BASE_COMMIT
+        PINNED_BASE_COMMIT = str(receipt["new_pin"])
+    return receipt  # type: ignore[return-value]
+
+
+def _validate_profile(
+    profile: dict[str, object],
+    *,
+    errors: list[str],
+    pinned_base_commit: str | None = None,
+) -> None:
+    pinned = pinned_base_commit or _current_pinned_base(profile)
     expected_scalars = {
         "schema": PROFILE_SCHEMA,
         "program_id": PROGRAM_ID,
@@ -237,7 +299,7 @@ def _validate_profile(profile: dict[str, object], *, errors: list[str]) -> None:
         expected_target_creation = {
             "required_before_worker_start": True,
             "base_ref": "origin/main",
-            "expected_base_commit": PINNED_BASE_COMMIT,
+            "expected_base_commit": pinned,
             "require_clean_recursive_tree": True,
             "fast_forward_merges_only": True,
         }
@@ -250,13 +312,15 @@ def _validate_profile(profile: dict[str, object], *, errors: list[str]) -> None:
         base_result = _git("rev-parse", "--verify", "origin/main^{commit}")
         if base_result.returncode != 0:
             errors.append("launch profile pinned base ref origin/main is unavailable")
-        elif base_result.stdout.strip() != PINNED_BASE_COMMIT:
+        elif base_result.stdout.strip() != pinned:
             errors.append(
                 "launch profile pinned base no longer matches origin/main: "
-                f"expected {PINNED_BASE_COMMIT}, "
-                f"got {base_result.stdout.strip()!r}"
+                f"expected {pinned}, "
+                f"got {base_result.stdout.strip()!r} "
+                "(automatic housekeeping did not reconcile; use "
+                "--housekeep or fix divergence manually)"
             )
-        object_result = _git("cat-file", "-e", f"{PINNED_BASE_COMMIT}^{{commit}}")
+        object_result = _git("cat-file", "-e", f"{pinned}^{{commit}}")
         if object_result.returncode != 0:
             errors.append("launch profile pinned base commit is unavailable")
         target_result = _git(
@@ -269,7 +333,7 @@ def _validate_profile(profile: dict[str, object], *, errors: list[str]) -> None:
             ancestry_result = _git(
                 "merge-base",
                 "--is-ancestor",
-                PINNED_BASE_COMMIT,
+                pinned,
                 MERGE_TARGET,
             )
             if ancestry_result.returncode != 0:
@@ -505,8 +569,11 @@ def validate(
     objective_path: Path,
     todo_path: Path,
     profile_path: Path,
+    *,
+    housekeep: bool = True,
 ) -> dict[str, object]:
     errors: list[str] = []
+    housekeep_receipt: dict[str, object] | None = None
     required_files = {
         "human plan": plan_path,
         "objective heap": objective_path,
@@ -528,9 +595,18 @@ def validate(
             "errors": errors,
         }
 
+    # Automatic housekeeping: re-pin expected_base_commit + companion constant
+    # and FF lagging merge targets when origin/main advances as a pure FF.
+    housekeep_receipt = _maybe_housekeep_merge_base(
+        profile_path,
+        housekeep=housekeep,
+        errors=errors,
+    )
+
     profile = _load_profile(profile_path, errors)
+    pinned = _current_pinned_base(profile if profile else None)
     if profile:
-        _validate_profile(profile, errors=errors)
+        _validate_profile(profile, errors=errors, pinned_base_commit=pinned)
 
     objective_text = objective_path.read_text(encoding="utf-8")
     objective_heading_ids = re.findall(r"(?m)^##\s+(\S+)", objective_text)
@@ -755,7 +831,8 @@ def validate(
         "goal_count": len(goals),
         "task_count": len(tasks),
         "shard_population": shard_population,
-        "pinned_base_commit": PINNED_BASE_COMMIT,
+        "pinned_base_commit": pinned,
+        "housekeep": housekeep_receipt,
         "plan_digest": "sha256:"
         + hashlib.sha256(plan_path.read_bytes()).hexdigest(),
         "objectives_digest": "sha256:"
@@ -774,16 +851,37 @@ def main() -> int:
         action="store_true",
         help="Emit the full preflight receipt as JSON",
     )
+    parser.add_argument(
+        "--no-housekeep",
+        action="store_true",
+        help=(
+            "Disable automatic merge-base re-pin / merge-target fast-forward "
+            "(fail closed on drift instead)"
+        ),
+    )
     args = parser.parse_args()
-    receipt = validate(PLAN_PATH, OBJECTIVE_PATH, TODO_PATH, PROFILE_PATH)
+    receipt = validate(
+        PLAN_PATH,
+        OBJECTIVE_PATH,
+        TODO_PATH,
+        PROFILE_PATH,
+        housekeep=not args.no_housekeep,
+    )
     if args.json:
         print(json.dumps(receipt, indent=2, sort_keys=True))
     else:
         if receipt["valid"]:
+            housekeep = receipt.get("housekeep") or {}
+            housekeep_note = ""
+            if isinstance(housekeep, dict) and housekeep.get("applied"):
+                housekeep_note = (
+                    f", housekeep={housekeep.get('action')}->"
+                    f"{str(housekeep.get('new_pin') or '')[:12]}"
+                )
             print(
                 "voice-app-surface-full-coverage-v2 plan preflight OK: "
                 f"{receipt['goal_count']} goals, {receipt['task_count']} tasks, "
-                f"shards={receipt['shard_population']}"
+                f"shards={receipt['shard_population']}{housekeep_note}"
             )
         else:
             print("voice-app-surface-full-coverage-v2 plan preflight FAILED:", file=sys.stderr)

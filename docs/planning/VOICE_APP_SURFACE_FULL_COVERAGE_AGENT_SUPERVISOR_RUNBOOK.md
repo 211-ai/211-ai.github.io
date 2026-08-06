@@ -34,9 +34,37 @@ DAG fold, and production IndexTTS + Whisper for the entire speech corpus.
 ```bash
 cd /path/to/211-AI/211-AI
 python scripts/validate_voice_app_surface_full_coverage_plan.py
+# or:
+python scripts/voice_app_surface_full_coverage/supervisor_control.py preflight
 ```
 
-Fail closed on cycles, missing fields, profile drift, or pin mismatch.
+**Automatic merge-base housekeeping** (default on): when `origin/main`
+advances as a pure fast-forward of the previous pin, preflight:
+
+1. Re-pins `merge_target_creation.expected_base_commit` in the launch profile
+2. Rewrites the companion `PINNED_BASE_COMMIT` constant in this validator
+3. Fast-forwards lagging `agent/voice-app-surface-full-coverage-v2` when the
+   branch tip is an ancestor of the new pin (no unique unmerged commits)
+4. Writes `data/voice_app_surface_full_coverage/baseline/merge-base-receipt.json`
+
+Implementation:
+`ipfs_accelerate_py.agent_supervisor.control.launch_profile_housekeeping`.
+
+```bash
+# Opt out (fail closed on pin drift instead of auto-fixing)
+python scripts/validate_voice_app_surface_full_coverage_plan.py --no-housekeep
+
+# Explicit housekeep only
+python scripts/voice_app_surface_full_coverage/supervisor_control.py housekeep-merge-base
+python -m ipfs_accelerate_py.agent_supervisor.control.launch_profile_housekeeping \
+  --repo-root . \
+  --profile docs/planning/voice_app_surface_full_coverage.supervisor.json \
+  --companion-pin scripts/validate_voice_app_surface_full_coverage_plan.py \
+  --receipt data/voice_app_surface_full_coverage/baseline/merge-base-receipt.json
+```
+
+Fail closed on cycles, missing fields, history rewrite / non-FF base drift,
+or diverged merge targets.
 
 ## 1. Pull submodules from origin/main (VAS2-002) — before parallel work
 
@@ -63,7 +91,9 @@ PY
 python scripts/voice_app_surface_full_coverage/record_submodule_pins.py --write  # created by VAS2-002
 ```
 
-Then re-pin launch profile base if monorepo `origin/main` moved (VAS2-003).
+Re-pin of the launch profile base when monorepo `origin/main` moves is now
+**automatic** on preflight (VAS2-003 housekeep). Manual re-pin is only needed
+when housekeeping fails closed (non-FF / diverged merge target).
 
 **Do not** discard unexpected dirty content in submodules.
 
